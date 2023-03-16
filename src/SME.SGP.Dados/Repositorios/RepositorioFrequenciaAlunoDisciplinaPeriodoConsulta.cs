@@ -600,19 +600,21 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<TurmaComponenteQntAulasDto>> ObterTotalAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
         {
-            var query = new StringBuilder();
-            query.AppendLine(@"select a.disciplina_id as ComponenteCurricularCodigo, a.turma_id as TurmaCodigo, 
-                               p.bimestre as Bimestre, p.periodo_inicio as PeriodoInicio, p.periodo_fim as PeriodoFim,
-                               COALESCE(SUM(a.quantidade),0) AS AulasQuantidade from 
-                                    aula a 
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("with lista as (");
+            query.AppendLine(@"select distinct a.id, 
+                                               a.disciplina_id as ComponenteCurricularCodigo, 
+                                               a.turma_id as TurmaCodigo, p.bimestre as Bimestre,
+                                               a.quantidade 
+                                  from aula a 
                                     inner join registro_frequencia_aluno rfa on 
-                                    rfa.aula_id = a.id 
+                                        rfa.aula_id = a.id 
                                     inner join periodo_escolar p on 
-                                    a.tipo_calendario_id = p.tipo_calendario_id 
-                                    where not a.excluido 
+                                        a.tipo_calendario_id = p.tipo_calendario_id 
+                                  where not a.excluido 
                                     and not rfa.excluido
                                     and a.tipo_calendario_id = @tipoCalendarioId
-                                    and a.data_aula::date between p.periodo_inicio and p.periodo_fim ");
+                                    and a.data_aula between p.periodo_inicio and p.periodo_fim ");
 
             if (componentesCurricularesId.Length > 0)
                 query.AppendLine("and a.disciplina_id = any(@componentesCurricularesId) ");
@@ -626,7 +628,8 @@ namespace SME.SGP.Dados
             else if (dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date < @dataSituacaoAluno");
 
-            query.AppendLine(" and a.turma_id = any(@turmasCodigo) group by a.disciplina_id, a.turma_id, p.bimestre, p.periodo_inicio, p.periodo_fim");
+            query.AppendLine(" and a.turma_id = any(@turmasCodigo)");
+            query.AppendLine(") select ComponenteCurricularCodigo, TurmaCodigo, Bimestre, sum(quantidade) AulasQuantidade from lista group by ComponenteCurricularCodigo, TurmaCodigo, Bimestre;");
 
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(),
            new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });

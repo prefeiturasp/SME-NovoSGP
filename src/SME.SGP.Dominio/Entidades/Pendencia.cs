@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dominio
@@ -14,6 +15,9 @@ namespace SME.SGP.Dominio
             Instrucao = instrucao;
             DescricaoHtml = descricaoHtml;
             UeId = ueId;
+            CriadoPor = "Sistema";
+            CriadoEm = DateTime.Now;
+            CriadoRF = "0";
             TurmaId = turmaId;
         }
 

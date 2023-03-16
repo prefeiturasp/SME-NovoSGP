@@ -35,9 +35,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var turmasInfantil = await mediator
                 .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual, ueId));
-
-            await mediator
-                .Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
+            if(turmasInfantil.Any())
+                await mediator
+                    .Send(new LimparConsolidacaoDevolutivasCommand(turmasInfantil.Select(ti => ti.Id).ToArray()));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
 
@@ -48,11 +48,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano, ueId));
 
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(ano));
-
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, ano);
 
             await AtualizarDataExecucao(ano);
+            try
+            {
+                // TODO: Essa rota não possui o registro
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(ano), Guid.NewGuid(), null));
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand("Erro ao executar", LogNivel.Critico, LogContexto.Geral, ex.Message));
+            }
         }
 
         private async Task ConsolidarDevolutivasHistorico(long ueId)
@@ -60,9 +67,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             for (var ano = 2021; ano < DateTime.Now.Year; ano++)
             {
                 if (!await mediator.Send(new ExisteConsolidacaoDevolutivaTurmaPorAnoQuery(ano)))
-                {
                     await ConsolidarDevolutivas(ano, ueId);
-                }
             }
         }
 
@@ -75,13 +80,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
+                    await mediator
+                        .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo, 0), Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
+                    await mediator
+                        .Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
                 }
-
             }
         }
 

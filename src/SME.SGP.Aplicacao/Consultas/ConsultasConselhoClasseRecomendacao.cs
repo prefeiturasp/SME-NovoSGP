@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -17,7 +15,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFechamentoAluno consultasFechamentoAluno;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
-        private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
         private readonly IMediator mediator;
 
@@ -25,15 +22,13 @@ namespace SME.SGP.Aplicacao
             IConsultasPeriodoFechamento consultasPeriodoFechamento,
             IConsultasConselhoClasse consultasConselhoClasse, 
             IMediator mediator, 
-            IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado,
-            IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
+            IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado)
         {
             this.consultasFechamentoAluno = consultasFechamentoAluno ?? throw new ArgumentNullException(nameof(consultasFechamentoAluno));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.consultasConselhoClasseAluno = consultasConselhoClasseAluno ?? throw new ArgumentNullException(nameof(consultasConselhoClasseAluno));
         }
 
         public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> ObterRecomendacoesAlunoFamilia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestreParam, bool consideraHistorico = false)
@@ -110,8 +105,7 @@ namespace SME.SGP.Aplicacao
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
-            var turmasComMatriculasValidas = await consultasConselhoClasseAluno
-                .ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoInicio, periodoFim);
+            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigos, periodoInicio, periodoFim));
 
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
