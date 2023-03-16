@@ -54,28 +54,30 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var id in request.Ids)
                 {
-                    var disciplinaCorreposdente = disciplinasUsuario
+                    var disciplinaCorrespondente = disciplinasUsuario
                         .FirstOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));                           
 
-                    if (disciplinaCorreposdente != null)
+                    if (disciplinaCorrespondente != null)
                     {
                         var registraFrequencia = await mediator
-                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorreposdente != null && disciplinaCorreposdente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorreposdente.CodigoComponenteTerritorioSaber : disciplinaCorreposdente.Codigo));
+                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente != null && disciplinaCorrespondente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo));
 
                         disciplinasRetorno.Add(new DisciplinaDto()
                         {
-                            Id = disciplinaCorreposdente.CodigoComponenteTerritorioSaber,
-                            CodigoComponenteCurricular = disciplinaCorreposdente.Codigo,
-                            CdComponenteCurricularPai = disciplinaCorreposdente.CodigoComponenteCurricularPai,
-                            Compartilhada = disciplinaCorreposdente.Compartilhada,
-                            Nome = disciplinaCorreposdente.Descricao,
-                            NomeComponenteInfantil = disciplinaCorreposdente.Descricao,
-                            PossuiObjetivos = disciplinaCorreposdente.PossuiObjetivos,
-                            Regencia = disciplinaCorreposdente.Regencia,
+                            Id = disciplinaCorrespondente.TerritorioSaber ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo,
+                            CodigoComponenteCurricular = disciplinaCorrespondente.Codigo,
+                            CdComponenteCurricularPai = disciplinaCorrespondente.CodigoComponenteCurricularPai,
+                            Compartilhada = disciplinaCorrespondente.Compartilhada,
+                            Nome = disciplinaCorrespondente.Descricao,
+                            NomeComponenteInfantil = disciplinaCorrespondente.Descricao,
+                            PossuiObjetivos = disciplinaCorrespondente.PossuiObjetivos,
+                            Regencia = disciplinaCorrespondente.Regencia,
                             RegistraFrequencia = registraFrequencia,
-                            TerritorioSaber = disciplinaCorreposdente.TerritorioSaber,
-                            LancaNota = disciplinaCorreposdente.LancaNota,
-                            TurmaCodigo = disciplinaCorreposdente.TurmaCodigo
+                            TerritorioSaber = disciplinaCorrespondente.TerritorioSaber,
+                            LancaNota = disciplinaCorrespondente.LancaNota,
+                            TurmaCodigo = disciplinaCorrespondente.TurmaCodigo,
+                            GrupoMatrizId = disciplinaCorrespondente.GrupoMatriz?.Id ?? 0,
+                            GrupoMatrizNome = disciplinaCorrespondente.GrupoMatriz?.Nome ?? ""
                         });
                     }
                     else
