@@ -2,6 +2,7 @@
 using MimeKit.Encodings;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -103,7 +104,8 @@ namespace SME.SGP.Aplicacao
                return await mediator.Send(new ObterUsuarioLogadoQuery());
             } catch(Exception ex)
             {
-                return null;
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter usuario obter componentes curriculares por ids Motivo: {ex.Message}", LogNivel.Critico, LogContexto.Usuario, ex.Message));
+                throw;
             }
         }
     }
