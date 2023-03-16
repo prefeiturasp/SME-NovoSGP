@@ -31,9 +31,11 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
                 
                 if(componentesCurricularesDoProfessorCJ != null)
-                    podeCriarAulasParaTurma = 
-                        componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo) ||
+                {
+                    podeCriarAulasParaTurma =
+                        componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && (c.DisciplinaId == request.ComponenteCurricularCodigo || (request.CodigoTerritorioSaber.HasValue && request.CodigoTerritorioSaber.Value > 0 && c.DisciplinaId.Equals(request.CodigoTerritorioSaber.Value)))) ||
                         componentesCurricularesDoProfessor.Any(c => c.Codigo.Equals(request.ComponenteCurricularCodigo) || c.CodigoComponenteTerritorioSaber.Equals(request.ComponenteCurricularCodigo));
+                }
 
                 if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);

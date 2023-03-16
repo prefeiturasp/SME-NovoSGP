@@ -27,7 +27,8 @@ namespace SME.SGP.Aplicacao.Commands.FilaRabbit.IncluirFilaInserirAulaRecorrente
                                                            request.TipoAula,
                                                            request.CodigoUe,
                                                            request.EhRegencia,
-                                                           request.RecorrenciaAula);
+                                                           request.RecorrenciaAula,
+                                                           request.CodigoTerritorioSaber);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaInserirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
 
