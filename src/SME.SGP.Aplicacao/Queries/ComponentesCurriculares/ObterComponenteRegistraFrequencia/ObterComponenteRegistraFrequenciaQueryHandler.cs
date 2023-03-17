@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(ObterComponenteRegistraFrequenciaQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequencia.RegistraFrequencia(request.ComponenteCurricularId);
+            => await repositorioFrequencia.RegistraFrequencia(request.ComponenteCurricularId, request.CodigoTerritorioSaber);
     }
 }

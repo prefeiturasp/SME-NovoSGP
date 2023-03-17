@@ -7,27 +7,30 @@ namespace SME.SGP.Aplicacao
     public class ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery : IRequest<int>
     {
         public string TurmaCodigo { get; set; }
-        public long ComponenteCurricularId { get; set; }
+        public long[] ComponentesCurricularesId { get; set; }
         public IEnumerable<long> PeriodosEscolaresIds { get; set; }
         public long TipoCalendarioId { get; set; }
+        public string Professor { get; set; }
 
-        private ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId)
+        private ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long[] componentesCurricularesId, long tipoCalendarioId, string professor = null)
         {
             TurmaCodigo = turmaCodigo;
-            ComponenteCurricularId = componenteCurricularId;
+            ComponentesCurricularesId = componentesCurricularesId;
             TipoCalendarioId = tipoCalendarioId;
         }
 
-        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId, long periodoEscolarId)
-            :this(turmaCodigo, componenteCurricularId, tipoCalendarioId)
+        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long[] componentesCurricularesId, long tipoCalendarioId, long periodoEscolarId, string professor = null)
+            :this(turmaCodigo, componentesCurricularesId, tipoCalendarioId)
         {
             PeriodosEscolaresIds = new List<long> { periodoEscolarId };
+            Professor = professor;
         }
 
-        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
-            : this(turmaCodigo, componenteCurricularId, tipoCalendarioId)
+        public ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(string turmaCodigo, long[] componentesCurricularesId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds, string professor = null)
+            : this(turmaCodigo, componentesCurricularesId, tipoCalendarioId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
+            Professor = professor;
         }
     }
 
@@ -39,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("A turma deve ser informada para a consulta de aulas dadas.");
 
-            RuleFor(x => x.ComponenteCurricularId)
+            RuleFor(x => x.ComponentesCurricularesId)
                 .NotEmpty()
                 .WithMessage("O componente curricular deve ser informado para a consulta de aulas dadas.");
 

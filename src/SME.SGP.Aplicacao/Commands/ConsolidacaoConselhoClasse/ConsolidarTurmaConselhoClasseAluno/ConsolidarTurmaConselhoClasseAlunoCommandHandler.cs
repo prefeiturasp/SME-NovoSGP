@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
                 var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
 
-                var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo));
+                var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo, codigoTurma: turma.CodigoTurma));
 
                 var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(disciplinasDaTurmaEol));
 
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
 
                         foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                         {
-                            var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+                            var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
 
                             if (disciplinaEol.Regencia)
                             {

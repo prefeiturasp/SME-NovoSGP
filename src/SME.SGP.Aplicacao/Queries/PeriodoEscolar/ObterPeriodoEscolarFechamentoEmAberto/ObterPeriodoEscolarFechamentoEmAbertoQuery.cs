@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPeriodoEscolarFechamentoEmAbertoQuery : IRequest<PeriodoEscolar>
+    public class ObterPeriodoEscolarFechamentoEmAbertoQuery : IRequest<IEnumerable<PeriodoEscolar>>
     {
         public ObterPeriodoEscolarFechamentoEmAbertoQuery(string codigoTurma, ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)
         {

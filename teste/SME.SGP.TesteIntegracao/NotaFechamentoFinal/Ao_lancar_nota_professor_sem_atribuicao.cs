@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre Final - Não deve permitir lançamento de nota por professor com atribuição encerrada")]
         public async Task Nao_deve_permitir_lancamento_nota_para_professor_com_atribuicao_encerrada()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
@@ -41,16 +41,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             
             excecao.Message.ShouldBe(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
-        
-        private async Task ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
-        {
-            await CriarDadosBase(filtroNotaFechamentoDto);
-
-            var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
-            
-            await ExecutarComandosFechamentoFinal(fechamentoFinalSalvarDto);
-        }
-        
         private async Task<NegocioException> ExecutarTesteComExcecao(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             await CriarDadosBase(filtroNotaFechamentoDto);

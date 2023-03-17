@@ -4,6 +4,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,15 +17,57 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<RetornoBaseDto> Executar(ExcluirAulaDto excluirDto)
-        {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
+        {            
             var aula = await mediator.Send(new ObterAulaPorIdQuery(excluirDto.AulaId));
 
             if (aula == null)
-                throw new NegocioException($"Não foi possivél localizar a aula de id : {excluirDto.AulaId}");
+                throw new NegocioException($"Não foi possível localizar a aula de id : {excluirDto.AulaId}");
 
-            var componenteCurricularNome = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(aula.DisciplinaId)));
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
+            var componenteCurricularId = long.Parse(aula.DisciplinaId);
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+
+            if (!usuarioLogado.EhProfessorCj())
+                componentesCurricularesEolProfessor = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.TurmaId,
+                                                                                  usuarioLogado.CodigoRf,
+                                                                                  usuarioLogado.PerfilAtual,
+                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
+            if (usuarioLogado.EhProfessorCj())
+            {
+                var componentesCurricularesDoProfessorCJ = await mediator
+                   .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                if (componentesCurricularesDoProfessorCJ.Any())
+                {
+                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                    if (dadosComponentes.Any())
+                    {
+                        componentesCurricularesDoProfessorCj = dadosComponentes
+                            .Select(d => (d.CodigoComponenteCurricular.ToString(), d.CdComponenteCurricularPai.ToString(), d.TerritorioSaber
+                                ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
+                    }
+                }
+            }
+
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
+                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == aula.DisciplinaId ||(componenteCurricular != null && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) ||    cp.Codigo.ToString() == aula.DisciplinaId)
+                    : new ComponenteCurricularEol
+                    {
+                        Codigo = long.TryParse(aula.DisciplinaId, out long codigo) ? codigo : 0,
+                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
+                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
+                    };
+
+            var codigoComponentes = new[] { componenteCorrespondente.Regencia ? componenteCorrespondente.CodigoComponenteCurricularPai.ToString() : componenteCorrespondente.Codigo.ToString() };
+            if (componenteCorrespondente.CodigoComponenteTerritorioSaber > 0)
+                codigoComponentes = codigoComponentes.Append(componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString()).ToArray();
+
+            var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ? 
+                componenteCorrespondente.Descricao : await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(aula.DisciplinaId)));
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {

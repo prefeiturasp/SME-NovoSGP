@@ -61,13 +61,13 @@ namespace SME.SGP.Api.Controllers
             else return StatusCode(204);
         }
 
-        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/turmas/anos")]
+        [HttpGet("ues/{codigoUe}/modalidades/{modalidade}/turmas/anos/{anoletivo}")]
         [ProducesResponseType(typeof(IEnumerable<OpcaoDropdownDto>), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade)
+        public async Task<IActionResult> ObterAnosLetivos(string codigoUe, int modalidade,int? anoletivo)
         {
-            var retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico));
+            var retorno = (await consultasAbrangencia.ObterAnosTurmasPorUeModalidade(codigoUe, (Modalidade)modalidade, ConsideraHistorico,anoletivo));
 
             if (!retorno.Any())
                 return NoContent();

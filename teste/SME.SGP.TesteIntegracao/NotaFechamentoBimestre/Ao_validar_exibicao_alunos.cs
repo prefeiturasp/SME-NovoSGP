@@ -66,7 +66,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await InserirPeriodoEscolarCustomizado();
             await CriarDadosBase(filtroNotaFechamento);
             await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
-            await CriarCiclo();
 
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
             var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.Id;
@@ -95,7 +94,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await InserirPeriodoEscolarCustomizado();
             await CriarDadosBase(filtroNotaFechamento);
             await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
-            await CriarCiclo();
 
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
             var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.Id;
@@ -124,7 +122,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await InserirPeriodoEscolarCustomizado();
             await CriarDadosBase(filtroNotaFechamento);
             await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
-            await CriarCiclo();
 
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
             var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.Id;

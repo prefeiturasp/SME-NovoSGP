@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -22,22 +23,17 @@ namespace SME.SGP.Aplicacao
                 filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo, historico: filtroDto.Historico))).ToList();
 
             if (listaRetorno.Any())
-                return await TransformaEntidadesEmDtosListaRetorno(listaRetorno);
-                
-            else return null;
+                return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
+            else 
+                return Enumerable.Empty<AtribuicaoCJListaRetornoDto>();
         }
 
-        private async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> TransformaEntidadesEmDtosListaRetorno(List<AtribuicaoCJ> listaDto)
+        private IEnumerable<AtribuicaoCJListaRetornoDto> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
         {
             var idsDisciplinas = listaDto
                 .Select(a => a.DisciplinaId)
                 .Distinct<long>()
                 .ToArray();
-
-            var disciplinasEol = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas))).ToList();
-
-            if (!disciplinasEol.Any())
-                throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
 
             var professoresDisciplinas = listaDto
                 .GroupBy(a => new { a.ProfessorRf, a.Modalidade, a.TurmaId, a.UeId }).ToList();
@@ -47,10 +43,15 @@ namespace SME.SGP.Aplicacao
             professoresDisciplinas.ForEach(a =>
             {
                 var disciplinasIds = a.Select(b => b.DisciplinaId);
+                var disciplinasEol = mediator
+                    .Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds.ToArray(), codigoTurma: a.Key.TurmaId)).Result;
+
+                if (!disciplinasEol.Any())
+                    throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
 
                 var disciplinasDescricoes = disciplinasEol
-                            .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular))
-                            .ToList();
+                    .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular))
+                    .ToList();
 
                 var professorDisciplina = a.FirstOrDefault();
 
@@ -63,7 +64,7 @@ namespace SME.SGP.Aplicacao
                     Turma = professorDisciplina?.Turma.Nome,
                     TurmaId = professorDisciplina?.TurmaId,
                     Disciplinas = exibeNomeTurmaNovoInfantil
-                    ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil).ToArray() 
+                    ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil).ToArray()
                     : disciplinasDescricoes.Select(d => d.Nome).ToArray(),
                     ProfessorRf = professorDisciplina.ProfessorRf
                 };

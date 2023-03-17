@@ -18,6 +18,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using SME.SGP.Infra;
+using SME.SGP.Api.Configuracoes;
 
 namespace SME.SGP.Api
 {

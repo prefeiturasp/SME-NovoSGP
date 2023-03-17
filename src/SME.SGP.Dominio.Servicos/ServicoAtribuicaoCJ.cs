@@ -36,9 +36,9 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task Salvar(AtribuicaoCJ atribuicaoCJ,IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol, IEnumerable<AtribuicaoCJ> atribuicoesAtuais = null)
         {
-            ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
+            await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
-            if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinaId == atribuicaoCJ.DisciplinaId))
+            if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinasId.Contains(atribuicaoCJ.DisciplinaId)))
                 throw new NegocioException("Não é possível realizar substituição na turma onde o professor já é o titular.");
 
             if (atribuicoesAtuais == null)

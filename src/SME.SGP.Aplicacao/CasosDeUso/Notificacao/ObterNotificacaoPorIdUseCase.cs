@@ -101,15 +101,15 @@ namespace SME.SGP.Aplicacao
                     return await mediator.Send(
                         new ObterMensagemNotificacaoAlteracaoParecerConclusivoQuery(workflowAprovacao.Id,
                             notificacao.Id));
-                case WorkflowAprovacaoTipo.Basica:
-                case WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional:
-                case WorkflowAprovacaoTipo.ReposicaoAula:
-                case WorkflowAprovacaoTipo.Evento_Data_Passada:
-                case WorkflowAprovacaoTipo.Fechamento_Reabertura:
                 case WorkflowAprovacaoTipo.AlteracaoNotaFechamento:
                     return await mediator.Send(
                         new ObterMensagemNotificacaoAlteracaoNotaFechamentoQuery(workflowAprovacao.Id,
                             notificacao.Id));
+                case WorkflowAprovacaoTipo.Basica:
+                case WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional:
+                case WorkflowAprovacaoTipo.ReposicaoAula:
+                case WorkflowAprovacaoTipo.Evento_Data_Passada:
+                case WorkflowAprovacaoTipo.Fechamento_Reabertura:                
                 case WorkflowAprovacaoTipo.RegistroItinerancia:
                 case WorkflowAprovacaoTipo.AlteracaoNotaConselho:
                 default:

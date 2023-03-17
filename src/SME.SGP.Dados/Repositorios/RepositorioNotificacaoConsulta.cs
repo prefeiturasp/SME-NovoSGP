@@ -193,6 +193,19 @@ namespace SME.SGP.Dados.Repositorios
             return notificacoes.FirstOrDefault();
         }
 
+        public async Task<IEnumerable<Notificacao>> ObterPorWorkFlowAprovacaoId(long workFlowAprovacaoId)
+        {
+            var query = @"select distinct n.*
+                            from wf_aprovacao wa
+                            join wf_aprovacao_nivel wan on wan.wf_aprovacao_id = wa.id 
+                            join wf_aprovacao_nivel_notificacao wann on wann.wf_aprovacao_nivel_id = wan.id 
+                            join notificacao n on n.id = wann.notificacao_id 
+                            join wf_aprovacao_nota_fechamento wfanc on wfanc.wf_aprovacao_id = wa.id
+                            where wfanc.wf_aprovacao_id = @workFlowAprovacaoId";
+
+            return await database.Conexao.QueryAsync<Notificacao>(query, new {workFlowAprovacaoId});
+        }
+
         public int ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoERf(int anoLetivo, string usuarioRf)
         {
             var query = new StringBuilder();

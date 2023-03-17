@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         {
             return new AutenticacaoApiEolDto()
             {
-                CodigoRf = "7924488"
+                CodigoRf = login
             };
         }
 
@@ -779,6 +779,24 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     GrupoMatrizNome = "Teste 2",
                     TurmaCodigo = "1"
                 },
+                new DisciplinaDto
+                {
+                    Id = 1214,
+                    CodigoComponenteCurricular = 1214,
+                    GrupoMatrizId = 4,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 11",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = false,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 11",
+                    TurmaCodigo = "1"
+                },
             }.Where(x => ids.Contains(x.Id)));
         }
 
@@ -809,7 +827,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
@@ -1031,13 +1049,42 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         Perfis.PERFIL_PAAI,
                     }
                 },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_COOD_NAAPA,
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_COORDENADOR_NAAPA
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_ADM_DRE,
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_ADMDRE
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_ADM_SME,
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_ADMSME
+                    }
+                },
             };
-            return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault());
+            return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login.ToUpper()).FirstOrDefault());
         }
 
-        public Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
+        public async Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
         {
-            throw new NotImplementedException();
+            return new RetornoDadosAcessoUsuarioSgpDto()
+            {
+                Permissoes = new List<int>() { 1 },
+                Token = "",
+                DataExpiracaoToken = DateTime.Now
+            };
         }
 
         public Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
@@ -1064,28 +1111,28 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     ProfessorRf ="",
                     ProfessorNome ="Não há professor titular.",
                     DisciplinaNome = "INFORMATICA - OIE",
-                    DisciplinaId = 1060
+                    DisciplinasId = new long[] { 1060 }
                 },
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf ="6118232",
                     ProfessorNome ="MARLEI LUCIANE BERNUN",
                     DisciplinaNome = "LEITURA - OSL",
-                    DisciplinaId = 1061
+                    DisciplinasId =new long[] { 1061 }
                 },
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf = "2222222",
                     ProfessorNome = "João Usuário",
                     DisciplinaNome = "REG CLASSE EJA ETAPA BASICA",
-                    DisciplinaId = 1114
+                    DisciplinasId = new long[] { 1114 }
                 },
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf = "6737544",
                     ProfessorNome = "GENILDO CLEBER DA SILVA",
                     DisciplinaNome = "Disciplina Fundamental",
-                    DisciplinaId = 1114
+                    DisciplinasId = new long[] { 1114 }
                 },
             };
         }
