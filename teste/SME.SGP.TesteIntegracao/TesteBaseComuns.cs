@@ -305,6 +305,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected const int NUMERO_AULA_1 = 1;
         protected const int NUMERO_AULA_2 = 2;
+        protected const int NUMERO_AULA_3 = 3;
 
         protected const string ALFABETIZACAO = "ALFABETIZACAO";
         protected const string INTERDISCIPLINAR = "INTERDISCIPLINAR";

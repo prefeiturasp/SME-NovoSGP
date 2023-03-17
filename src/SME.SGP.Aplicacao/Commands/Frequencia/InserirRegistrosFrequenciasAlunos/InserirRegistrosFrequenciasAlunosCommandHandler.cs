@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,6 +36,8 @@ namespace SME.SGP.Aplicacao
         {
             var dicionarioFrequenciaAluno = await ObtenhaDicionarioFrequenciaAlunoParaPersistir(request);
             var dicionarioPreDefinida = await ObtenhaDicionarioFrequenciaPreDefinidaParaPersistir(request);
+            
+            var informacoesFrequencia = string.Join(" - ", dicionarioFrequenciaAluno.Select(s=> s.Value.Select(a=> new FrequenciaAlunoAulaTurmaDto(a.CodigoAluno, a.Valor, a.AulaId, a.RegistroFrequenciaId, request.TurmaId).ObterInformacoes())).ToList());
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
@@ -42,15 +47,15 @@ namespace SME.SGP.Aplicacao
                     await CadastreFrequenciaPreDefinida(dicionarioPreDefinida);
 
                     unitOfWork.PersistirTransacao();
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     unitOfWork.Rollback();
-                    return false;
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao registrar a frequência do aluno e a frequência pré definida: {informacoesFrequencia}. Detalhes : {ex}", LogNivel.Critico, LogContexto.Frequencia));
+                    throw new NegocioException(MensagensNegocioFrequencia.Nao_foi_possivel_registrar_a_frequencia_do_dia_x);
                 }
             }
-
-            return true;
         }
 
         private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
