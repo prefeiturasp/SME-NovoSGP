@@ -13,14 +13,6 @@ namespace SME.SGP.Dominio
         [Display(Name = "LP - Capacidade de Leitura")]
         LP_CapacidadeLeitura = 4,
         [Display(Name = "LP - Produção de texto")]
-        LP_ProducaoTexto = 5,
-        [Display(Name = "MAT - Números")]
-        MAT_Numeros = 6,
-        [Display(Name = "MAT - Campo aditivo")]
-        MAT_CampoAditivo = 7,
-        [Display(Name = "MAT - Campo multiplicativo")]
-        MAT_CampoMultiplicativo = 8,
-        [Display(Name = "MAT - IAD")]
-        MAT_IAD = 9
+        LP_ProducaoTexto = 5
     }
 }
