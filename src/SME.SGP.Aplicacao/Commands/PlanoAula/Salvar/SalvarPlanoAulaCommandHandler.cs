@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
-                
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
                 if (periodoEscolar == null)
                     throw new NegocioException(MensagemNegocioPlanoAula.NAO_FOI_LOCALIZADO_BIMESTRE_DA_AULA);
@@ -64,11 +65,31 @@ namespace SME.SGP.Aplicacao
 
                 if (request.PlanoAula.ComponenteCurricularId.HasValue)
                 {
-                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.PlanoAula.ComponenteCurricularId.Value }));
+                    long componenteCurricularId = request.PlanoAula.ComponenteCurricularId.Value;
+
+                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma));
+
+                    if(!componentesCurriculares.Any())
+                    {
+                        var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual, true, false));
+                        if (componentesEol.Any())
+                            componentesCurriculares = componentesEol.Where(c=> c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber == componenteCurricularId : c.Codigo == componenteCurricularId).Select(c => new DisciplinaDto()
+                            {
+                                CdComponenteCurricularPai = c.CodigoComponenteCurricularPai,
+                                CodigoComponenteCurricular = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo,
+                                Nome = c.Descricao,
+                                TerritorioSaber = c.TerritorioSaber,
+                                LancaNota = c.LancaNota,
+                                Compartilhada = c.Compartilhada,
+                                Regencia = c.Regencia,
+                                RegistraFrequencia = c.RegistraFrequencia
+                            });
+                    }
+                        
                     disciplinaDto = componentesCurriculares.SingleOrDefault();
                 }
 
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                
 
                 if (usuario.EhGestorEscolar())
                     await ValidarAbrangenciaGestorEscolar(usuario, turma.CodigoTurma, turma.EhTurmaHistorica);
@@ -92,7 +113,7 @@ namespace SME.SGP.Aplicacao
                     new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id, periodoEscolar.Id, long.Parse(aula.DisciplinaId))
                     );
 
-                if ((planejamentoAnual?.Id <= 0 || planejamentoAnual == null) && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
+                if (ValidarSeNaoExistePlanoAnualCadastrado(planejamentoAnual, periodoEscolar, usuario, disciplinaDto))
                     throw new NegocioException(MensagemNegocioPlanoAula.NAO_EXISTE_PLANO_ANUAL_CADASTRADO);
 
                 if (planoAulaDto.ObjetivosAprendizagemComponente == null || !planoAulaDto.ObjetivosAprendizagemComponente.Any() && !planoAula.Migrado)
@@ -178,6 +199,11 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand("Não foi registrar o plano de aula.", LogNivel.Negocio, LogContexto.PlanoAula,ex.Message,"SGP",string.Empty,ex.StackTrace));
                 throw;
             }
+        }
+
+        private static bool ValidarSeNaoExistePlanoAnualCadastrado(PlanejamentoAnual planejamentoAnual, PeriodoEscolar periodoEscolar, Usuario usuario, DisciplinaDto disciplinaDto)
+        {
+            return (planejamentoAnual?.Id <= 0 || planejamentoAnual == null) && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) && !(disciplinaDto != null && disciplinaDto.TerritorioSaber);
         }
 
 

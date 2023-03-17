@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo,bool exibirRegistroSemPendencia = true)
         {
             var listaRetorno = new List<Aula>();
             var sqlQuery = new StringBuilder();
@@ -62,7 +62,8 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	and ue.dre_id = @dreId");
             sqlQuery.AppendLine("   and t.modalidade_codigo = ANY(@modalidades)");
             sqlQuery.AppendLine("   and t.ano_letivo = @anoLetivo");
-            sqlQuery.AppendLine("	and p.id is null");
+            if(exibirRegistroSemPendencia)
+               sqlQuery.AppendLine("	and p.id is null");
             sqlQuery.AppendLine("	and tf.id is null ");
 
             if (ueId > 0)
@@ -139,10 +140,10 @@ namespace SME.SGP.Dados.Repositorios
                }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, 
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf,
             bool ehGestor, string codigoTurma, int anoLetivo)
         {
-            var disciplinaId = Convert.ToInt32(componenteCurricularId);
+            var disciplinaId = Convert.ToInt64(componenteCurricularId);
 
             var sqlQuery = new StringBuilder(@"select distinct aula_id
                                                 from pendencia_diario_bordo pdb
@@ -152,12 +153,12 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine(ehGestor
                 ? " where a.turma_id = @codigoTurma and tc.ano_letivo = @anoLetivo"
                 : " where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf and tc.ano_letivo = @anoLetivo");
-            
+
             return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(), new { codigoTurma, anoLetivo, disciplinaId, professorRf },
                 commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo, bool exibirRegistroSemPendencia = true)
         { 
             var sqlQuery = @"
                     with vw_pendencia as (
@@ -188,10 +189,11 @@ namespace SME.SGP.Dados.Repositorios
                     and dre.id = @dreId
                     and a.data_aula::date < @hoje
                     and t.ano_letivo = @anoLetivo
-                    and nc.id is null 
-                    and p.id is null ";
+                    and nc.id is null ";
+            if(exibirRegistroSemPendencia)
+                sqlQuery += "  and p.id is null ";
 
-            if (ueId > 0)
+                if (ueId > 0)
                 sqlQuery += " and u.id = @ueId";
 
             return await database.Conexao
@@ -317,26 +319,26 @@ namespace SME.SGP.Dados.Repositorios
                 sql = @"SELECT 1  
                         FROM aula
                         INNER JOIN turma ON aula.turma_id = turma.turma_id
-                        LEFT JOIN registro_frequencia rf ON aula.id = rf.aula_id
+                        LEFT JOIN registro_frequencia_aluno rfa ON aula.id = rfa.aula_id and not rfa.excluido
                         LEFT JOIN pendencia_diario_bordo pdb ON pdb.aula_id = aula.id and pdb.componente_curricular_id = any(@componentesCurricularesId)
                         LEFT JOIN diario_bordo db on db.aula_id = aula.id and db.componente_curricular_id = any(:componentesCurricularesId)
                         WHERE NOT aula.excluido
                         AND aula.id = ANY(@aulas)
                         AND aula.data_aula::date < @hoje
-                        AND (rf.id is null or (pdb.id is not null and db.id is null))";
+                        AND (rfa.id is null or (pdb.id is not null and db.id is null))";
             }
             else
             {
                 sql = @"SELECT 1 FROM aula
                         INNER JOIN turma ON aula.turma_id = turma.turma_id
-                        INNER JOIN componente_curricular cc ON cc.id = aula.disciplina_id::bigint
-	                    LEFT JOIN registro_frequencia rf ON aula.id = rf.aula_id
+                        INNER JOIN componente_curricular cc ON (cc.id = aula.disciplina_id::bigint or cc.id = any(@componentesCurricularesId))
+	                    LEFT JOIN registro_frequencia_aluno rfa ON aula.id = rfa.aula_id and not rfa.excluido
                         WHERE NOT aula.excluido
 	                    AND aula.id = ANY(@aulas)
                         AND aula.data_aula::date < @hoje
-                        AND rf.id is null 
+                        AND rfa.id is null 
                         AND cc.permite_registro_frequencia ";
-            }
+            }   
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId }));
 
@@ -397,7 +399,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aula = aulaId, hoje = DateTime.Today.Date }));
         }
 
-        public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado)
+        public async Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado, long? disciplinaIdTerritorio = null)
         {
 
             var sql = new StringBuilder();
@@ -415,7 +417,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma on 
 	                            aula.turma_id = turma.turma_id
                             inner join componente_curricular cc on 
-	                        	aula.disciplina_id = cc.id::varchar
+	                        	(aula.disciplina_id = cc.id::varchar {(disciplinaIdTerritorio.HasValue ? "or @disciplinaIdTerritorio = cc.id" : string.Empty)})
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
                             left join pendencia_diario_bordo pdb on
@@ -424,9 +426,7 @@ namespace SME.SGP.Dados.Repositorios
                                 db.aula_id = aula.id and db.componente_curricular_id = cc.id");
 
                 if (usuarioLogado.EhProfessorInfantilOuCjInfantil())
-                {
                     sql.AppendLine(@" and pdb.professor_rf = @usuarioLogadoRf");
-                }
 
                 sql.AppendLine(@"  where
 	                            not aula.excluido
@@ -446,7 +446,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma on 
 	                            aula.turma_id = turma.turma_id
                             inner join componente_curricular cc on 
-	                        	aula.disciplina_id = cc.id::varchar
+	                        	(aula.disciplina_id = cc.id::varchar {(disciplinaIdTerritorio.HasValue ? "or @disciplinaIdTerritorio = cc.id" : string.Empty)})
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id                            
                             where
@@ -456,7 +456,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and rf.id is null");
             }
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf, disciplinaIdTerritorio }));
         }
 
         public async Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
@@ -501,7 +501,7 @@ namespace SME.SGP.Dados.Repositorios
 
                 sql += (!string.IsNullOrEmpty(codigoTurma) ? " and a.turma_id = @codigoTurma " : "") + " order by p.criado_em desc";
 
-                var retorno =  (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, codigoTurma, tipoPendencia = (int)TipoPendencia.DiarioBordo }, commandTimeout: 60));
+                var retorno = (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, codigoTurma, tipoPendencia = (int)TipoPendencia.DiarioBordo }, commandTimeout: 60));
                 return retorno;
             }
             catch (Exception ex)

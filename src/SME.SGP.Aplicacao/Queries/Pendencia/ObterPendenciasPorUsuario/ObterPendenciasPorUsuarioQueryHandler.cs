@@ -307,11 +307,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterBimestreTurma(Pendencia pendencia)
         {
+            if (pendencia.EhPendenciaFechamento())
+            {
+                var pendenciaCompleto =
+                    await mediator.Send(new ObterTurmaDaPendenciaFechamentoCompletoQuery(pendencia.Id));
+                
+               return pendenciaCompleto !=null ? ObterNomeBimestre(pendenciaCompleto.Bimestre) : string.Empty;
+            }
+
             var turma = pendencia.EhPendenciaAula() ? 
                     await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
-                pendencia.EhPendenciaFechamento() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
-                pendencia.EhPendenciaProfessor() ?
+                    pendencia.EhPendenciaProfessor() ?
                     await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
                 pendencia.EhPendenciaDiarioBordo() ?
                     await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :

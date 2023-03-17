@@ -28,11 +28,14 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaDisciplina in agrupamentoTurmaDisciplina)
             {
                 var periodoEscolarFechamentoEmAberto = (await mediator.Send(new ObterPeriodoEscolarFechamentoEmAbertoQuery(turmaDisciplina.Key.TurmaCodigo, turmaDisciplina.Key.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date)));
-                if (periodoEscolarFechamentoEmAberto != null)
+                if (periodoEscolarFechamentoEmAberto.Any())
                 {
-                    var situacao = await mediator.Send(new ObterSituacaoFechamentoTurmaComponenteQuery(turmaDisciplina.Key.TurmaId, long.Parse(turmaDisciplina.Key.DisciplinaId), periodoEscolarFechamentoEmAberto.Id));
-                    if (situacao != SituacaoFechamento.NaoIniciado)
-                        aulas.RemoveAll(aula => aula.TurmaId == turmaDisciplina.Key.TurmaCodigo && aula.DisciplinaId == turmaDisciplina.Key.DisciplinaId);
+                    foreach (var periodo in periodoEscolarFechamentoEmAberto)
+                    {
+                        var existeFechamentoTurmaDisciplinaIniciado = await mediator.Send(new VerificarFechamentoTurmaComponenteEmAndamentoQuery(turmaDisciplina.Key.TurmaId, long.Parse(turmaDisciplina.Key.DisciplinaId), periodo.Id));
+                        if (existeFechamentoTurmaDisciplinaIniciado)
+                            aulas.RemoveAll(aula => aula.TurmaId == turmaDisciplina.Key.TurmaCodigo && aula.DisciplinaId == turmaDisciplina.Key.DisciplinaId);
+                    }
                 }
 
             }

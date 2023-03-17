@@ -33,7 +33,9 @@ namespace SME.SGP.Aplicacao
                 atividadeAvaliativas.Remove(excluir);
 
             foreach (var inserir in request.EntidadesSalvar)
+            {
                 atividadeAvaliativas.Add(inserir);
+            }
 
             foreach (var alterar in request.EntidadesAlterar)
             {

@@ -15,5 +15,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public Usuario Usuario { get; set; }
         public bool ConsideraHistorico { get; set; }
         public short Semestre { get; set; }
+        public bool InformarObservacoesComplementares { get; set; }
+        public string ObservacaoComplementar { get; set; }
     }
 }

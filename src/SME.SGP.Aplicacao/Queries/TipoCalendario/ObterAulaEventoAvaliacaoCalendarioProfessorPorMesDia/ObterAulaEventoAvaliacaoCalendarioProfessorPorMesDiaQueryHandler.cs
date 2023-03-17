@@ -28,9 +28,19 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
-                    var componenteCurricular = request.ComponentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
-            
-                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId));
+                    var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
+                        .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||                            
+                                             a.Id == long.Parse(aulaParaVisualizar.DisciplinaId) ||
+                                             a.CodigoTerritorioSaber == long.Parse(aulaParaVisualizar.DisciplinaId));
+
+                    if (componenteCurricular != null && !componenteCurricular.RegistraFrequencia)
+                    {
+                        componenteCurricular.RegistraFrequencia = await mediator
+                            .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular));
+                    }
+
+                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(aulaParaVisualizar.DisciplinaId)) ||
+                                                                                     (componenteCurricular != null && p.DisciplinasId.Contains(componenteCurricular.Id)));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -40,7 +50,7 @@ namespace SME.SGP.Aplicacao
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
                         EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
                         EhAulaCJ = aulaParaVisualizar.AulaCJ,
-                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ 
+                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ
                                       || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
                         ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)

@@ -48,7 +48,8 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ConselhoClasseAlunoDto>> MontarRetorno(IEnumerable<AlunoPorTurmaResposta> alunos, IEnumerable<ConselhoClasseConsolidadoTurmaAluno> consolidadoConselhosClasses, string codigoTurma, long turmaId, PeriodoEscolar periodoEscolar, int situacaoConselhoClasse)
         {
             List<ConselhoClasseAlunoDto> lista = new List<ConselhoClasseAlunoDto>();
-            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosQuery(periodoEscolar.PeriodoFim));
+            var pareceresConclusivosDoPeriodo = await mediator.Send(new ObterPareceresConclusivosQuery(periodoEscolar.PeriodoFim));
+            var pareceresConclusivosDoPeriodoAnoAnterior = await mediator.Send(new ObterPareceresConclusivosQuery(new System.DateTime((periodoEscolar.PeriodoFim.Year - 1), periodoEscolar.PeriodoFim.Month, periodoEscolar.PeriodoFim.Day)));
 
             var dadosStatusAlunoConselhoConsolidado = await mediator.Send(new ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestreQuery(turmaId, periodoEscolar.Bimestre));
 
@@ -61,7 +62,7 @@ namespace SME.SGP.Aplicacao
                     continue;
 
                 var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
-                string parecerConclusivo = consolidadoConselhoClasse.ParecerConclusivoId != null ? pareceresConclusivos.FirstOrDefault(a => a.Id == consolidadoConselhoClasse.ParecerConclusivoId).Nome : "Sem parecer";
+                string parecerConclusivo = RetornaNomeParecerConclusivoAluno(pareceresConclusivosDoPeriodo, pareceresConclusivosDoPeriodoAnoAnterior, consolidadoConselhoClasse.ParecerConclusivoId);
 
                 lista.Add(new ConselhoClasseAlunoDto()
                 {
@@ -80,6 +81,19 @@ namespace SME.SGP.Aplicacao
                 ? lista.Where(l => l.SituacaoFechamentoCodigo == situacaoConselhoClasse).OrderBy(a => a.NomeAluno).ToList() 
                 : lista.OrderBy(a => a.NomeAluno).ToList();
 
+        }
+
+        public string RetornaNomeParecerConclusivoAluno(IEnumerable<ConselhoClasseParecerConclusivoDto> pareceresAtivosDoPeriodo, IEnumerable<ConselhoClasseParecerConclusivoDto> pareceresConclusivosDoPeriodoAnoAnterior, long? parecerConclusivoAlunoId)
+        {
+            if (parecerConclusivoAlunoId == null)
+                return "Sem parecer";
+            else
+            {
+                if (pareceresAtivosDoPeriodo.FirstOrDefault(a => a.Id == parecerConclusivoAlunoId) != null)
+                    return pareceresAtivosDoPeriodo.FirstOrDefault(a => a.Id == parecerConclusivoAlunoId).Nome;
+                else
+                    return pareceresConclusivosDoPeriodoAnoAnterior.FirstOrDefault(a => a.Id == parecerConclusivoAlunoId)?.Nome ?? "Sem parecer";
+            }
         }
     }
 }

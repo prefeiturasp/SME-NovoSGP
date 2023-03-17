@@ -192,7 +192,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
 
             var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
 
-            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
+            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
 
             var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -572,7 +572,6 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                     Bimestre = 1,
                     CodigoAluno = "3333333",
                     ComponenteCurricularDescricao = "MATEMATICA",
-                    ComponenteCurricularEhRegencia = false,
                     ConceitoAnteriorId = null,
                     FechamentoNota = null,
                     FechamentoTurmaDisciplinaId = 1,
@@ -595,7 +594,6 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                     Bimestre = 1,
                     CodigoAluno = "2222222",
                     ComponenteCurricularDescricao = "MATEMATICA",
-                    ComponenteCurricularEhRegencia = false,
                     ConceitoAnteriorId = null,
                     FechamentoNota = null,
                     FechamentoTurmaDisciplinaId = 1,

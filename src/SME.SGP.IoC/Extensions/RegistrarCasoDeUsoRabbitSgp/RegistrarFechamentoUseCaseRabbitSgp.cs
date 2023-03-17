@@ -9,7 +9,6 @@ namespace SME.SGP.IoC
     {
         internal static void RegistrarFechamentoUseCaseRabbitSgp(this IServiceCollection services)
         {
-            services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
             services.TryAddScoped<IExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase, ExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciasAusenciaFechamentoUseCase, ExecutarExclusaoPendenciasAusenciaFechamentoUseCase>();
             services.TryAddScoped<IVerificaPendenciasFechamentoUseCase, VerificaPendenciasFechamentoUseCase>();

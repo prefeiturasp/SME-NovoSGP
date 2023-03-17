@@ -41,14 +41,14 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
             var listaDescricao = new List<PlanoAnualTerritorioSaberResumidoDto>();
-            var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
+            var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
+
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
-            {
                 throw new NegocioException("Não foi possível obter o RF do usuário.");
-            }
+
             foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
             {
-                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value);
+                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, usuarioAtual.EhProfessor() ? usuarioAtual.CodigoRf : null);
                 if (planoAnualTerritorioSaber != null)
                 {
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now).Result)
@@ -94,13 +94,14 @@ namespace SME.SGP.Aplicacao
                                             {string.Join(", ", bimestresDescricaoVazia.Select(b => $"{b.Bimestre}º"))} bimestre");
         }
 
-        private async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre)
+        private async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre, string professor = null)
         {
             return await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(planoAnualTerritorioSaberDto.AnoLetivo.Value,
                                                                                                       planoAnualTerritorioSaberDto.EscolaId,
                                                                                                       planoAnualTerritorioSaberDto.TurmaId.Value,
                                                                                                       bimestre,
-                                                                                                      planoAnualTerritorioSaberDto.TerritorioExperienciaId);
+                                                                                                      planoAnualTerritorioSaberDto.TerritorioExperienciaId,
+                                                                                                      professor);
         }
         private PlanoAnualTerritorioSaber MapearParaDominio(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, PlanoAnualTerritorioSaber planoAnualTerritorioSaber, int bimestre, string desenvolvimento, string reflexao)
         {
@@ -111,7 +112,7 @@ namespace SME.SGP.Aplicacao
             planoAnualTerritorioSaber.Ano = planoAnualTerritorioSaberDto.AnoLetivo.Value;
             planoAnualTerritorioSaber.Bimestre = bimestre;
             planoAnualTerritorioSaber.Reflexao = reflexao?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos) ?? string.Empty;
-            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos) ?? string.Empty;
+            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos) ?? string.Empty;
             planoAnualTerritorioSaber.EscolaId = planoAnualTerritorioSaberDto.EscolaId;
             planoAnualTerritorioSaber.TurmaId = planoAnualTerritorioSaberDto.TurmaId.Value;
             planoAnualTerritorioSaber.TerritorioExperienciaId = planoAnualTerritorioSaberDto.TerritorioExperienciaId;

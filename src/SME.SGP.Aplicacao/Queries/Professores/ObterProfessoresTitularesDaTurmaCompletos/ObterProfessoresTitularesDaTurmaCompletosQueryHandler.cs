@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<ProfessorTitularDisciplinaEol>();
-            var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(request.CodigoTurma));
+            var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(request.CodigoTurma, realizaAgrupamento: false));
             if (!professores?.Any() ?? true) return retorno;
 
             foreach (var professor in professores)
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             {
                 retorno.Add(new ProfessorTitularDisciplinaEol
                 {
-                    DisciplinaId = professor.DisciplinaId,
+                    DisciplinasId = professor.DisciplinasId,
                     DisciplinaNome = professor.DisciplinaNome,
                     ProfessorNome = professorNome[index].Trim(),
                     ProfessorRf = professorRfs[index].Trim(),

@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
-            await ObterComponenteCurricular(fechamentoFinal.DisciplinaId);
+            await ObterComponenteCurricular(fechamentoFinal.DisciplinaId, turma.CodigoTurma);
             var tipoNota = await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turma.Id, turma.TipoTurma);
 
             var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
@@ -102,40 +102,44 @@ namespace SME.SGP.Dominio.Servicos
                                     ValidarNotasFechamento2020(notaDto);
 
                                 var fechamentoNota = CarregarNota(notaDto, fechamentoAluno);
+
+                                var semFechamentoNota = (fechamentoNota.Id == 0);
+                                var ehAprovacaoSemFechamentoNota = emAprovacao && semFechamentoNota;
                                 
                                 //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                                 //   deve gerar o registro do fechamento da nota inicial.
-                                if (!emAprovacao || (emAprovacao && (fechamentoNota.Id == 0)))
+                                double? notaAnterior = null;
+                                long? conceitoIdAnterior = null;
+
+                                if (!emAprovacao)
                                 {
-                                    // Registra Histórico de alteração de nota
-                                    if (fechamentoNota != null)
+                                    if (!semFechamentoNota)
                                     {
-                                        if (tipoNota.TipoNota == TipoNota.Nota)
-                                        {
-                                            if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaDto.Nota) != 0)
-                                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaDto.Nota, fechamentoNota.Id));
-                                        }
-                                        else
-                                        if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != notaDto.ConceitoId)
-                                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaDto.ConceitoId, fechamentoNota.Id));
+                                        notaAnterior = fechamentoNota.Nota;
+                                        conceitoIdAnterior = fechamentoNota.ConceitoId;
                                     }
-
-                                    if (!emAprovacao)
-                                    {
-                                        fechamentoNota.Nota = notaDto.Nota;
-                                        fechamentoNota.ConceitoId = notaDto.ConceitoId;
-                                    }
-
-                                    fechamentoNota.SinteseId = notaDto.SinteseId;
-                                    fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
-
-                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
-
-                                    fechamentosNotasCache[fechamentoAluno].Add(fechamentoNota);
-
-                                    ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                        
+                                    fechamentoNota.Nota = notaDto.Nota;
+                                    fechamentoNota.ConceitoId = notaDto.ConceitoId;
                                 }
 
+                                fechamentoNota.SinteseId = notaDto.SinteseId;
+                                fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
+
+                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                if (!emAprovacao)
+                                    await SalvarHistoricoNotaFechamento(fechamentoNota, tipoNota.TipoNota, usuarioLogado.CodigoRf, usuarioLogado.Nome, notaAnterior, conceitoIdAnterior);
+                                    
+                                var fechamentoNotaClone = fechamentoNota.Clone();
+                                fechamentoNotaClone.Nota = notaDto.Nota;
+                                fechamentoNotaClone.ConceitoId = notaDto.ConceitoId;
+                                fechamentosNotasCache[fechamentoAluno].Add(fechamentoNotaClone);
+
+                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                    ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                
                                 if (emAprovacao)
                                     AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, notaDto, fechamentoAluno.AlunoCodigo);
                             }
@@ -191,6 +195,17 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private async Task SalvarHistoricoNotaFechamento(FechamentoNota fechamentoNota, TipoNota tipoNota, string criadoRf, string criadoPor,double? notaAnterior, long? conceitoIdAnterior)
+        {
+            if (tipoNota == TipoNota.Nota)
+            {
+                if (fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaAnterior) != 0)
+                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, fechamentoNota.Nota, fechamentoNota.Id, criadoRF:criadoRf, criadoPor:criadoPor));
+            }
+            else if (fechamentoNota.ConceitoId.GetValueOrDefault().CompareTo(conceitoIdAnterior) != 0)
+                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior, fechamentoNota.ConceitoId,fechamentoNota.Id, criadoRF:criadoRf, criadoPor:criadoPor));
         }
 
         private async Task AtualizarCache(FechamentoTurmaDisciplina fechamentoFinal, Turma turma, bool emAprovacao, Dictionary<FechamentoAluno,List<FechamentoNota>> fechamentosNotasCache)
@@ -257,9 +272,9 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId)
+        private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId, string codigoTurma)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: codigoTurma));
 
             if (!componentes.Any())
                 throw new NegocioException($"Componente Curricular do Fechamento ({componenteCurricularId}) não localizado!");
@@ -315,7 +330,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task PersistirNotasFinaisNoCache(List<FechamentoNotaAlunoAprovacaoDto> notasFinais, FechamentoNota fechamentoNota,
             string codigoAluno, string disciplinaId, string codigoTurma, bool emAprovacao)
         {
-            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId);
+            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
             if (notaFinalAluno == null) {
                 notasFinais.Add(new FechamentoNotaAlunoAprovacaoDto

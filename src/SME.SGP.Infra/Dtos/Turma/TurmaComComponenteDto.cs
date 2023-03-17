@@ -2,7 +2,7 @@
 {
     public class TurmaComComponenteDto
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string NomeTurma { get; set; }
         public long TurmaCodigo { get; set; }
         public long ComponenteCurricularCodigo { get; set; }

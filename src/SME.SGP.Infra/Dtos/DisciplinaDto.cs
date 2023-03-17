@@ -6,6 +6,7 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public long CodigoComponenteCurricular { get; set; }
+        public long CodigoTerritorioSaber { get; set; }
         [JsonProperty("codDisciplinaPai")]
         public long? CdComponenteCurricularPai { get; set; }
         public bool Compartilhada { get; set; }
@@ -20,5 +21,6 @@ namespace SME.SGP.Infra
         public long GrupoMatrizId { get; set; }
         public string GrupoMatrizNome { get; set; }
         public string TurmaCodigo { get; set; }
+        public string Professor { get; set; }
     }
 }

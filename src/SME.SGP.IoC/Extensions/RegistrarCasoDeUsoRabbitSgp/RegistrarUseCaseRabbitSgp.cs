@@ -10,6 +10,7 @@ namespace SME.SGP.IoC
     {
         internal static void RegistrarUseCaseRabbitSgp(this IServiceCollection services)
         {
+            services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoEscolaAquiUseCase, ReceberRelatorioProntoEscolaAquiUseCase>();
             services.TryAddScoped<IReceberRelatorioComErroUseCase, ReceberRelatorioComErroUseCase>();
@@ -30,6 +31,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IGerarPendenciaAusenciaRegistroIndividualUseCase, GerarPendenciaAusenciaRegistroIndividualUseCase>();
             services.TryAddScoped<IAtualizarPendenciaRegistroIndividualUseCase, AtualizarPendenciaRegistroIndividualUseCase>();
             services.TryAddScoped<INotificarCompensacaoAusenciaUseCase, NotificarCompensacaoAusenciaUseCase>();
+            services.TryAddScoped<IConsolidarDevolutivasPorUeUseCase, ConsolidarDevolutivasPorUeUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
             services.TryAddScoped<IConsolidarDiariosBordoCarregarUseCase, ConsolidarDiariosBordoCarregarUseCase>();
@@ -77,6 +79,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase, NotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase, NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase, AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarGravarHistoricoEscolarObservacaoUseCase, ExecutarGravarHistoricoEscolarObservacaoUseCase>();
         }
     }
 }
