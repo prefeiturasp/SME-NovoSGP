@@ -31,17 +31,17 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             if (request.Usuario.EhProfessorCj())
             {
                 var possuiAtribuicaoCJ = await mediator
-                                               .Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, 
-                                                                                               turma.Ue.CodigoUe, 
-                                                                                               turma.CodigoTurma, 
-                                                                                               request.Usuario.CodigoRf));
+                    .Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, 
+                    turma.Ue.CodigoUe, 
+                    turma.CodigoTurma, 
+                    request.Usuario.CodigoRf));
                
                 var atribuicoesEsporadica = await mediator
-                                                  .Send(new ObterAtribuicoesPorRFEAnoQuery(request.Usuario.CodigoRf, 
-                                                                                           false, 
-                                                                                           request.DataAula.Year, 
-                                                                                           turma.Ue.Dre.CodigoDre, 
-                                                                                           turma.Ue.CodigoUe));
+                    .Send(new ObterAtribuicoesPorRFEAnoQuery(request.Usuario.CodigoRf, 
+                                                             false, 
+                                                             request.DataAula.Year, 
+                                                             turma.Ue.Dre.CodigoDre, 
+                                                             turma.Ue.CodigoUe));
 
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
@@ -54,10 +54,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             }
 
             var aulasExistentes = await mediator
-                                        .Send(new ObterAulasPorDataTurmaComponenteCurricularCJQuery(request.DataAula, 
-                                                                                                  request.CodigoTurma, 
-                                                                                                  request.CodigoComponenteCurricular, 
-                                                                                                  request.Usuario.EhProfessorCj()));
+                .Send(new ObterAulasPorDataTurmaComponenteCurricularCJQuery(request.DataAula, 
+                                                                            request.CodigoTurma, 
+                                                                            request.CodigoComponenteCurricular, 
+                                                                            request.Usuario.EhProfessorCj()));
             
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
-            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes);
+            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes, request.CodigoTerritorioSaber);
 
             var aula = MapearEntidade(request);
 
@@ -125,9 +125,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         private async Task AplicarValidacoes(InserirAulaUnicaCommand inserirAulaUnicaCommand, 
                                              Turma turma, 
                                              Usuario usuarioLogado, 
-                                             IEnumerable<AulaConsultaDto> aulasExistentes)
+                                             IEnumerable<AulaConsultaDto> aulasExistentes,
+                                             long? codigoTerritorioSaber = null)
         {
-            await ValidarComponentesDoProfessor(inserirAulaUnicaCommand, usuarioLogado);
+            await ValidarComponentesDoProfessor(inserirAulaUnicaCommand, usuarioLogado, codigoTerritorioSaber);
 
             await ValidarSeEhDiaLetivo(inserirAulaUnicaCommand, turma);
 
@@ -186,13 +187,14 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 throw new NegocioException(consultaPodeCadastrarAula.MensagemPeriodo);
         }
 
-        private async Task ValidarComponentesDoProfessor(InserirAulaUnicaCommand inserirAulaUnicaCommand, Usuario usuarioLogado)
+        private async Task ValidarComponentesDoProfessor(InserirAulaUnicaCommand inserirAulaUnicaCommand, Usuario usuarioLogado, long? codigoTerritorioSaber = null)
         {
             var resultadoValidacao = await mediator
-                                           .Send(new ValidarComponentesDoProfessorCommand(usuarioLogado, 
-                                                                                          inserirAulaUnicaCommand.CodigoTurma, 
-                                                                                          inserirAulaUnicaCommand.CodigoComponenteCurricular, 
-                                                                                          inserirAulaUnicaCommand.DataAula));
+                .Send(new ValidarComponentesDoProfessorCommand(usuarioLogado, 
+                                                               inserirAulaUnicaCommand.CodigoTurma, 
+                                                               inserirAulaUnicaCommand.CodigoComponenteCurricular, 
+                                                               inserirAulaUnicaCommand.DataAula,
+                                                               codigoTerritorioSaber));
            
             if (!resultadoValidacao.resultado)
                 throw new NegocioException(resultadoValidacao.mensagem);

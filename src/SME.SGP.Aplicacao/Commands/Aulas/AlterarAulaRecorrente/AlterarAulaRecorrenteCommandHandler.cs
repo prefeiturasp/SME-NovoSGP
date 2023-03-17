@@ -46,23 +46,35 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarComponentesProfessor(AlterarAulaRecorrenteCommand aulaRecorrente)
         {
+            var componentesCurricularesDoProfessor = await mediator
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.Usuario.Login, aulaRecorrente.Usuario.PerfilAtual));
+
             if (aulaRecorrente.Usuario.EhProfessorCj())
             {
-                var componentesCurricularesDoProfessorCJ = await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(aulaRecorrente.Usuario.Login));
+                var componentesCurricularesDoProfessorCJ = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(aulaRecorrente.Usuario.Login));
+
                 if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
                 {
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+                    var componenteDefinidoParaTerritorio = await mediator
+                        .Send(new DefinirComponenteCurricularParaAulaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.ComponenteCurricularId, aulaRecorrente.Usuario));
+
+                    if (componenteDefinidoParaTerritorio == default || !componenteDefinidoParaTerritorio.codigoTerritorio.HasValue ||
+                        componenteDefinidoParaTerritorio.codigoTerritorio.Value == 0 || !componentesCurricularesDoProfessorCJ.Select(cp => cp.DisciplinaId).Contains(componenteDefinidoParaTerritorio.codigoTerritorio.Value))
+                    {
+                        if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
+                            throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+                    }
                 }
             }
             else
-            {
-                var componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.Usuario.Login, aulaRecorrente.Usuario.PerfilAtual));
-                if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId))
-                {
+            {               
+                if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
                     throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
-                }
 
-                var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario));
+                var usuarioPodePersistirTurmaNaData = await mediator
+                    .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario));
+
                 if (!usuarioPodePersistirTurmaNaData)
                     throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
             }
@@ -77,7 +89,7 @@ namespace SME.SGP.Aplicacao
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, dataAula, request.RecorrenciaAula));
 
             var aulasDaRecorrencia = await mediator.Send(new ObterRepositorioAulaPorAulaRecorrenteQuery(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia));
-                
+
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasDaRecorrencia);
 
             try
