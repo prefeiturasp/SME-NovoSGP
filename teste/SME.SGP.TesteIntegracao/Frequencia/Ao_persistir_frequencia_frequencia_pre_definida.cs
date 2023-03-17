@@ -125,6 +125,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 ObterRegistroFrequenciaAlunoPara3Aulas(ALUNO_CODIGO_2, TipoFrequencia.F.ShortName(), TipoFrequencia.F.ShortName(),TipoFrequencia.R.ShortName()),
                 ObterRegistroFrequenciaAlunoPara3Aulas(ALUNO_CODIGO_3, TipoFrequencia.C.ShortName(), TipoFrequencia.F.ShortName(),TipoFrequencia.R.ShortName()),
                 ObterRegistroFrequenciaAlunoPara3Aulas(ALUNO_CODIGO_4, TipoFrequencia.R.ShortName(), TipoFrequencia.C.ShortName(),TipoFrequencia.C.ShortName()),
+                ObterRegistroFrequenciaAlunoPara3Aulas(ALUNO_CODIGO_5, TipoFrequencia.C.ShortName(), TipoFrequencia.F.ShortName(),TipoFrequencia.R.ShortName()),
+                ObterRegistroFrequenciaAlunoPara3Aulas(ALUNO_CODIGO_6, TipoFrequencia.R.ShortName(), TipoFrequencia.R.ShortName(),TipoFrequencia.R.ShortName()),
             };
 
             var inserirRegistrosFrequenciasAlunosCommand = new InserirRegistrosFrequenciasAlunosCommand(registroFrequenciaAlunoAlteradosDtos,REGISTRO_FREQUENCIA_ID_1,TURMA_ID_1,COMPONENTE_CURRICULAR_PORTUGUES_ID_138,AULA_ID_1,dataAula);
@@ -133,7 +135,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             retorno.ShouldBeTrue();
 
             var registroFrequenciaAlunos = ObterTodos<Dominio.RegistroFrequenciaAluno>();
-            registroFrequenciaAlunos.Count().ShouldBeEquivalentTo(12);
+            registroFrequenciaAlunos.Count().ShouldBeEquivalentTo(18);
             (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1) && f.NumeroAula == NUMERO_AULA_1).Valor == (int)TipoFrequencia.R).ShouldBeTrue();
             (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1) && f.NumeroAula == NUMERO_AULA_2).Valor == (int)TipoFrequencia.C).ShouldBeTrue();
             (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1) && f.NumeroAula == NUMERO_AULA_3).Valor == (int)TipoFrequencia.R).ShouldBeTrue();
@@ -159,8 +161,16 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4) && f.NumeroAula == NUMERO_AULA_1).Valor == (int)TipoFrequencia.C).ShouldBeFalse();
             (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4) && f.NumeroAula == NUMERO_AULA_3).Valor == (int)TipoFrequencia.F).ShouldBeFalse();
             
+            (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_5) && f.NumeroAula == NUMERO_AULA_1).Valor == (int)TipoFrequencia.C).ShouldBeTrue();
+            (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_5) && f.NumeroAula == NUMERO_AULA_2).Valor == (int)TipoFrequencia.F).ShouldBeTrue();
+            (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_5) && f.NumeroAula == NUMERO_AULA_3).Valor == (int)TipoFrequencia.R).ShouldBeTrue();
+            
+            (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_6) && f.NumeroAula == NUMERO_AULA_1).Valor == (int)TipoFrequencia.R).ShouldBeTrue();
+            (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_6) && f.NumeroAula == NUMERO_AULA_2).Valor == (int)TipoFrequencia.R).ShouldBeTrue();
+            (registroFrequenciaAlunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_6) && f.NumeroAula == NUMERO_AULA_3).Valor == (int)TipoFrequencia.R).ShouldBeTrue();
+            
             var frequenciaPreDefinidas = ObterTodos<Dominio.FrequenciaPreDefinida>();
-            frequenciaPreDefinidas.Count().ShouldBeEquivalentTo(4);
+            frequenciaPreDefinidas.Count().ShouldBeEquivalentTo(6);
             frequenciaPreDefinidas.Any(f=> f.TipoFrequencia == TipoFrequencia.C).ShouldBeTrue();
             frequenciaPreDefinidas.Any(f=> f.TipoFrequencia == TipoFrequencia.F).ShouldBeFalse();
             frequenciaPreDefinidas.Any(f=> f.TipoFrequencia == TipoFrequencia.R).ShouldBeFalse();
