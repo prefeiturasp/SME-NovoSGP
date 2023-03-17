@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,13 +29,24 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
-                
-                if(componentesCurricularesDoProfessorCJ != null)
+
+                if (componentesCurricularesDoProfessorCJ != null)
                 {
                     podeCriarAulasParaTurma =
                         componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && (c.DisciplinaId == request.ComponenteCurricularCodigo || (request.CodigoTerritorioSaber.HasValue && request.CodigoTerritorioSaber.Value > 0 && c.DisciplinaId.Equals(request.CodigoTerritorioSaber.Value)))) ||
                         componentesCurricularesDoProfessor.Any(c => c.Codigo.Equals(request.ComponenteCurricularCodigo) || c.CodigoComponenteTerritorioSaber.Equals(request.ComponenteCurricularCodigo));
-                }
+                }                
+
+                if (!podeCriarAulasParaTurma)
+                {
+                    var componenteTerritorioDefinidoParaAula = await mediator
+                        .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.Usuario));
+
+                    podeCriarAulasParaTurma = componenteTerritorioDefinidoParaAula != default &&
+                                              componenteTerritorioDefinidoParaAula.codigoTerritorio.HasValue &&
+                                              componenteTerritorioDefinidoParaAula.codigoTerritorio.Value > 0 &&
+                                              componentesCurricularesDoProfessorCJ.Select(cc => cc.DisciplinaId).Contains(componenteTerritorioDefinidoParaAula.codigoTerritorio.Value);
+                }                
 
                 if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);

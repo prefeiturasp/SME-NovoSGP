@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Minio.DataModel.ObjectLock;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System;
@@ -23,17 +24,17 @@ namespace SME.SGP.Aplicacao
             var componentesProfessor = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, request.Usuario.Login, request.Usuario.PerfilAtual));
 
-            var componenteCorrespondenteCorrespondente = componentesProfessor
+            var componenteCorrespondente = componentesProfessor
                 .FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(request.CodigoComponenteCurricular));
 
-            if (componenteCorrespondenteCorrespondente != null)
-                return (componenteCorrespondenteCorrespondente.Codigo, request.CodigoComponenteCurricular);
+            if (componenteCorrespondente != null)
+                return (componenteCorrespondente.Codigo, request.CodigoComponenteCurricular);
             else if (request.Usuario.EhProfessorCj())
             {
                 var atribuicoesCjProfessor = await mediator
                     .Send(new ObterAtribuicoesCJAtivasQuery(request.Usuario.CodigoRf, false));
 
-                var atribuicaoDisciplinaCorrespondente = atribuicoesCjProfessor
+                var atribuicaoDisciplinaCorrespondente = atribuicoesCjProfessor?
                     .FirstOrDefault(a => a.DisciplinaId.Equals(request.CodigoComponenteCurricular));
 
                 if (atribuicaoDisciplinaCorrespondente == null)
@@ -41,17 +42,19 @@ namespace SME.SGP.Aplicacao
                     var componentesTurma = await mediator
                         .Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(request.CodigoTurma));
 
-                    var componenteTurmaCorrespondente = componentesTurma
+                    var componenteTurmaCorrespondente = componentesTurma?
                         .FirstOrDefault(ct => ct.CodigoComponenteCurricular.Equals(request.CodigoComponenteCurricular));
 
                     if (componenteTurmaCorrespondente != null)
                     {
-                        atribuicaoDisciplinaCorrespondente = atribuicoesCjProfessor
+                        atribuicaoDisciplinaCorrespondente = atribuicoesCjProfessor?
                             .FirstOrDefault(a => a.DisciplinaId.Equals(componenteTurmaCorrespondente.CodigoComponenteTerritorioSaber));
 
-                        return (request.CodigoComponenteCurricular, componenteTurmaCorrespondente.CodigoComponenteTerritorioSaber);
+                        return atribuicoesCjProfessor != null ? (request.CodigoComponenteCurricular, componenteTurmaCorrespondente.CodigoComponenteTerritorioSaber) : default;
                     }
-                }               
+                }
+                else
+                    return (atribuicaoDisciplinaCorrespondente.DisciplinaId, null);
             }
 
             return default;
