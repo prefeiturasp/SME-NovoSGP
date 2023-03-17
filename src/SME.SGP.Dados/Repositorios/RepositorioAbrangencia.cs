@@ -1006,5 +1006,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return retorno;
         }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorAbrangenciaCPParaCopiaAvaliacao(int anoLetivo, string codigoRf, int modalidadeTurma, string anoTurma, long turmaIdReferencia)
+        {
+            var query = $@"select t.* from abrangencia a
+                                inner join usuario u on u.id = a.usuario_id
+                                inner join turma t on t.ue_id = a.ue_id
+                                where a.perfil = @perfilCP and t.ano_letivo = @anoLetivo
+                                and u.rf_codigo = @codigoRf and t.modalidade_codigo = @modalidadeTurma
+                                and t.ano = @anoTurma and t.id != @turmaIdReferencia";
+
+            return await database.Conexao.QueryAsync<Turma>(query, new { perfilCP = Guid.Parse(PerfilUsuario.CP.Name().ToString()), anoLetivo, codigoRf, modalidadeTurma, anoTurma, turmaIdReferencia });
+        }
     }
 }

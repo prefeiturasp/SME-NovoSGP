@@ -20,6 +20,7 @@ namespace SME.SGP.Dominio
         public bool ExibirComponenteEOL { get; set; }
         public GrupoMatriz GrupoMatriz { get; set; }
         public string TurmaCodigo { get; set; }
+        public string Professor { get; set; }
 
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
         {

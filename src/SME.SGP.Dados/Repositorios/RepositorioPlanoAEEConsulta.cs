@@ -172,6 +172,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join plano_aee_versao pav on pav.plano_aee_id = pa.id and not pav.excluido 
                                         where pa.aluno_codigo = @codigoEstudante 
                                         and pa.situacao not in (3,7)
+                                        and not pa.excluido
                                         and (EXTRACT(ISOYEAR from pa.criado_em) = @ano 
                                         or EXTRACT(ISOYEAR from pav.criado_em) = @ano)
                                         limit 1";

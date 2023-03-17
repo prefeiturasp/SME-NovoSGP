@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -12,10 +13,12 @@ namespace SME.SGP.Aplicacao
     internal class ObterAtribuicaoResponsaveisPorUeTipoQueryHandler : IRequestHandler<ObterAtribuicaoResponsaveisPorUeTipoQuery, IEnumerable<AtribuicaoResponsavelDto>>
     {
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
+        private readonly IMediator mediator;
 
-        public ObterAtribuicaoResponsaveisPorUeTipoQueryHandler(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
+        public ObterAtribuicaoResponsaveisPorUeTipoQueryHandler(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IMediator mediator)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<AtribuicaoResponsavelDto>> Handle(ObterAtribuicaoResponsaveisPorUeTipoQuery request, CancellationToken cancellationToken)
         {
@@ -23,9 +26,8 @@ namespace SME.SGP.Aplicacao
 
             return supervisores.Select(a => new AtribuicaoResponsavelDto()
             {
-                CodigoRF = a.SupervisorId,
-                NomeResponsavel = a.NomeResponsavel
-            });
+                CodigoRF = a.SupervisorId
+            }).ToList();
         }
     }
 }

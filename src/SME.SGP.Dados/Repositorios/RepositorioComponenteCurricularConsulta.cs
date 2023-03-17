@@ -66,7 +66,7 @@ namespace SME.SGP.Dados.Repositorios
                            from componente_curricular cc 
                            left join componente_curricular_grupo_matriz ccgm on ccgm.id = cc.grupo_matriz_id 
                           WHERE cc.id = @id";
-            return (await database.Conexao.QueryFirstAsync<DisciplinaDto>(query, new { id }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<DisciplinaDto>(query, new { id }));
         }
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()

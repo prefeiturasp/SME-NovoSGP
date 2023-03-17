@@ -240,8 +240,16 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             mediator.Setup(a => a.Send(It.IsAny<InserirWorkflowReposicaoAulaCommand>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(1);
 
-            repositorioAula.Setup(a => a.SalvarAsync(It.IsAny<Aula>()))
-                .ReturnsAsync(1);
+            mediator.Setup(a => a.Send(It.IsAny<InserirWorkflowReposicaoAulaCommand>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(1);
+
+            mediator.Setup(a => a.Send(It.IsAny<ObterAulasPorDataTurmaComponenteCurricularCJQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new List<AulaConsultaDto>() { new AulaConsultaDto()
+               {
+                   TipoAula = TipoAula.Normal,
+                   Quantidade = 1,
+                   DataAula = DateTime.Today.Date
+               } });
 
             // Act
             var auditoriaDto = await inserirAulaUnicaCommandHandler.Handle(inserirAulaUnicaCommand, new CancellationToken());

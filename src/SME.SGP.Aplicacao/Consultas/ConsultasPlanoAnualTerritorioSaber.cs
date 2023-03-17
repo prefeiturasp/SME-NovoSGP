@@ -54,7 +54,8 @@ namespace SME.SGP.Aplicacao
                     PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result,
                 });
             });
-            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, territorioExperienciaId);
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, territorioExperienciaId, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
             if (listaPlanoAnual != null && listaPlanoAnual.Any())
             {
                 if (listaPlanoAnual.Count() != periodos.Count())

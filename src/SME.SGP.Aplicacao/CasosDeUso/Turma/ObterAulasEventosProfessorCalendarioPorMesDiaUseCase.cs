@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Npgsql.Replication;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -63,12 +64,11 @@ namespace SME.SGP.Aplicacao
             retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
-            IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesDoProfessor = new List<(string, string)>();
+            var componentesCurricularesDoProfessor = new List<(string codigo, string codigoTerritorioSaber)>();
 
             IEnumerable<Aula> aulasParaVisualizar = null;
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
-            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor;
-            bool ehCJEPossuiComponentesVinculados = false;
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
 
             atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
             {
@@ -87,37 +87,39 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                componentesCurricularesEolProfessor = await mediator
+                componentesCurricularesEolProfessor = (await mediator
                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
                                                                                  usuarioLogado.CodigoRf,
                                                                                  usuarioLogado.PerfilAtual,
-                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
 
                 if (usuarioLogado.EhSomenteProfessorCj())
                 {
                     var componentesCurricularesDoProfessorCJ = await mediator
-                   .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+                        .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
 
                     if (componentesCurricularesDoProfessorCJ.Any())
                     {
-                        var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                        var dadosComponentes = await mediator
+                            .Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+
                         if (dadosComponentes.Any())
                         {
-                            componentesCurricularesDoProfessor = dadosComponentes.Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
-                            ehCJEPossuiComponentesVinculados = true;
+                            componentesCurricularesDoProfessor.AddRange(dadosComponentes
+                                .Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")));
                         }
                     }
                 }
 
-                if (componentesCurricularesEolProfessor != null || ehCJEPossuiComponentesVinculados)
+                if (componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any())
                 {
-                    if (!ehCJEPossuiComponentesVinculados)
-                        componentesCurricularesDoProfessor = componentesCurricularesEolProfessor
-                        .Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
-
-                    aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
-                    atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
+                    componentesCurricularesEolProfessor.ToList()
+                        .ForEach(cc => componentesCurricularesDoProfessor
+                            .Add((cc.Codigo.ToString(), cc.CodigoComponenteTerritorioSaber.ToString())));
                 }
+
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
+                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
@@ -126,11 +128,15 @@ namespace SME.SGP.Aplicacao
             {
                 if (componentesCurricularesDoProfessor != null && componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0") && !usuarioLogado.EhProfessorCj())
                 {
-                    var componentesCorrelatos = (from c in componentesCurricularesDoProfessor
+                    var componentesCorrelatos = !(usuarioLogado.TemPerfilGestaoUes() || usuarioLogado.TemPerfilAdmUE()) ?
+                                                (from c in componentesCurricularesDoProfessor
                                                  from a in aulasParaVisualizar
-                                                 where c.codigo == a.DisciplinaId || c.codigoTerritorioSaber == a.DisciplinaId
-                                                 select (long.Parse(c.codigo), (long?)long.Parse(c.codigoTerritorioSaber)))
-                                                 .ToList();
+                                                 where (c.codigo == a.DisciplinaId || c.codigoTerritorioSaber == a.DisciplinaId) && !a.AulaCJ
+                                                 select (long.Parse(c.codigo), (long?)long.Parse(c.codigoTerritorioSaber))).Distinct().ToList() :
+                                                 aulasParaVisualizar
+                                                    .Select(a => (long.Parse(a.DisciplinaId), componentesCurricularesEolProfessor
+                                                        .FirstOrDefault(cp => cp.Codigo.ToString() == a.DisciplinaId)?.CodigoComponenteTerritorioSaber ?? (long?)0))
+                                                            .ToList();
 
                     componentesCurriculares = await mediator
                         .Send(new ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQuery(componentesCorrelatos, componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0"), filtroAulasEventosCalendarioDto.TurmaCodigo));

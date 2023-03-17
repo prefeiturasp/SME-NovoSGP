@@ -24,14 +24,14 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos,string disciplinaId, DateTime dataAtual, string turmaCodigo = "");
         Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDisciplinasDataAsync(string[] codigosAlunos, string[] disciplinasIds, DateTime dataAtual, string turmaCodigo = "");
         Task<FrequenciaAluno> ObterPorAlunoDisciplinaDataAsync(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo);
-        Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string componenteCurricularId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds);
+        Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string[] componentesCurricularesId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds, string professor = null);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaAsync(string alunoCodigo, string[] turmasCodigos, string[] componenteCurricularCodigos);
         Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaGeralPorTurma(string turmaCodigo);
         Task<FrequenciaAluno> ObterPorAlunoDataTurmasAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string[] turmasCodigo, string disciplinaId = "");
         Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string[] disciplinasId, string[] turmasCodigo, int[] bimestres, long[] periodosEscolaresId = null);
-        Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(string codigoTurma, string componenteCurricularId, long periodoEscolarId);
-        Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(string codigoTurma, string componenteCurricularId, long[] periodosEscolaresIds);
+        Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(string codigoTurma, string[] componentesCurricularesId, long periodoEscolarId, string professor = null);
+        Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(string codigoTurma, string[] componentesCurricularesId, long[] periodosEscolaresIds, string professor = null);
         Task<int> ObterTotalAulasPorDisciplinaETurmaAsync(DateTime dataAula, string disciplinaId, string turmaId);
         Task<IEnumerable<TurmaComponenteQntAulasDto>> ObterTotalAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null);
         Task<IEnumerable<TurmaDataAulaComponenteQtdeAulasDto>> ObterAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] codigosAlunos, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null);

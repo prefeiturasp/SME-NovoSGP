@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(request.CodigoTurma, request.ComponenteCurricularId, request.PeriodoEscolarId);
+            return await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricular(request.CodigoTurma, request.ComponentesCurricularesId, request.PeriodoEscolarId);
         }
     }
 }

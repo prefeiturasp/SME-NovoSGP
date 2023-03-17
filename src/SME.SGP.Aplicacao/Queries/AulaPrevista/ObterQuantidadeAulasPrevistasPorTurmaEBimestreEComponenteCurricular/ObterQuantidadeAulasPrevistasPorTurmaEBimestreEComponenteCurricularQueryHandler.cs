@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> Handle(ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
-            var aulaPrevistaBimestre = await repositorioAulaPrevistaBimestre.ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(request.TipoCalendarioId, request.CodigoTurma, request.ComponenteCurricularId.ToString(), request.Bimestre);
+            var aulaPrevistaBimestre = await repositorioAulaPrevistaBimestre.ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(request.TipoCalendarioId, request.CodigoTurma, request.ComponentesCurricularesId.Select(cc => cc.ToString()).ToArray(), request.Bimestre, request.Professor);
             return aulaPrevistaBimestre?.Sum(x => x.Previstas) ?? default;
         }
     }
