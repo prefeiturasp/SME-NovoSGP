@@ -235,31 +235,35 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(new[] { turma.CodigoTurma }, tipoCalendarioId, componentesCurricularesId.Select(cc => cc.ToString()).ToArray(), bimestres.ToArray()));
 
             return frequenciaAlunosRegistrada
-                .GroupBy(x => x.CodigoAluno)
-                .Select(x => ObterFrequenciaAluno(x, aulasComponentesTurma).Result)
-                .ToList();
+           .GroupBy(x => x.CodigoAluno)
+           .Select(x => ObterFrequenciaAluno(x, aulasComponentesTurma).Result)
+           .ToList();
         }
 
         private async Task<FrequenciaAluno> ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<TurmaComponenteQntAulasDto> aulasComponentesTurma)
         {
-            var frequenciasAluno = agrupamentoAluno.ToList();
-
-            var matriculasAluno = await mediator
+            if (aulasComponentesTurma.Any() && agrupamentoAluno.Any())
+            {
+                var frequenciasAluno = agrupamentoAluno.ToList();
+                var matriculasAluno = await mediator
                 .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(aulasComponentesTurma.First().TurmaCodigo), int.Parse(agrupamentoAluno.Key)));
 
-            var frequenciasConsideradas = from f in frequenciasAluno
-                                          from m in matriculasAluno
-                                          where m.DataMatricula.Date <= f.PeriodoFim.Date
-                                          select f;
-            return new FrequenciaAluno
-            {
-                CodigoAluno = agrupamentoAluno.Key,
-                TotalAulas = frequenciasConsideradas.Sum(y => y.TotalAulas),
-                TotalAusencias = frequenciasConsideradas.Sum(y => y.TotalAusencias),
-                TotalCompensacoes = frequenciasConsideradas.Sum(y => y.TotalCompensacoes),
-                TotalPresencas = frequenciasConsideradas.Sum(y => y.TotalPresencas),
-                TotalRemotos = frequenciasConsideradas.Sum(y => y.TotalRemotos),
-            };
+                var frequenciasConsideradas = from f in frequenciasAluno
+                                              from m in matriculasAluno
+                                              where m.DataMatricula.Date <= f.PeriodoFim.Date
+                                              select f;
+                return new FrequenciaAluno
+                {
+                    CodigoAluno = agrupamentoAluno.Key,
+                    TotalAulas = frequenciasConsideradas.Sum(y => y.TotalAulas),
+                    TotalAusencias = frequenciasConsideradas.Sum(y => y.TotalAusencias),
+                    TotalCompensacoes = frequenciasConsideradas.Sum(y => y.TotalCompensacoes),
+                    TotalPresencas = frequenciasConsideradas.Sum(y => y.TotalPresencas),
+                    TotalRemotos = frequenciasConsideradas.Sum(y => y.TotalRemotos),
+                };
+            }
+
+            return new FrequenciaAluno();
         }
 
         private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
