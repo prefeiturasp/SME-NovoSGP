@@ -77,11 +77,10 @@ namespace SME.SGP.Aplicacao
             var alteracaoRegistro = registroFrequencia != null;
             
             registroFrequencia ??= new RegistroFrequencia(aula);
-
             registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia), cancellationToken);
 
             await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id,
-                long.Parse(aula.DisciplinaId),aula.Id), cancellationToken);
+                long.Parse(aula.DisciplinaId),aula.Id, aula.DataAula), cancellationToken);
 
             // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
             if (alteracaoRegistro)
