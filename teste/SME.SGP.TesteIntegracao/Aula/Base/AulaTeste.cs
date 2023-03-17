@@ -184,6 +184,12 @@ namespace SME.SGP.TesteIntegracao
                     Codigo = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113.ToString(),
                     Descricao = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME
                 };
+            else if (componenteCurricularId == COMPONENTE_CURRICULAR_ARTES_ID_139)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
+                    Descricao = COMPONENTE_CURRICULAR_ARTES_NOME
+                };
 
             return null;
         }
