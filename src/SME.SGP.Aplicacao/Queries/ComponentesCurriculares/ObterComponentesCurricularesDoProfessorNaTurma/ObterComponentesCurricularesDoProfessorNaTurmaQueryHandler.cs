@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Interfaces;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
             string nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}-${request.ChecaMotivoDisponibilizacao}";
-            return await repositorioCache.ObterAsync(nomeChaveCache, async () =>
+            var resultado = await repositorioCache.ObterAsync(nomeChaveCache, async () =>
             {
                 return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
                                                                                                request.Login,
@@ -30,6 +31,11 @@ namespace SME.SGP.Aplicacao
                                                                                                request.RealizarAgrupamentoComponente,
                                                                                                request.ChecaMotivoDisponibilizacao);
             });
+
+            if (resultado == null)
+                return Enumerable.Empty<ComponenteCurricularEol>();
+
+            return resultado;
         }
     }
 }

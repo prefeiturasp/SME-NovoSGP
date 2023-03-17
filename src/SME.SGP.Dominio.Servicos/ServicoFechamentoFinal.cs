@@ -70,7 +70,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
-            await ObterComponenteCurricular(fechamentoFinal.DisciplinaId);
+            await ObterComponenteCurricular(fechamentoFinal.DisciplinaId, turma.CodigoTurma);
             var tipoNota = await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turma.Id, turma.TipoTurma);
 
             var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
@@ -272,9 +272,9 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId)
+        private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId, string codigoTurma)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: codigoTurma));
 
             if (!componentes.Any())
                 throw new NegocioException($"Componente Curricular do Fechamento ({componenteCurricularId}) não localizado!");

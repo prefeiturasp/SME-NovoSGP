@@ -16,26 +16,25 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var filtro = mensagemRabbit.ObterObjetoMensagem<string>();
+            var ueId = long.Parse(filtro);
 
-            if (!await ExecutarConsolidacaoDevolutivas())
-                return false;
+            await ConsolidarDevolutivasAnoAtual(ueId);
 
-            await ConsolidarDevolutivasAnoAtual();
-
-            await ConsolidarDevolutivasHistorico();
+            await ConsolidarDevolutivasHistorico(ueId);
 
             return true;
 
         }
 
-        private async Task ConsolidarDevolutivasAnoAtual()
+        private async Task ConsolidarDevolutivasAnoAtual(long ueId)
         {
             var anoAtual = DateTime.Now.Year;
 
             var turmasInfantil = await mediator
-                .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
+                .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual, ueId));
 
             await mediator
                 .Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
@@ -45,9 +44,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             await AtualizarDataExecucao(anoAtual);
         }
 
-        private async Task ConsolidarDevolutivas(int ano)
+        private async Task ConsolidarDevolutivas(int ano, long ueId)
         {
-            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano));
+            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano, ueId));
 
             await mediator.Send(new LimparConsolidacaoDevolutivasCommand(ano));
 
@@ -56,13 +55,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             await AtualizarDataExecucao(ano);
         }
 
-        private async Task ConsolidarDevolutivasHistorico()
+        private async Task ConsolidarDevolutivasHistorico(long ueId)
         {
             for (var ano = 2021; ano < DateTime.Now.Year; ano++)
             {
                 if (!await mediator.Send(new ExisteConsolidacaoDevolutivaTurmaPorAnoQuery(ano)))
                 {
-                    await ConsolidarDevolutivas(ano);
+                    await ConsolidarDevolutivas(ano, ueId);
                 }
             }
         }
@@ -84,15 +83,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
 
             }
-        }
-
-        private async Task<bool> ExecutarConsolidacaoDevolutivas()
-        {
-            var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, DateTime.Now.Year));
-            if (parametroExecucao != null)
-                return parametroExecucao.Ativo;
-
-            return false;
         }
 
         private async Task AtualizarDataExecucao(int ano)

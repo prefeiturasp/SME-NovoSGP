@@ -858,8 +858,9 @@ namespace SME.SGP.Aplicacao.Integracoes
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
         {
             return disciplinas.Select(x => new DisciplinaDto
-            {
+            {                
                 CodigoComponenteCurricular = x.CdComponenteCurricular,
+                CodigoTerritorioSaber = x.CodigoTerritorioSaber,
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
@@ -1024,7 +1025,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);
-                return null;
+                return Enumerable.Empty<DisciplinaDto>();
             }
 
             var json = resposta.Content.ReadAsStringAsync().Result;

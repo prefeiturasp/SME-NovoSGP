@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
         private string Email { get; set; }
 
         public void AtualizaUltimoLogin()
-         => UltimoLogin = DateTime.Now;
+            => UltimoLogin = DateTime.Now;
 
         public void DefinirEmail(string novoEmail)
         {
@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio
         }
 
         public void DefinirPerfilAtual(Guid perfilAtual)
-         => PerfilAtual = perfilAtual;
+            => PerfilAtual = perfilAtual;
 
         public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesProfessor)
         {
@@ -48,14 +48,21 @@ namespace SME.SGP.Dominio
             else
             {
                 if (EhProfessorCj())
-                    return aulas.Where(a => a.ProfessorRf == CodigoRf);
+                    return aulas.Where(a => a.ProfessorRf == CodigoRf && a.AulaCJ);
                 else
-                    return aulas.Where(a => (componentesCurricularesProfessor.Any(c => c.codigo.Equals(a.DisciplinaId) || c.codigoTerritorioSaber.Equals(a.DisciplinaId)) || a.ProfessorRf == CodigoRf));
+                {
+                    return (from a in aulas
+                            from ccp in componentesCurricularesProfessor
+                            where ((!string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) && ccp.codigoTerritorioSaber.Equals(a.DisciplinaId) && a.ProfessorRf.Equals(CodigoRf)) ||
+                                  ((string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) || ccp.codigoTerritorioSaber == "0") &&  ccp.codigo.Equals(a.DisciplinaId)) ||
+                                  a.ProfessorRf == CodigoRf) && !a.AulaCJ
+                            select a).Distinct();
+                }
             }
         }
 
         public bool EhProfessorInfantilOuCjInfantil()
-         => EhProfessorInfantil() || EhProfessorCjInfantil();
+            => EhProfessorInfantil() || EhProfessorCjInfantil();
 
         public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasQuePodeVisualizar(IEnumerable<AtividadeAvaliativa> atividades, string[] componentesCurricularesProfessor)
         {
@@ -147,7 +154,7 @@ namespace SME.SGP.Dominio
         public bool PossuiPerfilGestorEscolar()
             => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR);
 
-        private bool EhCP()
+        public bool EhCP()
             => PerfilAtual == Dominio.Perfis.PERFIL_CP;
 
         private bool EhAD()
