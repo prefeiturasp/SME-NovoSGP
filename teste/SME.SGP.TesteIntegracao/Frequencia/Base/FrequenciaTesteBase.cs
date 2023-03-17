@@ -25,9 +25,13 @@ namespace SME.SGP.TesteIntegracao
         protected long REGISTRO_FREQUENCIA_ID_1 = 1;
         protected long REGISTRO_FREQUENCIA_ID_2 = 2;
         protected long REGISTRO_FREQUENCIA_ID_3 = 3;
+        protected long REGISTRO_FREQUENCIA_ID_4 = 4;
         
         private const int QUANTIDADE_3 = 3;
         protected const long AULA_ID_1 = 1;
+        protected const long AULA_ID_2 = 2;
+        protected const long AULA_ID_3 = 3;
+        protected const long AULA_ID_4 = 4;
         protected const int NUMERO_AULAS_1 = 1;
         protected const int NUMERO_AULAS_2 = 2;
         protected const int NUMERO_AULAS_3 = 3;
