@@ -31,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RESON_C, Policy = "Bearer")]
-        public IActionResult ObterSituacoes()
+        public IActionResult ObterTipoSondagem()
         {
             var lista = EnumExtensao.ListarDto<TipoSondagem>().ToList().OrderBy(tipo => tipo.Descricao);
 
