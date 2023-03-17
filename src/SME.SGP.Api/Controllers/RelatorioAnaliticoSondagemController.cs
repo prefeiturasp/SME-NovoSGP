@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.RCA_C, Policy = "Bearer")]
+        [Permissao(Permissao.RESON_C, Policy = "Bearer")]
         public async Task<IActionResult> Gerar(FiltroRelatorioAnaliticoSondagemDto filtroRelatorioAnaliticoSondagemDto, [FromServices] IRelatorioAnaliticoSondagemUseCase relatorioAnaliticoSondagemUseCase)
         {
             return Ok(await relatorioAnaliticoSondagemUseCase.Executar(filtroRelatorioAnaliticoSondagemDto));
@@ -30,7 +30,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("tiposondagem")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.RCA_C, Policy = "Bearer")]
+        [Permissao(Permissao.RESON_C, Policy = "Bearer")]
         public IActionResult ObterSituacoes()
         {
             var lista = EnumExtensao.ListarDto<TipoSondagem>().ToList().OrderBy(tipo => tipo.Descricao);
