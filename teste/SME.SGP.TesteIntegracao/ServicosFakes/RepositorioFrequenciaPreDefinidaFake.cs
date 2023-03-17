@@ -1,21 +1,25 @@
-﻿using Dapper;
-using Npgsql;
-using NpgsqlTypes;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
+﻿using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
+using Npgsql;
+using NpgsqlTypes;
+using SME.SGP.Dados;
+using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 
-namespace SME.SGP.Dados.Repositorios
+namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
-    public class RepositorioFrequenciaPreDefinida : IRepositorioFrequenciaPreDefinida
+    public class RepositorioFrequenciaPreDefinidaFake : IRepositorioFrequenciaPreDefinida
     {
         private readonly ISgpContext database;
 
-        public RepositorioFrequenciaPreDefinida(ISgpContext dataBase)
+        public RepositorioFrequenciaPreDefinidaFake(ISgpContext dataBase)
         {
             this.database = dataBase ?? throw new System.ArgumentNullException(nameof(dataBase));
         }
@@ -61,28 +65,19 @@ namespace SME.SGP.Dados.Repositorios
         
         public async Task<bool> InserirVarios(IEnumerable<FrequenciaPreDefinida> registros)
         {
-            var sql = @"copy frequencia_pre_definida (                                         
-                                        componente_curricular_id, 
-                                        turma_id, 
-                                        codigo_aluno, 
-                                        tipo_frequencia)
-                            from
-                            stdin (FORMAT binary)";
-
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            foreach (var entidade in registros)
             {
-                foreach (var frequencia in registros)
-                {
-                    writer.StartRow();
-                    writer.Write(frequencia.ComponenteCurricularId, NpgsqlDbType.Bigint);
-                    writer.Write(frequencia.TurmaId, NpgsqlDbType.Bigint);
-                    writer.Write(frequencia.CodigoAluno);
-                    writer.Write((int)frequencia.TipoFrequencia, NpgsqlDbType.Integer);
+                if (entidade.Id > 0)
+                {                
+                    await database.Conexao.UpdateAsync(entidade);
                 }
-                writer.Complete();
+                else
+                {
+                    entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                }
             }
 
-            return true;
+            return true; 
         }
     }
 }

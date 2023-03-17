@@ -1,23 +1,24 @@
-﻿using Dapper;
+﻿using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Dapper;
 using Npgsql;
 using NpgsqlTypes;
+using SME.SGP.Dados;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace SME.SGP.Dados
+namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
-    public class RepositorioRegistroFrequenciaAluno : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
+    public class RepositorioRegistroFrequenciaAlunoFake : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
         private readonly ISgpContext sgpContext;
 
-        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioRegistroFrequenciaAlunoFake(ISgpContext sgpContext,IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
         {}
 
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada)
@@ -58,36 +59,26 @@ namespace SME.SGP.Dados
 
         private async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
         {
-            var sql = @"copy registro_frequencia_aluno (                                         
-                                        valor, 
-                                        codigo_aluno, 
-                                        numero_aula, 
-                                        registro_frequencia_id, 
-                                        criado_em,
-                                        criado_por,                                        
-                                        criado_rf,
-                                        aula_id)
-                            from
-                            stdin (FORMAT binary)";
-
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+            foreach (var entidade in registros)
             {
-                foreach (var frequencia in registros)
-                {
-                    writer.StartRow();
-                    writer.Write(frequencia.Valor, NpgsqlDbType.Bigint);
-                    writer.Write(frequencia.CodigoAluno);
-                    writer.Write(frequencia.NumeroAula);
-                    writer.Write(frequencia.RegistroFrequenciaId);
-                    writer.Write(frequencia.CriadoEm);
-                    writer.Write(log ? database.UsuarioLogadoNomeCompleto : frequencia.CriadoPor);
-                    writer.Write(log ? database.UsuarioLogadoRF : frequencia.CriadoRF);
-                    writer.Write(frequencia.AulaId);
+                if (entidade.Id > 0)
+                {                
+                    entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
+                    entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
+                    entidade.AlteradoRF = database.UsuarioLogadoRF;
+                    await database.Conexao.UpdateAsync(entidade);
+                    await AuditarAsync(entidade.Id, "A");
                 }
-                writer.Complete();
+                else
+                {
+                    entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
+                    entidade.CriadoRF = database.UsuarioLogadoRF;
+                    entidade.Id = (long)(await database.Conexao.InsertAsync(entidade));
+                    await AuditarAsync(entidade.Id, "I");
+                }
             }
 
-            return true;
+            return true; 
         }
 
         public async Task ExcluirVariosLogicamente(long[] idsParaExcluir)
