@@ -52,7 +52,8 @@ namespace SME.SGP.Aplicacao
 
                         if (ultimaSituacao!.Inativo)
                             encerrarPlanoAee = true;
-                        else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido)
+                        else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
+                                  || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
                         {
                             if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
                             {
