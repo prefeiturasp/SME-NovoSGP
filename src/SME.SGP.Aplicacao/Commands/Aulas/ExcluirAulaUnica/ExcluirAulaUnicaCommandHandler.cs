@@ -35,15 +35,10 @@ namespace SME.SGP.Aplicacao
             var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
 
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf), cancellationToken))
-                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
-
-            var codigoComponenteVerificacao = long.Parse(aula.DisciplinaId);
-            var componenteConsideradoEmCasoDeCj = usuarioLogado.EhProfessorCj() ? await mediator.Send(new DefinirComponenteCurricularParaAulaQuery(aula.TurmaId, codigoComponenteVerificacao, usuarioLogado)) : default;
-            if (componenteConsideradoEmCasoDeCj != default && componenteConsideradoEmCasoDeCj.codigoTerritorio.HasValue)
-                codigoComponenteVerificacao = componenteConsideradoEmCasoDeCj.codigoTerritorio.Value;
+                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");            
 
             if (!request.Usuario.EhGestorEscolar())
-                await ValidarComponentesDoProfessor(aula.TurmaId, codigoComponenteVerificacao, aula.DataAula, request.Usuario);
+                await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
 
             if (aula.WorkflowAprovacaoId.HasValue)
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, request.Usuario);

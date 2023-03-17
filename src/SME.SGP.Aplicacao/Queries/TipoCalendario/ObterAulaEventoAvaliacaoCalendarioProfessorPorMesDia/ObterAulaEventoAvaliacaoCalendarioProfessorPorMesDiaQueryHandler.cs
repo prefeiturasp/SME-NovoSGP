@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                         var componenteVerificacao = await mediator
                             .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, long.Parse(aulaParaVisualizar.DisciplinaId), usuarioLogado));
 
-                        if (componenteVerificacao != default)
+                        if (componenteVerificacao != default && componenteVerificacao.codigoTerritorio.HasValue && componenteVerificacao.codigoTerritorio.Value > 0)
                         {
                             componenteCurricular.RegistraFrequencia = await mediator
                                 .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente, componenteVerificacao.codigoTerritorio));

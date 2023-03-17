@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new DefinirComponenteCurricularParaAulaQuery(aula.TurmaId, long.Parse(codigoComponenteConsiderado), usuarioLogado)) : 
                 default;
 
-            if (componenteConsideradoEmCasoDeCJ != default && componenteConsideradoEmCasoDeCJ.codigoTerritorio.HasValue)
+            if (componenteConsideradoEmCasoDeCJ != default && componenteConsideradoEmCasoDeCJ.codigoTerritorio.HasValue && componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value > 0)
                 codigoComponenteConsiderado = componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value.ToString();
 
             var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ? 

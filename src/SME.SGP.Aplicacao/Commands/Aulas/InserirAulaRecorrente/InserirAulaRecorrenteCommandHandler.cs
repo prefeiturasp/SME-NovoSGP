@@ -118,7 +118,12 @@ namespace SME.SGP.Aplicacao
             bool FilterComponentesCompativeis(AtribuicaoCJ c) =>
                 c.TurmaId == aulaRecorrente.CodigoTurma && (c.DisciplinaId == aulaRecorrente.ComponenteCurricularId || (aulaRecorrente.CodigoTerritorioSaber.HasValue && aulaRecorrente.CodigoTerritorioSaber.Value > 0 && c.DisciplinaId.Equals(aulaRecorrente.CodigoTerritorioSaber.Value)));
 
-            if (componentes == null || !componentes.Any(FilterComponentesCompativeis))
+            var componentesAtribuicaoEol = await mediator
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+            var componenteAtribuicaoEolCorrespondente = componentesAtribuicaoEol?
+                .FirstOrDefault(ca => ca.Codigo.Equals(aulaRecorrente.ComponenteCurricularId) || ca.CodigoComponenteTerritorioSaber.Equals(aulaRecorrente.ComponenteCurricularId));
+
+            if ((componentes == null || !componentes.Any(FilterComponentesCompativeis)) && componenteAtribuicaoEolCorrespondente == null)
             {
                 var componenteTerritorioParaAula = await mediator
                     .Send(new DefinirComponenteCurricularParaAulaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.ComponenteCurricularId, usuarioLogado));
@@ -126,7 +131,7 @@ namespace SME.SGP.Aplicacao
                 if (componenteTerritorioParaAula == default)
                     throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
 
-                if (!componenteTerritorioParaAula.codigoTerritorio.HasValue || !componentes.Select(c => c.DisciplinaId).Contains(componenteTerritorioParaAula.codigoTerritorio.Value))
+                if (!componenteTerritorioParaAula.codigoTerritorio.HasValue || componenteTerritorioParaAula.codigoTerritorio.Value == 0 || !componentes.Select(c => c.DisciplinaId).Contains(componenteTerritorioParaAula.codigoTerritorio.Value))
                     throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
             }
         }
