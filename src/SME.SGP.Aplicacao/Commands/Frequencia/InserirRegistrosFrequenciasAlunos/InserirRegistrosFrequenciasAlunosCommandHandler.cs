@@ -40,22 +40,20 @@ namespace SME.SGP.Aplicacao
             
             var informacoesFrequencia = FormatarInformacoesFrequencia(dicionarioFrequenciaAluno, request.RegistroFrequenciaId, request.TurmaId, request.AulaId);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            unitOfWork.IniciarTransacao();
+            try
             {
-                try
-                {
-                    await CadastreFrequenciaAluno(dicionarioFrequenciaAluno);
-                    await CadastreFrequenciaPreDefinida(dicionarioPreDefinida);
+                await CadastreFrequenciaAluno(dicionarioFrequenciaAluno);
+                await CadastreFrequenciaPreDefinida(dicionarioPreDefinida);
 
-                    unitOfWork.PersistirTransacao();
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    unitOfWork.Rollback();
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao registrar a frequência do aluno e a frequência pré definida: {informacoesFrequencia}. Detalhes : {ex}", LogNivel.Critico, LogContexto.Frequencia));
-                    throw new NegocioException(string.Format(MensagensNegocioFrequencia.Nao_foi_possivel_registrar_a_frequencia_do_dia_x,request.DataAula.ToString("dd/MM/yyyy")));
-                }
+                unitOfWork.PersistirTransacao();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao registrar a frequência do aluno e a frequência pré definida: {informacoesFrequencia}. Detalhes : {ex}", LogNivel.Critico, LogContexto.Frequencia));
+                return false;
             }
         }
 

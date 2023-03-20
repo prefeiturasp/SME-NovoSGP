@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AuditoriaDto> Executar(IEnumerable<FrequenciaSalvarAulaAlunosDto> frequencias)
+        public async Task<FrequenciaAuditoriaDto> Executar(IEnumerable<FrequenciaSalvarAulaAlunosDto> frequencias)
         {
-            var ultimaAuditoria = new AuditoriaDto();
+            var frequenciaAuditoria = new FrequenciaAuditoriaDto();
             foreach(var frequenciaAula in frequencias)
             {
                 var frequencia = new FrequenciaDto(frequenciaAula.AulaId);
@@ -28,10 +28,11 @@ namespace SME.SGP.Aplicacao
                     });
                 }
 
-                ultimaAuditoria = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia));
+                var frequenciaAuditoriaAulaDto = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia, false));
+                frequenciaAuditoria.TratarRetornoAuditoria(frequenciaAuditoriaAulaDto);
             }
 
-            return ultimaAuditoria;
+            return frequenciaAuditoria;
         }
     }
 }

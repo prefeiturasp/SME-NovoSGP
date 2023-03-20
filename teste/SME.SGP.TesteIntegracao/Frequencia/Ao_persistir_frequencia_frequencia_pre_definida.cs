@@ -81,9 +81,9 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 registroFrequenciaAlunoDtos, REGISTRO_FREQUENCIA_ID_2, TURMA_ID_1,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138, AULA_ID_1, dataAula);
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await mediator.Send(inserirRegistrosFrequenciasAlunosCommand));
+            var retorno = await mediator.Send(inserirRegistrosFrequenciasAlunosCommand);
             
-            excecao.Message.ShouldBe(string.Format(MensagensNegocioFrequencia.Nao_foi_possivel_registrar_a_frequencia_do_dia_x,dataAula.Date.ToString("dd/MM/yyyy")));
+            retorno.ShouldBeFalse();
             
             var registroFrequenciaAlunos = ObterTodos<Dominio.RegistroFrequenciaAluno>();
             registroFrequenciaAlunos.Count().ShouldBeEquivalentTo(0);
