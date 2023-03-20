@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrenqueciaDto()));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrequenciaDto()));
 
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.A_aula_informada_nao_foi_encontrada);
         }
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrenqueciaDto()));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrequenciaDto()));
 
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
         }
@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrenqueciaDto()));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrequenciaDto()));
 
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_possui_permissão_para_inserir_neste_periodo);
         }
@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrenqueciaDto()));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrequenciaDto()));
 
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_e_permitido_registro_de_frequencia_para_este_componente);
         }
@@ -90,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrenqueciaDto()));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrequenciaDto()));
 
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao);
         }
@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrenqueciaDto()));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObterFrequenciaDto()));
 
             excecao.Message.ShouldBe(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }

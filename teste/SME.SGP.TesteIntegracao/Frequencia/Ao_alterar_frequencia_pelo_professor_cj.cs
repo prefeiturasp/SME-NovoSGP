@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
-            await InserirFrequenciaUseCaseComValidacaoBasica(ObterFrenqueciaDto());
+            await InserirFrequenciaUseCaseComValidacaoBasica(ObterFrequenciaDto());
 
             var frequenciaAlterada = new FrequenciaDto()
             {

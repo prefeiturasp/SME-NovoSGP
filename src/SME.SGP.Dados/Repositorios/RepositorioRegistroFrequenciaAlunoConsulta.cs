@@ -171,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<FrequenciaAlunoAulaDto>> ObterFrequenciasDoAlunoNaAula(string codigoAluno, long aulaId)
         {
             var query = @"select
-	                        rfa.id as FrequenciaAlunoCodigo,
+	                        rfa.id as FrequenciaAlunoId,
 	                        rfa.valor TipoFrequencia,
 	                        rfa.numero_aula as NumeroAula,
 	                        rfa.codigo_aluno as AlunoCodigo 

@@ -22,8 +22,16 @@ namespace SME.SGP.TesteIntegracao
 {
     public abstract class FrequenciaTesteBase : TesteBaseComuns
     {
+        protected long REGISTRO_FREQUENCIA_ID_1 = 1;
+        protected long REGISTRO_FREQUENCIA_ID_2 = 2;
+        protected long REGISTRO_FREQUENCIA_ID_3 = 3;
+        protected long REGISTRO_FREQUENCIA_ID_4 = 4;
+        
         private const int QUANTIDADE_3 = 3;
         protected const long AULA_ID_1 = 1;
+        protected const long AULA_ID_2 = 2;
+        protected const long AULA_ID_3 = 3;
+        protected const long AULA_ID_4 = 4;
         protected const int NUMERO_AULAS_1 = 1;
         protected const int NUMERO_AULAS_2 = 2;
         protected const int NUMERO_AULAS_3 = 3;
@@ -296,11 +304,11 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected FrequenciaDto ObterFrenqueciaDto()
+        protected FrequenciaDto ObterFrequenciaDto()
         {
             var frenquencia = new FrequenciaDto(AULA_ID_1);
 
-            frenquencia.ListaFrequencia = ObtenhaListaDeFrequenciaAluno();
+            frenquencia.ListaFrequencia = ObterListaDeFrequenciaAluno();
 
             return frenquencia;
         }
@@ -380,10 +388,10 @@ namespace SME.SGP.TesteIntegracao
         }
 
 
-        private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
+        private List<RegistroFrequenciaAlunoDto> ObterListaDeFrequenciaAluno()
         {
             var lista = new List<RegistroFrequenciaAlunoDto>();
-            var aulas = ObtenhaFrenquenciaAula();
+            var aulas = ObterFrenquenciaAula();
 
             lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "1", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
             lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "2", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
@@ -393,7 +401,7 @@ namespace SME.SGP.TesteIntegracao
             return lista;
         }
 
-        private List<FrequenciaAulaDto> ObtenhaFrenquenciaAula()
+        private List<FrequenciaAulaDto> ObterFrenquenciaAula()
         {
             var lista = new List<FrequenciaAulaDto>();
 

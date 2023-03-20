@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -31,26 +35,37 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(InserirRegistrosFrequenciasAlunosCommand request, CancellationToken cancellationToken)
         {
-            var dicionarioFrequenciaAluno = await ObtenhaDicionarioFrequenciaAlunoParaPersistir(request);
-            var dicionarioPreDefinida = await ObtenhaDicionarioFrequenciaPreDefinidaParaPersistir(request);
+            var dicionarioFrequenciaAluno = await ObterDicionarioFrequenciaAlunoParaPersistir(request);
+            var dicionarioPreDefinida = await ObterDicionarioFrequenciaPreDefinidaParaPersistir(request);
+            
+            var informacoesFrequencia = FormatarInformacoesFrequencia(dicionarioFrequenciaAluno, request.RegistroFrequenciaId, request.TurmaId, request.AulaId);
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            unitOfWork.IniciarTransacao();
+            try
             {
-                try
-                {
-                    await CadastreFrequenciaAluno(dicionarioFrequenciaAluno);
-                    await CadastreFrequenciaPreDefinida(dicionarioPreDefinida);
+                await CadastreFrequenciaAluno(dicionarioFrequenciaAluno);
+                await CadastreFrequenciaPreDefinida(dicionarioPreDefinida);
 
-                    unitOfWork.PersistirTransacao();
-                }
-                catch (Exception ex)
-                {
-                    unitOfWork.Rollback();
-                    return false;
-                }
+                unitOfWork.PersistirTransacao();
+                return true;
             }
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao registrar a frequência do aluno e a frequência pré definida: {informacoesFrequencia}. Detalhes : {ex}", LogNivel.Critico, LogContexto.Frequencia));
+                return false;
+            }
+        }
 
-            return true;
+        private static string FormatarInformacoesFrequencia(Dictionary<int, List<RegistroFrequenciaAluno>> dicionarioFrequenciaAluno, long registroFrequenciaId, long turmaId, long aulaId)
+        {
+            var alunosValores = dicionarioFrequenciaAluno.SelectMany(s => s.Value.Select(a => new {a.CodigoAluno, a.Valor}).ToList()).ToList();
+
+            var informacoesFrequencia = new { registroFrequenciaId, turmaId, aulaId, alunosValores };
+            
+            var json = JsonConvert.SerializeObject(informacoesFrequencia, Formatting.Indented);
+            
+            return json;
         }
 
         private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
@@ -70,7 +85,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObtenhaDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
+        private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObterDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
         {
             var dicionario = new Dictionary<int, List<RegistroFrequenciaAluno>>();
             var listaDeFrequenciaAlunoCadastrada = await mediator.Send(new ObterRegistroDeFrequenciaAlunoPorIdRegistroQuery(request.RegistroFrequenciaId));
@@ -112,7 +127,7 @@ namespace SME.SGP.Aplicacao
             return dicionario;
         }
 
-        private async Task<Dictionary<int, List<FrequenciaPreDefinida>>> ObtenhaDicionarioFrequenciaPreDefinidaParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
+        private async Task<Dictionary<int, List<FrequenciaPreDefinida>>> ObterDicionarioFrequenciaPreDefinidaParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
         {
             var dicionario = new Dictionary<int, List<FrequenciaPreDefinida>>();
             var listaDeFrequenciaDefinidaCadastrada = await mediator.Send(new ObterFrequenciasPreDefinidasPorTurmaComponenteQuery(request.TurmaId, request.ComponenteCurricularId));

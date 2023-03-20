@@ -10,15 +10,18 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirRegistrosFrequenciasAlunosCommand : IRequest<bool>
     {
-        public InserirRegistrosFrequenciasAlunosCommand(IList<RegistroFrequenciaAlunoDto> frequencias, long registroFrequenciaId, long turmaId, long componenteCurricularId,long aulaId)
+        public InserirRegistrosFrequenciasAlunosCommand(IList<RegistroFrequenciaAlunoDto> frequencias,
+            long registroFrequenciaId, long turmaId, long componenteCurricularId, long aulaId, DateTime dataAula)
         {
             Frequencias = frequencias;
             RegistroFrequenciaId = registroFrequenciaId;
             TurmaId = turmaId;
             ComponenteCurricularId = componenteCurricularId;
             AulaId = aulaId;
+            DataAula = dataAula;
         }
 
+        public DateTime DataAula { get; set; }
         public IList<RegistroFrequenciaAlunoDto> Frequencias { get; set; }
         public long RegistroFrequenciaId { get; set; }
         public long TurmaId { get; set; }
@@ -45,6 +48,9 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.AulaId)
                 .NotEmpty()
                 .WithMessage("A aula precisa ser informada");
+            RuleFor(x => x.DataAula)
+                .NotEmpty()
+                .WithMessage("A data da aula precisa ser informada");
         }
     }
 }
