@@ -6,22 +6,15 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Utilitarios;
-using Microsoft.Extensions.Options;
 
 namespace SME.SGP.Aplicacao
 {
     public class RemoverArquivosExcluidosCommandHandler : IRequestHandler<RemoverArquivosExcluidosCommand, bool>
     {
-        private readonly IServicoArmazenamento servicoArmazenamento;
-        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
         private readonly IMediator mediator;
 
-        public RemoverArquivosExcluidosCommandHandler(IMediator mediator, IServicoArmazenamento servicoArmazenamento, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+        public RemoverArquivosExcluidosCommandHandler(IMediator mediator)
         {
-            this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
-            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
