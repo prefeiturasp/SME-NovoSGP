@@ -29,10 +29,10 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
 
-            var alunosDaTurmaFiltrados = await mediator
-                .Send(new ObterAlunosAtivosPorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
+            var alunosDaTurmaNaData = await mediator
+                .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (aula.DataAula, aula.DataAula)));
 
-            if (alunosDaTurmaFiltrados == null || !alunosDaTurmaFiltrados.Any())
+            if (alunosDaTurmaNaData == null || !alunosDaTurmaNaData.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
             var registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
@@ -83,26 +83,9 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, new long[] { long.Parse(aula.DisciplinaId) }, periodoEscolar.Id));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
-                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { aula.DisciplinaId }, periodoEscolar.Id));
+                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { aula.DisciplinaId }, periodoEscolar.Id));            
 
-            var alunosCondicaoFrequencia = Enumerable.Empty<AlunoPorTurmaResposta>();
-
-            if (turma.ModalidadeCodigo == Modalidade.EJA)
-            {
-                alunosCondicaoFrequencia = alunosDaTurmaFiltrados
-                    .Where(a => !a.Inativo || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
-                           (a.Inativo && a.DataSituacao >= aula.DataAula) && a.DataMatricula <= aula.DataAula)
-                    .OrderBy(c => c.NomeAluno);
-            }
-            else
-            {
-                alunosCondicaoFrequencia = alunosDaTurmaFiltrados
-                    .Where(a => a.EstaAtivo(aula.DataAula, aula.DataAula) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
-                           (a.Inativo && a.DataSituacao >= aula.DataAula) && a.DataMatricula <= aula.DataAula)
-                    .OrderBy(c => c.NomeAluno);
-            }
-
-            foreach (var aluno in alunosCondicaoFrequencia)
+            foreach (var aluno in alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno))
             {
                 var tipoFrequenciaPreDefinida = await mediator
                     .Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
@@ -118,7 +101,7 @@ namespace SME.SGP.Aplicacao
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = aluno.NomeAluno,
+                    NomeAluno = aluno.NomeSocialAluno ?? aluno.NomeAluno,
                     NumeroAlunoChamada = aluno.ObterNumeroAlunoChamada(),
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,

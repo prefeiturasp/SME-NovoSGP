@@ -19,14 +19,12 @@ namespace SME.SGP.Aplicacao
             var componenteCurricularId = long.Parse(param.DisciplinaId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(param.TurmaId);
-            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, param.DataFim));
+            var alunosDaTurma = await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (param.DataInicio, param.DataFim)));
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
             componenteCurricular ??= await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(param.ComponenteCurricularId)));
 
             if (componenteCurricular == null)
-                throw new NegocioException("Componente curricular não localizado");
-
-            alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
+                throw new NegocioException("Componente curricular não localizado");            
 
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, componenteCurricular.Regencia ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
 
@@ -49,7 +47,7 @@ namespace SME.SGP.Aplicacao
             var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(turma.Id, componenteCurricularId));
 
             return await mediator.Send(new ObterListaFrequenciaAulasQuery(turma,
-                                                                          alunosDaTurma,
+                                                                          alunosDaTurma.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno),
                                                                           aulas,
                                                                           frequenciaAlunos,
                                                                           registrosFrequenciaAlunos,
@@ -63,10 +61,6 @@ namespace SME.SGP.Aplicacao
                                                                           percentualAlerta,
                                                                           percentualCritico));
         }
-
-        private IEnumerable<AlunoPorTurmaResposta> VerificaAlunosAtivosNoPeriodo(IEnumerable<AlunoPorTurmaResposta> alunosdaTurmaEol, DateTime dataInicio, DateTime dataFim)
-            => alunosdaTurmaEol.Where(a => a.EstaAtivo(dataInicio, dataFim) || (a.EstaInativo(dataFim)
-            && a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido && a.DataSituacao.Date >= dataInicio && a.DataSituacao.Date <= dataFim));
 
         private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId)
             => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId)));
