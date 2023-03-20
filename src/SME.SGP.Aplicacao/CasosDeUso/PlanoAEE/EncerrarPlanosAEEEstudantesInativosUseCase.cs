@@ -50,22 +50,25 @@ namespace SME.SGP.Aplicacao
 
                         var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
 
-                        if (ultimaSituacao!.Inativo)
-                            encerrarPlanoAee = true;
-                        else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
-                                  || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
+                        if(ultimaSituacao != null)
                         {
-                            if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
+                            if (ultimaSituacao!.Inativo)
+                                encerrarPlanoAee = true;
+                            else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
+                                      || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
                             {
-                                var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
-                                if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
+                                if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
+                                {
+                                    var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
+                                    if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
+                                        encerrarPlanoAee = true;
+                                }
+                            }
+                            else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1)
+                            {
+                                if (AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
                                     encerrarPlanoAee = true;
                             }
-                        }
-                        else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1)
-                        {
-                            if (AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
-                                encerrarPlanoAee = true;
                         }
 
                         if (encerrarPlanoAee)
