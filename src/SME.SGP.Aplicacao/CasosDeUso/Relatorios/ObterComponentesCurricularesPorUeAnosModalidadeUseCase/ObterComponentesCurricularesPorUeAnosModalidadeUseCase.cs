@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
         {
             var componenteIds = listaComponentes.Select(c => c.Codigo).ToArray();
 
-            var componentesSgp = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componenteIds));
+            var componentesSgp = await mediator.Send(new ObterComponentesCurricularesPorIdsEUsuariosQuery(componenteIds));
 
             foreach (var componente in listaComponentes)
             {
