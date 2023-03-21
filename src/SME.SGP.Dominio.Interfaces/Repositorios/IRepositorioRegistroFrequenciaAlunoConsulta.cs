@@ -20,5 +20,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<FrequenciaAlunoTurmaDto>> ObterRegistroFrequenciaAlunosNaTurma(string turmaCodigo, string alunoCodigo);
         
         Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> alunos, bool somenteAusencias = false);
+        Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string codigoAluno, string disciplinaId, params string[] turmasId);
     }
 }

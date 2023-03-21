@@ -96,10 +96,10 @@ namespace SME.SGP.Aplicacao
                 foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
                     await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo), cancellationToken);
                 
-                return await ObterAuditoriaParaRetorno(aula.Id);
+                return await ObterAuditoriaParaRetorno(aula.Id, aula.DataAula, aula.TurmaId, aula.DisciplinaId);
             }
 
-            return new FrequenciaAuditoriaAulaDto() { AulaIdComErro = aula.Id, DataAulaComErro = aula.DataAula};
+            return new FrequenciaAuditoriaAulaDto() { AulaIdComErro = aula.Id, DataAulaComErro = aula.DataAula };
         }
 
         private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
@@ -110,10 +110,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<FrequenciaAuditoriaAulaDto> ObterAuditoriaParaRetorno(long  aulaId)
+        private async Task<FrequenciaAuditoriaAulaDto> ObterAuditoriaParaRetorno(long  aulaId, DateTime dataAula, string turmaId, string disciplinaId)
         {
             var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaId));
-            return new FrequenciaAuditoriaAulaDto() { Auditoria = (AuditoriaDto)registroFrequencia};
+            return new FrequenciaAuditoriaAulaDto() { Auditoria = (AuditoriaDto)registroFrequencia, DataAula = dataAula, TurmaId = turmaId, DisciplinaId = disciplinaId };
         }
         private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula, bool historico)
         {
