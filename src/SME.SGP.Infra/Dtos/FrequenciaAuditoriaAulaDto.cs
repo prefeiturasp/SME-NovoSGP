@@ -11,6 +11,9 @@ namespace SME.SGP.Infra
 
         public long? AulaIdComErro { get; set; }
         public DateTime? DataAulaComErro { get; set; }
+        public DateTime? DataAula { get; set; }
+        public string TurmaId { get; set; }
+        public string DisciplinaId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
     }
 }

@@ -349,5 +349,28 @@ namespace SME.SGP.Dados.Repositorios
 
             return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId }, commandTimeout: 120);
         }
+
+        public async Task<int> ObterTotalAulasPorDisciplinaTurmaAluno(DateTime dataAula, string codigoAluno, string disciplinaId, params string[] turmasId)
+        {
+            var query = $@"
+                            with qdadeAulasAluno as (
+                                select coalesce(a.quantidade, 0) as qdade
+                                              from aula a 
+                                                  inner join periodo_escolar p
+                                                      on a.tipo_calendario_id = p.tipo_calendario_id
+                                                  inner join registro_frequencia_aluno rfa on rfa.aula_id = a.id and not rfa.excluido 
+                                                  where not a.excluido
+                                                  and rfa.codigo_aluno = @codigoAluno  
+                                                  and @dataAula::date between p.periodo_inicio and p.periodo_fim
+                                                  and a.data_aula::date between p.periodo_inicio and p.periodo_fim
+                                                  and a.turma_id = any(@turmasId)
+                                                  {(!string.IsNullOrWhiteSpace(disciplinaId) ? " and a.disciplina_id = @disciplinaId" : String.Empty)}
+                                                  group by a.id)
+                            select sum(qdade) from qdadeAulasAluno;";
+
+            
+            return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
+                new { dataAula, disciplinaId, turmasId, codigoAluno });
+        }
     }
 }
