@@ -66,7 +66,7 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder(@"with lista as (
                         select *,
-                               row_number() over (partition by codigo_aluno, bimestre order by id desc) sequencia
+                               row_number() over (partition by codigo_aluno, bimestre, tipo order by id desc) sequencia
                             from
 	                            frequencia_aluno
                         where
