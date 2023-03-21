@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             var useCasePeriodos = ServiceProvider.GetService<IObterPeriodosPorComponenteUseCase>();
             useCasePeriodos.ShouldNotBeNull();
             var listaPeriodo = (await useCasePeriodos.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,
-                filtroListao.Bimestre)).ToList();            
+                filtroListao.Bimestre, true)).ToList();            
 
             //-> Obter retorno dos dados salvos e validar por período
             var useCaseObterFrequencia = ServiceProvider.GetService<IObterFrequenciasPorPeriodoUseCase>();
