@@ -60,8 +60,6 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, turma.Semestre);
 
-            long id;
-
             AulaPrevista aulaPrevista = null;
             aulaPrevista = MapearParaDominio(dto, aulaPrevista, tipoCalendario.Id);
 
@@ -105,17 +103,17 @@ namespace SME.SGP.Aplicacao
             return aulaPrevistaDto;
         }
 
-        private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
+        private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre)
         {
             if (aulasPrevistasBimestre.Any())
                 aulasPrevistasBimestre = aulasPrevistasBimestre.DistinctBy(a => a.Bimestre).ToList();
 
-            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre, periodosAbertos) ?? new AulasPrevistasDadasAuditoriaDto();
+            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre) ?? new AulasPrevistasDadasAuditoriaDto();
 
             return aulaPrevistaDto;
         }
 
-        private AulasPrevistasDadasAuditoriaDto MapearParaDto(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> bimestres = null, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
+        private AulasPrevistasDadasAuditoriaDto MapearParaDto(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> bimestres = null)
         {
             var bimestre = bimestres.FirstOrDefault();
 
@@ -139,11 +137,29 @@ namespace SME.SGP.Aplicacao
                     Cumpridas = x.LancaFrequencia || x.Cumpridas > 0 ? x.Cumpridas : x.CumpridasSemFrequencia,
                     Inicio = x.Inicio,
                     Fim = x.Fim,
-                    Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
+                    Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas, Mensagens = MapearMensagens(x)},
                     Reposicoes = x.LancaFrequencia || x.Reposicoes != 0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
-                    PodeEditar = periodosAbertos != null ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
+                    PodeEditar = true
                 }).ToList()
             };
+        }
+
+        private string[] MapearMensagens(AulaPrevistaBimestreQuantidade aula)
+        {
+            var mensagens = new List<string>();
+
+            if (aula != null)
+            {
+                if (aula.Previstas != (aula.CriadasCJ + aula.CriadasTitular) && aula.Fim.Date >= DateTime.Today)
+                    mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
+
+                int aulaCumprida = aula.LancaFrequencia || aula.Cumpridas > 0 ? aula.Cumpridas : aula.CumpridasSemFrequencia;
+
+                if(aula.Previstas != (aulaCumprida + aula.Reposicoes) && aula.Fim.Date < DateTime.Today)
+                    mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
+            }
+
+            return mensagens.ToArray();
         }
 
         private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId)
