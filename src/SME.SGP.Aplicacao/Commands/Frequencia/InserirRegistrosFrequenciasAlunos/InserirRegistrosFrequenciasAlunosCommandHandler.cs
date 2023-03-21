@@ -87,44 +87,47 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObterDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
         {
-            var dicionario = new Dictionary<int, List<RegistroFrequenciaAluno>>();
-            var listaDeFrequenciaAlunoCadastrada = await mediator.Send(new ObterRegistroDeFrequenciaAlunoPorIdRegistroQuery(request.RegistroFrequenciaId));
-            dicionario.Add(INSERIR, new List<RegistroFrequenciaAluno>());
-            dicionario.Add(ALTERAR, new List<RegistroFrequenciaAluno>());
-
-            foreach (var frequencia in request.Frequencias)
+            var registroFrequenciasAlunos = new Dictionary<int, List<RegistroFrequenciaAluno>>
             {
-                foreach (var aulaRegistrada in frequencia.Aulas)
+                { INSERIR, new List<RegistroFrequenciaAluno>() },
+                { ALTERAR, new List<RegistroFrequenciaAluno>() },
+            };
+
+            var registroFrequenciaAlunoAtual = await mediator.Send(new ObterRegistroDeFrequenciaAlunoPorIdRegistroQuery(request.RegistroFrequenciaId));
+            
+            foreach (var registroFrequenciaAlunoDto in request.Frequencias)
+            {
+                foreach (var aulaRegistrada in registroFrequenciaAlunoDto.Aulas)
                 {
-                    var frequenciaAluno = listaDeFrequenciaAlunoCadastrada.FirstOrDefault(fr => fr.NumeroAula == aulaRegistrada.NumeroAula && fr.CodigoAluno == frequencia.CodigoAluno);
-                    var presenca = ObtenhaValorPresenca(frequencia.TipoFrequenciaPreDefinido, aulaRegistrada.TipoFrequencia);
+                    var frequenciaAluno = registroFrequenciaAlunoAtual.FirstOrDefault(fr => fr.NumeroAula == aulaRegistrada.NumeroAula && fr.CodigoAluno == registroFrequenciaAlunoDto.CodigoAluno);
+                    var valorFrequencia = ObterValorFrequencia(registroFrequenciaAlunoDto.TipoFrequenciaPreDefinido, aulaRegistrada.TipoFrequencia);
 
                     if (frequenciaAluno != null)
                     {
-                        if (frequenciaAluno.Valor != (int)presenca)
+                        if (frequenciaAluno.Valor != (int)valorFrequencia)
                         {
-                            frequenciaAluno.Valor = (int)presenca;
+                            frequenciaAluno.Valor = (int)valorFrequencia;
                             frequenciaAluno.AulaId = request.AulaId;
-                            dicionario[ALTERAR].Add(frequenciaAluno);
+                            registroFrequenciasAlunos[ALTERAR].Add(frequenciaAluno);
                         }
                     }
                     else
                     {
                         var novafrequencia = new RegistroFrequenciaAluno()
                         {
-                            CodigoAluno = frequencia.CodigoAluno,
+                            CodigoAluno = registroFrequenciaAlunoDto.CodigoAluno,
                             NumeroAula = aulaRegistrada.NumeroAula,
-                            Valor = (int)presenca,
+                            Valor = (int)valorFrequencia,
                             AulaId = request.AulaId,
                             RegistroFrequenciaId = request.RegistroFrequenciaId
                         };
 
-                        dicionario[INSERIR].Add(novafrequencia);
+                        registroFrequenciasAlunos[INSERIR].Add(novafrequencia);
                     }
                 }
             }
 
-            return dicionario;
+            return registroFrequenciasAlunos;
         }
 
         private async Task<Dictionary<int, List<FrequenciaPreDefinida>>> ObterDicionarioFrequenciaPreDefinidaParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
@@ -162,7 +165,7 @@ namespace SME.SGP.Aplicacao
             return dicionario;
         }
 
-        private TipoFrequencia ObtenhaValorPresenca(string tipoFrequenciaPreDefinido, string tipoFrequencia)
+        private TipoFrequencia ObterValorFrequencia(string tipoFrequenciaPreDefinido, string tipoFrequencia)
         {
             return ObtenhaValor(tipoFrequencia, ObtenhaValorPreDefinido(tipoFrequenciaPreDefinido));
         }

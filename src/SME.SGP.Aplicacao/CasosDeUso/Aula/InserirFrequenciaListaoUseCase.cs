@@ -15,11 +15,16 @@ namespace SME.SGP.Aplicacao
         public async Task<FrequenciaAuditoriaDto> Executar(IEnumerable<FrequenciaSalvarAulaAlunosDto> frequencias)
         {
             var frequenciaAuditoria = new FrequenciaAuditoriaDto();
+            
             foreach(var frequenciaAula in frequencias)
             {
                 var frequencia = new FrequenciaDto(frequenciaAula.AulaId);
+                
+                var alunosComAulasInvalidas = frequenciaAula.Alunos.Where(w => w.Desabilitado).Select(s => s.CodigoAluno).ToList();
+                if (alunosComAulasInvalidas.Any())
+                    await mediator.Send(new ExcluirRegistroFrequenciaAlunoPorAulaECodigosAlunosCommand(frequenciaAula.AulaId, alunosComAulasInvalidas.ToArray()));
 
-                foreach(var frequenciaAluno in frequenciaAula.Alunos)
+                foreach(var frequenciaAluno in frequenciaAula.Alunos.Where(w=> !w.Desabilitado))
                 {
                     frequencia.ListaFrequencia.Add(new RegistroFrequenciaAlunoDto()
                     {
@@ -27,11 +32,13 @@ namespace SME.SGP.Aplicacao
                         Aulas = frequenciaAluno.Frequencias.ToList()
                     });
                 }
-
-                var frequenciaAuditoriaAulaDto = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia, true));
-                frequenciaAuditoria.TratarRetornoAuditoria(frequenciaAuditoriaAulaDto);
+                
+                if (frequencia.ListaFrequencia.Any())
+                {
+                    var frequenciaAuditoriaAulaDto = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia, false));
+                    frequenciaAuditoria.TratarRetornoAuditoria(frequenciaAuditoriaAulaDto);    
+                }
             }
-
             return frequenciaAuditoria;
         }
     }
