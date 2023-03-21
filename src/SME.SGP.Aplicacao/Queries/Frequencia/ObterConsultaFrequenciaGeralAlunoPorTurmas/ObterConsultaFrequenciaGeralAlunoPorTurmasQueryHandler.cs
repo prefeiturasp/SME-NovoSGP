@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
             var periodos = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
             var disciplinasDaTurmaEol = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
-            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
+            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsEUsuariosQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
             var gruposMatrizes = disciplinasDaTurma.Where(c => c.RegistraFrequencia && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
             var somaFrequenciaFinal = 0.0;
             var totalDisciplinas = 0;

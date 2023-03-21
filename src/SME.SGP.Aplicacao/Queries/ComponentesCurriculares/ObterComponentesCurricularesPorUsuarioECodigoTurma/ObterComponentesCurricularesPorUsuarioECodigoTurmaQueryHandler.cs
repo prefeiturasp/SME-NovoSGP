@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil, string codigoTurma)
         {
             var componentesSgp = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol
+                .Send(new ObterComponentesCurricularesPorIdsEUsuariosQuery(componentesCurricularesEol
                     .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : (a.Regencia && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray(), codigoTurma: codigoTurma));
 
             return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol, ehEducacaoInfatil);
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsEUsuariosQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
 
             return MapearParaComponenteNomeDto(disciplinasEol);
         }

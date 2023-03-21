@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsEUsuariosQuery(new[] { componenteCurricularId }));
             return componentes.FirstOrDefault();
         }
 

@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<DisciplinaResposta>> MapearLancaNotaFrequenciaSgp(IEnumerable<DisciplinaResposta> disciplinasEol, string codigoTurma)
         {
             var disciplinasCodigo = disciplinasEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
-            var disciplinasSgp = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo, codigoTurma: codigoTurma))).ToList();
+            var disciplinasSgp = (await mediator.Send(new ObterComponentesCurricularesPorIdsEUsuariosQuery(disciplinasCodigo, codigoTurma: codigoTurma))).ToList();
 
             return disciplinasEol.Select(disciplina => MapearLancaNotaFrequenciaSgp(disciplina, disciplinasSgp.FirstOrDefault(disciplinaSgp => 
                                                                                                                               disciplinaSgp.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular)));
@@ -369,7 +369,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
-            var disciplinasDaTurma = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo, codigoTurma: turma.CodigoTurma))).ToList();
+            var disciplinasDaTurma = (await mediator.Send(new ObterComponentesCurricularesPorIdsEUsuariosQuery(disciplinasCodigo, codigoTurma: turma.CodigoTurma))).ToList();
             var areasDoConhecimento = (await mediator.Send(new ObterAreasConhecimentoQuery(disciplinasDaTurmaEol))).ToList();
             var ordenacaoGrupoArea = (await mediator.Send(new ObterOrdenacaoAreasConhecimentoQuery(disciplinasDaTurma, areasDoConhecimento))).ToList();
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
