@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null), 
                 cancellationToken);
 
-            if (request.Months != null && request.Months.Any())
+            if (request.Meses != null && request.Meses.Any())
             {
-                foreach(var month in request.Months)
+                foreach(var month in request.Meses)
                     await PublicarConsolidacaoFrequenciaAlunoMensal(request.TurmaId, month, cancellationToken);
             }
             else
