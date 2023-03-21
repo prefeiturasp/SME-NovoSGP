@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                     });
                 }
 
-                var frequenciaAuditoriaAulaDto = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia, false));
+                var frequenciaAuditoriaAulaDto = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia, true));
                 frequenciaAuditoria.TratarRetornoAuditoria(frequenciaAuditoriaAulaDto);
             }
 
