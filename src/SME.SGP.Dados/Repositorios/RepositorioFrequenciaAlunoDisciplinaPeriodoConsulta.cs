@@ -348,7 +348,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId)
         {
-            var query = new StringBuilder($@"select fa.* 
+            var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
                             from frequencia_aluno fa
                             inner join turma t on fa.turma_id = t.turma_id ");
 
@@ -362,6 +362,8 @@ namespace SME.SGP.Dados
 
             if (tipoCalendarioId > 0)
                 query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
+
+            query.AppendLine(") select * from lista where sequencia = 1;");
 
             return await database.Conexao
                 .QueryAsync<FrequenciaAluno>(query.ToString(), new
