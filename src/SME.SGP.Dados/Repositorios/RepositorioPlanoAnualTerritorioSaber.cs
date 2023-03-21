@@ -36,23 +36,26 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, escolaId, turmaId = Convert.ToInt32(turmaId), bimestre, territorioExperienciaId });
         }
 
-        public async Task<IEnumerable<PlanoAnualTerritorioSaberCompletoDto>> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long territorioExperienciaId, string professor = null)
+        public async Task<IEnumerable<PlanoAnualTerritorioSaberCompletoDto>> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long[] territorioExperienciaId, string professor = null)
         {
             StringBuilder query = new StringBuilder();
 
-            query.AppendLine("select");
-            query.AppendLine("	pa.ano as AnoLetivo, pa.* ");
+            query.AppendLine("select * from (");
+            query.AppendLine(" select");
+            query.AppendLine("	pa.ano as AnoLetivo, pa.*, ");
+            query.AppendLine("	row_number() over(partition by pa.bimestre order by pa.id desc) sequencia ");
             query.AppendLine("from");
             query.AppendLine("	plano_anual_territorio_saber pa");
             query.AppendLine("where");
             query.AppendLine("	pa.ano = @ano");
             query.AppendLine("	and pa.escola_id = @ueId");
             query.AppendLine("	and pa.turma_id = @turmaId");
-            query.AppendLine("	and pa.territorio_experiencia_id = @territorioExperienciaId");
+            query.AppendLine("	and pa.territorio_experiencia_id = any(@territorioExperienciaId)");
             if (!string.IsNullOrWhiteSpace(professor))
                 query.AppendLine("and pa.criado_rf = @professor");
             query.AppendLine("group by");
-            query.AppendLine("	pa.id");
+            query.AppendLine("	pa.id ) as planos");            
+            query.AppendLine(" where sequencia = 1");
 
             return await database.Conexao.QueryAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), territorioExperienciaId, professor });
         }
