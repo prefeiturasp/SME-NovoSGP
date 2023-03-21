@@ -83,8 +83,6 @@ namespace SME.SGP.Aplicacao
                 if (totalAulasDaDisciplina == 0)
                     excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId)).Select(s => s.Id));
 
-                VerificaFrequenciasDuplicadas(frequenciaDosAlunos, request.DisciplinaId, excluirFrequenciaAlunoIds, periodoConsiderado.Bimestre);
-
                 if (registroFreqAlunos.Any())
                 {
                     var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
@@ -148,21 +146,6 @@ namespace SME.SGP.Aplicacao
 
                 frequenciasParaExcluir
                     .AddRange(frequenciasParaRealizarExclusao);
-            }
-        }
-
-        private void VerificaFrequenciasDuplicadas(IEnumerable<FrequenciaAluno> frequenciasAlunos, string disciplinaId, List<long> frequenciaAlunosIdsParaExcluir, int bimestre)
-        {
-            var frequenciaAgrupada = frequenciasAlunos.GroupBy(f => f.CodigoAluno);
-
-            foreach (var frequencia in frequenciaAgrupada)
-            {
-                var frequenciasDuplicadas = frequencia.Where(f => f.DisciplinaId == disciplinaId && f.Bimestre == bimestre).Select(f => f.Id);
-                if (frequenciasDuplicadas.Count() > 1)
-                {
-                    frequenciaAlunosIdsParaExcluir.AddRange(frequenciasDuplicadas);
-                    frequenciaAlunosIdsParaExcluir.Remove(frequenciasDuplicadas.FirstOrDefault()); // mantém somente uma frequência na lista para fazer a alteração na base com os dados atualizados
-                }
             }
         }
 
