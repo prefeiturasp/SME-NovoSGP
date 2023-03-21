@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             return "Alteração realizada com sucesso";
         }
 
-        public async Task<long> Inserir(AulaPrevistaDto dto)
+        public async Task<AulasPrevistasDadasAuditoriaDto> Inserir(AulaPrevistaDto dto)
         {
             var turma = await ObterTurma(dto.TurmaId);
 
@@ -67,16 +67,18 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
 
-            id = await Inserir(dto, aulaPrevista);
+            var aulaPrevistaDto = await Inserir(dto, aulaPrevista);
             var nomeChave = CHAVE_CRIAR_CHACHE_AULAS_PREVISTAS + turma.UeId;
-            await mediator.Send(new CriarCacheAulaPrevistaCommand(nomeChave,turma.UeId));
+            await mediator.Send(new CriarCacheAulaPrevistaCommand(nomeChave, turma.UeId));
 
             unitOfWork.PersistirTransacao();
 
-            return id;
+            var aulasPrevistasConsulta = await ObterBimestres(aulaPrevistaDto.Id);
+
+            return MapearDtoRetorno(aulaPrevista, aulasPrevistasConsulta);
         }
 
-        private async Task<long> Inserir(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista)
+        private async Task<AulaPrevistaDto> Inserir(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista)
         {
             aulaPrevistaDto.Id = repositorio.Salvar(aulaPrevista);
 
@@ -84,15 +86,69 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
 
             if (aulaPrevistaDto.BimestresQuantidade != null)
+            {
+                var aulasPrevistasBimestres = await mediator.Send(new ObterAulaPrevistaBimestrePorAulaPrevistaIdBimestreQuery(aulaPrevista.Id, aulaPrevistaDto.BimestresQuantidade.Select(a => a.Bimestre).ToArray()));
                 foreach (var bimestreQuantidadeDto in aulaPrevistaDto.BimestresQuantidade)
+                {
+                    var aulaJaPrevistaNoBimestre = aulasPrevistasBimestres.Any(a => a.Bimestre == bimestreQuantidadeDto.Bimestre);
+
                     await repositorioAulaPrevistaBimestre.SalvarAsync(new AulaPrevistaBimestre()
                     {
+                        Id = !aulaJaPrevistaNoBimestre ? 0 : aulasPrevistasBimestres.FirstOrDefault(a => a.Bimestre == bimestreQuantidadeDto.Bimestre).Id,
                         AulaPrevistaId = aulaPrevistaDto.Id,
                         Bimestre = bimestreQuantidadeDto.Bimestre,
                         Previstas = bimestreQuantidadeDto.Quantidade
                     });
+                }
+            }
 
-            return aulaPrevistaDto.Id;
+            return aulaPrevistaDto;
+        }
+
+        private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
+        {
+            if (aulasPrevistasBimestre.Any())
+                aulasPrevistasBimestre = aulasPrevistasBimestre.DistinctBy(a => a.Bimestre).ToList();
+
+            AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre, periodosAbertos) ?? new AulasPrevistasDadasAuditoriaDto();
+
+            return aulaPrevistaDto;
+        }
+
+        private AulasPrevistasDadasAuditoriaDto MapearParaDto(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> bimestres = null, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
+        {
+            var bimestre = bimestres.FirstOrDefault();
+
+            return aulaPrevista == null ? null : new AulasPrevistasDadasAuditoriaDto
+            {
+                Id = aulaPrevista.Id,
+                AlteradoEm = bimestre?.AlteradoEm ?? DateTime.MinValue,
+                AlteradoPor = bimestre?.AlteradoPor ?? "",
+                AlteradoRF = bimestre?.AlteradoRF ?? "",
+                CriadoEm = bimestre?.CriadoEm ?? aulaPrevista.CriadoEm,
+                CriadoPor = bimestre?.CriadoPor ?? aulaPrevista.CriadoPor,
+                CriadoRF = bimestre?.CriadoRF ?? aulaPrevista.CriadoRF,
+                AulasPrevistasPorBimestre = bimestres?.Select(x => new AulasPrevistasDadasDto
+                {
+                    Bimestre = x.Bimestre,
+                    Criadas = new AulasQuantidadePorProfessorDto()
+                    {
+                        QuantidadeCJ = x.CriadasCJ,
+                        QuantidadeTitular = x.CriadasTitular
+                    },
+                    Cumpridas = x.LancaFrequencia || x.Cumpridas > 0 ? x.Cumpridas : x.CumpridasSemFrequencia,
+                    Inicio = x.Inicio,
+                    Fim = x.Fim,
+                    Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
+                    Reposicoes = x.LancaFrequencia || x.Reposicoes != 0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
+                    PodeEditar = periodosAbertos != null ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
+                }).ToList()
+            };
+        }
+
+        private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId)
+        {
+            return await repositorioAulaPrevistaBimestreConsulta.ObterBimestresAulasPrevistasPorId(aulaPrevistaId);
         }
 
         private async Task<Turma> ObterTurma(string turmaId)

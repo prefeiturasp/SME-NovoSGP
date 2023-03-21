@@ -29,12 +29,12 @@ namespace SME.SGP.Aplicacao
             var wfAprovacaoItinerancia = await repositorioWfAprovacaoItinerancia.ObterPorItineranciaId(request.ItineranciaId);
             wfAprovacaoItinerancia.StatusAprovacao = request.StatusAprovacao;
             var itinerancia = await repositorioItinerancia.ObterComUesPorId(request.ItineranciaId);
-            var objetivos = await repositorioItinerancia.ObterDecricaoObjetivosPorId(request.ItineranciaId);
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
+                    var objetivos = await repositorioItinerancia.ObterDecricaoObjetivosPorId(request.ItineranciaId);
                     await repositorioWfAprovacaoItinerancia.SalvarAsync(wfAprovacaoItinerancia);
 
                     if (itinerancia.DataRetornoVerificacao.HasValue)
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task CriarEvento(Itinerancia itinerancia, IEnumerable<ItineranciaObjetivoDescricaoDto> objetivos)
+        private async Task CriarEvento(Itinerancia itinerancia, IEnumerable<ItineranciaNomeDescricaoDto> objetivos)
         {
             await mediator.Send(new CriarEventoItineranciaPAAICommand(
                 itinerancia.Id,

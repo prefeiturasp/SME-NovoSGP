@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using MimeKit.Encodings;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;

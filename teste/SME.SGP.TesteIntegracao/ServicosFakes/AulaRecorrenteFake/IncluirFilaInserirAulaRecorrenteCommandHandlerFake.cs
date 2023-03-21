@@ -27,7 +27,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                                                            request.TipoAula,
                                                            request.CodigoUe,
                                                            request.EhRegencia,
-                                                           request.RecorrenciaAula));
+                                                           request.RecorrenciaAula,
+                                                           request.CodigoTerritorioSaber));
 
             return true;
         }

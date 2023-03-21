@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
                     ue.CodigoUe,
                     itineranciaDto.DataRetornoVerificacao.Value,
                     itineranciaDto.DataVisita,
-                    ObterObjetivos(itineranciaDto.ObjetivosVisita)));
+                    (IEnumerable<ItineranciaNomeDescricaoDto>)ObterObjetivos(itineranciaDto.ObjetivosVisita)));
         }
 
         private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
