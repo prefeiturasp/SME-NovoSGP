@@ -386,14 +386,14 @@ namespace SME.SGP.Dados.Repositorios
             return registroItinerancia;
         }
 
-        public async Task<IEnumerable<ItineranciaObjetivoDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId)
+        public async Task<IEnumerable<ItineranciaNomeDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId)
         {
             var query = @"select iob.nome, io.descricao
                           from itinerancia_objetivo io 
                          inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
                          where io.itinerancia_id = @itineranciaId";
 
-            return await database.Conexao.QueryAsync<ItineranciaObjetivoDescricaoDto>(query, new {itineranciaId});
+            return await database.Conexao.QueryAsync<ItineranciaNomeDescricaoDto>(query, new {itineranciaId});
         }
 
         public async Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao)
