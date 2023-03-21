@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
                         {
                             var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
 
-                            disciplinasRegenciasComAtividades.ToList().ForEach(async r => r.DisciplinaContidaRegenciaNome = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) })).ToList().FirstOrDefault().Nome);
+                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = (repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) })).Result.ToList().FirstOrDefault()?.Nome);
 
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);

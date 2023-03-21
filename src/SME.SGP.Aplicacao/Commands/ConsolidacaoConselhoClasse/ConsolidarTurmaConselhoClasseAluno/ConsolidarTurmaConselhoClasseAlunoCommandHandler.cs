@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
                 var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
 
-                var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo));
+                var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo, codigoTurma: turma.CodigoTurma));
 
                 var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(disciplinasDaTurmaEol));
 
@@ -105,17 +105,16 @@ namespace SME.SGP.Aplicacao
 
                         foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                         {
-                            var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+                            var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
 
                             if (disciplinaEol.Regencia)
                             {
-                                conselhoClasseAlunoNotas.ComponenteRegencia = await ObterComponenteRegencia(disciplina.CodigoComponenteCurricular, turma);
+                                conselhoClasseAlunoNotas.ComponenteRegencia = await ObterComponenteRegencia(turma);
                             }
                             else
                             {
                                 conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterComponenteCurricular(disciplina.Nome,
-                                                                                                                    disciplina.CodigoComponenteCurricular,
-                                                                                                                    turma));
+                                                                                                                    disciplina.CodigoComponenteCurricular));
                             }
                         }
                     }
@@ -190,7 +189,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<ConselhoClasseComponenteFrequenciaDto> ObterComponenteCurricular(string componenteCurricularNome, long componenteCurricularCodigo, Turma turma)
+        private async Task<ConselhoClasseComponenteFrequenciaDto> ObterComponenteCurricular(string componenteCurricularNome, long componenteCurricularCodigo)
         {
             var conselhoClasseComponente = new ConselhoClasseComponenteFrequenciaDto()
             {
@@ -200,7 +199,7 @@ namespace SME.SGP.Aplicacao
             return conselhoClasseComponente;
         }
 
-        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterComponenteRegencia(long componenteCurricularCodigo, Turma turma)
+        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterComponenteRegencia(Turma turma)
         {
             var componentesRegencia = await consultasDisciplina.ObterComponentesRegencia(turma);
 

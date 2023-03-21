@@ -234,7 +234,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("        (a.turma_id is null and a.dre_id is null and a.ue_id = t.ue_id) --admin ue");
             query.AppendLine("  inner join ue");
             query.AppendLine("      on ue.id = t.ue_id");
-            query.AppendLine($"where { (!consideraHistorico || abrangenciaPermitida ? "not " : string.Empty) } coalesce(nullif(t.turma_historica, false), a.historico)");
+            query.AppendLine($"where { (!consideraHistorico || (abrangenciaPermitida && !consideraHistorico) ? "not " : string.Empty) } coalesce(nullif(t.turma_historica, false), a.historico)");
             query.AppendLine("  and u.login = @login");
             query.AppendLine("  and a.perfil = @perfil");
             query.AppendLine("  and t.turma_codigo = @turma;");
@@ -611,17 +611,11 @@ namespace SME.SGP.Dados.Repositorios
             return dados.OrderBy(x => x.Descricao);
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas, bool consideraHistorico = false)
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas, bool consideraHistorico = false, int anoLetivo = 0)
         {
             var query = "";
             if (consideraHistorico)
-            {
-                query = @"select distinct vau.modalidade_codigo from v_abrangencia_historica vau 
-                            where vau.login = @login
-                            and usuario_perfil  = @perfilAtual
-                            and vau.ue_codigo = @codigoUe
-                            and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
-            }
+                query = @"select f_abrangencia_modalidades(@login, @perfilAtual, true, @anoLetivo, @modalidadesQueSeraoIgnoradasArray::int4[], @codigoUe) modalidade_codigo order by 1";
             else
             {
                 query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
@@ -632,8 +626,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray });
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year });
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)
@@ -1001,6 +994,18 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return retorno;
+        }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasPorAbrangenciaCPParaCopiaAvaliacao(int anoLetivo, string codigoRf, int modalidadeTurma, string anoTurma, long turmaIdReferencia)
+        {
+            var query = $@"select t.* from abrangencia a
+                                inner join usuario u on u.id = a.usuario_id
+                                inner join turma t on t.ue_id = a.ue_id
+                                where a.perfil = @perfilCP and t.ano_letivo = @anoLetivo
+                                and u.rf_codigo = @codigoRf and t.modalidade_codigo = @modalidadeTurma
+                                and t.ano = @anoTurma and t.id != @turmaIdReferencia";
+
+            return await database.Conexao.QueryAsync<Turma>(query, new { perfilCP = Guid.Parse(PerfilUsuario.CP.Name().ToString()), anoLetivo, codigoRf, modalidadeTurma, anoTurma, turmaIdReferencia });
         }
     }
 }

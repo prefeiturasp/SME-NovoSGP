@@ -7,5 +7,6 @@
         public const string NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA = "Não foi possível identificar o tipo de nota da turma";
         public const string CICLO_TURMA_NAO_ENCONTRADO = "Não foi encontrado o ciclo da turma informada";
         public const string TURMA_DEVE_SER_TIPO_REGULAR = "A turma informada deve ser turma do tipo regular";
+        public const string NAO_FOI_POSSIVEL_OBTER_TURMA = "Não foi possível obter a turma.";
     }
 }

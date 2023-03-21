@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                         mediator.Send(new ObterAulaDataTurmaDisciplinaQuery(
                             planoTurma.Data,
                             planoTurma.TurmaId,
-                            request.PlanoAulaMigrar.DisciplinaId
+                            aula.DisciplinaId
                         ));
 
                     if (aulaConsultaDto == null)
@@ -63,6 +63,7 @@ namespace SME.SGP.Aplicacao
                         Id = planoTurma.Sobreescrever ? request.PlanoAulaMigrar.PlanoAulaId : 0,
                         AulaId = aulaConsultaDto.Id,
                         Descricao = planoAulaDto.Descricao,
+                        ComponenteCurricularId = Convert.ToInt64(aulaConsultaDto.DisciplinaId),
                         LicaoCasa = request.PlanoAulaMigrar.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
                         ObjetivosAprendizagemComponente = !usuario.EhProfessorCj() ||
                                                           request.PlanoAulaMigrar.MigrarObjetivos ?

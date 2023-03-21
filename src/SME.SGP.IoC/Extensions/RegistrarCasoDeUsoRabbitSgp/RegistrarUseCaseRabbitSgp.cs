@@ -10,6 +10,7 @@ namespace SME.SGP.IoC
     {
         internal static void RegistrarUseCaseRabbitSgp(this IServiceCollection services)
         {
+            services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoEscolaAquiUseCase, ReceberRelatorioProntoEscolaAquiUseCase>();
             services.TryAddScoped<IReceberRelatorioComErroUseCase, ReceberRelatorioComErroUseCase>();
@@ -30,6 +31,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IGerarPendenciaAusenciaRegistroIndividualUseCase, GerarPendenciaAusenciaRegistroIndividualUseCase>();
             services.TryAddScoped<IAtualizarPendenciaRegistroIndividualUseCase, AtualizarPendenciaRegistroIndividualUseCase>();
             services.TryAddScoped<INotificarCompensacaoAusenciaUseCase, NotificarCompensacaoAusenciaUseCase>();
+            services.TryAddScoped<IConsolidarDevolutivasPorUeUseCase, ConsolidarDevolutivasPorUeUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
             services.TryAddScoped<IConsolidarDiariosBordoCarregarUseCase, ConsolidarDiariosBordoCarregarUseCase>();
@@ -71,6 +73,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase, RemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase, RemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
             services.TryAddScoped<IExcluirArmazenamentoPorAquivoUseCase, ExcluirArmazenamentoPorAquivoUseCase>();
+            services.TryAddScoped<IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase, AtualizarInformacoesDoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IAtualizarTurmaDoEncaminhamentoNAAPAUseCase, AtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase, AtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
         }
     }
 }

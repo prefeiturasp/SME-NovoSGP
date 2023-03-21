@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("       , usu_responsavel.rf_codigo");
                 sql.AppendLine("       , usu_responsavel.nome");
                 sql.AppendLine("       , usu_paai_responsavel.rf_codigo");
-                sql.AppendLine("       , usu_paai_responsavel.nome");
+                sql.AppendLine("       , usu_paai_responsavel.nome ");
                 sql.AppendLine("        order by pa.aluno_nome ");
             }
 
@@ -111,6 +111,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", usu_responsavel.nome NomeReponsavel ");
                 sql.AppendLine(", usu_paai_responsavel.rf_codigo RfPaaiReponsavel ");
                 sql.AppendLine(", usu_paai_responsavel.nome NomePaaiReponsavel ");
+                sql.AppendLine(", max(pav.id) as planoAeeVersaoId ");
             }
 
             sql.AppendLine(" from plano_aee pa ");
@@ -171,6 +172,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join plano_aee_versao pav on pav.plano_aee_id = pa.id and not pav.excluido 
                                         where pa.aluno_codigo = @codigoEstudante 
                                         and pa.situacao not in (3,7)
+                                        and not pa.excluido
                                         and (EXTRACT(ISOYEAR from pa.criado_em) = @ano 
                                         or EXTRACT(ISOYEAR from pav.criado_em) = @ano)
                                         limit 1";
@@ -229,10 +231,16 @@ namespace SME.SGP.Dados.Repositorios
             var condicaoPendencias = desconsiderarPendencias ? $"and (ppa.id is null or p.id is null or p.situacao = {(int)SituacaoPendencia.Resolvida})" : string.Empty;
             var condicaoNotificacoes = desconsiderarNotificados ? "and npa.id is null" : string.Empty;
 
-            var query = $@"select pa.* 
+            var query = $@"with versoes as (
+                                select plano_aee_id, 
+                                    max(id) as versao_id 
+                                  from plano_aee_versao
+                                group by plano_aee_id 
+                            )
+                          select distinct pa.*  
                           from plano_aee pa
-                         inner join plano_aee_versao pav on pav.id in (select max(id) from plano_aee_versao where plano_aee_id = pa.id)
-                         inner join plano_aee_questao paq on paq.plano_aee_versao_id = pav.id
+                         inner join versoes pav on pav.plano_aee_Id = pa.id
+                         inner join plano_aee_questao paq on paq.plano_aee_versao_id = pav.versao_id
                          inner join questao q on q.id = paq.questao_id and q.ordem = 1 and q.tipo = @tipoQuestao
                          inner join plano_aee_resposta par on par.plano_questao_id = paq.id
                          inner join periodo_escolar pe on pe.id = par.texto::bigint

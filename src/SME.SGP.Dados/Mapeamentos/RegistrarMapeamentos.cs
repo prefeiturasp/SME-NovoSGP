@@ -134,6 +134,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new HistoricoNotaFechamentoMap());
                config.AddMap(new HistoricoNotaConselhoClasseMap());
                config.AddMap(new ClassificacaoDocumentoMap());
+               config.AddMap(new DocumentoArquivoMap());
                config.AddMap(new TipoDocumentoMap());
                config.AddMap(new DocumentoMap());
                config.AddMap(new PendenciaUsuarioMap());
@@ -167,7 +168,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new NotificacaoPlanoAEEMap());
                config.AddMap(new OcorrenciaTipoMap());
                config.AddMap(new OcorrenciaMap());
-               config.AddMap(new OcorrenciaAlunoMap());               
+               config.AddMap(new OcorrenciaAlunoMap());
+               config.AddMap(new OcorrenciaServidorMap());
                config.AddMap(new AcompanhamentoAlunoMap());
                config.AddMap(new AcompanhamentoAlunoSemestreMap());
                config.AddMap(new AcompanhamentoAlunoFotoMap());
@@ -207,7 +209,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FrequenciaTurmaEvasaoMap());
                config.AddMap(new SuporteUsuarioMap());
                config.AddMap(new PendenciaDevolutivaMap());
-               
+               config.AddMap(new SecaoEncaminhamentoNAAPAMap());
+               config.AddMap(new EncaminhamentoNAAPAMap());
+               config.AddMap(new EncaminhamentoNAAPASecaoMap());
+               config.AddMap(new QuestaoEncaminhamentoNAAPAMap());
+               config.AddMap(new RespostaEncaminhamentoNAAPAMap());
+
                config.ForDommel();
            });
         }

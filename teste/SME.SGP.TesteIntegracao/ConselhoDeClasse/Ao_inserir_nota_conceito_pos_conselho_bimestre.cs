@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         //[InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, bimestre: 1);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);
 
             await CriarDados(ObterPerfilProfessor(),
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,

@@ -42,5 +42,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre, bool aulaCj);
         Task<int> ObterBimestre(long periodoEscolarId);
         Task<int> ObterBimestreAtualComAberturaPorAnoModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia);
+        Task<PeriodoEscolar> ObterPeriodoEscolarAtualPorTurmaIdAsync(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia, bool anteriorAoPrimeiroBimestre);
     }
 }

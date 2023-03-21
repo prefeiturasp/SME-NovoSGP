@@ -24,10 +24,16 @@ namespace SME.SGP.Aplicacao
             int anoTurma;
             var listaRetorno = new List<ObjetivoAprendizagemDto>();
 
-            foreach (var ano in request.Anos)
+            if (request.Anos.Any())
             {
-                listaRetorno.AddRange(await repositorioObjetivoAprendizagem
-                    .ObterPorAnoEComponenteCurricularJuremaIds(int.TryParse(ano, out anoTurma) ? (AnoTurma)Convert.ToInt32(ano) : (AnoTurma?)null, request.JuremaIds));
+                if(!request.Anos.FirstOrDefault().Equals("0"))
+                {
+                    foreach (var ano in request.Anos)
+                    {
+                        listaRetorno.AddRange(await repositorioObjetivoAprendizagem
+                            .ObterPorAnoEComponenteCurricularJuremaIds(int.TryParse(ano, out anoTurma) ? (AnoTurma)Convert.ToInt32(ano) : (AnoTurma?)null, request.JuremaIds));
+                    }
+                }
             }
 
             return listaRetorno;

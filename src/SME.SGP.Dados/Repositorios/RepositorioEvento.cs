@@ -1109,29 +1109,39 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId, string ueCodigo = "", params EventoLetivo[] tiposLetivosConsiderados)
         {
-            var query = @"select
-	                        data_inicio,
-	                        data_fim,
-	                        letivo,
-                            e.ue_id,
-                            e.dre_id,
-                            e.nome,
-                            e.feriado_id,
-                            e.tipo_evento_id TipoEventoId
-                        from
-	                        evento e
-                                inner join tipo_calendario tc
-                                    on e.tipo_calendario_id = tc.id
-                        where
-                            e.tipo_calendario_id = @tipoCalendarioId
-                        and extract(year from e.data_inicio) = tc.ano_letivo     
-                        and e.letivo = any(@tiposLetivos)                         
-                        and not e.excluido";
+            bool possuiUeCodigo = !string.IsNullOrEmpty(ueCodigo);
 
-            if (!string.IsNullOrEmpty(ueCodigo))
-                query += " and e.ue_id = @ueCodigo ";
+            var query = new StringBuilder(@"select
+	                                            data_inicio,
+	                                            data_fim,
+	                                            letivo,
+                                                e.ue_id,
+                                                e.dre_id,
+                                                e.nome,
+                                                e.feriado_id,
+                                                e.tipo_evento_id TipoEventoId
+                                            from
+	                                            evento e
+                                                    inner join tipo_calendario tc
+                                                        on e.tipo_calendario_id = tc.id");
+            if (possuiUeCodigo)
+                query.AppendLine(@" left join ue u 
+                                        on u.ue_id = e.ue_id
+                                    left join dre d 
+                                        on d.id = u.dre_id");
+
+             query.AppendLine(@" where
+                                    e.tipo_calendario_id = @tipoCalendarioId
+                                and extract(year from e.data_inicio) = tc.ano_letivo     
+                                and e.letivo = any(@tiposLetivos)                         
+                                and not e.excluido");
+
+            if (possuiUeCodigo)
+                query.AppendLine($@" and (e.ue_id = @ueCodigo 
+                                            or (e.ue_id is null and e.dre_id is null)
+                                            or (e.ue_id is null and e.dre_id = d.dre_id))");
             
-            return await database.Conexao.QueryAsync<Evento>(query,
+            return await database.Conexao.QueryAsync<Evento>(query.ToString(),
                 new
                 {
                     tipoCalendarioId,

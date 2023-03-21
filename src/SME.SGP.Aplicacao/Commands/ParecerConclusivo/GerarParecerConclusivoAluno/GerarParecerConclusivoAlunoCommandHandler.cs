@@ -22,27 +22,40 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
 
-        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request, CancellationToken cancellationToken)
+        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request,
+            CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
-            var alunosEol = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
+            var alunosEol =
+                await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
             bool historico = turma.Historica;
+            var emAprovacao = await EnviarParaAprovacao(turma);
 
             if (alunoNaTurma != null)
                 historico = alunoNaTurma.Inativo;
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, historico))
+            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null,
+                    historico))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma);
-            var parecerConclusivo = await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo, turma.CodigoTurma, pareceresDaTurma));
+            var parecerConclusivo =
+                await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo,
+                    turma.CodigoTurma, pareceresDaTurma));
 
-            var emAprovacao = await EnviarParaAprovacao(turma);
+            if (parecerConclusivo.Id == conselhoClasseAluno.ConselhoClasseParecerId)
+                return new ParecerConclusivoDto()
+                {
+                    Id = parecerConclusivo?.Id ?? 0,
+                    Nome = parecerConclusivo?.Nome,
+                    EmAprovacao = emAprovacao
+                };
+
             if (await EnviarParaAprovacao(turma))
-                await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
+                emAprovacao = await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
                 var bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar == null ? (int?)null : conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre;
@@ -68,22 +81,26 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, long usuarioSolicitanteId)
+        private async Task<bool> GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, long usuarioSolicitanteId)
         {
             if (parecerConclusivoId == conselhoClasseAluno.ConselhoClasseParecerId)
-                return;
+                return false;
 
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var parecerAnterior = pareceresDaTurma.FirstOrDefault(a => a.Id == conselhoClasseAluno.ConselhoClasseParecerId)?.Nome;
             var parecerNovo = pareceresDaTurma.FirstOrDefault(a => a.Id == parecerConclusivoId).Nome;
 
-            await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
-                                                                             turma,
-                                                                             conselhoClasseAluno.AlunoCodigo,
-                                                                             parecerConclusivoId,
-                                                                             parecerAnterior,
-                                                                             parecerNovo,
-                                                                             usuarioSolicitanteId));
+            var pareceresEmAprovacaoAtual = await mediator.Send(new ObterParecerConclusivoEmAprovacaoPorConselhoClasseAlunoQuery(conselhoClasseAluno.Id));
+            if (!pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId)) 
+                await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
+                                                                                 turma,
+                                                                                 conselhoClasseAluno.AlunoCodigo,
+                                                                                 parecerConclusivoId,
+                                                                                 parecerAnterior,
+                                                                                 parecerNovo,
+                                                                                 usuarioSolicitanteId));
+
+            return true;
         }
 
         private async Task<bool> EnviarParaAprovacao(Turma turma)
@@ -193,7 +210,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
             var disciplinasDaTurma = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
+                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: turma.CodigoTurma));
 
             // Checa se todas as disciplinas da turma receberam nota
             var disciplinasLancamNota = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null);

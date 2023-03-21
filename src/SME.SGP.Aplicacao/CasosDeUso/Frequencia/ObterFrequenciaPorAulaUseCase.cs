@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
 
             var componenteCurricularAula = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { param.ComponenteCurricularId ?? Convert.ToInt64(aula.DisciplinaId) }));
+                .Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { param.ComponenteCurricularId ?? Convert.ToInt64(aula.DisciplinaId) }, codigoTurma: turma.CodigoTurma));
 
             if (componenteCurricularAula == null || componenteCurricularAula.ToList().Count <= 0)
                 throw new NegocioException("Componente curricular da aula não encontrado");
@@ -80,10 +80,10 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
 
             var frequenciaAlunosRegistrada = await mediator
-                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(aula.DisciplinaId), periodoEscolar.Id));
+                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, new long[] { long.Parse(aula.DisciplinaId) }, periodoEscolar.Id));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
-                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
+                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { aula.DisciplinaId }, periodoEscolar.Id));
 
             var alunosCondicaoFrequencia = Enumerable.Empty<AlunoPorTurmaResposta>();
 

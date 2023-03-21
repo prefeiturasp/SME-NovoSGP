@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoPlanoAeeQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoPlanoAeeQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
         }
         
@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             var idPlano = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.ParecerPAAI);
 
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(idPlano, TURMA_CODIGO_1);
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(idPlano, TURMA_CODIGO_1,1);
 
             var obterPlanoAeeUseCase = ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);

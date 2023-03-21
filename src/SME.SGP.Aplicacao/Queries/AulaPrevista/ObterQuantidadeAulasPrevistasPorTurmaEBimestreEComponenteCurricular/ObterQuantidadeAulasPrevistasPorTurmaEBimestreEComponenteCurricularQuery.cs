@@ -7,15 +7,17 @@ namespace SME.SGP.Aplicacao
     {
         public string CodigoTurma { get; set; }
         public long TipoCalendarioId { get; set; }
-        public long ComponenteCurricularId { get; set; }
+        public long[] ComponentesCurricularesId { get; set; }
         public int? Bimestre { get; set; }
+        public string Professor { get; set; }
 
-        public ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(string codigoTurma, long tipoCalendarioId, long componenteCurricularId, int? bimestre)
+        public ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(string codigoTurma, long tipoCalendarioId, long[] componentesCurricularesId, int? bimestre, string professor = null)
         {
             CodigoTurma = codigoTurma;
             TipoCalendarioId = tipoCalendarioId;
-            ComponenteCurricularId = componenteCurricularId;
+            ComponentesCurricularesId = componentesCurricularesId;
             Bimestre = bimestre;
+            Professor = professor;
         }
     }
 
@@ -31,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O tipo de calendário deve ser informado.");
 
-            RuleFor(x => x.ComponenteCurricularId)
+            RuleFor(x => x.ComponentesCurricularesId)
                 .NotEmpty()
                 .WithMessage("O componente curricular deve ser informado.");
 

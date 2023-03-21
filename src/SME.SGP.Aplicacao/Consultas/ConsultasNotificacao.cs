@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                         Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
                         Codigo = r.Codigo,
                         PodeRemover = r.PodeRemover,
-                        PodeMarcarComoLida = r.DeveMarcarComoLido
+                        PodeMarcarComoLida = r.Status == NotificacaoStatus.Pendente
                     }
             };
 
@@ -73,24 +73,6 @@ namespace SME.SGP.Aplicacao
                 Tipo = x.Tipo.ToString(),
                 Titulo = x.Titulo
             });
-        }
-
-        public async Task<NotificacaoDetalheDto> Obter(long notificacaoId)
-        {
-            var notificacao = repositorioNotificacao.ObterPorId(notificacaoId);
-
-            if (notificacao == null)
-                throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
-
-            if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
-            {
-                repositorioNotificacao.Salvar(notificacao);
-                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
-            }
-
-            var retorno = await MapearEntidadeParaDetalheDto(notificacao);
-
-            return retorno;
         }
 
         public IEnumerable<EnumeradoRetornoDto> ObterCategorias()

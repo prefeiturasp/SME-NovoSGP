@@ -144,7 +144,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         private async Task CriaAula(string componente)
         {
             await CriarAula(
-                    DATA_01_02_INICIO_BIMESTRE_1,
+                    DATA_INICIO_BIMESTRE_4,
                     RecorrenciaAula.AulaUnica,
                     TipoAula.Normal,
                     USUARIO_PROFESSOR_CODIGO_RF_2222222,
@@ -220,7 +220,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             dto.Alunos.ShouldNotBeNull();
             var aluno = dto.Alunos.FirstOrDefault(aluno => aluno.Codigo == codigoAluno);
             aluno.ShouldNotBeNull();
-            aluno.FrequenciaValor.ShouldBe(percentual);
+            aluno.FrequenciaValor.ShouldBe(Math.Round(percentual));
             aluno.TotalFaltas.ShouldBe(totalFalta);
             aluno.TotalAusenciasCompensadas.ShouldBe(totalAusenciasCompensadas);
             aluno.NotasConceitoFinal.ShouldNotBeNull();
@@ -243,11 +243,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_2, NOTA_8);
             dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_3, NOTA_8);
             dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_4, NOTA_9);
+            dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_FINAL, NOTA_8);
 
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_1, NOTA_7);
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_2, NOTA_9);
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_3, NOTA_8);
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_4, NOTA_10);
+            dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_FINAL, NOTA_9);
 
             return dicionario;
         }

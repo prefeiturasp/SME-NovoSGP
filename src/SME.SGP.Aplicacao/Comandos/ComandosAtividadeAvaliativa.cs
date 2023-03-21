@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
 
             ValidaDisciplinaNaAvaliacao(disciplina);
-            ValidaCategoriaInterdisciplinar(dto);
+            await ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
 
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
             if (!aula.Any())
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
             
-            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao);
+            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao.Date);
 
             var mesmoAnoLetivo = DateTime.Today.Year == atividadeAvaliativa.DataAvaliacao.Year;
 
@@ -211,7 +211,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
 
             ValidaDisciplinaNaAvaliacao(disciplina);
-            ValidaCategoriaInterdisciplinar(dto);
+            await ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
@@ -378,11 +378,16 @@ namespace SME.SGP.Aplicacao
             return disciplina.FirstOrDefault();
         }
 
-        private void ValidaCategoriaInterdisciplinar(AtividadeAvaliativaDto dto)
+        private async Task ValidaCategoriaInterdisciplinar(AtividadeAvaliativaDto dto)
         {
+            bool verificaSeEhRegencia = false;
             if (dto.CategoriaId == CategoriaAtividadeAvaliativa.Interdisciplinar && dto.DisciplinasId.Count() < 2)
             {
-                throw new NegocioException("Para categoria Interdisciplinar informe mais que um componente curricular.");
+                if (dto.DisciplinasId.Any())
+                    verificaSeEhRegencia = await mediator.Send(new VerificarComponenteCurriculareSeERegenciaPorIdQuery(Convert.ToInt64(dto.DisciplinasId.FirstOrDefault())));
+
+                if(!verificaSeEhRegencia)
+                    throw new NegocioException("Para categoria Interdisciplinar informe mais que um componente curricular.");
             }
         }
 
@@ -427,7 +432,7 @@ namespace SME.SGP.Aplicacao
 
             if (atividadeAvaliativa.EhRegencia)
             {
-                if (dto.DisciplinaContidaRegenciaId.Length == 0)
+                if (dto.DisciplinaContidaRegenciaId.Length == 0 && !(atividadeAvaliativa.Categoria == CategoriaAtividadeAvaliativa.Interdisciplinar))
                     throw new NegocioException("É necessário informar as disciplinas da regência");
 
                 foreach (string id in dto.DisciplinaContidaRegenciaId)
@@ -465,10 +470,10 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> ValidarCopias(AtividadeAvaliativaDto atividadeAvaliativaDto, string codigoRf)
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
-
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, long.Parse(atividadeAvaliativaDto.DisciplinasId[0]));
 
-            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
+            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any() && usuario.EhProfessor())
             {
                 var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
                 idsTurmasSelecionadas.Add(atividadeAvaliativaDto.TurmaId);

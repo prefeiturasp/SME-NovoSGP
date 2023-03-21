@@ -6,14 +6,15 @@ using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEPorIdUseCase : AbstractUseCase, IObterPlanoAEEPorIdUseCase
     {
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-
         public ObterPlanoAEEPorIdUseCase(IMediator mediator,
                                          IConsultasPeriodoEscolar consultasPeriodoEscolar) : base(mediator)
         {
@@ -22,24 +23,32 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
-
             var plano = new PlanoAEEDto();
+            bool verificaMatriculaAnoVigente = false; 
+            bool novaVersao = false;
+            var alunoCodigo = 0;
 
             PlanoAEEVersaoDto ultimaVersao = null;
-            Turma turma = null;
+            Turma turma;
 
             if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
                 var entidadePlano = await mediator
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
+                
+                if(entidadePlano == null)
+                    throw new NegocioException("Plano AEE não encontrado");
+                
+                alunoCodigo = int.Parse(entidadePlano.AlunoCodigo);
                 var alunoTurma = await mediator
-                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, DateTime.Today.Year, true));
+                    .Send(new ObterAlunoPorCodigoEAnoPlanoAeeQuery(entidadePlano.AlunoCodigo,
+                        DateTimeExtension.HorarioBrasilia().Year, true));
 
-                if (alunoTurma == null)
-                {
-                    alunoTurma = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
-                }
+                if (alunoTurma != null)
+                    verificaMatriculaAnoVigente = true;
+
+                alunoTurma ??= await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
 
                 if (alunoTurma == null)
                     throw new NegocioException("Aluno não encontrado.");
@@ -55,17 +64,21 @@ namespace SME.SGP.Aplicacao
                     case SituacaoMatriculaAluno.Rematriculado:
                     case SituacaoMatriculaAluno.Concluido:
                         {
-                            if (entidadePlano.AlteradoEm?.Year != null)
-                                anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
+                            if (entidadePlano.AlteradoEm != null)
+                                anoLetivo = entidadePlano.AlteradoEm.GetValueOrDefault().Year;
                             break;
                         }
                 }
 
-                if (alunoTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && entidadePlano.Turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year && SituacaoAtivaPlanoAEE(entidadePlano))
+                if (alunoTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
+                    && entidadePlano.Turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year
+                    && !verificaMatriculaAnoVigente)
                     anoLetivo = entidadePlano.Turma.AnoLetivo;
+                else if (verificaMatriculaAnoVigente)
+                    anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
 
                 var alunoPorTurmaResposta = await mediator
-                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, anoLetivo == DateTime.Today.Year ? false : entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, true, entidadePlano.Turma?.CodigoTurma));
+                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, anoLetivo != DateTimeExtension.HorarioBrasilia().Year && entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, true, entidadePlano.Turma?.CodigoTurma));
 
 
                 if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
@@ -73,12 +86,14 @@ namespace SME.SGP.Aplicacao
                     alunoPorTurmaResposta = await mediator
                         .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
                 }
-                else
-                    if ((alunoPorTurmaResposta == null && anoLetivo == DateTimeExtension.HorarioBrasilia().Year) || !SituacaoAtivaPlanoAEE(entidadePlano))
+                else if ((alunoPorTurmaResposta == null && anoLetivo == DateTimeExtension.HorarioBrasilia().Year) ||
+                         !SituacaoAtivaPlanoAEE(entidadePlano.Situacao))
+                {
                     alunoPorTurmaResposta = await ChecaSeOAlunoTeveMudancaDeTurmaAnual(entidadePlano.AlunoCodigo, anoLetivo);
+                }
 
                 if (alunoPorTurmaResposta == null)
-                    throw new NegocioException("Aluno não localizado");
+                    throw new NegocioException("Não foi localizada matrícula ativa para o aluno selecionado.");
 
                 turma = await mediator
                     .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
@@ -104,8 +119,7 @@ namespace SME.SGP.Aplicacao
 
                 plano.Id = filtro.PlanoAEEId.Value;
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
-                plano.Versoes = await mediator
-                    .Send(new ObterVersoesPlanoAEEQuery(filtro.PlanoAEEId.Value));
+                plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(filtro.PlanoAEEId.Value));
                 plano.Aluno = aluno;
                 plano.Situacao = entidadePlano.Situacao;
                 plano.SituacaoDescricao = entidadePlano.Situacao.Name();
@@ -135,7 +149,8 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                plano.Responsavel = await ObtenhaResponsavel();
+                novaVersao = true;
+                plano.Responsavel = await ObterResponsavel();
                 turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
             }
 
@@ -149,40 +164,68 @@ namespace SME.SGP.Aplicacao
 
             plano.QuestionarioId = questionarioId;
 
-            var periodoEscolarId = plano.Questoes.Any() && plano.Id > 0 ? plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto : null;
             var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-            
-            var periodoEscolar = periodoEscolarId != null 
-                ? await mediator.Send(new ObterPeriodoEscolarePorIdQuery(long.Parse(periodoEscolarId))) 
-                : await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now.Date)); ;
 
             if (plano.Situacao != SituacaoPlanoAEE.Encerrado &&
                 plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente &&
                 turma != null &&
                 plano.Questoes != null &&
                 plano.Questoes.Any() &&
-                turma.AnoLetivo.Equals(DateTime.Today.Year) &&
-                periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar &&
-                x.Resposta.Any()) && VerificaSeUltimaVersaoPlanoEDoAnoAtual(plano))
-                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+                turma.AnoLetivo.Equals(DateTimeExtension.HorarioBrasilia().Year) &&
+                periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar && x.Resposta.Any()) &&
+                VerificaSeUltimaVersaoPlanoEDoAnoAtual(plano))
+            {
+                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto =
+                    periodoAtual.Id.ToString();
+            }
             else
-                CriarRespostaPeriodoEscolarParaPlanoASerCriado(plano, periodoAtual);
+                CriarRespostaPeriodoEscolarParaPlanoASerCriado(plano, periodoAtual, SituacaoAtivaPlanoAEE(plano.Situacao));
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
+            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
+
             return plano;
         }
 
-        public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual)
+        private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
         {
-            var questaoPeriodoEscolar = plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
-            var resposta = new List<RespostaQuestaoDto>();
-            resposta.Add(new RespostaQuestaoDto() { Texto = periodoAtual.Id.ToString() });
-            questaoPeriodoEscolar.Resposta = resposta;
+            if (novaVersao)
+            {
+                var resposta = new List<RespostaQuestaoDto>();
+                var dadoSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
 
-            plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta = questaoPeriodoEscolar.Resposta;
+                if (dadoSrm.Count > 0)
+                {
+                    var json = JsonConvert.SerializeObject(dadoSrm); 
+                    resposta.Add(new RespostaQuestaoDto() {Texto = json});
+                    
+                    plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = resposta;
+                }
+            }
+            
+        }
+        
+        public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual, bool planoEstaAtivo)
+        {
+            if (periodoAtual == null)
+                return;
+
+            if (planoEstaAtivo)
+            {
+                var questaoPeriodoEscolar = plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
+                var resposta = new List<RespostaQuestaoDto> { new() { Texto = periodoAtual.Id.ToString() } };
+                questaoPeriodoEscolar.Resposta = resposta;
+
+                var questao = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
+
+                if (questao == null)
+                    return;
+
+                questao.Resposta = questaoPeriodoEscolar.Resposta;
+            }
+            
         }
 
         public bool VerificaSeUltimaVersaoPlanoEDoAnoAtual(PlanoAEEDto plano)
@@ -209,6 +252,9 @@ namespace SME.SGP.Aplicacao
                 {
                     var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
 
+                    if (alunoComMatriculaAtiva == null)
+                        return null;
+
                     return await mediator
                         .Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, false, alunoComMatriculaAtiva.CodigoTurma.ToString()));
                 }
@@ -229,11 +275,11 @@ namespace SME.SGP.Aplicacao
             return entidadePlano;
         }
 
-        private bool SituacaoAtivaPlanoAEE(PlanoAEE entidadePlano)
+        private bool SituacaoAtivaPlanoAEE(SituacaoPlanoAEE situacaoEntidadePlanoAEE)
         {
-            return entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado
-                && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente
-                && entidadePlano.Situacao != SituacaoPlanoAEE.Expirado;
+            return situacaoEntidadePlanoAEE != SituacaoPlanoAEE.Encerrado
+                && situacaoEntidadePlanoAEE != SituacaoPlanoAEE.EncerradoAutomaticamente
+                && situacaoEntidadePlanoAEE != SituacaoPlanoAEE.Expirado;
         }
 
         private string ObterNomeTurmaFormatado(Turma turma)
@@ -267,7 +313,7 @@ namespace SME.SGP.Aplicacao
             return responsavel;
         }
 
-        private async Task<ResponsavelDto> ObtenhaResponsavel()
+        private async Task<ResponsavelDto> ObterResponsavel()
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
             anosParaRetorno.UnionWith(anosAnterioresParaIncluir);
 
-            return anosParaRetorno.OrderBy(a => a).AsEnumerable();
+            return anosParaRetorno.OrderByDescending(a => a).AsEnumerable();
 
 
         }

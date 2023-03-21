@@ -20,10 +20,15 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(param.TurmaId);
             var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, param.DataFim));
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+            componenteCurricular ??= await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(param.ComponenteCurricularId)));
+
+            if (componenteCurricular == null)
+                throw new NegocioException("Componente curricular não localizado");
 
             alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
 
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, componenteCurricular.Regencia ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
@@ -31,11 +36,9 @@ namespace SME.SGP.Aplicacao
             var percentualCritico = await ObterParametro(TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo);
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
 
-            var mesmoAnoLetivo = DateTime.Today.Year == turma.AnoLetivo;
-
             var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
-            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, param.DisciplinaId, periodoEscolar.Id));
+            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, new long[] { componenteCurricularId }, periodoEscolar.Id));
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { param.DisciplinaId }, periodoEscolar.Id));
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
                                                                                                                   param.DisciplinaId,
                                                                                                                   alunosDaTurma.Select(a => a.CodigoAluno).ToArray(),
@@ -61,7 +64,7 @@ namespace SME.SGP.Aplicacao
                                                                           percentualCritico));
         }
 
-        private IEnumerable<AlunoPorTurmaResposta> VerificaAlunosAtivosNoPeriodo(IEnumerable<AlunoPorTurmaResposta> alunosdaTurmaEol, DateTime dataInicio, DateTime dataFim) 
+        private IEnumerable<AlunoPorTurmaResposta> VerificaAlunosAtivosNoPeriodo(IEnumerable<AlunoPorTurmaResposta> alunosdaTurmaEol, DateTime dataInicio, DateTime dataFim)
             => alunosdaTurmaEol.Where(a => a.EstaAtivo(dataInicio, dataFim) || (a.EstaInativo(dataFim)
             && a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido && a.DataSituacao.Date >= dataInicio && a.DataSituacao.Date <= dataFim));
 
@@ -95,9 +98,9 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId,bool aulaCJ)
+        private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId, bool aulaCJ, string professor = null)
         {
-            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinaId,aulaCJ));
+            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinaId, aulaCJ, professor));
             if (aulas == null)
                 throw new NegocioException("Aulas não encontradas para a turma no Período.");
 

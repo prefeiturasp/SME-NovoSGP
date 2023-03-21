@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
-                
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
                 if (periodoEscolar == null)
                     throw new NegocioException(MensagemNegocioPlanoAula.NAO_FOI_LOCALIZADO_BIMESTRE_DA_AULA);
@@ -64,14 +65,34 @@ namespace SME.SGP.Aplicacao
 
                 if (request.PlanoAula.ComponenteCurricularId.HasValue)
                 {
-                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.PlanoAula.ComponenteCurricularId.Value }));
+                    long componenteCurricularId = request.PlanoAula.ComponenteCurricularId.Value;
+
+                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma));
+
+                    if(!componentesCurriculares.Any())
+                    {
+                        var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual, true, false));
+                        if (componentesEol.Any())
+                            componentesCurriculares = componentesEol.Where(c=> c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber == componenteCurricularId : c.Codigo == componenteCurricularId).Select(c => new DisciplinaDto()
+                            {
+                                CdComponenteCurricularPai = c.CodigoComponenteCurricularPai,
+                                CodigoComponenteCurricular = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo,
+                                Nome = c.Descricao,
+                                TerritorioSaber = c.TerritorioSaber,
+                                LancaNota = c.LancaNota,
+                                Compartilhada = c.Compartilhada,
+                                Regencia = c.Regencia,
+                                RegistraFrequencia = c.RegistraFrequencia
+                            });
+                    }
+                        
                     disciplinaDto = componentesCurriculares.SingleOrDefault();
                 }
 
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                
 
                 if (usuario.EhGestorEscolar())
-                    await ValidarAbrangenciaGestorEscolar(usuario, turma.CodigoTurma);
+                    await ValidarAbrangenciaGestorEscolar(usuario, turma.CodigoTurma, turma.EhTurmaHistorica);
                 else
                     await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario.EhProfessorCj());
 
@@ -186,12 +207,12 @@ namespace SME.SGP.Aplicacao
             objetivoAtual.Excluido = true;
             await repositorioObjetivosAula.SalvarAsync(objetivoAtual);
         }
-        private async Task ValidarAbrangenciaGestorEscolar(Usuario usuario, string turmaCodigo)
+        private async Task ValidarAbrangenciaGestorEscolar(Usuario usuario, string turmaCodigo, bool ehTurmaHistorica)
         {
-            var ehAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilUE();
+            var ehAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilSME();
             
             var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turmaCodigo, usuario.Login,
-                usuario.PerfilAtual, false, ehAbrangenciaUeOuDreOuSme));
+                usuario.PerfilAtual, ehTurmaHistorica, ehAbrangenciaUeOuDreOuSme));
 
             if (abrangenciaTurmas == null)
                 throw new NegocioException(MensagemNegocioComuns.USUARIO_SEM_ACESSO_TURMA_RESPECTIVA_AULA);

@@ -9,7 +9,6 @@ namespace SME.SGP.IoC
     {
         internal static void RegistrarFechamentoUseCaseRabbitSgp(this IServiceCollection services)
         {
-            services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
             services.TryAddScoped<IExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase, ExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciasAusenciaFechamentoUseCase, ExecutarExclusaoPendenciasAusenciaFechamentoUseCase>();
             services.TryAddScoped<IVerificaPendenciasFechamentoUseCase, VerificaPendenciasFechamentoUseCase>();
@@ -49,7 +48,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase, ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase>();
             services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020UseCase, GerarFechamentoTurmaEdFisica2020UseCase>();
             services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase, GerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase>();
-
+            services.TryAddScoped<INotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase, NotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase>();
+            services.TryAddScoped<INotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaUseCase, NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaUseCase>();
         }
     }
 }

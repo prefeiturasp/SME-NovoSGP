@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -20,6 +21,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioPeriodoEscolar> repositorioPeriodoEscolar;
+        private readonly Mock<IMediator> mediator;
         private AulaConsultaDto aula;
         private IEnumerable<ObjetivoAprendizagemAula> objetivos;
         private PlanoAula planoAula;
@@ -34,6 +36,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasAula = new Mock<IConsultasAula>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
+            mediator = new Mock<IMediator>();
 
 
             consultasPlanoAula = new ConsultasPlanoAula(repositorioPlanoAula.Object,
@@ -43,7 +46,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                 consultasPeriodoEscolar.Object,
                                                 repositorioAtividadeAvaliativa.Object,
                                                 servicoUsuario.Object,
-                                                repositorioPeriodoEscolar.Object);
+                                                repositorioPeriodoEscolar.Object,
+                                                mediator.Object);
             Setup();
         }
 

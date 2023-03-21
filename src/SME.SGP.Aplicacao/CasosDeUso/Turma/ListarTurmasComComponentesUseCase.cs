@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -35,7 +36,6 @@ namespace SME.SGP.Aplicacao
                 componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
             }
 
-
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(filtroTurmaDto.Modalidade.Value, filtroTurmaDto.AnoLetivo, 1));
 
             IEnumerable<long> turmasAbrangencia = null;
@@ -66,14 +66,17 @@ namespace SME.SGP.Aplicacao
                         Ano = turma.Ano,
                         ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
                         NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
-                        ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
+                        ComponenteCurricularCodigo = d.CodigoComponenteCurricular,
+                        ComponenteCurricularTerritorioSaberCodigo = d.CodigoComponenteTerritorioSaber ?? 0,
                         Turno = (TipoTurnoEOL)turma.TipoTurno,
+                        TerritorioSaber = d.TerritorioSaber,
+                        Id = d.Id
                     });
                 }
                 else
                 {
-                    if(turmasAbrangencia.Any() || turmasAbrangencia != null) 
-                        foreach(var turmaAbrangencia in turmasAbrangencia)
+                    if (turmasAbrangencia.Any() || turmasAbrangencia != null)
+                        foreach (var turmaAbrangencia in turmasAbrangencia)
                         {
                             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaAbrangencia.ToString()));
 
@@ -92,7 +95,7 @@ namespace SME.SGP.Aplicacao
 
                             listRetorno.AddRange(turmasPaginadas.Items);
                         }
-                        turmasPaginadas.Items = listRetorno;
+                    turmasPaginadas.Items = listRetorno;
                 }
             }
             else
@@ -125,7 +128,7 @@ namespace SME.SGP.Aplicacao
 
             var retornoComponentesTurma = from item in turmasPaginadas.Items.ToList()
                                           join componenteCodigo in componentesCodigos on item.TurmaCodigo equals componenteCodigo
-                                          select item.ComponenteCurricularCodigo;
+                                          select item.TerritorioSaber && item.Id.HasValue && item.Id.Value > 0 ? item.Id.Value : item.ComponenteCurricularCodigo;
 
             if (turmasAbrangencia != null)
             {
@@ -143,7 +146,7 @@ namespace SME.SGP.Aplicacao
                 turmasPaginadas = await VerificarAgrupamentoRegencia(turmasPaginadas);
 
             var componentesRetorno = await mediator.Send(new ObterComponentesCurricularesSimplesPorIdsQuery(retornoComponentesTurma.ToArray()));
-                                                                     
+
             turmasPaginadas.TotalRegistros = turmasPaginadas.Items != null && turmasPaginadas.Items.Any() ? turmasPaginadas.Items.Count() : 0;
             turmasPaginadas.TotalPaginas = (int)Math.Ceiling((double)turmasPaginadas.TotalRegistros / qtdeRegistros);
             turmasPaginadas.Items = turmasPaginadas.Items.Skip(qtdeRegistrosIgnorados).Take(qtdeRegistros);
@@ -163,7 +166,7 @@ namespace SME.SGP.Aplicacao
             var listaTurmasMesmaSerie = new List<RetornoConsultaListagemTurmaComponenteDto>();
             foreach (var turmas in turmasAgrupadasPorAnoNome)
             {
-                foreach(var turmaAno in turmas)
+                foreach (var turmaAno in turmas)
                 {
                     var componenteCurricularPai = await mediator.Send(new ObterCodigoComponentePaiQuery(turmaAno.ComponenteCurricularCodigo));
                     if (!string.IsNullOrEmpty(componenteCurricularPai))
@@ -235,7 +238,7 @@ namespace SME.SGP.Aplicacao
             return turmas == null ? null : new TurmaComComponenteDto
             {
                 Id = turmas.Id.GetValueOrDefault(),
-                NomeTurma = (turmas.Ano == null && turmas.SerieEnsino == null && turmas.NomeFiltro == null) ? turmas.NomeTurmaFormatado(nomeComponente) : turmas.NomeTurmaFiltroFormatado(nomeComponente),
+                NomeTurma = turmas.SerieEnsino == null && turmas.NomeFiltro == null ? turmas.NomeTurmaFormatado(nomeComponente) : turmas.NomeTurmaFiltroFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
                 ComponenteCurricularCodigo = turmas.TerritorioSaber ? turmas.ComponenteCurricularTerritorioSaberCodigo : turmas.ComponenteCurricularCodigo,
                 Turno = turmas.Turno.ObterNome(),
@@ -250,6 +253,7 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo.Key.ToString()));
+
                 var ehTurmaInfantil = turma.EhTurmaInfantil;
 
                 var periodoFechamentoIniciado = !ehTurmaInfantil && !usuario.EhProfessorCj() &&
@@ -279,7 +283,7 @@ namespace SME.SGP.Aplicacao
                     turmaComponente.PendenciaAvaliacoes = pendencias?.PendenciaAvaliacoes ?? false;
                     turmaComponente.PendenciaFrequencia = pendencias?.PendenciaFrequencia ?? false;
                     turmaComponente.PendenciaPlanoAula = pendencias?.PendenciaPlanoAula ?? false;
-                    turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento && turmaComponente.LancaNota;
+                    turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento && turmaComponente.LancaNota && turma.TipoTurma != TipoTurma.Programa;
                     turmaComponente.PeriodoFechamentoIniciado = periodoFechamentoIniciado;
 
                     itensComPendencias.Add(turmaComponente);

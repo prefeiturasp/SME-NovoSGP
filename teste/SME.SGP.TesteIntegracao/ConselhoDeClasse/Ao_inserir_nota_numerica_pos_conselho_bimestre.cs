@@ -32,10 +32,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Theory]
-        [InlineData(false)]
-        //[InlineData(true)]
-        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_fundamental(bool anoAnterior)
+        [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho bimestre - Fundamental")]
+        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_fundamental()
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
 
@@ -44,17 +42,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             ANO_7,
                             Modalidade.Fundamental,
                             ModalidadeTipoCalendario.FundamentalMedio,
-                            anoAnterior,
+                            false,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
         }
 
-        [Theory]
-        [InlineData(false)]
-        //[InlineData(true)]
-        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_fundamental_cp(bool anoAnterior)
+        [Fact(DisplayName = "Conselho de Classe - CP deve lançar nota numérica pós conselho bimestre - Fundamental")]
+        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_fundamental_cp()
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
 
@@ -63,17 +59,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             ANO_5,
                             Modalidade.Fundamental,
                             ModalidadeTipoCalendario.FundamentalMedio,
-                            anoAnterior,
+                            false,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota, SituacaoConselhoClasse.EmAndamento, true);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota, SituacaoConselhoClasse.EmAndamento, true);
         }
 
-        [Theory]
-        [InlineData(false)]
-        //[InlineData(true)]
-        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_medio(bool anoAnterior)
+        [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho bimestre - Ensino Médio")]
+        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_medio()
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
 
@@ -82,17 +76,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             ANO_7,
                             Modalidade.Medio,
                             ModalidadeTipoCalendario.FundamentalMedio,
-                            anoAnterior,
+                            false,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
         }
 
-        [Theory]
-        [InlineData(false)]
-        //[InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_medio_diretor(bool anoAnterior)
+        [Fact(DisplayName = "Conselho de Classe - Diretor deve lançar nota numérica pós conselho bimestre - Ensino Médio")]
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_medio_diretor()
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
 
@@ -102,36 +94,32 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ANO_5,
                 Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior,
+                false,
                 SituacaoConselhoClasse.EmAndamento,
                 true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota, SituacaoConselhoClasse.EmAndamento, true);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota, SituacaoConselhoClasse.EmAndamento, true);
         }
 
-        [Theory]
-        [InlineData(false)]
-        //[InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_eja(bool anoAnterior)
+        [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho - EJA")]
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_eja()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, bimestre: 1);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
 
             await CriarDados(ObterPerfilProfessor(),
                             salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
                             ANO_9,
                             Modalidade.EJA,
                             ModalidadeTipoCalendario.EJA,
-                            anoAnterior,
+                            false,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
         }
 
-        [Theory]
-        [InlineData(false)]
-        //[InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_regencia_classe(bool anoAnterior)
+        [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho - Regência")]
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_regencia_classe()
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
 
@@ -140,11 +128,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             ANO_6,
                             Modalidade.Fundamental,
                             ModalidadeTipoCalendario.FundamentalMedio,
-                            anoAnterior,
+                            false,
                             SituacaoConselhoClasse.EmAndamento,
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
         }
 
         private async Task CriarDados(

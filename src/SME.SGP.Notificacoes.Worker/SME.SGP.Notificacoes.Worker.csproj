@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Infra.HealthCheck\SME.SGP.Infra.HealthCheck.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Telemetria\SME.SGP.Infra.Telemetria.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Utilitarios\SME.SGP.Infra.Utilitarios.csproj" />

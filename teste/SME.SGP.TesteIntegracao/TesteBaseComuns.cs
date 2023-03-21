@@ -34,8 +34,18 @@ namespace SME.SGP.TesteIntegracao
         protected const string TURMA_NOME_1 = "Turma Nome 1";
         protected const string TURMA_ANO_2 = "2";
 
+        protected const string TURMA_NOME_3 = "Turma Nome 3";
+        protected const string TURMA_CODIGO_3 = "3";
+        protected const string TURMA_ANO_3 = "3";
+        
+        protected const string TURMA_NOME_4 = "Turma Nome 4";
+        protected const string TURMA_CODIGO_4 = "4";
+        protected const string TURMA_ANO_4 = "4";
+        
         protected const long TURMA_ID_1 = 1;
         protected const long TURMA_ID_2 = 2;
+        protected const long TURMA_ID_3 = 3;
+        protected const long TURMA_ID_4 = 4;
 
         protected const long DRE_ID_1 = 1;
         protected const long UE_ID_1 = 1;
@@ -110,6 +120,10 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_3 = "'Área de conhecimento 3'";
         private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
         private const string AREA_DE_CONHECIMENTO_5 = "'Área de conhecimento 5'";
+        
+        protected const string CLASSIFICACAO_DOCUMENTO = "classificacao_documento";
+        protected const string TIPO_DOCUMENTO = "tipo_documento";
+        protected const string DOCUMENTO_ARQUIVO = "documento_arquivo";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
         protected const string COMPONENTE_CIENCIAS_NOME = "'CIENCIA'";
@@ -178,24 +192,40 @@ namespace SME.SGP.TesteIntegracao
         private const string REGENCIA_INFATIL_EMEI_4H = "'REGÊNCIA INFANTIL EMEI 4H'";
 
         protected const string UE_CODIGO_1 = "1";
-        private const string UE_NOME_1 = "Nome da UE";
+        protected const string UE_NOME_1 = "Nome da UE";
+        
+        protected const string UE_CODIGO_2 = "2";
+        protected const string UE_NOME_2 = "UE 2";
+        
+        protected const string UE_CODIGO_3 = "3";
+        protected const string UE_NOME_3 = "UE 3";
 
         protected const string DRE_CODIGO_1 = "1";
         protected const string DRE_NOME_1 = "DRE 1";
+        
+        protected const string DRE_CODIGO_2 = "2";
+        protected const string DRE_NOME_2 = "DRE 2";
 
         protected const string SISTEMA_NOME = "Sistema";
         protected const string SISTEMA_CODIGO_RF = "1";
 
         private const string EVENTO_NOME_FESTA = "Festa";
 
-        protected const string USUARIO_LOGIN_CP999999 = "CP999999";
-        protected const string USUARIO_LOGIN_DIRETOR999998 = "DIR999998";
-        protected const string USUARIO_LOGIN_AD999997 = "AD999997";
-        
+        public const string USUARIO_LOGADO_NOME = "João Usuário";
+        public const string USUARIO_LOGADO_RF = "2222222";
+        public const string USUARIO_ADMIN_RF = "9999999";
+
+        public const string USUARIO_LOGIN_CP = "CP999999";
+        public const string USUARIO_LOGIN_DIRETOR = "DIR999998";
+        public const string USUARIO_LOGIN_AD = "AD999997";
+        public const string USUARIO_LOGIN_COOD_NAAPA = "NAAP11111";
+        public const string USUARIO_LOGIN_ADM_DRE = "DRE111111";
+        public const string USUARIO_LOGIN_ADM_SME = "SME111111";
+
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
         protected const string USUARIO_PAAI_LOGIN_3333333 = "3333333";
-        protected const string USUARIO_PAAI_LOGIN_4444444 = "4444444";
+        public const string USUARIO_LOGIN_PAAI = "4444444";
         protected const string USUARIO_PAAI_LOGIN_5555555 = "5555555";
         protected const string USUARIO_PAEE_LOGIN_5555555 = "5555555";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
@@ -237,8 +267,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string LIBERACAO_EXCEPCIONAL = "Liberação excepcional";
         protected const int TIPO_CALENDARIO_ID = 1;
 
-        protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
+        protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         protected DateTime DATA_28_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
+        protected DateTime DATA_29_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
         protected DateTime DATA_02_05_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected DateTime DATA_08_07_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
         protected DateTime DATA_25_07_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
@@ -336,6 +367,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_ALUNO_12 = "12";
         protected const string CODIGO_ALUNO_13 = "13";
         protected const string CODIGO_ALUNO_14 = "14";
+        protected const string CODIGO_ALUNO_15 = "15";
         protected const int TOTAL_AUSENCIAS_1 = 1;
         protected const int TOTAL_AUSENCIAS_3 = 3;
         protected const int TOTAL_AUSENCIAS_7 = 7;
@@ -350,7 +382,7 @@ namespace SME.SGP.TesteIntegracao
         protected const int TOTAL_PRESENCAS_4 = 4;
         protected const int TOTAL_REMOTOS_0 = 0;
 
-        protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
+        protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);
         protected const string REABERTURA_GERAL = "Reabrir Geral";
         protected DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
@@ -419,6 +451,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_NOME = "PercentualFrequenciaCritico";
         protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
+        protected readonly string NUMERO_PAGINA = "NumeroPagina";
+        protected readonly string NUMERO_REGISTROS = "NumeroRegistros";
 
         protected readonly CollectionFixture collectionFixture;
 
@@ -430,8 +464,8 @@ namespace SME.SGP.TesteIntegracao
         protected void CriarClaimUsuario(string perfil)
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
-            var variaveis = ObterVariaveisPorPerfil(perfil);
-            contextoAplicacao.AdicionarVariaveis(variaveis);
+            
+            contextoAplicacao.AdicionarVariaveis(ObterVariaveisPorPerfil(perfil));
         }
 
         private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil)
@@ -444,6 +478,8 @@ namespace SME.SGP.TesteIntegracao
                 { USUARIO_LOGADO_CHAVE, rfLoginPerfil },
                 { USUARIO_RF_CHAVE, rfLoginPerfil },
                 { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
+                { NUMERO_PAGINA, "0" },
+                { NUMERO_REGISTROS, "10" },
 
                 {
                     USUARIO_CLAIMS_CHAVE,
@@ -461,16 +497,22 @@ namespace SME.SGP.TesteIntegracao
                 return USUARIO_PROFESSOR_LOGIN_2222222;
 
             if (perfil.Equals(ObterPerfilDiretor()))
-                return USUARIO_LOGIN_DIRETOR999998;
+                return USUARIO_LOGIN_DIRETOR;
             
             if (perfil.Equals(ObterPerfilAD()))
-                return USUARIO_LOGIN_AD999997;
+                return USUARIO_LOGIN_AD;
 
             if (perfil.Equals(ObterPerfilPaai()))
-                return USUARIO_PAAI_LOGIN_4444444;
+                return USUARIO_LOGIN_PAAI;
             
             if (perfil.Equals(ObterPerfilPaee()))
                 return USUARIO_PAAI_LOGIN_5555555;
+
+            if (perfil.Equals(ObterPerfilAdmDre()))
+                return USUARIO_LOGIN_ADM_DRE;
+
+            if (perfil.Equals(ObterPerfilAdmSme()))
+                return USUARIO_LOGIN_ADM_SME;
 
             return USUARIO_PROFESSOR_LOGIN_2222222;
         }
@@ -498,6 +540,17 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.PAEE.Name()).ToString();
         }
+
+        protected string ObterPerfilAdmDre()
+        {
+            return Guid.Parse(PerfilUsuario.ADMDRE.ObterNome()).ToString();
+        }
+
+        protected string ObterPerfilAdmSme()
+        {
+            return Guid.Parse(PerfilUsuario.ADMSME.ObterNome()).ToString();
+        }
+
         protected string ObterPerfilCJInfantil()
         {
             return Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()).ToString();
@@ -709,9 +762,9 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_LOGIN_CP999999,
-                Login = USUARIO_LOGIN_CP999999,
-                Nome = USUARIO_LOGIN_CP999999,
+                CodigoRf = USUARIO_LOGIN_CP,
+                Login = USUARIO_LOGIN_CP,
+                Nome = USUARIO_LOGIN_CP,
                 PerfilAtual = Guid.Parse(PerfilUsuario.CP.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
@@ -720,9 +773,9 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_LOGIN_DIRETOR999998,
-                Login = USUARIO_LOGIN_DIRETOR999998,
-                Nome = USUARIO_LOGIN_DIRETOR999998,
+                CodigoRf = USUARIO_LOGIN_DIRETOR,
+                Login = USUARIO_LOGIN_DIRETOR,
+                Nome = USUARIO_LOGIN_DIRETOR,
                 PerfilAtual = Guid.Parse(PerfilUsuario.DIRETOR.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
@@ -731,9 +784,9 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_LOGIN_AD999997,
-                Login = USUARIO_LOGIN_AD999997,
-                Nome = USUARIO_LOGIN_AD999997,
+                CodigoRf = USUARIO_LOGIN_AD,
+                Login = USUARIO_LOGIN_AD,
+                Nome = USUARIO_LOGIN_AD,
                 PerfilAtual = Guid.Parse(PerfilUsuario.AD.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
@@ -741,9 +794,9 @@ namespace SME.SGP.TesteIntegracao
             });
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
-                Login = USUARIO_PAAI_LOGIN_4444444,
-                Nome = USUARIO_PAAI_LOGIN_4444444,
+                CodigoRf = USUARIO_LOGIN_PAAI,
+                Login = USUARIO_LOGIN_PAAI,
+                Nome = USUARIO_LOGIN_PAAI,
                 PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -772,6 +825,32 @@ namespace SME.SGP.TesteIntegracao
                 AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1,
+                TipoTurma = TipoTurma.Regular
+            });
+            
+            await InserirNaBase(new Turma
+            {
+                UeId = 2,
+                Ano = TURMA_ANO_2,
+                CodigoTurma = TURMA_CODIGO_2,
+                Historica = turmaHistorica,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_2,
+                TipoTurma = TipoTurma.Regular
+            });
+            
+            await InserirNaBase(new Turma
+            {
+                UeId = 3,
+                Ano = TURMA_ANO_3,
+                CodigoTurma = TURMA_CODIGO_3,
+                Historica = turmaHistorica,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_3,
                 TipoTurma = TipoTurma.Regular
             });
         }
@@ -1075,6 +1154,34 @@ namespace SME.SGP.TesteIntegracao
                 DreId = 1,
                 Nome = UE_NOME_1,
             });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_2,
+                DreId = 1,
+                Nome = UE_NOME_2,
+            });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_3,
+                DreId = 1,
+                Nome = UE_NOME_3,
+            });
+            
+            await InserirNaBase(new Dre
+            {
+                CodigoDre = DRE_CODIGO_2,
+                Abreviacao = DRE_NOME_2,
+                Nome = DRE_NOME_2
+            });
+
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_2,
+                DreId = 2,
+                Nome = UE_NOME_2,
+            });
 
             await InserirNaBase(new PrioridadePerfil
             {
@@ -1175,6 +1282,19 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(), NULO, CODIGO_4, NULO, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, NULO);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_512.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_4HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME);
+        }
+        
+        protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
+        {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false)

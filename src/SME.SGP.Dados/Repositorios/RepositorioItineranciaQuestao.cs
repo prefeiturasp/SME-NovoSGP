@@ -18,5 +18,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             await database.Conexao.ExecuteScalarAsync(@"delete from itinerancia_questao iq where itinerancia_id = @itineranciaId and id = @questaoId", new { questaoId, itineranciaId });
         }
+
+        public async Task<bool> ExcluirItineranciaQuestaoPorArquivo(long arquivoId)
+        {
+            return await database.Conexao.ExecuteAsync("delete from itinerancia_questao where  arquivo_id  = @arquivoId", new {arquivoId}) > 0;
+        }
     }
 }

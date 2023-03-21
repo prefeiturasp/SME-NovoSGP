@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao 
+namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler : IRequestHandler<ObterPlanoAulasPorTurmaEComponentePeriodoQuery, IEnumerable<PlanoAulaRetornoDto>>
     {
@@ -39,15 +39,18 @@ namespace SME.SGP.Aplicacao
 
             var temPlanoAnual = await ValidarPlanoAnual(turma, periodosEscolaresAulasInicioFim, request.ComponenteCurricularId, usuarioLogado);
 
-            var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, request.ComponenteCurricularId, usuarioLogado.EhProfessorCj());
+            var componente = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(request.ComponenteCurricularId)));
+            var componenteCurricularCodigo = !string.IsNullOrWhiteSpace(request.ComponenteCurricularCodigo) ? long.Parse(request.ComponenteCurricularCodigo) : 0;
 
-            var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s=> s.Id)));
+            var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, componente.TerritorioSaber && componenteCurricularCodigo > 0 ? componenteCurricularCodigo.ToString() : request.ComponenteCurricularId, usuarioLogado.EhProfessorCj(), ehProfessor && componente.TerritorioSaber ? codigoRf : null);
+
+            var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s => s.Id)));
 
             var bimestre = periodosEscolaresAulasInicioFim.FirstOrDefault().Bimestre;
 
             var validaObjetivos = !usuarioLogado.EhSomenteProfessorCj() && turma.ModalidadeCodigo != Modalidade.EJA && turma.ModalidadeCodigo != Modalidade.Medio;
 
-            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId, validaObjetivos, long.Parse(request.ComponenteCurricularId), bimestre, turma.Id);            
+            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId, validaObjetivos, long.Parse(request.ComponenteCurricularId), bimestre, turma.Id);
 
             return planoAulaDto.OrderBy(x => x.DataAula);
         }
@@ -59,13 +62,13 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(ComponenteCurricularId))
             {
-                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { long.Parse(ComponenteCurricularId) }));
-                disciplinaDto = disciplinasRetorno.SingleOrDefault();
+                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { long.Parse(ComponenteCurricularId) }, codigoTurma: turma.CodigoTurma));
+                disciplinaDto = disciplinasRetorno.FirstOrDefault();
             }
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
-                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(ComponenteCurricularId)));
+                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular : long.Parse(ComponenteCurricularId)));
 
                 temPlanoAnual.Add(planejamentoAnualPeriodoId);
 
@@ -81,10 +84,9 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(IEnumerable<PlanoAulaObjetivosAprendizagemDto> planoAulas, IEnumerable<Aula> aulas, bool temPlanoAnual, string componenteCurricularCodigo, long ueId, bool validaObjetivos, long componenteCurricularId, int bimestre, long turmaId)
         {
             var planosAulaRetorno = new List<PlanoAulaRetornoDto>();
-
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
-
-            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }))).FirstOrDefault().Regencia;
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;           
 
             var disciplinaId = (planoAulas != null && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
             var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,
@@ -120,22 +122,23 @@ namespace SME.SGP.Aplicacao
                     ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente,
                     ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
                     IdAtividadeAvaliativa = atividadeAvaliativa?.Id,
-                    PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,                    
+                    PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,
                     EhReposicao = plano.TipoAula == (int)TipoAula.Reposicao
                 });
-            }            
+            }
 
-            var aulasSemPlanoAula = aulas.Where(a => !planoAulas.Select(b => b.AulaId).Contains(a.Id)).Select(aula=> aula);
+            var aulasSemPlanoAula = aulas.Where(a => !planoAulas.Select(b => b.AulaId).Contains(a.Id)).Select(aula => aula);
 
-            planosAulaRetorno.AddRange((from aula in aulasSemPlanoAula select new PlanoAulaRetornoDto()
-            { 
-                DataAula = aula.DataAula,
-                AulaId = aula.Id,
-                QtdAulas = aula.Quantidade,
-                AulaCj = aula.AulaCJ,
-                EhReposicao = aula.EhReposicao(),
-                ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
-            }));
+            planosAulaRetorno.AddRange((from aula in aulasSemPlanoAula
+                                        select new PlanoAulaRetornoDto()
+                                        {
+                                            DataAula = aula.DataAula,
+                                            AulaId = aula.Id,
+                                            QtdAulas = aula.Quantidade,
+                                            AulaCj = aula.AulaCJ,
+                                            EhReposicao = aula.EhReposicao(),
+                                            ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
+                                        }));
 
             return planosAulaRetorno;
         }
@@ -162,11 +165,12 @@ namespace SME.SGP.Aplicacao
                 ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente
             };
 
-        private IEnumerable<Aula> ObterAulas(ObterPlanoAulasPorTurmaEComponentePeriodoQuery request, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, Usuario usuarioLogado, string codigoRf,bool aulaCj)
+        private IEnumerable<Aula> ObterAulas(ObterPlanoAulasPorTurmaEComponentePeriodoQuery request, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, Usuario usuarioLogado, string codigoRf, bool aulaCj)
         {
-            var datasAulas = ObterAulasNosPeriodos(periodosEscolaresAulasInicioFim, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, codigoRf, request.AulaInicio, request.AulaFim,aulaCj);
+            var datasAulas = ObterAulasNosPeriodos(periodosEscolaresAulasInicioFim, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, codigoRf, request.AulaInicio, request.AulaFim, aulaCj);
 
-            var aulasPermitidas = usuarioLogado.ObterAulasQuePodeVisualizar(datasAulas, new string[] { request.ComponenteCurricularCodigo }).Select(a => a.Id);
+            var aulasPermitidas = usuarioLogado
+                .ObterAulasQuePodeVisualizar(datasAulas, new List<(string, string)>() { (request.ComponenteCurricularCodigo, null) }).Select(a => a.Id);
 
             return ObterAulasSelecionadas(usuarioLogado, datasAulas, aulasPermitidas);
         }
@@ -203,11 +207,11 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private IEnumerable<Aula> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string usuarioRf, DateTime aulaInicio, DateTime aulaFim,bool aulaCj)
+        private IEnumerable<Aula> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string usuarioRf, DateTime aulaInicio, DateTime aulaFim, bool aulaCj)
         {
-            var lstPeriodosEscolaresIds = periodosEscolares.Select(s=> s.Id).Distinct();
+            var lstPeriodosEscolaresIds = periodosEscolares.Select(s => s.Id).Distinct();
 
-            var lstAulas = repositorioAula.ObterDatasDeAulasPorAnoTurmaEDisciplina(lstPeriodosEscolaresIds, anoLetivo, turmaCodigo, componenteCurricularCodigo, usuarioRf, aulaInicio, aulaFim,aulaCj);
+            var lstAulas = repositorioAula.ObterDatasDeAulasPorAnoTurmaEDisciplina(lstPeriodosEscolaresIds, anoLetivo, turmaCodigo, componenteCurricularCodigo, usuarioRf, aulaInicio, aulaFim, aulaCj);
 
             return lstAulas;
         }

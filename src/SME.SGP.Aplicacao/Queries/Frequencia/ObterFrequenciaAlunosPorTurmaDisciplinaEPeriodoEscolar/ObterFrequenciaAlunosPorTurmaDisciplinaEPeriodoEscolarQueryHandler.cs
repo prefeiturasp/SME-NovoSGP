@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> Handle(ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(request.Turma.CodigoTurma, request.ComponenteCurricularId.ToString(), TipoFrequenciaAluno.PorDisciplina, request.PeriodosEscolaresIds);
+            => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(request.Turma.CodigoTurma, request.ComponentesCurricularesId.Select(cc => cc.ToString()).ToArray(), TipoFrequenciaAluno.PorDisciplina, request.PeriodosEscolaresIds);
     }
 }

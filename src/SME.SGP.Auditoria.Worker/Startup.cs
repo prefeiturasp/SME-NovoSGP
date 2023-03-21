@@ -15,6 +15,8 @@ using RabbitMQ.Client;
 using SME.SGP.Auditoria.Worker.Interfaces;
 using SME.SGP.Auditoria.Worker.Repositorio;
 using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
+using SME.SGP.Dados.ElasticSearch;
+using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
 using SME.SGP.IoC;
 using System;
@@ -40,6 +42,11 @@ namespace SME.SGP.Auditoria.Worker
             RegistrarTelemetria(services);
 
             services.AddHostedService<WorkerRabbitAuditoria>();
+            
+            services.AddHealthChecks()
+                .AddElasticSearchSgp();
+            
+            services.AddHealthChecksUiSgp();
         }
 
         private void RegistrarElasticSearch(IServiceCollection services)
@@ -102,6 +109,9 @@ namespace SME.SGP.Auditoria.Worker
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
+
+            app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();

@@ -22,25 +22,48 @@ namespace SME.SGP.Dados.Repositorios
                     where not ae.excluido and ae.professor_rf = @professorRF ";
             if (consideraHistorico)
                 query += $" and ae.ano_letivo < {DateTime.Now.Year}";
-            
-            query += @"union 
-                            select t.ano_letivo from atribuicao_cj ac
-                            inner join turma t on ac.turma_id = t.turma_id where ac.professor_rf = @professorRF";
-            if (consideraHistorico)
-                query += $" and t.ano_letivo < {DateTime.Now.Year} ";
 
-            return await database.QueryAsync<int>(query, new { professorRF });
+            query += @"union 
+                       select t.ano_letivo from atribuicao_cj ac
+                       inner join turma t on ac.turma_id = t.turma_id where ac.professor_rf = @professorRF and t.historica = @consideraHistorico;";
+
+            return await database.QueryAsync<int>(query, new { professorRF, consideraHistorico });
         }
 
-        public IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf)
+        public IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf, bool historica)
         {
-            var query = @"select id, disciplina_id, dre_id, ue_id, professor_rf, turma_id, modalidade, substituir,
-                            criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, migrado
-                            from atribuicao_cj where professor_rf = @professorRf and substituir = true";
+            var query = @"select acj.id, 
+                                 acj.disciplina_id, 
+                                 acj.dre_id, 
+                                 acj.ue_id, 
+                                 acj.professor_rf, 
+                                 acj.turma_id, 
+                                 acj.modalidade, 
+                                 acj.substituir,
+                                 acj.criado_em, 
+                                 acj.criado_por, 
+                                 acj.alterado_em, 
+                                 acj.alterado_por, 
+                                 acj.criado_rf, 
+                                 acj.alterado_rf, 
+                                 acj.migrado,
+                                 t.ano_letivo
+                            from atribuicao_cj acj
+                                inner join turma t
+                                    on acj.turma_id = t.turma_id
+                          where acj.professor_rf = @professorRf 
+                            and acj.substituir
+                            and t.historica = @historica";
 
-            var parametros = new { professorRf };
-
-            return database.Query<AtribuicaoCJ>(query, parametros);
+            return database.Query<AtribuicaoCJ, int, AtribuicaoCJ>(query, (atribuicaoCJ, anoLetivo) =>
+            {
+                atribuicaoCJ.Turma = new Turma()
+                {
+                    CodigoTurma = atribuicaoCJ.TurmaId,
+                    AnoLetivo = anoLetivo
+                };
+                return atribuicaoCJ;
+            }, new { professorRf, historica }, splitOn: "ano_letivo");
         }
 
         public async Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoAtivaAsync(string professorRf)
@@ -136,7 +159,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.AppendLine(@"select distinct 1 from atribuicao_cj where turma_id = @turmaCodigo and professor_rf = @rfProfessor and disciplina_id = @disciplinaId");
 
-            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaCodigo, rfProfessor, disciplinaId});
+            return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { turmaCodigo, rfProfessor, disciplinaId });
         }
 
         public async Task<bool> RemoverRegistros(string dreCodigo, string ueCodigo, string turmaCodigo, string professorRf, long disciplinaId)
@@ -154,7 +177,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder sql = new StringBuilder();
 
-            sql.AppendLine(@"select * from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and professor_rf = @professorRf and turma_id = @turmaId;");
+            sql.AppendLine(@$"select * from atribuicao_cj where dre_id = @dreCodigo and ue_id = @ueCodigo and {(string.IsNullOrEmpty(professorRf) ? "professor_rf = @professorRf and" : string.Empty)} turma_id = @turmaId;");
 
             return database.Conexao.QueryAsync<AtribuicaoCJ>(sql.ToString(), new { turmaId, dreCodigo, ueCodigo, professorRf });
         }

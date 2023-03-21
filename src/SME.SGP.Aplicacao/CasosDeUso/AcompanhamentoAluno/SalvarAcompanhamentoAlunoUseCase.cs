@@ -20,9 +20,12 @@ namespace SME.SGP.Aplicacao
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
+        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> 
+            
+            
+            Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(acompanhamentoAlunoDto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(acompanhamentoAlunoDto.TurmaId));
             var parametroQuantidadeImagens = await ObterQuantidadeLimiteImagens(turma.AnoLetivo);
 
             if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
@@ -39,7 +42,7 @@ namespace SME.SGP.Aplicacao
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
             
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, dataAtual.Year, true,false, turma.CodigoTurma));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, turma.AnoLetivo, true,false, turma.CodigoTurma));
             if (aluno == null)
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
             

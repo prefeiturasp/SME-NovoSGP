@@ -23,6 +23,8 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         private const string NOME_TURMA_1 = "Turma Nome 1";
         private const string NOME_TURMA_2 = "Turma Nome 2";
         private const int ID_UE = 1;
+        private const string TIPO_TURNO_TARDE = "Tarde";
+        private const string TIPO_TURNO_INTERMEDIARIO = "Intermediário";
 
         public Ao_obter_aluno_por_codigo(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -46,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
             retorno.ShouldNotBeNull();
 
-            retorno.TurmaEscola.ShouldBe(ObtenhaNomeTurma(NOME_TURMA_1));
+            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_1, TIPO_TURNO_INTERMEDIARIO));
         }
 
         [Fact]
@@ -63,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
             retorno.ShouldNotBeNull();
 
-            retorno.TurmaEscola.ShouldBe(ObtenhaNomeTurma(NOME_TURMA_2));
+            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_2, TIPO_TURNO_INTERMEDIARIO));
         }
 
         private async Task CriaTurma2()
@@ -77,13 +79,14 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
                 ModalidadeCodigo = Modalidade.EJA,
                 AnoLetivo = ANO_2022,
                 Semestre = 2,
-                Nome = NOME_TURMA_2
+                Nome = NOME_TURMA_2,
+                TipoTurno = 2
             });
         }
 
-        private string ObtenhaNomeTurma(string nome)
+        private string ObterNomeTurma(string nome, string turno)
         {
-            return $"{Modalidade.EJA.ShortName()} - {nome}";
+            return $"{Modalidade.EJA.ShortName()} - {nome} - {turno}";
         }
     }
 }

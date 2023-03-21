@@ -637,7 +637,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
                 var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
 
-                if (!dadosUsuarioLogado.EhProfessorCj())
+                if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
                     throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
                 
                 if (ehGestorEscolar)
@@ -655,7 +655,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 }     
                 else
                 {
-                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF, false));
 
                     if (!obterAtribuicoesCJAtivas.Any())
                         throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
@@ -676,6 +676,10 @@ namespace SME.SGP.Aplicacao.Integracoes
             var retorno = JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
 
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(retorno.CodigoRF));
+
+            if (usuario == null)
+                throw new NegocioException("Usuário não localizado.");
+
             retorno.UsuarioId = usuario.Id;
 
             return retorno;
@@ -844,16 +848,17 @@ namespace SME.SGP.Aplicacao.Integracoes
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
         {
             return disciplinas.Select(x => new DisciplinaDto
-            {
-                CodigoComponenteCurricular = !x.Territorio? x.CdComponenteCurricular : long.Parse(x.CdComponenteCurricular.ToString().Substring(x.CdComponenteCurricular.ToString().Length - 4)),
+            {                
+                CodigoComponenteCurricular = x.CdComponenteCurricular,
+                CodigoTerritorioSaber = x.CodigoTerritorioSaber,
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
                 RegistraFrequencia = x.RegistraFrequencia,
                 TerritorioSaber = x.Territorio,
                 LancaNota = x.LancaNota,
-                GrupoMatrizId = x.GrupoMatriz.Id,
-                GrupoMatrizNome = x.GrupoMatriz.Nome
+                GrupoMatrizId = x.GrupoMatriz?.Id ?? 0,
+                GrupoMatrizNome = x.GrupoMatriz?.Nome
             });
         }
 
@@ -1010,7 +1015,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);
-                return null;
+                return Enumerable.Empty<DisciplinaDto>();
             }
 
             var json = resposta.Content.ReadAsStringAsync().Result;

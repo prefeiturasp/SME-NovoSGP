@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/registros-individuais")]
@@ -51,7 +51,7 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.REI_C, Policy = "Bearer")]
+        [Permissao(Permissao.REI_C, Permissao.OCO_C, Policy = "Bearer")]
         public async Task<IActionResult> ListarAlunosPorTurma([FromServices] IListarAlunosDaTurmaRegistroIndividualUseCase useCase, long turmaId, long componenteCurricularId)
         {
             return Ok(await useCase.Executar(new FiltroRegistroIndividualBase(turmaId, componenteCurricularId)));

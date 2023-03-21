@@ -20,7 +20,9 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         private const string NOME_TABELA_SUGESTAO = "registro_individual_sugestao (mes, descricao)";
         protected const string DESCRICAO_REGISTRO_INDIVIDUAL = "Descrição do registro individual";
         protected const long COMPONENTE_CURRICULAR_CODIGO_512 = 512;
-        
+        protected readonly DateTime DATA_DESISTENCIA_ALUNO_5_REGISTRO_INDIVIDUAL = DateTimeExtension.HorarioBrasilia().Date.AddDays(-5);
+
+
         public RegistroIndividualTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -68,7 +70,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
 
             await CriarDreUePerfil();
             
-            await CriarPeriodoEscolarCustomizadoQuartoBimestre(!filtroRegistroIndividualDto.BimestreEncerrado);
+            if (!filtroRegistroIndividualDto.NaoCriarPeriodosEscolares)
+                await CriarPeriodoEscolarCustomizadoQuartoBimestre(!filtroRegistroIndividualDto.BimestreEncerrado);
 
             await CriarComponenteCurricular();
 

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDocumentosPorUeETipoEClassificacaoQueryHandler : ConsultasBase, IRequestHandler<ObterDocumentosPorUeETipoEClassificacaoQuery, PaginacaoResultadoDto<DocumentoDto>>
+    public class ObterDocumentosPorUeETipoEClassificacaoQueryHandler : ConsultasBase, IRequestHandler<ObterDocumentosPorUeETipoEClassificacaoQuery, PaginacaoResultadoDto<DocumentoResumidoDto>>
     {
         private readonly IRepositorioDocumento repositorioDocumento;
 
@@ -21,19 +20,19 @@ namespace SME.SGP.Aplicacao
             this.repositorioDocumento = repositorioDocumento ?? throw new ArgumentNullException(nameof(repositorioDocumento));
         }
 
-        public async Task<PaginacaoResultadoDto<DocumentoDto>> Handle(ObterDocumentosPorUeETipoEClassificacaoQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Handle(ObterDocumentosPorUeETipoEClassificacaoQuery request, CancellationToken cancellationToken)
         {
-            var documentos = await repositorioDocumento.ObterPorUeTipoEClassificacaoPaginada(request.UeId, request.TipoDocumentoId, request.ClassificacaoId, Paginacao);
+            var documentos = await repositorioDocumento.ObterPorUeTipoEClassificacaoPaginada(request.UeId, request.TipoDocumentoId, request.ClassificacaoId, request.AnoLetivo, Paginacao);
             return MapearParaDtoPaginado(documentos);
         }
 
-        private PaginacaoResultadoDto<DocumentoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<DocumentoDto> documento)
+        private PaginacaoResultadoDto<DocumentoResumidoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<DocumentoResumidoDto> documento)
         {
-            var itens = new List<DocumentoDto>();
+            var itens = new List<DocumentoResumidoDto>();
 
-            var retornoPaginado = new PaginacaoResultadoDto<DocumentoDto>
+            var retornoPaginado = new PaginacaoResultadoDto<DocumentoResumidoDto>
             {
-                Items = new List<DocumentoDto>(),
+                Items = new List<DocumentoResumidoDto>(),
                 TotalPaginas = documento.TotalPaginas,
                 TotalRegistros = documento.TotalRegistros
             };
@@ -43,13 +42,12 @@ namespace SME.SGP.Aplicacao
                 var comunicadoDto = itens.FirstOrDefault(x => x.DocumentoId == item.DocumentoId);
 
                 if (comunicadoDto == null)
-                    itens.Add((DocumentoDto)item);
+                    itens.Add(item);
             }
 
             retornoPaginado.Items = itens;
 
             return retornoPaginado;
         }
-
     }
 }

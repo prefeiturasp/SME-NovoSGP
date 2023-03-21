@@ -214,7 +214,8 @@ namespace SME.SGP.Aplicacao
             {
                 Descricao = tipoEvento.Descricao,
                 Id = tipoEvento.Id,
-                TipoData = tipoEvento.TipoData
+                TipoData = tipoEvento.TipoData,
+                Letivo = tipoEvento.Letivo
             };
         }
     }

@@ -186,7 +186,7 @@ namespace SME.SGP.Dominio
                     await mediator.Send(new RemoverNotaConceitoCommand(entidade));
 
                 if (notaConceitoParaInserir.Any())
-                    await mediator.Send(new SalvarListaNotaConceitoCommand(notaConceitoParaInserir, criadoPor));
+                    await mediator.Send(new SalvarListaNotaConceitoCommand(notaConceitoParaInserir));
 
                 foreach (var notaConceito in notaConceitoParaAtualizar)
                     repositorioNotasConceitos.Salvar(notaConceito);
@@ -229,7 +229,7 @@ namespace SME.SGP.Dominio
             {
                 if (disciplinasEol != null && disciplinasEol.Any())
                     ehTitular = disciplinasEol.Any(d =>
-                        d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
+                        d.DisciplinasId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
 
                 var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
 

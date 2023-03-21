@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             if (request.WorkflowAprovacao.Tipo != WorkflowAprovacaoTipo.Basica && request.WorkflowAprovacao.EntidadeParaAprovarId == 0)
                 throw new NegocioException("Para um workflow diferente de básico, é necessário informar o Id da entidade para Aprovar.");
 
-            WorkflowAprovacao workflowAprovacao = await MapearDtoParaEntidade(request.WorkflowAprovacao);
+            var workflowAprovacao = await MapearDtoParaEntidade(request.WorkflowAprovacao);
 
             await repositorioWorkflowAprovacao.SalvarAsync(workflowAprovacao);
 
@@ -62,16 +62,18 @@ namespace SME.SGP.Aplicacao
 
         private async Task<WorkflowAprovacao> MapearDtoParaEntidade(WorkflowAprovacaoDto workflowAprovacaoNiveisDto)
         {
-            WorkflowAprovacao workflowAprovacao = new WorkflowAprovacao();
-            workflowAprovacao.Ano = workflowAprovacaoNiveisDto.Ano;
-            workflowAprovacao.DreId = workflowAprovacaoNiveisDto.DreId;
-            workflowAprovacao.UeId = workflowAprovacaoNiveisDto.UeId;
-            workflowAprovacao.TurmaId = workflowAprovacaoNiveisDto.TurmaId;
-            workflowAprovacao.NotifacaoMensagem = workflowAprovacaoNiveisDto.NotificacaoMensagem;
-            workflowAprovacao.NotifacaoTitulo = workflowAprovacaoNiveisDto.NotificacaoTitulo;
-            workflowAprovacao.NotificacaoTipo = workflowAprovacaoNiveisDto.NotificacaoTipo;
-            workflowAprovacao.NotificacaoCategoria = workflowAprovacaoNiveisDto.NotificacaoCategoria;
-            workflowAprovacao.Tipo = workflowAprovacaoNiveisDto.Tipo;
+            var workflowAprovacao = new WorkflowAprovacao
+            {
+                Ano = workflowAprovacaoNiveisDto.Ano,
+                DreId = workflowAprovacaoNiveisDto.DreId,
+                UeId = workflowAprovacaoNiveisDto.UeId,
+                TurmaId = workflowAprovacaoNiveisDto.TurmaId,
+                NotifacaoMensagem = workflowAprovacaoNiveisDto.NotificacaoMensagem,
+                NotifacaoTitulo = workflowAprovacaoNiveisDto.NotificacaoTitulo,
+                NotificacaoTipo = workflowAprovacaoNiveisDto.NotificacaoTipo,
+                NotificacaoCategoria = workflowAprovacaoNiveisDto.NotificacaoCategoria,
+                Tipo = workflowAprovacaoNiveisDto.Tipo
+            };
 
             foreach (var nivel in workflowAprovacaoNiveisDto.Niveis)
             {
@@ -81,7 +83,7 @@ namespace SME.SGP.Aplicacao
                     Nivel = nivel.Nivel
                 };
 
-                if (nivel.UsuariosRf != null && nivel.UsuariosRf.Length > 0)
+                if (nivel.UsuariosRf is { Length: > 0 })
                 {
                     foreach (var usuarioRf in nivel.UsuariosRf)
                     {

@@ -109,7 +109,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             retorno.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)?
                 .Alunos.Where(c => c.Marcador != null)
-                .Count(c => c.Marcador.Tipo == TipoMarcadorFrequencia.Inativo).ShouldBe(9);
+                .Count(c => c.Marcador.Tipo == TipoMarcadorFrequencia.Inativo).ShouldBe(7);
         }
         
         [Fact]

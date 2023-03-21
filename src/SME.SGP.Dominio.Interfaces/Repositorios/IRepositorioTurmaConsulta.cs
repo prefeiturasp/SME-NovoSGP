@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Turma> ObterPorId(long id);
         Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id);
         Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
+        Task<IEnumerable<Turma>> ObterTurmasComUeEDrePorCodigo(string turmaCodigo);
         Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
 
@@ -54,5 +55,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterIdsTurmasPorAnoModalidadeUeTipoRegular(int anoLetivo, int modalidade, long ueId);
         public Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(int anoLetivo, int pagina, int quantidadeRegistrosPorPagina, params TipoEscola[] tiposEscola);
         Task<IEnumerable<TurmaComplementarDto>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos);
+        Task<Turma> ObterSomenteTurmaPorId(long turmaId);
     }
 }

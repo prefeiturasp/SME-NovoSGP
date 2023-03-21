@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-
+        
         public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -56,11 +57,11 @@ namespace SME.SGP.Aplicacao
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
-            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }));
+            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }, codigoTurma: turmaCompleta.CodigoTurma));
             if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
                 throw new NegocioException("Componente curricular informado não encontrado no EOL");
 
-            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo);
+            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo || a.Id == filtro.DisciplinaCodigo);
 
             var retorno = new NotasConceitosRetornoDto();
             var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
@@ -85,7 +86,8 @@ namespace SME.SGP.Aplicacao
                 Descricao = $"{filtro.Bimestre}º Bimestre",
                 Numero = filtro.Bimestre,
                 PeriodoInicio = periodoInicio,
-                PeriodoFim = periodoFim
+                PeriodoFim = periodoFim,
+                DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(periodoFim))
             };
 
             var listaAlunosDoBimestre = new List<NotasConceitosAlunoRetornoDto>();
@@ -95,7 +97,7 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(a => a.DataAvaliacao)
                 .ToList();
 
-            if (componenteReferencia.Regencia)
+            if (componenteReferencia?.Regencia ?? false)
                 atividadesAvaliativasdoBimestre = atividadesAvaliativasdoBimestre.Where(a => a.EhRegencia).ToList();
 
             var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct().ToArray();
@@ -112,7 +114,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
 
-            if (componenteReferencia.Regencia)
+            if (componenteReferencia?.Regencia ?? false)
             {
                 if (usuario.EhProfessorCj())
                 {
@@ -162,7 +164,7 @@ namespace SME.SGP.Aplicacao
             var frequenciasDosAlunos = await mediator
                 .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
 
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString(), filtro.PeriodoEscolarId));
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, new string[] { filtro.DisciplinaCodigo.ToString() }, filtro.PeriodoEscolarId));
 
             PeriodoFechamentoVigenteDto periodoFechamentoBimestre = null;
 
@@ -324,7 +326,7 @@ namespace SME.SGP.Aplicacao
 
                     }
                 }
-                else if (componenteReferencia.Regencia && componenteReferencia != null)
+                else if (componenteReferencia?.Regencia ?? false)
                 {
                     // Regencia carrega disciplinas mesmo sem nota de fechamento
                     foreach (var disciplinaRegencia in disciplinasRegencia)
@@ -351,11 +353,13 @@ namespace SME.SGP.Aplicacao
             IEnumerable<DisciplinaDto> disciplinas;
             var disciplinasNaoRegencia = Enumerable.Empty<DisciplinaDto>();
 
-            if (!componenteReferencia.Regencia)
+            if (componenteReferencia != null && !componenteReferencia.Regencia)
+            {
                 disciplinasNaoRegencia = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(componenteReferencia.CodigoComponenteCurricular,
                                                                                                                                   turmaCompleta.CodigoTurma,
                                                                                                                                   turmaCompleta.TipoTurma == TipoTurma.Programa,
                                                                                                                                   componenteReferencia.Regencia);
+            }               
 
             foreach (var avaliacao in atividadesAvaliativasdoBimestre)
             {
@@ -365,7 +369,8 @@ namespace SME.SGP.Aplicacao
                     Data = avaliacao.DataAvaliacao,
                     Descricao = avaliacao.DescricaoAvaliacao,
                     Nome = avaliacao.NomeAvaliacao,
-                    EhCJ = avaliacao.EhCj
+                    EhCJ = avaliacao.EhCj,
+                    DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(avaliacao.DataAvaliacao))
                 };
 
                 avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);

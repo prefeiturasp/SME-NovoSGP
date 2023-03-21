@@ -46,8 +46,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>),typeof(PublicarFilaEmLoteSgpCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>),typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTotalAulasPorDisciplinaETurmaQuery, int>), typeof(ObterTotalAulasPorDisciplinaETurmaQueryFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));            
             services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IServicoArmazenamento),typeof(ServicoArmazenamentoFake), ServiceLifetime.Scoped));
@@ -80,6 +79,12 @@ namespace SME.SGP.TesteIntegracao
         public Task InserirNaBase(string nomeTabela, params string[] campos)
         {
             _collectionFixture.Database.Inserir(nomeTabela, campos);
+            return Task.CompletedTask;
+        }
+        
+        public Task InserirNaBase(string nomeTabela, string[] campos, string[] valores)
+        {
+            _collectionFixture.Database.Inserir(nomeTabela, campos, valores);
             return Task.CompletedTask;
         }
 

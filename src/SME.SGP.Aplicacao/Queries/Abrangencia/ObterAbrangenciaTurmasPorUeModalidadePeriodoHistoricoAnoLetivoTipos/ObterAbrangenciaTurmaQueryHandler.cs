@@ -28,25 +28,19 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-            var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo, Modalidade.EducacaoInfantil)) : null;
-   
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil, request.Modalidade, request.Tipos.Any() ? request.Tipos : null, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
+            var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil
+                ? await mediator.Send(
+                    new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo,
+                        Modalidade.EducacaoInfantil))
+                : null;
 
-            result = request.Modalidade == Modalidade.EducacaoInfantil ? await VerificaTurmasCEMEI(result, request.CodigoUe) : result;
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil,
+                request.Modalidade, request.Tipos != null && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
+                request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
 
             return OrdernarTurmasItinerario(result);
         }  
-        
-        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> VerificaTurmasCEMEI(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoUe)
-        {
-            var tipoEscola = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(codigoUe));
-
-            if (tipoEscola == TipoEscola.CEMEI || tipoEscola == TipoEscola.CEUCEMEI)
-                return turmas.Where(t => int.Parse(t.Ano) > 4);
-
-            return turmas;
-        }
-        
+ 
         private IEnumerable<AbrangenciaTurmaRetorno> OrdernarTurmasItinerario(IEnumerable<AbrangenciaTurmaRetorno> result)
         {
             List<AbrangenciaTurmaRetorno> turmasOrdenadas = new List<AbrangenciaTurmaRetorno>();
