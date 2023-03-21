@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -505,7 +505,7 @@ namespace SME.SGP.Dados.Repositorios
             if (modalidade == Modalidade.EJA)
             {
                 var periodoReferencia = semestre == 1 ? "p.periodo_inicio < @dataReferencia" : "p.periodo_fim > @dataReferencia";
-                queryPeriodoEJA = $"and exists(select 0 from periodo_escolar p where p.tipo_calendario_id = tc.id and {periodoReferencia})";
+                queryPeriodoEJA = $"and exists(select 0 from periodo_escolar p where p.tipo_calendario_id = tc.id and {periodoReferencia} and t.semestre = @semestre)";
                 query.AppendLine(queryPeriodoEJA);
 
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);

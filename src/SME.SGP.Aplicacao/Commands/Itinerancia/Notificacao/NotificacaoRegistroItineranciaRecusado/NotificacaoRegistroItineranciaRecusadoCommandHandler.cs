@@ -40,7 +40,8 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Registro de Itinerância devolvido - {descricaoUe} - {dataVisita:dd/MM/yyyy}";
             var mensagem = new StringBuilder($"Registro de Itinerância da {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os estudantes abaixo foi devolvido pelos gestores da UE");
 
-            await MontarTabelaDeEstudantes(estudantes, mensagem, dataVisita);
+            if (estudantes.Any())
+                await MontarTabelaDeEstudantes(estudantes, mensagem, dataVisita);
 
             mensagem.AppendLine($"<br><br>Motivo: {observacao}");
 

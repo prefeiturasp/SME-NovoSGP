@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
 
             foreach (var aluno in request.AlunosDaTurma
-                                    .Where(a => a.DeveMostrarNaChamada(request.DataFim, request.PeriodoEscolar.PeriodoInicio))
+                                    .Where(a => a.MostrarNaChamada(request.DataFim, request.PeriodoEscolar.PeriodoInicio))
                                     .OrderBy(c => c.NomeAluno))
             {
                 

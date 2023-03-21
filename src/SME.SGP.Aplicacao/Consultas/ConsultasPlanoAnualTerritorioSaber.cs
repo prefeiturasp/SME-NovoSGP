@@ -46,6 +46,12 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTime.Now.Date;
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaId));
             var bimestresAbertoFechado = new List<PeriodoEscolarPorTurmaDto>();
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
+            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+            var componenteCurricularId = territorioExperienciaId;
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+            long[] codigosComponentes = new long[2];
+
             periodos.Select(s => s.Bimestre).Distinct().ToList().ForEach(bimestre =>
             {
                 bimestresAbertoFechado.Add(new PeriodoEscolarPorTurmaDto()
@@ -55,7 +61,44 @@ namespace SME.SGP.Aplicacao
                 });
             });
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, territorioExperienciaId, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
+
+            if (!usuarioLogado.EhProfessorCj())
+                componentesCurricularesEolProfessor = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaId,
+                                                                                  usuarioLogado.CodigoRf,
+                                                                                  usuarioLogado.PerfilAtual,
+                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
+            if (usuarioLogado.EhProfessorCj())
+            {
+                var componentesCurricularesDoProfessorCJ = await mediator
+                   .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                if (componentesCurricularesDoProfessorCJ.Any())
+                {
+                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                    if (dadosComponentes.Any())
+                    {
+                        componentesCurricularesDoProfessorCj = dadosComponentes
+                            .Select(d => (d.CodigoComponenteCurricular.ToString(), d.CdComponenteCurricularPai.ToString(), d.TerritorioSaber
+                                ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
+                    }
+                }
+            }
+
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
+                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId || (componenteCurricular != null && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) || cp.Codigo == territorioExperienciaId)
+                    : new ComponenteCurricularEol
+                    {
+                        Codigo = territorioExperienciaId > 0 ? territorioExperienciaId : 0,
+                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
+                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
+                    };
+
+            codigosComponentes[0] = componenteCorrespondente?.Codigo ?? 0;
+            codigosComponentes[1] = componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0;
+
+            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, codigosComponentes, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
             if (listaPlanoAnual != null && listaPlanoAnual.Any())
             {
                 if (listaPlanoAnual.Count() != periodos.Count())

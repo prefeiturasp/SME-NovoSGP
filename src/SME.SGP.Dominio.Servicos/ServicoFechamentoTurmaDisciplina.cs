@@ -554,9 +554,11 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
             {
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
-
                 if (fechamentoAluno == null)
+                {
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
+                    indiceFechamentoAntigo = -1;
+                }
                 else
                     indiceFechamentoAntigo = fechamentoAlunos.IndexOf(fechamentoAluno);
 
