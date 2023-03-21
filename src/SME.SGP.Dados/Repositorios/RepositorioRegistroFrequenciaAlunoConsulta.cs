@@ -350,7 +350,7 @@ namespace SME.SGP.Dados.Repositorios
             return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId }, commandTimeout: 120);
         }
 
-        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string codigoAluno, string disciplinaId, params string[] turmasId)
+        public async Task<int> ObterTotalAulasPorDisciplinaTurmaAluno(DateTime dataAula, string codigoAluno, string disciplinaId, params string[] turmasId)
         {
             var query = $@"
                             with qdadeAulasAluno as (

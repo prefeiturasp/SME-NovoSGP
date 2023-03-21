@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public Task<int> Handle(ObterTotalAulasPorDisciplinaTurmaCodigoAlunoQuery request, CancellationToken cancellationToken)
-            => repositorioConsulta.ObterTotalAulasPorDisciplinaETurma(request.DataAula, request.CodigoAluno, request.DisciplinaId, request.TurmasId);
+            => repositorioConsulta.ObterTotalAulasPorDisciplinaTurmaAluno(request.DataAula, request.CodigoAluno, request.DisciplinaId, request.TurmasId);
     }
 }
