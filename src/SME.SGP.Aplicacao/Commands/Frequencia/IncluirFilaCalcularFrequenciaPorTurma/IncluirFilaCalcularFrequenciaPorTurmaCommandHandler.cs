@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
 
             if (request.Meses != null && request.Meses.Any())
             {
-                foreach(var month in request.Meses)
-                    await PublicarConsolidacaoFrequenciaAlunoMensal(request.TurmaId, month, cancellationToken);
+                foreach(var mes in request.Meses)
+                    await PublicarConsolidacaoFrequenciaAlunoMensal(request.TurmaId, mes, cancellationToken);
             }
             else
                 await PublicarConsolidacaoFrequenciaAlunoMensal(request.TurmaId, request.DataAula.Month, cancellationToken);
