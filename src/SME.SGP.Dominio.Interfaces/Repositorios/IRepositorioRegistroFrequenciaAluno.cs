@@ -15,5 +15,6 @@ namespace SME.SGP.Dominio
         Task ExcluirVarios(List<long> idsParaExcluir);
         Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId);
         Task ExcluirVariosLogicamente(long[] idsParaExcluir);
+        Task ExcluirRegistroFrequenciaAlunoPorAulaECodigosAlunos(long aulaId, string[] codigosAlunos);
     }
 }
