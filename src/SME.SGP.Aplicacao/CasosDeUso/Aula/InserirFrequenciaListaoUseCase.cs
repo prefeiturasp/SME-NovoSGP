@@ -26,12 +26,12 @@ namespace SME.SGP.Aplicacao
             foreach (var frequenciaAula in frequencias)
             {
                 var frequencia = new FrequenciaDto(frequenciaAula.AulaId);
-                
+
                 var alunosComAulasInvalidas = frequenciaAula.Alunos.Where(w => w.Desabilitado).Select(s => s.CodigoAluno).ToList();
                 if (alunosComAulasInvalidas.Any())
                     await mediator.Send(new ExcluirRegistroFrequenciaAlunoPorAulaECodigosAlunosCommand(frequenciaAula.AulaId, alunosComAulasInvalidas.ToArray()));
 
-                foreach(var frequenciaAluno in frequenciaAula.Alunos.Where(w=> !w.Desabilitado))
+                foreach (var frequenciaAluno in frequenciaAula.Alunos.Where(w => !w.Desabilitado))
                 {
                     frequencia.ListaFrequencia.Add(new RegistroFrequenciaAlunoDto()
                     {
@@ -40,16 +40,19 @@ namespace SME.SGP.Aplicacao
                     });
                 }
 
-                var frequenciaAuditoriaAulaDto = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia, false));
-                if (frequenciaAuditoriaAulaDto.DataAula.HasValue)
+                if (frequencia.ListaFrequencia.Any())
                 {
-                    datasAulas.Add(frequenciaAuditoriaAulaDto.DataAula ?? DateTimeExtension.HorarioBrasilia().Date);
-                    turmaId = frequenciaAuditoriaAulaDto.TurmaId;
-                    disciplinaId = frequenciaAuditoriaAulaDto.DisciplinaId;
-                    alunos.AddRange(frequenciaAula.Alunos.Select(aluno => aluno.CodigoAluno).ToList());
-                }
-                    
-                frequenciaAuditoria.TratarRetornoAuditoria(frequenciaAuditoriaAulaDto);
+                    var frequenciaAuditoriaAulaDto = await mediator.Send(new InserirFrequenciasAulaCommand(frequencia, false));
+                    if (frequenciaAuditoriaAulaDto.DataAula.HasValue)
+                    {
+                        datasAulas.Add(frequenciaAuditoriaAulaDto.DataAula ?? DateTimeExtension.HorarioBrasilia().Date);
+                        turmaId = frequenciaAuditoriaAulaDto.TurmaId;
+                        disciplinaId = frequenciaAuditoriaAulaDto.DisciplinaId;
+                        alunos.AddRange(frequenciaAula.Alunos.Select(aluno => aluno.CodigoAluno).ToList());
+                    }
+
+                    frequenciaAuditoria.TratarRetornoAuditoria(frequenciaAuditoriaAulaDto);
+                } 
             }
 
             if (datasAulas.Any())
