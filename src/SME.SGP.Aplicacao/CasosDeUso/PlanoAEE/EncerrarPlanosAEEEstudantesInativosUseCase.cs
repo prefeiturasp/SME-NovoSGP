@@ -41,35 +41,57 @@ namespace SME.SGP.Aplicacao
                         var matriculas = await mediator
                             .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo, filtrarSituacao: false));
 
-                        if (matriculas == null)
-                            throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
-
                         var turmaDoPlanoAee = await ObterTurma(planoAEE.TurmaId);
 
                         if (turmaDoPlanoAee == null)
                             throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Turma_nao_localizada, planoAEE.TurmaId));
 
-                        var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
-
-                        if (ultimaSituacao!.Inativo)
-                            encerrarPlanoAee = true;
-                        else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido)
+                        if (matriculas == null || !matriculas.Any())
                         {
-                            if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
+                            var uePlanoAluno = turmaDoPlanoAee.Ue.CodigoUe;
+                            var dadosMatriculaAlunoNaUEPlano = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(uePlanoAluno, planoAEE.AlunoCodigo));
+
+                            if(dadosMatriculaAlunoNaUEPlano != null && dadosMatriculaAlunoNaUEPlano.Any())
                             {
-                                var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
-                                if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
-                                    encerrarPlanoAee = true;
+                                if (!dadosMatriculaAlunoNaUEPlano.Any(d => d.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo))
+                                {
+                                    var ultimaSituacaoAlunoNaUE = dadosMatriculaAlunoNaUEPlano.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
+                                    await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
+                                }  
                             }
+                            else
+                                throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
                         }
-                        else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1)
+                        else
                         {
-                            if (AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
-                                encerrarPlanoAee = true;
+                            var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
+
+                            if (ultimaSituacao != null)
+                            {
+                                if (ultimaSituacao!.Inativo)
+                                    encerrarPlanoAee = true;
+                                else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
+                                          || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
+                                {
+                                    if (turmaDoPlanoAee.AnoLetivo < anoLetivo)
+                                    {
+                                        var turmaAtualDoAluno = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaSituacao.CodigoTurma.ToString()));
+                                        if (turmaDoPlanoAee.Ue.CodigoUe != turmaAtualDoAluno.Ue.CodigoUe)
+                                            encerrarPlanoAee = true;
+                                    }
+                                }
+                                else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1)
+                                {
+                                    if (AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
+                                        encerrarPlanoAee = true;
+                                }
+                            }
+
+                            if (encerrarPlanoAee)
+                                await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao.DataSituacao);
                         }
 
-                        if (encerrarPlanoAee)
-                            await EncerrarPlanoAee(planoAEE, ultimaSituacao?.SituacaoMatricula ?? "Inativo", ultimaSituacao.DataSituacao);
+                       
                     }
 
                     return true;
