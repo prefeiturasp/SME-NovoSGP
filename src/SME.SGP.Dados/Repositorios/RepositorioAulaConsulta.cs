@@ -1048,11 +1048,11 @@ namespace SME.SGP.Dados.Repositorios
 	                                                 periodo_escolar pe 
 	                                                 on a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
                                                  inner join
-	                                                 registro_frequencia_aluno rfa
-	                                                 on a.id = rfa.aula_id
+	                                                 registro_frequencia rf
+	                                                 on a.id = rf.aula_id
                                                  where 
 	                                                 not a.excluido
-                                                     and not rfa.excluido
+                                                     and not rf.excluido
 	                                                 and a.turma_id = @turmaCodigo
 	                                                 and a.disciplina_id = any(@componentesCurricularesId)
                                                      and a.tipo_calendario_id = @tipoCalendarioId

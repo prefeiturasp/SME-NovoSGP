@@ -2,39 +2,40 @@
 using MediatR;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery : IRequest<IEnumerable<FrequenciaAluno>>
+    public class ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery : IRequest<IEnumerable<FrequenciaAlunoDto>>
     {
         public Turma Turma { get; set; }
         public long[] ComponentesCurricularesId { get; set; }
         public IEnumerable<long> PeriodosEscolaresIds { get; set; }
-        public string Professor { get; set; }
+        public string RfProfessorTerritorioSaber { get; set; }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, string professor = null)
+        public ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(Turma turma, long[] componentesCurricularesId, string rfProfessorTerritorioSaber = null)
         {
             Turma = turma;
             ComponentesCurricularesId = componentesCurricularesId;
-            Professor = professor;
+            RfProfessorTerritorioSaber = rfProfessorTerritorioSaber;
         }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, string professor = null)
+        public ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, string rfProfessorTerritorioSaber = null)
             :this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
-            Professor = professor;
+            RfProfessorTerritorioSaber = rfProfessorTerritorioSaber;
         }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, long periodoEscolarId, string professor = null)
+        public ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(Turma turma, long[] componentesCurricularesId, long periodoEscolarId, string rfProfessorTerritorioSaber = null)
             : this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = new List<long> { periodoEscolarId };
-            Professor = professor;
+            RfProfessorTerritorioSaber = rfProfessorTerritorioSaber;
         }
     }
 
-    public class ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQueryValidator : AbstractValidator<ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery>
+    public class ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQueryValidator : AbstractValidator<ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery>
     {
         public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQueryValidator()
         {

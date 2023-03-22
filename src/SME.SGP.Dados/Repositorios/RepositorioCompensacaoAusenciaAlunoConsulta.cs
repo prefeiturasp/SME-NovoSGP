@@ -112,6 +112,25 @@ namespace SME.SGP.Dados.Repositorios
 	                c.bimestre";
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, alunoCodigos, turmaCodigo });
-        }       
+        }
+
+        public async Task<IEnumerable<AlunoDisciplinaTotalCompensacaoAusenciaDto>> ObterTotalCompensacoesPorTurmaBimestresDisciplinas(int[] bimestres, string[] disciplinasIds, string turmaCodigo)
+        {
+            var sql = $@"SELECT caa.codigo_aluno as CodigoAluno,
+ 	                           ca.disciplina_id as DisciplinaId,        
+                               sum(caa.qtd_faltas_compensadas) as TotalCompensacoes
+                            FROM compensacao_ausencia ca 
+                            join turma t on t.id = ca.turma_id 
+                            join compensacao_ausencia_aluno caa on ca.id = caa.compensacao_ausencia_id	 
+                            WHERE NOT ca.excluido    	  
+    	                          and not caa.excluido 
+                                  AND t.turma_id = @turmaCodigo 
+                                  AND ca.disciplina_id = any(@disciplinasIds)        
+                                  AND ca.bimestre = any(@bimestres)                  
+	                        GROUP  BY caa.codigo_aluno,ca.disciplina_id	";
+
+            var parametros = new { turmaCodigo, disciplinasIds,bimestres};
+            return await database.Conexao.QueryAsync<AlunoDisciplinaTotalCompensacaoAusenciaDto>(sql, parametros);
+        }
     }
 }

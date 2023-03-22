@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 var frequenciaAluno = request.FrequenciaAlunos
-                    .FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+                    .FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno);
 
                 // Marcador visual da situação
                 registroFrequenciaAluno.Marcador = await mediator
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
                 && aula.PermiteRegistroFrequencia(turma);
         }
 
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
+        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAlunoDto frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
             var percentualFrequencia = turmaComFrequenciasRegistradas ?
                 (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100) :
