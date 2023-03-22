@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
         public ObterListaFrequenciaAulasQuery(Turma turma,
                                               IEnumerable<AlunoPorTurmaResposta> alunosDaTurma,
                                               IEnumerable<Aula> aulas,
-                                              IEnumerable<FrequenciaAluno> frequenciaAlunos,
+                                              IEnumerable<FrequenciaAlunoDto> frequenciaAlunos,
                                               IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
                                               IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
                                               IEnumerable<FrequenciaPreDefinidaDto> frequenciasPreDefinidas,
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
         public Turma Turma { get; }
         public IEnumerable<AlunoPorTurmaResposta> AlunosDaTurma { get; }
         public IEnumerable<Aula> Aulas { get; }
-        public IEnumerable<FrequenciaAluno> FrequenciaAlunos { get; }
+        public IEnumerable<FrequenciaAlunoDto> FrequenciaAlunos { get; }
         public IEnumerable<RegistroFrequenciaAlunoPorAulaDto> RegistrosFrequenciaAlunos { get; }
         public IEnumerable<AnotacaoAlunoAulaDto> AnotacoesTurma { get; }
         public IEnumerable<FrequenciaPreDefinidaDto> FrequenciasPreDefinidas { get; }
