@@ -141,6 +141,16 @@ namespace SME.SGP.TesteIntegracao
                 await CriarPeriodoEscolarEAbertura();
         }
 
+        protected async Task CriarDadosBasicosAulaRecorrencia(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3, int quantidadeRecorrencia = QUANTIDADE_AULA_2)
+        {
+            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
+            await CriarTurma(modalidade);
+            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula);
+            await CriarAulaRecorrente(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula, quantidadeRecorrencia);
+            if (criarPeriodoEscolarEAbertura)
+                await CriarPeriodoEscolarEAbertura();
+        }
+
         protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3)
         {
             await CriarTipoCalendario(tipoCalendario);
@@ -212,6 +222,18 @@ namespace SME.SGP.TesteIntegracao
         protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
+        }
+
+        protected async Task CriarAulaRecorrente(string componenteCurricularCodigo, DateTime dataAulaBase, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, int qdadeRecorrencia = QUANTIDADE_AULA_2, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        {
+            var dataAulaRecorrente = dataAulaBase;
+            for (int i = 0; i < qdadeRecorrencia; i++)
+            {
+                dataAulaRecorrente = dataAulaRecorrente.AddDays(7);
+                var aula = ObterAula(componenteCurricularCodigo, dataAulaRecorrente, recorrencia, quantidadeAula, rf);
+                aula.AulaPaiId = 1;
+                await InserirNaBase(aula);
+            }
         }
 
         private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
@@ -348,6 +370,23 @@ namespace SME.SGP.TesteIntegracao
             await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA_3);
         }
 
+        protected async Task CrieRegistroDeFrenquenciaTodasAulas(string[] codigoAlunos, int qdadeAula)
+        {
+            await InserirNaBase(new RegistroFrequencia
+            {
+                AulaId = AULA_ID_1,
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+
+            var aulas = ObterTodos<Dominio.Aula>();
+            foreach(var aula in aulas)
+                foreach(var aluno in codigoAlunos)
+                    for (int indexAula = 1; indexAula <= (qdadeAula > 0 ? qdadeAula : aula.Quantidade); indexAula++)
+                        await RegistroFrequenciaAluno(aluno, indexAula, aula.Id);
+                    
+        }
+
         protected async Task CriarRegistrosConsolidacaoFrequenciaAlunoMensal()
         {
             await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
@@ -441,7 +480,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula)
+        private async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula, long aulaid = 1)
         {
             await InserirNaBase(new RegistroFrequenciaAluno
             {
@@ -452,7 +491,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "",
                 Valor = (int) TipoFrequencia.F,
                 NumeroAula = numeroAula,
-                AulaId = 1
+                AulaId = aulaid
             });
         }
 

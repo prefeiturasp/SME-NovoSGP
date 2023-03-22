@@ -370,6 +370,8 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
 
         protected const int AULA_ID = 1;
+        protected const int QUANTIDADE_AULA_NORMAL_MAIS_RECORRENTES_3 = 3;
+        protected const int QUANTIDADE_AULA_RECORRENTE_2 = 2;
         protected const int QUANTIDADE_AULA = 1;
         protected const int QUANTIDADE_AULA_2 = 2;
         protected const int QUANTIDADE_AULA_3 = 3;

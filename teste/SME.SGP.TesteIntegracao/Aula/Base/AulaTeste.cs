@@ -198,6 +198,14 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(aula);
         }
+
+        protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia, DateTime dataAula)
+        {
+            var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataAula, recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
+            aula.AulaPaiId = 1;
+
+            await InserirNaBase(aula);
+        }
         private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             return new Dominio.Aula
