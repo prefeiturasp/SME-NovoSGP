@@ -87,5 +87,12 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
             await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
+
+        public async Task ExcluirRegistroFrequenciaAlunoPorAulaECodigosAlunos(long aulaId, string[] codigosAlunos)
+        {
+            var query = @"DELETE FROM registro_frequencia_aluno WHERE NOT excluido AND aula_id = @aulaId and codigo_aluno = any(@codigosAlunos)";
+
+            await database.Conexao.ExecuteAsync(query, new { aulaId, codigosAlunos });
+        }
     }
 }

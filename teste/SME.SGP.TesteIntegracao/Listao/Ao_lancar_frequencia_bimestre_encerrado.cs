@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact(DisplayName = "Não deve Lançar frequência para bimestre encerrado sem reabertura")]
+        [Fact(DisplayName = "Frequência Listão - Não deve Lançar frequência para bimestre encerrado sem reabertura")]
         public async Task Nao_deve_lancar_frequencia_bimestre_encerrado_sem_reabertura()
         {
             var filtroListao = new FiltroListao
@@ -44,47 +44,6 @@ namespace SME.SGP.TesteIntegracao.Listao
                 CriarPeriodoReaberturaTodosBimestres = false
             };
 
-            await ExecutarTesteComExcecao(filtroListao);
-        }
-        
-        //[Fact(DisplayName = "Lançamento de frequência para bimestre encerrado com reabertura")]
-        public async Task Deve_lancar_frequencia_bimestre_encerrado_com_reabertura()
-        {
-            var filtroListao = new FiltroListao
-            {
-                Bimestre = 3,
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilProfessor(),
-                AnoTurma = ANO_8,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                TipoTurma = TipoTurma.Regular,
-                TurmaHistorica = false,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
-            };
-
-            await ExecutarTeste(filtroListao);            
-        }
-        
-        private async Task ExecutarTeste(FiltroListao filtroListao)
-        {
-            await CriarDadosBasicos(filtroListao);
-
-            var listaAulaId = ObterTodos<Dominio.Aula>().Select(c => c.Id).Distinct().ToList();
-            listaAulaId.ShouldNotBeNull();
-
-            var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
-
-            //-> Salvar a frequencia
-            var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
-            useCaseSalvar.ShouldNotBeNull();
-            var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
-            retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBeGreaterThan(0);
-        }              
-        
-        private async Task ExecutarTesteComExcecao(FiltroListao filtroListao)
-        {
             await CriarDadosBasicos(filtroListao);
 
             var listaAulaId = ObterTodos<Dominio.Aula>().Select(c => c.Id).Distinct().ToList();
@@ -99,6 +58,37 @@ namespace SME.SGP.TesteIntegracao.Listao
             
             await useCaseSalvar.Executar(frequenciasSalvar)
                 .ShouldThrowAsync<NegocioException>(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
-        }            
+        }
+        
+        [Fact(DisplayName = "Frequência Listão - Lançamento de frequência para bimestre encerrado com reabertura")]
+        public async Task Deve_lancar_frequencia_bimestre_encerrado_com_reabertura()
+        {
+            var filtroListao = new FiltroListao
+            {
+                Bimestre = 3,
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilProfessor(),
+                AnoTurma = ANO_8,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TipoTurma = TipoTurma.Regular,
+                TurmaHistorica = false,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
+            };
+
+            await CriarDadosBasicos(filtroListao);
+
+            var listaAulaId = ObterTodos<Dominio.Aula>().Select(c => c.Id).Distinct().ToList();
+            listaAulaId.ShouldNotBeNull();
+
+            var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
+                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
+
+            //-> Salvar a frequencia
+            var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
+            useCaseSalvar.ShouldNotBeNull();
+            var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
+            retorno.ShouldNotBeNull();
+            retorno.AulasIDsComErros.Any().ShouldBeFalse();
+        }              
     }
 }

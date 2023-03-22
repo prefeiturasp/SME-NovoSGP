@@ -305,6 +305,22 @@ namespace SME.SGP.TesteIntegracao
 
         protected const int NUMERO_AULA_1 = 1;
         protected const int NUMERO_AULA_2 = 2;
+        protected const int NUMERO_AULA_3 = 3;
+        protected const int NUMERO_AULA_4 = 4;
+        
+        protected const int AULA_ID_1 = 1;
+        protected const int AULA_ID_2 = 2;
+        protected const int AULA_ID_3 = 3;
+        protected const int AULA_ID_4 = 4;
+        protected const int AULA_ID_5 = 5;
+        protected const int AULA_ID_6 = 6;
+        protected const int AULA_ID_7 = 7;
+        protected const int AULA_ID_8 = 8;
+        protected const int AULA_ID_9 = 9;
+        protected const int AULA_ID_10 = 10;
+        
+        protected const long REGISTRO_FREQUENCIA_1 = 1;
+        protected const long REGISTRO_FREQUENCIA_2 = 2;
 
         protected const string ALFABETIZACAO = "ALFABETIZACAO";
         protected const string INTERDISCIPLINAR = "INTERDISCIPLINAR";
