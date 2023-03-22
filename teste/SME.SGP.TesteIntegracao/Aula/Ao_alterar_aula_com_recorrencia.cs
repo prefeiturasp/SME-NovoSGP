@@ -90,6 +90,32 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
         }
 
+        [Fact]
+        public async Task Editar_quantidade_aula_recorrente_com_recorrencia_no_bimestre_atual()
+        {
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.RepetirBimestreAtual);
+
+            var dataAula = DATA_02_05.AddDays(7);
+            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual, dataAula);
+            
+            dataAula = dataAula.AddDays(7);
+            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual, dataAula);
+
+            await CriarPeriodoEscolarEAbertura();
+
+            var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
+
+            var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, 138, DATA_02_05);
+            aula.Quantidade = 2;
+            aula.Id = 1;
+
+            var retorno = await usecase.Executar(aula);
+
+            retorno.ShouldNotBeNull();
+        }
+
         private async Task CriarPeriodoEscolarEAbertura()
         {
             await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);

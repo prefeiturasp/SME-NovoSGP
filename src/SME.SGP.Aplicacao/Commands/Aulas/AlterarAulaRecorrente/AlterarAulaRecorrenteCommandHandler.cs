@@ -71,13 +71,18 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarRecorrencia(AlterarAulaRecorrenteCommand request, Aula aulaOrigem, Turma turma)
         {
             var listaAlteracoes = new List<(bool sucesso, bool erro, DateTime data, string mensagem)>();
+            var listaAlteracoesFrequencia = new List<(long Id, DateTime Data, int QdadeAnterior)>()
+            {
+                (aulaOrigem.Id, aulaOrigem.DataAula, aulaOrigem.Quantidade)
+            };
+
             var dataAula = request.DataAula;
             var aulaPaiIdOrigem = aulaOrigem.AulaPaiId ?? aulaOrigem.Id;
-
+            var aulaAnteriorQnt = aulaOrigem.Quantidade;
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, dataAula, request.RecorrenciaAula));
 
             var aulasDaRecorrencia = await mediator.Send(new ObterRepositorioAulaPorAulaRecorrenteQuery(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia));
-                
+            listaAlteracoesFrequencia.AddRange(aulasDaRecorrencia.Select(aula => (aula.Id, aula.DataAula, aula.Quantidade)));
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasDaRecorrencia);
 
             try
@@ -96,6 +101,9 @@ namespace SME.SGP.Aplicacao
                     else
                         listaAlteracoes.Add(await TratarAlteracaoAula(request, (Aula)aulaOrigem.Clone(), diaAula, turma));
                 }
+
+                if (request.Quantidade != aulaAnteriorQnt)
+                    await TrataAlteracaoDeFrequencia(request.Usuario, listaAlteracoesFrequencia);
             }
             finally
             {
@@ -103,6 +111,15 @@ namespace SME.SGP.Aplicacao
             }
 
             await NotificarUsuario(request.AulaId, listaAlteracoes, request.Usuario, request.NomeComponenteCurricular, turma);
+        }
+
+        private async Task TrataAlteracaoDeFrequencia(Usuario usuarioLogado, List<(long Id, DateTime Data, int QdadeAnterior)> listaAlteracoesFrequencia)
+        {
+            foreach(var aula in listaAlteracoesFrequencia)
+            {
+                var trataFrequenciaAulaModificada = new AulaAlterarFrequenciaRequestDto(aula.Id, aula.QdadeAnterior);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAlterarAulaFrequenciaTratar, trataFrequenciaAulaModificada, Guid.NewGuid(), usuarioLogado));
+            }
         }
 
         private IEnumerable<DateTime> ObterDiasDaRecorrencia(DateTime inicioRecorrencia, DateTime fimRecorrencia)
