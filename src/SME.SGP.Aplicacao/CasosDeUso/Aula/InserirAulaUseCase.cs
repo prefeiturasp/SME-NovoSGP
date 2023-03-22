@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -24,12 +25,23 @@ namespace SME.SGP.Aplicacao
             if (inserirAulaDto.TipoAula == TipoAula.Reposicao && inserirAulaDto.RecorrenciaAula != RecorrenciaAula.AulaUnica)
                 throw new NegocioException("Não é possível cadastrar aula de reposição com recorrência!");
 
-            var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0,
-                inserirAulaDto.CodigoTurma,
-                inserirAulaDto.CodigoComponenteCurricular,
-                inserirAulaDto.DataAula,
-                inserirAulaDto.EhRegencia,
-                inserirAulaDto.TipoAula));
+            var codigoTerritorioSaber = (long?)null;
+            var componenteCurricularCodigo = inserirAulaDto.CodigoComponenteCurricular;
+            var retornoDefinicaoComponente = await mediator
+                .Send(new DefinirComponenteCurricularParaAulaQuery(inserirAulaDto.CodigoTurma, componenteCurricularCodigo, usuarioLogado));
+
+            if (retornoDefinicaoComponente != default)
+            {
+                componenteCurricularCodigo = retornoDefinicaoComponente.codigoComponente;
+                codigoTerritorioSaber = retornoDefinicaoComponente.codigoTerritorio;
+            }
+
+            var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase
+                .Executar(new FiltroPodeCadastrarAulaDto(0, inserirAulaDto.CodigoTurma,
+                                                         componenteCurricularCodigo,
+                                                         inserirAulaDto.DataAula,
+                                                         inserirAulaDto.EhRegencia,
+                                                         inserirAulaDto.TipoAula));
 
             if (retornoPodeCadastrarAula.PodeCadastrarAula)
             {
@@ -39,12 +51,13 @@ namespace SME.SGP.Aplicacao
                                                                            inserirAulaDto.DataAula,
                                                                            inserirAulaDto.Quantidade,
                                                                            inserirAulaDto.CodigoTurma,
-                                                                           inserirAulaDto.CodigoComponenteCurricular,
+                                                                           componenteCurricularCodigo,
                                                                            inserirAulaDto.NomeComponenteCurricular,
                                                                            inserirAulaDto.TipoCalendarioId,
                                                                            inserirAulaDto.TipoAula,
                                                                            inserirAulaDto.CodigoUe,
-                                                                           inserirAulaDto.EhRegencia));
+                                                                           inserirAulaDto.EhRegencia,
+                                                                           codigoTerritorioSaber));
                 }
                 else
                 {
@@ -55,13 +68,14 @@ namespace SME.SGP.Aplicacao
                                                                                         inserirAulaDto.DataAula,
                                                                                         inserirAulaDto.Quantidade,
                                                                                         inserirAulaDto.CodigoTurma,
-                                                                                        inserirAulaDto.CodigoComponenteCurricular,
+                                                                                        componenteCurricularCodigo,
                                                                                         inserirAulaDto.NomeComponenteCurricular,
                                                                                         inserirAulaDto.TipoCalendarioId,
                                                                                         inserirAulaDto.TipoAula,
                                                                                         inserirAulaDto.CodigoUe,
                                                                                         inserirAulaDto.EhRegencia,
-                                                                                        inserirAulaDto.RecorrenciaAula));
+                                                                                        inserirAulaDto.RecorrenciaAula,
+                                                                                        codigoTerritorioSaber));
 
                         return await Task.FromResult(new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento."));
                     }
