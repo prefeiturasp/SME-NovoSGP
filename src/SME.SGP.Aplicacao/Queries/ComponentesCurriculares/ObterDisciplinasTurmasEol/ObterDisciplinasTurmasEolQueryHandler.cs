@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
                     LancaNota = disciplinaEol.LancaNota,
                     TurmaCodigo = disciplinaEol.TurmaCodigo,
                     TerritorioSaber = disciplinaEol.TerritorioSaber,
-                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplinaEol.GrupoMatriz.Id, Nome = disciplinaEol.GrupoMatriz.Nome }
+                    GrupoMatriz = new Integracoes.Respostas.GrupoMatriz { Id = disciplinaEol.GrupoMatriz?.Id ?? 0 , Nome = disciplinaEol.GrupoMatriz?.Nome ?? ""}
                 };
             }
         }
