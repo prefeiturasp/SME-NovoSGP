@@ -112,8 +112,10 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             aula.Id = 1;
 
             var retorno = await usecase.Executar(aula);
-
             retorno.ShouldNotBeNull();
+            retorno.Mensagens.Contains("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.").ShouldBe(true);
+            var aulas = ObterTodos<Dominio.Aula>();
+            aulas.All(aula => aula.Quantidade == 2).ShouldBe(true);
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
