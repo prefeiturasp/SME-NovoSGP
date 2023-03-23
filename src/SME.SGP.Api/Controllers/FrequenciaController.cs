@@ -9,7 +9,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Dtos.Log;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
