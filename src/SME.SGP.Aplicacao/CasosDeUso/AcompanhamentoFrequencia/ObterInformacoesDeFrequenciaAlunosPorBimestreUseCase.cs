@@ -69,10 +69,13 @@ namespace SME.SGP.Aplicacao
         {
             var codigoComponenteTerritorioCorrespondente = await ObterComponenteTerritorioSaberERfLogin(turma, componenteCurricularId);
 
-            var componentesCurricularesId = new List<long>() { componenteCurricularId };
+            var componentesCurricularesId = new List<long>();
             
             if (codigoComponenteTerritorioCorrespondente != default)
                 componentesCurricularesId.Add(codigoComponenteTerritorioCorrespondente.codigo);
+            
+            if (!componentesCurricularesId.Contains(componenteCurricularId))
+                componentesCurricularesId.Add(componenteCurricularId);
 
             var rfProfessorTerritorioSaber = codigoComponenteTerritorioCorrespondente != default ? codigoComponenteTerritorioCorrespondente.rf : null;
             
