@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                 if (!usuarioLogado.TemPerfilGestaoUes())
                 {
                     componentesCurriculares = (await mediator
-                   .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
 
                     componentesCurriculares ??= (await mediator
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
@@ -149,20 +149,26 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+                    componentesCurriculares = (await mediator
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
 
-                    if(componentesCurricularesDaTurma.Any() && componentesCurricularesDaTurma != null)
+                    if (!componentesCurriculares.Any())
                     {
-                        componentesCurriculares = componentesCurricularesDaTurma.Select(c => new ComponenteCurricularEol()
+                        var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+
+                        if (componentesCurricularesDaTurma.Any() && componentesCurricularesDaTurma != null)
                         {
-                            Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber.Value : c.CodigoComponenteCurricular,
-                            TerritorioSaber = c.TerritorioSaber,
-                            CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteCurricular : 0,
-                            Descricao = c.Nome,
-                            GrupoMatriz = new Dominio.GrupoMatriz() { Id = c.GrupoMatriz.Id, Nome = c.GrupoMatriz.Nome },
-                            TurmaCodigo = c.TurmaCodigo
-                        }).ToList();
-                    }
+                            componentesCurriculares = componentesCurricularesDaTurma.Select(c => new ComponenteCurricularEol()
+                            {
+                                Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber.Value : c.CodigoComponenteCurricular,
+                                TerritorioSaber = c.TerritorioSaber,
+                                CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteCurricular : 0,
+                                Descricao = c.Nome,
+                                GrupoMatriz = new Dominio.GrupoMatriz() { Id = c.GrupoMatriz.Id, Nome = c.GrupoMatriz.Nome },
+                                TurmaCodigo = c.TurmaCodigo
+                            }).ToList();
+                        }
+                    }                    
                 }
 
                 var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();
