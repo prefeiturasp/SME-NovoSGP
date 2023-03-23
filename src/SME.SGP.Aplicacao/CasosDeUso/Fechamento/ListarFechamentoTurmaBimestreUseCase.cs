@@ -174,9 +174,9 @@ namespace SME.SGP.Aplicacao
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
                 if (frequenciaAluno != null)
-                    alunoDto.Frequencia = frequenciaAluno.PercentualFrequencia.ToString();
+                    alunoDto.Frequencia = frequenciaAluno.PercentualFrequenciaFormatado;
                 else
-                    alunoDto.Frequencia = turmaPossuiFrequenciaRegistrada ? "100" : string.Empty;
+                    alunoDto.Frequencia = turmaPossuiFrequenciaRegistrada ? FrequenciaAluno.FormatarPercentual(100) : string.Empty;
 
                 if (aluno.CodigoAluno != null)
                 {
@@ -446,17 +446,18 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AlunosFechamentoNotaConceitoTurmaDto> TrataFrequenciaAluno(string componenteCurricularCodigo, AlunoPorTurmaResposta aluno, Turma turma)
         {
+            var percentualFrequencia = FrequenciaAluno.FormatarPercentual(100);
+
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmaEComponenteQuery(aluno.CodigoAluno, turma.CodigoTurma, componenteCurricularCodigo));
-
-            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 100;
-
-            if (frequenciaAluno != null && turma.AnoLetivo.Equals(2020))
-                percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
+            if (frequenciaAluno != null)
+            {
+                percentualFrequencia = turma.AnoLetivo.Equals(2020) ? frequenciaAluno.PercentualFrequenciaFinalFormatado : frequenciaAluno.PercentualFrequenciaFormatado;
+            }
 
             var fechamentoFinalAluno = new AlunosFechamentoNotaConceitoTurmaDto
             {
                 Nome = aluno.NomeAluno,
-                Frequencia = percentualFrequencia.ToString(),
+                Frequencia = percentualFrequencia,
                 NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
             };

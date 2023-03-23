@@ -294,7 +294,7 @@ namespace SME.SGP.Aplicacao
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
-                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequenciaFormatado;
                     }
                     else
                     {

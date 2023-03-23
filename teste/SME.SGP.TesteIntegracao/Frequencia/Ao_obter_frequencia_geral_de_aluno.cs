@@ -17,8 +17,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_obter_frequencia_geral_de_aluno : FrequenciaTesteBase
     {
-        private const string VALOR_83 = "83";
-        private const string VALOR_100 = "100";
+        private const string VALOR_83 = "83,33";
+        private const string VALOR_100 = "100,00";
         public Ao_obter_frequencia_geral_de_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -44,8 +44,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             var mediator = ServiceProvider.GetService<IMediator>();
             var valor = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(CODIGO_ALUNO_1, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()));
             
-            valor.Replace(".",",").ShouldNotBeEmpty();
-            valor.Replace(".",",").ShouldBe(VALOR_83);
+            valor.ShouldNotBeEmpty();
+            valor.ShouldBe(VALOR_83);
         }
 
         [Fact]

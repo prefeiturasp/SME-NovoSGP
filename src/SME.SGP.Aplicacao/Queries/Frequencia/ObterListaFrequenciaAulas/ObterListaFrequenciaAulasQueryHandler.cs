@@ -91,18 +91,16 @@ namespace SME.SGP.Aplicacao
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
-            var percentualFrequencia = turmaComFrequenciasRegistradas ?
-                (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100) :
-                int.MinValue;
+            var percentualFrequencia = turmaComFrequenciasRegistradas ? (frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100) : double.MinValue;
 
-            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : percentualFrequencia.ToString();
+            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : FrequenciaAluno.FormatarPercentual(percentualFrequencia);
 
             // Critico
-            if (percentualFrequencia <= percentualCritico)
+            if (percentualFrequencia <= (double)percentualCritico)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
 
             // Alerta
-            if (percentualFrequencia <= percentualAlerta)
+            if (percentualFrequencia <= (double)percentualAlerta)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
 
             return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };
