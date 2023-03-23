@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -124,6 +125,9 @@ namespace SME.SGP.Dominio
 
         public static double ArredondarPercentual(double percentual) => Math.Round(percentual, PERCENTUAL_FREQUENCIA_PRECISAO);
 
-        public static string FormatarPercentual(double percentual) => percentual.ToString($"N{PERCENTUAL_FREQUENCIA_PRECISAO}");
+        public static string FormatarPercentual(double percentual)
+        {
+            return percentual.ToString($"N{PERCENTUAL_FREQUENCIA_PRECISAO}", CultureInfo.CurrentCulture);
+        }
     }
 }
