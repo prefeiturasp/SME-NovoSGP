@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
 
             var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
-            var frequenciaAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(turma, new long[] { componenteCurricularId }, periodoEscolar.Id));
+            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, new long[] { componenteCurricularId }, periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { param.DisciplinaId }, periodoEscolar.Id));
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
                                                                                                                   param.DisciplinaId,
