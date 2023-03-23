@@ -1218,6 +1218,9 @@ namespace SME.SGP.IoC
             // Notificação
             services.TryAddScoped<IObterNotificacaoPorIdUseCase, ObterNotificacaoPorIdUseCase>();
 
+            // Log.
+            services.TryAddScoped<ISalvarLogUseCase, SalvarLogUseCase>();
+
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
             RegistrarCasoDeUsoFechamentoRabbitSgp(services);
