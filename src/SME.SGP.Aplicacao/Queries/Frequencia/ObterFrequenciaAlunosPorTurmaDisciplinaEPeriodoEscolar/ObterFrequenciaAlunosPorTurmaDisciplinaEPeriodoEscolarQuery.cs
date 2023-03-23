@@ -6,36 +6,32 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery : IRequest<IEnumerable<FrequenciaAlunoDto>>
+    public class ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery : IRequest<IEnumerable<FrequenciaAluno>>
     {
         public Turma Turma { get; set; }
         public long[] ComponentesCurricularesId { get; set; }
         public IEnumerable<long> PeriodosEscolaresIds { get; set; }
-        public string RfProfessorTerritorioSaber { get; set; }
 
-        public ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(Turma turma, long[] componentesCurricularesId, string rfProfessorTerritorioSaber = null)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId)
         {
             Turma = turma;
             ComponentesCurricularesId = componentesCurricularesId;
-            RfProfessorTerritorioSaber = rfProfessorTerritorioSaber;
         }
 
-        public ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, string rfProfessorTerritorioSaber = null)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds)
             :this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
-            RfProfessorTerritorioSaber = rfProfessorTerritorioSaber;
         }
 
-        public ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(Turma turma, long[] componentesCurricularesId, long periodoEscolarId, string rfProfessorTerritorioSaber = null)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, long periodoEscolarId)
             : this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = new List<long> { periodoEscolarId };
-            RfProfessorTerritorioSaber = rfProfessorTerritorioSaber;
         }
     }
 
-    public class ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQueryValidator : AbstractValidator<ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery>
+    public class ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQueryValidator : AbstractValidator<ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery>
     {
         public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQueryValidator()
         {

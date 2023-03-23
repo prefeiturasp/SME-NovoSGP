@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
 
             var frequenciaAlunosRegistrada = await mediator
-                .Send(new ObterRegistroFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarProfessorQuery(turma, new long[] { long.Parse(aula.DisciplinaId) }, periodoEscolar.Id));
+                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, new long[] { long.Parse(aula.DisciplinaId) }, periodoEscolar.Id));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
                 .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { aula.DisciplinaId }, periodoEscolar.Id));            
@@ -124,7 +124,7 @@ namespace SME.SGP.Aplicacao
 
                 aluno.CodigoTurma = long.Parse(turma.CodigoTurma);
 
-                var frequenciaAluno = frequenciaAlunosRegistrada.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno);
+                var frequenciaAluno = frequenciaAlunosRegistrada.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
 
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada);
 
@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao
             return TipoResponsavel.Filicacao1.ToString();
         }
 
-        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAlunoDto frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
+        private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
             var percentualFrequencia = 0;
 
