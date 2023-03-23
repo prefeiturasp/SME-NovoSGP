@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
             foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
                 await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo), cancellationToken);
 
-            return await ObterAuditoriaParaRetorno(aula.Id);
+            return (AuditoriaDto)registroFrequencia;
         }
 
         private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
@@ -104,11 +104,6 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<AuditoriaDto> ObterAuditoriaParaRetorno(long  aulaId)
-        {
-            var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaId));
-            return (AuditoriaDto)registroFrequencia;
-        }
         private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula, bool historico)
         {
             var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local(), historico));
