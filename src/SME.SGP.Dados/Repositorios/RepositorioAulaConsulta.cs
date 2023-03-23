@@ -1118,6 +1118,17 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
         }
 
+        public async Task<IEnumerable<PeriodoEscolarAulaDto>> ObterPeriodosEscolaresDasAulas(long[] aulasId)
+        {
+            var query = @"select pe.id, pe.bimestre, pe.periodo_inicio as DataInicio, pe.periodo_fim as DataFim, a.data_aula as DataAula, a.id as AulaId
+                          from aula a
+                         inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id 
+                         where a.id = any(@aulasId)
+                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
+
+            return await database.Conexao.QueryAsync<PeriodoEscolarAulaDto>(query, new { aulasId });
+        }
+
         public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)
         {
             var query = @"select a.id as AulaId,
