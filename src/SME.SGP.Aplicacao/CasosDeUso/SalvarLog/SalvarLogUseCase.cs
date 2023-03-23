@@ -13,9 +13,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task SalvarInformacao(string mensagem, LogContexto logContexto)
-        {
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Informacao, logContexto));
-        }
+        public Task SalvarInformacao(string mensagem, LogContexto logContexto)
+            => mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Informacao, logContexto));
     }
 }
