@@ -243,7 +243,7 @@ namespace SME.SGP.Api.Controllers
             return Ok();
         }
 
-        [HttpPost("frequencias/log/registros")]
+        [HttpPost("frequencias/log/registrar")]
         [ProducesResponseType(typeof(RegistroFrequenciaPorDataPeriodoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
