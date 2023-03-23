@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         public string ObterLoginAtual()
         {
             var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
-            if (loginAtual == null)
+            if (string.IsNullOrEmpty(loginAtual))
                 throw new NegocioException("Não foi possível localizar o login no token");
 
             return loginAtual;
