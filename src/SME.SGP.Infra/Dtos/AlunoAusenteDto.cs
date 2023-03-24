@@ -12,5 +12,7 @@ namespace SME.SGP.Infra
         public double? PercentualFrequencia { get; set; }
         public int MaximoCompensacoesPermitidas { get; set; }
         public bool Alerta { get; set; }
+
+        public string PercentualFrequenciaFormatado { get; set; }
     }
 }

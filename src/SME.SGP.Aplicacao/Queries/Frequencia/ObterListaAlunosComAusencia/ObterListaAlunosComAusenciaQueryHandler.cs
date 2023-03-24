@@ -64,6 +64,7 @@ namespace SME.SGP.Aplicacao
                     QuantidadeFaltasTotais = faltasNaoCompensadas,
                     MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > faltasNaoCompensadas ? faltasNaoCompensadas : quantidadeMaximaCompensacoes,
                     PercentualFrequencia = frequenciaAluno.PercentualFrequencia,
+                    PercentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado,
                     Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta
                 });
             }
