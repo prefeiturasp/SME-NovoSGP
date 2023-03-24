@@ -159,9 +159,14 @@ namespace SME.SGP.Aplicacao
                 var totalPresencas = frequenciaAlunoRegistrada?.TotalPresencas ?? default;
                 
                 var totalAulas = frequenciaAlunoRegistrada?.TotalAulas ?? default;
-                
-                var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada && totalAulas > 0 ? "100" : frequenciaAlunoRegistrada != null ? frequenciaAlunoRegistrada?.PercentualFrequencia.ToString() : "";
-                
+
+                var percentualFrequencia = string.Empty;
+
+                if (frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada && totalAulas > 0)
+                    percentualFrequencia = FrequenciaAluno.FormatarPercentual(100);
+                else if (frequenciaAlunoRegistrada != null)
+                    percentualFrequencia = frequenciaAlunoRegistrada.PercentualFrequenciaFormatado;
+
                 novaListaAlunos.Add(new AlunoFrequenciaDto
                 {
                     AlunoRf = long.Parse(aluno.CodigoAluno),
