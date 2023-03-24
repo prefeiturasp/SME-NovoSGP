@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
-                    var componenteTerritorio = componenteAtual.TerritorioSaber ? 
+                    var componenteTerritorio = componenteAtual.TerritorioSaber ?
                         await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteAtual.CodigoComponenteTerritorioSaber)) : null;
 
                     disciplinasAtibuicaoCj = disciplinasAtibuicaoCj.Append(new DisciplinaResposta()
@@ -130,14 +130,48 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var componentesCurriculares = (await mediator
-                    .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
+                var componentesCurriculares = new List<ComponenteCurricularEol>();
 
-                componentesCurriculares ??= (await mediator
-                    .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
+                if (!usuarioLogado.TemPerfilGestaoUes())
+                {
+                    componentesCurriculares = (await mediator
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
 
-                var idsDisciplinas = componentesCurriculares?
-                    .Select(a => a.TerritorioSaber ? (a.CodigoComponenteTerritorioSaber == 0 ? a.Codigo : a.CodigoComponenteTerritorioSaber) : a.Codigo).ToArray();
+                    componentesCurriculares ??= (await mediator
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
+
+                    componentesCurriculares.ForEach(c =>
+                    {
+                        var codigoTerritorio = c.Codigo;
+                        c.Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo;
+                        c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? codigoTerritorio : c.CodigoComponenteTerritorioSaber;
+                    });
+                }
+                else
+                {
+                    componentesCurriculares = (await mediator
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
+
+                    if (!componentesCurriculares.Any() || componentesCurriculares.Any(c => c.TerritorioSaber))
+                    {
+                        var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+
+                        if (componentesCurricularesDaTurma.Any() && componentesCurricularesDaTurma != null)
+                        {
+                            componentesCurriculares = componentesCurricularesDaTurma.Select(c => new ComponenteCurricularEol()
+                            {
+                                Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber.Value : c.CodigoComponenteCurricular,
+                                TerritorioSaber = c.TerritorioSaber,
+                                CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteCurricular : 0,
+                                Descricao = c.Nome,
+                                GrupoMatriz = new Dominio.GrupoMatriz() { Id = c.GrupoMatriz.Id, Nome = c.GrupoMatriz.Nome },
+                                TurmaCodigo = c.TurmaCodigo
+                            }).ToList();
+                        }
+                    }
+                }
+
+                var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();
 
                 if (usuarioLogado.TemPerfilAdmUE() || usuarioLogado.TemPerfilGestaoUes())
                     idsDisciplinas = await ObterDisciplinasAtribuicaoCJParaTurma(codigoTurma, componentesCurriculares, idsDisciplinas);
@@ -151,9 +185,11 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto.ForEach(d =>
                 {
-                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => (a.TerritorioSaber && a.CodigoComponenteTerritorioSaber > 0) ? a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular : a.Codigo == d.CodigoComponenteCurricular);
+                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
+
                     d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
                     d.CodigoComponenteCurricular = componenteEOL.Codigo;
+                    d.CodigoTerritorioSaber = componenteEOL.CodigoComponenteTerritorioSaber;
                     d.Regencia = componenteEOL.Regencia;
 
                     if (d.TerritorioSaber)
@@ -198,7 +234,7 @@ namespace SME.SGP.Aplicacao
         private async Task<long[]> ObterDisciplinasAtribuicaoCJParaTurma(string codigoTurma, List<ComponenteCurricularEol> componentesCurriculares, long[] idsDisciplinas)
         {
             var atribuicoesCJTurma = await ObterDisciplinasPerfilCJ(codigoTurma, null);
-            var codigosDisciplinasAtribuicao = atribuicoesCJTurma != null && atribuicoesCJTurma.Any() ? 
+            var codigosDisciplinasAtribuicao = atribuicoesCJTurma != null && atribuicoesCJTurma.Any() ?
                 (from a in atribuicoesCJTurma
                  where !idsDisciplinas.Any(id => a.CodigoComponenteCurricular == id || a.CodigoComponenteTerritorioSaber == id)
                  select a.TerritorioSaber ? a.CodigoComponenteCurricular : a.CodigoComponenteTerritorioSaber)
@@ -416,7 +452,7 @@ namespace SME.SGP.Aplicacao
                     {
                         d.CodigoComponenteCurricular = componenteCorrepondente.Codigo;
                         d.CodigoTerritorioSaber = componenteCorrepondente.CodigoComponenteTerritorioSaber;
-                        d.Nome = componenteCorrepondente.Descricao;                        
+                        d.Nome = componenteCorrepondente.Descricao;
                     }
                 }
             });
