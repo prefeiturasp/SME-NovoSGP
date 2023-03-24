@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
             somatorioAulasRealizadas = (dados1 == null ? 0 : dados1.AulasRealizadas) + (dados2 == null ? 0 : dados2.AulasRealizadas);
             somatorioAusencias = (dados1 == null ? 0 : dados1.Ausencias) + (dados2 == null ? 0 : dados2.Ausencias);
             somatorioCompensacoes = (dados1 == null ? 0 : dados1.Compensacoes) + (dados2 == null ? 0 : dados2.Compensacoes);
-            mediaFrequencia = (dados1 ?? dados2).PercentualFrequencia(somatorioAulasRealizadas, somatorioAusencias - somatorioCompensacoes);
+            mediaFrequencia = (dados1 ?? dados2).CalcularPercentualFrequencia(somatorioAulasRealizadas, somatorioAusencias - somatorioCompensacoes);
 
             mediaFrequencia = mediaFrequencia != null ? Math.Round(mediaFrequencia.Value, 2) : mediaFrequencia;
 
@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
                 Ausencias = somatorioAusencias,
                 AulasRealizadas = somatorioAulasRealizadas,
                 Semestre = bimestreReferencia <= 2 ? 1 : 2,
-                Bimestre = "0",
+                Bimestre = "0"
             });
 
             return bimestres;
