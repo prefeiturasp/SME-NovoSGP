@@ -152,7 +152,7 @@ namespace SME.SGP.Aplicacao
                     componentesCurriculares = (await mediator
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
 
-                    if (!componentesCurriculares.Any())
+                    if (!componentesCurriculares.Any() || componentesCurriculares.Any(c => c.TerritorioSaber))
                     {
                         var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
 
