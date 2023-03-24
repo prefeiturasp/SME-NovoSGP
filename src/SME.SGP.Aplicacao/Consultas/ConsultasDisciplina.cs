@@ -142,9 +142,8 @@ namespace SME.SGP.Aplicacao
 
                     componentesCurriculares.ForEach(c =>
                     {
-                        var codigoTerritorio = c.Codigo;
                         c.Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo;
-                        c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? codigoTerritorio : c.CodigoComponenteTerritorioSaber;
+                        c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : 0;
                     });
                 }
                 else
