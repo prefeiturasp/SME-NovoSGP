@@ -55,7 +55,7 @@ namespace SME.SGP.Dominio
                             from ccp in componentesCurricularesProfessor
                             where ((!string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) && ccp.codigoTerritorioSaber.Equals(a.DisciplinaId) && a.ProfessorRf.Equals(CodigoRf)) ||
                                   ((string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) || ccp.codigoTerritorioSaber == "0") &&  ccp.codigo.Equals(a.DisciplinaId)) ||
-                                  a.ProfessorRf == CodigoRf) && !a.AulaCJ
+                                  a.ProfessorRf == CodigoRf)
                             select a).Distinct();
                 }
             }
