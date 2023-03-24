@@ -142,9 +142,8 @@ namespace SME.SGP.Aplicacao
 
                     componentesCurriculares.ForEach(c =>
                     {
-                        var codigoTerritorio = c.Codigo;
                         c.Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo;
-                        c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? codigoTerritorio : c.CodigoComponenteTerritorioSaber;
+                        c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : 0;
                     });
                 }
                 else
@@ -171,7 +170,7 @@ namespace SME.SGP.Aplicacao
                     }                    
                 }
 
-                var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();
+                var idsDisciplinas = componentesCurriculares?.Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : a.Codigo).ToArray();
 
                 if (usuarioLogado.TemPerfilAdmUE() || usuarioLogado.TemPerfilGestaoUes())
                     idsDisciplinas = await ObterDisciplinasAtribuicaoCJParaTurma(codigoTurma, componentesCurriculares, idsDisciplinas);
@@ -185,7 +184,7 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto.ForEach(d =>
                 {
-                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
+                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular : a.Codigo == d.CodigoComponenteCurricular);
 
                     d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
                     d.CodigoComponenteCurricular = componenteEOL.Codigo;
