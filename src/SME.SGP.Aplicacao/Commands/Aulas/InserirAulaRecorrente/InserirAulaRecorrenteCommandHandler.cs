@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
             if (componente == null) return false;
 
             if (!componente.TerritorioSaber && (componente.Codigo != aulaRecorrente.ComponenteCurricularId)
-                || componente.TerritorioSaber && (componente.CodigoComponenteTerritorioSaber != aulaRecorrente.ComponenteCurricularId))
+                || componente.TerritorioSaber && (componente.CodigoComponenteTerritorioSaber != aulaRecorrente.CodigoTerritorioSaber))
                 return false;
 
             return true;
