@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciasAluno.Sum(f => f.TotalCompensacoes),
             };
 
-            informacoesEscolaresAluno.FrequenciaGlobal = frequenciaAluno.PercentualFrequencia.ToString() ;
+            informacoesEscolaresAluno.FrequenciaGlobal = frequenciaAluno.PercentualFrequenciaFormatado;
 
             return informacoesEscolaresAluno;
         }
