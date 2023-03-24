@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Pipelines.Sockets.Unofficial.Arenas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -155,7 +156,8 @@ namespace SME.SGP.Dados
         }
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia = TipoFrequenciaAluno.PorDisciplina)
         {
-            var query = @"select * 
+            var query = @"select * from (
+                            select *, row_number() over (partition by turma_id, codigo_aluno, bimestre, disciplina_id, tipo order by id desc) sequencia
                             from frequencia_aluno fa 
                            where fa.codigo_aluno = @codigoAluno
                              and fa.turma_id = @turmaId 
@@ -163,6 +165,8 @@ namespace SME.SGP.Dados
 
             if (bimestre > 0)
                 query += " and fa.bimestre = @bimestre";
+
+            query += ") as freqAluno where freqAluno.sequencia = 1";
 
             var parametros = new
             {
@@ -715,7 +719,7 @@ namespace SME.SGP.Dados
         }
         public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmaComponenteBimestres(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string componenteCurricularId, string turmaCodigo, int[] bimestres)
         {
-            var query = new StringBuilder(@"select fa.*
+            var query = new StringBuilder(@"select * from (select fa.*, row_number() over (partition by fa.turma_id, fa.codigo_aluno, fa.bimestre, fa.disciplina_id, fa.tipo order by fa.id desc) sequencia
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where
@@ -727,6 +731,7 @@ namespace SME.SGP.Dados
             if (bimestres.Length > 0)
                 query.AppendLine($" and ({(bimestres.Contains(0) ? " fa.bimestre is null or " : "")}  fa.bimestre = any(@bimestres)) ");
 
+            query.AppendLine(") as freqAluno where freqAluno.sequencia = 1");
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
