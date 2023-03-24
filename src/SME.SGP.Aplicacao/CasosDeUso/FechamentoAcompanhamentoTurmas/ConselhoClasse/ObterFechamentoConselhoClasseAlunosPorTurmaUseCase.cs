@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 if (consolidadoConselhoClasse == null)
                     continue;
 
-                var frequenciaGlobal = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
+                var frequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
                 string parecerConclusivo = RetornaNomeParecerConclusivoAluno(pareceresConclusivosDoPeriodo, pareceresConclusivosDoPeriodoAnoAnterior, consolidadoConselhoClasse.ParecerConclusivoId);
 
                 lista.Add(new ConselhoClasseAlunoDto()
