@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new ObterListaFrequenciaAulasQuery(turma,
                                                                           alunosDaTurma.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno),
                                                                           aulas,
-                                                                          frequenciaAlunos,
+                                                                          frequenciaAlunos.ToList(),
                                                                           registrosFrequenciaAlunos,
                                                                           anotacoesTurma,
                                                                           frequenciaPreDefinida,
