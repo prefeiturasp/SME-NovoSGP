@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 {
                     NomeAluno = "Aluno 2",
                     Ano = DateTime.Now.Year,
-                    DataSituacao = periodoEscolar.PeriodoInicio.AddDays(1),
+                    DataSituacao = DateTime.Now.Date,
                     CodigoAluno = CODIGO_ALUNO_4,
                     CodigoComponenteCurricular = 138,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     DataSituacao = periodoEscolar.PeriodoInicio,
                     CodigoAluno = CODIGO_ALUNO_2,
                     CodigoComponenteCurricular = 138,
-                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.ReclassificadoSaida,
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = SITUACAO_MATRICULA_15
                 },
                 new AlunoPorTurmaResposta()
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     DataSituacao = primeiroBimestre.PeriodoInicio.AddDays(-1),
                     CodigoAluno = CODIGO_ALUNO_3,
                     CodigoComponenteCurricular = 138,
-                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.VinculoIndevido,
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = SITUACAO_MATRICULA_4
                 },
                 new AlunoPorTurmaResposta()
