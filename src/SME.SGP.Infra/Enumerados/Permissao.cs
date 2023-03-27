@@ -698,7 +698,7 @@
         [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, EhConsulta = true, Url = "/relatorios/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
         RENAAPA_C = 241,
         
-        [PermissaoMenu(Menu = "SONDAGEM", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, EhConsulta = true, Url = "/relatorios/sondagem/analitico", EhSubMenu = true, SubMenu = "Sondagem")]
+        [PermissaoMenu(Menu = "SONDAGEM", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, EhConsulta = true, Url = "/relatorios/sondagem/analitico", EhSubMenu = true, SubMenu = "Relatório Analítico Sondagem")]
         RESON_C = 242
     }
 }
