@@ -355,7 +355,8 @@ namespace SME.SGP.Dados.Repositorios
                          on sen.id = ens.secao_encaminhamento_id 
                         where not en.excluido 
                         and en.situacao = @situacao
-                        and sen.nome = 'Itinerância' and ens.concluido 
+                        and sen.nome_componente = 'QUESTOES_ITINERACIA'
+                        and ens.concluido 
                         and not ens.excluido and 
                         en.id = @encaminhamentoId";
 
