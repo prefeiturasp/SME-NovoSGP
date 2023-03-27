@@ -31,6 +31,9 @@ namespace SME.SGP.Aplicacao
             var nomeUe = encaminhamentoNAAPA.Turma.Ue.TipoEscola == TipoEscola.Nenhum ? encaminhamentoNAAPA.Turma.Ue.Nome : 
                             $"{encaminhamentoNAAPA.Turma.Ue.TipoEscola.ObterNomeCurto()} {encaminhamentoNAAPA.Turma.Ue.Nome}";
 
+            if(encaminhamentoNAAPA.Situacao == Dominio.Enumerados.SituacaoNAAPA.AguardandoAtendimento)
+                await VerificaSeEstaEmAguardandoAtendimentoIndevidamente(encaminhamentoNAAPA);
+
             return new EncaminhamentoNAAPARespostaDto()
             {
                 Aluno = aluno,
@@ -97,6 +100,13 @@ namespace SME.SGP.Aplicacao
             }
 
             return turmaNome;
+        }
+
+        public async Task VerificaSeEstaEmAguardandoAtendimentoIndevidamente(EncaminhamentoNAAPA encaminhamento)
+        {
+            bool necessitaAlteracao = await mediator.Send(new VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamenteQuery(encaminhamento.Id));
+            if (necessitaAlteracao)
+                await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamento, Dominio.Enumerados.SituacaoNAAPA.EmAtendimento));        
         }
     }
 }
