@@ -520,6 +520,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 {
                     Codigo = 1106,
                     TerritorioSaber = false
+                },
+                new ComponenteCurricularEol()
+                {
+                    Codigo = 138,
+                    TerritorioSaber = false
                 }
             });
         }
