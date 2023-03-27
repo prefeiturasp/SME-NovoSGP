@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class RelatorioAnaliticoSondagemController : ControllerBase
     {
-        [HttpPost]
+        [HttpPost("sondagem/analitico")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
