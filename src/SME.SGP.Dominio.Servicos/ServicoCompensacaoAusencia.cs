@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Options;
+using Minio.DataModel;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
@@ -235,6 +236,14 @@ namespace SME.SGP.Dominio.Servicos
             var listaPersistencia = new List<CompensacaoAusenciaAluno>();
             IEnumerable<CompensacaoAusenciaAluno> alunos = new List<CompensacaoAusenciaAluno>();
 
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
+
+            var codigoComponenteTerritorioCorrespondente = await VerificarSeComponenteEhDeTerritorio(turma, long.Parse(disciplinaId));
+
+            var componentesCurricularesId = new List<long>() { long.Parse(disciplinaId) };
+            if (codigoComponenteTerritorioCorrespondente != default)
+                componentesCurricularesId.Add(codigoComponenteTerritorioCorrespondente.codigo);
+
             if (alteracao)
                 alunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
 
@@ -247,7 +256,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (alunosDto.Any())
             {
-                var obterFrequenciaPorListaDeAlunosDisciplinaData = await mediator.Send(new ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(alunosDto?.Select(x => x.Id).ToArray(), disciplinaId, periodo.PeriodoFim, turmaId));
+                var obterFrequenciaPorListaDeAlunosDisciplinaData = await mediator.Send(new ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(alunosDto?.Select(x => x.Id).ToArray(), componentesCurricularesId.Select(d => d.ToString()).ToArray(), periodo.Id, turmaId));
 
                 // altera as faltas compensadas
                 var alunosAlterarFaltasCompensada = alunos.Where(a => !a.Excluido);
@@ -287,10 +296,10 @@ namespace SME.SGP.Dominio.Servicos
                 if (listaAlunosDto.Any())
                 {
                     var listaIdsAluno = listaAlunosDto.Select(x => x.Id);
-                    var consultaAlunosFrequencia = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(c => listaIdsAluno.Contains(c.CodigoAluno) && c.DisciplinaId == disciplinaId && c.PeriodoFim == periodo.PeriodoFim && c.TurmaId == turmaId);
+                    var consultaAlunosFrequencia = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(c => listaIdsAluno.Contains(c.CodigoAluno) && componentesCurricularesId.Contains(long.Parse(c.DisciplinaId)) && c.PeriodoFim == periodo.PeriodoFim && c.TurmaId == turmaId);
                     foreach (var alunoDto in listaAlunosDto)
                     {
-                        var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && x.DisciplinaId == disciplinaId && x.TurmaId == turmaId);
+                        var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && componentesCurricularesId.Contains(long.Parse(x.DisciplinaId)) && x.TurmaId == turmaId);
                         if (frequenciaAluno == null)
                         {
                             mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
@@ -504,6 +513,32 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"{respTurmasComErro} {respostaSucesso}");
 
             return respostaSucesso;
+        }
+        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
+        {
+            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (usuarioLogado.EhProfessor())
+            {
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
+            }
+            else if (usuarioLogado.EhProfessorCj())
+            {
+                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
+                if (professor != null)
+                {
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                    if (componenteProfessorRelacionado != null)
+                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
+                }
+            }
+
+            return codigoComponenteTerritorioCorrespondente;
         }
     }
 }

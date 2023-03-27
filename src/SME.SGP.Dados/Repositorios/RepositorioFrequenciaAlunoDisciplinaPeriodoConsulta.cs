@@ -269,16 +269,38 @@ namespace SME.SGP.Dados
                 turmaCodigo
             });
         }
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string disciplinaId, DateTime dataAtual, string turmaCodigo)
+
+        public FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo)
+        {
+            var query = @"select *
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where codigo_aluno = @codigoAluno
+                            and disciplina_id = any(@disciplinaIds)
+	                        and tipo = 1
+	                        and pe.id = @periodoEscolarId ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += "and fa.turma_id = @turmaCodigo";
+
+            return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
+            {
+                codigoAluno,
+                disciplinaIds,
+                periodoEscolarId,
+                turmaCodigo
+            });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo)
         {
             var query = @"select *
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                         where codigo_aluno = any(@codigosAlunos)
-                            and disciplina_id = @disciplinaId
+                            and disciplina_id = any(@disciplinaIds)
 	                        and tipo = 1
-	                        and pe.periodo_inicio <= @dataAtual
-	                        and pe.periodo_fim >= @dataAtual ";
+	                        and pe.id = @periodoEscolarId ";
 
             if (!string.IsNullOrEmpty(turmaCodigo))
                 query += "and fa.turma_id = @turmaCodigo";
@@ -286,8 +308,8 @@ namespace SME.SGP.Dados
             return await database.QueryAsync<FrequenciaAluno>(query, new
             {
                 codigosAlunos,
-                disciplinaId,
-                dataAtual,
+                disciplinaIds,
+                periodoEscolarId,
                 turmaCodigo
             });
         }
