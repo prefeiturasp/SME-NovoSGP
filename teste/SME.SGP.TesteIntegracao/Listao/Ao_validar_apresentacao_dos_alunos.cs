@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Apresentação de alunos novos com tooltip por 15 dias")]
         public async Task Validar_aprensentacao_de_alunos_novos_devem_aparecer_com_o_tooltip_durante_15_dias()
         {
             var dataInicio = DateTimeExtension.HorarioBrasilia().AddDays(-10);
@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             novoAluno.Marcador.Descricao.ShouldBe(descricaoMarcador);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Apresentação de alunos novos sem tooltip após 15 dias")]
         public async Task Validar_aprensentacao_de_alunos_novos_nao_deve_aparecer_com_o_tooltip_apos_15_dias()
         {
             var dataInicio = DateTimeExtension.HorarioBrasilia().AddDays(11);
@@ -145,7 +145,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             novoAluno.Marcador.ShouldBeNull();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Apresentação de alunos inativos com tooltip Inativo")]
         public async Task Validar_aprensentacao_de_alunos_inativo_devem_aparecer_com_o_tooltip_inativo()
         {
             var dataInicio = DateTimeExtension.HorarioBrasilia().AddDays(-10);
@@ -204,7 +204,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             novoAluno.Marcador.Descricao.ShouldBe(descricaoMarcador);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Não apresentar alunos inativos antes do início do período")]
         public async Task Validar_nao_deve_aprensentar_de_aluno_inativo_antes_do_inicio()
         {
             var dataInicio = DateTimeExtension.HorarioBrasilia();
