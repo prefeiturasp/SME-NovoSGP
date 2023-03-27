@@ -306,7 +306,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await relatorioAnaliticoSondagemUseCase.Executar(filtroRelatorioAnaliticoSondagemDto));
         }
 
-        [HttpGet("tiposondagem")]
+        [HttpGet("sondagem/analitico/tiposondagem")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RESON_C, Policy = "Bearer")]
