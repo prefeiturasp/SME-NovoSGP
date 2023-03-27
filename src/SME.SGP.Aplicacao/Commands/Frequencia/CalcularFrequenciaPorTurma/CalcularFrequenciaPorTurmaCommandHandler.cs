@@ -99,9 +99,11 @@ namespace SME.SGP.Aplicacao
                     }
 
                     VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(registroFreqAlunos, frequenciaDosAlunos, excluirFrequenciaAlunoIds);
-                    await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
                     await TrataPersistencia(frequenciaDosAlunos);
                 }
+
+                if (excluirFrequenciaAlunoIds.Any())
+                    await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
             }
         }        
 

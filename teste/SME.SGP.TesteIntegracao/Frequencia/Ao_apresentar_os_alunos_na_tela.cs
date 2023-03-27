@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia), ServiceLifetime.Scoped));
         }
         
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve exibir tooltip alunos novos durante 15 dias")]
         public async Task Deve_exibir_tooltip_alunos_novos_durante_15_dias()
         {
             var retorno = await ExecutarTesteToolTip();
@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Marcador == null).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve exibir tooltip alunos inativos ate data sua inativacao")]
         public async Task Deve_exibir_tooltip_alunos_inativos_ate_data_sua_inativacao()
         {
             var retorno = await ExecutarTesteToolTip();
@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_11)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Nao deve exibir alunos inativos antes do comeco do ano ou bimestre")]
         public async Task Nao_deve_exibir_alunos_inativos_antes_do_comeco_do_ano_ou_bimestre()
         {
             var retorno = await ExecutarTesteToolTip();

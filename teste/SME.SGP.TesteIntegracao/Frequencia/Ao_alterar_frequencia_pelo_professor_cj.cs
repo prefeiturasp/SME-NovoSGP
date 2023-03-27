@@ -14,10 +14,10 @@ namespace SME.SGP.TesteIntegracao.Frequencia
     {
         public Ao_alterar_frequencia_pelo_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
-        //[Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar a Frequencia quando CJ")]
         public async Task Deve_alterar_a_frequencia()
         {
-            await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), criarPeriodo:false);
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await InserirFrequenciaUseCaseComValidacaoBasica(ObterFrequenciaDto());
