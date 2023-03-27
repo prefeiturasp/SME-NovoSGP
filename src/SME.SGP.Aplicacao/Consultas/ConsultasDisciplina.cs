@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
-                    var componenteTerritorio = componenteAtual.TerritorioSaber ? 
+                    var componenteTerritorio = componenteAtual.TerritorioSaber ?
                         await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteAtual.CodigoComponenteTerritorioSaber)) : null;
 
                     disciplinasAtibuicaoCj = disciplinasAtibuicaoCj.Append(new DisciplinaResposta()
@@ -138,7 +138,7 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
 
                     componentesCurriculares ??= (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();                    
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
 
                     componentesCurriculares.ForEach(c =>
                     {
@@ -168,7 +168,7 @@ namespace SME.SGP.Aplicacao
                                 TurmaCodigo = c.TurmaCodigo
                             }).ToList();
                         }
-                    }                    
+                    }
                 }
 
                 var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();
@@ -234,7 +234,7 @@ namespace SME.SGP.Aplicacao
         private async Task<long[]> ObterDisciplinasAtribuicaoCJParaTurma(string codigoTurma, List<ComponenteCurricularEol> componentesCurriculares, long[] idsDisciplinas)
         {
             var atribuicoesCJTurma = await ObterDisciplinasPerfilCJ(codigoTurma, null);
-            var codigosDisciplinasAtribuicao = atribuicoesCJTurma != null && atribuicoesCJTurma.Any() ? 
+            var codigosDisciplinasAtribuicao = atribuicoesCJTurma != null && atribuicoesCJTurma.Any() ?
                 (from a in atribuicoesCJTurma
                  where !idsDisciplinas.Any(id => a.CodigoComponenteCurricular == id || a.CodigoComponenteTerritorioSaber == id)
                  select a.TerritorioSaber ? a.CodigoComponenteCurricular : a.CodigoComponenteTerritorioSaber)
@@ -452,7 +452,7 @@ namespace SME.SGP.Aplicacao
                     {
                         d.CodigoComponenteCurricular = componenteCorrepondente.Codigo;
                         d.CodigoTerritorioSaber = componenteCorrepondente.CodigoComponenteTerritorioSaber;
-                        d.Nome = componenteCorrepondente.Descricao;                        
+                        d.Nome = componenteCorrepondente.Descricao;
                     }
                 }
             });
