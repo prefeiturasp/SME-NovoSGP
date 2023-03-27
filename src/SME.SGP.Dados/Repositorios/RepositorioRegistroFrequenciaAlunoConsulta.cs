@@ -366,7 +366,7 @@ namespace SME.SGP.Dados.Repositorios
                                                   and a.turma_id = any(@turmasId)
                                                   {(!string.IsNullOrWhiteSpace(disciplinaId) ? " and a.disciplina_id = @disciplinaId" : String.Empty)}
                                                   group by a.id)
-                            select sum(qdade) from qdadeAulasAluno;";
+                            select coalesce(sum(qdade), 0) from qdadeAulasAluno;";
 
             
             return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),

@@ -45,9 +45,7 @@ namespace SME.SGP.Aplicacao
                                                                                  bimestres.ToArray(),
                                                                                  matricula.dataMatricula,
                                                                                  !matricula.inativo && periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
-            }
-
-            int quantidadeTotalAulas = aulasComponentesTurmas.Sum(a => a.AulasQuantidade);
+            }            
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
             {
@@ -69,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAluno = new FrequenciaAluno()
             {
-                TotalAulas = quantidadeTotalAulas,
+                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
                 TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };

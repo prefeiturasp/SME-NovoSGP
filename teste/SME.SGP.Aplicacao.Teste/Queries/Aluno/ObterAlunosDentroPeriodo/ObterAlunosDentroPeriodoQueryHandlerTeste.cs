@@ -75,12 +75,12 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
         {
             var listaAlunos = new List<AlunoPorTurmaResposta>()
             {
-                new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 3, 1), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
-                new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 3, 3), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
-                new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 3, 4), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
-                new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 3, 5), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
-                new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 3, 6), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
-                new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 3, 7), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo }
+                new AlunoPorTurmaResposta() { CodigoAluno = "1", DataMatricula = new DateTime(anoAtual, 3, 1), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
+                new AlunoPorTurmaResposta() { CodigoAluno = "2", DataMatricula = new DateTime(anoAtual, 3, 3), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
+                new AlunoPorTurmaResposta() { CodigoAluno = "3", DataMatricula = new DateTime(anoAtual, 3, 4), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
+                new AlunoPorTurmaResposta() { CodigoAluno = "4", DataMatricula = new DateTime(anoAtual, 3, 5), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
+                new AlunoPorTurmaResposta() { CodigoAluno = "5", DataMatricula = new DateTime(anoAtual, 3, 6), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo },
+                new AlunoPorTurmaResposta() { CodigoAluno = "6", DataMatricula = new DateTime(anoAtual, 3, 7), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo }
             };
 
             mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
@@ -98,9 +98,9 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
             Assert.Contains(listaAlunos[0], retorno);
             Assert.Contains(listaAlunos[1], retorno);
             Assert.Contains(listaAlunos[2], retorno);
-            Assert.DoesNotContain(listaAlunos[3], retorno); // não deve constar, pois considera o aluno na turma no dia posterior a matrícula
-            Assert.DoesNotContain(listaAlunos[4], retorno); // não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo
-            Assert.DoesNotContain(listaAlunos[5], retorno); // idem ao aluno acima
+            Assert.False(retorno.Contains(listaAlunos[3]), "não deve constar, pois considera o aluno na turma no dia posterior a matrícula");
+            Assert.False(retorno.Contains(listaAlunos[4]), "não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo");
+            Assert.False(retorno.Contains(listaAlunos[5]), "não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo");
         }
 
         [Fact(DisplayName = "ObterAlunosDentroPeriodoQuery - Considerar alunos com período de matrícula condizente com a data única do período em que alunos foram inativados anteriormente e posteriormente a data do período no EOL")]
@@ -131,15 +131,15 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
             Assert.NotNull(retorno);
             Assert.NotEmpty(retorno);
             Assert.Equal(5, retorno.Count());
-            Assert.DoesNotContain(listaAlunos[0], retorno); // não deve constar, pois foi considerado inativado antes da data de referência
-            Assert.Contains(listaAlunos[1], retorno); // deve constar, pois é considerado ativo na data de referência
-            Assert.Contains(listaAlunos[2], retorno); // deve constar, pois mesmo considerado inativado na data de referência só estará fora da turma no dia posterior
-            Assert.Contains(listaAlunos[3], retorno); // deve constar, pois é considerado ativo na data de referência
-            Assert.Contains(listaAlunos[4], retorno); // idem ao aluno acima
-            Assert.Contains(listaAlunos[5], retorno); // idem ao aluno acima
-            Assert.DoesNotContain(listaAlunos[6], retorno); // não deve constar, pois considera o aluno na turma no dia posterior a matrícula
-            Assert.DoesNotContain(listaAlunos[7], retorno); // não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo
-            Assert.DoesNotContain(listaAlunos[8], retorno); // idem ao aluno acima
+            Assert.False(retorno.Contains(listaAlunos[0]), "não deve constar, pois foi considerado inativado antes da data de referência");
+            Assert.True(retorno.Contains(listaAlunos[1]), "deve constar, pois é considerado ativo na data de referência");
+            Assert.True(retorno.Contains(listaAlunos[2]), "deve constar, pois mesmo considerado inativado na data de referência só estará fora da turma no dia posterior");
+            Assert.True(retorno.Contains(listaAlunos[3]), "deve constar, pois é considerado ativo na data de referência");
+            Assert.True(retorno.Contains(listaAlunos[4]), "deve constar, pois é considerado ativo na data de referência");
+            Assert.True(retorno.Contains(listaAlunos[5]), "deve constar, pois é considerado ativo na data de referência");
+            Assert.False(retorno.Contains(listaAlunos[6]), "não deve constar, pois considera o aluno na turma no dia posterior a matrícula");
+            Assert.False(retorno.Contains(listaAlunos[7]), "não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo");
+            Assert.False(retorno.Contains(listaAlunos[8]), "não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo");
         }
 
         [Fact(DisplayName = "ObterAlunosDentroPeriodoQuery - Considerar alunos com período de matrícula condizente com o período informado e todos alunos ativos no EOL")]
@@ -168,13 +168,13 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
             Assert.NotNull(retorno);
             Assert.NotEmpty(retorno);
             Assert.Equal(4, retorno.Count());
-            Assert.Contains(listaAlunos[0], retorno); // deve constar, pois é considerado ativo no período
-            Assert.Contains(listaAlunos[1], retorno); // idem ao aluno acima
-            Assert.Contains(listaAlunos[2], retorno); // idem ao aluno acima
-            Assert.Contains(listaAlunos[3], retorno); // idem ao aluno acima
-            Assert.DoesNotContain(listaAlunos[4], retorno); // não deve constar, pois considera o aluno na turma no dia posterior a matrícula
-            Assert.DoesNotContain(listaAlunos[5], retorno); // não deve constar, pois foi matriculado posteriormente ao período apesar de ser considerado como ativo
-            Assert.DoesNotContain(listaAlunos[6], retorno); // idem ao aluno acima
+            Assert.True(retorno.Contains(listaAlunos[0]), "deve constar, pois é considerado ativo no período");
+            Assert.True(retorno.Contains(listaAlunos[1]), "deve constar, pois é considerado ativo no período");
+            Assert.True(retorno.Contains(listaAlunos[2]), "deve constar, pois é considerado ativo no período");
+            Assert.True(retorno.Contains(listaAlunos[3]), "deve constar, pois é considerado ativo no período");
+            Assert.False(retorno.Contains(listaAlunos[4]), "não deve constar, pois considera o aluno na turma no dia posterior a matrícula");
+            Assert.False(retorno.Contains(listaAlunos[5]), "não deve constar, pois foi matriculado posteriormente ao período apesar de ser considerado como ativo");
+            Assert.False(retorno.Contains(listaAlunos[6]), "não deve constar, pois foi matriculado posteriormente ao período apesar de ser considerado como ativo");
         }
 
         [Fact(DisplayName = "ObterAlunosDentroPeriodoQuery - Considerar alunos com período de matrícula condizente com o período informado em que alunos foram inativados anteriormente, dentro e posteriormente ao período no EOL")]
@@ -206,16 +206,16 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
             Assert.NotNull(retorno);
             Assert.NotEmpty(retorno);
             Assert.Equal(6, retorno.Count());
-            Assert.DoesNotContain(listaAlunos[0], retorno); // não deve constar, pois foi considerado inativado antes do período
-            Assert.Contains(listaAlunos[1], retorno); // deve constar, pois é considerado ativo no período
-            Assert.Contains(listaAlunos[2], retorno); // deve constar, pois mesmo considerado inativado no período só estará fora da turma no dia posterior
-            Assert.Contains(listaAlunos[3], retorno); // deve constar, pois é considerado ativo no período
-            Assert.Contains(listaAlunos[4], retorno); // idem ao aluno acima
-            Assert.Contains(listaAlunos[5], retorno); // idem ao aluno acima
-            Assert.DoesNotContain(listaAlunos[6], retorno); // não deve constar, pois considera na turma no dia posterior a matrícula
-            Assert.DoesNotContain(listaAlunos[7], retorno); // não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo
-            Assert.DoesNotContain(listaAlunos[8], retorno); // idem ao aluno acima
-            Assert.Contains(listaAlunos[9], retorno); // deve constar, pois seu período de matrícula está dentro do período definido
+            Assert.False(retorno.Contains(listaAlunos[0]), "não deve constar, pois foi considerado inativado antes do período");
+            Assert.True(retorno.Contains(listaAlunos[1]), "deve constar, pois é considerado ativo no período");
+            Assert.True(retorno.Contains(listaAlunos[2]), "deve constar, pois mesmo considerado inativado no período só estará fora da turma no dia posterior");
+            Assert.True(retorno.Contains(listaAlunos[3]), "deve constar, pois é considerado ativo no período");
+            Assert.True(retorno.Contains(listaAlunos[4]), "deve constar, pois é considerado ativo no período");
+            Assert.True(retorno.Contains(listaAlunos[5]), "deve constar, pois é considerado ativo no período");
+            Assert.False(retorno.Contains(listaAlunos[6]), "não deve constar, pois considera na turma no dia posterior a matrícula");
+            Assert.False(retorno.Contains(listaAlunos[7]), "não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo");
+            Assert.False(retorno.Contains(listaAlunos[8]), "não deve constar, pois foi matriculado posteriormente a data de referência apesar de ser considerado como ativo");
+            Assert.True(retorno.Contains(listaAlunos[9]), "deve constar, pois seu período de matrícula está dentro do período definido");
         }
     }
 }

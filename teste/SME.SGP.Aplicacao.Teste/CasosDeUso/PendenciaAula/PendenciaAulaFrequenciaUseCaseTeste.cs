@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             };
 
             var hoje = DateTime.Today;
-            mediator.Setup(a => a.Send(It.IsAny<ObterPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterAulasPendenciaSemFechamentoTurmaDiscplinaProcessadoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(aula);
 
             mediator.Setup(a => a.Send(It.IsAny<SalvarPendenciaAulasPorTipoCommand>(), It.IsAny<CancellationToken>()));

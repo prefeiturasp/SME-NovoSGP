@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve retornar false se a mensagem estiver vazia quando recalcula a frequência")]
         public async Task Deve_retornar_false_se_a_mensagem_estiver_vazia()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
             retorno.ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve gravar 100 de percentual de frequencia para um aluno quando recalcula a frequência")]
         public async Task Deve_gravar_100_de_percentual_de_frequencia_para_um_aluno()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();
@@ -98,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
 
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve gravar 50 de percentual de frequencia para um aluno quando recalcula a frequência")]
         public async Task Deve_gravar_50_de_percentual_de_frequencia_discplina_para_um_aluno()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();
@@ -165,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
             frequencias.First(x => x.Tipo == TipoFrequenciaAluno.PorDisciplina).PercentualFrequencia.ShouldBe(50);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve gravar 50 de percentual de frequencia discplina mesmo com duplicidade de ausencia na mesma aula quando recalcula a frequência")]
         public async Task Deve_gravar_50_de_percentual_de_frequencia_discplina_mesmo_com_duplicidade_de_ausencia_na_mesma_aula()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();

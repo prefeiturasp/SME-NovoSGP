@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
             DetalheFrequencia = new List<FrequenciaDetalheAulaDto>();
 
             AulaId = aula.Id;
-            Desabilitado = aluno.EstaInativo(aula.DataAula, PeriodoFim) || aula.EhDataSelecionadaFutura;
+            Desabilitado = !aluno.EstaAtivo(aula.DataAula) || aula.EhDataSelecionadaFutura;
             PermiteAnotacao = aluno.EstaAtivo(aula.DataAula);
             PossuiAnotacao = anotacoesTurma.Any(a => a.AulaId == AulaId);
             EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;

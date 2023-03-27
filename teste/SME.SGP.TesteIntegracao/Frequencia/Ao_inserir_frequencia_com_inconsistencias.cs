@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve retornar exceção 'Lista de alunos e o componente devem ser informados'")]
         public async Task Lista_de_alunos_e_o_componente_devem_ser_informados()
         {
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve retornar exceção 'A aula informada não foi encontrada'")]
         public async Task A_aula_informada_nao_foi_encontrada()
         {
             await CriarDadosBase(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.A_aula_informada_nao_foi_encontrada);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve retornar exceção 'A turma não foi encontrada'")]
         public async Task Turma_informada_nao_foi_encontrada()
         {
             await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Professor cj nao possui permissão para inserir neste periodo")]
         public async Task Professor_cj_nao_possui_permissão_para_inserir_neste_periodo()
         {
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_possui_permissão_para_inserir_neste_periodo);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Nao e permitido registro de frequencia para este componente")]
         public async Task Nao_e_permitido_registro_de_frequencia_para_este_componente()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString());
@@ -83,7 +83,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_e_permitido_registro_de_frequencia_para_este_componente);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não e possível registrar a frequência o componente nao permite substituicao")]
         public async Task Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_AEE_COLABORATIVO.ToString());
@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não pode fazer alteracoes nesta turma componente e data")]
         public async Task Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data()
         {
             collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
@@ -111,8 +111,5 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             excecao.Message.ShouldBe(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
-
-
-
     }
 }
