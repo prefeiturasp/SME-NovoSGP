@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var alunos = (await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo), cancellationToken)).Select(c => c.CodigoAluno).Distinct();
-            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, request.TurmaCodigo, request.ComponenteCurricularId), cancellationToken);
+            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, request.TurmaCodigo, request.ComponenteCurricularId, request.Meses), cancellationToken);
 
             return await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, periodo.Bimestre, request.ComponenteCurricularId, periodo.DataInicio, periodo.DataFim), cancellationToken);
         }

@@ -17,19 +17,6 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterCompensacoesAluno(string codigoAluno, long compensacaoIgnoradaId, int bimestre)
-        {
-            var query = @"select * 
-                            from compensacao_ausencia_aluno a
-                        inner join compensacao_ausencia c on c.id = a.compensacao_ausencia_id
-                        where not a.excluido 
-                          and a.codigo_aluno = @codigoAluno
-                          and c.bimestre = @bimestre
-                          and c.id <> @compensacaoIgnoradaId";
-
-            return await database.Conexao.QueryAsync<CompensacaoAusenciaAluno>(query, new { codigoAluno, compensacaoIgnoradaId, bimestre });
-        }
-
         public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorCompensacao(long compensacaoId)
         {
             var query = @"select * 
@@ -112,6 +99,6 @@ namespace SME.SGP.Dados.Repositorios
 	                c.bimestre";
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, alunoCodigos, turmaCodigo });
-        }       
+        }
     }
 }

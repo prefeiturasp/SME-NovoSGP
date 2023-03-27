@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -51,8 +52,11 @@ namespace SME.SGP.Aplicacao
             if (aulaOrigem == null)
                 throw new NegocioException("Não foi possível obter a aula.");
 
+            var listaAlteracoesFrequencia = new List<long>() { aulaOrigem.Id };
+
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaOrigem.TipoCalendarioId, aulaOrigem.DataAula.Date, request.Recorrencia), cancellationToken);
             var aulasRecorrencia = await repositorioAulaConsulta.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
+            listaAlteracoesFrequencia.AddRange(aulasRecorrencia.Select(aula => aula.Id));
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasRecorrencia);
 
             try
@@ -81,9 +85,21 @@ namespace SME.SGP.Aplicacao
             await ExcluirArquivosPlanoAula(request.AulaId);
             await RemoverArquivosDiarioBordo(request.AulaId);
 
-            await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aulaOrigem.TurmaId, aulaOrigem.DisciplinaId, request.AulaId), cancellationToken);
-
+            await PublicarRecalculoFrequencia(listaAlteracoesFrequencia.ToArray(), aulaOrigem.TurmaId, aulaOrigem.DisciplinaId, cancellationToken);
+            
             return true;
+        }
+
+        private async Task PublicarRecalculoFrequencia(long[] aulasId, string turmaId, string disciplinaId, CancellationToken cancellationToken)
+        {
+            var periodosAula = await repositorioAulaConsulta.ObterPeriodosEscolaresDasAulas(aulasId);
+            var agrupamentoPeriodo = periodosAula.GroupBy(aula => aula.Bimestre);
+            foreach (var periodo in agrupamentoPeriodo)
+            {
+                var meses = periodo.Select(aula => aula.DataAula.Month).Distinct().ToArray();
+                var aulaId = periodo.Min(aula => aula.AulaId);
+                await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(turmaId, disciplinaId, aulaId, meses), cancellationToken);
+            }
         }
 
         private async Task ExcluirArquivosPlanoAula(long aulaId)

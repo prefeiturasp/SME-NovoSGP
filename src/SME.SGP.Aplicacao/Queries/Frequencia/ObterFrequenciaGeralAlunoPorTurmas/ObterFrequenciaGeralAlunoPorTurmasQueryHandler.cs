@@ -45,9 +45,7 @@ namespace SME.SGP.Aplicacao
                                                                                  bimestres.ToArray(),
                                                                                  matricula.dataMatricula,
                                                                                  !matricula.inativo && periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
-            }
-
-            int quantidadeTotalAulas = aulasComponentesTurmas.Sum(a => a.AulasQuantidade);
+            }            
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
             {
@@ -69,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAluno = new FrequenciaAluno()
             {
-                TotalAulas = quantidadeTotalAulas,
+                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
                 TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
@@ -96,15 +94,15 @@ namespace SME.SGP.Aplicacao
             }                
 
             if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
-                return "0";
+                return FrequenciaAluno.FormatarPercentual(0);
             else if (frequenciaAluno?.PercentualFrequencia > 0)
-                return frequenciaAluno.PercentualFrequencia.ToString();
+                return frequenciaAluno.PercentualFrequenciaFormatado;
             else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
-                return "0";
+                return FrequenciaAluno.FormatarPercentual(0);
             else if (aulasComponentesTurmas.Any())
-                return "100";
+                return FrequenciaAluno.FormatarPercentual(100);
 
-            return "0";
+            return FrequenciaAluno.FormatarPercentual(0);
         }
 
         private async Task<FrequenciaAluno> ObterTotalSomadoIndividualmente(string[] turmasCodigo, long tipoCalendarioId, string codigoAluno, FrequenciaAluno frequenciaGeralObtida, string[] disciplinasAluno, DateTime? dataMatriculaTurmaFiltro)

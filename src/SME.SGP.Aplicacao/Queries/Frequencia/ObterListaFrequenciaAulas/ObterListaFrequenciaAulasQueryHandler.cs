@@ -23,22 +23,21 @@ namespace SME.SGP.Aplicacao
             var codigoTurma = long.Parse(request.Turma.CodigoTurma);
             var registrosFrequencias = new RegistroFrequenciaPorDataPeriodoDto();
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos,usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhGestorEscolar());
+            registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhGestorEscolar());
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
 
-            foreach (var aluno in request.AlunosDaTurma
-                                    .Where(a => a.DeveMostrarNaChamada(request.DataFim, request.PeriodoEscolar.PeriodoInicio))
-                                    .OrderBy(c => c.NomeAluno))
+            foreach (var aluno in request.AlunosDaTurma)
             {
-                
-                var frequenciaPreDefinida = request.FrequenciasPreDefinidas.LastOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+                var frequenciaPreDefinida = request.FrequenciasPreDefinidas
+                    .LastOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
 
-                var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, request.Turma.AnoLetivo));
+                var alunoPossuiPlanoAEE = await mediator
+                    .Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, request.Turma.AnoLetivo));
 
                 var registroFrequenciaAluno = new AlunoRegistroFrequenciaDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
-                    NomeAluno = aluno.NomeAluno,
+                    NomeAluno = aluno.NomeSocialAluno ?? aluno.NomeAluno,
                     NumeroAlunoChamada = aluno.ObterNumeroAlunoChamada(),
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
@@ -51,10 +50,13 @@ namespace SME.SGP.Aplicacao
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
                 };
 
-                var frequenciaAluno = request.FrequenciaAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+                var frequenciaAluno = request.FrequenciaAlunos
+                    .FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
 
                 // Marcador visual da situação
-                registroFrequenciaAluno.Marcador = await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, request.PeriodoEscolar, request.Turma.ModalidadeCodigo));
+                registroFrequenciaAluno.Marcador = await mediator
+                    .Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, request.PeriodoEscolar, request.Turma.ModalidadeCodigo));
+
                 // Indicativo de Frequencia (%)
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, request.PercentualAlerta, request.PercentualCritico, request.TurmaPossuiFrequenciaRegistrada);
 
@@ -62,10 +64,14 @@ namespace SME.SGP.Aplicacao
                 {
                     if (RegistraFrequencia(request.RegistraFrequencia, request.Aulas, request.Turma))
                     {
-                        var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
-                        var anotacoesAluno = request.AnotacoesTurma.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
+                        var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos
+                            .Where(a => a.AlunoCodigo == aluno.CodigoAluno);
 
-                        registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, request.PeriodoEscolar.PeriodoFim);
+                        var anotacoesAluno = request.AnotacoesTurma
+                            .Where(a => a.AlunoCodigo == aluno.CodigoAluno);
+
+                        registroFrequenciaAluno
+                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, request.PeriodoEscolar.PeriodoFim);
                     }
 
                     registrosFrequencias.Alunos.Add(registroFrequenciaAluno);
@@ -85,18 +91,16 @@ namespace SME.SGP.Aplicacao
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
-            var percentualFrequencia = turmaComFrequenciasRegistradas ?
-                (int)Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100) :
-                int.MinValue;
+            var percentualFrequencia = turmaComFrequenciasRegistradas ? (frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100) : double.MinValue;
 
-            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : percentualFrequencia.ToString();
+            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : FrequenciaAluno.FormatarPercentual(percentualFrequencia);
 
             // Critico
-            if (percentualFrequencia <= percentualCritico)
+            if (percentualFrequencia <= (double)percentualCritico)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Critico, Percentual = percentualFrequenciaLabel };
 
             // Alerta
-            if (percentualFrequencia <= percentualAlerta)
+            if (percentualFrequencia <= (double)percentualAlerta)
                 return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Alerta, Percentual = percentualFrequenciaLabel };
 
             return new IndicativoFrequenciaDto() { Tipo = TipoIndicativoFrequencia.Info, Percentual = percentualFrequenciaLabel };

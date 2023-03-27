@@ -56,7 +56,10 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(ObterAlunosPorTurmaEDataMatriculaQueryHandlerFakeListao), ServiceLifetime.Scoped));
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeListao), ServiceLifetime.Scoped));            
+                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeListao), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery,IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterTodosAlunosNaTurmaQueryHandlerFakeListao), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBasicos(FiltroListao filtroListao)
@@ -85,10 +88,10 @@ namespace SME.SGP.TesteIntegracao.Listao
             await CriarFrequenciaPreDefinida(filtroListao.ComponenteCurricularId);
         }
         
-        protected IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno()
+        protected IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno(bool desabilitado = false)
         {
             return codigosAlunos.Select(codigoAluno => new FrequenciaSalvarAlunoDto
-                { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula() }).ToList();
+                { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula(), Desabilitado = desabilitado}).ToList();
         }
 
         private IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula()
