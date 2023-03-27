@@ -150,14 +150,16 @@ namespace SME.SGP.Aplicacao
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
 
             //Obter alunos ativos
-            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
+            IEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
 
             alunosAtivos = from a in alunos
-                           where a.DataMatricula.Date <= periodoFim.Date 
-                           && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
-                           orderby a.NomeValido(), a.NumeroAlunoChamada
-                           select a;
-            
+                                    where a.DataMatricula.Date <= periodoFim.Date
+                                    && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
+                                    group a by a.CodigoAluno into grupoAlunos
+                                    orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
+                                    select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
+
+
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -183,6 +185,9 @@ namespace SME.SGP.Aplicacao
                 };
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
+
+                if (alunos.Where(x => x.CodigoAluno == aluno.CodigoAluno).Count() >= 2)
+                    aluno.DataMatricula = alunos.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DataMatricula != aluno.DataMatricula).DataMatricula;
 
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
                 {
@@ -230,7 +235,6 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
-
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma

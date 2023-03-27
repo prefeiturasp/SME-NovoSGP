@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT rfa.excluido
                               AND rfa.aula_id = @aulaId";
 
-            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId});
+            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId });
         }
 
         public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, IEnumerable<string> codigoAlunos, params string[] turmasId)
@@ -186,7 +186,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId, dataMatriculaAluno, dataSituacaoAluno);
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
-                new { dataAula, disciplinaId, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date : (DateTime?)null });
+                new { dataAula, disciplinaId, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date.AddDays(-1) : (DateTime?)null });
         }
 
         private string BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
@@ -216,7 +216,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("			  where a.id = rfa.aula_id and");
             query.AppendLine("				  not a.excluido and");
             query.AppendLine("				  rfa.numero_aula between 1 and a.quantidade);");
-
             return query.ToString();
         }
 
