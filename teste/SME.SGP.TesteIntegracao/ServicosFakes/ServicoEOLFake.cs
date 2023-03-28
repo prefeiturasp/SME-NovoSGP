@@ -521,14 +521,15 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 {
                     Codigo = 1106,
                     TerritorioSaber = false,
-                    GrupoMatriz = new GrupoMatriz() { Id = 2, Nome = "Diversificada" }
+                    GrupoMatriz = new GrupoMatriz() { Id = 2, Nome = "Diversificada" },
+                    LancaNota = false            
                 },
                 new ComponenteCurricularEol()
                 {
                     Codigo = 138,
                     TerritorioSaber = false,
-                    GrupoMatriz = new GrupoMatriz() { Id = 1, Nome = "Base Nacional Comum" }
-
+                    GrupoMatriz = new GrupoMatriz() { Id = 1, Nome = "Base Nacional Comum" },
+                    LancaNota = true
                 }
             });
         }
