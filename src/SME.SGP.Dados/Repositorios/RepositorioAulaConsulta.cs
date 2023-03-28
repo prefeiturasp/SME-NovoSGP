@@ -325,7 +325,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
-                dataAtual = DateTime.Now
+                dataAtual = DateTimeExtension.HorarioBrasilia().Date
             }, splitOn: "id");
         }
 
@@ -348,7 +348,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
-                dataAtual = DateTime.Today
+                dataAtual = DateTimeExtension.HorarioBrasilia().Date
             });
         }
 
