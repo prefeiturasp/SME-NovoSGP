@@ -1351,7 +1351,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoCalendarioId = tipoCalendarioId,
                 ProfessorRf = professorRf,
                 Quantidade = 1,
-                DataAula = dataAula,
+                DataAula = dataAula.Date,
                 RecorrenciaAula = recorrenciaAula,
                 TipoAula = tipoAula,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),

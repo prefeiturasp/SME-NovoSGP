@@ -249,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
                                               left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
                                               left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
                                               where tc.modalidade = @modalidade
-                                              and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
+                                              and pe.periodo_inicio::date <= @dataReferencia and pe.periodo_fim::date >= @dataReferencia
                                               and not tc.excluido ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
