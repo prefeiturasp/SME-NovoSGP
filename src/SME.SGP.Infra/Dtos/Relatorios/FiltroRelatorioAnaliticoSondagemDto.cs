@@ -14,5 +14,7 @@ namespace SME.SGP.Infra
         public string UeCodigo { get; set; }
         public TipoSondagem TipoSondagem { get; set; }
         public int Periodo { get; set; } 
+        public string LoginUsuarioLogado { get; set; }
+        public Guid PerfilUsuarioLogado { get; set; }
     }
 }
