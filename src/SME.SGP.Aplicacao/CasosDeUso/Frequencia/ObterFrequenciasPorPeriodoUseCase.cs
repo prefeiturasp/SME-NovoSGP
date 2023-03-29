@@ -22,13 +22,17 @@ namespace SME.SGP.Aplicacao
             var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, param.DataFim));
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
             componenteCurricular ??= await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(param.ComponenteCurricularId)));
+            string disciplinaAula = componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai != null ?
+                componenteCurricular.CdComponenteCurricularPai.ToString() :
+                componenteCurricular.CodigoComponenteCurricular.ToString();
+
 
             if (componenteCurricular == null)
                 throw new NegocioException("Componente curricular não localizado");
 
             alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
 
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, componenteCurricular.Regencia ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, disciplinaAula, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
