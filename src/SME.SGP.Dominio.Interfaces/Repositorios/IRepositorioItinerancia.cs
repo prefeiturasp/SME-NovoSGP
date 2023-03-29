@@ -25,7 +25,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf, Paginacao paginacao);
         Task<IEnumerable<int>> ObterAnosLetivosItinerancia();
         Task<Itinerancia> ObterComUesPorId(long id);
-        Task<IEnumerable<ItineranciaObjetivoDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId);
+        Task<IEnumerable<ItineranciaNomeDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId);
 
         Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao);
         Task<List<QuestaoTipoDto>> ObterTipoDaQuestaoItinerancia(long itineranciaId);

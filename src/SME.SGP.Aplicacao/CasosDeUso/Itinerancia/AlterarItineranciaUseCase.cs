@@ -88,8 +88,8 @@ namespace SME.SGP.Aplicacao.Interfaces
             await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.Dre.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
         }
 
-        private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
-            => objetivosVisita.Select(a => (ItineranciaObjetivoDescricaoDto)a);
+        private IEnumerable<ItineranciaNomeDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
+            => (IEnumerable<ItineranciaNomeDescricaoDto>)objetivosVisita.Select(a => (ItineranciaObjetivoDescricaoDto)a);
 
         private async Task AtualizaDatasEventos(long id, DateTime? dataRetornoVerificacao)
         {

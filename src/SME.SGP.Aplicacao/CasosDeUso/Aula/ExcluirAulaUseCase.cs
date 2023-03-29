@@ -66,8 +66,16 @@ namespace SME.SGP.Aplicacao
             if (componenteCorrespondente.CodigoComponenteTerritorioSaber > 0)
                 codigoComponentes = codigoComponentes.Append(componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString()).ToArray();
 
+            var codigoComponenteConsiderado = aula.DisciplinaId;
+            var componenteConsideradoEmCasoDeCJ = usuarioLogado.EhProfessorCj() ? 
+                await mediator.Send(new DefinirComponenteCurricularParaAulaQuery(aula.TurmaId, long.Parse(codigoComponenteConsiderado), usuarioLogado)) : 
+                default;
+
+            if (componenteConsideradoEmCasoDeCJ != default && componenteConsideradoEmCasoDeCJ.codigoTerritorio.HasValue && componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value > 0)
+                codigoComponenteConsiderado = componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value.ToString();
+
             var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ? 
-                componenteCorrespondente.Descricao : await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(aula.DisciplinaId)));
+                componenteCorrespondente.Descricao : await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(codigoComponenteConsiderado)));
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {

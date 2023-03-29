@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
                 // Exclui a aula em alteração da lista
                 aulasExistentes = aulasExistentes.Where(a => a.Id != request.Id);
 
-                if (aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
+                if (aulasExistentes.Any(c => c.TipoAula == request.TipoAula && c.AulaCJ == usuarioLogado.EhProfessorCj()))
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
