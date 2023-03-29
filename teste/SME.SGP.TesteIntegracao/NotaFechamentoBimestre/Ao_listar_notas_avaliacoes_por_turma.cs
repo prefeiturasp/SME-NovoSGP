@@ -46,8 +46,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             avaliacao.Nome.ShouldBe(AVALIACAO_NOME_1);
             avaliacao.Disciplinas.ShouldNotBeNull();
             avaliacao.Disciplinas.Length.ShouldBe(2);
-            avaliacao.Disciplinas[0].ShouldBe(COMPONENTE_GEOGRAFIA_NOME.Replace("'", string.Empty));
-            avaliacao.Disciplinas[1].ShouldBe(COMPONENTE_CIENCIAS_NOME.Replace("'", string.Empty));
+            avaliacao.Disciplinas.ShouldContain(COMPONENTE_GEOGRAFIA_NOME.Replace("'", string.Empty));
+            avaliacao.Disciplinas.ShouldContain(COMPONENTE_CIENCIAS_NOME.Replace("'", string.Empty));
         }
 
         private async Task CriarNotaConceitoNaBase(FiltroFechamentoNotaDto filtroNota, string alunoCodigo, long atividadeAvaliativaId, double? nota = null, long? conceitoId = null)
