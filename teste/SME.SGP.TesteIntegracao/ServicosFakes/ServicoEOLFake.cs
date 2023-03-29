@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GrupoMatriz = SME.SGP.Dominio.GrupoMatriz;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
@@ -519,7 +520,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new ComponenteCurricularEol()
                 {
                     Codigo = 1106,
-                    TerritorioSaber = false
+                    TerritorioSaber = false,
+                    GrupoMatriz = new GrupoMatriz() { Id = 2, Nome = "Diversificada" },
+                    LancaNota = false            
+                },
+                new ComponenteCurricularEol()
+                {
+                    Codigo = 138,
+                    TerritorioSaber = false,
+                    GrupoMatriz = new GrupoMatriz() { Id = 1, Nome = "Base Nacional Comum" },
+                    LancaNota = true
                 }
             });
         }

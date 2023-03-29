@@ -31,12 +31,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoBaseDto> Handle(ExcluirAulaUnicaCommand request, CancellationToken cancellationToken)
         {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
 
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf), cancellationToken))
-                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");            
 
-            if(!request.Usuario.EhGestorEscolar())
+            if (!request.Usuario.EhGestorEscolar())
                 await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
 
             if (aula.WorkflowAprovacaoId.HasValue)
