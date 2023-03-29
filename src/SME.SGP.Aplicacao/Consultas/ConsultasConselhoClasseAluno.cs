@@ -144,9 +144,12 @@ namespace SME.SGP.Aplicacao
 
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
                 }
-
                 if (grupoMatriz.ComponenteSinteses.Any())
-                    grupoMatriz.ComponenteSinteses = grupoMatriz.ComponenteSinteses.OrderBy(c => c.Nome).ToList();
+                    grupoMatriz.ComponenteSinteses = grupoMatriz.ComponenteSinteses
+                                                        .OrderBy(c => c.Nome)
+                                                        .GroupBy(c => c.Codigo)
+                                                        .Select(c => c.First())
+                                                        .ToList();
 
                 retorno.Add(grupoMatriz);
             }
