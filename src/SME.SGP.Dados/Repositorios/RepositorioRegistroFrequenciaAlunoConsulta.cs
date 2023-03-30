@@ -122,18 +122,18 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"           
                 select
-	                count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 1) as TotalPresencas,
-                    count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as TotalAusencias,
-                    count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 3) as TotalRemotos,
+	                count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 1 and not rfa.excluido) as TotalPresencas,
+                    count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2 and not rfa.excluido) as TotalAusencias,
+                    count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 3 and not rfa.excluido) as TotalRemotos,
 	                p.id as PeriodoEscolarId,
 	                p.periodo_inicio as PeriodoInicio,
 	                p.periodo_fim as PeriodoFim,
 	                p.bimestre,
                     rfa.codigo_aluno as AlunoCodigo,
                     a.disciplina_id as ComponenteCurricularId
-                from aula a
+                from registro_frequencia_aluno rfa
+                inner join aula a on rfa.aula_id = a.id                
                 inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
-                left join registro_frequencia_aluno rfa on rfa.aula_id = a.id and not rfa.excluido
                 where
 	                rfa.codigo_aluno = any(@codigoAlunos)	                
 	                and a.turma_id = any(@turmasId)
