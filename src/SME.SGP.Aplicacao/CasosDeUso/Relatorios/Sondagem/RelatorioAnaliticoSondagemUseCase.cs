@@ -19,6 +19,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioAnaliticoSondagemDto filtroRelatorioAnaliticoSondagemDto)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+
+            filtroRelatorioAnaliticoSondagemDto.PerfilUsuarioLogado = perfil;
+            filtroRelatorioAnaliticoSondagemDto.LoginUsuarioLogado = usuarioLogado.Login;
 
             if (usuarioLogado == null)
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
