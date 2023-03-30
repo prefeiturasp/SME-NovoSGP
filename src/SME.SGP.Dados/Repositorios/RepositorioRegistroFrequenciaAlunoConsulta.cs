@@ -121,7 +121,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> codigoAlunos)
         {
             var query = @"           
-                    select
+                select
 	                count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 1) as TotalPresencas,
                     count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as TotalAusencias,
                     count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 3) as TotalRemotos,
@@ -131,16 +131,11 @@ namespace SME.SGP.Dados.Repositorios
 	                p.bimestre,
                     rfa.codigo_aluno as AlunoCodigo,
                     a.disciplina_id as ComponenteCurricularId
-                from
-	                registro_frequencia_aluno rfa
-                inner join aula a on
-	                rfa.aula_id = a.id
-                inner join periodo_escolar p on
-	                a.tipo_calendario_id = p.tipo_calendario_id
+                from aula a
+                inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
+                left join registro_frequencia_aluno rfa on rfa.aula_id = a.id and not rfa.excluido
                 where
-	                not rfa.excluido
-	                and not a.excluido
-	                and rfa.codigo_aluno = any(@codigoAlunos)	                
+	                rfa.codigo_aluno = any(@codigoAlunos)	                
 	                and a.turma_id = any(@turmasId)
 	                and p.periodo_inicio <= @dataAula
 	                and p.periodo_fim >= @dataAula
