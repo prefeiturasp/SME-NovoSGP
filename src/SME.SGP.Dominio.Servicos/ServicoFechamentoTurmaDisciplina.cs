@@ -497,7 +497,7 @@ namespace SME.SGP.Dominio.Servicos
                     var frequencia = frequencias.Where(c => c.CodigoAluno == fechamentoAluno.AlunoCodigo &&
                         c.DisciplinaId == fechamentoNota.DisciplinaId.ToString()).FirstOrDefault();
 
-                    var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
+                    var percentualFrequencia = frequencia == null ? 0 : frequencia.PercentualFrequencia;
                     var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, anoLetivo));
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;

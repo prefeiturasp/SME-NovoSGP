@@ -520,7 +520,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
                     var frequencia = await mediator.Send(new ObterFrequenciaPorAlunoDisciplinaDataQuery(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia, codigoTurma));
-                    var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
+                    var percentualFrequencia = frequencia == null ? 0 : frequencia.PercentualFrequencia;
                     var sinteseDto = await ObterSinteseAluno(percentualFrequencia, disciplina, anoLetivo);
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;

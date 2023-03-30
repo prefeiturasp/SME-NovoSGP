@@ -99,8 +99,6 @@ namespace SME.SGP.Aplicacao
                 return frequenciaAluno.PercentualFrequenciaFormatado;
             else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
                 return FrequenciaAluno.FormatarPercentual(0);
-            else if (aulasComponentesTurmas.Any())
-                return FrequenciaAluno.FormatarPercentual(100);
 
             return FrequenciaAluno.FormatarPercentual(0);
         }
