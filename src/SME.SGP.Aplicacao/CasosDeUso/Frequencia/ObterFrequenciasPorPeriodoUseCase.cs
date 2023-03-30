@@ -33,6 +33,9 @@ namespace SME.SGP.Aplicacao
             alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
 
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, disciplinaAula, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
+            
+            if (!aulas.Any()) 
+                aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
