@@ -270,11 +270,11 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await ObterComponentesCurriculares(url);
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true, bool tipoTurma = true)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
 
-            var resposta = await httpClient.GetAsync($"alunos/{codigoAluno}/turmas/anosLetivos/{anoLetivo}/historico/{consideraHistorico}/filtrar-situacao/{filtrarSituacao}");
+            var resposta = await httpClient.GetAsync($"alunos/{codigoAluno}/turmas/anosLetivos/{anoLetivo}/historico/{consideraHistorico}/filtrar-situacao/{filtrarSituacao}/tipo-turma/{tipoTurma}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrEmpty(request.CodigoTurma))
             {
                 return (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo,
-                        request.ConsideraHistorico, request.FiltrarSituacao))
+                        request.ConsideraHistorico, request.FiltrarSituacao, request.TipoTurma))
                     .OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
             }
 
@@ -33,21 +33,23 @@ namespace SME.SGP.Aplicacao
                                           request.AnoLetivo,
                                           request.ConsideraHistorico,
                                           request.FiltrarSituacao,
-                                          request.CodigoTurma);
+                                          request.CodigoTurma,
+                                          request.TipoTurma);
 
             return alunos ?? await ObterAluno(request.CodigoAluno,
                                           request.AnoLetivo,
                                           !request.ConsideraHistorico,
                                           request.FiltrarSituacao,
-                                          request.CodigoTurma);
+                                          request.CodigoTurma,
+                                          request.TipoTurma);
         }
 
 
         private async Task<AlunoPorTurmaResposta> ObterAluno(string codigoAluno, int anoLetivo,
-            bool historica, bool filtrarSituacao, string codigoTurma)
+            bool historica, bool filtrarSituacao, string codigoTurma, bool tipoTurma)
         {
             var response =
-                (await servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao))
+                (await servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao, tipoTurma))
                             .OrderByDescending(a => a.DataSituacao);
 
             var retorno = response
