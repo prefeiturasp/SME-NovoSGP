@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrEmpty(request.CodigoTurma))
             {
                 return (await servicoEol.ObterDadosAluno(request.CodigoAluno, request.AnoLetivo,
-                        request.ConsideraHistorico, request.FiltrarSituacao, request.TipoTurma))
+                        request.ConsideraHistorico, request.FiltrarSituacao, request.VerificarTipoTurma))
                     .OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
             }
 
@@ -34,22 +34,22 @@ namespace SME.SGP.Aplicacao
                                           request.ConsideraHistorico,
                                           request.FiltrarSituacao,
                                           request.CodigoTurma,
-                                          request.TipoTurma);
+                                          request.VerificarTipoTurma);
 
             return alunos ?? await ObterAluno(request.CodigoAluno,
                                           request.AnoLetivo,
                                           !request.ConsideraHistorico,
                                           request.FiltrarSituacao,
                                           request.CodigoTurma,
-                                          request.TipoTurma);
+                                          request.VerificarTipoTurma);
         }
 
 
         private async Task<AlunoPorTurmaResposta> ObterAluno(string codigoAluno, int anoLetivo,
-            bool historica, bool filtrarSituacao, string codigoTurma, bool tipoTurma)
+            bool historica, bool filtrarSituacao, string codigoTurma, bool verificarTipoTurma)
         {
             var response =
-                (await servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao, tipoTurma))
+                (await servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao, verificarTipoTurma))
                             .OrderByDescending(a => a.DataSituacao);
 
             var retorno = response
