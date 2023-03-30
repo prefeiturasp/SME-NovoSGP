@@ -164,8 +164,6 @@ namespace SME.SGP.Aplicacao
             var frequenciasDosAlunos = await mediator
                 .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
 
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, new string[] { filtro.DisciplinaCodigo.ToString() }, filtro.PeriodoEscolarId));
-
             PeriodoFechamentoVigenteDto periodoFechamentoBimestre = null;
 
             if (turmaCompleta.AnoLetivo >= DateTime.Now.Year)
@@ -340,10 +338,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada)
-                    notaConceitoAluno.PercentualFrequencia = "100,00";
-                else
-                    notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequenciaFormatado : "";
+                notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequenciaFormatado : "";
 
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }

@@ -190,7 +190,7 @@ namespace SME.SGP.Aplicacao
             if (turmaComFrequenciasRegistradas && frequenciaAluno != null)
                 percentualFrequencia = frequenciaAluno.PercentualFrequencia;
 
-            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : FrequenciaAluno.FormatarPercentual(percentualFrequencia);
+            var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : "";
 
             // Critico
             if (percentualFrequencia <= (double)percentualCritico)
