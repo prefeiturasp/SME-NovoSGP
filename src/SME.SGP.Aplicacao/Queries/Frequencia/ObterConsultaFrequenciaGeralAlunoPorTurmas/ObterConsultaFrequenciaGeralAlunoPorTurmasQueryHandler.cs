@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                         var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
                             .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, disciplina.CodigoComponenteCurricular.ToString()).Result;
 
-                        somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 100;
+                        somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 0;
                     });
                     var mediaFinalFrequenciaDiscipina = FrequenciaAluno.ArredondarPercentual(somaPercentualFrequenciaDisciplinaBimestre / periodos.Count());
                     somaFrequenciaFinal += mediaFinalFrequenciaDiscipina;

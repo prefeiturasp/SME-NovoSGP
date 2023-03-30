@@ -340,10 +340,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada)
-                    notaConceitoAluno.PercentualFrequencia = "100,00";
-                else
-                    notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequenciaFormatado : "";
+                notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequenciaFormatado : "";
 
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }

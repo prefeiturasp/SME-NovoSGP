@@ -163,9 +163,7 @@ namespace SME.SGP.Aplicacao
 
                 var percentualFrequencia = string.Empty;
 
-                if (frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada && totalAulas > 0)
-                    percentualFrequencia = FrequenciaAluno.FormatarPercentual(100);
-                else if (frequenciaAlunoRegistrada != null)
+                if (frequenciaAlunoRegistrada != null)
                     percentualFrequencia = frequenciaAlunoRegistrada.PercentualFrequenciaFormatado;
 
                 novaListaAlunos.Add(new AlunoFrequenciaDto
