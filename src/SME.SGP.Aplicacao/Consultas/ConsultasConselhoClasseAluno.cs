@@ -860,7 +860,10 @@ namespace SME.SGP.Aplicacao
                         foreach (var frequenciaAlunoAtual in frequenciasAlunoAtual)
                         {
                             frequenciaAlunoAtual.PercentuaisFrequenciaPorBimestre
-                                .Add((bimestreAtual, frequenciasAlunoAtual.FirstOrDefault(f => f.Bimestre == bimestreAtual).PercentualFrequencia ));
+                                .Add((bimestreAtual, 
+                                    frequenciasAlunoAtual.Any(f => f.Bimestre == bimestreAtual) 
+                                        ? frequenciasAlunoAtual.FirstOrDefault(f => f.Bimestre == bimestreAtual).PercentualFrequencia 
+                                        : 0));
                         }
                     }
                 }
