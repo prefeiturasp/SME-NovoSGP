@@ -18,7 +18,8 @@ namespace SME.SGP.Dominio
             int totalCompensacoes,
             TipoFrequenciaAluno tipo,
             int totalRemotos,
-            int totalPresencas)
+            int totalPresencas,
+            string professor)
         {
             PercentuaisFrequenciaPorBimestre = new HashSet<(int, double)>();
             Bimestre = bimestre;
@@ -34,6 +35,7 @@ namespace SME.SGP.Dominio
             TotalAusencias = totalAusencias;
             TotalRemotos = totalRemotos;
             TotalPresencas = totalPresencas;
+            Professor = professor;
         }
 
         public FrequenciaAluno()
@@ -73,6 +75,7 @@ namespace SME.SGP.Dominio
         public int TotalPresencas { get; set; }
         public int TotalRemotos { get; set; }
         public string TurmaId { get; set; }
+        public string Professor { get; set; }
 
         /// <summary>
         /// Lista montada para particularidade de cálculo para o ano de 2020.
@@ -93,8 +96,9 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas)
+        public FrequenciaAluno DefinirFrequencia(string disciplinaId, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas, string professor)
         {
+            DisciplinaId = disciplinaId;
             Tipo = tipoFrequencia;
             TotalAusencias = totalAusencias;
             TotalCompensacoes = totalCompensacoes;
@@ -102,6 +106,7 @@ namespace SME.SGP.Dominio
             TotalRemotos = totalRemotos;
             TotalPresencas = totalPresencas;
             AlteradoEm = DateTime.Now;
+            Professor = professor;
 
             return this;
         }

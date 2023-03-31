@@ -106,7 +106,7 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
 
-        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> alunos, bool somenteAusencias = false)
+        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> alunos, bool somenteAusencias = false, string professor = null)
         {
             var query = "with lista1 as (";
             var listaAlunos = alunos.ToList();
@@ -119,21 +119,22 @@ namespace SME.SGP.Dados
                       	   pe.periodo_inicio,
                       	   pe.periodo_fim,
                       	   pe.bimestre,
-                      	   coalesce(rfa.codigo_aluno, '{listaAlunos[i].codigo}') codigo_aluno,
+                      	   rfa.codigo_aluno,
                       	   a.disciplina_id, 
-                      	   coalesce(rfa.valor, 1) valor,  	
-                      	   coalesce(rfa.criado_em, a.criado_em) criado_em,
-                           coalesce(rfa.numero_aula, 1) numero_aula,
-                           coalesce(rfa.id, 0) registro_frequencia_aluno_id                    	   
+                      	   rfa.valor,  	
+                      	   rfa.criado_em,
+                           rfa.numero_aula,
+                           rfa.id registro_frequencia_aluno_id                    	   
                       	from aula a
                       		inner join periodo_escolar pe
                       			on a.tipo_calendario_id = pe.tipo_calendario_id
-                      		left join registro_frequencia_aluno rfa 
-                      			on a.id = rfa.aula_id and
-								   not rfa.excluido and
-								   rfa.codigo_aluno = '{listaAlunos[i].codigo}'
-                    where not a.excluido and                      	  
+                      		inner join registro_frequencia_aluno rfa 
+                      			on a.id = rfa.aula_id								   
+                    where not a.excluido and
+                          not rfa.excluido and
+						  rfa.codigo_aluno = '{listaAlunos[i].codigo}' and
                     	  a.turma_id = any(@turmasId) and
+                          {(!string.IsNullOrWhiteSpace(professor) ? "a.professor_rf = @professor and" : string.Empty)}
                           @dataAula::date between pe.periodo_inicio and pe.periodo_fim and
                           a.data_aula::date between pe.periodo_inicio and pe.periodo_fim and
                           a.data_aula::date > '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
@@ -164,7 +165,8 @@ namespace SME.SGP.Dados
                         	 tmp.codigo_aluno,
                         	 tmp.disciplina_id;";
 
-            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId }, commandTimeout: 120);
+            return await sgpContextConsultas.Conexao
+                .QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId, professor }, commandTimeout: 120);
         }
     }
 }

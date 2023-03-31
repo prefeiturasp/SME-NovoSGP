@@ -1133,14 +1133,14 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<DataAulaDto>(query, new { turmaId, componenteCurricularId, dataCriacao = dataCriacao.Date });
         }
 
-        public Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId, bool aulaCj, string professor = null)
+        public Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string[] disciplinasId, bool aulaCj, string professor = null)
         {
             var query = new StringBuilder(@"select *
                  from aula
                 where not excluido
                   and DATE(data_aula) between Date(@dataInicio) and Date(@dataFim)
                   and turma_id = @turmaId
-                  and disciplina_id = @disciplinaId");
+                  and disciplina_id = any(@disciplinasId)");
 
             if (aulaCj)
                 query.AppendLine(" and aula_cj");
@@ -1153,7 +1153,7 @@ namespace SME.SGP.Dados.Repositorios
                 dataInicio = dataInicio.Date,
                 dataFim = dataFim.Date,
                 turmaId,
-                disciplinaId,
+                disciplinasId,
                 professor
             });
         }
