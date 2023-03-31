@@ -264,7 +264,7 @@ namespace SME.SGP.Aplicacao
             {
                 Nome = aluno.NomeAluno,
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = existeFrequenciaComponenteCurricular ? percentualFrequencia.ToString() : null,
+                Frequencia = existeFrequenciaComponenteCurricular ? FrequenciaAluno.FormatarPercentual(percentualFrequencia) : null,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))

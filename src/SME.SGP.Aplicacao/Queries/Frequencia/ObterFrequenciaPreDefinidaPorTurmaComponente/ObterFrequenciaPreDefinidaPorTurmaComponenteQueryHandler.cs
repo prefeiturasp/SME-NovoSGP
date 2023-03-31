@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaPreDefinidaPorTurmaComponenteQueryHandler : IRequestHandler<ObterFrequenciaPreDefinidaPorTurmaComponenteQuery, IEnumerable<FrequenciaPreDefinidaDto>>
     {
-        private readonly IRepositorioFrequenciaPreDefinida repositorioFrequenciaPreDefinida;
+        private readonly IRepositorioFrequenciaPreDefinidaConsulta repositorioFrequenciaPreDefinida;
 
-        public ObterFrequenciaPreDefinidaPorTurmaComponenteQueryHandler(IRepositorioFrequenciaPreDefinida repositorioFrequenciaPreDefinida)
+        public ObterFrequenciaPreDefinidaPorTurmaComponenteQueryHandler(IRepositorioFrequenciaPreDefinidaConsulta repositorioFrequenciaPreDefinida)
         {
             this.repositorioFrequenciaPreDefinida = repositorioFrequenciaPreDefinida ?? throw new ArgumentNullException(nameof(repositorioFrequenciaPreDefinida));
         }

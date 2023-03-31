@@ -508,6 +508,7 @@ namespace SME.SGP.IoC
 
             // Frequência
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
+            services.TryAddScoped<IRepositorioFrequenciaPreDefinidaConsulta, RepositorioFrequenciaPreDefinidaConsulta>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAluno, RepositorioRegistroFrequenciaAluno>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAlunoConsulta, RepositorioRegistroFrequenciaAlunoConsulta>();
             services.TryAddScoped<IRepositorioDashBoardFrequencia, RepositorioDashBoardFrequencia>();
@@ -669,6 +670,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterUsuarioNotificarDiarioBordoObservacaoUseCase, ObterUsuarioNotificarDiarioBordoObservacaoUseCase>();
             services.TryAddScoped<IRelatorioCompensacaoAusenciaUseCase, RelatorioCompensacaoAusenciaUseCase>();
             services.TryAddScoped<IRelatorioCalendarioUseCase, RelatorioCalendarioUseCase>();
+            services.TryAddScoped<IRelatorioAnaliticoSondagemUseCase, RelatorioAnaliticoSondagemUseCase>();
 
             services.TryAddScoped<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
             services.TryAddScoped<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
@@ -1236,6 +1238,9 @@ namespace SME.SGP.IoC
 
             // Notificação
             services.TryAddScoped<IObterNotificacaoPorIdUseCase, ObterNotificacaoPorIdUseCase>();
+
+            // Log.
+            services.TryAddScoped<ISalvarLogUseCase, SalvarLogUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

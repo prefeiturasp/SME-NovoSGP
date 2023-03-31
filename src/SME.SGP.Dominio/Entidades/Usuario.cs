@@ -53,9 +53,9 @@ namespace SME.SGP.Dominio
                 {
                     return (from a in aulas
                             from ccp in componentesCurricularesProfessor
-                            where ((!string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) && ccp.codigoTerritorioSaber.Equals(a.DisciplinaId) && a.ProfessorRf.Equals(CodigoRf)) ||
+                            where ((!string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) && ccp.codigoTerritorioSaber.Equals(a.DisciplinaId)) ||
                                   ((string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) || ccp.codigoTerritorioSaber == "0") &&  ccp.codigo.Equals(a.DisciplinaId)) ||
-                                  a.ProfessorRf == CodigoRf) && !a.AulaCJ
+                                  a.ProfessorRf == CodigoRf)
                             select a).Distinct();
                 }
             }
