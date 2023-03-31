@@ -21,6 +21,10 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(param.TurmaId);
             var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, param.DataFim));
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+            string disciplinaAula = componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai != null ?
+                componenteCurricular.CdComponenteCurricularPai.ToString() :
+                componenteCurricular.CodigoComponenteCurricular.ToString();
+
 
             if (componenteCurricular == null)
                 throw new NegocioException("Componente curricular não localizado");            

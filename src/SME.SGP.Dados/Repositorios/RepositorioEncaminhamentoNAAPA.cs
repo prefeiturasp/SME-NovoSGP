@@ -346,6 +346,23 @@ namespace SME.SGP.Dados.Repositorios
             return new SituacaoDto();
         }
 
+        public async Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId)
+        {
+            var query = @"select 1 from encaminhamento_naapa en 
+                        left join encaminhamento_naapa_secao ens 
+                         on ens.encaminhamento_naapa_id = en.id 
+                        left join secao_encaminhamento_naapa sen 
+                         on sen.id = ens.secao_encaminhamento_id 
+                        where not en.excluido 
+                        and en.situacao = @situacao
+                        and sen.nome_componente = 'QUESTOES_ITINERACIA'
+                        and ens.concluido 
+                        and not ens.excluido and 
+                        en.id = @encaminhamentoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId });
+        }
+
         public async Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()
         {
             var query = @" select 
