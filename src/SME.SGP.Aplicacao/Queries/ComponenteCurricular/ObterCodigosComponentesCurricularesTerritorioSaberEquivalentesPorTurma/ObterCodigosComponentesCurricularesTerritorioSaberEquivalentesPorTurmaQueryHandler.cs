@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 var disciplinasEOL = await servicoEol
                     .ObterDisciplinasPorIdsAgrupadas(new long[] { request.CodigoComponenteBase }, request.CodigoTurma);
 
-                if (disciplinasEOL == null && !disciplinasEOL.Any())
+                if (disciplinasEOL == null || !disciplinasEOL.Any())
                     return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
                 return disciplinasEOL
