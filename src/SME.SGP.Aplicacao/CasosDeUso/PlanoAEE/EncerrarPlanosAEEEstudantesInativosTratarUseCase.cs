@@ -46,11 +46,16 @@ namespace SME.SGP.Aplicacao
 
                         if (dadosMatriculaAlunoNaUEPlano != null && dadosMatriculaAlunoNaUEPlano.Any())
                         {
-                            if (!dadosMatriculaAlunoNaUEPlano.Any(d => d.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo))
+                            var situacoesAlunoNaUEAnoAtual = dadosMatriculaAlunoNaUEPlano.Where(a => a.AnoLetivo == anoLetivo);
+
+                            if (situacoesAlunoNaUEAnoAtual.Any() && situacoesAlunoNaUEAnoAtual != null)
                             {
-                                var ultimaSituacaoAlunoNaUE = dadosMatriculaAlunoNaUEPlano.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
-                                await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
+                                var ultimaSituacaoAlunoNaUE = situacoesAlunoNaUEAnoAtual.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
+
+                                if (PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
+                                    await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
                             }
+                            
                         }
                         else
                             throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
@@ -61,7 +66,7 @@ namespace SME.SGP.Aplicacao
 
                         if (ultimaSituacao != null)
                         {
-                            if (ultimaSituacao!.Inativo)
+                            if (ultimaSituacao!.Inativo && PlanoDeveSerEncerrado(ultimaSituacao.CodigoSituacaoMatricula))
                                 encerrarPlanoAee = true;
                             else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
                                       || ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Ativo)
@@ -95,6 +100,18 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
         }
+
+        public bool PlanoDeveSerEncerrado(SituacaoMatriculaAluno situacao)
+            => !(new[] { SituacaoMatriculaAluno.Ativo,
+                        SituacaoMatriculaAluno.Rematriculado,
+                        SituacaoMatriculaAluno.PendenteRematricula,
+                        SituacaoMatriculaAluno.SemContinuidade,
+                        SituacaoMatriculaAluno.Concluido,
+                        SituacaoMatriculaAluno.RemanejadoSaida,
+                        SituacaoMatriculaAluno.ReclassificadoSaida,
+                        SituacaoMatriculaAluno.Transferido,
+                        SituacaoMatriculaAluno.TransferidoSED
+                    }).Contains(situacao);
 
         private async Task EncerrarPlanoAee(PlanoAEE planoAEE, string situacaoMatricula, DateTime dataSituacao)
         {
@@ -176,11 +193,15 @@ namespace SME.SGP.Aplicacao
         private async Task<List<long>> ObterUsuariosId(List<string> funcionarios)
         {
             var usuariosIds = new List<long>();
-            foreach (var functionario in funcionarios)
+
+            if(funcionarios != null)
             {
-                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(functionario));
-                if (usuarioId > 0)
-                    usuariosIds.Add(usuarioId);
+                foreach (var functionario in funcionarios)
+                {
+                    var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(functionario));
+                    if (usuarioId > 0)
+                        usuariosIds.Add(usuarioId);
+                }
             }
 
             return usuariosIds;
