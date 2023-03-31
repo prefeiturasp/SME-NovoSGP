@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             {
                 var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
                 var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor != null)
+                if (professor != null && !String.IsNullOrEmpty(professor.ProfessorRf))
                 {
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
                     var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
