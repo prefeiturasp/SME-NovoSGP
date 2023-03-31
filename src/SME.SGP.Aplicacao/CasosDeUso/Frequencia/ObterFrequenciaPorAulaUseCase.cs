@@ -95,9 +95,6 @@ namespace SME.SGP.Aplicacao
 
                 var periodoDeCompensacaoAberto = new PeriodoDeCompensacaoAbertoUseCase(mediator);
 
-                var ehAbertura = await periodoDeCompensacaoAberto
-                    .VerificarPeriodoAberto(turma.CodigoTurma, periodoEscolar.Bimestre);
-
                 var registroFrequenciaAluno = new RegistroFrequenciaAlunoDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
@@ -185,7 +182,7 @@ namespace SME.SGP.Aplicacao
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
-            double percentualFrequencia = 0;
+            double percentualFrequencia = Double.MinValue;
 
             if (turmaComFrequenciasRegistradas && frequenciaAluno != null)
                 percentualFrequencia = frequenciaAluno.PercentualFrequencia;
