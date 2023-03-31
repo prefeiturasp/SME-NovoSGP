@@ -175,13 +175,16 @@ namespace SME.SGP.Aplicacao
             else
                 periodoFechamentoBimestre = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAnoAnterior(turmaCompleta, filtro.Bimestre);
 
+            var dadosAlunosQuePossuemPlanoAEEAtivo = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosAtivosCodigos, turmaCompleta.AnoLetivo));
+
             foreach (var aluno in alunosAtivos)
             {
                 var notaConceitoAluno = new NotasConceitosAlunoRetornoDto()
                 {
                     Id = aluno.CodigoAluno,
                     Nome = aluno.NomeValido(),
-                    NumeroChamada = aluno.ObterNumeroAlunoChamada()
+                    NumeroChamada = aluno.ObterNumeroAlunoChamada(),
+                    EhAtendidoAEE = dadosAlunosQuePossuemPlanoAEEAtivo.Any(d=> d.CodigoAluno == aluno.CodigoAluno)
                 };
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
