@@ -858,7 +858,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 TerritorioSaber = x.Territorio,
                 LancaNota = x.LancaNota,
                 GrupoMatrizId = x.GrupoMatriz?.Id ?? 0,
-                GrupoMatrizNome = x.GrupoMatriz?.Nome
+                GrupoMatrizNome = x.GrupoMatriz?.Nome,
+                Professor = x.Professor
             });
         }
 

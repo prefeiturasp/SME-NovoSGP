@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             var mediator = ServiceProvider.GetService<IMediator>();
             mediator.ShouldNotBeNull();
             
-            var periodosEscolares = (await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId,
+            var periodosEscolares = (await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(TURMA_CODIGO_1, new long[] { filtroListao.ComponenteCurricularId },
                 filtroListao.Bimestre, false))).Where(c => c.DataAula <= DateTimeExtension.HorarioBrasilia()).ToList();
 
             const int qtdeLimiteDeAulas = 5;

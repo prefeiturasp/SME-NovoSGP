@@ -1,0 +1,1 @@
+ALTER TABLE public.frequencia_aluno ADD professor_rf varchar(15) NULL;

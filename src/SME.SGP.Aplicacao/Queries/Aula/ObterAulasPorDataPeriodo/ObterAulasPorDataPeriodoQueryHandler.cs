@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<Aula>> Handle(ObterAulasPorDataPeriodoQuery request, CancellationToken cancellationToken)
-            => await repositorioAula.ObterAulasPorDataPeriodo(request.DataInicio, request.DataFim, request.TurmaId, request.ComponenteCurricularId, request.AulaCj, request.Professor);
+            => await repositorioAula.ObterAulasPorDataPeriodo(request.DataInicio, request.DataFim, request.TurmaId, request.ComponentesCurricularesId, request.AulaCj, request.Professor);
     }
 }

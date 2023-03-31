@@ -7,18 +7,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciasPorAlunosTurmaQuery : IRequest<IEnumerable<FrequenciaAluno>>
     {
-        public ObterFrequenciasPorAlunosTurmaQuery(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string disciplinaId)
+        public ObterFrequenciasPorAlunosTurmaQuery(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null)
         {
             AlunosCodigo = alunosCodigo;
             PeriodosEscolaresId = periodosEscolaresId;
             TurmaId = turmaId;
-            DisciplinaId = disciplinaId;
+            DisciplinaIdsConsideradas = disciplinaIdsConsideradas;
+            Professor = professor;
         }
 
         public IEnumerable<string> AlunosCodigo { get; set; }
         public IEnumerable<long?> PeriodosEscolaresId { get; set; }
         public string TurmaId { get; set; }
-        public string DisciplinaId { get; }
+        public string[] DisciplinaIdsConsideradas { get; }
+        public string Professor { get; set; }
     }
 
     public class ObterFrequenciasPorAlunosTurmaQueryValidator : AbstractValidator<ObterFrequenciasPorAlunosTurmaQuery>
@@ -33,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("Necessário informar a turma para consulta de frequências dos alunos");
 
-            RuleFor(a => a.DisciplinaId)
+            RuleFor(a => a.DisciplinaIdsConsideradas)
                 .NotEmpty()
                 .WithMessage("Necessário informar a disciplina para consulta de frequências dos alunos");
         }

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> Handle(ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery request, CancellationToken cancellationToken)
         {
             return repositorioRegistroFrequenciaAluno
-                .ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(request.DataAula, request.TurmasId, request.Alunos);
+                .ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(request.DataAula, request.TurmasId, request.Alunos, professor: request.Professor);
         }
     }
 }
