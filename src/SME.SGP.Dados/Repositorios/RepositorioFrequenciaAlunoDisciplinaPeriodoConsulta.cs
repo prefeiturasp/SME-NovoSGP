@@ -349,7 +349,7 @@ namespace SME.SGP.Dados
 	                        from (     
 		                        select 
 			                            fa.*,
-			                            row_number() over (partition by fa.codigo_aluno, fa.bimestre, fa.disciplina_id order by fa.id desc) sequencia
+			                            row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
 			                        from 
 			                            frequencia_aluno fa 
 		                            where
