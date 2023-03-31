@@ -93,7 +93,14 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (alunoPorTurmaResposta == null)
-                    throw new NegocioException("Não foi localizada matrícula ativa para o aluno selecionado.");
+                {
+                    var obterMatriculaAlunoTurmaPlano = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(entidadePlano.Turma.CodigoTurma, entidadePlano.AlunoCodigo));
+                    if (obterMatriculaAlunoTurmaPlano.Any() && obterMatriculaAlunoTurmaPlano != null)
+                        alunoPorTurmaResposta = obterMatriculaAlunoTurmaPlano.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
+                    else
+                        throw new NegocioException("Não foi localizada matrícula ativa para o aluno selecionado.");
+                }
+                    
 
                 turma = await mediator
                     .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));

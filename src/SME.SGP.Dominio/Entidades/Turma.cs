@@ -125,7 +125,10 @@ namespace SME.SGP.Dominio
         {
             return TipoTurma == TipoTurma.Regular;
         }
-
+        public bool EhTurmaPrograma()
+        {
+            return TipoTurma == TipoTurma.Programa;
+        }
         public bool EhAnoAnterior()
         {
             return AnoLetivo < DateTime.Now.Year;

@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> Handle(ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery request, CancellationToken cancellationToken)
-         => await repositorioPeriodoEscolar.ObterPeriodoEscolaresPorTurmaComponenteBimestre(request.TurmaCodigo, request.ComponenteCodigo, request.Bimestre,request.AulaCj);
+         => await repositorioPeriodoEscolar.ObterPeriodoEscolaresPorTurmaComponenteBimestre(request.TurmaCodigo, request.ComponentesCodigos, request.Bimestre,request.AulaCj);
     }
 }

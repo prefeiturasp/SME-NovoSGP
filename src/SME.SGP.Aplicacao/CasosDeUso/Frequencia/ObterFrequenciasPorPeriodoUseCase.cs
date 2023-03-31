@@ -21,12 +21,23 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(param.TurmaId);
             var alunosDaTurma = await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (param.DataInicio, param.DataFim)));
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
-            componenteCurricular ??= await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(param.ComponenteCurricularId)));
 
             if (componenteCurricular == null)
-                throw new NegocioException("Componente curricular não localizado");            
+                throw new NegocioException("Componente curricular não localizado");
 
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
+            string disciplinaAula = componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai != null ?
+                componenteCurricular.CdComponenteCurricularPai.ToString() :
+                componenteCurricular.CodigoComponenteCurricular.ToString();
+
+            var codigosComponentesConsiderados = new List<string>() { disciplinaAula };
+
+            var componenteTerritorioEquivalente = await mediator
+                .Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma));
+
+            if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
+                codigosComponentesConsiderados.AddRange(componenteTerritorioEquivalente.Select(c => c.CodigoComponenteCurricular.ToString()).Except(codigosComponentesConsiderados));                
+
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesConsiderados.ToArray(), usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
@@ -92,9 +103,9 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string disciplinaId, bool aulaCJ, string professor = null)
+        private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string[] disciplinasId, bool aulaCJ, string professor = null)
         {
-            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinaId, aulaCJ, professor));
+            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinasId, aulaCJ, professor));
             if (aulas == null)
                 throw new NegocioException("Aulas não encontradas para a turma no Período.");
 

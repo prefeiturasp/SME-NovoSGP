@@ -8,12 +8,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasPorDataPeriodoQuery : IRequest<IEnumerable<Aula>>
     {
-        public ObterAulasPorDataPeriodoQuery(DateTime dataInicio, DateTime dataFim, string turmaId, string componenteCurricularId, bool aulaCj, string professor = null)
+        public ObterAulasPorDataPeriodoQuery(DateTime dataInicio, DateTime dataFim, string turmaId, string[] componentesCurricularesId, bool aulaCj, string professor = null)
         {
             DataInicio = dataInicio;
             DataFim = dataFim;
             TurmaId = turmaId;
-            ComponenteCurricularId = componenteCurricularId;
+            ComponentesCurricularesId = componentesCurricularesId;
             AulaCj = aulaCj;
             Professor = professor;
         }
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }
         public string TurmaId { get; set; }
-        public string ComponenteCurricularId { get; set; }
+        public string[] ComponentesCurricularesId { get; set; }
         public bool AulaCj { get; set; }
         public string Professor { get; set; }
     }
