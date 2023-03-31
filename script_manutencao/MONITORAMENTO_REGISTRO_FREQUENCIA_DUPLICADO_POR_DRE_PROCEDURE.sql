@@ -15,7 +15,9 @@ BEGIN
 					join ue on ue.id = t.ue_id 
 					join dre on dre.id = ue.dre_id 					
 			where t.ano_letivo = extract(year from NOW())	
-			  and dre.id = p_dreid	
+			  and dre.id = p_dreid 
+			  AND NOT a.excluido 
+			  and not rf.excluido 	
 			group by rf.aula_id
 			having count(rf.id) > 1
 	    );

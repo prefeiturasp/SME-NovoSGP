@@ -16,7 +16,9 @@ BEGIN
 					join aula a on a.id = rfa.aula_id  
 					join turma t on t.turma_id = a.turma_id 		
 			where t.ano_letivo = extract(year from NOW())	
-			  and t.ue_id = p_ueid	
+			  and t.ue_id = p_ueid 
+			  AND NOT a.excluido 
+			  and not rfa.excluido 	
 			group by rfa.registro_frequencia_id,
 					 rfa.aula_id,		 
  					 rfa.numero_aula,
