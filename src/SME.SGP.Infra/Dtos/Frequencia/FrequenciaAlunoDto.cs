@@ -8,6 +8,8 @@ namespace SME.SGP.Infra
         public int TotalAulas { get; set; }
         public int TotalAusencias { get; set; }
         public int TotalCompensacoes { get; set; }
+        public int TotalPresencas { get; set; }
+        public int TotalRemotos { get; set; }
         public DateTime PeriodoFim { get; set; }
         public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
         public double PercentualFrequencia 

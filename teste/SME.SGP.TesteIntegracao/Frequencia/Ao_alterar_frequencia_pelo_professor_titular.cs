@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        //[Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar a Frequencia quando Professor Titular")]
         public async Task Deve_alterar_a_Frequencia()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false);

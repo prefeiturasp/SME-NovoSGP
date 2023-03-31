@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class CriarEventoItineranciaPAAICommand : IRequest<bool>
     {
-        public CriarEventoItineranciaPAAICommand(long itineranciaId, string dreCodigo, string ueCodigo, DateTime dataEvento, DateTime dataItinerancia, IEnumerable<ItineranciaObjetivoDescricaoDto> objetivos)
+        public CriarEventoItineranciaPAAICommand(long itineranciaId, string dreCodigo, string ueCodigo, DateTime dataEvento, DateTime dataItinerancia, IEnumerable<ItineranciaNomeDescricaoDto> objetivos)
         {
             ItineranciaId = itineranciaId;
             DreCodigo = dreCodigo;
@@ -23,6 +23,6 @@ namespace SME.SGP.Aplicacao
         public string UeCodigo { get; }
         public DateTime DataItinerancia { get; }
         public DateTime DataEvento { get; }
-        public IEnumerable<ItineranciaObjetivoDescricaoDto> Objetivos { get; }
+        public IEnumerable<ItineranciaNomeDescricaoDto> Objetivos { get; }
     }
 }

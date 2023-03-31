@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             var disciplinasTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
 
             string[] codigoDisciplinasTurma = disciplinasTurma.Any()
-                ? disciplinasTurma.Select(d => d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.ToString() : d.CodigoComponenteCurricular.ToString()).ToArray() 
+                ? disciplinasTurma.Select(d => d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.ToString() : d.CodigoComponenteCurricular.ToString()).ToArray()
                 : new string[] { };
 
             return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, turmaCodigo, codigoDisciplinasTurma, tipoCalendario.Id, matriculasAluno));
@@ -79,20 +79,20 @@ namespace SME.SGP.Aplicacao
                         var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
                             .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, disciplina.CodigoComponenteCurricular.ToString()).Result;
 
-                        somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 100;
+                        somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 0;
                     });
-                    var mediaFinalFrequenciaDiscipina = Math.Round(somaPercentualFrequenciaDisciplinaBimestre / periodos.Count(), 2);
+                    var mediaFinalFrequenciaDiscipina = FrequenciaAluno.ArredondarPercentual(somaPercentualFrequenciaDisciplinaBimestre / periodos.Count());
                     somaFrequenciaFinal += mediaFinalFrequenciaDiscipina;
                 }
                 totalDisciplinas += grupoDisciplinasMatriz.Count();
             }
 
-            var frequenciaGlobal2020 = Math.Round(somaFrequenciaFinal / totalDisciplinas, 2);
+            var frequenciaGlobal2020 = FrequenciaAluno.ArredondarPercentual(somaFrequenciaFinal / totalDisciplinas);
 
             if (frequenciaGlobal2020 == 0)
                 return string.Empty;
             else
-                return frequenciaGlobal2020.ToString();
+                return FrequenciaAluno.FormatarPercentual(frequenciaGlobal2020);
         }
     }
 }

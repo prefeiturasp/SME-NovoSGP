@@ -142,6 +142,9 @@ namespace SME.SGP.Dominio
         HistoricoEscolarFundamentalRazor = 46,
         
         [Display(Name = "relatorios/encaminhamentonaapadetalhado", ShortName = "EncaminhamentoNAAPA", Description = "Relatório do Encaminhamento NAAPA")]
-        RelatorioEncaminhamentoNaapaDetalhado = 47
+        RelatorioEncaminhamentoNaapaDetalhado = 47,
+
+        [Display(Name = "relatorios/analitico-sondagem", ShortName = "AnaliticoSondagem", Description = "Relatório analítico da Sondagem")]
+        RelatorioAnaliticoSondagem = 48
     }
 }

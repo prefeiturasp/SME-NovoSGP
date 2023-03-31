@@ -6,17 +6,19 @@ namespace SME.SGP.Aplicacao
 {
     public class RecalcularFrequenciaPorTurmaCommand : IRequest<bool>
     {
-        public RecalcularFrequenciaPorTurmaCommand(string turmaCodigo, string componenteCurricularId, long aulaId)
+        public RecalcularFrequenciaPorTurmaCommand(string turmaCodigo, string componenteCurricularId, long aulaId, int[] meses = null)
         {
             TurmaCodigo = turmaCodigo;
             ComponenteCurricularId = componenteCurricularId;
             AulaId = aulaId;
+            Meses = meses;
         }
 
         public string TurmaCodigo { get; }
         public string ComponenteCurricularId { get; }
         public long AulaId { get; }
-    }
+        public int[] Meses { get; set; }
+}
 
     public class RecalcularFrequenciaPorTurmaCommandValidator : AbstractValidator<RecalcularFrequenciaPorTurmaCommand>
     {

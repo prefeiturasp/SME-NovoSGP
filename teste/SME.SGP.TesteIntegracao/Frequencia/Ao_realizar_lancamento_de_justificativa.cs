@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve Criar justificativa somente com motivo")]
         public async Task Deve_Criar_justificativa_somente_com_motivo()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -48,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (retorno.Id > 0).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve Criar justificativa somente com descricao")]
         public async Task Deve_Criar_justificativa_somente_com_descricao()
         {
             await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (retorno.Id > 0).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve criar justificativa com motivo e descricao")]
         public async Task Deve_Criar_justificativa_com_motivo_e_descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -88,7 +88,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (retorno.Id > 0).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve criar justificativa somente com motivo sem Aula")]
         public async Task Nao_Deve_Criar_justificativa_somente_com_motivo_Sem_Aula()
         {
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Nao deve criar justificativa usuario possui atribuicao na turma na data")]
         public async Task Nao_Deve_Criar_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Data()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -121,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - nao deve criar justificativa crianca nao encontrada anotacao")]
         public async Task Nao_Deve_Criar_justificativa_Crianca_nao_encontrada_anotacao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -138,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve criar justificativa criança não ativa")]
         public async Task Nao_Deve_Criar_justificativa_Crianca_nao_ativa()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -155,7 +155,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve criar justificativa criança não ativo")]
         public async Task Nao_Deve_Criar_justificativa_Aluno_nao_ativo()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -173,7 +173,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         }
 
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve criar justificativa aluno nao encontrado anotacao")]
         public async Task Nao_Deve_Criar_justificativa_Aluno_nao_encontrado_anotacao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -190,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve criar justificativa motivo ausencia não encontrado")]
         public async Task Nao_Deve_Criar_justificativa_Motivo_ausencia_nao_encontrado()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -208,27 +208,27 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         }
 
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve excluir justificativa")]
         public async Task Deve_Excluir_justificativa()
         {
             (await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(await Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao())).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve excluir justificativa anotacao nao localizada com id informado")]
         public async Task Nao_Deve_Excluir_justificativa_Anotacao_Nao_Localizada_Com_Id_Informado()
         {
             await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(8).ShouldThrowAsync<NegocioException>();
         }
 
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve excluir justificativa usuario possui atribuicao na turma na data")]
         public async Task Nao_Deve_Excluir_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Data()
         {
             var criarJustificativa = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data();
             await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(criarJustificativa).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar justificativa com motivo e descricao")]
         public async Task Deve_Alterar_justificativa_com_motivo_e_descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
@@ -241,7 +241,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar justificativa somente com descricao sem motivo")]
         public async Task Deve_Alterar_justificativa_somente_com_descricao_sem_motivo()
         {
             var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto
@@ -252,7 +252,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar justificativa somente com motivo sem descricao")]
         public async Task Deve_Alterar_justificativa_somente_com_motivo_sem_descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
@@ -264,7 +264,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve altear justificativa somente motivo com descricao")]
         public async Task Deve_Altear_justificativa_somente_motivo_com_descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
@@ -277,7 +277,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar justificativa somente descricao com motivo")]
         public async Task Deve_Alterar_justificativa_somente_descricao_com_motivo()
         {
             var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto
@@ -289,7 +289,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve alterar justificativa usuario possui atribuicao na turma na dato")]
         public async Task Nao_Deve_Alterar_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Dato()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
@@ -302,7 +302,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Não deve alterar justificativa anotacao não localizada com id informado")]
         public async Task Nao_Deve_Alterar_justificativa_Anotacao_Nao_Localizada_Com_Id_Informado()
         {
             var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto

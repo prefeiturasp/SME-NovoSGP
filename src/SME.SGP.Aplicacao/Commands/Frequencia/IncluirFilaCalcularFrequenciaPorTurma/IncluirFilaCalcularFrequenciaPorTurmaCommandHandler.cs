@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,11 +22,22 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null), 
                 cancellationToken);
 
-            var comandoConsolidacao = new FiltroConsolidacaoFrequenciaAlunoMensal(request.TurmaId, request.DataAula.Month);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, comandoConsolidacao, Guid.NewGuid(), null),
-                cancellationToken);
+            if (request.Meses != null && request.Meses.Any())
+            {
+                foreach(var mes in request.Meses)
+                    await PublicarConsolidacaoFrequenciaAlunoMensal(request.TurmaId, mes, cancellationToken);
+            }
+            else
+                await PublicarConsolidacaoFrequenciaAlunoMensal(request.TurmaId, request.DataAula.Month, cancellationToken);
 
             return true;
+        }
+
+        public async Task PublicarConsolidacaoFrequenciaAlunoMensal(string turmaId, int month, CancellationToken cancellationToken)
+        {
+            var comandoConsolidacao = new FiltroConsolidacaoFrequenciaAlunoMensal(turmaId, month);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, comandoConsolidacao, Guid.NewGuid(), null),
+                cancellationToken);
         }
     }
 }
