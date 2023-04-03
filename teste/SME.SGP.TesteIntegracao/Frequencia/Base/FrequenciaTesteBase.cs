@@ -154,8 +154,15 @@ namespace SME.SGP.TesteIntegracao
             await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
             CriarClaimUsuario(perfil);
             await CriarUsuarios();
+            await CriarTurma(Modalidade.Fundamental, false);
         }
-
+        protected async Task CriarDadosBaseSemTurma(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
+        {
+            await CriarTipoCalendario(tipoCalendario);
+            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            CriarClaimUsuario(perfil);
+            await CriarUsuarios();
+        }
         protected async Task CriarPeriodoEscolarEAbertura()
         {
             await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
@@ -595,7 +602,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "0",
                 AlteradoRF = "0",
                 TotalCompensacoes = 0,
-                PeriodoEscolarId = 1,
+                PeriodoEscolarId = 2,
                 TotalPresencas = 1,
                 TotalRemotos = 0,
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
