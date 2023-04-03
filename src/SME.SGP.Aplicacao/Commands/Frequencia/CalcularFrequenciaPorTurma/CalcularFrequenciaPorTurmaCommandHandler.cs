@@ -75,13 +75,9 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var alunoCodigo in alunosComFrequencia)
                     {
-                        var totalAulasNaDisciplinaParaAluno = registroFreqAlunos
-                            .FirstOrDefault(t => t.AlunoCodigo.Equals(alunoCodigo) && t.ComponenteCurricularId.Equals(request.DisciplinaId))
-                            .TotalAulas;
+                        var totalAulasNaDisciplinaParaAluno = await mediator.Send(new ObterTotalAulasPorDisciplinaTurmaCodigoAlunoQuery(request.DataAula, alunoCodigo, request.DisciplinaId, request.TurmaId));
 
-                        var totalAulasParaAluno = registroFreqAlunos
-                            .Where(t => t.AlunoCodigo.Equals(alunoCodigo))
-                            .Sum(s => s.TotalAulas);
+                        var totalAulasParaAluno = await mediator.Send(new ObterTotalAulasPorDisciplinaTurmaCodigoAlunoQuery(request.DataAula, alunoCodigo, string.Empty, request.TurmaId));
 
                         if (totalAulasNaDisciplinaParaAluno == 0)
                             excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos
@@ -185,7 +181,7 @@ namespace SME.SGP.Aplicacao
                                                        IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
                                                        Turma turma, string componenteCurricularId, PeriodoEscolar periodoEscolar)
         {
-            if (registroFrequenciaAlunos.Any(a => a.ComponenteCurricularId == componenteCurricularId) || totalAulasNaDisciplina > 0)
+            if (registroFrequenciaAlunos.Any(a => a.ComponenteCurricularId == componenteCurricularId) && totalAulasNaDisciplina > 0)
             {
                 var registroFrequenciaAluno = registroFrequenciaAlunos
                     .FirstOrDefault(a => a.AlunoCodigo == alunoCodigo && a.ComponenteCurricularId == componenteCurricularId);
@@ -242,7 +238,7 @@ namespace SME.SGP.Aplicacao
                                                 IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
                                                 string turmaId)
         {
-            if (registroFrequenciaAlunos.Any())
+            if (registroFrequenciaAlunos.Any() && totalAulasDaTurmaGeral > 0)
             {
                 int totalCompensacoesDoAlunoGeral = 0;
 

@@ -84,6 +84,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return ServiceProvider.GetService<IEncerrarPlanosAEEEstudantesInativosUseCase>();
         }
+
+        protected IEncerrarPlanosAEEEstudantesInativosTratarUseCase EncerrarPlanosAEEEstudantesInativosTratarUseCase()
+        {
+            return ServiceProvider.GetService<IEncerrarPlanosAEEEstudantesInativosTratarUseCase>();
+        }
         protected IEncerrarPlanoAEEUseCase ObterServicoEncerrarPlanoAEEUseCase()
         {
             return ServiceProvider.GetService<IEncerrarPlanoAEEUseCase>();
