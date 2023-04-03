@@ -31,6 +31,8 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var disciplinasRetorno = new List<DisciplinaDto>();
 
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
+
             var disciplinasUsuario = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
@@ -89,6 +91,8 @@ namespace SME.SGP.Aplicacao
                         {
                             disciplina.RegistraFrequencia = await mediator
                                 .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+                            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+                                disciplina.NomeComponenteInfantil = disciplina.Nome;
 
                             disciplinasRetorno.Add(disciplina);
                         }
