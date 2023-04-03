@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 DataSituacao = DateTime.Parse("2022-01-11"),
             };
 
-            var naoExibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-11"), DateTime.Parse("2022-01-10"));
+            var naoExibirAlunoFrequencia = aluno.DeveMostrarNaChamada(DateTime.Parse("2022-01-12"), DateTime.Parse("2022-06-01"));
 
             Assert.True(naoExibirAlunoFrequencia, "Aluno não está ativo depois do inicio do bimestre antes da aula");
         }

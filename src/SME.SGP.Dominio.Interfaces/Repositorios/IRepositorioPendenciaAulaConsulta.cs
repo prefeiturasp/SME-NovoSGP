@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -6,8 +7,8 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPendenciaAulaConsulta
     {
-        Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo);
-        Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo);
+        Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo,bool exibirRegistroSemPendencia = true);
+        Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo,bool exibirRegistroSemPendencia = true);
         Task<long[]> ListarPendenciasPorAulaId(long aulaId);
         Task<long[]> ListarPendenciasPorAulasId(long[] aulasId);
         Task<PendenciaAulaDto> PossuiPendenciasPorAulaId(long aulaId, bool ehInfantil, Usuario usuarioLogado, long? disciplinaIdTerritorio = null);
@@ -31,5 +32,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<long> ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarTurma(long componenteCurricularId, string codigoRf, long periodoEscolarId, string codigoTurma = "");        
         Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId);
         Task<IEnumerable<long>> ObterPendenciasAulaPorDreUeTipoModalidade(long dreId, long ueId, TipoPendencia tipoPendencia, Modalidade modalidade);
+        Task<IEnumerable<long>> ObterIdsPendencias(int anoLetivo, string codigoUE);
+        Task<long[]> ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim);
     }
 }

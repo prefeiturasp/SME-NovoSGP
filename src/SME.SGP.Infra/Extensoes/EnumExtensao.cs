@@ -52,6 +52,21 @@ namespace SME.SGP.Infra
             }
         }
 
+        public static FuncaoExterna ObterFuncaoExternaPorPerfil(this PerfilUsuario perfilCodigo)
+        {
+            switch (perfilCodigo)
+            {
+                case PerfilUsuario.CP:
+                    return FuncaoExterna.CP;
+                case PerfilUsuario.AD:
+                    return FuncaoExterna.AD;
+                case PerfilUsuario.DIRETOR:
+                    return FuncaoExterna.Diretor;
+                default:
+                    throw new NegocioException("Perfil não relacionado com Função Externa");
+            }
+        }
+
         public static PerfilUsuario ObterPerfilPorCargo(this Cargo cargoId)
         {
             switch (cargoId)
@@ -68,6 +83,21 @@ namespace SME.SGP.Infra
                     return PerfilUsuario.SUPERVISOR_TECNICO;
                 default:
                     throw new NegocioException("Cargo não relacionado a um Perfil");
+            }
+        }
+
+        public static PerfilUsuario ObterPerfilPorFuncaoExterna(this FuncaoExterna funcaoExternaId)
+        {
+            switch (funcaoExternaId)
+            {
+                case FuncaoExterna.CP:
+                    return PerfilUsuario.CP;
+                case FuncaoExterna.AD:
+                    return PerfilUsuario.AD;
+                case FuncaoExterna.Diretor:
+                    return PerfilUsuario.DIRETOR;
+                default:
+                    throw new NegocioException("Funcao Externa não relacionada a um Perfil");
             }
         }
 

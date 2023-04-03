@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve obter ausencia motivo por Aluno")]
         public async Task Deve_obter_ausencia_motivo_por_Aluno()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, NUMERO_AULAS_1);

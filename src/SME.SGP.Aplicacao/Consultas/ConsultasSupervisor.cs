@@ -189,27 +189,28 @@ namespace SME.SGP.Aplicacao
             var totalRegistros = supervisor.Count;
             for (int i = 0; i < totalRegistros; i++)
             {
-                switch (supervisor[i].TipoAtribuicao)
-                {
-                    case (int)TipoResponsavelAtribuicao.PsicologoEscolar:
-                    case (int)TipoResponsavelAtribuicao.Psicopedagogo:
-                    case (int)TipoResponsavelAtribuicao.AssistenteSocial:
-                        {
-                            if (supervisor[i].SupervisorId == null)
+                if (supervisor[i].SupervisorId == null)
+                    listaResponsaveis = null;
+                else
+                    switch (supervisor[i].TipoAtribuicao)
+                    {
+                        case (int)TipoResponsavelAtribuicao.PsicologoEscolar:
+                        case (int)TipoResponsavelAtribuicao.Psicopedagogo:
+                        case (int)TipoResponsavelAtribuicao.AssistenteSocial:
+                            {
+                                var nomesFuncionariosAtribuidos = await servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor[i].SupervisorId });
+                                if (nomesFuncionariosAtribuidos.Any())
+                                    listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesFuncionariosAtribuidos.FirstOrDefault().Login, NomeServidor = nomesFuncionariosAtribuidos.FirstOrDefault().NomeServidor };
                                 break;
-                            var nomesFuncionariosAtribuidos = await servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor[i].SupervisorId });
-                            if (nomesFuncionariosAtribuidos.Any())
-                                listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesFuncionariosAtribuidos.FirstOrDefault().Login, NomeServidor = nomesFuncionariosAtribuidos.FirstOrDefault().NomeServidor };
-                            break;
-                        }
-                    default:
-                        {
-                            var nomesServidoresAtribuidos = await servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor[i].SupervisorId });
-                            if (nomesServidoresAtribuidos.Any())
-                                listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesServidoresAtribuidos.FirstOrDefault().CodigoRF, NomeServidor = nomesServidoresAtribuidos.FirstOrDefault().Nome };
-                            break;
-                        }
-                }
+                            }
+                        default:
+                            {
+                                var nomesServidoresAtribuidos = await servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor[i].SupervisorId });
+                                if (nomesServidoresAtribuidos.Any())
+                                    listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesServidoresAtribuidos.FirstOrDefault().CodigoRF, NomeServidor = nomesServidoresAtribuidos.FirstOrDefault().Nome };
+                                break;
+                            }
+                    }
                 string nomeResponsavel = listaResponsaveis != null ? listaResponsaveis.NomeServidor + " - " + listaResponsaveis.CodigoRfOuLogin
                                          : string.Empty;
 

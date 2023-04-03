@@ -9,6 +9,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.TesteIntegracao.ExcluirTurmaExtinta.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao
@@ -50,7 +54,14 @@ namespace SME.SGP.TesteIntegracao
         public Excluir_turma_extinta(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-
+        
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryFake), ServiceLifetime.Scoped));
+        }
+        
         [Fact]
         public async Task Deve_retornar_false_se_nao_informado_turma()
         {

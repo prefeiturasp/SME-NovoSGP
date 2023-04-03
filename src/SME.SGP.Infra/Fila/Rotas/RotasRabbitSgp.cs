@@ -41,7 +41,10 @@
         public const string ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA = "sgp.atualizar.informacoes.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA = "sgp.atualizar.turma.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA = "sgp.atualizar.endereco.encaminhamento.naapa";
-        
+        public const string ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA = "sgp.atualizacao.situacao.aluno.encaminhamento.naapa.notificar";
+        public const string ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA = "sgp.transferencia.ue.dre.encaminhamento.naapa.notificar";
+        public const string ExecutarAtualizacaoDasTurmasProgramaDoEncaminhamentoNAAPA = "sgp.atualizar.turmas.programa.encaminhamento.naapa";
+
         #region Relatórios
 
         public const string RotaRelatoriosProntos = "sgp.relatorios.prontos.notificar";
@@ -129,5 +132,7 @@
         public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.remover.atribuicao.responsaveis.aspp.dre";
 
         #endregion
+
+        public const string ExecutarGravarObservacaoHistorioEscolar = "sgp.executar.gravar.observacao.historico.escolar";
     }
 }

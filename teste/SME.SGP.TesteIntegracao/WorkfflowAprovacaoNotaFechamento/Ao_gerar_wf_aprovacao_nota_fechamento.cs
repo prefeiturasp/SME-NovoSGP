@@ -70,10 +70,10 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(WorkFlowAprovacaoNotaFechamento.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerWFFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "WorkFlow Aprovação - Deve consumir a fila sgp.fechamento.nota.aprovacao.notificar")]
         public async Task Deve_consumir_primeira_fila_wf_notificacao_nota_fechamento_com_sucesso()
         {
-            await CirarDadosBasicos();
+            await CriarDadosBasicos();
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
                 FechamentoNotaId = 1,
@@ -102,12 +102,50 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
             validaFila.ShouldBeTrue();
             wfAprovacao.ShouldNotBeEmpty();
         }
+        
+        [Fact(DisplayName = "WorkFlow Aprovação - Deve consumir a fila sgp.fechamento.nota.aprovacao.notificar.turma")]
+        public async Task Deve_consumir_segunda_fila_wf_notificacao_nota_fechamento_turma_com_sucesso()
+        {
+            await CriarDadosBasicos();
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 1,
+                Nota = NOTA_5,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+            });
 
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 2,
+                Nota = NOTA_8,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+            });
+
+            var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaUseCase>();
+            var jsonMensagem = JsonSerializer.Serialize(new WfAprovacaoNotaFechamentoTurmaDto() { TurmaId = 1 });
+            bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
+            validaFila.ShouldBeTrue();
+            
+            var wfAprovacao = ObterTodos<WfAprovacaoNotaFechamento>();
+            wfAprovacao.ShouldNotBeEmpty();
+            
+            var useCaseTurma = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
+            jsonMensagem = JsonSerializer.Serialize(ObterMensagem());
+            validaFila = await useCaseTurma.Executar(new MensagemRabbit(jsonMensagem));
+            validaFila.ShouldBeTrue();
+
+            var notificacoes = ObterTodos<Notificacao>();
+            notificacoes.All(c=> c.Mensagem.Contains("<mensagemDinamicaTabelaPorAluno>")).ShouldBeTrue();
+        }
 
         [Fact]
         public async Task Deve_gerar_notificacao_com_dados_wf_aprovacao_nota_sem_wf_aprovacao_id()
         {
-            await CirarDadosBasicos();
+            await CriarDadosBasicos();
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
                 FechamentoNotaId = 1,
@@ -154,7 +192,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
 
             var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
 
-            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
+            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
 
             var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -172,7 +210,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
         [Fact]
         public async Task Deve_permitir_inserir_wf_sem_aprovacao_id()
         {
-            await CirarDadosBasicos();
+            await CriarDadosBasicos();
 
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
@@ -193,7 +231,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
         [Fact]
         public async Task Deve_permitir_inserir_wf_com_aprovacao_id()
         {
-            await CirarDadosBasicos();
+            await CriarDadosBasicos();
 
             await CriarWfAprovacao();
 
@@ -220,7 +258,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
         {
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await CirarDadosBasicos();
+            await CriarDadosBasicos();
 
             await CriarWfAprovacaoNotaFechamento(null);
 
@@ -267,7 +305,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await CirarDadosBasicos();
+            await CriarDadosBasicos();
 
             await CriarWfAprovacao();
 
@@ -362,7 +400,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
             });
         }
 
-        private async Task CirarDadosBasicos()
+        private async Task CriarDadosBasicos()
         {
             await InserirNaBase(new Usuario
             {
@@ -522,6 +560,57 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
             await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
             await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
             await InserirNaBase("componente_curricular", "1", "512", "1", "1", "'MAT'", "false", "false", "true", "false", "false", "true", "'MATEMATICA'", "'MATEMATICA'");
+        }
+        
+        private static List<WfAprovacaoNotaFechamentoTurmaDto> ObterMensagem()
+        {
+            return new List<WfAprovacaoNotaFechamentoTurmaDto>()
+            {
+                new()
+                {
+                    AnoLetivo = 0,
+                    Bimestre = 1,
+                    CodigoAluno = "3333333",
+                    ComponenteCurricularDescricao = "MATEMATICA",
+                    ConceitoAnteriorId = null,
+                    FechamentoNota = null,
+                    FechamentoTurmaDisciplinaId = 1,
+                    LancaNota = false,
+                    NotaAnterior = 8,
+                    TurmaId = 1,
+                    WfAprovacao = new WfAprovacaoNotaFechamento() 
+                    {
+                        CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                        CriadoPor = SISTEMA,
+                        CriadoRF = SISTEMA,
+                        Id = 2,
+                        Nota = 8,
+                        FechamentoNotaId = 2
+                    }
+                },
+                new()
+                {
+                    AnoLetivo = 0,
+                    Bimestre = 1,
+                    CodigoAluno = "2222222",
+                    ComponenteCurricularDescricao = "MATEMATICA",
+                    ConceitoAnteriorId = null,
+                    FechamentoNota = null,
+                    FechamentoTurmaDisciplinaId = 1,
+                    LancaNota = false,
+                    NotaAnterior = 5,
+                    TurmaId = 1,
+                    WfAprovacao = new WfAprovacaoNotaFechamento()
+                    {
+                        CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                        CriadoPor = SISTEMA,
+                        CriadoRF = SISTEMA,
+                        Id = 1,
+                        Nota = 5,
+                        FechamentoNotaId = 1
+                    }
+                },
+            };
         }
     }
 }

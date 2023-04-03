@@ -15,6 +15,11 @@ namespace SME.SGP.TesteIntegracao
 {
     public abstract class TesteBaseComuns : TesteBase
     {
+        protected const string ALUNO_CODIGO_1111111 = "1111111";
+        protected const string ALUNO_CODIGO_2222222 = "2222222";
+        protected const string ALUNO_CODIGO_3333333 = "3333333";
+        protected const string ALUNO_CODIGO_4444444 = "4444444";
+        
         private const string USUARIO_CHAVE = "NomeUsuario";
         private const string USUARIO_RF_CHAVE = "RF";
         private const string USUARIO_LOGIN_CHAVE = "login";
@@ -300,6 +305,22 @@ namespace SME.SGP.TesteIntegracao
 
         protected const int NUMERO_AULA_1 = 1;
         protected const int NUMERO_AULA_2 = 2;
+        protected const int NUMERO_AULA_3 = 3;
+        protected const int NUMERO_AULA_4 = 4;
+        
+        protected const int AULA_ID_1 = 1;
+        protected const int AULA_ID_2 = 2;
+        protected const int AULA_ID_3 = 3;
+        protected const int AULA_ID_4 = 4;
+        protected const int AULA_ID_5 = 5;
+        protected const int AULA_ID_6 = 6;
+        protected const int AULA_ID_7 = 7;
+        protected const int AULA_ID_8 = 8;
+        protected const int AULA_ID_9 = 9;
+        protected const int AULA_ID_10 = 10;
+        
+        protected const long REGISTRO_FREQUENCIA_1 = 1;
+        protected const long REGISTRO_FREQUENCIA_2 = 2;
 
         protected const string ALFABETIZACAO = "ALFABETIZACAO";
         protected const string INTERDISCIPLINAR = "INTERDISCIPLINAR";
@@ -349,6 +370,8 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
 
         protected const int AULA_ID = 1;
+        protected const int QUANTIDADE_AULA_NORMAL_MAIS_RECORRENTES_3 = 3;
+        protected const int QUANTIDADE_AULA_RECORRENTE_2 = 2;
         protected const int QUANTIDADE_AULA = 1;
         protected const int QUANTIDADE_AULA_2 = 2;
         protected const int QUANTIDADE_AULA_3 = 3;
@@ -414,6 +437,7 @@ namespace SME.SGP.TesteIntegracao
 
 
         protected readonly string ALUNO_CODIGO_1 = "1";
+        protected const string ALUNO_NOME_1 = "Nome do Aluno 1";
         protected readonly string ALUNO_CODIGO_2 = "2";
         protected readonly string ALUNO_CODIGO_3 = "3";
         protected readonly string ALUNO_CODIGO_4 = "4";
@@ -520,6 +544,26 @@ namespace SME.SGP.TesteIntegracao
         protected string ObterPerfilProfessor()
         {
             return Guid.Parse(PerfilUsuario.PROFESSOR.Name()).ToString();
+        }
+        
+        protected string ObterPerfilCoordenadorNAAPA()
+        {
+            return Guid.Parse(PerfilUsuario.COORDENADOR_NAAPA.Name()).ToString();
+        }
+        
+        protected string ObterPerfilPsicologoEscolar()
+        {
+            return Guid.Parse(PerfilUsuario.PSICOLOGO_ESCOLAR.Name()).ToString();
+        }
+        
+        protected string ObterPerfilPsicopedagogo()
+        {
+            return Guid.Parse(PerfilUsuario.PSICOPEDAGOGO.Name()).ToString();
+        }
+        
+        protected string ObterPerfilAssistenteSocial()
+        {
+            return Guid.Parse(PerfilUsuario.ASSISTENTE_SOCIAL.Name()).ToString();
         }
 
         protected string ObterPerfilCJ()
@@ -1307,7 +1351,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoCalendarioId = tipoCalendarioId,
                 ProfessorRf = professorRf,
                 Quantidade = 1,
-                DataAula = dataAula,
+                DataAula = dataAula.Date,
                 RecorrenciaAula = recorrenciaAula,
                 TipoAula = tipoAula,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),

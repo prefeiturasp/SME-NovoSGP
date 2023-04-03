@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
     {
         public Ao_alterar_frequencia_pelo_cp_ou_diretor(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
-        //[Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar a Frequencia quando CP")]
         public async Task Deve_alterar_a_Frequencia_quando_cp()
         {
             await CriarDadosBasicos(ObterPerfilCP(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false);
@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
         }
 
-        //[Fact]
+        [Fact(DisplayName = "Frequência - Deve alterar a Frequencia quando DIRETOR")]
         public async Task Deve_alterar_a_Frequencia_quando_diretor()
         {
             await CriarDadosBasicos(ObterPerfilDiretor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false);

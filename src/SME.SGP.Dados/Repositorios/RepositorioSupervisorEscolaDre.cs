@@ -324,5 +324,31 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(query, new { codigoUe, tipoResponsavelAtribuicao }));
         }
+
+        public async Task<IEnumerable<SupervisorEscolasDreDto>> ObterResponsaveisPorDreUeTiposAtribuicaoAsync(string codigoDre, string codigoUe, TipoResponsavelAtribuicao[] tiposResponsavelAtribuicao)
+        {
+            StringBuilder query = new();
+
+            query.AppendLine("select sed.id as AtribuicaoSupervisorId, sed.dre_id as DreId, sed.escola_id as UeId, sed.supervisor_id as SupervisorId, sed.criado_em as CriadoEm, sed.criado_por as CriadoPor, sed.alterado_em as AlteradoEm, sed.alterado_por as AlteradoPor, sed.criado_rf as CriadoRF, sed.alterado_rf as AlteradoRF, sed.excluido as AtribuicaoExcluida, sed.tipo as TipoAtribuicao, u.nome as SupervisorNome");
+            query.AppendLine("from supervisor_escola_dre sed");
+            query.AppendLine("join usuario u on u.rf_codigo = supervisor_id ");
+            query.AppendLine("where not excluido");
+
+            if (!string.IsNullOrEmpty(codigoDre))
+                query.AppendLine("and dre_id = @codigoDre");
+            if (!string.IsNullOrEmpty(codigoUe))
+                query.AppendLine("and escola_id = @codigoUe ");
+            if (tiposResponsavelAtribuicao != null && tiposResponsavelAtribuicao.Any())
+                query.AppendLine("and tipo = any (@tiposResponsavelAtribuicao) ");
+
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new
+            {
+                codigoDre,
+                codigoUe,
+                tiposResponsavelAtribuicao = tiposResponsavelAtribuicao.ToIntegerArray()
+            });
+            
+            
+        }
     }
 }

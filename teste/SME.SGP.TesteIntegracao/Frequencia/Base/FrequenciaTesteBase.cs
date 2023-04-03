@@ -16,13 +16,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 
 namespace SME.SGP.TesteIntegracao
 {
     public abstract class FrequenciaTesteBase : TesteBaseComuns
     {
+        protected long REGISTRO_FREQUENCIA_ID_1 = 1;
+        protected long REGISTRO_FREQUENCIA_ID_2 = 2;
+        protected long REGISTRO_FREQUENCIA_ID_3 = 3;
+        protected long REGISTRO_FREQUENCIA_ID_4 = 4;
+        
         private const int QUANTIDADE_3 = 3;
         protected const long AULA_ID_1 = 1;
+        protected const long AULA_ID_2 = 2;
+        protected const long AULA_ID_3 = 3;
+        protected const long AULA_ID_4 = 4;
         protected const int NUMERO_AULAS_1 = 1;
         protected const int NUMERO_AULAS_2 = 2;
         protected const int NUMERO_AULAS_3 = 3;
@@ -68,7 +77,9 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosDentroPeriodoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosDentroPeriodoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
@@ -127,6 +138,16 @@ namespace SME.SGP.TesteIntegracao
             await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
             await CriarTurma(modalidade);
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
+            if (criarPeriodoEscolarEAbertura)
+                await CriarPeriodoEscolarEAbertura();
+        }
+
+        protected async Task CriarDadosBasicosAulaRecorrencia(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3, int quantidadeRecorrencia = QUANTIDADE_AULA_2)
+        {
+            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
+            await CriarTurma(modalidade);
+            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula);
+            await CriarAulaRecorrente(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula, quantidadeRecorrencia);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
         }
@@ -209,6 +230,18 @@ namespace SME.SGP.TesteIntegracao
         protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
+        }
+
+        protected async Task CriarAulaRecorrente(string componenteCurricularCodigo, DateTime dataAulaBase, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, int qdadeRecorrencia = QUANTIDADE_AULA_2, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        {
+            var dataAulaRecorrente = dataAulaBase;
+            for (int i = 0; i < qdadeRecorrencia; i++)
+            {
+                dataAulaRecorrente = dataAulaRecorrente.AddDays(7);
+                var aula = ObterAula(componenteCurricularCodigo, dataAulaRecorrente, recorrencia, quantidadeAula, rf);
+                aula.AulaPaiId = 1;
+                await InserirNaBase(aula);
+            }
         }
 
         private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
@@ -301,11 +334,11 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected FrequenciaDto ObterFrenqueciaDto()
+        protected FrequenciaDto ObterFrequenciaDto()
         {
             var frenquencia = new FrequenciaDto(AULA_ID_1);
 
-            frenquencia.ListaFrequencia = ObtenhaListaDeFrequenciaAluno();
+            frenquencia.ListaFrequencia = ObterListaDeFrequenciaAluno();
 
             return frenquencia;
         }
@@ -343,6 +376,23 @@ namespace SME.SGP.TesteIntegracao
             await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA);
             await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA_2);
             await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA_3);
+        }
+
+        protected async Task CrieRegistroDeFrenquenciaTodasAulas(string[] codigoAlunos, int qdadeAula)
+        {
+            await InserirNaBase(new RegistroFrequencia
+            {
+                AulaId = AULA_ID_1,
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+
+            var aulas = ObterTodos<Dominio.Aula>();
+            foreach(var aula in aulas)
+                foreach(var aluno in codigoAlunos)
+                    for (int indexAula = 1; indexAula <= (qdadeAula > 0 ? qdadeAula : aula.Quantidade); indexAula++)
+                        await RegistroFrequenciaAluno(aluno, indexAula, aula.Id);
+                    
         }
 
         protected async Task CriarRegistrosConsolidacaoFrequenciaAlunoMensal()
@@ -385,10 +435,10 @@ namespace SME.SGP.TesteIntegracao
         }
 
 
-        private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
+        private List<RegistroFrequenciaAlunoDto> ObterListaDeFrequenciaAluno()
         {
             var lista = new List<RegistroFrequenciaAlunoDto>();
-            var aulas = ObtenhaFrenquenciaAula();
+            var aulas = ObterFrenquenciaAula();
 
             lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "1", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
             lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "2", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
@@ -398,7 +448,7 @@ namespace SME.SGP.TesteIntegracao
             return lista;
         }
 
-        private List<FrequenciaAulaDto> ObtenhaFrenquenciaAula()
+        private List<FrequenciaAulaDto> ObterFrenquenciaAula()
         {
             var lista = new List<FrequenciaAulaDto>();
 
@@ -438,7 +488,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula)
+        private async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula, long aulaid = 1)
         {
             await InserirNaBase(new RegistroFrequenciaAluno
             {
@@ -449,7 +499,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "",
                 Valor = (int) TipoFrequencia.F,
                 NumeroAula = numeroAula,
-                AulaId = 1
+                AulaId = aulaid
             });
         }
 

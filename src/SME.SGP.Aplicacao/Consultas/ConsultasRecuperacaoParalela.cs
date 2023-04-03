@@ -259,7 +259,7 @@ namespace SME.SGP.Aplicacao
             return new RecuperacaoParalelaTotalEstudanteDto
             {
                 QuantidadeTotal = total,
-                PorcentagemTotal = 100,
+                PorcentagemTotal = 0,
                 Anos = totalAlunosPorSeries.Select(x => new RecuperacaoParalelaTotalAnoDto
                 {
                     AnoDescricao = x.Ano,
@@ -318,7 +318,7 @@ namespace SME.SGP.Aplicacao
                     Quantidade = s.Sum(x => x.Total),
                     TotalQuantidade = total,
                     Porcentagem = ((double)s.Sum(x => x.Total) * 100) / total,
-                    TotalPorcentagem = 100,
+                    TotalPorcentagem = 0,
                     Chave = s.Key.ToString(),
                     CodigoAno = s.Key,
                 }),
@@ -330,14 +330,14 @@ namespace SME.SGP.Aplicacao
                     Quantidade = s.Sum(c => c.Total),
                     Porcentagem = ((double)s.Sum(x => x.Total) * 100) / total,
                     TotalQuantidade = total,
-                    TotalPorcentagem = 100
+                    TotalPorcentagem = 0
                 })
             });
             retorno.Frequencia.Add(new RecuperacaoParalelaTotalEstudanteFrequenciaDto
             {
                 FrequenciaDescricao = "Total",
                 QuantidadeTotalFrequencia = total,
-                PorcentagemTotalFrequencia = 100,
+                PorcentagemTotalFrequencia = 0,
                 Linhas = linhaTotal
             });
 

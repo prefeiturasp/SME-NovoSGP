@@ -325,7 +325,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
-                dataAtual = DateTime.Now
+                dataAtual = DateTimeExtension.HorarioBrasilia().Date
             }, splitOn: "id");
         }
 
@@ -333,12 +333,13 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select *
                             from aula a
-                            left join plano_aula p on p.aula_id = a.id
+                            left join plano_aula p on p.aula_id = a.id and not p.excluido 
                            where turma_id = @codigoTurma
                                 and disciplina_id = @disciplinaId
                                 and data_aula >= @inicioPeriodo
                                 and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
+                                and not a.excluido 
                                 and p.id is null";
 
             return database.Conexao.Query<Aula>(query, new
@@ -347,7 +348,7 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 inicioPeriodo,
                 fimPeriodo,
-                dataAtual = DateTime.Today
+                dataAtual = DateTimeExtension.HorarioBrasilia().Date
             });
         }
 
@@ -1047,11 +1048,11 @@ namespace SME.SGP.Dados.Repositorios
 	                                                 periodo_escolar pe 
 	                                                 on a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
                                                  inner join
-	                                                 registro_frequencia_aluno rfa
-	                                                 on a.id = rfa.aula_id
+	                                                 registro_frequencia rf
+	                                                 on a.id = rf.aula_id
                                                  where 
 	                                                 not a.excluido
-                                                     and not rfa.excluido
+                                                     and not rf.excluido
 	                                                 and a.turma_id = @turmaCodigo
 	                                                 and a.disciplina_id = any(@componentesCurricularesId)
                                                      and a.tipo_calendario_id = @tipoCalendarioId
@@ -1115,6 +1116,17 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarInicioFimDto>(query, new { aulaId });
+        }
+
+        public async Task<IEnumerable<PeriodoEscolarAulaDto>> ObterPeriodosEscolaresDasAulas(long[] aulasId)
+        {
+            var query = @"select pe.id, pe.bimestre, pe.periodo_inicio as DataInicio, pe.periodo_fim as DataFim, a.data_aula as DataAula, a.id as AulaId
+                          from aula a
+                         inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id 
+                         where a.id = any(@aulasId)
+                           and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
+
+            return await database.Conexao.QueryAsync<PeriodoEscolarAulaDto>(query, new { aulasId });
         }
 
         public async Task<DataAulaDto> ObterAulaPorCodigoTurmaComponenteEData(string turmaId, string componenteCurricularId, DateTime dataCriacao)

@@ -2,6 +2,7 @@
 using MediatR;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, string professor = null)
-            :this(turma, componentesCurricularesId)
+            : this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
             Professor = professor;
