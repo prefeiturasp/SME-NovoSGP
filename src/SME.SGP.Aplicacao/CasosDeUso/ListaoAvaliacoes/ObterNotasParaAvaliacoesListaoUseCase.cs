@@ -156,9 +156,7 @@ namespace SME.SGP.Aplicacao
                     Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.ObterNumeroAlunoChamada()
                 };
-
-                if (alunos.Where(x => x.CodigoAluno == aluno.CodigoAluno).Count() >= 2)
-                    aluno.DataMatricula = alunos.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DataMatricula != aluno.DataMatricula).DataMatricula;
+                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCompleta.CodigoTurma, aluno.CodigoAluno));
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoListaoRetornoDto>();
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
@@ -188,16 +186,15 @@ namespace SME.SGP.Aplicacao
                     var ausente = ausenciasDasAtividadesAvaliativas
                         .Any(a => a.AlunoCodigo == aluno.CodigoAluno && a.AulaData.Date == atividadeAvaliativa.DataAvaliacao.Date);
                     
-                    var dataAtual = DateTime.Now;
+
                     var notaAvaliacao = new NotasConceitosNotaAvaliacaoListaoRetornoDto()
                     {
                         AtividadeAvaliativaId = atividadeAvaliativa.Id,
                         NotaConceito = notaParaVisualizar,
                         Ausente = ausente,
-                        PodeEditar = (aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao)
-                                        && atividadeAvaliativa.DataAvaliacao.Date <= dataAtual) 
-                                            && !(aluno.EstaInativo(atividadeAvaliativa.DataAvaliacao) 
-                                                && atividadeAvaliativa.DataAvaliacao.Date <= aluno.DataSituacao.Date),
+                        PodeEditar = (aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) || 
+                        aluno.VerificaEstaAtivoAvaliacao(matriculasAluno, atividadeAvaliativa.DataAvaliacao) ||
+                        (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao))
                     };
 
                     notasAvaliacoes.Add(notaAvaliacao);
