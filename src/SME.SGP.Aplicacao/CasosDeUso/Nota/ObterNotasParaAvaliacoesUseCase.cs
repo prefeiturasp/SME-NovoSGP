@@ -1,8 +1,6 @@
-﻿using Elastic.Apm.Api;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -228,7 +226,7 @@ namespace SME.SGP.Aplicacao
                     (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao)) && ChecarSeProfessorCJTitularPodeEditarNota(usuario, atividadeAvaliativa),
                         StatusGsa = notaDoAluno?.StatusGsa
                     };
-                    
+
                     notasAvaliacoes.Add(notaAvaliacao);
                 }
 
