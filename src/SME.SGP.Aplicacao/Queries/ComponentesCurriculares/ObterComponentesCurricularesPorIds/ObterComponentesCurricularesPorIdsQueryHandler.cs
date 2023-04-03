@@ -31,6 +31,8 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var disciplinasRetorno = new List<DisciplinaDto>();
 
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
+
             var disciplinasUsuario = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
@@ -68,8 +70,8 @@ namespace SME.SGP.Aplicacao
                             CodigoComponenteCurricular = disciplinaCorrespondente.Codigo,
                             CdComponenteCurricularPai = disciplinaCorrespondente.CodigoComponenteCurricularPai,
                             Compartilhada = disciplinaCorrespondente.Compartilhada,
-                            Nome = disciplinaCorrespondente.Descricao,
-                            NomeComponenteInfantil = disciplinaCorrespondente.Descricao,
+                            Nome = disciplinaCorrespondente.Descricao,                            
+                            NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(id)) : disciplinaCorrespondente.Descricao,
                             PossuiObjetivos = disciplinaCorrespondente.PossuiObjetivos,
                             Regencia = disciplinaCorrespondente.Regencia,
                             RegistraFrequencia = registraFrequencia,
@@ -89,6 +91,8 @@ namespace SME.SGP.Aplicacao
                         {
                             disciplina.RegistraFrequencia = await mediator
                                 .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+                            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+                                disciplina.NomeComponenteInfantil = disciplina.Nome;
 
                             disciplinasRetorno.Add(disciplina);
                         }
