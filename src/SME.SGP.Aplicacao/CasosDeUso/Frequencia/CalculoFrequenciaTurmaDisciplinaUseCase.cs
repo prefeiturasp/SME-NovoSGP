@@ -19,10 +19,15 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaCommand>();
+
             if (comando == null)
                 return false;
 
+            comando.UsuarioConsiderado = !string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF) ? 
+                (mensagemRabbit.UsuarioLogadoRF, mensagemRabbit.PerfilUsuario) : default;
+
             await mediator.Send(comando);
+
             return true;
         }
 

@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(a => a.ComponentesCodigos)
                .NotEmpty()
-               .WithMessage("O componente deve ser informado para buscar os períodos");
+               .WithMessage("Os componentes devem ser informados para buscar os períodos");
 
             RuleFor(a => a.Bimestre)
                .NotEmpty()

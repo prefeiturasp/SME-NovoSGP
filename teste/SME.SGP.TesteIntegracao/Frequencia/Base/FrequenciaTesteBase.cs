@@ -652,7 +652,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "0",
                 AlteradoRF = "0",
                 TotalCompensacoes = 0,
-                PeriodoEscolarId = 3,
+                PeriodoEscolarId = 2,
                 TotalPresencas = 1,
                 TotalRemotos = 0,
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),

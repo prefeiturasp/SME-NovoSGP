@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve obter lista de alunos ausentes")]
         public async Task Deve_obter_lista_de_alunos_ausentes()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_1, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
             await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_1,TipoFrequenciaAluno.PorDisciplina);
             await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_2,TipoFrequenciaAluno.PorDisciplina);
 
