@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             componentesCurricularesEolProfessor = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
-                                                                              usuarioLogado.CodigoRf,
+                                                                              usuarioLogado.Login,
                                                                               usuarioLogado.PerfilAtual,
                                                                               usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
