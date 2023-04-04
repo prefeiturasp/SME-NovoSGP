@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Infra
@@ -165,13 +164,5 @@ namespace SME.SGP.Infra
 
             return PodeEditarNotaConceito();
         }
-        public bool VerificaEstaAtivoAvaliacao(IEnumerable<AlunoPorTurmaResposta> matriculasAluno, DateTime dataAvaliacao)
-        {
-            return matriculasAluno.Any(matricula =>
-                   (SituacoesAtiva.Contains(matricula.CodigoSituacaoMatricula) && matricula.DataMatricula.Date <= dataAvaliacao)
-                   || (!SituacoesAtiva.Contains(matricula.CodigoSituacaoMatricula) && matricula.DataMatricula.Date >= dataAvaliacao)
-                   || (!SituacoesAtiva.Contains(matricula.CodigoSituacaoMatricula) && matricula.DataSituacao.Date >= dataAvaliacao));
-        }
-
     }
 }

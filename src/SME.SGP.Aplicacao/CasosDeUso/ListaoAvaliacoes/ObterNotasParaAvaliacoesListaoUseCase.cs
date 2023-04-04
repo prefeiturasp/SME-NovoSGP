@@ -190,8 +190,8 @@ namespace SME.SGP.Aplicacao
                         AtividadeAvaliativaId = atividadeAvaliativa.Id,
                         NotaConceito = notaParaVisualizar,
                         Ausente = ausente,
-                        PodeEditar = (aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) || 
-                        aluno.VerificaEstaAtivoAvaliacao(matriculasAluno, atividadeAvaliativa.DataAvaliacao) ||
+                        PodeEditar = matriculasAluno.Any(m => m.EstaAtivo(atividadeAvaliativa.DataAvaliacao)) ||
+                        (aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
                         (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao))
                     };
 
