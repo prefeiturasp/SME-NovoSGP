@@ -191,8 +191,7 @@ namespace SME.SGP.Aplicacao
                         NotaConceito = notaParaVisualizar,
                         Ausente = ausente,
                         PodeEditar = matriculasAluno.Any(m => m.EstaAtivo(atividadeAvaliativa.DataAvaliacao)) ||
-                        (aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
-                        (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao))
+                        (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao)
                     };
 
                     notasAvaliacoes.Add(notaAvaliacao);
