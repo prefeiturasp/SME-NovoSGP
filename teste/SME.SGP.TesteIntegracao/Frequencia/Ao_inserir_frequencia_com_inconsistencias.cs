@@ -47,10 +47,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve retornar exceção 'A turma não foi encontrada'")]
         public async Task Turma_informada_nao_foi_encontrada()
         {
-            //await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, 
-            //    BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, quantidadeAula: NUMERO_AULAS_1);
-
-
             await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
 
