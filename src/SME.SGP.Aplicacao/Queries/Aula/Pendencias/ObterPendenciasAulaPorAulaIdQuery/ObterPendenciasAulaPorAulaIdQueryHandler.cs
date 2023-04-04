@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesDoProfessorCJ = Enumerable.Empty<AtribuicaoCJ>();
             var componentesCurricularesEolProfessor = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.TurmaId,
-                                                                                  usuarioLogado.CodigoRf,
+                                                                                  usuarioLogado.Login,
                                                                                   usuarioLogado.PerfilAtual,
                                                                                   usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
