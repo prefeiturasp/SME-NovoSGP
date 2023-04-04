@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                     dadosComponentes.ToList().ForEach(dc =>
                     {
                         var professor = dc.TerritorioSaber ? professores.FirstOrDefault(p => p.DisciplinasId.Contains(dc.CodigoComponenteCurricular)) : null;
-                        if (professor != null)
+                        if (professor != null && !String.IsNullOrEmpty(professor.ProfessorRf))
                         {
                             var componentesProfessorAtrelado = mediator
                                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR)).Result;
