@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Elastic.Apm.Api;
+using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Queries;
@@ -189,8 +190,7 @@ namespace SME.SGP.Aplicacao
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
 
-                if (alunos.Where(x => x.CodigoAluno == aluno.CodigoAluno).Count() >= 2)
-                    aluno.DataMatricula = alunos.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DataMatricula != aluno.DataMatricula).DataMatricula;
+                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCompleta.CodigoTurma, aluno.CodigoAluno));
 
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
                 {
@@ -224,11 +224,12 @@ namespace SME.SGP.Aplicacao
                         AtividadeAvaliativaId = atividadeAvaliativa.Id,
                         NotaConceito = notaParaVisualizar,
                         Ausente = ausente,
-                        PodeEditar = (aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
-                                     (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao)) && ChecarSeProfessorCJTitularPodeEditarNota(usuario, atividadeAvaliativa),
+                        PodeEditar = matriculasAluno.Any(m => m.EstaAtivo(atividadeAvaliativa.DataAvaliacao)) ||
+                        (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao) 
+                        && ChecarSeProfessorCJTitularPodeEditarNota(usuario, atividadeAvaliativa),
                         StatusGsa = notaDoAluno?.StatusGsa
                     };
-
+                    
                     notasAvaliacoes.Add(notaAvaliacao);
                 }
 
@@ -442,7 +443,6 @@ namespace SME.SGP.Aplicacao
 
             return retorno;
         }
-
         private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
         {
             if (dadosUsuario.EhProfessor() || dadosUsuario.EhProfessorCj())
