@@ -61,8 +61,6 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new();
-
                 var listaExclusoes = new List<(DateTime dataAula, bool sucesso, string mensagem, bool existeFrequente, bool existePlanoAula)>
                 {
                     await TratarExclusaoAula(aulaOrigem, request.Usuario)
@@ -73,7 +71,6 @@ namespace SME.SGP.Aplicacao
                     listaExclusoes.Add(await TratarExclusaoAula(aulaRecorrente, request.Usuario));
                 }
 
-                //usuario.PerfilAtual = perfilSelecionado;
                 await NotificarUsuario(aulaOrigem.Id, listaExclusoes, request.Usuario, request.ComponenteCurricularNome, aulaOrigem.Turma);
             }
             finally

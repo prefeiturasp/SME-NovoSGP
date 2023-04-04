@@ -100,5 +100,21 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, alunoCodigos, turmaCodigo });
         }
+
+        public async Task<IEnumerable<CompensacaoAusenciaAlunoEDataDto>> ObterCompensacaoAusenciaAlunoEAulaPorAulaId(long aulaId)
+        {
+            var query = @"select caaa.compensacao_ausencia_aluno_id CompensacaoAusenciaAlunoId, 
+                                 caaa.id CompensacaoAusenciaAlunoAulaId, 
+                                 caa.compensacao_ausencia_id CompensacaoAusenciaId
+                          from compensacao_ausencia_aluno caa 
+                            join compensacao_ausencia_aluno_aula caaa on caa.id = caaa.compensacao_ausencia_aluno_id
+                            join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id
+                          where rfa.aula_id = @aula_id
+                                and not caa.excluido   
+                                and not caaa.excluido
+                                and not rfa.excluido";
+
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoEDataDto>(query, new { aulaId });
+        }
     }
 }

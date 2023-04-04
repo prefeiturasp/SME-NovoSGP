@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
         }
         public async Task<bool> Handle(ExcluiCompensacaoAlunoPorCompensacaoAlunoIdCommand request, CancellationToken cancellationToken)
-         => await repositorioCompensacaoAusenciaAluno.ExcluirCompensacaoAusenciaAlunoPorId(request.CompensacaoAlunoId);
+         => await repositorioCompensacaoAusenciaAluno.ExclusaoLogicaCompensacaoAusenciaAlunoPorId(request.CompensacaoAlunoId);
     }
 }
