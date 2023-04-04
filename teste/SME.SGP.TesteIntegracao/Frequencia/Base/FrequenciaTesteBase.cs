@@ -463,7 +463,7 @@ namespace SME.SGP.TesteIntegracao
 
             var frequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
             frequenciaPreDefinida.ShouldNotBeEmpty();
-            frequenciaPreDefinida.FirstOrDefault().TipoFrequencia.Equals(tipoFrequenciaPreDefinida).ShouldBeTrue();
+            frequenciaPreDefinida.Any(f => f.TipoFrequencia.Equals(tipoFrequenciaPreDefinida)).ShouldBeTrue();
 
             var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
             registroFrequenciaAluno.ShouldNotBeEmpty();

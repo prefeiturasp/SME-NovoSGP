@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 componenteCurricular.CdComponenteCurricularPai.ToString() :
                 componenteCurricular.CodigoComponenteCurricular.ToString();
 
-            var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
+            var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
 
             var codigosComponentesTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.CodigoRf));

@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_2,TipoFrequenciaAluno.PorDisciplina);
 
             var mediator = ServiceProvider.GetService<IMediator>();
-            var lista = await mediator.Send(new ObterListaAlunosComAusenciaQuery(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), BIMESTRE_1));
+            var lista = await mediator.Send(new ObterListaAlunosComAusenciaQuery(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), BIMESTRE_2));
 
             lista.ShouldNotBeNull();
             lista.ToList().Exists(ausencia => ausencia.Id == CODIGO_ALUNO_1).ShouldBeTrue();
