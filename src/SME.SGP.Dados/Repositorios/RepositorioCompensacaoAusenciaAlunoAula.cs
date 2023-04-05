@@ -1,5 +1,5 @@
 ﻿using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
