@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {

@@ -49,6 +49,10 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
 
+            await CriarFrequencia(); 
+                
+            await CriarCompensacaoAusencia();
+
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
 
             var dto = ObterExcluirAulaDto(RecorrenciaAula.AulaUnica);
@@ -67,9 +71,97 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             compensacoesCompensacaoAusenciaAlunos.Any(a=> a.Excluido).ShouldBeTrue();
             compensacoesCompensacaoAusenciaAlunos.Any(a=> !a.Excluido).ShouldBeFalse();
             
-            var compensacoes = ObterTodos<Dominio.CompensacaoAusenciaAluno>();
-            compensacoes.Any(a=> a.Excluido).ShouldBeTrue();
-            compensacoes.Any(a=> !a.Excluido).ShouldBeFalse();
+            var compensacaoAusenciaAlunoAula = ObterTodos<Dominio.CompensacaoAusenciaAlunoAula>();
+            compensacaoAusenciaAlunoAula.Any(a=> a.Excluido).ShouldBeTrue();
+            compensacaoAusenciaAlunoAula.Any(a=> !a.Excluido).ShouldBeFalse();
+        }
+
+        private async Task CriarFrequencia()
+        {
+            await InserirNaBase(new RegistroFrequencia
+            {
+                AulaId = AULA_ID,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new RegistroFrequenciaAluno()
+            {
+                Valor = (int)TipoFrequencia.F, 
+                CodigoAluno = ALUNO_CODIGO_1, 
+                NumeroAula = NUMERO_AULA_1, 
+                RegistroFrequenciaId = 1, 
+                AulaId = AULA_ID_1, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new RegistroFrequenciaAluno()
+            {
+                Valor = (int)TipoFrequencia.F, 
+                CodigoAluno = ALUNO_CODIGO_1, 
+                NumeroAula = NUMERO_AULA_2, 
+                RegistroFrequenciaId = 1, 
+                AulaId = AULA_ID_1, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new RegistroFrequenciaAluno()
+            {
+                Valor = (int)TipoFrequencia.F, 
+                CodigoAluno = ALUNO_CODIGO_1, 
+                NumeroAula = NUMERO_AULA_3, 
+                RegistroFrequenciaId = 1, 
+                AulaId = AULA_ID_1, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarCompensacaoAusencia()
+        {
+            await InserirNaBase(new CompensacaoAusencia
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                Bimestre = BIMESTRE_2,
+                TurmaId = TURMA_ID_1,
+                Nome = "Atividade de compensação",
+                Descricao = "Breve descrição da atividade de compensação",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CompensacaoAusenciaAluno
+            {
+                CodigoAluno = CODIGO_ALUNO_1,
+                CompensacaoAusenciaId = 1,
+                QuantidadeFaltasCompensadas = NUMERO_AULA_3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CompensacaoAusenciaAlunoAula()
+            {
+                DataAula = DATA_02_05,
+                NumeroAula = NUMERO_AULA_1,
+                CompensacaoAusenciaAlunoId = 1,
+                RegistroFrequenciaAlunoId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new CompensacaoAusenciaAlunoAula()
+            {
+                DataAula = DATA_02_05,
+                NumeroAula = NUMERO_AULA_2,
+                CompensacaoAusenciaAlunoId = 1,
+                RegistroFrequenciaAlunoId = 2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new CompensacaoAusenciaAlunoAula()
+            {
+                DataAula = DATA_02_05,
+                NumeroAula = NUMERO_AULA_1,
+                CompensacaoAusenciaAlunoId = 1,
+                RegistroFrequenciaAlunoId = 3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         [Fact]
