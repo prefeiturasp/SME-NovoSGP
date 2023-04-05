@@ -13,7 +13,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/frequencias/acompanhamentos")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class FrequenciaAcompanhamentoController : ControllerBase
     {
         [HttpGet("")]
@@ -59,6 +59,19 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterInformacoesDeFrequenciaAlunoPorSemestre(long turmaId, int semestre, long alunoCodigo, [FromQuery] long componenteCurricularId, [FromServices] IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroTurmaAlunoSemestreDto(turmaId, alunoCodigo, semestre, componenteCurricularId)));
+        }
+        [HttpGet("faltas-nao-compensadas")]
+        [ProducesResponseType(typeof(RegistroFaltasNaoCompensadaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterDatasFaltasNaoCompensadas([FromQuery]FiltroFaltasNaoCompensadasDto filtro,[FromServices]IObterFaltasNaoCompensadaUseCase useCase)
+        {
+            var consulta = await  useCase.Executar(filtro);
+
+            if (consulta == null)
+                return NoContent();
+            
+            return Ok(consulta);
         }
     }
 }
