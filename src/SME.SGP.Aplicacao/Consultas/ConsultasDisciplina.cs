@@ -439,7 +439,7 @@ namespace SME.SGP.Aplicacao
 
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
 
-            disciplinasEol.ToList().ForEach(d =>
+            disciplinasEol.ToList().ForEach(async d =>
             {
                 d.Professor = professoresTitulares
                     .FirstOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
@@ -456,6 +456,23 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             });
+
+            var contemComponenteTerritorioSemCodigo = disciplinasEol.Any(d => d.TerritorioSaber && d.CodigoTerritorioSaber == 0);
+            if (contemComponenteTerritorioSemCodigo)
+            {
+                var componentesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+
+                foreach(var componente in disciplinasEol.Where(d=> d.TerritorioSaber)){
+                    var componenteCorrespondente = componentesDaTurma.FirstOrDefault(c => c.CodigoComponenteTerritorioSaber == componente.CodigoComponenteCurricular);
+
+                    if (componenteCorrespondente != null)
+                    {
+                        componente.CodigoComponenteCurricular = componenteCorrespondente.CodigoComponenteTerritorioSaber.Value;
+                        componente.CodigoTerritorioSaber = componenteCorrespondente.CodigoComponenteCurricular;
+                        componente.Nome = componenteCorrespondente.Nome;
+                    }       
+                }
+            }
 
             return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
         }
@@ -596,6 +613,7 @@ namespace SME.SGP.Aplicacao
             Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue ? disciplina.CodigoComponenteTerritorioSaber.Value : (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
+            CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
             Nome = disciplina.Nome,
             NomeComponenteInfantil = disciplina.NomeComponenteInfantil,
             Regencia = disciplina.Regencia,

@@ -164,6 +164,5 @@ namespace SME.SGP.Infra
 
             return PodeEditarNotaConceito();
         }
-
     }
 }
