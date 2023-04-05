@@ -48,7 +48,6 @@ namespace SME.SGP.Aplicacao
             Usuario usuarioLogado,
             AtribuicaoEsporadica atribuicao)
         {
-
             if (usuarioLogado.EhProfessorCj())
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
@@ -163,13 +162,21 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi possível obter a turma para inclusão de aulas recorrentes.");
 
+            var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(aulaRecorrente.ComponenteCurricularId, turma.CodigoTurma, usuario.EhProfessor() ? usuario.Login : null));
+
+            var codigosComponentesConsiderados = new List<long>() { aulaRecorrente.ComponenteCurricularId };
+
+            if (codigosTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+
             var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma,
-                aulaRecorrente.ComponenteCurricularId, aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia,
+                codigosComponentesConsiderados.ToArray(), aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia,
                 aulaRecorrente.Quantidade, usuario, turma, atribuicao);
             var datasPersistencia = validacaoDatas.datasPersistencia;
             var mensagensValidacao = validacaoDatas.mensagensValidacao;
 
-            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia, aulaRecorrente.EhRegencia);
+            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia, aulaRecorrente.EhRegencia, codigosTerritorioEquivalentes);
 
             // Notificar usuário da conclusão da geração de aulas
             await NotificarUsuario(geracaoRecorrencia.aula, geracaoRecorrencia.aulasQueDeramErro, mensagensValidacao, usuario, datasPersistencia.Count(), aulaRecorrente.NomeComponenteCurricular, turma);
@@ -231,10 +238,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<(IEnumerable<DateTime> datasPersistencia, IEnumerable<string> mensagensValidacao)> ValidarDatasAula(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, long tipoCalendarioId, bool ehRegencia, int quantidade, Usuario usuario, Turma turma, AtribuicaoEsporadica atribuicao)
+        private async Task<(IEnumerable<DateTime> datasPersistencia, IEnumerable<string> mensagensValidacao)> ValidarDatasAula(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long[] componentesCurricularesCodigos, long tipoCalendarioId, bool ehRegencia, int quantidade, Usuario usuario, Turma turma, AtribuicaoEsporadica atribuicao)
         {
             // Aulas Existentes
-            var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componenteCurricularCodigo, usuario.EhProfessorCj());
+            var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componentesCurricularesCodigos, usuario.EhProfessorCj());
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
             if (datasValidas == null || !datasValidas.Any())
@@ -246,7 +253,7 @@ namespace SME.SGP.Aplicacao
             }
 
             // Grade Curricular
-            var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, turmaCodigo, componenteCurricularCodigo, ehRegencia, quantidade, usuario.CodigoRf);
+            var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, turmaCodigo, componentesCurricularesCodigos, ehRegencia, quantidade, usuario.CodigoRf);
 
             // Dias Letivos
             var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, tipoCalendarioId);
@@ -255,7 +262,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"{string.Join("<br/>", validacaoDiasLetivos.mensagensValidacao)}");
 
             // Atribuição Professor
-            var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componenteCurricularCodigo, usuario, atribuicao);
+            var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componentesCurricularesCodigos.OrderBy(cc => cc).Last(), usuario, atribuicao); ;
 
             return (validacaoAtribuicaoProfessor.datasAtribuicao,
                     validacaoAtribuicaoProfessor.mensagensValidacao
@@ -294,7 +301,7 @@ namespace SME.SGP.Aplicacao
             mensagensValidacao.Add($"<b>{data.ToString("dd/MM/yyyy")}</b> - {mensagem};");
         }
 
-        private async Task<(IEnumerable<DateTime> datasValidas, IEnumerable<string> mensagensValidacao)> ValidarGradeCurricular(IEnumerable<DateTime> datasConsulta, string turmaCodigo, long componenteCurricularCodigo, bool ehRegencia, int quantidade, string codigoRf)
+        private async Task<(IEnumerable<DateTime> datasValidas, IEnumerable<string> mensagensValidacao)> ValidarGradeCurricular(IEnumerable<DateTime> datasConsulta, string turmaCodigo, long[] componentesCurricularesCodigos, bool ehRegencia, int quantidade, string codigoRf)
         {
             var datasValidas = new List<DateTime>();
             var mensagensValidacao = new List<string>();
@@ -303,7 +310,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componenteCurricularCodigo, dataConsulta, codigoRf, ehRegencia));
+                    var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componentesCurricularesCodigos, dataConsulta, codigoRf, ehRegencia));
                     var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
                     if (gradeAulas != null)
@@ -325,10 +332,10 @@ namespace SME.SGP.Aplicacao
             return (datasValidas, mensagensValidacao);
         }
 
-        private async Task<(IEnumerable<DateTime> datasValidas, IEnumerable<string> mensagensValidacao)> ValidarAulaExistenteNaData(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long componenteCurricularCodigo, bool professorCJ)
+        private async Task<(IEnumerable<DateTime> datasValidas, IEnumerable<string> mensagensValidacao)> ValidarAulaExistenteNaData(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long[] componentesCurricularesCodigos, bool professorCJ)
         {
             var mensagensValidacao = new List<string>();
-            var datasComRegistro = await mediator.Send(new ObterAulaPorDataAulasExistentesQuery(diasParaIncluirRecorrencia.ToList(), turmaCodigo, componenteCurricularCodigo.ToString(), professorCJ));
+            var datasComRegistro = await mediator.Send(new ObterAulaPorDataAulasExistentesQuery(diasParaIncluirRecorrencia.ToList(), turmaCodigo, componentesCurricularesCodigos.Select(c => c.ToString()).ToArray(), professorCJ));
 
             if (datasComRegistro != null && datasComRegistro.Any())
             {
@@ -394,7 +401,7 @@ namespace SME.SGP.Aplicacao
             return (datasAtribuicao, mensagensValidacao);
         }
 
-        private async Task<(Aula aula, IEnumerable<(DateTime dataAula, string mensagemDeErro)> aulasQueDeramErro)> GerarAulaDeRecorrenciaParaDias(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, IEnumerable<DateTime> datasParaPersistencia, bool ehRegencia)
+        private async Task<(Aula aula, IEnumerable<(DateTime dataAula, string mensagemDeErro)> aulasQueDeramErro)> GerarAulaDeRecorrenciaParaDias(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, IEnumerable<DateTime> datasParaPersistencia, bool ehRegencia, (string codigoComponente, string professor)[] codigosTerritorioEquivalentes = default)
         {
             var aulasQueDeramErro = new List<(DateTime dataAula, string errorMessage)>();
 
@@ -404,10 +411,22 @@ namespace SME.SGP.Aplicacao
             {
                 if (aula.Id == 0)
                 {
-                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, long.Parse(aula.DisciplinaId), dia, ehRegencia, aulaRecorrente.TipoAula, usuario.CodigoRf);
+                    var codigosComponentesConsiderados = new List<long>() { long.Parse(aula.DisciplinaId) };
+
+                    if (codigosTerritorioEquivalentes != default)
+                        codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+
+                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, codigosComponentesConsiderados.ToArray(), dia, ehRegencia, aulaRecorrente.TipoAula, usuario.CodigoRf);
 
                     if (retornoPodeCadastrarAula.PodeCadastrarAula)
+                    {
+                        if (codigosTerritorioEquivalentes != default && long.Parse(codigosTerritorioEquivalentes.First().codigoComponente) > long.Parse(aula.DisciplinaId))
+                            aula.DisciplinaId = codigosTerritorioEquivalentes.First().codigoComponente;
+
+                        aula.ProfessorRf = codigosTerritorioEquivalentes.FirstOrDefault().professor ?? usuario.Login;
+
                         await repositorioAula.SalvarAsync(aula);
+                    }
                     else
                         aulasQueDeramErro.Add((dia, "Já existe aula cadastrada nesta data"));
 
@@ -431,18 +450,18 @@ namespace SME.SGP.Aplicacao
             return (aula, aulasQueDeramErro);
         }
 
-        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long disciplinaId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula, string codigoRf)
+        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula, string codigoRf)
         {
             if (CriandoAula(aulaId) || await AlterandoDataAula(aulaId, dataAula))
             {
-                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinaId, codigoRf, tipoAula)))
+                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinasId, codigoRf, tipoAula)))
                     throw new NegocioException($"Não é possível cadastrar aula do tipo '{tipoAula.Name()}' para o dia selecionado!");
             }
 
             return new CadastroAulaDto()
             {
                 PodeCadastrarAula = true,
-                Grade = tipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, disciplinaId, dataAula, ehRegencia: ehRegencia))
+                Grade = tipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, disciplinasId, dataAula, ehRegencia: ehRegencia))
             };
         }
 
