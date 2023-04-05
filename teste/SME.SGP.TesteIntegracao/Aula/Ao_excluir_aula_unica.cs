@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
@@ -53,19 +55,32 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
                 
             await CriarCompensacaoAusencia();
 
-            var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
+            var excluirAulaUseCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
 
-            var dto = ObterExcluirAulaDto(RecorrenciaAula.AulaUnica);
+            var excluirAulaDto = ObterExcluirAulaDto(RecorrenciaAula.AulaUnica);
 
             await CriarPeriodoEscolarEAbertura();
 
-            var retorno = await useCase.Executar(dto);
+            var retorno = await excluirAulaUseCase.Executar(excluirAulaDto);
 
             retorno.ShouldNotBeNull();
 
-            var lista = ObterTodos<Dominio.Aula>();
-            lista.ShouldNotBeEmpty();
-            lista.FirstOrDefault().Excluido.ShouldBe(true);
+            var aulas = ObterTodos<Dominio.Aula>();
+            aulas.ShouldNotBeEmpty();
+            aulas.FirstOrDefault().Excluido.ShouldBe(true);
+            
+            var mensagem = new MensagemRabbit(
+                JsonConvert.SerializeObject(new FiltroIdDto(AULA_ID)),
+                Guid.NewGuid(),
+                USUARIO_PROFESSOR_LOGIN_2222222,
+                USUARIO_PROFESSOR_LOGIN_2222222,
+                Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
+                false,
+                TesteBaseComuns.USUARIO_ADMIN_RF);
+             
+            //Essa fila está dentro do processo do ExcluirAulaUseCase e está sendo chamada aqui de forma exclusiva para o teste
+            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaPorAulaIdUseCase>();
+            await excluirCompensacaoAusenciaPorAulaIdUseCase.Executar(mensagem);
             
             var compensacoesCompensacaoAusenciaAlunos = ObterTodos<Dominio.CompensacaoAusenciaAluno>();
             compensacoesCompensacaoAusenciaAlunos.Any(a=> a.Excluido).ShouldBeTrue();
@@ -157,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             await InserirNaBase(new CompensacaoAusenciaAlunoAula()
             {
                 DataAula = DATA_02_05,
-                NumeroAula = NUMERO_AULA_1,
+                NumeroAula = NUMERO_AULA_3,
                 CompensacaoAusenciaAlunoId = 1,
                 RegistroFrequenciaAlunoId = 3,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF

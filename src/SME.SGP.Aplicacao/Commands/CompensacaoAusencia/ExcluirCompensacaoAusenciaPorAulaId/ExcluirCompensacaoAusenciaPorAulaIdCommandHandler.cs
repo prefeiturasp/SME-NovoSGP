@@ -29,11 +29,9 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.IniciarTransacao();
                 try
                 {
-                    foreach (var compensacao in compensacoesAusenciasAlunosAulas)
-                    {
-                        await mediator.Send(new ExcluirCompensacaoAusenciaAlunoPorIdCommand(compensacao.CompensacaoAusenciaAlunoId));
-                        await mediator.Send(new ExcluirCompensacaoAusenciaAlunoAulaPorIdCommand(compensacao.CompensacaoAusenciaAlunoAulaId));
-                    }
+                    await mediator.Send(new ExcluirCompensacaoAusenciaAlunoPorIdCommand(compensacoesAusenciasAlunosAulas.FirstOrDefault().CompensacaoAusenciaAlunoId));
+                    await mediator.Send(new ExcluirCompensacaoAusenciaAlunoAulaPorIdsCommand(compensacoesAusenciasAlunosAulas.Select(s=> s.CompensacaoAusenciaAlunoAulaId).ToArray()));
+                    
                     unitOfWork.PersistirTransacao();
                 }
                 catch

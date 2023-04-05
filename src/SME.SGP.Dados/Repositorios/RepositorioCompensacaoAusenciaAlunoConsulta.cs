@@ -111,8 +111,7 @@ namespace SME.SGP.Dados.Repositorios
                             join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id
                           where rfa.aula_id = @aulaId
                                 and not caa.excluido   
-                                and not caaa.excluido
-                                and not rfa.excluido";
+                                and not caaa.excluido";
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoEDataDto>(query, new { aulaId });
         }
