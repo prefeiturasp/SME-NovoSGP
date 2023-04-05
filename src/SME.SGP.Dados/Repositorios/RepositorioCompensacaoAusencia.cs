@@ -72,5 +72,30 @@ namespace SME.SGP.Dados
             
             return await database.Conexao.QueryAsync<RegistroFaltasNaoCompensadaDto>(query,parametros);
         }
+
+        public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string disciplinaId, int bimestre,string turmacodigo)
+        {
+	        var query = @"select
+							    caaa.id  as CompensacaoAusenciaAlunoAulaId,
+								rfa.aula_id as AulaId,
+								caaa.data_aula as DataAula,
+								'Aula ' || caaa.numero_aula as Descricao,
+								caaa.registro_frequencia_aluno_id as RegistroFrequenciaAlunoId,
+								rfa.codigo_aluno as CodigoAluno
+							from compensacao_ausencia_aluno_aula caaa
+							join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id
+							join aula a on a.id = rfa.aula_id
+							inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
+							where not caaa.excluido 
+							    and rfa.codigo_aluno = any(@codigosAlunos)
+								and a.disciplina_id = @disciplinaId
+								and p.bimestre = @bimestre
+								and a.turma_id = @turmacodigo
+								and rfa.valor = 2
+								order by caaa.data_aula ";
+	        
+	        var parametros = new { codigosAlunos,disciplinaId,bimestre,turmacodigo};
+	        return await database.Conexao.QueryAsync<CompensacaoDataAlunoDto>(query,parametros);
+        }
     }
 }
