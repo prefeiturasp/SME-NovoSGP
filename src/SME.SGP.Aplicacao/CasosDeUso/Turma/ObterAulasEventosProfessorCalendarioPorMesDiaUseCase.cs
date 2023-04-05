@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             {
                 componentesCurricularesEolProfessor = (await mediator
                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                                                 usuarioLogado.CodigoRf,
+                                                                                 usuarioLogado.Login,
                                                                                  usuarioLogado.PerfilAtual,
                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
 
@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao
             retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()
             {
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
-                UsuarioCodigoRf = usuarioLogado.CodigoRf,
+                UsuarioCodigoRf = usuarioLogado.CodigoRf ?? usuarioLogado.Login,
                 Aulas = aulasParaVisualizar,
                 Avaliacoes = atividadesAvaliativas,
                 ComponentesCurricularesParaVisualizacao = componentesCurriculares,
