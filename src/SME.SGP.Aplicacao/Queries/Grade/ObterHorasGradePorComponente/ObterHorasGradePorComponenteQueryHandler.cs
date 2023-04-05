@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<int> Handle(ObterHorasGradePorComponenteQuery request, CancellationToken cancellationToken)
-            => await repositorioGrade.ObterHorasComponente(request.GradeId, request.ComponenteCurricular, request.Ano);
+            => await repositorioGrade.ObterHorasComponente(request.GradeId, new long[] { request.ComponenteCurricular }, request.Ano);
     }
 }

@@ -45,8 +45,7 @@ namespace SME.SGP.Dominio
                 var atividadesAvaliativas =
                     await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
 
-                var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
-
+                var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
 
                 if (alunos == null || !alunos.Any())
                     throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
@@ -68,7 +67,7 @@ namespace SME.SGP.Dominio
                         on a.CodigoAluno equals nc.AlunoId
                     join aa in atividadesAvaliativas
                         on nc.AtividadeAvaliativaID equals aa.Id
-                    where a.EstaAtivo(aa.DataAvaliacao)
+                    where a.EstaAtivo(aa.DataAvaliacao) 
                     select a).Distinct();
 
                 if (!usuario.EhGestorEscolar())

@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             var componente = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(request.ComponenteCurricularId)));
             var componenteCurricularCodigo = !string.IsNullOrWhiteSpace(request.ComponenteCurricularCodigo) ? long.Parse(request.ComponenteCurricularCodigo) : 0;
 
-            var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, componente.TerritorioSaber && componenteCurricularCodigo > 0 ? componenteCurricularCodigo.ToString() : request.ComponenteCurricularId, usuarioLogado.EhProfessorCj(), ehProfessor && componente.TerritorioSaber ? codigoRf : null);
+            var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, new string[] { componente.TerritorioSaber && componenteCurricularCodigo > 0 ? componenteCurricularCodigo.ToString() : request.ComponenteCurricularId }, usuarioLogado.EhProfessorCj(), ehProfessor && componente.TerritorioSaber ? codigoRf : null);
 
             var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s => s.Id)));
 
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
-                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular : long.Parse(ComponenteCurricularId)));
+                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.CodigoComponenteCurricular : long.Parse(ComponenteCurricularId)));
 
                 temPlanoAnual.Add(planejamentoAnualPeriodoId);
 

@@ -37,6 +37,7 @@
     <ProjectReference Include="..\SME.SGP.Infra.HealthCheck\SME.SGP.Infra.HealthCheck.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
     <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
+    <ProjectReference Include="..\SME.SGP.Worker.Rabbbit\SME.SGP.Worker.Rabbbit.csproj" />
   </ItemGroup>
 
   <ItemGroup>

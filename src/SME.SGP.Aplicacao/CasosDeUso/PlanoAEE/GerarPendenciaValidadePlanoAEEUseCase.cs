@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             var dataFim = DateTime.Today.AddDays(-1);
-            var planosEncerrados = await mediator.Send(new ObterPlanosAEEPorDataFimQuery(dataFim));
+            var planosEncerrados = await mediator.Send(new ObterPlanosAEEPorDataFimQuery(dataFim, false));
 
             foreach (var planoEncerrado in planosEncerrados)
             {

@@ -40,7 +40,8 @@ namespace SME.SGP.Dados.Repositorios
                                         criado_rf,
                                         total_compensacoes,
                                         turma_id,
-                                        periodo_escolar_id)
+                                        periodo_escolar_id,
+                                        professor_rf)
                             from
                             stdin (FORMAT binary)";
 
@@ -62,6 +63,7 @@ namespace SME.SGP.Dados.Repositorios
                     writer.Write(database.UsuarioLogadoRF, NpgsqlDbType.Varchar);
                     writer.Write(frequencia.TotalCompensacoes, NpgsqlDbType.Integer);
                     writer.Write(frequencia.TurmaId, NpgsqlDbType.Varchar);
+                    writer.Write(frequencia.Professor, NpgsqlDbType.Varchar);
 
                     if (frequencia.PeriodoEscolarId.HasValue)
                         writer.Write((long)frequencia.PeriodoEscolarId, NpgsqlDbType.Bigint);

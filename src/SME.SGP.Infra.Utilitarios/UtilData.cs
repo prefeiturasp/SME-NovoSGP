@@ -7,7 +7,7 @@ namespace SME.SGP.Infra.Utilitarios
     {
         public static int ObterSemanaDoAno(DateTime data)
         {
-            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;            
             return dfi.Calendar.GetWeekOfYear(data, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
         }
 
