@@ -18,7 +18,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                        TipoAula tipoAula,
                                        string codigoUe,
                                        bool ehRegencia,
-                                       long? codigoTerritorioSaber = null)
+                                       long? codigoTerritorioSaberEquivalente = null,
+                                       string professorConsiderado = null)
         {
             Usuario = usuario;
             DataAula = dataAula;
@@ -30,7 +31,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             CodigoUe = codigoUe;
             EhRegencia = ehRegencia;
             CodigoTurma = codigoTurma;
-            CodigoTerritorioSaber = codigoTerritorioSaber;
+            CodigoTerritorioSaberEquivalente = codigoTerritorioSaberEquivalente;
+            ProfessorConsiderado = professorConsiderado;
         }
 
         public DateTime DataAula { get; private set; }
@@ -43,7 +45,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         public TipoAula TipoAula { get; private set; }
         public string CodigoTurma { get; private set; }
         public bool EhRegencia { get; internal set; }
-        public long? CodigoTerritorioSaber { get; set; }
+        public long? CodigoTerritorioSaberEquivalente { get; set; }
+        public string ProfessorConsiderado { get; private set; }
     }
 
     public class InserirAulaUnicaCommandValidator : AbstractValidator<InserirAulaUnicaCommand>

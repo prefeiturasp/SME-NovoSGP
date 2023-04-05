@@ -21,7 +21,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterGradeAulasTurma([FromQuery] DateTime data, string codigoTurma, long codigoDisciplina, [FromServices] IMediator mediator, [FromQuery] bool ehRegencia = false)
         {
-            var horasGrade = await ObterGradeAulasPorTurmaEProfessorUseCase.Executar(mediator, codigoTurma, codigoDisciplina, data, ehRegencia: ehRegencia);
+            var horasGrade = await new ObterGradeAulasPorTurmaEProfessorUseCase().Executar(mediator, codigoTurma, codigoDisciplina, data, ehRegencia: ehRegencia);
 
             if (horasGrade == null)
                 return NoContent();
