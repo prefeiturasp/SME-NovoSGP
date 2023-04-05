@@ -2,7 +2,7 @@
 using MediatR;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao.Queries.CompensacaoAusencia.ObterAusenciaParaCompensacaoPorAlunos
+namespace SME.SGP.Aplicacao
 {
     public class ObterAusenciaParaCompensacaoPorAlunosQuery :IRequest<IEnumerable<CompensacaoDataAlunoDto>>
     {

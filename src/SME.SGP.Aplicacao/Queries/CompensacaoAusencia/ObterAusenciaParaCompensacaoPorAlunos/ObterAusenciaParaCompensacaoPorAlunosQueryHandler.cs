@@ -6,7 +6,7 @@ using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao.Queries.CompensacaoAusencia.ObterAusenciaParaCompensacaoPorAlunos
+namespace SME.SGP.Aplicacao
 {
     public class ObterAusenciaParaCompensacaoPorAlunosQueryHandler :IRequestHandler<ObterAusenciaParaCompensacaoPorAlunosQuery,IEnumerable<CompensacaoDataAlunoDto>>
     {

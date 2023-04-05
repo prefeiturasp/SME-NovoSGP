@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Queries.CompensacaoAusencia.ObterAusenciaParaCompensacaoPorAlunos;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
