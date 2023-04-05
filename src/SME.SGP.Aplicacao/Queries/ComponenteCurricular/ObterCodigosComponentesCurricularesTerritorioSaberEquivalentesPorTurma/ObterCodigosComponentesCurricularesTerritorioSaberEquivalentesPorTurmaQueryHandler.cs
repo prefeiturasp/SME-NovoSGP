@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +29,22 @@ namespace SME.SGP.Aplicacao
 
                 if (disciplinasEOL == null || !disciplinasEOL.Any())
                     return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
+
+                if (disciplinasEOL.All(d => d.CodigoTerritorioSaber == 0))
+                {
+                    var componentesTurma = await mediator
+                        .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, "Sistema", Perfis.PERFIL_ADMSME));
+
+                    var componentesTurmaCorrespondentes = componentesTurma
+                        .Where(ct => ct.CodigoComponenteTerritorioSaber.Equals(request.CodigoComponenteBase));
+
+                    if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
+                        return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
+
+                    return componentesTurmaCorrespondentes
+                        .Select(ct => (ct.Codigo.ToString(), ct.Professor))
+                        .ToArray();
+                }
 
                 return disciplinasEOL
                     .Select(d => (d.CodigoTerritorioSaber.ToString(), d.Professor))
