@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
