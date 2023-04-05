@@ -234,6 +234,20 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
+        public async Task<bool> AtualizarTurmaModalidadeEParaHistorica(string turmaId, Modalidade modalidadeEol)
+        {
+            var query = @"update public.turma 
+                             set historica = true,
+                                 modalidade_codigo = @modalidadeEol,
+                                 data_atualizacao = @dataAtualizacao
+                           where turma_id = @turmaId";
+
+            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, modalidadeEol , dataAtualizacao = DateTime.Now });
+
+            return retorno != 0;
+
+        }
+
         public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId)
         {
             var query = @"INSERT INTO public.turma
