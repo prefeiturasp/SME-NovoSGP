@@ -109,7 +109,7 @@ namespace SME.SGP.Dados.Repositorios
                           from compensacao_ausencia_aluno caa 
                             join compensacao_ausencia_aluno_aula caaa on caa.id = caaa.compensacao_ausencia_aluno_id
                             join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id
-                          where rfa.aula_id = @aula_id
+                          where rfa.aula_id = @aulaId
                                 and not caa.excluido   
                                 and not caaa.excluido
                                 and not rfa.excluido";

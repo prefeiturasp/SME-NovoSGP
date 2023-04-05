@@ -172,6 +172,8 @@ namespace SME.SGP.Aplicacao
             await PulicaFilaSgp(RotasRabbitSgpFrequencia.AnotacoesFrequenciaDaAulaExcluir, aula.Id, usuario);
             await PulicaFilaSgp(RotasRabbitSgp.DiarioBordoDaAulaExcluir, aula.Id, usuario);
             await PulicaFilaSgp(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgp.ExclusaoCompensacaoAusenciaAlunoEAula, aula.Id, usuario);
 
             aula.Excluido = true;
 

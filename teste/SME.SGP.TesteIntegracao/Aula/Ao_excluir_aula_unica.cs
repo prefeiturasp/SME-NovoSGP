@@ -60,10 +60,16 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             retorno.ShouldNotBeNull();
 
             var lista = ObterTodos<Dominio.Aula>();
-
             lista.ShouldNotBeEmpty();
-
             lista.FirstOrDefault().Excluido.ShouldBe(true);
+            
+            var compensacoesCompensacaoAusenciaAlunos = ObterTodos<Dominio.CompensacaoAusenciaAluno>();
+            compensacoesCompensacaoAusenciaAlunos.Any(a=> a.Excluido).ShouldBeTrue();
+            compensacoesCompensacaoAusenciaAlunos.Any(a=> !a.Excluido).ShouldBeFalse();
+            
+            var compensacoes = ObterTodos<Dominio.CompensacaoAusenciaAluno>();
+            compensacoes.Any(a=> a.Excluido).ShouldBeTrue();
+            compensacoes.Any(a=> !a.Excluido).ShouldBeFalse();
         }
 
         [Fact]
