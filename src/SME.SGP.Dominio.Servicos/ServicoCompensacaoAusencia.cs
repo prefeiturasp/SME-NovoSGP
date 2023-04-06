@@ -71,7 +71,7 @@ namespace SME.SGP.Dominio.Servicos
                     await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
                 // Valida mesma compensação no ano
-                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id));
+                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id,compensacaoDto.DisciplinaId));
 
                 if (compensacaoExistente != null)
                     throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
