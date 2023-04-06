@@ -1,6 +1,7 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -69,6 +70,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FechamentoReaberturaNotificacaoMap());
                config.AddMap(new CompensacaoAusenciaMap());
                config.AddMap(new CompensacaoAusenciaAlunoMap());
+               config.AddMap(new CompensacaoAusenciaAlunoAulaMap());
                config.AddMap(new CompensacaoAusenciaDisciplinaRegenciaMap());
                config.AddMap(new ProcessoExecutandoMap());
                config.AddMap(new PeriodoFechamentoMap());

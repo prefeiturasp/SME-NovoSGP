@@ -477,7 +477,9 @@ namespace SME.SGP.TesteIntegracao
         protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
         protected readonly string NUMERO_PAGINA = "NumeroPagina";
         protected readonly string NUMERO_REGISTROS = "NumeroRegistros";
-
+        protected readonly string ADMINISTRADOR = "Administrador";
+        protected readonly string NOME_ADMINISTRADOR = "NomeAdministrador";
+        
         protected readonly CollectionFixture collectionFixture;
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -504,7 +506,8 @@ namespace SME.SGP.TesteIntegracao
                 { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
                 { NUMERO_PAGINA, "0" },
                 { NUMERO_REGISTROS, "10" },
-
+                { ADMINISTRADOR, rfLoginPerfil },
+                { NOME_ADMINISTRADOR, rfLoginPerfil },
                 {
                     USUARIO_CLAIMS_CHAVE,
                     new List<InternalClaim> {

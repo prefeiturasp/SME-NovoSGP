@@ -123,7 +123,8 @@ namespace SME.SGP.Aplicacao
             
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
-
+            var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
+            var compensacoes = (await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(alunosCodigos,compensacao.DisciplinaId,compensacao.Bimestre,turma.CodigoTurma))).ToList();
             foreach (var aluno in compensacao.Alunos)
             {
                 // Adiciona nome do aluno no Dto de retorno
@@ -132,7 +133,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var alunoDto = MapearParaDtoAlunos(aluno);
                     alunoDto.Nome = alunoEol.NomeAluno;
-
+                    alunoDto.Compensacoes = compensacoes.Where(x => x.CodigoAluno == aluno.CodigoAluno);
+                    
                     var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno.CodigoAluno, compensacao.Bimestre,TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, compensacao.DisciplinaId));
                     if (frequenciaAluno != null)
                     {
