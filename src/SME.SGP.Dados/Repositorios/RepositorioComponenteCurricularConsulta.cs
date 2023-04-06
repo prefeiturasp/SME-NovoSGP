@@ -281,6 +281,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids }, queryName: "ObterComponentesSimplesPorIds");
         }
+
+        public async Task<ComponenteGrupoMatrizDto> ObterComponenteGrupoMatrizPorId(long id)
+        {
+            var query = @"select cc.id as ComponenteCurricularId, ccgm.id as GrupoMatrizId, ccgm.nome as GrupoMatrizNome from componente_curricular cc
+                            left join componente_curricular_grupo_matriz ccgm on ccgm.id = cc.grupo_matriz_id
+                         where cc.id = @id";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ComponenteGrupoMatrizDto>(query, new { id }, queryName: "ObterComponenteGrupoMatrizPorId");
+        }
     }
 }
 

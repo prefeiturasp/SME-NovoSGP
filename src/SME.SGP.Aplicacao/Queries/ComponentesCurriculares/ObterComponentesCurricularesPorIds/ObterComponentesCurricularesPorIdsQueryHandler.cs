@@ -88,6 +88,17 @@ namespace SME.SGP.Aplicacao
                         {
                             disciplina.RegistraFrequencia = await mediator
                                 .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+                            
+                            if(disciplina.GrupoMatrizId == 0 || String.IsNullOrEmpty(disciplina.GrupoMatrizNome))
+                            {
+                                var dadosGrupoMatriz = await mediator.Send(new ObterComponenteCurricularGrupoMatrizPorComponenteIdQuery() { ComponenteCurricularId = disciplina.CodigoComponenteCurricular });
+                                if(dadosGrupoMatriz != null)
+                                {
+                                    disciplina.GrupoMatrizId = dadosGrupoMatriz.GrupoMatrizId;
+                                    disciplina.GrupoMatrizNome = dadosGrupoMatriz.GrupoMatrizNome ?? "";
+                                }
+                            }
+
                             if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
                                 disciplina.NomeComponenteInfantil = disciplina.Nome;
 
