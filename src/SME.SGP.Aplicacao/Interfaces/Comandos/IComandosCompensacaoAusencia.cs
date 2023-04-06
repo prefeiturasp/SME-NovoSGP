@@ -11,6 +11,5 @@ namespace SME.SGP.Aplicacao
         Task Inserir(CompensacaoAusenciaDto compensacao);
         Task Alterar(long id, CompensacaoAusenciaDto compensacao);
         Task Excluir(long[] compensacoesIds);
-        Task <string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia);
     }
 }
