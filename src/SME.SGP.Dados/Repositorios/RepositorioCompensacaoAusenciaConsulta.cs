@@ -62,18 +62,19 @@ namespace SME.SGP.Dados
             return query.ToString();
         }
 
-        public async Task<CompensacaoAusencia> ObterPorAnoTurmaENome(int anoLetivo, long turmaId, string nome, long idIgnorar)
+        public async Task<CompensacaoAusencia> ObterPorAnoTurmaENome(int anoLetivo, long turmaId, string nome, long idIgnorar, string disciplinaId)
         {
             var query = new StringBuilder(@"select * 
                                               from compensacao_ausencia c
                                              where not excluido
                                                and ano_letivo = @anoLetivo
                                                and turma_id = @turmaId
+                                               and disciplina_id = @disciplinaId
                                                and nome = @nome ");
             if (idIgnorar > 0)
                 query.AppendLine("and id <> @idIgnorar");                                               
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<CompensacaoAusencia>(query.ToString(), new { anoLetivo, turmaId, nome, idIgnorar });
+            return await database.Conexao.QueryFirstOrDefaultAsync<CompensacaoAusencia>(query.ToString(), new { anoLetivo, turmaId, nome, idIgnorar,disciplinaId });
         }
 
         public async Task<IEnumerable<Infra.TotalCompensacaoAusenciaDto>> ObterCompesacoesAusenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
