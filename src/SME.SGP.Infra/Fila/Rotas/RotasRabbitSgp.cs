@@ -19,6 +19,7 @@
         public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
         public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
+        public const string ExclusaoCompensacaoAusenciaAlunoEAula = "sgp.compensacao.ausencia.aluno.e.aula.excluir";
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
         public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
