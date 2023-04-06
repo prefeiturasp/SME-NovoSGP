@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
             var consulta = await mediator.Send(new ObterAusenciaParaCompensacaoQuery(param));
             retorno = param.CompensacaoId == 0 ? MaperarDto(consulta.ToList(), param, retorno) : consulta.ToList();
-            return retorno;
+            return retorno.OrderBy(x => x.DataAula);
         }
 
         List<RegistroFaltasNaoCompensadaDto> MaperarDto(List<RegistroFaltasNaoCompensadaDto> registroFaltasNaoCompensada, FiltroFaltasNaoCompensadasDto filtro, List<RegistroFaltasNaoCompensadaDto> retorno)
