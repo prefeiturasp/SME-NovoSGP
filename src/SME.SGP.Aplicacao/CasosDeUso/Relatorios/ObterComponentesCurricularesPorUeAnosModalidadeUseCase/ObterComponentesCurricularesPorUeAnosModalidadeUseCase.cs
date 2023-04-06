@@ -52,14 +52,14 @@ namespace SME.SGP.Aplicacao
         {
             var componenteIds = listaComponentes.Select(c => c.Codigo).ToArray();
 
-            var componentesSgp = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componenteIds));
+            var componentesSgp = await mediator.Send(new ObterComponentesCurricularesSimplesPorIdsQuery(componenteIds));
 
             foreach (var componente in listaComponentes)
             {
-                var componenteSgp = componentesSgp.FirstOrDefault(c => c.CodigoComponenteCurricular == componente.Codigo);
+                var componenteSgp = componentesSgp.FirstOrDefault(c => c.Id == componente.Codigo);
 
                 if (componenteSgp != null)
-                    componente.Descricao = componenteSgp.Nome;
+                    componente.Descricao = componenteSgp.DescricaoInfantil ?? componenteSgp.Descricao;
             }
         }
     }
