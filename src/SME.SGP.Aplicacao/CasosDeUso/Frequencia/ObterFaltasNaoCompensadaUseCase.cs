@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         List<RegistroFaltasNaoCompensadaDto> MaperarDto(List<RegistroFaltasNaoCompensadaDto> registroFaltasNaoCompensada, FiltroFaltasNaoCompensadasDto filtro, List<RegistroFaltasNaoCompensadaDto> retorno)
         {
-            var listaSugestao = (Enumerable.Reverse(registroFaltasNaoCompensada).ToList().Where(z => !z.Sugestao).Take(filtro.QuantidadeCompensar)).ToList();
+            var listaSugestao = (registroFaltasNaoCompensada.Where(z => !z.Sugestao).Take(filtro.QuantidadeCompensar)).ToList();
             var lista = (registroFaltasNaoCompensada.Except(listaSugestao)).ToList();
             listaSugestao.ForEach(sugestao =>
             {
