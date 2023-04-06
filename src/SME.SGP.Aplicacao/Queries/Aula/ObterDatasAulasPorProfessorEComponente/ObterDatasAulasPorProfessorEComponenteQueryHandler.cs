@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                         Codigo = componenteCurricularCorrespondente?.Codigo ?? (long.TryParse(request.ComponenteCurricularCodigo, out long codigo) ? codigo : 0),
                         CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Any() ? componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault() : componenteCurricularCorrespondente?.CodigoComponenteCurricularPai ?? 0,
                         CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Any() ? 
-                            componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault(n => n != 0) 
+                            componentesCurricularesDoProfessorCj.Where(c=> c.codigo == request.ComponenteCurricularCodigo).Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault() 
                             : componenteCurricularCorrespondente?.CodigoComponenteTerritorioSaber ?? 0
                     };
 
