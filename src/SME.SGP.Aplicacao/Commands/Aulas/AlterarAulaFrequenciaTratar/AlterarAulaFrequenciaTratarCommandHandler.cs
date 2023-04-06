@@ -44,17 +44,16 @@ namespace SME.SGP.Aplicacao
 
                 if (ausenciasParaAdicionar.Any())
                     await repositorioRegistroFrequenciaAluno.InserirVarios(ausenciasParaAdicionar);
-
             }
             else
             {
                 // Excluir os registros de aula maior que o atual
                 var idsParaExcluir = registrosFrequenciaAlunos.Where(a => a.NumeroAula > quantidadeAtual).Select(a => a.Id).ToList();
 
-                //TODO: Criar método genérico com Auditoria
                 if (idsParaExcluir.Count > 0)
-                    await repositorioRegistroFrequenciaAluno.ExcluirVarios(idsParaExcluir);                
-
+                    await repositorioRegistroFrequenciaAluno.RemoverLogico(idsParaExcluir.ToArray());   
+                
+                await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(idsParaExcluir,quantidadeAtual));
             }
 
             return true;

@@ -13,12 +13,5 @@ namespace SME.SGP.Dados
         public RepositorioCompensacaoAusenciaAlunoAula(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
-
-        public async Task<bool> ExclusaoLogicaCompensacaoAusenciaAlunoAulaPorIds(long[] ids)
-        {
-            var sql = $@"update compensacao_ausencia_aluno_aula set excluido = true where id = ANY(@ids)";
-
-            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { ids});
-        }
     }
 }
