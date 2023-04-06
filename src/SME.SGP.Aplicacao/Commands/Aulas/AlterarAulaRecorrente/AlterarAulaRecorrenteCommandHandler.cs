@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
             if (codigosComponentesEquivalentes != default)
                 codigosComponentesConsiderados.AddRange(codigosComponentesEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
 
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), request.Usuario.CodigoRf));
+            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), request.Usuario.Login));
             aulasExistentes = aulasExistentes.Where(a => a.Id != request.AulaId);
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
