@@ -92,7 +92,7 @@ namespace SME.SGP.Dados
 
         public async Task ExcluirVariosLogicamente(long[] idsParaExcluir)
         {
-            var query = "update registro_frequencia_aluno set excluido = true where id = any(@idsParaExcluir)";
+            var query = "update registro_frequencia_aluno set excluido = true,  where id = any(@idsParaExcluir)";
 
             await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }

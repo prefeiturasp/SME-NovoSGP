@@ -367,5 +367,10 @@ namespace SME.SGP.Dados.Repositorios
             return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
                 new { dataAula, disciplinaId, turmasId, codigoAluno });
         }
+
+        public Task<object> ObterCompensacoesAusenciasAlunoAulaPorRegistroFrequenciaAlunoIdQuery(IEnumerable<long> registroFrequenciaAlunoIds)
+        {
+	        throw new NotImplementedException();
+        }
     }
 }

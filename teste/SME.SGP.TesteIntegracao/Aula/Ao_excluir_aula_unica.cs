@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Deve gerar exceção que a aula não foi encontrada")]
         public async Task Aula_nao_encontrada()
         {
             CriarClaimUsuario(ObterPerfilProfessor());
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
         }
 
-        [Fact] 
+        [Fact(DisplayName = "Aula - Deve permitir excluir aula única para professor fundamental")]
         public async Task Exclui_aula_unica()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);

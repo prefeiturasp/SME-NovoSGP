@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirCompensacaoAusenciaAlunoAulaPorIdsCommand request, CancellationToken cancellationToken)
         {
-            await repositorioCompensacaoAusenciaAlunoAula.ExclusaoLogicaCompensacaoAusenciaAlunoAulaPorIds(request.Ids);
+            await repositorioCompensacaoAusenciaAlunoAula.RemoverLogico(request.Ids);
             return true;
         }
     }
