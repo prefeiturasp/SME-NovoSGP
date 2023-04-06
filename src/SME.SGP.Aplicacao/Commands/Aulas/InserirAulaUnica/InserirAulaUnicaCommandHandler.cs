@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                     if (aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
                         throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
                 }
-                else
+                else if (aulasExistentes.Any(a => a.ProfessorRf == request.ProfessorConsiderado))
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
