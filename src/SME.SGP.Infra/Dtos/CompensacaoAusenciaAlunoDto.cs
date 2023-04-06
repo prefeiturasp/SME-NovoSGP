@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -8,5 +7,11 @@ namespace SME.SGP.Infra
     {
         public string Id { get; set; }
         public int QtdFaltasCompensadas { get; set; }
+        public IEnumerable<CompensacaoAusenciaAlunoAulaDto> CompensacaoAusenciaAlunoAula { get; set; }
+    }
+
+    public class CompensacaoAusenciaAlunoAulaDto
+    {
+        public long RegistroFrequenciaAlunoId { get; set; }
     }
 }
