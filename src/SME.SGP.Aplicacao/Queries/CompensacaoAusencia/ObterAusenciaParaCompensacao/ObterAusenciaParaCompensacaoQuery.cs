@@ -7,11 +7,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAusenciaParaCompensacaoQuery : IRequest<IEnumerable<RegistroFaltasNaoCompensadaDto>>
     {
-        public ObterAusenciaParaCompensacaoQuery(FiltroFaltasNaoCompensadasDto filtro)
+        public ObterAusenciaParaCompensacaoQuery(long compensacaoId, string turmaCodigo, string disciplinaId, int bimestre, IEnumerable<AlunoQuantidadeCompensacaoDto> alunosQuantidadeCompensacoes)
         {
-            Filtro = filtro ?? throw new ArgumentNullException(nameof(filtro));
+            CompensacaoId = compensacaoId;
+            TurmaCodigo = turmaCodigo;
+            DisciplinaId = disciplinaId;
+            AlunosQuantidadeCompensacoes = alunosQuantidadeCompensacoes;
+            Bimestre = bimestre;
         }
 
-        public FiltroFaltasNaoCompensadasDto Filtro { get; set; } 
+        public long CompensacaoId { get; }
+        public string TurmaCodigo { get; }
+        public string DisciplinaId { get; }
+        public int Bimestre { get; }
+        public IEnumerable<AlunoQuantidadeCompensacaoDto> AlunosQuantidadeCompensacoes  { get; }
     }
 }

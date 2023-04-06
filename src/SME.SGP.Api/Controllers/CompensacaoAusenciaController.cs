@@ -46,9 +46,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CA_I, Policy = "Bearer")]
-        public async Task<IActionResult> Inserir([FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
+        public async Task<IActionResult> Inserir([FromBody] CompensacaoAusenciaDto compensacao, [FromServices] ISalvarCompensasaoAusenciaUseCase salvarCompensasaoAusenciaUseCase)
         {
-            await comandos.Inserir(compensacao);
+            await salvarCompensasaoAusenciaUseCase.Executar(0, compensacao);
             return Ok();
         }
 
@@ -57,9 +57,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CA_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar(long id, [FromBody] CompensacaoAusenciaDto compensacao, [FromServices] IComandosCompensacaoAusencia comandos)
+        public async Task<IActionResult> Alterar(long id, [FromBody] CompensacaoAusenciaDto compensacao, [FromServices] ISalvarCompensasaoAusenciaUseCase salvarCompensasaoAusenciaUseCase)
         {
-            await comandos.Alterar(id, compensacao);
+            await salvarCompensasaoAusenciaUseCase.Executar(id, compensacao);
             return Ok();
         }
 

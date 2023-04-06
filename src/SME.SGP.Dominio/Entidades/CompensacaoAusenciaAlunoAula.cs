@@ -9,5 +9,15 @@ namespace SME.SGP.Dominio
         public int NumeroAula { get; set; }
         public DateTime DataAula { get; set; }
         public bool Excluido { get; set; }
+
+        public void Excluir()
+        {
+            Excluido = true;
+        }
+
+        public void Restaurar()
+        {
+            Excluido = false;
+        }
     }
 }

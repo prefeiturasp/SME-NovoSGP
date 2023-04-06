@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarCompensacaoAusenciaDiciplinaRegenciaCommandHandler : IRequestHandler<SalvarCompensacaoAusenciaDiciplinaRegenciaCommand, bool>
+    public class SalvarCompensacaoAusenciaDiciplinaRegenciaCommandHandler : IRequestHandler<SalvarCompensacaoAusenciaDiciplinaRegenciaCommand, long>
     {
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
 
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioCompensacaoAusenciaDisciplinaRegencia = repositorioCompensacaoAusenciaDisciplinaRegencia;
         }
 
-        public Task<bool> Handle(SalvarCompensacaoAusenciaDiciplinaRegenciaCommand request, CancellationToken cancellationToken)
+        public Task<long> Handle(SalvarCompensacaoAusenciaDiciplinaRegenciaCommand request, CancellationToken cancellationToken)
         {
             return repositorioCompensacaoAusenciaDisciplinaRegencia.SalvarAsync(request.CompensacaoAusenciaDisciplinaRegencia);
         }
