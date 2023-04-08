@@ -79,7 +79,7 @@ namespace SME.SGP.Dados
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
 
             if (!string.IsNullOrWhiteSpace(professor))
-                query.AppendLine("and (professor_rf = @professor or professor_rf is null)");            
+                query.AppendLine("and (professor_rf = @professor or professor_rf is null)");
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
@@ -347,7 +347,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string[] componentesCurricularesId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds, string professor = null)
         {
-             var sql = $@"select *
+            var sql = $@"select *
 	                        from (     
 		                        select 
 			                            fa.*,
@@ -363,7 +363,7 @@ namespace SME.SGP.Dados
 		                        )rf
 	                        where rf.sequencia = 1";
 
-            var parametros = new { codigoTurma, componentesCurricularesId, tipoFrequencia, periodosEscolaresIds = periodosEscolaresIds.ToList()};
+            var parametros = new { codigoTurma, componentesCurricularesId, tipoFrequencia = (short)tipoFrequencia, periodosEscolaresIds = periodosEscolaresIds.ToList(), professor };
             return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
         }
 
@@ -575,7 +575,7 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componentesCurricularesId, periodoEscolarId, professor });
         }
         public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(string codigoTurma, string[] componentesCurricularesId, long[] periodosEscolaresIds, string professor = null)
-        {   
+        {
             var sql = @$"select 1
                            from registro_frequencia_aluno rfa
                          inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
