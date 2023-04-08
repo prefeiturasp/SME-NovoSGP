@@ -25,17 +25,28 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
         public async Task<RetornoBaseDto> Handle(AlterarAulaUnicaCommand request, CancellationToken cancellationToken)
         {
             var retorno = new RetornoBaseDto();
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));           
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var componentesTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularCodigo, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
 
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, request.ComponenteCurricularCodigo, usuarioLogado.CodigoRf));
-            if (aulasExistentes != null)
+            var professorConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
+                                       componentesTerritorioEquivalentes.First().professor : request.Usuario.Login;
+
+            var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularCodigo };
+
+            if (componentesTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ce => long.Parse(ce.codigoComponente)).Except(codigosComponentesConsiderados));
+
+            var aulasExistentes = await mediator
+                .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), professorConsiderado));
+
+            if (aulasExistentes != null && aulasExistentes.Any())
             {
                 // Exclui a aula em alteração da lista
                 aulasExistentes = aulasExistentes.Where(a => a.Id != request.Id);
 
-                if (aulasExistentes.Any(c => c.TipoAula == request.TipoAula && c.AulaCJ == usuarioLogado.EhProfessorCj()))
+                if (aulasExistentes.Any(c => c.TipoAula == request.TipoAula && c.AulaCJ == request.Usuario.EhProfessorCj()))
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
@@ -43,15 +54,18 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
             var aulaAnteriorQnt = aula.Quantidade;
 
-            await AplicarValidacoes(request, aula, turma, usuarioLogado, aulasExistentes);
+            await AplicarValidacoes(request, aula, turma, request.Usuario, aulasExistentes);
 
-            MapearEntidade(aula, request);
+            var codigoComponenteEquivalenteConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
+                                                         long.Parse(componentesTerritorioEquivalentes.First().codigoComponente) : (long?)null;
+
+            MapearEntidade(aula, request, codigoComponenteEquivalenteConsiderado, professorConsiderado);
 
             await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
 
             repositorioAula.Salvar(aula);
 
-            await TrataAlteracaoDeFrequencia(usuarioLogado, aula, aulaAnteriorQnt);
+            await TrataAlteracaoDeFrequencia(request.Usuario, aula, aulaAnteriorQnt);
 
             retorno.Mensagens.Add("Aula alterada com sucesso.");
 
@@ -81,18 +95,20 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             }
         }
 
-        private void MapearEntidade(Aula aula, AlterarAulaUnicaCommand request)
+        private void MapearEntidade(Aula aula, AlterarAulaUnicaCommand request, long? codigoComponenteTerritorioEquivalente, string professor)
         {
             aula.DataAula = request.DataAula;
             aula.Quantidade = request.Quantidade;
             aula.RecorrenciaAula = RecorrenciaAula.AulaUnica;
             aula.AulaPaiId = null;
-            aula.DisciplinaId = request.ComponenteCurricularCodigo.ToString();
+            aula.DisciplinaId = codigoComponenteTerritorioEquivalente.HasValue && codigoComponenteTerritorioEquivalente > request.ComponenteCurricularCodigo ?
+                                codigoComponenteTerritorioEquivalente.Value.ToString() : request.ComponenteCurricularCodigo.ToString();
+            aula.ProfessorRf = professor;
         }
 
         private async Task AplicarValidacoes(AlterarAulaUnicaCommand request, Aula aula, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)
         {
-            if(!usuarioLogado.EhGestorEscolar())
+            if (!usuarioLogado.EhGestorEscolar())
                 await ValidarComponentesDoProfessor(request, usuarioLogado);
 
             await ValidarSeEhDiaLetivo(request, turma);
@@ -108,7 +124,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
         {
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,
-                                                                                   request.ComponenteCurricularCodigo,
+                                                                                   new long[] { request.ComponenteCurricularCodigo },
                                                                                    request.DataAula,
                                                                                    usuarioLogado.CodigoRf,
                                                                                    quantidadeAdicional,

@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     {
         public ValidarGradeAulaCommand(string turmaCodigo,
                                        Modalidade turmaModalidade,
-                                       long componenteCurricularCodigo,
+                                       long[] componentesCurricularesCodigo,
                                        DateTime data,
                                        string usuarioRf,
                                        int quantidade,
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             TurmaCodigo = turmaCodigo;
             TurmaModalidade = turmaModalidade;
-            ComponenteCurricularCodigo = componenteCurricularCodigo;
+            ComponenteCurricularesCodigo = componentesCurricularesCodigo;
             Data = data;
             UsuarioRf = usuarioRf;
             Quantidade = quantidade;
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
         public string TurmaCodigo { get; set; }
         public Modalidade TurmaModalidade { get; set; }
-        public long ComponenteCurricularCodigo { get; set; }
+        public long[] ComponenteCurricularesCodigo { get; set; }
         public DateTime Data { get; set; }
         public string UsuarioRf { get; set; }
         public int Quantidade { get; set; }
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             .NotEmpty()
             .WithMessage("A modalidade da turma deve ser informada para validação de grade da matriz curricular");
 
-            RuleFor(c => c.ComponenteCurricularCodigo)
+            RuleFor(c => c.ComponenteCurricularesCodigo)
             .NotEmpty()
             .WithMessage("O componente curricular deve ser informado para validação de grade da matriz curricular");
 

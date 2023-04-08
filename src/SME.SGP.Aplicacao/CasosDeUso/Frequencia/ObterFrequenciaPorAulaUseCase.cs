@@ -70,8 +70,24 @@ namespace SME.SGP.Aplicacao
 
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
 
+            var usuarioLogado = await mediator
+                .Send(new ObterUsuarioLogadoQuery());
+
+            var professorConsiderado = usuarioLogado.Login;
+
+            var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
+
+            var codigosComponentesConsiderados = new List<long>() { param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId) };
+
+            if (codigosTerritorioEquivalentes != default)
+            {
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+                professorConsiderado = codigosTerritorioEquivalentes.First().professor;
+            }
+
             var componenteCurricularAula = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { param.ComponenteCurricularId ?? Convert.ToInt64(aula.DisciplinaId) }, codigoTurma: turma.CodigoTurma));
+                .Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentesConsiderados.ToArray(), codigoTurma: turma.CodigoTurma));
 
             if (componenteCurricularAula == null || !componenteCurricularAula.Any())
                 throw new NegocioException("Componente curricular da aula não encontrado");
@@ -79,16 +95,11 @@ namespace SME.SGP.Aplicacao
             var anotacoesTurma = await mediator
                 .Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
 
-            var componentesConsiderados = new List<long> { long.Parse(aula.DisciplinaId) };
-
-            if (componenteCurricularAula.Any())
-                componentesConsiderados.AddRange(componenteCurricularAula.Select(ca => ca.CodigoComponenteCurricular).Except(componentesConsiderados));
-
             var frequenciaAlunosRegistrada = await mediator
-                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componentesConsiderados.ToArray(), periodoEscolar.Id));
+                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesConsiderados.ToArray(), periodoEscolar.Id, professorConsiderado));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
-                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { aula.DisciplinaId }, periodoEscolar.Id));            
+                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), periodoEscolar.Id, professorConsiderado));
 
             foreach (var aluno in alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno))
             {

@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var frequenciasDuplicadasGeral = frequencia
-                    .Where(f => disciplinasId.Contains(f.DisciplinaId) && f.Bimestre == bimestre && f.Tipo == TipoFrequenciaAluno.Geral).Select(f => f.Id);
+                    .Where(f => string.IsNullOrWhiteSpace(f.DisciplinaId) && f.Bimestre == bimestre && f.Tipo == TipoFrequenciaAluno.Geral).Select(f => f.Id);
 
                 if (frequenciasDuplicadasGeral.Count() > 1)
                 {

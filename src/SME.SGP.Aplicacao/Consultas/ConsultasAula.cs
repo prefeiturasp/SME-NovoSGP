@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
             if (ExperienciaPedagogica(disciplina))
                 aulas = await repositorioConsulta.ObterAulasTurmaExperienciasPedagogicasSemana(turma, semana);
             else
-                aulas = await repositorioConsulta.ObterAulasTurmaDisciplinaSemanaProfessor(turma, disciplina, semana, codigoRf);
+                aulas = await repositorioConsulta.ObterAulasTurmaDisciplinaSemanaProfessor(turma, new string[] { disciplina }, semana, codigoRf);
 
             return aulas.Sum(a => a.Quantidade);
         }
