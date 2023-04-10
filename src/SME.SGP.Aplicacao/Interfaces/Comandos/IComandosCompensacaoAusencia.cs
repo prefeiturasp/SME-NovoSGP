@@ -1,7 +1,4 @@
 ﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -10,6 +7,5 @@ namespace SME.SGP.Aplicacao
     {
         Task Inserir(CompensacaoAusenciaDto compensacao);
         Task Alterar(long id, CompensacaoAusenciaDto compensacao);
-        Task Excluir(long[] compensacoesIds);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Options;
-using Minio.DataModel;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
@@ -355,93 +354,7 @@ namespace SME.SGP.Dominio.Servicos
 
             return compensacao;
         }
-
-        public async Task Excluir(long[] compensacoesIds)
-        {
-            var compensacoesExcluir = new List<CompensacaoAusencia>();
-            var compensacoesAlunosExcluir = new List<CompensacaoAusenciaAluno>();
-            var compensacoesDisciplinasExcluir = new List<CompensacaoAusenciaDisciplinaRegencia>();
-            var listaCompensacaoDescricao = new List<string>();
-
-            List<long> idsComErroAoExcluir = new List<long>();
-
-            // Carrega lista de objetos a excluir marcando-los para exclusão
-            foreach (var compensacaoId in compensacoesIds)
-            {
-                var compensacao = repositorioCompensacaoAusencia.ObterPorId(compensacaoId);
-                listaCompensacaoDescricao.Add(compensacao.Descricao);
-                compensacao.Excluir();
-                compensacoesExcluir.Add(compensacao);
-
-                var compensacoesAlunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
-
-                foreach (var compensacaoAluno in compensacoesAlunos)
-                {
-                    compensacaoAluno.Excluir();
-                    compensacoesAlunosExcluir.Add(compensacaoAluno);
-                }
-
-                var compensacoesDisciplinas = await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoId);
-                foreach (var compensacaoDisciplina in compensacoesDisciplinas)
-                {
-                    compensacaoDisciplina.Excluir();
-                    compensacoesDisciplinasExcluir.Add(compensacaoDisciplina);
-                }
-            }
-
-            // Excluir lista carregada
-            foreach (var compensacaoExcluir in compensacoesExcluir)
-            {
-                var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(compensacaoExcluir.TurmaId);
-                var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
-
-                unitOfWork.IniciarTransacao();
-                try
-                {
-                    // Exclui dependencias
-                    var alunosDaCompensacao = compensacoesAlunosExcluir
-                        .Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
-                    alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
-
-                    compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
-                        .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
-
-                    // Exclui compensação
-                    await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
-                    // Excluir notificações
-                    await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoExcluir.Id));
-
-                    unitOfWork.PersistirTransacao();
-
-                    var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno).ToList();
-
-                    if (alunosDaCompensacao.Any())
-                    {
-                        Task.Delay(TimeSpan.FromSeconds(5)).Wait();
-                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos,
-                            periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
-                    }
-                }
-                catch (Exception)
-                {
-                    idsComErroAoExcluir.Add(compensacaoExcluir.Id);
-                    unitOfWork.Rollback();
-                }
-            }
-
-            if (listaCompensacaoDescricao != null && listaCompensacaoDescricao.Any())
-            {
-                foreach (var item in listaCompensacaoDescricao)
-                {
-                    await mediator.Send(
-                        new DeletarArquivoDeRegistroExcluidoCommand(item, TipoArquivo.CompensacaoAusencia.Name()));
-                }
-            }
-
-            if (idsComErroAoExcluir.Any())
-                throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
-        }
-
+        
         private async Task ValidaProfessorPodePersistirTurma(string turmaId, Usuario usuario, DateTime dataAula)
         {
             if (!await PossuiPermissaoTurma(turmaId, usuario, dataAula))
@@ -462,56 +375,7 @@ namespace SME.SGP.Dominio.Servicos
             var componentes = await consultasDisciplina.ObterDisciplinasPerfilCJ(turmaId, codigoRf);
             return componentes != null && componentes.Any();
         }
-
-        public async Task<string> Copiar(CompensacaoAusenciaCopiaDto compensacaoCopia)
-        {
-            var compensacaoOrigem = repositorioCompensacaoAusencia.ObterPorId(compensacaoCopia.CompensacaoOrigemId);
-            if (compensacaoOrigem == null)
-                throw new NegocioException("Compensação de origem não localizada com o identificador informado.");
-
-            var turmasCopiadas = new StringBuilder("");
-            var turmasComErro = new StringBuilder("");
-            foreach (var turmaId in compensacaoCopia.TurmasIds)
-            {
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-                CompensacaoAusenciaDto compensacaoDto = new CompensacaoAusenciaDto()
-                {
-                    TurmaId = turmaId,
-                    Bimestre = compensacaoCopia.Bimestre,
-                    DisciplinaId = compensacaoOrigem.DisciplinaId,
-                    Atividade = compensacaoOrigem.Nome,
-                    Descricao = compensacaoOrigem.Descricao,
-                    DisciplinasRegenciaIds = new List<string>(),
-                    Alunos = new List<CompensacaoAusenciaAlunoDto>()
-                };
-
-                var disciplinasRegencia =
-                    await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoOrigem.Id);
-                if (disciplinasRegencia != null && disciplinasRegencia.Any())
-                    compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
-
-                try
-                {
-                    await Salvar(0, compensacaoDto);
-                    turmasCopiadas.Append(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
-                }
-                catch (Exception e)
-                {
-                    turmasComErro.AppendLine($"A cópia para a turma {turma.Nome} não foi realizada: {e.Message}\n");
-                }
-            }
-
-            var respTurmasCopiadas = turmasCopiadas.ToString();
-            var textoTurmas = respTurmasCopiadas.Contains(",") ? "as turmas" : "a turma";
-            var respostaSucesso = respTurmasCopiadas.Length > 0
-                ? $"A cópia para {textoTurmas} {respTurmasCopiadas} foi realizada com sucesso"
-                : "";
-            var respTurmasComErro = turmasComErro.ToString();
-            if (respTurmasComErro.Length > 0)
-                throw new NegocioException($"{respTurmasComErro} {respostaSucesso}");
-
-            return respostaSucesso;
-        }
+        
         private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
         {
             var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
