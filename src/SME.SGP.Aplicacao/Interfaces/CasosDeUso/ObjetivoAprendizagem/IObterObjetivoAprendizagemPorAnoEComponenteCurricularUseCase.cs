@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
@@ -8,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
-    public interface IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase
+    public interface IListarObjetivoAprendizagemPorAnoTurmaEComponenteCurricularUseCase
     {
-        Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial);
+        Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, long turmaId, bool ensinoEspecial);
     }
 }
