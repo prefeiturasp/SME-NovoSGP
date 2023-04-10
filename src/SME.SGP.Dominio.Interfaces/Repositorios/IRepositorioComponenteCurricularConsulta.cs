@@ -19,5 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterComponentesSimplesPorIds(long[] ids);
         Task<string> ObterCodigoComponentePai(long componenteCurricularId);
         Task<DisciplinaDto> ObterDisciplinaPorId(long id);
+        Task<ComponenteGrupoMatrizDto> ObterComponenteGrupoMatrizPorId(long id);
     }
 }
