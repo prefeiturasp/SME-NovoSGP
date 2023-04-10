@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,6 +20,32 @@ namespace SME.SGP.Aplicacao
         public string TurmaCodigo { get; }
         public string DisciplinaId { get; }
         public int Bimestre { get; }
-        public IEnumerable<AlunoQuantidadeCompensacaoDto> AlunosQuantidadeCompensacoes  { get; }
+        public IEnumerable<AlunoQuantidadeCompensacaoDto> AlunosQuantidadeCompensacoes { get; }
+    }
+
+    public class ObterAusenciaParaCompensacaoQueryValidator : AbstractValidator<ObterAusenciaParaCompensacaoQuery>
+    {
+        public ObterAusenciaParaCompensacaoQueryValidator()
+        {
+            RuleFor(x => x.CompensacaoId)
+                .GreaterThan(0)
+                .WithMessage("A compensação id deve ser preenchido para obter ausência para compensação.");
+
+            RuleFor(x => x.TurmaCodigo)
+                .NotEmpty()
+                .WithMessage("O código da turma deve ser preenchido para obter ausência para compensação.");
+
+            RuleFor(x => x.DisciplinaId)
+                .NotEmpty()
+                .WithMessage("A disciplina id deve ser preenchido para obter ausência para compensação.");
+
+            RuleFor(x => x.Bimestre)
+                .NotEmpty()
+                .WithMessage("O bimestre deve ser preenchido para obter ausência para compensação.");
+
+            RuleFor(x => x.AlunosQuantidadeCompensacoes)
+                .NotEmpty()
+                .WithMessage("Os alunos e quantidade de compensações deve ser preenchido para obter ausência para compensação.");
+        }
     }
 }
