@@ -252,7 +252,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<List<string>> GravarCompensacaoAlunoAulas(bool alteracao, CompensacaoAusencia compensacao, Turma turma, IEnumerable<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunosDto)
+        private async Task<IEnumerable<string>> GravarCompensacaoAlunoAulas(bool alteracao, CompensacaoAusencia compensacao, Turma turma, IEnumerable<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunosDto)
         {
             var codigosAlunosQtdeCompensacao = compensacaoAusenciaAlunos
                 .Where(t => t.QuantidadeFaltasCompensadas > 0)
@@ -310,8 +310,8 @@ namespace SME.SGP.Aplicacao
                     // -> adiciona a quantidade faltante pegando da mais antiga para a mais nova.
                     foreach (var falta in faltasNaoCompensadasAluno
                         .Where(t => !compensacaoAusenciaAlunoDto.CompensacaoAusenciaAlunoAula.Any(x => x.RegistroFrequenciaAlunoId == t.RegistroFrequenciaAlunoId))
-                        .OrderByDescending(t => t.DataAula)
-                        .ThenByDescending(t => t.NumeroAula)
+                        .OrderBy(t => t.DataAula)
+                        .ThenBy(t => t.NumeroAula)
                         .Take(diferenca))
                     {
                         AdicionarCompensacaoAlunoAula(compensacaoAusenciaAlunoAulas, listaPersistencia, compensacaoAusenciaAluno, falta);
@@ -322,8 +322,8 @@ namespace SME.SGP.Aplicacao
                     //-> adiciona a diferença pegando da mais antiga para a mais nova.
                     foreach (var falta in faltasNaoCompensadasAluno
                         .Where(t => compensacaoAusenciaAlunoDto.CompensacaoAusenciaAlunoAula.Any(x => x.RegistroFrequenciaAlunoId == t.RegistroFrequenciaAlunoId))
-                        .OrderByDescending(t => t.DataAula)
-                        .ThenByDescending(t => t.NumeroAula)
+                        .OrderBy(t => t.DataAula)
+                        .ThenBy(t => t.NumeroAula)
                         .Take(compensacaoAusenciaAlunoDto.QtdFaltasCompensadas))
                     {
                         AdicionarCompensacaoAlunoAula(compensacaoAusenciaAlunoAulas, listaPersistencia, compensacaoAusenciaAluno, falta);
@@ -332,19 +332,22 @@ namespace SME.SGP.Aplicacao
             }
 
             // Remove as aulas não existentes
-            foreach (var compensacaoAusenciaAlunoAulaExcluir in compensacaoAusenciaAlunoAulas.Where(t => !listaPersistencia.Any(x => x.CompensacaoAusenciaAlunoId == t.CompensacaoAusenciaAlunoId)))
+            foreach (var compensacaoAusenciaAlunoAulaExcluir in compensacaoAusenciaAlunoAulas.Where(t => !listaPersistencia.Any(x => x.CompensacaoAusenciaAlunoId == t.CompensacaoAusenciaAlunoId && x.RegistroFrequenciaAlunoId == t.RegistroFrequenciaAlunoId)))
             {
                 compensacaoAusenciaAlunoAulaExcluir.Excluir();
                 listaPersistencia.Add(compensacaoAusenciaAlunoAulaExcluir);
             }
 
-            return codigosAlunosQtdeCompensacao.Select(t => t.CodigoAluno).ToList();
+            if (listaPersistencia.Any())
+                await SalvarCompensacaoAlunoAulas(listaPersistencia);
+
+            return codigosAlunosQtdeCompensacao.Select(t => t.CodigoAluno);
         }
 
         private static void AdicionarCompensacaoAlunoAula(IEnumerable<CompensacaoAusenciaAlunoAula> compensacaoAusenciaAlunoAulas, List<CompensacaoAusenciaAlunoAula> listaPersistencia, CompensacaoAusenciaAluno compensacaoAusenciaAluno, RegistroFaltasNaoCompensadaDto falta)
         {
             var compensacaoAusenciaAlunoAula = compensacaoAusenciaAlunoAulas
-                                        .FirstOrDefault(t => t.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.CompensacaoAusenciaId && t.RegistroFrequenciaAlunoId == falta.RegistroFrequenciaAlunoId);
+                                        .FirstOrDefault(t => t.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id && t.RegistroFrequenciaAlunoId == falta.RegistroFrequenciaAlunoId);
 
             if (compensacaoAusenciaAlunoAula == null)
                 compensacaoAusenciaAlunoAula = new CompensacaoAusenciaAlunoAula()

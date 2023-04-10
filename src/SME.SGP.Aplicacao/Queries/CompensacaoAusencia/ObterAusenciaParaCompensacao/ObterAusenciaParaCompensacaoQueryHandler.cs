@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 if (diferenca > 0)
                 {
                     // -> adiciona como sugestão a quantidade faltante pegando da mais antiga para a mais nova.
-                    foreach (var falta in faltasNaoCompensadasAluno.Where(t => !t.Sugestao).OrderByDescending(t => t.DataAula).ThenByDescending(t => t.NumeroAula).Take(diferenca))
+                    foreach (var falta in faltasNaoCompensadasAluno.Where(t => !t.Sugestao).OrderBy(t => t.DataAula).ThenBy(t => t.NumeroAula).Take(diferenca))
                     {
                         falta.Sugestao = true;
                     }
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 else if (diferenca < 0)
                 {
                     // -> remove as sugestões a quantidade a mais pegando da mais nova para a mais antiga.
-                    foreach (var falta in faltasNaoCompensadasAluno.Where(t => t.Sugestao).OrderBy(t => t.DataAula).OrderBy(t => t.NumeroAula).Take(Math.Abs(diferenca)))
+                    foreach (var falta in faltasNaoCompensadasAluno.Where(t => t.Sugestao).OrderByDescending(t => t.DataAula).ThenByDescending(t => t.NumeroAula).Take(Math.Abs(diferenca)))
                     {
                         falta.Sugestao = false;
                     }

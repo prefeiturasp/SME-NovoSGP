@@ -19,11 +19,12 @@ namespace SME.SGP.Dados
             var tipoFrequenciaFalta = (int)TipoFrequencia.F;
 
             var query = @" select
+								rfa.codigo_aluno as CodigoAluno,
 								a.id AulaId,
 								a.data_aula as DataAula,
 								rfa.numero_aula as NumeroAula,
 								'Aula ' || rfa.numero_aula as Descricao,
-								caaa.registro_frequencia_aluno_id as RegistroFrequenciaAlunoId,
+								rfa.id as RegistroFrequenciaAlunoId,
 								case 
 									when caaa.id is null then false else true 
 								end Sugestao

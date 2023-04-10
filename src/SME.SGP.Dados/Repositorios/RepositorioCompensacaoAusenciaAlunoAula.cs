@@ -24,7 +24,7 @@ namespace SME.SGP.Dados
 
         public Task<IEnumerable<CompensacaoAusenciaAlunoAula>> ObterPorCompensacaoIdAsync(long compensacaoId)
         {
-            var sql = $@"SELECT id, compensacao_ausencia_aluno_id, registro_frequencia_aluno_id, numero_aula, data_aula, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido
+            var sql = $@"SELECT caaa.id, caaa.compensacao_ausencia_aluno_id, caaa.registro_frequencia_aluno_id, caaa.numero_aula, caaa.data_aula, caaa.criado_em, caaa.criado_por, caaa.alterado_em, caaa.alterado_por, caaa.criado_rf, caaa.alterado_rf, caaa.excluido
                          FROM compensacao_ausencia_aluno caa
                          INNER JOIN compensacao_ausencia_aluno_aula caaa on caaa.compensacao_ausencia_aluno_id = caa.id 
                          WHERE caa.compensacao_ausencia_id = @compensacaoId";
