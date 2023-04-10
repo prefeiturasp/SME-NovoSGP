@@ -79,7 +79,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
                 TesteBaseComuns.USUARIO_ADMIN_RF);
              
             //Essa fila está dentro do processo do ExcluirAulaUseCase e está sendo chamada aqui de forma exclusiva para o teste
-            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaPorAulaIdUseCase>();
+            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase>();
             await excluirCompensacaoAusenciaPorAulaIdUseCase.Executar(mensagem);
             
             var compensacoesCompensacaoAusenciaAlunos = ObterTodos<Dominio.CompensacaoAusenciaAluno>();

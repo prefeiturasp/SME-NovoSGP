@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                 if (idsParaExcluir.Count > 0)
                     await repositorioRegistroFrequenciaAluno.RemoverLogico(idsParaExcluir.ToArray());   
                 
-                await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(idsParaExcluir,quantidadeAtual));
+                await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(idsParaExcluir,quantidadeOriginal - quantidadeAtual));
             }
 
             return true;

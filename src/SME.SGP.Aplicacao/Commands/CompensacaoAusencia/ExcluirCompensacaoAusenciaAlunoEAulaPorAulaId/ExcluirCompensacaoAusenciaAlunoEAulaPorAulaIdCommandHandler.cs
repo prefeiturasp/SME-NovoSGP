@@ -10,17 +10,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirCompensacaoAusenciaPorAulaIdCommandHandler : IRequestHandler<ExcluirCompensacaoAusenciaPorAulaIdCommand, bool>
+    public class ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommandHandler : IRequestHandler<ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand, bool>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         
-        public ExcluirCompensacaoAusenciaPorAulaIdCommandHandler(IUnitOfWork unitOfWork,IMediator mediator, IRepositorioPendenciaDiarioBordo repositorioPendenciaDiarioBordo, IRepositorioPendencia repositorioPendencia)
+        public ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommandHandler(IUnitOfWork unitOfWork,IMediator mediator, IRepositorioPendenciaDiarioBordo repositorioPendenciaDiarioBordo, IRepositorioPendencia repositorioPendencia)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task<bool> Handle(ExcluirCompensacaoAusenciaPorAulaIdCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand request, CancellationToken cancellationToken)
         {
             var compensacoesAusenciasAlunosAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoEAulaPorAulaIdQuery(request.AulaId), cancellationToken);
             

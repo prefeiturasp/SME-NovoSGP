@@ -105,7 +105,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select caaa.compensacao_ausencia_aluno_id CompensacaoAusenciaAlunoId, 
                                  caaa.id CompensacaoAusenciaAlunoAulaId, 
-                                 caa.compensacao_ausencia_id CompensacaoAusenciaId
+                                 caaa.registro_frequencia_aluno_id RegistroFrequenciaAlunoId
                           from compensacao_ausencia_aluno caa 
                             join compensacao_ausencia_aluno_aula caaa on caa.id = caaa.compensacao_ausencia_aluno_id
                             join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id
@@ -116,16 +116,19 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoEDataDto>(query, new { aulaId });
         }
 
-        public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdQuery(IEnumerable<long> registroFrequenciaAlunoIds)
+        public async Task<IEnumerable<CompensacaoAusenciaAlunoEDataDto>> ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdsQuery(IEnumerable<long> registroFrequenciaAlunoIds)
         {
-            var query = @"select caa.*
+            var query = @"select caaa.registro_frequencia_aluno_id RegistroFrequenciaAlunoId, 
+                                 caa.id CompensacaoAusenciaAlunoId,
+                                 caa.qtd_faltas_compensadas QuantidadeCompensacoes,
+                                 caa.compensacao_ausencia_id CompensacaoAusenciaId
 	                        from compensacao_ausencia_aluno caa
 	                        join compensacao_ausencia_aluno_aula caaa on caa.id = caaa.compensacao_ausencia_aluno_id
 	                        where caaa.registro_frequencia_aluno_id = ANY(@registroFrequenciaAlunoIds)
                                 and not caa.excluido   
                                 and not caaa.excluido";
 
-            return await database.Conexao.QueryAsync<CompensacaoAusenciaAluno>(query, new { registroFrequenciaAlunoIds });
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoEDataDto>(query, new { registroFrequenciaAlunoIds });
         }
     }
 }

@@ -35,15 +35,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(InserirRegistrosFrequenciasAlunosCommand request, CancellationToken cancellationToken)
         {
-            var dicionarioFrequenciaAluno = await ObterDicionarioFrequenciaAlunoParaPersistir(request);
+            var dicionarioFrequenciaAlunoECompensacoesAusencias = await ObterDicionarioFrequenciaAlunoParaPersistirECompensacoesParaExcluir(request);
             var dicionarioPreDefinida = await ObterDicionarioFrequenciaPreDefinidaParaPersistir(request);
             
-            var informacoesFrequencia = FormatarInformacoesFrequencia(dicionarioFrequenciaAluno, request.RegistroFrequenciaId, request.TurmaId, request.AulaId);
+            var informacoesFrequencia = FormatarInformacoesFrequencia(dicionarioFrequenciaAlunoECompensacoesAusencias.Item1, request.RegistroFrequenciaId, request.TurmaId, request.AulaId);
 
             unitOfWork.IniciarTransacao();
             try
             {
-                await CadastreFrequenciaAluno(dicionarioFrequenciaAluno);
+                await CadastreFrequenciaAlunoAtualizarCompensacoes(dicionarioFrequenciaAlunoECompensacoesAusencias);
                 await CadastreFrequenciaPreDefinida(dicionarioPreDefinida);
 
                 unitOfWork.PersistirTransacao();
@@ -68,12 +68,14 @@ namespace SME.SGP.Aplicacao
             return json;
         }
 
-        private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
+        private async Task CadastreFrequenciaAlunoAtualizarCompensacoes((Dictionary<int, List<RegistroFrequenciaAluno>>,List<long>) dicionario)
         {
-            await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
+            await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario.Item1[INSERIR]);
 
-            foreach (var frequenciaAluno in dicionario[ALTERAR])
+            foreach (var frequenciaAluno in dicionario.Item1[ALTERAR])
                 await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
+            
+            await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(dicionario.Item2.ToArray(),1));
         }
 
         private async Task CadastreFrequenciaPreDefinida(Dictionary<int, List<FrequenciaPreDefinida>> dicionario)
@@ -85,7 +87,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObterDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
+        private async Task<(Dictionary<int, List<RegistroFrequenciaAluno>>,List<long>)> ObterDicionarioFrequenciaAlunoParaPersistirECompensacoesParaExcluir(InserirRegistrosFrequenciasAlunosCommand request)
         {
             var registroFrequenciasAlunos = new Dictionary<int, List<RegistroFrequenciaAluno>>
             {
@@ -93,8 +95,10 @@ namespace SME.SGP.Aplicacao
                 { ALTERAR, new List<RegistroFrequenciaAluno>() },
             };
 
+            var registroFrequenciaParaExcluir = new List<long>();
+
             var registroFrequenciaAlunoAtual = await mediator.Send(new ObterRegistroDeFrequenciaAlunoPorIdRegistroQuery(request.RegistroFrequenciaId));
-            
+
             foreach (var registroFrequenciaAlunoDto in request.Frequencias)
             {
                 foreach (var aulaRegistrada in registroFrequenciaAlunoDto.Aulas)
@@ -109,6 +113,9 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno.Valor = (int)valorFrequencia;
                             frequenciaAluno.AulaId = request.AulaId;
                             registroFrequenciasAlunos[ALTERAR].Add(frequenciaAluno);
+
+                            if (frequenciaAluno.Valor == (int)TipoFrequencia.F && valorFrequencia != TipoFrequencia.F)
+                                registroFrequenciaParaExcluir.Add(frequenciaAluno.Id);
                         }
                     }
                     else
@@ -127,7 +134,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return registroFrequenciasAlunos;
+            return (registroFrequenciasAlunos,registroFrequenciaParaExcluir);
         }
 
         private async Task<Dictionary<int, List<FrequenciaPreDefinida>>> ObterDicionarioFrequenciaPreDefinidaParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
