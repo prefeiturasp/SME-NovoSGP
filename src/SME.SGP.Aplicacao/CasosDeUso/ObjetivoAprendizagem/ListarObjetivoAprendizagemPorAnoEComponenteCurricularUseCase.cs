@@ -20,12 +20,14 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, long turmaId, bool ensinoEspecial)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial, long turmaId = 0)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-
-            if (turma.ModalidadeCodigo == Modalidade.Medio)
-                return null;
+            if (turmaId != 0)
+            {
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+                if (turma.ModalidadeCodigo == Modalidade.Medio)
+                    return null;
+            }
 
             long[] ids;
 
