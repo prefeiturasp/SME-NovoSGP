@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -11,9 +12,16 @@ namespace SME.SGP.Aplicacao
     public class ExcluirCompensacaoAusenciaUseCase : AbstractUseCase,IExcluirCompensacaoAusenciaUseCase
     {
         private readonly IUnitOfWork unitOfWork;
-        public ExcluirCompensacaoAusenciaUseCase(IMediator mediator,IUnitOfWork ofWork) : base(mediator)
+        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
+        private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
+        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
+        public ExcluirCompensacaoAusenciaUseCase(IMediator mediator,IUnitOfWork ofWork,IRepositorioCompensacaoAusenciaAluno compensacaoAusenciaAluno,
+        IRepositorioCompensacaoAusenciaDisciplinaRegencia compensacaoAusenciaDisciplinaRegencia,IRepositorioCompensacaoAusencia compensacaoAusencia) : base(mediator)
         {
-            unitOfWork = ofWork ?? throw new System.ArgumentNullException(nameof(ofWork));
+            unitOfWork = ofWork ?? throw new ArgumentNullException(nameof(ofWork));
+            repositorioCompensacaoAusenciaAluno = compensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(compensacaoAusenciaAluno));
+            repositorioCompensacaoAusenciaDisciplinaRegencia = compensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(compensacaoAusenciaDisciplinaRegencia));
+            repositorioCompensacaoAusencia = compensacaoAusencia ?? throw new ArgumentNullException(nameof(compensacaoAusencia));
         }
 
         public async Task<bool> Executar(long[] compensacoesIds)
@@ -55,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.IniciarTransacao();
                 try
                 {
-                    // Exclui dependencias
+                    
                     var alunosDaCompensacao = compensacoesAlunosExcluir
                         .Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
                     alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
@@ -63,9 +71,9 @@ namespace SME.SGP.Aplicacao
                     compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
                         .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
 
-                    // Exclui compensação
+                    
                     await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
-                    // Excluir notificações
+                    
                     await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoExcluir.Id));
 
                     unitOfWork.PersistirTransacao();
