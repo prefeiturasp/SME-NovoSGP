@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<RetornoBaseDto> Executar(ExcluirAulaDto excluirDto)
-        {            
+        {
             var aula = await mediator.Send(new ObterAulaPorIdQuery(excluirDto.AulaId));
 
             if (aula == null)
@@ -54,7 +54,11 @@ namespace SME.SGP.Aplicacao
             }
 
             var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
-                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == aula.DisciplinaId ||(componenteCurricular != null && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) ||    cp.Codigo.ToString() == aula.DisciplinaId)
+                    ? (from cp in componentesCurricularesEolProfessor
+                       where cp.CodigoComponenteCurricularPai.ToString() == aula.DisciplinaId ||
+                             cp.Codigo.ToString() == aula.DisciplinaId ||
+                             (componenteCurricular != null && (cp.Codigo == componenteCurricular.CdComponenteCurricularPai || cp.CodigoComponenteTerritorioSaber == componenteCurricular.CodigoComponenteCurricular))
+                       select cp).FirstOrDefault()
                     : new ComponenteCurricularEol
                     {
                         Codigo = long.TryParse(aula.DisciplinaId, out long codigo) ? codigo : 0,
@@ -67,14 +71,14 @@ namespace SME.SGP.Aplicacao
                 codigoComponentes = codigoComponentes.Append(componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString()).ToArray();
 
             var codigoComponenteConsiderado = aula.DisciplinaId;
-            var componenteConsideradoEmCasoDeCJ = usuarioLogado.EhProfessorCj() ? 
-                await mediator.Send(new DefinirComponenteCurricularParaAulaQuery(aula.TurmaId, long.Parse(codigoComponenteConsiderado), usuarioLogado)) : 
+            var componenteConsideradoEmCasoDeCJ = usuarioLogado.EhProfessorCj() ?
+                await mediator.Send(new DefinirComponenteCurricularParaAulaQuery(aula.TurmaId, long.Parse(codigoComponenteConsiderado), usuarioLogado)) :
                 default;
 
             if (componenteConsideradoEmCasoDeCJ != default && componenteConsideradoEmCasoDeCJ.codigoTerritorio.HasValue && componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value > 0)
                 codigoComponenteConsiderado = componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value.ToString();
 
-            var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ? 
+            var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ?
                 componenteCorrespondente.Descricao : await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(codigoComponenteConsiderado)));
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
