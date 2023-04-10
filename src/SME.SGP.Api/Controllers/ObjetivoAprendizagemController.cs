@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -35,13 +36,13 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{ano}/{componenteCurricularId}")]
+        [Route("{ano}/{componenteCurricularId}/{turmaId}")]
         [ProducesResponseType(typeof(IEnumerable<ObjetivoAprendizagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterObjetivosPorAnoEComponenteCurricular([FromServices] IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase useCase, [FromQuery] bool ensinoEspecial, string ano, long componenteCurricularId)
+        public async Task<IActionResult> ObterObjetivosPorAnoEComponenteCurricular([FromServices] IListarObjetivoAprendizagemPorAnoTurmaEComponenteCurricularUseCase useCase, [FromQuery] bool ensinoEspecial, string ano, long componenteCurricularId, long turmaId)
         {
-            var result = await useCase.Executar(ano, componenteCurricularId, ensinoEspecial);
+            var result = await useCase.Executar(ano, componenteCurricularId, turmaId, ensinoEspecial);
             if (result == null)
                 return NoContent();
 
