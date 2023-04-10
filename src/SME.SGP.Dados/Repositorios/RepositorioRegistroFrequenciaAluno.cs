@@ -90,13 +90,6 @@ namespace SME.SGP.Dados
             return true;
         }
 
-        public async Task ExcluirVariosLogicamente(long[] idsParaExcluir)
-        {
-            var query = "update registro_frequencia_aluno set excluido = true where id = any(@idsParaExcluir)";
-
-            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
-        }
-
         public async Task ExcluirRegistroFrequenciaAlunoPorAulaECodigosAlunos(long aulaId, string[] codigosAlunos)
         {
             var query = @"DELETE from registro_frequencia_aluno WHERE NOT excluido AND aula_id = @aulaId and codigo_aluno = any(@codigosAlunos)";

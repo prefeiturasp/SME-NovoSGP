@@ -754,6 +754,8 @@ namespace SME.SGP.IoC
 
             // Compensacao Ausencia
             services.TryAddScoped<IPeriodoDeCompensacaoAbertoUseCase, PeriodoDeCompensacaoAbertoUseCase>();
+            services.TryAddScoped<ICopiarCompensacaoAusenciaUseCase, CopiarCompensacaoAusenciaUseCase>();
+            services.TryAddScoped<IExcluirCompensacaoAusenciaUseCase, ExcluirCompensacaoAusenciaUseCase>();
 
             // Componentes Curriculares
             services.TryAddScoped<IObterComponentesCurricularesPorTurmaECodigoUeUseCase, ObterComponentesCurricularesPorTurmaECodigoUeUseCase>();

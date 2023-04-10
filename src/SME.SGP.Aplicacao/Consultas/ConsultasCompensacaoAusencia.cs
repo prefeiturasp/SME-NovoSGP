@@ -124,7 +124,7 @@ namespace SME.SGP.Aplicacao
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
             var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
-            var compensacoes = (await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(alunosCodigos,compensacao.DisciplinaId,compensacao.Bimestre,turma.CodigoTurma))).ToList();
+            var compensacoes = await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(alunosCodigos,compensacao.DisciplinaId,compensacao.Bimestre,turma.CodigoTurma));
             foreach (var aluno in compensacao.Alunos)
             {
                 // Adiciona nome do aluno no Dto de retorno

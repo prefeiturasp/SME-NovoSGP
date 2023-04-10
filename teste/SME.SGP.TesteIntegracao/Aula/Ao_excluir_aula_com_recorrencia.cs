@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Deve permitir excluir aula recorrente no bimestre")]
         public async Task Excluir_aula_com_recorrencia_no_bimestre()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             compensacaoAusenciaAlunoAula.Any(a=> !a.Excluido).ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Deve permitir excluir aula recorrente em todos os bimestre")]
         public async Task Excluir_aula_com_recorrencia_em_todos_os_bimestres()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
@@ -126,7 +126,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             compensacaoAusenciaAlunoAula.Any(a=> !a.Excluido).ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Não deve permitir excluir aula que tenha avaliação vinculada")]
         public async Task Aula_com_avaliacao_vinculada()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);

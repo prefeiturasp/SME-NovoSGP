@@ -49,10 +49,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await CriaCompensacaoAusenciaAluno();
             await CriaRegistroDeFrequencia();
 
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
+            var comando = ServiceProvider.GetService<IExcluirCompensacaoAusenciaUseCase>();
             var listaIds = new long[] { COMPENSACAO_AUSENCIA_ID_1 };
 
-            await comando.Excluir(listaIds);
+            await comando.Executar(listaIds);
 
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
             listaDeCompensacaoAusencia.ShouldNotBeNull();

@@ -63,12 +63,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { id});
         }
-        
-        public async Task<bool> ExclusaoLogicaCompensacaoAusenciaAlunoPorId(long id)
-        {
-            var sql = $@"update compensacao_ausencia_aluno set excluido = true where id = @id";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { id});
+        public async Task<bool> AlterarQuantidadeFaltasCompensadasPorIds(long[] compensacoesAlunosAtualizar, int quantidade)
+        {
+            var sql = $@"update compensacao_ausencia_aluno set qtd_faltas_compensadas = @quantidade where id = ANY(@compensacoesAlunosAtualizar)";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { compensacoesAlunosAtualizar, quantidade});
         }
     }
 }
