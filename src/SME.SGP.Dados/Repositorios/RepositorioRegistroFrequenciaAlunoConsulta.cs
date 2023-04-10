@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -182,14 +183,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<FrequenciaAlunoAulaDto>(query, new { aulaId, codigoAluno });
         }
 
-        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, params string[] turmasId)
+        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string[] disciplinaIdsConsideradas, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, string professor = null, params string[] turmasId)
         {
-            var query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId, dataMatriculaAluno, dataSituacaoAluno);
+            var query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaIdsConsideradas, dataMatriculaAluno, dataSituacaoAluno, professor);
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
-                new { dataAula, disciplinaId, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date : (DateTime?)null });
+                new { dataAula, disciplinaIdsConsideradas, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date : (DateTime?)null, professor });
         }
 
-        private string BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
+        private string BuildQueryObterTotalAulasPorDisciplinaETurma(string[] disciplinaIdsConsideradas, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, string professor = null)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select COALESCE(SUM(a.quantidade),0) AS total");
@@ -200,8 +201,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and @dataAula::date between p.periodo_inicio and p.periodo_fim");
             query.AppendLine("and a.data_aula::date between p.periodo_inicio and p.periodo_fim");
 
-            if (!string.IsNullOrWhiteSpace(disciplinaId))
-                query.AppendLine("and a.disciplina_id = @disciplinaId");
+            if (disciplinaIdsConsideradas != null && disciplinaIdsConsideradas.Any())
+                query.AppendLine("and a.disciplina_id = any(@disciplinaIdsConsideradas)");
 
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date between (@dataMatriculaAluno::date + 1) and @dataSituacaoAluno::date");
@@ -209,6 +210,9 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.data_aula::date > @dataMatriculaAluno::date");
             else if (dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date <= @dataSituacaoAluno::date");
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and a.professor_rf = @professor");
 
             query.AppendLine("and a.turma_id = any(@turmasId)");            
             query.AppendLine("and exists (select 1");

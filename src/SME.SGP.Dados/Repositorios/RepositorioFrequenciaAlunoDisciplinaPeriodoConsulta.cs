@@ -62,30 +62,32 @@ namespace SME.SGP.Dados
             return query;
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string disciplinaId)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null)
         {
-            var query = new StringBuilder(@"with lista as (
+            var query = new StringBuilder(@"
                         select *,
-                               row_number() over (partition by codigo_aluno, bimestre order by id desc) sequencia
+                               row_number() over (partition by codigo_aluno, bimestre, tipo order by id desc) sequencia
                             from
 	                            frequencia_aluno
                         where
 	                        codigo_aluno = any(@alunosCodigo)	                        	                        
                             and turma_id = @turmaId
-                            and (disciplina_id = @disciplinaId or tipo = @tipo)");
+                            and (disciplina_id = any(@disciplinaIdsConsideradas) or tipo = @tipo)");
 
             if (periodosEscolaresId != null && periodosEscolaresId.Any())
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
 
-            query.AppendLine(") select * from lista where sequencia = 1;");
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and (professor_rf = @professor or professor_rf is null)");            
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
                 alunosCodigo,
                 periodosEscolaresId = periodosEscolaresId.ToArray(),
                 turmaId,
-                disciplinaId,
-                tipo = TipoFrequenciaAluno.Geral
+                disciplinaIdsConsideradas,
+                tipo = TipoFrequenciaAluno.Geral,
+                professor
             });
         }
 
@@ -343,7 +345,7 @@ namespace SME.SGP.Dados
 	                        from (     
 		                        select 
 			                            fa.*,
-			                            row_number() over (partition by fa.id, fa.codigo_aluno, fa.bimestre, fa.disciplina_id order by fa.id desc) sequencia
+			                            row_number() over (partition by fa.codigo_aluno, fa.bimestre, fa.disciplina_id order by fa.id desc) sequencia
 			                        from 
 			                            frequencia_aluno fa 
 		                            where
@@ -351,16 +353,7 @@ namespace SME.SGP.Dados
                                         disciplina_id = any(@componentesCurricularesId) and 
                                         tipo = @tipoFrequencia and
                                         periodo_escolar_id = any(@periodosEscolaresIds)
-                                        {(!string.IsNullOrEmpty(professor) ? @"and exists (select 1 
-                                                                                              from aula a
-                                                                                                 inner join periodo_escolar pe
-                                                                                                    on a.tipo_calendario_id = pe.tipo_calendario_id
-                                                                                           where not a.excluido and 
-                                                                                                 a.turma_id = fa.turma_id and
-                                                                                                 pe.id = fa.periodo_escolar_id and
-                                                                                                 a.data_aula::date between pe.data_inicio and pe.data_fim and
-                                                                                                 a.disciplina_id = fa.disciplina_id and
-                                                                                                 a.professor_rf = @professor)" : string.Empty)}
+                                        {(!string.IsNullOrEmpty(professor) ? " and (professor_rf = @professor or professor_rf is null)" : string.Empty)}
 		                        )rf
 	                        where rf.sequencia = 1";
 

@@ -17,5 +17,6 @@ namespace SME.SGP.Infra
         public bool LancaNota { get; set; }
         public GrupoMatriz GrupoMatriz { get; set; }
         public bool BaseNacional { get; set; }
+        public string Professor { get; set; }
     }
 }

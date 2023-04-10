@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não localizada.");
 
             // verifica se é regencia de classe
-            var horasGrade = await TratarHorasGrade(request.ComponenteCurricular, turma, request.EhRegencia);
+            var horasGrade = await TratarHorasGrade(request.ComponentesCurriculares, turma, request.EhRegencia);
             if (horasGrade == 0)
                 return null;
 
@@ -50,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 request.EhGestor = usuario.EhGestorEscolar();
             }
 
-            var horasCadastradas = await ObtenhaHorasCadastradas(request.ComponenteCurricular, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhGestor);
+            var horasCadastradas = await ObtenhaHorasCadastradas(request.ComponentesCurriculares, semana, request.DataAula, request.CodigoRf, turma, request.EhRegencia, request.EhGestor);
             var aulasRestantes = horasCadastradas > horasGrade ? 0 : (horasGrade - horasCadastradas);
 
             return new GradeComponenteTurmaAulasDto
@@ -61,12 +62,12 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<int> TratarHorasGrade(long componenteCurricularId, Turma turma, bool ehRegencia)
+        private async Task<int> TratarHorasGrade(long[] componentesCurricularesId, Turma turma, bool ehRegencia)
         {
             if (ehRegencia)
                 return turma.ObterHorasGradeRegencia();
 
-            if (componenteCurricularId == 1030)
+            if (componentesCurricularesId.Any(c => c == 1030))
                 return 4;
 
             int.TryParse(turma.Ano, out int ano);
@@ -76,21 +77,30 @@ namespace SME.SGP.Aplicacao
             if (grade == null)
                 return 0;
 
-            return await repositorioGrade.ObterHorasComponente(grade.Id, componenteCurricularId, ano);
+            return await repositorioGrade.ObterHorasComponente(grade.Id, componentesCurricularesId, ano);
         }
 
-        private async Task<int> ObtenhaHorasCadastradas(long componenteCurricular, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia, bool ehGestor)
+        private async Task<int> ObtenhaHorasCadastradas(long[] componentesCurriculares, int semana, DateTime dataAula, string codigoRf, Turma turma, bool ehRegencia, bool ehGestor)
         {
-            var ehExperienciaPedagogica = await mediator.Send(new AulaDeExperienciaPedagogicaQuery(componenteCurricular));
+            var ehExperienciaPedagogica = false;
+
+            foreach (var componente in componentesCurriculares)
+            {
+                ehExperienciaPedagogica = await mediator.Send(new AulaDeExperienciaPedagogicaQuery(componente));
+
+                if (ehExperienciaPedagogica)
+                    break;
+            }
+
             if (ehRegencia)
                 return ehExperienciaPedagogica ?
                     await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(turma.CodigoTurma, dataAula) :
-                    await repositorioAula.ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(turma.CodigoTurma, componenteCurricular.ToString(), dataAula, codigoRf, ehGestor);
+                    await repositorioAula.ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(turma.CodigoTurma, componentesCurriculares.Select(c => c.ToString()).ToArray(), dataAula, codigoRf, ehGestor);
 
             // Busca horas aula cadastradas para a disciplina na turma
             return ehExperienciaPedagogica ?
-                await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(turma.CodigoTurma, semana, componenteCurricular.ToString()) :
-                await repositorioAula.ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(turma.CodigoTurma, componenteCurricular.ToString(), semana, codigoRf, dataAula, ehGestor);
+                await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(turma.CodigoTurma, semana, componentesCurriculares.Select(c => c.ToString()).ToArray()) :
+                await repositorioAula.ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(turma.CodigoTurma, componentesCurriculares.Select(c => c.ToString()).ToArray(), semana, codigoRf, dataAula, ehGestor);
         }
     }
 }
