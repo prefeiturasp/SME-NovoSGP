@@ -32,8 +32,10 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Deve_Criar_justificativa_somente_com_motivo()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08,
+                BIMESTRE_2, DATA_07_08, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, quantidadeAula: NUMERO_AULAS_2);
+
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
@@ -51,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve Criar justificativa somente com descricao")]
         public async Task Deve_Criar_justificativa_somente_com_descricao()
         {
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -72,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Deve_Criar_justificativa_com_motivo_e_descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -109,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Nao_Deve_Criar_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Data()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), DateTime.Now.AddDays(-10), RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -128,7 +130,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Nao_Deve_Criar_justificativa_Crianca_nao_encontrada_anotacao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_03_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -146,7 +148,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Nao_Deve_Criar_justificativa_Crianca_nao_ativa()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_03_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -164,7 +166,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Nao_Deve_Criar_justificativa_Aluno_nao_ativo()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_03_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -183,7 +185,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Nao_Deve_Criar_justificativa_Aluno_nao_encontrado_anotacao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_03_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -201,7 +203,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Nao_Deve_Criar_justificativa_Motivo_ausencia_nao_encontrado()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarDadosBaseSemTurma(ObterPerfilProfessor(), ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             await CriarTurma(Modalidade.Fundamental, false);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
