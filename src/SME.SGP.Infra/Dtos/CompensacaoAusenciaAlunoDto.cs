@@ -9,9 +9,4 @@ namespace SME.SGP.Infra
         public int QtdFaltasCompensadas { get; set; }
         public IEnumerable<CompensacaoAusenciaAlunoAulaDto> CompensacaoAusenciaAlunoAula { get; set; }
     }
-
-    public class CompensacaoAusenciaAlunoAulaDto
-    {
-        public long RegistroFrequenciaAlunoId { get; set; }
-    }
 }

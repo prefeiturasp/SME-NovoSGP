@@ -8,5 +8,6 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public long CompensacaoAusenciaAlunoId { get; set; }
+        public long RegistroFrequenciaAlunoId { get; set; }
     }
 }

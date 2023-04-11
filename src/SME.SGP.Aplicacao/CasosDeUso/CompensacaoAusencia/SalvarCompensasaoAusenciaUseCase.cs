@@ -275,7 +275,15 @@ namespace SME.SGP.Aplicacao
             foreach (var compensacaoAusenciaAluno in compensacaoAusenciaAlunos)
             {
                 var compensacaoAusenciaAlunoDto = compensacaoAusenciaAlunosDto.FirstOrDefault(t => t.Id == compensacaoAusenciaAluno.CodigoAluno);
+                if (compensacaoAusenciaAlunoDto == null)
+                    continue;
+
                 var faltasNaoCompensadasAluno = faltasNaoCompensadas.Where(t => t.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno);
+                if (compensacaoAusenciaAlunoDto.QtdFaltasCompensadas > faltasNaoCompensadasAluno.Count())
+                    throw new NegocioException($"O aluno {compensacaoAusenciaAluno.CodigoAluno} possui {faltasNaoCompensadasAluno.Count()} faltas registradas");
+
+                if (compensacaoAusenciaAlunoDto.CompensacaoAusenciaAlunoAula == null)
+                    compensacaoAusenciaAlunoDto.CompensacaoAusenciaAlunoAula = new List<CompensacaoAusenciaAlunoAulaDto>();
 
                 if (compensacaoAusenciaAluno.QuantidadeFaltasCompensadas > 0 && !compensacaoAusenciaAlunoDto.CompensacaoAusenciaAlunoAula.Any())
                 {
