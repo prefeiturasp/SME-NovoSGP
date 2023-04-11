@@ -77,17 +77,12 @@ namespace SME.SGP.Aplicacao
                     codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
                 }
             }
-
             var aulaPrevista = codigoTerritorioCorrespondente.HasValue ?
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.CriadoRF.Equals(rf) && (x.DisciplinaId == disciplinaId || x.DisciplinaId == codigoTerritorioCorrespondente.Value.ToString())) :
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
-            if (disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista == null)
-            {
-                aulaPrevista = await repositorioAulaPrevistaConsulta
-                    .ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
-                var aulaTeste = totalAulasPrevistas.FirstOrDefault(x => x.DisciplinaId == CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
-            }
+            if (aulaPrevista == null)
+                aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) ? CODIGO_ALTERNATIVO_DISCIPLINA_INGLES : disciplinaId);
 
             var ehAnoLetivo = turma.AnoLetivo == DateTime.Today.Year;
             var periodosAbertos = await consultasTurma
@@ -126,6 +121,9 @@ namespace SME.SGP.Aplicacao
 
         private AulasPrevistasDadasAuditoriaDto MapearDtoRetorno(AulaPrevista aulaPrevista, IEnumerable<AulaPrevistaBimestreQuantidade> aulasPrevistasBimestre, IEnumerable<PeriodoEscolarAbertoDto> periodosAbertos = null)
         {
+            if (aulasPrevistasBimestre.Any())
+                aulasPrevistasBimestre = aulasPrevistasBimestre.DistinctBy(a => a.Bimestre).ToList();
+
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = MapearParaDto(aulaPrevista, aulasPrevistasBimestre, periodosAbertos) ?? new AulasPrevistasDadasAuditoriaDto();
             aulaPrevistaDto = MapearMensagens(aulaPrevistaDto);
 

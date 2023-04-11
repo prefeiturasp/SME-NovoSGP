@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao
         protected long REGISTRO_FREQUENCIA_ID_2 = 2;
         protected long REGISTRO_FREQUENCIA_ID_3 = 3;
         protected long REGISTRO_FREQUENCIA_ID_4 = 4;
-        
+
         private const int QUANTIDADE_3 = 3;
         protected const long AULA_ID_1 = 1;
         protected const long AULA_ID_2 = 2;
@@ -135,7 +135,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3)
         {
-            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
+            await CriarDadosBaseSemTurma(perfil, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
             await CriarTurma(modalidade);
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
             if (criarPeriodoEscolarEAbertura)
@@ -144,7 +144,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarDadosBasicosAulaRecorrencia(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3, int quantidadeRecorrencia = QUANTIDADE_AULA_2)
         {
-            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
+            await CriarDadosBaseSemTurma(perfil, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
             await CriarTurma(modalidade);
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula);
             await CriarAulaRecorrente(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula, quantidadeRecorrencia);
@@ -169,7 +169,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
         }
 
-        protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
+        protected async Task CriarDadosBaseSemTurma(string perfil, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
         {
             await CriarTipoCalendario(tipoCalendario);
             await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
@@ -274,7 +274,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarMotivoAusencia(string descricao)
         {
-            await InserirNaBase(new MotivoAusencia() {Descricao = descricao});
+            await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
         }
 
         protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
@@ -381,11 +381,11 @@ namespace SME.SGP.TesteIntegracao
             });
 
             var aulas = ObterTodos<Dominio.Aula>();
-            foreach(var aula in aulas)
-                foreach(var aluno in codigoAlunos)
+            foreach (var aula in aulas)
+                foreach (var aluno in codigoAlunos)
                     for (int indexAula = 1; indexAula <= (qdadeAula > 0 ? qdadeAula : aula.Quantidade); indexAula++)
                         await RegistroFrequenciaAluno(aluno, indexAula, aula.Id);
-                    
+
         }
 
         protected async Task CriarRegistrosConsolidacaoFrequenciaAlunoMensal()
@@ -433,10 +433,10 @@ namespace SME.SGP.TesteIntegracao
             var lista = new List<RegistroFrequenciaAlunoDto>();
             var aulas = ObterFrenquenciaAula();
 
-            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "1", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
-            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "2", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
-            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "3", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
-            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "4", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "1", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "2", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "3", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "4", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
 
             return lista;
         }
@@ -445,7 +445,7 @@ namespace SME.SGP.TesteIntegracao
         {
             var lista = new List<FrequenciaAulaDto>();
 
-            lista.Add(new FrequenciaAulaDto() {NumeroAula = QUANTIDADE_AULA, TipoFrequencia = TipoFrequencia.C.ShortName()});
+            lista.Add(new FrequenciaAulaDto() { NumeroAula = QUANTIDADE_AULA, TipoFrequencia = TipoFrequencia.C.ShortName() });
 
             return lista;
         }
@@ -460,7 +460,7 @@ namespace SME.SGP.TesteIntegracao
 
             var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
             registroFrequenciaAluno.ShouldNotBeEmpty();
-            (registroFrequenciaAluno.FirstOrDefault().Valor == (int) tipoFrequenciaRegistrada).ShouldBeTrue();
+            (registroFrequenciaAluno.FirstOrDefault().Valor == (int)tipoFrequenciaRegistrada).ShouldBeTrue();
 
             var consolidacaoFrequenciaAlunoMensal = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
             consolidacaoFrequenciaAlunoMensal.ShouldNotBeEmpty();
@@ -490,7 +490,7 @@ namespace SME.SGP.TesteIntegracao
                 RegistroFrequenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = (int) TipoFrequencia.F,
+                Valor = (int)TipoFrequencia.F,
                 NumeroAula = numeroAula,
                 AulaId = aulaid
             });
@@ -499,8 +499,10 @@ namespace SME.SGP.TesteIntegracao
         protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08,
+                BIMESTRE_2, DATA_07_08, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, quantidadeAula: NUMERO_AULAS_2);
+
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
@@ -518,8 +520,10 @@ namespace SME.SGP.TesteIntegracao
         protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Motivo()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08,
+                BIMESTRE_2, DATA_07_08, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, quantidadeAula: NUMERO_AULAS_2);
+
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
@@ -536,8 +540,10 @@ namespace SME.SGP.TesteIntegracao
         protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08,
+                BIMESTRE_2, DATA_07_08, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, quantidadeAula: NUMERO_AULAS_2);
+
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 Anotacao = DESCRICAO_FREQUENCIA_ALUNO_1,
@@ -554,8 +560,10 @@ namespace SME.SGP.TesteIntegracao
         protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
-            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08,
+                BIMESTRE_2, DATA_07_08, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), false, quantidadeAula: NUMERO_AULAS_2);
+
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
@@ -607,7 +615,7 @@ namespace SME.SGP.TesteIntegracao
                     Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
                     Descricao = "",
                     Valor = "75",
-                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ano = DateTimeExtension.HorarioBrasilia().Year - 1,
                     Ativo = true,
                     CriadoEm = DateTime.Now,
                     CriadoPor = "",
@@ -620,7 +628,7 @@ namespace SME.SGP.TesteIntegracao
                     Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
                     Descricao = "",
                     Valor = "80",
-                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ano = DateTimeExtension.HorarioBrasilia().Year - 1,
                     Ativo = true,
                     CriadoEm = DateTime.Now,
                     CriadoPor = "",

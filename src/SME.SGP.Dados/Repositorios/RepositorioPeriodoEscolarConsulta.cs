@@ -249,10 +249,10 @@ namespace SME.SGP.Dados.Repositorios
                                               left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
                                               left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
                                               where tc.modalidade = @modalidade
-                                              and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
+                                              and pe.periodo_inicio::date <= @dataReferencia and pe.periodo_fim::date >= @dataReferencia
                                               and not tc.excluido ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { codigoTurma, modalidade = (int)modalidade, dataReferencia = dataReferencia.Date });
         }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPorModalidadeDataFechamento(int modalidadeTipoCalendario, DateTime dataFechamento)
@@ -466,7 +466,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { dataPendenciaCriada, modalidadeTipoCalendario });
         }
 
-        public Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre, bool aulaCj)
+        public Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long[] componentesCurricularesId, int bimestre, bool aulaCj)
         {
             var query = new StringBuilder(@"select distinct pe.id as Id,
                                    pe.periodo_inicio as DataInicio,    
@@ -478,7 +478,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
                                 where a.turma_id = @turmaCodigo
                                 and pe.bimestre = @bimestre
-                                and a.disciplina_id = cast(@componenteCurricularId as varchar)
+                                and a.disciplina_id = any(@componentesCurricularesId)
                                 and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
                                 and not a.excluido ");
 
@@ -486,7 +486,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.aula_cj = true");
 
             query.AppendLine("order by a.data_aula");
-            return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query.ToString(), new { turmaCodigo, componenteCurricularId, bimestre });
+            return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query.ToString(), new { turmaCodigo, componentesCurricularesId = componentesCurricularesId.Select(c => c.ToString()).ToArray(), bimestre });
         }
 
         public async Task<PeriodoEscolar> ObterPeriodoEscolarAtualAsync(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)

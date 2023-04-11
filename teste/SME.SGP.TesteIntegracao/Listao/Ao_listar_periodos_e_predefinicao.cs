@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             var mediator = ServiceProvider.GetService<IMediator>();
             mediator.ShouldNotBeNull();
             
-            var periodosEscolares = (await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId,
+            var periodosEscolares = (await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(TURMA_CODIGO_1, new long[] { filtroListao.ComponenteCurricularId },
                 filtroListao.Bimestre, false))).Where(c => c.DataAula <= DateTimeExtension.HorarioBrasilia()).ToList();
 
             const int qtdeLimiteDeAulas = 5;
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             Math.Ceiling((decimal)periodosEscolares.Count / qtdeLimiteDeAulas).ShouldBe(listaPeriodo.Count);
         }
 
-        // [Fact(DisplayName = "Verificar se a frequência predefina na outra tela é sugerida no listão")]
+        [Fact(DisplayName = "Verificar se a frequência predefinida é sugerida no listão")]
         public async Task Deve_sugerir_frequencia_pre_definida()
         {
             var filtroListao = new FiltroListao
@@ -126,11 +126,10 @@ namespace SME.SGP.TesteIntegracao.Listao
             };
             
             await CriarDadosBasicos(filtroListao);
-            await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
-            
+                       
             var useCasePeriodo = ObterPeriodosPorComponenteUseCase();
             var listaPeriodo = (await useCasePeriodo.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,
-                filtroListao.Bimestre)).ToList();
+                filtroListao.Bimestre, true)).ToList();
             
             listaPeriodo.ShouldNotBeNull();
             

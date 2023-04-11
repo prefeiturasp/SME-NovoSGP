@@ -91,7 +91,7 @@ namespace SME.SGP.Dominio
         {
             get
             {
-                return ArredondarPercentual(PercentuaisFrequenciaPorBimestre.Any() ? PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count : 100);
+                return ArredondarPercentual(PercentuaisFrequenciaPorBimestre.Any() ? PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count : 0);
             }
         }
 

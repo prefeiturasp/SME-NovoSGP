@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 
             await CriarPeriodoEscolarEAbertura();
 
-            var excecao = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
+            var excecao = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_ARTES_ID_139, DATA_02_05);
 
             excecao.ExistemErros.ShouldBeTrue();
 

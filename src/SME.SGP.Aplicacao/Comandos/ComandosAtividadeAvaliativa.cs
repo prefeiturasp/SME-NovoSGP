@@ -470,10 +470,10 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> ValidarCopias(AtividadeAvaliativaDto atividadeAvaliativaDto, string codigoRf)
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
-
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, long.Parse(atividadeAvaliativaDto.DisciplinasId[0]));
 
-            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
+            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any() && usuario.EhProfessor())
             {
                 var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
                 idsTurmasSelecionadas.Add(atividadeAvaliativaDto.TurmaId);
