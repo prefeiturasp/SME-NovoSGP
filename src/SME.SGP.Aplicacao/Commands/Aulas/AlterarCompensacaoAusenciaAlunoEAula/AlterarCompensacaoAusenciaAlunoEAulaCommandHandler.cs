@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AlterarCompensacaoAusenciaAlunoEAulaCommand request, CancellationToken cancellationToken)
         {
-            var compensacoes = (await repositorioCompensacaoAusenciaAlunoConsulta.ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdsQuery(request.RegistroFrequenciaAlunoIds)).ToList();
+            var compensacoes = await repositorioCompensacaoAusenciaAlunoConsulta.ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdsQuery(request.RegistroFrequenciaAlunoIds);
 
             if (compensacoes.Any())
             {
