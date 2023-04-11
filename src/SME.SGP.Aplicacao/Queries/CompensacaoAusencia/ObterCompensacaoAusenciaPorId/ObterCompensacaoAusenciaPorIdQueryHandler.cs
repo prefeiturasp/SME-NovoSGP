@@ -1,24 +1,23 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCompensacaoAusenciaPorIdQueryHandler : IRequestHandler<ObterCompensacaoAusenciaPorIdQuery,CompensacaoAusencia>
+    public class ObterCompensacaoAusenciaPorIdQueryHandler : IRequestHandler<ObterCompensacaoAusenciaPorIdQuery, Dominio.CompensacaoAusencia>
     {
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
 
-        public ObterCompensacaoAusenciaPorIdQueryHandler(IRepositorioCompensacaoAusencia compensacaoAusencia)
+        public ObterCompensacaoAusenciaPorIdQueryHandler(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia)
         {
-            repositorioCompensacaoAusencia = compensacaoAusencia ?? throw new ArgumentNullException(nameof(compensacaoAusencia));
+            this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
         }
 
-        public async Task<CompensacaoAusencia> Handle(ObterCompensacaoAusenciaPorIdQuery request, CancellationToken cancellationToken)
+        public Task<Dominio.CompensacaoAusencia> Handle(ObterCompensacaoAusenciaPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCompensacaoAusencia.ObterPorIdAsync(request.CompensacaoAusenciaId);
+            return repositorioCompensacaoAusencia.ObterPorIdAsync(request.Id);
         }
     }
 }

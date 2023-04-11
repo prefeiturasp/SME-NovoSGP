@@ -1,24 +1,25 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterCompensacaoAusenciaPorIdQuery : IRequest<CompensacaoAusencia>
+    public class ObterCompensacaoAusenciaPorIdQuery : IRequest<Dominio.CompensacaoAusencia>
     {
-        public ObterCompensacaoAusenciaPorIdQuery(long compensacaoAusenciaId)
+        public ObterCompensacaoAusenciaPorIdQuery(long id)
         {
-            CompensacaoAusenciaId = compensacaoAusenciaId;
+            Id = id;
         }
 
-        public long CompensacaoAusenciaId { get; set; }   
+        public long Id { get; }
     }
 
-    public class ObterCompensacaoAusenciaPorIdQueryValidator : AbstractValidator<ObterCompensacaoAusenciaPorIdQuery>
+    public class ObterCompensacaoAusenciaPorIdQueryValidator: AbstractValidator<ObterCompensacaoAusenciaPorIdQuery>
     {
         public ObterCompensacaoAusenciaPorIdQueryValidator()
         {
-            RuleFor(x => x.CompensacaoAusenciaId).GreaterThan(0).WithMessage("Deve ser informado o Id da Compensação ausência para realizar a consulta");
+            RuleFor(c => c.Id)
+                .NotEmpty()
+                .WithMessage("O Id da compensação de ausência deve ser informado.");
         }
     }
 }

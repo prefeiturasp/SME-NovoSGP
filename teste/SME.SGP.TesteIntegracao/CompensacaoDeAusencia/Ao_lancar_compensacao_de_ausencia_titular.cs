@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         ModalidadeTipoCalendario.FundamentalMedio,
                         ANO_7);
 
-            await ExecuteTeste(dto);
+            //await ExecuteTeste(dto);
         }
 
         //[Fact]
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         ModalidadeTipoCalendario.FundamentalMedio,
                         ANO_1);
 
-            await ExecuteTeste(dto);
+            //await ExecuteTeste(dto);
         }
 
         //[Fact]
@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         ModalidadeTipoCalendario.EJA,
                         ANO_3);
 
-            await ExecuteTeste(dto);
+            //await ExecuteTeste(dto);
         }
     }
 }

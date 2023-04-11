@@ -15,24 +15,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> Executar(FiltroFaltasNaoCompensadasDto param)
         {
-            var retorno = new List<RegistroFaltasNaoCompensadaDto>();
-
-            var consulta = await mediator.Send(new ObterAusenciaParaCompensacaoQuery(param));
-            retorno = param.CompensacaoId == 0 ? MaperarDto(consulta.ToList(), param, retorno) : consulta.ToList();
-            return retorno.OrderBy(x => x.DataAula);
-        }
-
-        List<RegistroFaltasNaoCompensadaDto> MaperarDto(List<RegistroFaltasNaoCompensadaDto> registroFaltasNaoCompensada, FiltroFaltasNaoCompensadasDto filtro, List<RegistroFaltasNaoCompensadaDto> retorno)
-        {
-            var listaSugestao = (registroFaltasNaoCompensada.Where(z => !z.Sugestao).Take(filtro.QuantidadeCompensar)).ToList();
-            var lista = (registroFaltasNaoCompensada.Except(listaSugestao)).ToList();
-            listaSugestao.ForEach(sugestao =>
-            {
-                sugestao.Sugestao = true;
-                retorno.Add(sugestao);
-            });
-            retorno.AddRange(lista);
-            return retorno;
+            return await mediator.Send(new ObterAusenciaParaCompensacaoQuery(
+                param.CompensacaoId, 
+                param.TurmaId, 
+                param.DisciplinaId, 
+                param.Bimestre, 
+                new List<AlunoQuantidadeCompensacaoDto> { new AlunoQuantidadeCompensacaoDto(param.CodigoAluno, param.QuantidadeCompensar) }));
         }
     }
 }
