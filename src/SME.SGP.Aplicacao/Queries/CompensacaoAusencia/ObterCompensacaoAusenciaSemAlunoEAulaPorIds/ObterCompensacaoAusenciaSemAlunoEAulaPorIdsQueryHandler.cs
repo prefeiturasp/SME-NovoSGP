@@ -18,9 +18,9 @@ namespace SME.SGP.Aplicacao
             repositorioCompensacaoAusenciaConsulta = compensacaoAusenciaConsulta ?? throw new ArgumentNullException(nameof(compensacaoAusenciaConsulta));
         }
 
-        public async Task<IEnumerable<long>> Handle(ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<long>> Handle(ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCompensacaoAusenciaConsulta.ObterPorIds(request.CompensacaoAusenciaIds);
+            return repositorioCompensacaoAusenciaConsulta.ObterPorIds(request.CompensacaoAusenciaIds);
         }
     }
 }
