@@ -459,7 +459,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<bool> PossuiAtribuicaoCJ(string turmaId, string codigoRf)
         {
-            var componentes = await consultasDisciplina.ObterDisciplinasPerfilCJ(turmaId, codigoRf);
+            var componentes = await consultasDisciplina.ObterDisciplinasCJ(turmaId, codigoRf);
             return componentes != null && componentes.Any();
         }
 

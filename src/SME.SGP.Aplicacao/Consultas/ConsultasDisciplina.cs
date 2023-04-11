@@ -200,9 +200,12 @@ namespace SME.SGP.Aplicacao
                     d.NomeComponenteInfantil = componenteEOL.ExibirComponenteEOL && !string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.NomeComponenteInfantil : d.Nome;
                 });
 
-                disciplinasAtibuicaoCj = await ObterDisciplinasCJ(codigoTurma, usuarioLogado.Login, usuarioLogado.EhProfessorCj(), turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
-                disciplinasDto.AddRange(MapearParaDto(disciplinasAtibuicaoCj, turmaPrograma, turma.EnsinoEspecial));
-                disciplinasDto = disciplinasDto.DistinctBy(d => d.CodigoComponenteCurricular)?.OrderBy(c => c.Nome)?.ToList();
+                if (usuarioLogado.TemPerfilGestaoUes())
+                {
+                    disciplinasAtibuicaoCj = await ObterDisciplinasCJ(codigoTurma, usuarioLogado.Login, usuarioLogado.EhCP(), turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
+                    disciplinasDto.AddRange(MapearParaDto(disciplinasAtibuicaoCj, turmaPrograma, turma.EnsinoEspecial));
+                    disciplinasDto = disciplinasDto.DistinctBy(d => d.CodigoComponenteCurricular)?.OrderBy(c => c.Nome)?.ToList();
+                }
 
             }
 
@@ -431,10 +434,12 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasCJ(string codigoTurma, string login, bool verificaPerfilCJ = true, string codigoDre = null, string codigoUe = null)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasCJ(string codigoTurma, string login, bool verificaPerfilCP = false, string codigoDre = null, string codigoUe = null)
         {
-            var atribuicoes = verificaPerfilCJ ? await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true) :
-                await repositorioAtribuicaoCJ.ObterAtribuicaoCJPorDreUeTurmaRF(codigoTurma, codigoDre, codigoUe);
+            var atribuicoes = verificaPerfilCP ? await repositorioAtribuicaoCJ.ObterAtribuicaoCJPorDreUeTurmaRF(codigoTurma, codigoDre, codigoUe) :
+                                    await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+
+
 
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
