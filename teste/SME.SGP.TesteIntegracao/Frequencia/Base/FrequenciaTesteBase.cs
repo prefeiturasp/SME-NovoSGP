@@ -43,6 +43,10 @@ namespace SME.SGP.TesteIntegracao
         protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
         protected const string TIPO_FREQUENCIA_REMOTO = "R";
+        
+        protected const int TIPO_FREQUENCIA_COMPARECEU_NUMERO = 1;
+        protected const int TIPO_FREQUENCIA_FALTOU_NUMERO = 2;
+        protected const int TIPO_FREQUENCIA_REMOTO_NUMERO = 3;
 
         protected const string CODIGO_ALUNO_99999 = "99999";
         protected const string CODIGO_ALUNO_77777 = "77777";

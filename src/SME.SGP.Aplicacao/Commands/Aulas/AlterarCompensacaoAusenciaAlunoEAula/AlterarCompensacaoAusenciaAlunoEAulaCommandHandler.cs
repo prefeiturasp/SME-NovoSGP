@@ -30,25 +30,25 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AlterarCompensacaoAusenciaAlunoEAulaCommand request, CancellationToken cancellationToken)
         {
-            var compensacoes = await repositorioCompensacaoAusenciaAlunoConsulta.ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdsQuery(request.RegistroFrequenciaAlunoIds);
+            var compensacoes = (await repositorioCompensacaoAusenciaAlunoConsulta.ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdsQuery(request.RegistroFrequenciaAlunoIds)).ToList();
 
             if (compensacoes.Any())
             {
                 try
                 {
                     unitOfWork.IniciarTransacao();
-
-                    foreach (var registroFrequenciaAlunoId in request.RegistroFrequenciaAlunoIds)
+                    
+                    foreach (var compensacao in compensacoes)
                     {
-                        var compensacaoAusenciaAluno = compensacoes.FirstOrDefault(f=> f.RegistroFrequenciaAlunoId == registroFrequenciaAlunoId);
-                        var qtdeFaltasAtualizadas = compensacaoAusenciaAluno.QuantidadeCompensacoes - request.QtdeFaltas;
-
+                        var qtdeFaltasAtualizadas = compensacao.QuantidadeCompensacoes - compensacao.QuantidadeRegistrosFrequenciaAluno;
+                    
                         if (qtdeFaltasAtualizadas > 0)
-                            await repositorioCompensacaoAusenciaAluno.AlterarQuantidadeFaltasCompensadasPorId(compensacaoAusenciaAluno.CompensacaoAusenciaAlunoId, qtdeFaltasAtualizadas);
+                            await repositorioCompensacaoAusenciaAluno.AlterarQuantidadeFaltasCompensadasPorId(compensacao.CompensacaoAusenciaAlunoId, qtdeFaltasAtualizadas);
                         else
-                            await repositorioCompensacaoAusenciaAluno.RemoverLogico(compensacaoAusenciaAluno.CompensacaoAusenciaAlunoId);
+                            await repositorioCompensacaoAusenciaAluno.RemoverLogico(compensacao.CompensacaoAusenciaAlunoId);
                     }
-                    await repositorioCompensacaoAusenciaAlunoAula.RemoverLogico(request.RegistroFrequenciaAlunoIds.ToArray());
+
+                    await repositorioCompensacaoAusenciaAlunoAula.RemoverLogico(request.RegistroFrequenciaAlunoIds.ToArray(),"registro_frequencia_aluno_id");
                     
                     unitOfWork.PersistirTransacao();
                     

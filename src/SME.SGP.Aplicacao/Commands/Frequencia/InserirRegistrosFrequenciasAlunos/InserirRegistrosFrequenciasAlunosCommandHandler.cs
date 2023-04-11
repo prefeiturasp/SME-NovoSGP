@@ -74,8 +74,9 @@ namespace SME.SGP.Aplicacao
 
             foreach (var frequenciaAluno in dicionario.Item1[ALTERAR])
                 await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            
-            await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(dicionario.Item2.ToArray(),1));
+
+            if (dicionario.Item2.Any())
+                await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(dicionario.Item2.ToArray(),1));
         }
 
         private async Task CadastreFrequenciaPreDefinida(Dictionary<int, List<FrequenciaPreDefinida>> dicionario)
@@ -110,12 +111,12 @@ namespace SME.SGP.Aplicacao
                     {
                         if (frequenciaAluno.Valor != (int)valorFrequencia)
                         {
+                            if (frequenciaAluno.Valor == (int)TipoFrequencia.F && valorFrequencia != TipoFrequencia.F)
+                                registroFrequenciaParaExcluir.Add(frequenciaAluno.Id);
+                            
                             frequenciaAluno.Valor = (int)valorFrequencia;
                             frequenciaAluno.AulaId = request.AulaId;
                             registroFrequenciasAlunos[ALTERAR].Add(frequenciaAluno);
-
-                            if (frequenciaAluno.Valor == (int)TipoFrequencia.F && valorFrequencia != TipoFrequencia.F)
-                                registroFrequenciaParaExcluir.Add(frequenciaAluno.Id);
                         }
                     }
                     else

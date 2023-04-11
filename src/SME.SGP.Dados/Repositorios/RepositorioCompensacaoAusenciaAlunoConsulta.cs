@@ -118,15 +118,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<CompensacaoAusenciaAlunoEDataDto>> ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdsQuery(IEnumerable<long> registroFrequenciaAlunoIds)
         {
-            var query = @"select caaa.registro_frequencia_aluno_id RegistroFrequenciaAlunoId, 
-                                 caa.id CompensacaoAusenciaAlunoId,
+            var query = @"select caa.id CompensacaoAusenciaAlunoId,
                                  caa.qtd_faltas_compensadas QuantidadeCompensacoes,
-                                 caa.compensacao_ausencia_id CompensacaoAusenciaId
+                                 caa.compensacao_ausencia_id CompensacaoAusenciaId,
+                                 count(caaa.registro_frequencia_aluno_id) as QuantidadeRegistrosFrequenciaAluno
 	                        from compensacao_ausencia_aluno caa
 	                        join compensacao_ausencia_aluno_aula caaa on caa.id = caaa.compensacao_ausencia_aluno_id
 	                        where caaa.registro_frequencia_aluno_id = ANY(@registroFrequenciaAlunoIds)
                                 and not caa.excluido   
-                                and not caaa.excluido";
+                                and not caaa.excluido
+                            group by caa.id,caa.qtd_faltas_compensadas, caa.compensacao_ausencia_id  ";
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoEDataDto>(query, new { registroFrequenciaAlunoIds });
         }
