@@ -93,13 +93,13 @@ namespace SME.SGP.Aplicacao
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoTurma));
-
+            IEnumerable<DisciplinaResposta> disciplinasAtibuicaoCj;
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
 
             if (usuarioLogado.EhProfessorCj())
             {
-                var disciplinasAtibuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
+                disciplinasAtibuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
 
                 var componentesCurricularesAtribuicaoEol = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
@@ -199,6 +199,11 @@ namespace SME.SGP.Aplicacao
                     d.CdComponenteCurricularPai = componenteEOL.CodigoComponenteCurricularPai;
                     d.NomeComponenteInfantil = componenteEOL.ExibirComponenteEOL && !string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.NomeComponenteInfantil : d.Nome;
                 });
+
+                disciplinasAtibuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login, usuarioLogado.EhProfessorCj(), turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
+                disciplinasDto.AddRange(MapearParaDto(disciplinasAtibuicaoCj, turmaPrograma, turma.EnsinoEspecial));
+                disciplinasDto = disciplinasDto.DistinctBy(d => d.CodigoComponenteCurricular)?.OrderBy(c => c.Nome)?.ToList();
+
             }
 
             //Exceção para disciplinas 1060 e 1061 que são compartilhadas entre EF e EJA
@@ -426,10 +431,10 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login, bool verificaCJ = true, string codigoDre = null, string codigoUe = null)
         {
-            var atribuicoes = await repositorioAtribuicaoCJ
-                .ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+            var atribuicoes = verificaCJ ? await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true) :
+                await repositorioAtribuicaoCJ.ObterAtribuicaoCJPorDreUeTurmaRF(codigoTurma, codigoDre, codigoUe);
 
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
