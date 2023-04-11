@@ -404,6 +404,8 @@ namespace SME.SGP.TesteIntegracao
         protected const int TOTAL_PRESENCAS_3 = 3;
         protected const int TOTAL_PRESENCAS_4 = 4;
         protected const int TOTAL_REMOTOS_0 = 0;
+        
+        protected const int COMPENSACAO_AUSENCIA_ID_1 = 1;
 
         protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);

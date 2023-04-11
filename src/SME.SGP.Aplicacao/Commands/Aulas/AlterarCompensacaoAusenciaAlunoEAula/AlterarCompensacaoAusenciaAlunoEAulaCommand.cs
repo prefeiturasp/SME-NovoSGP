@@ -10,14 +10,14 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarCompensacaoAusenciaAlunoEAulaCommand  : IRequest<bool>
     {
-        public AlterarCompensacaoAusenciaAlunoEAulaCommand(IEnumerable<long> registroFrequenciaAlunoIds, int qtdeFaltasCompensadas)
+        public AlterarCompensacaoAusenciaAlunoEAulaCommand(IEnumerable<long> registroFrequenciaAlunoIds, int qtdeFaltas)
         {
             RegistroFrequenciaAlunoIds = registroFrequenciaAlunoIds;
-            QtdeFaltasCompensadas = qtdeFaltasCompensadas;
+            QtdeFaltas = qtdeFaltas;
         }
 
         public IEnumerable<long> RegistroFrequenciaAlunoIds { get; set; }
-        public int QtdeFaltasCompensadas { get; set; }
+        public int QtdeFaltas { get; set; }
     }
         
     public class AlterarCompensacaoAusenciaAlunoEAulaCommandValidator: AbstractValidator<AlterarCompensacaoAusenciaAlunoEAulaCommand>
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("Os Ids de registro frequencia aluno devem ser informados para a alteração de compensação de ausência aluno e aula.");
 
-            RuleFor(a => a.QtdeFaltasCompensadas)
+            RuleFor(a => a.QtdeFaltas)
                 .NotEmpty()
                 .WithMessage("A quantidade de compenações devem ser informadas para a alteração de compensação de ausência aluno e aula.");
         }

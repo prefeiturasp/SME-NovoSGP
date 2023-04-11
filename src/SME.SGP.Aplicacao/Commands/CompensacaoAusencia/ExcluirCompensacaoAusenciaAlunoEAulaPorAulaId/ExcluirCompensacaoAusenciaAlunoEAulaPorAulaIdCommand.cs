@@ -8,9 +8,9 @@ using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirCompensacaoAusenciaPorAulaIdCommand : IRequest<bool>
+    public class ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand : IRequest<bool>
     {
-        public ExcluirCompensacaoAusenciaPorAulaIdCommand(long aulaId)
+        public ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(long aulaId)
         {
             AulaId = aulaId;
         }
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public long AulaId { get; set; }
     }
     
-    public class ExcluirCompensacaoAusenciaPorAulaIdCommandValidator : AbstractValidator<ExcluirCompensacaoAusenciaPorAulaIdCommand>
+    public class ExcluirCompensacaoAusenciaPorAulaIdCommandValidator : AbstractValidator<ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand>
     {
         public ExcluirCompensacaoAusenciaPorAulaIdCommandValidator()
         {
