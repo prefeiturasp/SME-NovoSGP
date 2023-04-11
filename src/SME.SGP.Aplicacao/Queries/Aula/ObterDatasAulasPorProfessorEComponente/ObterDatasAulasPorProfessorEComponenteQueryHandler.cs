@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
 
-                    dadosComponentes.ToList().ForEach(dc =>
+                    foreach (var dc in dadosComponentes.ToList())
                     {
                         var professor = dc.TerritorioSaber ? professores.FirstOrDefault(p => p.DisciplinasId.Contains(dc.CodigoComponenteCurricular)) : null;
                         if (professor != null && !String.IsNullOrEmpty(professor.ProfessorRf))
@@ -141,9 +141,21 @@ namespace SME.SGP.Aplicacao
                             componentesCurricularesDoProfessorCj
                                 .Add((dc.CodigoComponenteCurricular.ToString(), dc.CdComponenteCurricularPai?.ToString(), componenteProfessorAtreladoEquivalente?.Codigo.ToString() ?? dc.CodigoComponenteCurricular.ToString()));
                         }
+                        else if (professor != null && String.IsNullOrEmpty(professor.ProfessorRf))
+                        {
+                            var componentesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(turma.CodigoTurma));
+
+                            if (componentesDaTurma != null && componentesDaTurma.Any())
+                            {
+                                var componenteCorrespondente = componentesDaTurma.FirstOrDefault(c => c.CodigoComponenteTerritorioSaber == dc.CodigoComponenteCurricular);
+                                if (componenteCorrespondente != null)
+                                    componentesCurricularesDoProfessorCj.Add((componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString(), componenteCorrespondente.CodigoComponenteCurricularPai?.ToString(),
+                                        componenteCorrespondente.TerritorioSaber ? componenteCorrespondente.CodigoComponenteCurricular.ToString() : "0"));
+                            }
+                        }
                         else
                             componentesCurricularesDoProfessorCj.Add((dc.CodigoComponenteCurricular.ToString(), dc.CdComponenteCurricularPai?.ToString(), dc.TerritorioSaber ? dc.CodigoComponenteCurricular.ToString() : "0"));
-                    });
+                    }
                 }
             }
         }
