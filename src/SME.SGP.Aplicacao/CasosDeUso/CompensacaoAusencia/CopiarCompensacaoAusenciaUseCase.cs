@@ -14,11 +14,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
+        private readonly ISalvarCompensasaoAusenciaUseCase salvarCompensasaoAusenciaUseCase ;
         public CopiarCompensacaoAusenciaUseCase(IMediator mediator, IRepositorioCompensacaoAusencia compensacaoAusencia,
-            IRepositorioCompensacaoAusenciaDisciplinaRegencia compensacaoAusenciaDisciplinaRegencia) : base(mediator)
+            IRepositorioCompensacaoAusenciaDisciplinaRegencia compensacaoAusenciaDisciplinaRegencia,ISalvarCompensasaoAusenciaUseCase salvarCompensasaoAusencia) : base(mediator)
         {
             repositorioCompensacaoAusencia = compensacaoAusencia ?? throw new ArgumentNullException(nameof(compensacaoAusencia));
-            repositorioCompensacaoAusenciaDisciplinaRegencia = compensacaoAusenciaDisciplinaRegencia ?? throw new System.ArgumentNullException(nameof(compensacaoAusenciaDisciplinaRegencia));
+            repositorioCompensacaoAusenciaDisciplinaRegencia = compensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(compensacaoAusenciaDisciplinaRegencia));
+            salvarCompensasaoAusenciaUseCase = salvarCompensasaoAusencia ?? throw new ArgumentNullException(nameof(salvarCompensasaoAusencia));
         }
 
         public async Task<string> Executar(CompensacaoAusenciaCopiaDto param)
@@ -51,6 +53,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     //await Salvar(0, compensacaoDto); Aguardando A Task do Juliano para usar o salvar
+                    //await salvarCompensasaoAusencia.Executar(0, compensacaoDto);
                     turmasCopiadas.Append(turmasCopiadas.ToString().Length > 0 ? ", " + turma.Nome : turma.Nome);
                 }
                 catch (Exception e)
