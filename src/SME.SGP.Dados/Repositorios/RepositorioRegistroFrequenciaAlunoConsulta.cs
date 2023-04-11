@@ -220,20 +220,18 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<RegistroFrequenciaAlunoPorTurmaEMesDto>> ObterRegistroFrequenciaAlunosPorTurmaEMes(string turmaCodigo, int mes)
         {
             const string query = @"SELECT t.id AS TurmaId,
-									       rfa.codigo_aluno AS AlunoCodigo,
-									       sum(a.quantidade) AS QuantidadeAulas,
-									       count(distinct(rfa.registro_frequencia_id * rfa.numero_aula)) filter (
-									        WHERE rfa.valor = 2) AS QuantidadeAusencias,
-									       sum(0) AS QuantidadeCompensacoes,
-									       t.ano_letivo
+									      rfa.codigo_aluno AS AlunoCodigo,
+									      sum(a.quantidade) AS QuantidadeAulas,
+									      count(distinct(rfa.registro_frequencia_id * rfa.numero_aula)) filter ( WHERE rfa.valor = 2) AS QuantidadeAusencias,
+									      count(caaa.id) AS QuantidadeCompensacoes,
+									      t.ano_letivo
 									FROM registro_frequencia_aluno rfa
-									INNER JOIN aula a ON a.id = rfa.aula_id
-									AND NOT a.excluido
+									INNER JOIN aula a ON a.id = rfa.aula_id AND NOT a.excluido
 									INNER JOIN turma t ON t.turma_id = a.turma_id
+                                    LEFT JOIN compensacao_ausencia_aluno_aula caaa on caaa.registro_frequencia_aluno_id = rfa.id and not caaa.excluido
 									WHERE NOT rfa.excluido
 									  AND a.turma_id = @turmaCodigo
-									  AND extract(MONTH
-									              FROM a.data_aula) = @mes
+									  AND extract(MONTH FROM a.data_aula) = @mes
 									GROUP BY rfa.codigo_aluno,
 									         t.id,
 									         t.ano_letivo
