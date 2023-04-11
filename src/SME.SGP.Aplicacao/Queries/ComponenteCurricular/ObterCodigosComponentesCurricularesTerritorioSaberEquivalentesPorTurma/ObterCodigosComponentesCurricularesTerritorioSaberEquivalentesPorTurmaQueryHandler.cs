@@ -62,8 +62,8 @@ namespace SME.SGP.Aplicacao
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), request.Professor) };
 
             return new (string, string)[] { (
-                    componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber > 0 &&
-                        componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase ?
+                    (componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber > 0 &&
+                        componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase) || componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber == 0 ?
                             componenteProfessorCorrespondente.Codigo.ToString() : componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber.ToString(), request.Professor) };
         }
     }
