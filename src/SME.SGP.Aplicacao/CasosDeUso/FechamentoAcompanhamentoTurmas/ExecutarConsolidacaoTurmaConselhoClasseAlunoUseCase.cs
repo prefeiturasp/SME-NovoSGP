@@ -152,12 +152,12 @@ namespace SME.SGP.Aplicacao
 
                             if (componenteCurricular.Regencia)
                             {
-                                var componentesRegencia = await mediator
-                                    .Send(new ObterComponentesCurricularesRegenciaPorAnoETurnoQuery(long.Parse(turma.Ano), (long)turma.TipoTurno));
+                                var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
+                                                                    turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
                                 foreach (var regencia in componentesRegencia)
                                 {
-                                    await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, regencia.CodigoComponenteCurricular, long.Parse(componenteCurricular.Codigo),
+                                    await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, regencia.Codigo, long.Parse(componenteCurricular.Codigo),
                                                                                filtro.AlunoCodigo, nota, conceitoId, consolidadoTurmaAlunoId);
                                 }
                                 continue;
