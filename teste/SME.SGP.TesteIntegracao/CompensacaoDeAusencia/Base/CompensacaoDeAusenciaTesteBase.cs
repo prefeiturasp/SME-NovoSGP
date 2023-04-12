@@ -10,6 +10,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
@@ -34,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria), typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBase(CompensacaoDeAusenciaDBDto dtoDB)
@@ -181,6 +182,28 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             });
         }
 
+        protected async Task CriarCompensacaoAusenciaAlunoAula(List<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos, List<RegistroFrequenciaAluno> registroFrequenciaAlunos)
+        {
+            registroFrequenciaAlunos = registroFrequenciaAlunos.Where(t => t.Valor == (int)TipoFrequencia.F).ToList();
+
+            foreach (var compensacaoAusenciaAluno in compensacaoAusenciaAlunos.Where(t => t.CompensacaoAusenciaId == COMPENSACAO_AUSENCIA_ID_1))
+            {
+                foreach(var registroFrequencia in registroFrequenciaAlunos.Where(t => t.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno).Take(compensacaoAusenciaAluno.QuantidadeFaltasCompensadas))
+                {
+                    await InserirNaBase(new CompensacaoAusenciaAlunoAula
+                    {
+                        CompensacaoAusenciaAlunoId = compensacaoAusenciaAluno.Id,
+                        RegistroFrequenciaAlunoId = registroFrequencia.Id,
+                        NumeroAula = registroFrequencia.NumeroAula,
+                        DataAula = DateTimeExtension.HorarioBrasilia(),
+                        CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                        CriadoPor = SISTEMA_NOME,
+                        CriadoRF = SISTEMA_CODIGO_RF
+                    });
+                }
+            }
+        }
+
         protected class CompensacaoDeAusenciaDBDto
         {
             public CompensacaoDeAusenciaDBDto()
@@ -204,7 +227,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             public int QuantidadeAula { get; set; }
             public bool AulaCj { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
-            
+
             public bool PermiteCompensacaoForaPeriodoAtivo { get; set; }
         }
 
@@ -250,7 +273,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 Ativo = ativo
             });
         }
-        
+
         protected async Task CriarPeriodoReaberturaAnoAnterior(long tipoCalendarioId)
         {
             await InserirNaBase(new FechamentoReabertura()
@@ -299,6 +322,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
-        }        
+        }
     }
 }

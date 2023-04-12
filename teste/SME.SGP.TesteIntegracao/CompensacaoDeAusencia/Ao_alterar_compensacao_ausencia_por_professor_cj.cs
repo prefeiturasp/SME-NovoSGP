@@ -8,10 +8,11 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
-    public class Ao_alterar_compensacao_ausencia_por_professor_cj : CompensacaoDeAusenciaTesteBase
+    public class Ao_alterar_compensacao_ausencia_por_professor_cj : Ao_lancar_compensacao_de_ausencia_base
     {
         private const string DESCRICAO_ALTERADA = "OUTRA DESCRICAO";
 
@@ -19,43 +20,14 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
         }
 
-        //bulk insert
-        //[Fact]
+        [Fact]
         public async Task deve_alterar_compensacao()
         {
-            var dtoDadoBase = ObterDtoDadoBase(ObterPerfilCJ(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            await CriarDadosBase(dtoDadoBase);
-            await CriaFrequenciaAlunos(dtoDadoBase);
-
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, ObterListaDeAlunos());
-
-            await comando.Inserir(dto);
-            var compensacaoAusencias = ObterTodos<CompensacaoAusencia>();
-            var compensacaoAusenciaAlterada = compensacaoAusencias.FirstOrDefault();
-            compensacaoAusenciaAlterada.Descricao = DESCRICAO_ALTERADA;
-
-            var compensacaoAusenciaAlunoDto = new List<CompensacaoAusenciaAlunoDto>()
-            { new CompensacaoAusenciaAlunoDto()
-                { Id = compensacaoAusenciaAlterada.Alunos.FirstOrDefault().Id.ToString(),
-                    QtdFaltasCompensadas = compensacaoAusenciaAlterada.Alunos.FirstOrDefault().QuantidadeFaltasCompensadas
-                }
-            };
-
-            var dtoAlterado = new CompensacaoAusenciaDto()
-            {
-                Alunos = compensacaoAusenciaAlunoDto,
-                Bimestre = compensacaoAusenciaAlterada.Bimestre,
-                Descricao = compensacaoAusenciaAlterada.Descricao,
-                DisciplinaId = compensacaoAusenciaAlterada.DisciplinaId,
-                Id = compensacaoAusenciaAlterada.Id,
-                TurmaId = compensacaoAusenciaAlterada.TurmaId.ToString()
-            };
-
-            await comando.Alterar(dtoAlterado.Id, dtoAlterado);
-            var listaAlterada = ObterTodos<CompensacaoAusencia>();
-
-            listaAlterada.ToList().Exists(x => x.Descricao == DESCRICAO_ALTERADA).ShouldBeTrue();
+            var dtoDadoBase = ObtenhaDtoDadoBase(
+                ObterPerfilCJ(), 
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()
+                );
+            await ExecuteAlterarCompensacaoAusenciaSemAulasSelecionadas(dtoDadoBase);
         }
 
         private CompensacaoDeAusenciaDBDto ObterDtoDadoBase(string perfil, string componente)
