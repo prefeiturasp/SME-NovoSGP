@@ -50,8 +50,7 @@ namespace SME.SGP.Aplicacao
                 RotasRabbitSgpFrequencia.AnotacoesFrequenciaDaAulaExcluir,
                 RotasRabbitSgp.DiarioBordoDaAulaExcluir,
                 RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula,
-                RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula,
-                RotasRabbitSgp.ExclusaoCompensacaoAusenciaAlunoEAula
+                RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula
             };
 
             await PulicaFilaSgp(filas, aula.Id, request.Usuario);
@@ -59,6 +58,8 @@ namespace SME.SGP.Aplicacao
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
 
+            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.Id),cancellationToken);
+            
             await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id), cancellationToken);
 
             await ExcluirArquivoAnotacaoFrequencia(request.AulaId);

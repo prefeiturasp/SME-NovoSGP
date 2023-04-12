@@ -173,11 +173,11 @@ namespace SME.SGP.Aplicacao
             await PulicaFilaSgp(RotasRabbitSgp.DiarioBordoDaAulaExcluir, aula.Id, usuario);
             await PulicaFilaSgp(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula, aula.Id, usuario);
             await PulicaFilaSgp(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula, aula.Id, usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.ExclusaoCompensacaoAusenciaAlunoEAula, aula.Id, usuario);
 
             aula.Excluido = true;
 
             await repositorioAula.SalvarAsync(aula);
+            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.Id));
         }
 
         private async Task PulicaFilaSgp(string fila, long id, Usuario usuario)

@@ -51,9 +51,10 @@ namespace SME.SGP.Aplicacao
                 var idsParaExcluir = registrosFrequenciaAlunos.Where(a => a.NumeroAula > quantidadeAtual).Select(a => a.Id).ToList();
 
                 if (idsParaExcluir.Count > 0)
-                    await repositorioRegistroFrequenciaAluno.RemoverLogico(idsParaExcluir.ToArray());   
-                
-                await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(idsParaExcluir,quantidadeOriginal - quantidadeAtual));
+                {
+                    await repositorioRegistroFrequenciaAluno.RemoverLogico(idsParaExcluir.ToArray());
+                    await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(idsParaExcluir,quantidadeOriginal - quantidadeAtual));
+                }
             }
 
             return true;
