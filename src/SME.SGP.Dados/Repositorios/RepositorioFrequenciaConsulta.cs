@@ -404,7 +404,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string componenteCurricularId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim)
+        public Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string[] componentesCurricularesId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim)
         {
             var query = @"select a.id as AulaId
                                 , rfa.registro_frequencia_id as RegistroFrequenciaId
@@ -423,10 +423,10 @@ namespace SME.SGP.Dados.Repositorios
                             and not rfa.excluido
                             and not a.excluido 
                             and a.turma_id = @turmaCodigo
-                            and a.disciplina_id = @componenteCurricularId
+                            and a.disciplina_id = any(@componentesCurricularesId)
                             and a.data_aula between @dataInicio and @dataFim ";
 
-            return database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorAulaDto>(query, new { turmaCodigo, componenteCurricularId, codigosAlunos, dataInicio, dataFim });
+            return database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorAulaDto>(query, new { turmaCodigo, componentesCurricularesId, codigosAlunos, dataInicio, dataFim });
         }
 
         public Task<bool> RegistraFrequencia(long componenteCurricularId, long? codigoTerritorioSaber = null)

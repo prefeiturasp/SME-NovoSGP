@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(aulaParaVisualizar.DisciplinaId)) ||
-                                                                                     (componenteCurricular != null && p.DisciplinasId.Contains(componenteCurricular.Id)));
+                                                                                     (componenteCurricular != null && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoTerritorioSaber))));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {

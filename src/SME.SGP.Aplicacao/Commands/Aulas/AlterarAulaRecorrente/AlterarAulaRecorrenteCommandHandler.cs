@@ -56,21 +56,14 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
                 {
-                    var componenteDefinidoParaTerritorio = await mediator
-                        .Send(new DefinirComponenteCurricularParaAulaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.ComponenteCurricularId, aulaRecorrente.Usuario));
-
-                    if (componenteDefinidoParaTerritorio == default || !componenteDefinidoParaTerritorio.codigoTerritorio.HasValue ||
-                        componenteDefinidoParaTerritorio.codigoTerritorio.Value == 0 || !componentesCurricularesDoProfessorCJ.Select(cp => cp.DisciplinaId).Contains(componenteDefinidoParaTerritorio.codigoTerritorio.Value))
-                    {
-                        if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
-                            throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
-                    }
+                    if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
+                        throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
                 }
             }
             else
-            {               
+            {
                 if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);                
 
                 var usuarioPodePersistirTurmaNaData = await mediator
                     .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario));
@@ -213,7 +206,15 @@ namespace SME.SGP.Aplicacao
         {
             await ValidarSeEhDiaLetivo(request.TipoCalendarioId, dataAula, turma);
 
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, request.ComponenteCurricularId, request.Usuario.CodigoRf));
+            var codigosComponentesEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
+
+            var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
+
+            if (codigosComponentesEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosComponentesEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+
+            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), request.Usuario.Login));
             aulasExistentes = aulasExistentes.Where(a => a.Id != request.AulaId);
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
@@ -238,9 +239,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)
         {
+            var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, request.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
+
+            var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
+
+            if (codigosTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,
-                                                                                   request.ComponenteCurricularId,
+                                                                                   codigosComponentesConsiderados.ToArray(),
                                                                                    dataAula,
                                                                                    request.Usuario.CodigoRf,
                                                                                    request.Quantidade,

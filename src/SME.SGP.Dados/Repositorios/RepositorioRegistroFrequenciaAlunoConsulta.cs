@@ -118,9 +118,9 @@ namespace SME.SGP.Dados.Repositorios
             return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaGeralPorDisciplinaAlunoTurmaDataDto>(query, new { ano });
         }
 
-        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> codigoAlunos)
+        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> codigoAlunos, string professor = null)
         {
-            var query = @"           
+            var query = @$"           
                 select
 	                count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 1 and not rfa.excluido) as TotalPresencas,
                     count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2 and not rfa.excluido) as TotalAusencias,
@@ -141,7 +141,8 @@ namespace SME.SGP.Dados.Repositorios
 	                and p.periodo_fim >= @dataAula
 	                and a.data_aula >= p.periodo_inicio
 	                and a.data_aula <= p.periodo_fim                    
-                    and rfa.numero_aula <= a.quantidade 
+                    and rfa.numero_aula <= a.quantidade
+                    {(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor " : string.Empty)}
                 group by
 	                p.id,
 	                p.periodo_inicio,
@@ -150,7 +151,7 @@ namespace SME.SGP.Dados.Repositorios
                     rfa.codigo_aluno,
                     a.disciplina_id";
 
-            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmasId });
+            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmasId, professor });
         }
 
         public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorAulaAsync(long aulaId)
@@ -179,14 +180,14 @@ namespace SME.SGP.Dados.Repositorios
             return sgpContextConsultas.Conexao.QueryAsync<FrequenciaAlunoAulaDto>(query, new { aulaId, codigoAluno });
         }
 
-        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, params string[] turmasId)
+        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string[] disciplinaIdsConsideradas, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, string professor = null, params string[] turmasId)
         {
-            var query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId, dataMatriculaAluno, dataSituacaoAluno);
+            var query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaIdsConsideradas, dataMatriculaAluno, dataSituacaoAluno, professor);
             return await sgpContextConsultas.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
-                new { dataAula, disciplinaId, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date : (DateTime?)null });
+                new { dataAula, disciplinaIdsConsideradas, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date : (DateTime?)null, professor });
         }
 
-        private string BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
+        private string BuildQueryObterTotalAulasPorDisciplinaETurma(string[] disciplinaIdsConsideradas, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, string professor = null)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select COALESCE(SUM(a.quantidade),0) AS total");
@@ -197,8 +198,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and @dataAula::date between p.periodo_inicio and p.periodo_fim");
             query.AppendLine("and a.data_aula::date between p.periodo_inicio and p.periodo_fim");
 
-            if (!string.IsNullOrWhiteSpace(disciplinaId))
-                query.AppendLine("and a.disciplina_id = @disciplinaId");
+            if (disciplinaIdsConsideradas != null && disciplinaIdsConsideradas.Any())
+                query.AppendLine("and a.disciplina_id = any(@disciplinaIdsConsideradas)");
 
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date between (@dataMatriculaAluno::date + 1) and @dataSituacaoAluno::date");
@@ -206,6 +207,9 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.data_aula::date > @dataMatriculaAluno::date");
             else if (dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date <= @dataSituacaoAluno::date");
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and a.professor_rf = @professor");
 
             query.AppendLine("and a.turma_id = any(@turmasId)");            
             query.AppendLine("and exists (select 1");

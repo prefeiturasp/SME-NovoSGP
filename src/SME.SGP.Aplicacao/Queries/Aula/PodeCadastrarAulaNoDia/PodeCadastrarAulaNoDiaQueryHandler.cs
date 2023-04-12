@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -70,14 +71,15 @@ namespace SME.SGP.Aplicacao
             var existeAula =  await mediator.Send(new ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery(
                                                     request.DataAula,
                                                     request.TurmaCodigo,
-                                                    request.ComponenteCurricular.ToString(),
+                                                    request.ComponentesCurriculares.Select(c => c.ToString()).ToArray(),
                                                     request.ProfessorRf,
                                                     request.TipoAula));
 
             if (existeAula)
             {
                 var perfilAtual = await mediator.Send(new ObterPerfilAtualQuery());
-                var aula = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponenteCurricular, request.ProfessorRf));
+                var aula = await mediator
+                    .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponentesCurriculares, request.ProfessorRf));
 
                 if (aula.Any() || perfilAtual != Guid.Empty)
                 {

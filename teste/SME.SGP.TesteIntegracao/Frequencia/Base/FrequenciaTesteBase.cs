@@ -456,7 +456,7 @@ namespace SME.SGP.TesteIntegracao
 
             var frequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
             frequenciaPreDefinida.ShouldNotBeEmpty();
-            frequenciaPreDefinida.FirstOrDefault().TipoFrequencia.Equals(tipoFrequenciaPreDefinida).ShouldBeTrue();
+            frequenciaPreDefinida.Any(f => f.TipoFrequencia.Equals(tipoFrequenciaPreDefinida)).ShouldBeTrue();
 
             var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
             registroFrequenciaAluno.ShouldNotBeEmpty();
@@ -653,7 +653,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "0",
                 AlteradoRF = "0",
                 TotalCompensacoes = 0,
-                PeriodoEscolarId = 1,
+                PeriodoEscolarId = 2,
                 TotalPresencas = 1,
                 TotalRemotos = 0,
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
