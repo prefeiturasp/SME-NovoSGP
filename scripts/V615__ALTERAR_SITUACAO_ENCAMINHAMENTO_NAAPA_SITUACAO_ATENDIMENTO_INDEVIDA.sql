@@ -1,3 +1,4 @@
+
 update encaminhamento_naapa 
 set situacao = 3,
 alterado_em = current_timestamp,
