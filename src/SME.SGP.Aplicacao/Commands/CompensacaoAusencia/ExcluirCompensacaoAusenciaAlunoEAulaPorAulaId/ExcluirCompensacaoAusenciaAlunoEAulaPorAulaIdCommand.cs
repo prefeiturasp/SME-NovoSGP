@@ -1,21 +1,19 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
+﻿using FluentValidation;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand : IRequest<bool>
     {
-        public ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(long aulaId)
+        public ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(long aulaId, long? numeroAula = null)
         {
             AulaId = aulaId;
+            NumeroAula = numeroAula;
         }
 
         public long AulaId { get; set; }
+
+        public long? NumeroAula { get; set; }
     }
     
     public class ExcluirCompensacaoAusenciaPorAulaIdCommandValidator : AbstractValidator<ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand>

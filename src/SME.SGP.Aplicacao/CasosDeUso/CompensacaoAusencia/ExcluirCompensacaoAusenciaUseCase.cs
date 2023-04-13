@@ -1,27 +1,20 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirCompensacaoAusenciaUseCase : AbstractUseCase,IExcluirCompensacaoAusenciaUseCase
+    public class ExcluirCompensacaoAusenciaUseCase : AbstractUseCase, IExcluirCompensacaoAusenciaUseCase
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
-        private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
-        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
-        public ExcluirCompensacaoAusenciaUseCase(IMediator mediator,IUnitOfWork ofWork,IRepositorioCompensacaoAusenciaAluno compensacaoAusenciaAluno,
-        IRepositorioCompensacaoAusenciaDisciplinaRegencia compensacaoAusenciaDisciplinaRegencia,IRepositorioCompensacaoAusencia compensacaoAusencia) : base(mediator)
+
+        public ExcluirCompensacaoAusenciaUseCase(IMediator mediator, IUnitOfWork ofWork) : base(mediator)
         {
             unitOfWork = ofWork ?? throw new ArgumentNullException(nameof(ofWork));
-            repositorioCompensacaoAusenciaAluno = compensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(compensacaoAusenciaAluno));
-            repositorioCompensacaoAusenciaDisciplinaRegencia = compensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(compensacaoAusenciaDisciplinaRegencia));
-            repositorioCompensacaoAusencia = compensacaoAusencia ?? throw new ArgumentNullException(nameof(compensacaoAusencia));
         }
 
         public async Task<bool> Executar(long[] compensacoesIds)
@@ -29,6 +22,8 @@ namespace SME.SGP.Aplicacao
             var compensacoesExcluir = new List<CompensacaoAusencia>();
             var compensacoesAlunosExcluir = new List<CompensacaoAusenciaAluno>();
             var compensacoesDisciplinasExcluir = new List<CompensacaoAusenciaDisciplinaRegencia>();
+            var compensacoesAlunoAulasExcluir = new List<CompensacaoAusenciaAlunoAula>();
+
             var listaCompensacaoDescricao = new List<string>();
             var idsComErroAoExcluir = new List<long>();
 
@@ -53,6 +48,13 @@ namespace SME.SGP.Aplicacao
                     compensacaoDisciplina.Excluir();
                     compensacoesDisciplinasExcluir.Add(compensacaoDisciplina);
                 }
+
+                var compensacoesAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulasPorCompensacaoIdQuery(compensacaoId));
+                foreach (var compensacaoAusenciaAlunoAula in compensacoesAlunoAulas)
+                {
+                    compensacaoAusenciaAlunoAula.Excluir();
+                    compensacoesAlunoAulasExcluir.Add(compensacaoAusenciaAlunoAula);
+                }
             }
 
             foreach (var compensacaoExcluir in compensacoesExcluir)
@@ -63,25 +65,32 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.IniciarTransacao();
                 try
                 {
-                    
-                    var alunosDaCompensacao = compensacoesAlunosExcluir
-                        .Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList();
-                    alunosDaCompensacao.ForEach(c => repositorioCompensacaoAusenciaAluno.Salvar(c));
+                    var alunosDaCompensacao = compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id);
+                    foreach (var compensacaoAusenciaAluno in alunosDaCompensacao)
+                    {
+                        foreach (var compensacaoAlunoAulaExcluir in compensacoesAlunoAulasExcluir.Where(c => c.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id))
+                        {
+                            await mediator.Send(new SalvarCompensacaoAusenciaAlunoAulaCommand(compensacaoAlunoAulaExcluir));
+                        }
 
-                    compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id).ToList()
-                        .ForEach(c => repositorioCompensacaoAusenciaDisciplinaRegencia.Salvar(c));
+                        await mediator.Send(new SalvarCompensacaoAusenciaAlunoCommand(compensacaoAusenciaAluno));
+                    }
 
-                    
-                    await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
-                    
+                    foreach (var compensacaoDisciplinaRegenciaExcluir in compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id))
+                    {
+                        await mediator.Send(new SalvarCompensacaoAusenciaDiciplinaRegenciaCommand(compensacaoDisciplinaRegenciaExcluir));
+                    }
+
+                    await mediator.Send(new SalvarCompensacaoAusenciaCommand(compensacaoExcluir));
+
                     await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoExcluir.Id));
 
                     unitOfWork.PersistirTransacao();
 
-                    var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno).ToList();
-
                     if (alunosDaCompensacao.Any())
                     {
+                        var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno);
+
                         Task.Delay(TimeSpan.FromSeconds(5)).Wait();
                         await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos,
                             periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
@@ -115,7 +124,7 @@ namespace SME.SGP.Aplicacao
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
 
             PeriodoEscolarDto periodo = null;
-            var consulta  = await mediator.Send(new ObterPeriodoEscolarListaPorTipoCalendarioQuery(tipoCalendario.Id));
+            var consulta = await mediator.Send(new ObterPeriodoEscolarListaPorTipoCalendarioQuery(tipoCalendario.Id));
             if (turma.ModalidadeCodigo == Modalidade.EJA)
             {
                 if (turma.Semestre == 1)

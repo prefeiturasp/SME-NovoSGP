@@ -5,6 +5,8 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+using System.Text;
 
 namespace SME.SGP.Dados
 {
@@ -85,5 +87,20 @@ namespace SME.SGP.Dados
             var parametros = new { codigosAlunos, disciplinaId, bimestre, turmacodigo };
             return await database.Conexao.QueryAsync<CompensacaoDataAlunoDto>(query, parametros);
         }
-    }
+
+
+		public async Task<IEnumerable<long>> ObterSemAlunoPorIds(long[] ids)
+		{
+			var query = new StringBuilder(@"select ca.id
+                                            from compensacao_ausencia ca
+                                            left join compensacao_ausencia_aluno caa on ca.id = caa.compensacao_ausencia_id
+                                            where not ca.excluido 
+                                                  and ca.id = any(@ids)    
+                                            group by ca.id
+                                            having coalesce(sum(caa.qtd_faltas_compensadas) filter (where not caa.excluido),0)  = 0 ");
+
+			return await database.Conexao.QueryAsync<long>(query.ToString(), new { ids });
+		}
+
+	}
 }

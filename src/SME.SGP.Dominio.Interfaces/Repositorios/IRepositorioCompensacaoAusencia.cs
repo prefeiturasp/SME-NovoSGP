@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> ObterAusenciaParaCompensacao(long compensacaoId, string turmaId, string disciplinaId, string[] codigoAlunos, int bimestre);
         Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos,string disciplinaId,int bimestre,string turmacodigo);
+        Task<IEnumerable<long>> ObterSemAlunoPorIds(long[] ids);
     }
 }

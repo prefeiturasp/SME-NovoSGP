@@ -11,16 +11,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQueryHandler : IRequestHandler<ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQuery,IEnumerable<long>>
     {
-        private readonly IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusenciaConsulta;
+        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
 
-        public ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQueryHandler(IRepositorioCompensacaoAusenciaConsulta compensacaoAusenciaConsulta)
+        public ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQueryHandler(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia)
         {
-            repositorioCompensacaoAusenciaConsulta = compensacaoAusenciaConsulta ?? throw new ArgumentNullException(nameof(compensacaoAusenciaConsulta));
+            repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
         }
 
         public Task<IEnumerable<long>> Handle(ObterCompensacaoAusenciaSemAlunoEAulaPorIdsQuery request, CancellationToken cancellationToken)
         {
-            return repositorioCompensacaoAusenciaConsulta.ObterPorIds(request.CompensacaoAusenciaIds);
+            return repositorioCompensacaoAusencia.ObterSemAlunoPorIds(request.CompensacaoAusenciaIds);
         }
     }
 }

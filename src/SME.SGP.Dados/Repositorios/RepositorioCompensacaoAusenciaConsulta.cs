@@ -248,18 +248,5 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<Infra.TotalCompensacaoAusenciaDto>(query.ToString(), paramentros);
         }
-
-        public async Task<IEnumerable<long>> ObterPorIds(long[] compensacaoAusenciaIds)
-        {
-            var query = new StringBuilder(@"select caa.compensacao_ausencia_id
-                                            from compensacao_ausencia_aluno caa
-                                            join compensacao_ausencia ca on ca.id = caa.compensacao_ausencia_id
-                                            where not ca.excluido 
-                                                  and caa.compensacao_ausencia_id = any(@compensacaoAusenciaIds)    
-                                            group by caa.compensacao_ausencia_id
-                                            having coalesce(sum(caa.qtd_faltas_compensadas) filter (where not caa.excluido),0)  = 0 ");
-
-            return await database.Conexao.QueryAsync<long>(query.ToString(), new { compensacaoAusenciaIds});
-        }
     }
 }

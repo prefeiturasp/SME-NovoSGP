@@ -131,5 +131,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoEDataDto>(query, new { registroFrequenciaAlunoIds });
         }
+
+        public async Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorIdsAsync(long[] ids)
+        {
+            var query = @"select * 
+                          from compensacao_ausencia_aluno 
+                          where not excluido 
+                            and id = any(@ids)";
+
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAluno>(query, new { ids });
+        }
     }
 }

@@ -2,9 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,16 +20,29 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand request, CancellationToken cancellationToken)
         {
-            var compensacoesAusenciasAlunosAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoEAulaPorAulaIdQuery(request.AulaId), cancellationToken);
-            
-            if (compensacoesAusenciasAlunosAulas.Any())
+            var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaPorAulaIdQuery(request.AulaId, request.NumeroAula), cancellationToken);
+            if (compensacaoAusenciaAlunoAulas.Any())
             {
+                var conpensacaoAusenciaAlunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorIdsQuery(compensacaoAusenciaAlunoAulas.Select(t => t.CompensacaoAusenciaAlunoId).Distinct().ToArray()));
+
                 unitOfWork.IniciarTransacao();
                 try
                 {
-                    await mediator.Send(new ExcluirCompensacaoAusenciaAlunoPorIdCommand(compensacoesAusenciasAlunosAulas.FirstOrDefault().CompensacaoAusenciaAlunoId));
-                    await mediator.Send(new ExcluirCompensacaoAusenciaAlunoAulaPorIdsCommand(compensacoesAusenciasAlunosAulas.Select(s=> s.CompensacaoAusenciaAlunoAulaId).ToArray()));
-                    
+                    foreach(var compensacaoAusenciaAluno in conpensacaoAusenciaAlunos)
+                    {
+                        var aluasAluno = compensacaoAusenciaAlunoAulas.Where(t => t.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id);
+                        compensacaoAusenciaAluno.QuantidadeFaltasCompensadas -= aluasAluno.Count();
+
+                        if (compensacaoAusenciaAluno.QuantidadeFaltasCompensadas <= 0)
+                            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoPorIdCommand(compensacaoAusenciaAluno.Id));
+                        else
+                            await mediator.Send(new SalvarCompensacaoAusenciaAlunoCommand(compensacaoAusenciaAluno));
+
+                        await mediator.Send(new ExcluirCompensacaoAusenciaAlunoAulaPorIdsCommand(aluasAluno.Select(s => s.Id).ToArray()));
+                    }
+
+                    await mediator.Send(new ExcluirCompensacaoAusenciaPorIdsCommand(conpensacaoAusenciaAlunos.Select(s => s.CompensacaoAusenciaId).ToArray()));
+
                     unitOfWork.PersistirTransacao();
                 }
                 catch

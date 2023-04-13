@@ -7,5 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioCompensacaoAusenciaAlunoAulaConsulta : IRepositorioBase<CompensacaoAusenciaAlunoAula>
     {
         Task<IEnumerable<CompensacaoAusenciaAlunoAulaDto>> ObterCompensacoesAusenciasAlunoEAulaPorAulaIdTurmaComponenteQuantidade(long aulaId, int quantidade);
+        Task<IEnumerable<CompensacaoAusenciaAlunoAula>> ObterPorCompensacaoIdAsync(long compensacaoId);
+        Task<IEnumerable<CompensacaoAusenciaAlunoAula>> ObterPorAulaIdAsync(long aulaId, long? numeroAula);
     }
 }
