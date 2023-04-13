@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(AlterarAulaFrequenciaTratarCommand request, CancellationToken cancellationToken)
         {
-            var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunoPorAulaIdQuery(request.Aula.Id));
+            var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunoPorAulaIdQuery(request.Aula.Id), cancellationToken);
 
             var quantidadeAtual = request.Aula.Quantidade;
             var quantidadeOriginal = request.QuantidadeAulasOriginal;
@@ -53,13 +53,10 @@ namespace SME.SGP.Aplicacao
                 if (idsParaExcluir.Count > 0)
                 {
                     await repositorioRegistroFrequenciaAluno.RemoverLogico(idsParaExcluir.ToArray());
-
                     foreach (var aula in registrosFrequenciaAlunos.Where(a => a.NumeroAula > quantidadeAtual).Select(s => new { s.AulaId, s.NumeroAula }).Distinct())
                     {
-                        await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.AulaId, aula.NumeroAula));
+                        await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.AulaId, aula.NumeroAula), cancellationToken);
                     }
-
-                    //await mediator.Send(new AlterarCompensacaoAusenciaAlunoEAulaCommand(idsParaExcluir, quantidadeOriginal - quantidadeAtual));
                 }
             }
 

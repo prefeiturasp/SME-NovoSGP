@@ -22,6 +22,5 @@ namespace SME.SGP.Infra
         public int QuantidadeAulas { get; set; }
         public int QuantidadeAusencias { get; set; }
         public int QuantidadeCompensacoes { get; set; }
-        public int AnoLetivo { get; set; }
     }
 }
