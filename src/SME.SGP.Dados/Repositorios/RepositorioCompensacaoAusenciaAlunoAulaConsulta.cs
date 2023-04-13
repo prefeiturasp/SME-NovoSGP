@@ -51,5 +51,14 @@ namespace SME.SGP.Dados
 
             return database.Conexao.QueryAsync<CompensacaoAusenciaAlunoAula>(sql, new { aulaId, numeroAula = numeroAula.GetValueOrDefault() });
         }
+
+        public Task<IEnumerable<CompensacaoAusenciaAlunoAula>> ObterPorRegistroFrequenciaAlunoIdsAsync(long[] registroFrequenciaAlunoIds)
+        {
+            var sql = $@"SELECT caaa.id, caaa.compensacao_ausencia_aluno_id, caaa.registro_frequencia_aluno_id, caaa.numero_aula, caaa.data_aula, caaa.criado_em, caaa.criado_por, caaa.alterado_em, caaa.alterado_por, caaa.criado_rf, caaa.alterado_rf, caaa.excluido
+                         FROM compensacao_ausencia_aluno_aula caaa
+                         WHERE caaa.registro_frequencia_aluno_id = ANY(@registroFrequenciaAlunoIds) and not caaa.excluido";
+
+            return database.Conexao.QueryAsync<CompensacaoAusenciaAlunoAula>(sql, new { registroFrequenciaAlunoIds });
+        }
     }
 }
