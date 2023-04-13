@@ -315,7 +315,7 @@ namespace SME.SGP.Aplicacao
                                  registrosFrequenciaAluno?.Sum(rfa => rfa.TotalPresencas) ?? totalAulasNaDisciplina,
                                  professor);
 
-                    frequenciaDosAlunos.Add(frequenciaFinal);
+                        frequenciaDosAlunos.Add(frequenciaFinal);                   
                 }
                 else
                 {

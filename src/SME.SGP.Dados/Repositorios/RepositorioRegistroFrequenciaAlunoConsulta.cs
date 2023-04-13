@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE NOT rfa.excluido
                               AND rfa.aula_id = @aulaId";
 
-            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId});
+            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId });
         }
 
         public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, IEnumerable<string> codigoAlunos, params string[] turmasId)
@@ -220,7 +220,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("			  where a.id = rfa.aula_id and");
             query.AppendLine("				  not a.excluido and");
             query.AppendLine("				  rfa.numero_aula between 1 and a.quantidade);");
-
             return query.ToString();
         }
 

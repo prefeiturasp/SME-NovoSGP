@@ -126,6 +126,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
                 await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
 
@@ -459,7 +461,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<bool> PossuiAtribuicaoCJ(string turmaId, string codigoRf)
         {
-            var componentes = await consultasDisciplina.ObterDisciplinasPerfilCJ(turmaId, codigoRf);
+            var componentes = await consultasDisciplina.ObterDisciplinasCJ(turmaId, codigoRf);
             return componentes != null && componentes.Any();
         }
 

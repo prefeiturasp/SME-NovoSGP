@@ -19,5 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre, DateTime? dataMatricula = null,
             DateTime? dataSituacao = null, int? anoLetivo = null, long? tipoCalendario = null);        
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterPorFechamentoTurmaAlunoEDisciplinaAsync(long fechamentoTurmaId, string alunoCodigo, long componenteCurricularId);
+        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null);
     }
 }
