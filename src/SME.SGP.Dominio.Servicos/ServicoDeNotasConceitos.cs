@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
+using Minio.DataModel;
 
 namespace SME.SGP.Dominio
 {
@@ -44,8 +45,9 @@ namespace SME.SGP.Dominio
 
                 var atividadesAvaliativas =
                     await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
-
-                var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
+                    
+                var alunos = await mediator
+                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
 
                 if (alunos == null || !alunos.Any())
                     throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
