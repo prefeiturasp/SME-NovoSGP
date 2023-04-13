@@ -4,12 +4,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesPorIdsQuery : IRequest<IEnumerable<DisciplinaDto>>
+    public class ObterComponentesCurricularesPorIdsUsuarioLogadoQuery : IRequest<IEnumerable<DisciplinaDto>>
     {
-        public ObterComponentesCurricularesPorIdsQuery()
-        { }
-
-        public ObterComponentesCurricularesPorIdsQuery(long[] ids, bool? possuiTerritorio = false, string codigoTurma = null)
+        public ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(long[] ids, bool? possuiTerritorio = false, string codigoTurma = null)
         {
             Ids = ids;
             PossuiTerritorio = possuiTerritorio;
@@ -17,9 +14,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public long[] Ids { get; set; }
-
         public bool? PossuiTerritorio { get; set; }
         public string CodigoTurma { get; set; }
     }
-
 }

@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(ComponenteCurricularId))
             {
-                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { long.Parse(ComponenteCurricularId) }, codigoTurma: turma.CodigoTurma));
+                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { long.Parse(ComponenteCurricularId) }, codigoTurma: turma.CodigoTurma));
                 disciplinaDto = disciplinasRetorno.FirstOrDefault();
             }
 
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
             var planosAulaRetorno = new List<PlanoAulaRetornoDto>();
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;           
+            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;           
 
             var disciplinaId = (planoAulas != null && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
             var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,

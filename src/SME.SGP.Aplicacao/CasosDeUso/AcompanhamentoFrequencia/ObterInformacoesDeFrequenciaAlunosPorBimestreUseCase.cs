@@ -186,7 +186,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, bool? possuiTerritorio = false, string codigoTurma = null)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }, possuiTerritorio, codigoTurma));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new[] { componenteCurricularId }, possuiTerritorio, codigoTurma));
             return componentes.FirstOrDefault();
         }
 
