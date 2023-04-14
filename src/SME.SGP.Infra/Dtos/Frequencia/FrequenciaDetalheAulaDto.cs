@@ -7,5 +7,6 @@ namespace SME.SGP.Infra
         public TipoFrequencia Tipo { get; set; }
         public string TipoFrequencia { get => Tipo.ShortName(); }
         public int NumeroAula { get; set; }
+        public bool PossuiCompensacao { get; set; }
     }
 }
