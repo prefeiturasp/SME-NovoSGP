@@ -259,6 +259,9 @@ namespace SME.SGP.Aplicacao
                 .Select(t => new AlunoQuantidadeCompensacaoDto(t.CodigoAluno, t.QuantidadeFaltasCompensadas))
                 .Distinct();
 
+            if (turma.AnoLetivo < 2023)
+                return codigosAlunosQtdeCompensacao.Select(t => t.CodigoAluno);
+
             var faltasNaoCompensadas = await mediator.Send(new ObterAusenciaParaCompensacaoQuery(
                 compensacao.Id,
                 turma.CodigoTurma,
