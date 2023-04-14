@@ -156,13 +156,13 @@ namespace SME.SGP.Aplicacao
             alunosAtivos = from a in alunos
                                     where a.DataMatricula.Date <= periodoFim.Date
                                     && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
-                                    group a by a.CodigoAluno into grupoAlunos
+                                    group a by new { a.CodigoAluno, a.NumeroAlunoChamada } into grupoAlunos
                                     orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
                                     select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
 
 
             var alunosAtivosCodigos = alunosAtivos
-                .Select(a => a.CodigoAluno).Distinct().ToArray();
+                .Select(a => a.CodigoAluno).ToArray();
 
             var frequenciasDosAlunos = await mediator
                 .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
