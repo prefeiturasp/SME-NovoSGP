@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurricularesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
             var existeTerritorio = componentesCurricularesDaTurmaEol.Any(c => c.TerritorioSaber = true);
-            var componentesCurricularesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), existeTerritorio,turma.CodigoTurma));
+            var componentesCurricularesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurricularesDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), existeTerritorio,turma.CodigoTurma));
 
             var retorno = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
