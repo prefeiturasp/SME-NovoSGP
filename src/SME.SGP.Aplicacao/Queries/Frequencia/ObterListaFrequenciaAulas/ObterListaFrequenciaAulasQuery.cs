@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
                                               IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
                                               IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
                                               IEnumerable<FrequenciaPreDefinidaDto> frequenciasPreDefinidas,
+                                              IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunoAulas,
                                               PeriodoEscolar periodoEscolar,
                                               bool registraFrequencia,
                                               bool turmaPossuiFrequenciaRegistrada,
@@ -30,6 +31,7 @@ namespace SME.SGP.Aplicacao
             RegistrosFrequenciaAlunos = registrosFrequenciaAlunos;
             AnotacoesTurma = anotacoesTurma;
             FrequenciasPreDefinidas = frequenciasPreDefinidas;
+            CompensacaoAusenciaAlunoAulas = compensacaoAusenciaAlunoAulas;
             PeriodoEscolar = periodoEscolar;
             RegistraFrequencia = registraFrequencia;
             TurmaPossuiFrequenciaRegistrada = turmaPossuiFrequenciaRegistrada;
@@ -46,6 +48,7 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<RegistroFrequenciaAlunoPorAulaDto> RegistrosFrequenciaAlunos { get; }
         public IEnumerable<AnotacaoAlunoAulaDto> AnotacoesTurma { get; }
         public IEnumerable<FrequenciaPreDefinidaDto> FrequenciasPreDefinidas { get; }
+        public IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> CompensacaoAusenciaAlunoAulas { get; }
         public PeriodoEscolar PeriodoEscolar { get; }
         public bool RegistraFrequencia { get; }
         public bool TurmaPossuiFrequenciaRegistrada { get; }

@@ -48,11 +48,17 @@ namespace SME.SGP.Aplicacao
             var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
             var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id));
+            
+
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
                                                                                                                   codigosComponentesBusca.ToArray(),
                                                                                                                   alunosDaTurma.Select(a => a.CodigoAluno).ToArray(),
                                                                                                                   param.DataInicio,
                                                                                                                   param.DataFim));
+
+            var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(registrosFrequenciaAlunos.Select(t => t.AulaId).Distinct().ToArray()));
+            if (compensacaoAusenciaAlunoAulas == null)
+                compensacaoAusenciaAlunoAulas = new List<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
 
             var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoPorPeriodoQuery(param.TurmaId, param.DataInicio, param.DataFim));
             var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(turma.Id, componenteCurricularId));
@@ -64,6 +70,7 @@ namespace SME.SGP.Aplicacao
                                                                           registrosFrequenciaAlunos,
                                                                           anotacoesTurma,
                                                                           frequenciaPreDefinida,
+                                                                          compensacaoAusenciaAlunoAulas,
                                                                           periodoEscolar,
                                                                           registraFrequencia,
                                                                           turmaPossuiFrequenciaRegistrada,
