@@ -150,18 +150,19 @@ namespace SME.SGP.Aplicacao
 
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
 
-            //Obter alunos ativos
-            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
+            //Obter alunos ativos            
+            var alunosAtivos = from a in alunos
+                               where a.DataMatricula.Date <= periodoFim.Date
+                               && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
+                               group a by new { a.CodigoAluno, a.NumeroAlunoChamada } into grupoAlunos
+                               orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
+                               select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
 
-            alunosAtivos = from a in alunos
-                                    where a.DataMatricula.Date <= periodoFim.Date
-                                    && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
-                                    group a by new { a.CodigoAluno, a.NumeroAlunoChamada } into grupoAlunos
-                                    orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
-                                    select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
+            alunosAtivos = alunosAtivos.OrderBy(a => a.NomeValido()).ThenBy(a => a.NumeroAlunoChamada);
 
+            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivosOrdenados = alunosAtivos.OrderBy(a => a.NomeValido()).ThenBy(a => a.NumeroAlunoChamada);
 
-            var alunosAtivosCodigos = alunosAtivos
+            var alunosAtivosCodigos = alunosAtivosOrdenados
                 .Select(a => a.CodigoAluno).ToArray();
 
             var frequenciasDosAlunos = await mediator
