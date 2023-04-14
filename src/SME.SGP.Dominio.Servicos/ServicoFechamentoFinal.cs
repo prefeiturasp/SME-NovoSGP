@@ -259,7 +259,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId, string codigoTurma)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: codigoTurma));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { componenteCurricularId }, codigoTurma: codigoTurma));
 
             if (!componentes.Any())
                 throw new NegocioException($"Componente Curricular do Fechamento ({componenteCurricularId}) não localizado!");

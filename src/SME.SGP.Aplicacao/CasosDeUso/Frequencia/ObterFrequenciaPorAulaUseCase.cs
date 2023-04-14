@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var componenteCurricularAula = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentesConsiderados.ToArray(), codigoTurma: turma.CodigoTurma));
+                .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), codigoTurma: turma.CodigoTurma));
 
             if (componenteCurricularAula == null || componenteCurricularAula.ToList().Count <= 0)
                 throw new NegocioException("Componente curricular da aula não encontrado");
