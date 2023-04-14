@@ -88,9 +88,9 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<CompensacaoDataAlunoDto>(query, parametros);
         }
 
-
 		public async Task<IEnumerable<long>> ObterSemAlunoPorIds(long[] ids)
 		{
+			// TODO fazer o update for select para atualizar os dados utilizando a transação em aberto.
 			var query = new StringBuilder(@"select ca.id
                                             from compensacao_ausencia ca
                                             left join compensacao_ausencia_aluno caa on ca.id = caa.compensacao_ausencia_id
