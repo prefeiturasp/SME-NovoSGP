@@ -262,8 +262,8 @@ namespace SME.SGP.Aplicacao
                 var totalCompensacoes = 0;
                 var totalCompensacoesDisciplinaAluno = (from c in compensacoesDisciplinasAlunos
                                                         where c.AlunoCodigo == alunoCodigo &&
-                                                              c.ComponenteCurricularId == componenteCurricularId ||
-                                                              (codigosTerritorioConsiderados != null && codigosTerritorioConsiderados.Contains(c.ComponenteCurricularId))
+                                                              (c.ComponenteCurricularId == componenteCurricularId ||
+                                                               (codigosTerritorioConsiderados != null && codigosTerritorioConsiderados.Contains(c.ComponenteCurricularId)))
                                                         select c).FirstOrDefault();
 
                 if (totalCompensacoesDisciplinaAluno != null)
