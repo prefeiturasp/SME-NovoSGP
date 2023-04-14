@@ -14,8 +14,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var command = mensagem.ObterObjetoMensagem<GerarPendenciasFechamentoCommand>();
-         
-            await mediator.Send(command);         
+            command.PerfilUsuario = mensagem.PerfilUsuario;
+               await mediator.Send(command);         
 
             return true;
         }
