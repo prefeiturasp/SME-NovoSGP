@@ -261,6 +261,7 @@ namespace SME.SGP.Aplicacao
                                              (f.DisciplinaId == componenteCurricularId ||
                                              (codigosTerritorioConsiderados != null && codigosTerritorioConsiderados.Contains(f.DisciplinaId))) &&
                                              f.Tipo == TipoFrequenciaAluno.PorDisciplina
+                                             && f.Bimestre == periodoEscolar.Bimestre
                                        orderby f.Id
                                        select f;
 
@@ -270,6 +271,7 @@ namespace SME.SGP.Aplicacao
                                                         where c.AlunoCodigo == alunoCodigo &&
                                                               (c.ComponenteCurricularId == componenteCurricularId ||
                                                                (codigosTerritorioConsiderados != null && codigosTerritorioConsiderados.Contains(c.ComponenteCurricularId)))
+                                                              && c.Bimestre == periodoEscolar.Bimestre
                                                         select c).FirstOrDefault();
 
                 if (totalCompensacoesDisciplinaAluno != null)
