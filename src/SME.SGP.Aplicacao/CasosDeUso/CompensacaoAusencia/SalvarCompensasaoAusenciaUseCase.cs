@@ -71,8 +71,13 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new SalvarCompensacaoAusenciaCommand(compensacao));
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
-                var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(id > 0, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
-                var codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(id > 0, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
+
+                IEnumerable<string> codigosAlunosCompensacao = new List<string>();
+                if (compensacaoDto.Alunos.Any())
+                {
+                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(id > 0, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
+                    codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(id > 0, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
+                }
 
                 unitOfWork.PersistirTransacao();
 
