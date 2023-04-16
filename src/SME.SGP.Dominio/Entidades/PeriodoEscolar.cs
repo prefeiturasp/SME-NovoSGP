@@ -89,5 +89,11 @@ namespace SME.SGP.Dominio
             for (var data = PeriodoInicio; data <= PeriodoFim; data = data.AddDays(1))
                 yield return data;
         }
+
+        public IEnumerable<int> MesesDoPeriodo()
+        {
+            for (int mes = PeriodoInicio.Month; mes <= PeriodoFim.Month; mes++)
+                yield return mes;
+        }
     }
 }
