@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 if (codigosAlunosCompensacao.Any())
                 {
                     Task.Delay(TimeSpan.FromSeconds(5)).Wait();
-                    await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
+                    await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                 }
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCompensacaoAusencia, new FiltroNotificacaoCompensacaoAusenciaDto(compensacao.Id), Guid.NewGuid(), usuario));
