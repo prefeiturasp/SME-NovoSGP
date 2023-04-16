@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
 
                         Task.Delay(TimeSpan.FromSeconds(5)).Wait();
                         await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos,
-                            periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
+                            periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                     }
                 }
                 catch (Exception)
