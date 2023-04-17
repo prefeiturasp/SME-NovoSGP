@@ -40,7 +40,7 @@ begin
 				and rfa.codigo_aluno = _turmas_com_compensacao.codigo_aluno
 				and rfa.valor = 2
 				and caaa.id is null	
-			order by a.data_aula 	
+			order by a.data_aula, rfa.numero_aula 	
 			limit _turmas_com_compensacao.qtd_faltas_compensadas			  
 			
 		  	loop
