@@ -92,7 +92,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
         public async Task<IActionResult> CadastroAula([FromServices] IPodeCadastrarAulaUseCase podeCadastrarAulaUseCase, long aulaId, string turmaCodigo, long componenteCurricular, [FromQuery] DateTime dataAula, [FromQuery] bool ehRegencia, [FromQuery] TipoAula tipoAula)
         {
-            return Ok(await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(aulaId, turmaCodigo, componenteCurricular, dataAula, ehRegencia, tipoAula)));
+            return Ok(await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(aulaId, turmaCodigo, new long[] { componenteCurricular }, dataAula, ehRegencia, tipoAula)));
         }
 
         [HttpGet("sincronizar/aulas-regencia")]

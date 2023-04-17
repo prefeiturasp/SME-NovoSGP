@@ -323,5 +323,21 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
         }
+
+        protected CompensacaoDeAusenciaDBDto ObterDtoDadoBase(string perfil, string componente)
+        {
+            return new CompensacaoDeAusenciaDBDto()
+            {
+                Perfil = perfil,
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Bimestre = BIMESTRE_3,
+                ComponenteCurricular = componente,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                AnoTurma = ANO_5,
+                DataReferencia = DATA_25_07_INICIO_BIMESTRE_3,
+                QuantidadeAula = QUANTIDADE_AULA_4
+            };
+        }
     }
 }

@@ -7,17 +7,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterRegistrosFrequenciaAlunosPorPeriodoQuery : IRequest<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>>
     {
-        public ObterRegistrosFrequenciaAlunosPorPeriodoQuery(string turmaCodigo, string componenteCurricularId, string[] alunosCodigos, DateTime dataInicio, DateTime dataFim)
+        public ObterRegistrosFrequenciaAlunosPorPeriodoQuery(string turmaCodigo, string[] componentesCurricularesId, string[] alunosCodigos, DateTime dataInicio, DateTime dataFim)
         {
             TurmaCodigo = turmaCodigo;
-            ComponenteCurricularId = componenteCurricularId;
+            ComponentesCurricularesId = componentesCurricularesId;
             AlunosCodigos = alunosCodigos;
             DataInicio = dataInicio;
             DataFim = dataFim;
         }
 
         public string TurmaCodigo { get; }
-        public string ComponenteCurricularId { get; }
+        public string[] ComponentesCurricularesId { get; }
         public string[] AlunosCodigos { get; set; }
         public DateTime DataInicio { get; set; }
         public DateTime DataFim { get; set; }

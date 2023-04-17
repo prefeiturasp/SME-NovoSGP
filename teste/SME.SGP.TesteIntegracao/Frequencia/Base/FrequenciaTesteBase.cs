@@ -43,6 +43,10 @@ namespace SME.SGP.TesteIntegracao
         protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
         protected const string TIPO_FREQUENCIA_REMOTO = "R";
+        
+        protected const int TIPO_FREQUENCIA_COMPARECEU_NUMERO = 1;
+        protected const int TIPO_FREQUENCIA_FALTOU_NUMERO = 2;
+        protected const int TIPO_FREQUENCIA_REMOTO_NUMERO = 3;
 
         protected const string CODIGO_ALUNO_99999 = "99999";
         protected const string CODIGO_ALUNO_77777 = "77777";
@@ -456,7 +460,7 @@ namespace SME.SGP.TesteIntegracao
 
             var frequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
             frequenciaPreDefinida.ShouldNotBeEmpty();
-            frequenciaPreDefinida.FirstOrDefault().TipoFrequencia.Equals(tipoFrequenciaPreDefinida).ShouldBeTrue();
+            frequenciaPreDefinida.Any(f => f.TipoFrequencia.Equals(tipoFrequenciaPreDefinida)).ShouldBeTrue();
 
             var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
             registroFrequenciaAluno.ShouldNotBeEmpty();
@@ -653,7 +657,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "0",
                 AlteradoRF = "0",
                 TotalCompensacoes = 0,
-                PeriodoEscolarId = 1,
+                PeriodoEscolarId = 2,
                 TotalPresencas = 1,
                 TotalRemotos = 0,
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),

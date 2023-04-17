@@ -31,34 +31,34 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             if (request.Usuario.EhProfessorCj())
             {
                 var possuiAtribuicaoCJ = await mediator
-                    .Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, 
-                    turma.Ue.CodigoUe, 
-                    turma.CodigoTurma, 
+                    .Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre,
+                    turma.Ue.CodigoUe,
+                    turma.CodigoTurma,
                     request.Usuario.CodigoRf));
-               
+
                 var atribuicoesEsporadica = await mediator
-                    .Send(new ObterAtribuicoesPorRFEAnoQuery(request.Usuario.CodigoRf, 
-                                                             false, 
-                                                             request.DataAula.Year, 
-                                                             turma.Ue.Dre.CodigoDre, 
+                    .Send(new ObterAtribuicoesPorRFEAnoQuery(request.Usuario.CodigoRf,
+                                                             false,
+                                                             request.DataAula.Year,
+                                                             turma.Ue.Dre.CodigoDre,
                                                              turma.Ue.CodigoUe));
 
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
-                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= request.DataAula.Date 
-                                                       && a.DataFim >= request.DataAula.Date 
-                                                       && a.DreId == turma.Ue.Dre.CodigoDre 
+                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= request.DataAula.Date
+                                                       && a.DataFim >= request.DataAula.Date
+                                                       && a.DreId == turma.Ue.Dre.CodigoDre
                                                        && a.UeId == turma.Ue.CodigoUe).Any())
                         throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
-                }                
+                }
             }
 
             var aulasExistentes = await mediator
-                .Send(new ObterAulasPorDataTurmaComponenteCurricularCJQuery(request.DataAula, 
-                                                                            request.CodigoTurma, 
-                                                                            request.CodigoComponenteCurricular, 
+                .Send(new ObterAulasPorDataTurmaComponenteCurricularCJQuery(request.DataAula,
+                                                                            request.CodigoTurma,
+                                                                            request.CodigoComponenteCurricular,
                                                                             request.Usuario.EhProfessorCj()));
-            
+
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
                 if (request.Usuario.EhProfessorCj())
@@ -66,25 +66,28 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                     if (aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
                         throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
                 }
-                else
+                else if (aulasExistentes.Any(a => a.ProfessorRf == request.ProfessorConsiderado))
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
-            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes, request.CodigoTerritorioSaber);
+            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes, request.CodigoTerritorioSaberEquivalente);
 
             var aula = MapearEntidade(request);
 
             if (request.Usuario.PerfilAtual == Perfis.PERFIL_DIRETOR)
                 aula.Status = EntidadeStatus.Aprovado;
 
+            if (!string.IsNullOrWhiteSpace(request.ProfessorConsiderado))
+                aula.ProfessorRf = request.ProfessorConsiderado;
+
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
             if (request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
-                await ValidarAulasDeReposicao(request, 
-                                              turma, 
-                                              aulasExistentes, 
-                                              aula, 
-                                              retorno.Mensagens, 
+                await ValidarAulasDeReposicao(request,
+                                              turma,
+                                              aulasExistentes,
+                                              aula,
+                                              retorno.Mensagens,
                                               request.Usuario);
 
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");
@@ -92,11 +95,11 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             return retorno;
         }
 
-        private async Task ValidarAulasDeReposicao(InserirAulaUnicaCommand request, 
-                                                   Turma turma, 
-                                                   IEnumerable<AulaConsultaDto> aulasExistentes, 
-                                                   Aula aula, 
-                                                   List<string> mensagens, 
+        private async Task ValidarAulasDeReposicao(InserirAulaUnicaCommand request,
+                                                   Turma turma,
+                                                   IEnumerable<AulaConsultaDto> aulasExistentes,
+                                                   Aula aula,
+                                                   List<string> mensagens,
                                                    Usuario usuarioLogado)
         {
             if (request.TipoAula == TipoAula.Reposicao)
@@ -107,9 +110,9 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                 if (AulasReposicaoPrecisamAprovacao(quantidadeDeAulasExistentes + request.Quantidade, request.EhRegencia))
                 {
                     var idWorkflow = await PersistirWorkflowReposicaoAula(request, turma, aula, usuarioLogado);
-                
+
                     aula.EnviarParaWorkflowDeAprovacao(idWorkflow);
-                    
+
                     await repositorioAula.SalvarAsync(aula);
 
                     mensagens.Add("Aula cadastrada e enviada para aprovação com sucesso.");
@@ -122,9 +125,9 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             return qtdAulas >= 3 || (ehRegencia && qtdAulas >= 2);
         }
 
-        private async Task AplicarValidacoes(InserirAulaUnicaCommand inserirAulaUnicaCommand, 
-                                             Turma turma, 
-                                             Usuario usuarioLogado, 
+        private async Task AplicarValidacoes(InserirAulaUnicaCommand inserirAulaUnicaCommand,
+                                             Turma turma,
+                                             Usuario usuarioLogado,
                                              IEnumerable<AulaConsultaDto> aulasExistentes,
                                              long? codigoTerritorioSaber = null)
         {
@@ -133,7 +136,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             await ValidarSeEhDiaLetivo(inserirAulaUnicaCommand, turma);
 
             if (inserirAulaUnicaCommand.TipoAula != TipoAula.Reposicao)
-                await ValidarGrade(inserirAulaUnicaCommand, usuarioLogado, aulasExistentes, turma);
+                await ValidarGrade(inserirAulaUnicaCommand, usuarioLogado, aulasExistentes, turma, codigoTerritorioSaber);
         }
 
         private Aula MapearEntidade(InserirAulaUnicaCommand inserirAulaUnicaCommand)
@@ -154,14 +157,20 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             };
         }
 
-        private async Task ValidarGrade(InserirAulaUnicaCommand inserirAulaUnicaCommand, 
-                                        Usuario usuarioLogado, 
-                                        IEnumerable<AulaConsultaDto> aulasExistentes, 
-                                        Turma turma)
+        private async Task ValidarGrade(InserirAulaUnicaCommand inserirAulaUnicaCommand,
+                                        Usuario usuarioLogado,
+                                        IEnumerable<AulaConsultaDto> aulasExistentes,
+                                        Turma turma,
+                                        long? codigoTerritorio)
         {
+
+            var codigosConsiderados = new List<long>() { inserirAulaUnicaCommand.CodigoComponenteCurricular };
+            if (codigoTerritorio.HasValue && codigoTerritorio.Value > 0)
+                codigosConsiderados.Add(codigoTerritorio.Value);
+
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,
-                                                                                   inserirAulaUnicaCommand.CodigoComponenteCurricular,
+                                                                                   codigosConsiderados.ToArray(),
                                                                                    inserirAulaUnicaCommand.DataAula,
                                                                                    usuarioLogado.CodigoRf,
                                                                                    inserirAulaUnicaCommand.Quantidade,
@@ -190,12 +199,12 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         private async Task ValidarComponentesDoProfessor(InserirAulaUnicaCommand inserirAulaUnicaCommand, Usuario usuarioLogado, long? codigoTerritorioSaber = null)
         {
             var resultadoValidacao = await mediator
-                .Send(new ValidarComponentesDoProfessorCommand(usuarioLogado, 
-                                                               inserirAulaUnicaCommand.CodigoTurma, 
-                                                               inserirAulaUnicaCommand.CodigoComponenteCurricular, 
+                .Send(new ValidarComponentesDoProfessorCommand(usuarioLogado,
+                                                               inserirAulaUnicaCommand.CodigoTurma,
+                                                               inserirAulaUnicaCommand.CodigoComponenteCurricular,
                                                                inserirAulaUnicaCommand.DataAula,
                                                                codigoTerritorioSaber));
-           
+
             if (!resultadoValidacao.resultado)
                 throw new NegocioException(resultadoValidacao.mensagem);
         }

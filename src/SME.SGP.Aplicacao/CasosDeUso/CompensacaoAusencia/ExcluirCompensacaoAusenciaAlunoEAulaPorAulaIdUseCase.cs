@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirCompensacaoAusenciaPorAulaIdUseCase : AbstractUseCase, IExcluirCompensacaoAusenciaPorAulaIdUseCase
+    public class ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase : AbstractUseCase, IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase
     {
-        public ExcluirCompensacaoAusenciaPorAulaIdUseCase(IMediator mediator) : base(mediator)
+        public ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<FiltroIdDto>();
             
-            await mediator.Send(new ExcluirCompensacaoAusenciaPorAulaIdCommand(filtro.Id));
+            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(filtro.Id));
             
             return true;
         }

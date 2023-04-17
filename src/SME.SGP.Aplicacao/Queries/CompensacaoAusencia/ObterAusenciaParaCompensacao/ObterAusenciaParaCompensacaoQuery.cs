@@ -27,10 +27,6 @@ namespace SME.SGP.Aplicacao
     {
         public ObterAusenciaParaCompensacaoQueryValidator()
         {
-            RuleFor(x => x.CompensacaoId)
-                .GreaterThan(0)
-                .WithMessage("A compensação id deve ser preenchido para obter ausência para compensação.");
-
             RuleFor(x => x.TurmaCodigo)
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser preenchido para obter ausência para compensação.");

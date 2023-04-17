@@ -27,7 +27,13 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado == null)
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioAnaliticoSondagem, filtroRelatorioAnaliticoSondagemDto, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosAnaliticoSondagem,formato:TipoFormatoRelatorio.Xlsx));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioAnaliticoSondagem, filtroRelatorioAnaliticoSondagemDto, usuarioLogado, 
+                                                                rotaRelatorio: (RelatorioTodasDresUes(filtroRelatorioAnaliticoSondagemDto.DreCodigo) ?
+                                                                                    RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosAnaliticoSondagemTodasDresUes
+                                                                                    : RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosAnaliticoSondagem)                                                               
+                                                                ,formato:TipoFormatoRelatorio.Xlsx));
         }
+
+        private bool RelatorioTodasDresUes(string codigoDre) => string.IsNullOrEmpty(codigoDre) || (codigoDre == "-99");
     }
 }

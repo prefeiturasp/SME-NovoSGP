@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioGrade.Setup(c => c.ObterGradeTurma(It.IsAny<TipoEscola>(), It.IsAny<Modalidade>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(grade));
 
-            repositorioGrade.Setup(c => c.ObterHorasComponente(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+            repositorioGrade.Setup(c => c.ObterHorasComponente(It.IsAny<int>(), It.IsAny<long[]>(), It.IsAny<int>()))
                 .Returns(Task.FromResult(5));
         }
     }

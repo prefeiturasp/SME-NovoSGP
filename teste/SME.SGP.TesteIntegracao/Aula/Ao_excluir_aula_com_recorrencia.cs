@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
                 TesteBaseComuns.USUARIO_ADMIN_RF);
              
             //Essa fila está dentro do processo do ExcluirAulaUseCase e está sendo chamada aqui de forma exclusiva
-            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaPorAulaIdUseCase>();
+            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase>();
             await excluirCompensacaoAusenciaPorAulaIdUseCase.Executar(mensagem);
             
             var compensacoesCompensacaoAusenciaAlunos = ObterTodos<Dominio.CompensacaoAusenciaAluno>();
@@ -114,7 +114,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
                 TesteBaseComuns.USUARIO_ADMIN_RF);
              
             //Essa fila está dentro do processo do ExcluirAulaUseCase e está sendo chamada aqui de forma exclusiva 
-            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaPorAulaIdUseCase>();
+            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase>();
             await excluirCompensacaoAusenciaPorAulaIdUseCase.Executar(mensagem);
             
             var compensacoesCompensacaoAusenciaAlunos = ObterTodos<Dominio.CompensacaoAusenciaAluno>();

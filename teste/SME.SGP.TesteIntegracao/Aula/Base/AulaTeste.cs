@@ -90,7 +90,7 @@ namespace SME.SGP.TesteIntegracao
             return new FiltroPodeCadastrarAulaDto()
             {
                 AulaId = aulaId,
-                ComponenteCurricular = componenteCurricular,
+                ComponentesCurriculares = new long[] { componenteCurricular },
                 DataAula = dataAula,
                 EhRegencia = ehRegencia,
                 TipoAula = tipoAula,

@@ -486,7 +486,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.aula_cj = true");
 
             query.AppendLine("order by a.data_aula");
-            return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query.ToString(), new { turmaCodigo, componentesCurricularesId = componentesCurricularesId.Select(c => c.ToString()).ToArray(), bimestre });
+            return database.Conexao.QueryAsync<PeriodoEscolarVerificaRegenciaDto>(query.ToString(), new { turmaCodigo, componentesCurricularesId = componentesCurricularesId.Select(cc => cc.ToString()).ToArray(), bimestre });
         }
 
         public async Task<PeriodoEscolar> ObterPeriodoEscolarAtualAsync(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)

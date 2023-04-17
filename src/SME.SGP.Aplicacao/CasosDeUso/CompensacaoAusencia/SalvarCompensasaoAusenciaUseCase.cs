@@ -71,8 +71,13 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new SalvarCompensacaoAusenciaCommand(compensacao));
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
-                var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(id > 0, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
-                var codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(id > 0, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
+
+                IEnumerable<string> codigosAlunosCompensacao = new List<string>();
+                if (compensacaoDto.Alunos.Any())
+                {
+                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(id > 0, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
+                    codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(id > 0, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
+                }
 
                 unitOfWork.PersistirTransacao();
 
@@ -81,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 if (codigosAlunosCompensacao.Any())
                 {
                     Task.Delay(TimeSpan.FromSeconds(5)).Wait();
-                    await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
+                    await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                 }
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCompensacaoAusencia, new FiltroNotificacaoCompensacaoAusenciaDto(compensacao.Id), Guid.NewGuid(), usuario));
@@ -258,6 +263,9 @@ namespace SME.SGP.Aplicacao
                 .Where(t => t.QuantidadeFaltasCompensadas > 0)
                 .Select(t => new AlunoQuantidadeCompensacaoDto(t.CodigoAluno, t.QuantidadeFaltasCompensadas))
                 .Distinct();
+
+            if (turma.AnoLetivo < 2023)
+                return codigosAlunosQtdeCompensacao.Select(t => t.CodigoAluno);
 
             var faltasNaoCompensadas = await mediator.Send(new ObterAusenciaParaCompensacaoQuery(
                 compensacao.Id,

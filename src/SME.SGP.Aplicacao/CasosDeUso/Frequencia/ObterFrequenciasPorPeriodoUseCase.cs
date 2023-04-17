@@ -29,15 +29,15 @@ namespace SME.SGP.Aplicacao
                 componenteCurricular.CdComponenteCurricularPai.ToString() :
                 componenteCurricular.CodigoComponenteCurricular.ToString();
 
-            var codigosComponentesConsiderados = new List<string>() { disciplinaAula };
+            var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
 
-            var componenteTerritorioEquivalente = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma));
+            var codigosComponentesTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.CodigoRf));
 
-            if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
-                codigosComponentesConsiderados.AddRange(componenteTerritorioEquivalente.Select(c => c.CodigoComponenteCurricular.ToString()).Except(codigosComponentesConsiderados));                
+            if (codigosComponentesTerritorioEquivalentes != null && codigosComponentesTerritorioEquivalentes.Any())
+                codigosComponentesBusca.AddRange(codigosComponentesTerritorioEquivalentes.Select(ct => ct.codigoComponente));
 
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesConsiderados.ToArray(), usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
@@ -46,13 +46,19 @@ namespace SME.SGP.Aplicacao
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
 
             var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
-            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, new long[] { componenteCurricularId }, periodoEscolar.Id));
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { param.DisciplinaId }, periodoEscolar.Id));
+            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id));
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id));
+            
+
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
-                                                                                                                  param.DisciplinaId,
+                                                                                                                  codigosComponentesBusca.ToArray(),
                                                                                                                   alunosDaTurma.Select(a => a.CodigoAluno).ToArray(),
                                                                                                                   param.DataInicio,
                                                                                                                   param.DataFim));
+
+            var compensacaoAusenciaAlunoAulas = 
+                (registrosFrequenciaAlunos.Any() ? await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(registrosFrequenciaAlunos.Select(t => t.AulaId).Distinct().ToArray())) : null) ?? 
+                new List<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
 
             var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoPorPeriodoQuery(param.TurmaId, param.DataInicio, param.DataFim));
             var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(turma.Id, componenteCurricularId));
@@ -64,6 +70,7 @@ namespace SME.SGP.Aplicacao
                                                                           registrosFrequenciaAlunos,
                                                                           anotacoesTurma,
                                                                           frequenciaPreDefinida,
+                                                                          compensacaoAusenciaAlunoAulas,
                                                                           periodoEscolar,
                                                                           registraFrequencia,
                                                                           turmaPossuiFrequenciaRegistrada,

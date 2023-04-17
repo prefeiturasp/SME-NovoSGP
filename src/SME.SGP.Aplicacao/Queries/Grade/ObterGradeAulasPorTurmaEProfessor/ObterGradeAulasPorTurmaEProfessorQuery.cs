@@ -8,10 +8,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterGradeAulasPorTurmaEProfessorQuery: IRequest<GradeComponenteTurmaAulasDto>
     {
-        public ObterGradeAulasPorTurmaEProfessorQuery(string turmaCodigo, long componenteCurricular, DateTime dataAula, string codigoRf = null, bool ehRegencia = false, bool ehGestor = false)
+        public ObterGradeAulasPorTurmaEProfessorQuery(string turmaCodigo, long[] componentesCurriculares, DateTime dataAula, string codigoRf = null, bool ehRegencia = false, bool ehGestor = false)
         {
             TurmaCodigo = turmaCodigo;
-            ComponenteCurricular = componenteCurricular;
+            ComponentesCurriculares = componentesCurriculares;
             DataAula = dataAula;
             CodigoRf = codigoRf;
             EhRegencia = ehRegencia;
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public string TurmaCodigo { get; set; }
-        public long ComponenteCurricular { get; set; }
+        public long[] ComponentesCurriculares { get; set; }
         public DateTime DataAula { get; set; }
         public string CodigoRf { get; set; }
         public bool EhRegencia { get; set; }

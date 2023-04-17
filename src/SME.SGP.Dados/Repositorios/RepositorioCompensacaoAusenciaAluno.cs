@@ -64,9 +64,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { id});
         }
 
-        public async Task<bool> AlterarQuantidadeFaltasCompensadasPorIds(long[] compensacoesAlunosAtualizar, int quantidade)
+        public async Task<bool> AlterarQuantidadeFaltasCompensadasPorId(long compensacoesAlunosAtualizar, int quantidade)
         {
-            var sql = $@"update compensacao_ausencia_aluno set qtd_faltas_compensadas = @quantidade where id = ANY(@compensacoesAlunosAtualizar)";
+            var sql = $@"update compensacao_ausencia_aluno set qtd_faltas_compensadas = @quantidade where id = @compensacoesAlunosAtualizar";
 
             return await database.Conexao.ExecuteScalarAsync<bool>(sql, new { compensacoesAlunosAtualizar, quantidade});
         }
