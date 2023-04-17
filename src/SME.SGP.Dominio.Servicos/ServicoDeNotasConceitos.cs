@@ -45,7 +45,7 @@ namespace SME.SGP.Dominio
 
                 var atividadesAvaliativas =
                     await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
-                    
+
                 var alunos = await mediator
                 .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
 
