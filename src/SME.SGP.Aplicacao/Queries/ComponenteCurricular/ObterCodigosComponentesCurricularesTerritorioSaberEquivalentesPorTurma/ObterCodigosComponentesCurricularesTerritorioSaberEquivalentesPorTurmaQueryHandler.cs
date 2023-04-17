@@ -43,13 +43,14 @@ namespace SME.SGP.Aplicacao
                     if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
                         return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
-                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(Convert.ToInt64(request.CodigoTurma)));
+                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
+                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
                     bool existemProfessoresTitulares = professoresTitulares.Any() && professoresTitulares != null;
 
                     return componentesTurmaCorrespondentes
                         .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares
-                                                                                        ? professoresTitulares.Where(p => p.DisciplinasId.Contains(ct.Codigo)).FirstOrDefault().ProfessorRf
-                                                                                        : string.Empty)))
+                            ? professoresTitulares.Where(p => p.DisciplinasId.Contains(ct.Codigo) || p.DisciplinasId.Contains(ct.CodigoComponenteTerritorioSaber)).FirstOrDefault()?.ProfessorRf
+                            : string.Empty)))
                         .ToArray();
                 }
 
