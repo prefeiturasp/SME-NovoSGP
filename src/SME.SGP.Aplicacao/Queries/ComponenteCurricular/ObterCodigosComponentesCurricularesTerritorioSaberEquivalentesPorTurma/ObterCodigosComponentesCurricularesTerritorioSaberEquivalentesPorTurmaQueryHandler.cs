@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
+using Minio.DataModel;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System;
@@ -41,8 +43,13 @@ namespace SME.SGP.Aplicacao
                     if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
                         return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
+                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(Convert.ToInt64(request.CodigoTurma)));
+                    bool existemProfessoresTitulares = professoresTitulares.Any() && professoresTitulares != null;
+
                     return componentesTurmaCorrespondentes
-                        .Select(ct => (ct.Codigo.ToString(), ct.Professor))
+                        .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares
+                                                                                        ? professoresTitulares.Where(p => p.DisciplinasId.Contains(ct.Codigo)).FirstOrDefault().ProfessorRf
+                                                                                        : string.Empty)))
                         .ToArray();
                 }
 
