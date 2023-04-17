@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             var command = mensagem.ObterObjetoMensagem<GerarPendenciasFechamentoCommand>();
             command.PerfilUsuario = mensagem.PerfilUsuario;
-               await mediator.Send(command);         
+            await mediator.Send(command);         
 
             return true;
         }
