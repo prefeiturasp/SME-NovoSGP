@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase : IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase
+    public class ListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase : IListarObjetivoAprendizagemPorAnoTurmaEComponenteCurricularUseCase
     {
         private readonly IMediator mediator;
 
@@ -20,8 +20,15 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial, long turmaId = 0)
         {
+            if (turmaId != 0)
+            {
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+                if (turma.ModalidadeCodigo == Modalidade.Medio)
+                    return null;
+            }
+
             long[] ids;
 
             if (componenteCurricularId == 138)

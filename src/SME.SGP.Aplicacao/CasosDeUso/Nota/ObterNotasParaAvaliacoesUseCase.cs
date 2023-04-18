@@ -150,17 +150,20 @@ namespace SME.SGP.Aplicacao
 
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
 
-            //Obter alunos ativos
-            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
+            //Obter alunos ativos            
+            var alunosAtivos = from a in alunos
+                               where a.DataMatricula.Date <= periodoFim.Date
+                               && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
+                               group a by new { a.CodigoAluno, a.NumeroAlunoChamada } into grupoAlunos
+                               orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
+                               select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
 
-            alunosAtivos = from a in alunos
-                           where a.DataMatricula.Date <= periodoFim.Date
-                           && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
-                           orderby a.NomeValido(), a.NumeroAlunoChamada
-                           select a;
+            alunosAtivos = alunosAtivos.OrderBy(a => a.NomeValido()).ThenBy(a => a.NumeroAlunoChamada);
 
-            var alunosAtivosCodigos = alunosAtivos
-                .Select(a => a.CodigoAluno).Distinct().ToArray();
+            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivosOrdenados = alunosAtivos.OrderBy(a => a.NomeValido()).ThenBy(a => a.NumeroAlunoChamada);
+
+            var alunosAtivosCodigos = alunosAtivosOrdenados
+                .Select(a => a.CodigoAluno).ToArray();
 
             var frequenciasDosAlunos = await mediator
                 .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
@@ -188,14 +191,20 @@ namespace SME.SGP.Aplicacao
 
                 var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCompleta.CodigoTurma, aluno.CodigoAluno));
 
+                if(matriculasAluno.Count() > 1)
+                    matriculasAluno = matriculasAluno.Where(m => m.NumeroAlunoChamada == aluno.NumeroAlunoChamada).ToList();
+
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
                 {
                     var notaDoAluno = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
                     var notaParaVisualizar = string.Empty;
+                    bool estavaAtivoNaAvaliacao = matriculasAluno.Any(m => m.EstaAtivo(atividadeAvaliativa.DataAvaliacao)) ||
+                        (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao);
 
                     if (notaDoAluno != null)
                     {
-                        notaParaVisualizar = notaDoAluno.ObterNota();
+                        if (estavaAtivoNaAvaliacao)
+                            notaParaVisualizar = notaDoAluno.ObterNota();
 
                         if (!dataUltimaNotaConceitoInserida.HasValue || notaDoAluno.CriadoEm > dataUltimaNotaConceitoInserida.Value)
                         {
@@ -220,9 +229,7 @@ namespace SME.SGP.Aplicacao
                         AtividadeAvaliativaId = atividadeAvaliativa.Id,
                         NotaConceito = notaParaVisualizar,
                         Ausente = ausente,
-                        PodeEditar = matriculasAluno.Any(m => m.EstaAtivo(atividadeAvaliativa.DataAvaliacao)) ||
-                        (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao) 
-                        && ChecarSeProfessorCJTitularPodeEditarNota(usuario, atividadeAvaliativa),
+                        PodeEditar = estavaAtivoNaAvaliacao && ChecarSeProfessorCJTitularPodeEditarNota(usuario, atividadeAvaliativa),
                         StatusGsa = notaDoAluno?.StatusGsa
                     };
                     
