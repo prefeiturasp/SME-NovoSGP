@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 typeof(ProfessorPodePersistirTurmaQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve bloquear compensações ausência para professor sem atribuição")]
         public async Task Deve_bloquear_lancar_compensacao_ausencia_para_professor_sem_atribuicao()
         {
             var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
@@ -41,14 +41,14 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 false);
             
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            comando.ShouldNotBeNull();            
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            casoDeUso.ShouldNotBeNull();            
             
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
             async Task DoExecutarInserir()
             {
-                await comando.Inserir(compensacaoAusenciaDosAlunos);
+                await casoDeUso.Executar(0, compensacaoAusenciaDosAlunos);
             }
 
             await Should.ThrowAsync<NegocioException>(DoExecutarInserir);       

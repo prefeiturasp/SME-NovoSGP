@@ -27,8 +27,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
         }
 
-        // TODO: Comentado devido ao problema de inclusÃ£o (Bulk Insert)
-        //[Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve lançar compensações ausência bimestre encerrado sem reabertura")]
         public async Task Deve_lancar_compensacao_ausencia_bimestre_encerrado_sem_reabertura()
         {
             var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
@@ -42,13 +41,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 false,
                 true,
                 true);
-            
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            comando.ShouldNotBeNull();            
-            
+
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            casoDeUso.ShouldNotBeNull();
+
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
-            await comando.Inserir(compensacaoAusenciaDosAlunos);
+            await casoDeUso.Executar(0, compensacaoAusenciaDosAlunos);
             
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
             listaDeCompensacaoAusencia.ShouldNotBeNull();
@@ -73,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             }            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve bloquear compensações ausência ano anterior sem reabertura do período")]
         public async Task Deve_bloquear_lancar_compensacao_ausencia_ano_anterior_sem_reabertura_periodo()
         {
             var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
@@ -87,22 +86,21 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 false,
                 false,
                 true);
-            
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            comando.ShouldNotBeNull();            
-            
+
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            casoDeUso.ShouldNotBeNull();
+
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
             async Task DoExecutarInserir()
             {
-                await comando.Inserir(compensacaoAusenciaDosAlunos);
+                await casoDeUso.Executar(0, compensacaoAusenciaDosAlunos);
             }
 
             await Should.ThrowAsync<NegocioException>(DoExecutarInserir);
         }
-        
-        // TODO: Comentado devido ao problema de inclusÃ£o (Bulk Insert)
-        //[Fact]
+
+        [Fact(DisplayName = "Compensação de Ausência - Deve lançar compensações ausência ano anterior com reabertura do período")]
         public async Task Deve_lancar_compensacao_ausencia_ano_anterior_com_reabertura_periodo()
         {
             var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
@@ -117,12 +115,12 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 true);
             
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            comando.ShouldNotBeNull();            
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            casoDeUso.ShouldNotBeNull();            
             
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
-            await comando.Inserir(compensacaoAusenciaDosAlunos);
+            await casoDeUso.Executar(0, compensacaoAusenciaDosAlunos);
             
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
             listaDeCompensacaoAusencia.ShouldNotBeNull();
@@ -146,8 +144,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.Item2);                
             }
         }
-        
-        [Fact]
+
+        [Fact(DisplayName = "Compensação de Ausência - Deve bloquear compensações ausência que não lançam frequencia")]
         public async Task Deve_bloquear_lancar_compensacao_ausencia_componente_que_nao_lanca_frequencia()
         {
             var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
@@ -162,14 +160,14 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 false);
             
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            comando.ShouldNotBeNull();            
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            casoDeUso.ShouldNotBeNull();            
             
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
             async Task DoExecutarInserir()
             {
-                await comando.Inserir(compensacaoAusenciaDosAlunos);
+                await casoDeUso.Executar(0, compensacaoAusenciaDosAlunos);
             }
 
             await Should.ThrowAsync<NegocioException>(DoExecutarInserir);

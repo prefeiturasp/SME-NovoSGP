@@ -11,15 +11,15 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
         }
 
-        [Fact]
-        public async Task deve_alterar_compensacao_perfil_cp()
+        [Fact(DisplayName = "Compensação de Ausência - Deve alterar a compensações pelo perfil cp")]
+        public async Task Deve_alterar_compensacao_perfil_cp()
         {
             var dtoBase = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await ExecuteAlterarCompensacaoAusenciaSemAulasSelecionadas(dtoBase);
         }
 
-        [Fact]
-        public async Task deve_alterar_compensacao_perfil_diretor()
+        [Fact(DisplayName = "Compensação de Ausência - Deve alterar a compensações pelo perfil diretor")]
+        public async Task Deve_alterar_compensacao_perfil_diretor()
         {
             var dtoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await ExecuteAlterarCompensacaoAusenciaSemAulasSelecionadas(dtoBase);

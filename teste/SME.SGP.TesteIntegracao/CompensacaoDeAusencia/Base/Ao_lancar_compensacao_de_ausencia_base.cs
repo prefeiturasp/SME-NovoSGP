@@ -22,13 +22,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         {
         }
 
-        protected override void RegistrarFakes(IServiceCollection services)
-        {
-            base.RegistrarFakes(services);
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
-        }
-
         protected async Task ExecuteInserirCompensasaoAusenciaSemAulasSelecionadas(CompensacaoDeAusenciaDBDto dtoDadoBase)
         {
             await CriarDadosBase(dtoDadoBase);

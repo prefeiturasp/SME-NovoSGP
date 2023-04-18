@@ -28,38 +28,38 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve adicionar aluno na compensação sem aulas selecionadas pelo professor titular")]
         public async Task Deve_adicionar_aluno_na_compensacao_sem_aulas_selecionadas()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await ExecuteInserirCompensasaoAusenciaSemAulasSelecionadas(dtoDadoBase);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve adicionar aluno na compensação com aulas selecionadas pelo professor titular")]
         public async Task Deve_adicionar_aluno_na_compensacao_com_aulas_selecionadas()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await ExecuteInserirCompensasaoAusenciaComAulasSelecionadas(dtoDadoBase);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve alterar a quantidade de compensações sem aulas selecionadas pelo professor titular")]
         public async Task Deve_alterar_quantidade_ausencias_compensadas_sem_aulas_selecionadas()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await ExecuteAlterarCompensacaoAusenciaSemAulasSelecionadas(dtoDadoBase);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve alterar a quantidade de compensações com aulas selecionadas pelo professor titular")]
         public async Task Deve_alterar_quantidade_ausencias_compensadas_com_aulas_selecionadas()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await ExecuteAlterarCompensacaoAusenciaComAulasSelecionadas(dtoDadoBase);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve remover a compensações pelo professor titular")]
         public async Task Deve_remover_aluno_na_compensacao()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await ExecutarTesteRemoverAlunoCompensacao(dtoDadoBase);
         }
     }
