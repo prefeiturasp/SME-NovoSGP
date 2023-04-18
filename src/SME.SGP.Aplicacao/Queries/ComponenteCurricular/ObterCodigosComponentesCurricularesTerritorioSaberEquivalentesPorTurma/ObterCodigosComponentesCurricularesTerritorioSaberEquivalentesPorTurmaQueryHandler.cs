@@ -1,7 +1,10 @@
 ﻿using MediatR;
+using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
+using Minio.DataModel;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -41,14 +44,26 @@ namespace SME.SGP.Aplicacao
                     if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
                         return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
+                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
+                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                    bool existemProfessoresTitulares = professoresTitulares.Any() && professoresTitulares != null;
+
                     return componentesTurmaCorrespondentes
-                        .Select(ct => (ct.Codigo.ToString(), ct.Professor))
+                        .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares
+                            ? professoresTitulares.Where(p => p.DisciplinasId.Contains(ct.Codigo) || p.DisciplinasId.Contains(ct.CodigoComponenteTerritorioSaber)).FirstOrDefault()?.ProfessorRf
+                            : string.Empty)))
                         .ToArray();
                 }
 
-                return disciplinasEOL
-                    .Select(d => (d.CodigoTerritorioSaber.ToString(), d.Professor))
-                    .ToArray();
+                var retorno = new List<(string, string)>();
+
+                retorno.AddRange(disciplinasEOL
+                    .Select(d => (d.CodigoTerritorioSaber.ToString(), d.Professor)));
+
+                retorno.AddRange(new List<(string, string)>() {
+                        (request.CodigoComponenteBase.ToString(), disciplinasEOL.FirstOrDefault(d => d.CodigoComponenteCurricular == request.CodigoComponenteBase).Professor) }.Except(retorno));
+
+                return retorno.ToArray();
             }
 
             var componentesProfessor = await mediator

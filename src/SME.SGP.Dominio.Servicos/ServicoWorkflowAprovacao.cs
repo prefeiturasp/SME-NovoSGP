@@ -23,6 +23,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
+        private readonly IRepositorioWorkflowAprovacaoNivelUsuario repositorioWorkflowAprovacaoNivelUsuario;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioPendencia repositorioPendencia;
@@ -38,6 +39,7 @@ namespace SME.SGP.Dominio.Servicos
                                         IServicoUsuario servicoUsuario,
                                         IServicoNotificacao servicoNotificacao,
                                         IRepositorioWorkflowAprovacaoNivel workflowAprovacaoNivel,
+                                        IRepositorioWorkflowAprovacaoNivelUsuario repositorioWorkflowAprovacaoNivelUsuario,
                                         IRepositorioEvento repositorioEvento,
                                         IConfiguration configuration,
                                         IRepositorioAulaConsulta repositorioAula,
@@ -55,6 +57,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.servicoNotificacao = servicoNotificacao ?? throw new System.ArgumentNullException(nameof(servicoNotificacao));
             this.workflowAprovacaoNivel = workflowAprovacaoNivel ?? throw new System.ArgumentNullException(nameof(workflowAprovacaoNivel));
+            this.repositorioWorkflowAprovacaoNivelUsuario = repositorioWorkflowAprovacaoNivelUsuario ?? throw new System.ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelUsuario));
             this.repositorioEvento = repositorioEvento ?? throw new System.ArgumentNullException(nameof(repositorioEvento));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));
@@ -444,6 +447,12 @@ namespace SME.SGP.Dominio.Servicos
                     nivel.Status = WorkflowAprovacaoNivelStatus.AguardandoAprovacao;
                     workflowAprovacaoNivel.Salvar(nivel);
                 }
+
+                repositorioWorkflowAprovacaoNivelUsuario.Salvar(new WorkflowAprovacaoNivelUsuario()
+                {
+                    UsuarioId = usuario.Id,
+                    WorkflowAprovacaoNivelId = nivel.Id
+                });
             }
 
             return nivel.Cargo;

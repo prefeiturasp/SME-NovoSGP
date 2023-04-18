@@ -46,6 +46,7 @@ namespace SME.SGP.Dominio
             notificacao.Usuario = usuario;
 
             nivel.Adicionar(notificacao);
+            nivel.Adicionar(usuario);
         }
 
         public void Adicionar(long nivelId, Usuario usuario)
