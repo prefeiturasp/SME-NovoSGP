@@ -4,6 +4,7 @@ using Minio.DataModel;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,9 +55,15 @@ namespace SME.SGP.Aplicacao
                         .ToArray();
                 }
 
-                return disciplinasEOL
-                    .Select(d => (d.CodigoTerritorioSaber.ToString(), d.Professor))
-                    .ToArray();
+                var retorno = new List<(string, string)>();
+
+                retorno.AddRange(disciplinasEOL
+                    .Select(d => (d.CodigoTerritorioSaber.ToString(), d.Professor)));
+
+                retorno.AddRange(new List<(string, string)>() {
+                        (request.CodigoComponenteBase.ToString(), disciplinasEOL.FirstOrDefault(d => d.CodigoComponenteCurricular == request.CodigoComponenteBase).Professor) }.Except(retorno));
+
+                return retorno.ToArray();
             }
 
             var componentesProfessor = await mediator
