@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
                     DataSituacao = aluno.DataSituacao,
                     DataNascimento = aluno.DataNascimento,
                     Desabilitado = aluno.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio) && (aluno.EstaInativo(aula.DataAula) || (aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido) && aula.EhDataSelecionadaFutura && !aula.PermiteRegistroFrequencia(turma))) && turma.TipoTurma != TipoTurma.Programa,
-                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula, aula.DataAula),
+                    PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
                     PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
                     NomeResponsavel = aluno.NomeResponsavel,
                     TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
