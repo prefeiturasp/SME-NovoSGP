@@ -30,6 +30,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
                 , request.Justificativa
                 , request.CriadoRF
                 , request.TurmaId
+                , request.Usuario.PerfilAtual.ToString()
                 , request.ComponenteSemNota
                 , request.RegistraFrequencia));
 

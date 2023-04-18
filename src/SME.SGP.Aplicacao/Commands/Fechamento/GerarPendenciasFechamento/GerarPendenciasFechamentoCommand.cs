@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
                                                 string justificativa,
                                                 string criadoRF,
                                                 long turmaId,
+                                                string perfilUsuario,
                                                 bool componenteSemNota = false,
                                                 bool registraFrequencia = true)
         {
@@ -34,6 +35,7 @@ namespace SME.SGP.Aplicacao
             ComponenteSemNota = componenteSemNota;
             RegistraFrequencia = registraFrequencia;
             TurmaId = turmaId;
+            PerfilUsuario = perfilUsuario;
         }
 
         public long ComponenteCurricularId { get; }
@@ -50,5 +52,6 @@ namespace SME.SGP.Aplicacao
         public bool ComponenteSemNota { get; }
         public bool RegistraFrequencia { get; }
         public long TurmaId { get; set; }
+        public string PerfilUsuario { get; set; }
     }
 }

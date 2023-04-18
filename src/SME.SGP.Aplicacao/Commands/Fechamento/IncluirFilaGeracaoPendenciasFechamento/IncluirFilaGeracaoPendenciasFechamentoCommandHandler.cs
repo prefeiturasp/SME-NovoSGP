@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
                                                             , request.Justificativa
                                                             , request.CriadoRF
                                                             , request.TurmaId
+                                                            , request.Usuario.PerfilAtual.ToString()
                                                             , request.ComponenteSemNota
                                                             , request.RegistraFrequencia);
 
