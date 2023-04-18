@@ -935,7 +935,7 @@ namespace SME.SGP.Aplicacao
         {
             double? notaConselhoEmAprovacao = await mediator.Send(new ObterNotaConselhoEmAprovacaoQuery(conselhoClasseNotaId));
 
-            if (notaConselhoEmAprovacao.HasValue)
+            if (notaConselhoEmAprovacao.HasValue && notaConselhoEmAprovacao >= 0)
             {
                 nota.EmAprovacao = true;
                 nota.Nota = notaConselhoEmAprovacao;
