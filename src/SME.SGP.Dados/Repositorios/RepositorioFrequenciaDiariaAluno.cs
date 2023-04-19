@@ -2,8 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,19 +15,22 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>> ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao paginacao, int[] bimestres, string codigoAluno, long turmaId, string aulaDisciplinaId)
+        public async Task<PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>> ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao paginacao, int[] bimestres, string codigoAluno, long turmaId, string[] aulaDisciplinasIds, string professor = null)
         {
             var query = new StringBuilder();
-            MontarQueryConsulta(paginacao, bimestres, codigoAluno, turmaId, aulaDisciplinaId, query, false);
+            var considerarProfessor = !string.IsNullOrEmpty(professor);
+
+            MontarQueryConsulta(paginacao, query, false, considerarProfessor);
             query.AppendLine(";");
-            MontarQueryConsulta(paginacao, bimestres, codigoAluno, turmaId, aulaDisciplinaId, query, true);
+            MontarQueryConsulta(paginacao, query, true, considerarProfessor);
 
             var parametros = new
             {
                 bimestres,
                 codigoAluno,
                 turmaId,
-                aulaDisciplinaId
+                aulaDisciplinasIds,
+                professor
             };
 
             var retorno = new PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>();
@@ -44,12 +45,12 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private void MontarQueryConsulta(Paginacao paginacao, int[] bimestres, string codigoAluno, long turmaId, string aulaDisciplinaId, StringBuilder query, bool contador)
+        private void MontarQueryConsulta(Paginacao paginacao, StringBuilder query, bool contador, bool considerarProfessor)
         {
             query.AppendLine(contador ? " select count(n.TotalAulasNoDia) " : " select n.*  ");
 
 
-            query.AppendLine(@"
+            query.AppendLine(@$"
                 FROM(SELECT count(rfa.id) AS TotalAulasNoDia,
 	                        a.data_aula AS DataAula,
 	                        a.id AS AulasId,
@@ -68,7 +69,8 @@ namespace SME.SGP.Dados.Repositorios
                         LEFT JOIN motivo_ausencia ma ON an.motivo_ausencia_id = ma.id
                         WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
 	                        AND rfa.codigo_aluno = @codigoAluno
-	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId   
+	                        AND t.id = @turmaId AND a.disciplina_id = any(@aulaDisciplinasIds)
+                            {(considerarProfessor ? "AND a.professor_rf = @professor" : string.Empty)}
  						GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.codigo_aluno
                         order by a.data_aula desc)n
                 ");
