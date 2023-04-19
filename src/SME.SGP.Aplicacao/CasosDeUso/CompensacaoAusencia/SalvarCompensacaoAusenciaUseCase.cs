@@ -15,12 +15,12 @@ using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarCompensasaoAusenciaUseCase : AbstractUseCase, ISalvarCompensasaoAusenciaUseCase
+    public class SalvarCompensacaoAusenciaUseCase : AbstractUseCase, ISalvarCompensacaoAusenciaUseCase
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
-        public SalvarCompensasaoAusenciaUseCase(IMediator mediator, IUnitOfWork unitOfWork, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
+        public SalvarCompensacaoAusenciaUseCase(IMediator mediator, IUnitOfWork unitOfWork, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -36,7 +36,17 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Turma não localizada!");
 
                 // Consiste periodo
-                var periodo = await BuscaPeriodo(turma, compensacaoDto.Bimestre);
+                var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
+                var periodo = periodos?.SingleOrDefault(p => p.Bimestre == compensacaoDto.Bimestre);
+
+                var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
+                if (parametroSistema is not { Ativo: true })
+                {
+                    var turmaEmPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodo.Bimestre, false, periodo.TipoCalendarioId));
+
+                    if (!turmaEmPeriodoAberto)
+                        throw new NegocioException($"Período do {periodo.Bimestre}º Bimestre não está aberto.");
+                }
 
                 var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -98,37 +108,6 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<PeriodoEscolarDto> BuscaPeriodo(Turma turma, int bimestre)
-        {
-            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio, turma.Semestre));
-
-            var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
-
-            PeriodoEscolarDto periodo = null;
-            var consulta = await mediator.Send(new ObterPeriodoEscolarListaPorTipoCalendarioQuery(tipoCalendario.Id));
-            if (turma.ModalidadeCodigo == Modalidade.EJA)
-            {
-                if (turma.Semestre == 1)
-                    periodo = consulta.Periodos.FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoInicio < new DateTime(turma.AnoLetivo, 6, 1));
-                else
-                    periodo = consulta.Periodos.FirstOrDefault(p => p.Bimestre == bimestre && p.PeriodoFim > new DateTime(turma.AnoLetivo, 6, 1));
-            }
-            else
-                periodo = consulta.Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
-
-            if (parametroSistema is not { Ativo: true })
-            {
-                var turmaEmPeriodoAberto =
-                    await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, false,
-                        tipoCalendario.Id));
-
-                if (!turmaEmPeriodoAberto)
-                    throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
-            }
-
-            return periodo;
-        }
-
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo))
@@ -182,7 +161,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, Turma turma, string disciplinaId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolarDto periodo, Usuario usuarioLogado)
+        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, Turma turma, string disciplinaId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolar periodo, Usuario usuarioLogado)
         {
             var mensagensExcessao = new StringBuilder();
             var listaPersistencia = new List<CompensacaoAusenciaAluno>();

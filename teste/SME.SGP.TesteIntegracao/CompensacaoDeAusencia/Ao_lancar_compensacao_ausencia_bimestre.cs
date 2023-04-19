@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 true);
 
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             casoDeUso.ShouldNotBeNull();
 
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 false,
                 true);
 
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             casoDeUso.ShouldNotBeNull();
 
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 true);
             
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             casoDeUso.ShouldNotBeNull();            
             
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
@@ -160,7 +160,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 false);
             
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             casoDeUso.ShouldNotBeNull();            
             
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
