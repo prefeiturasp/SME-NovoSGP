@@ -14,11 +14,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
-        private readonly ISalvarCompensasaoAusenciaUseCase salvarCompensasaoAusenciaUseCase;
+        private readonly ISalvarCompensacaoAusenciaUseCase salvarCompensasaoAusenciaUseCase;
 
         public CopiarCompensacaoAusenciaUseCase(IMediator mediator, IRepositorioCompensacaoAusencia compensacaoAusencia,
             IRepositorioCompensacaoAusenciaDisciplinaRegencia compensacaoAusenciaDisciplinaRegencia            ,
-            ISalvarCompensasaoAusenciaUseCase salvarCompensasaoAusencia
+            ISalvarCompensacaoAusenciaUseCase salvarCompensasaoAusencia
             ) : base(mediator)
         {
             repositorioCompensacaoAusencia = compensacaoAusencia ?? throw new ArgumentNullException(nameof(compensacaoAusencia));

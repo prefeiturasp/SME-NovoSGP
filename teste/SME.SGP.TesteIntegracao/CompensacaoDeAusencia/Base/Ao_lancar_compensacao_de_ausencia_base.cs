@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, ObtenhaListaDeAlunosSemAulasSelecionadas());
 
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             await casoDeUso.Executar(0, dto);
 
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
@@ -64,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, alunos);
 
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             await casoDeUso.Executar(0, dto);
 
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 TurmaId = compensacaoAusenciaAlterada.TurmaId.ToString()
             };
 
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             await casoDeUso.Executar(compensacaoAusenciaAlterada.Id, dtoAlterado);
 
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
@@ -220,7 +220,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 TurmaId = compensacaoAusenciaAlterada.TurmaId.ToString()
             };
 
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             await casoDeUso.Executar(compensacaoAusenciaAlterada.Id, dtoAlterado);
 
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();

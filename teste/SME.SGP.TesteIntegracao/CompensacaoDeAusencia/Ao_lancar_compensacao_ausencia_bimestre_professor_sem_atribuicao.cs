@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 true,
                 false);
             
-            var casoDeUso = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var casoDeUso = ServiceProvider.GetService<ISalvarCompensacaoAusenciaUseCase>();
             casoDeUso.ShouldNotBeNull();            
             
             var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
