@@ -29,8 +29,22 @@ namespace SME.SGP.Aplicacao
                 ? new int[] { request.Bimestre }
                 : request.Semestre == 1 ? new int[] { 1, 2 } : new int[] { 3, 4 };
 
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+            var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var professorConsiderado = usuarioLogado.EhProfessor() ? usuarioLogado.Login : null;
+
+            var componentesCurricularesTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
+
+            if (componentesCurricularesTerritorioEquivalentes != default)
+            {
+                codigosComponentesConsiderados.AddRange(componentesCurricularesTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+                professorConsiderado = componentesCurricularesTerritorioEquivalentes.First().professor;
+            }
+
             var quantidadeDiasPorTipoFrequencia = await repositorioFrequenciaDiaria.ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao, bimestres, request.AlunoCodigo.ToString()
-                , request.TurmaId, request.ComponenteCurricularId.ToString());
+                , request.TurmaId, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), professorConsiderado);
 
             var lista = MapearMotivoAusencia(quantidadeDiasPorTipoFrequencia.Items);
             retornoPaginado = new PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>()
@@ -47,10 +61,10 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<FrequenciaDiariaAlunoDto> MapearMotivoAusencia(IEnumerable<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto> quantidadeDiasPorTipoFrequencia)
         {
             var listaFrequencias = new List<FrequenciaDiariaAlunoDto>();
-            
+
             foreach (var item in quantidadeDiasPorTipoFrequencia)
             {
-                
+
                 var frequencia = new FrequenciaDiariaAlunoDto
                 {
                     Id = item.AnotacaoId,
