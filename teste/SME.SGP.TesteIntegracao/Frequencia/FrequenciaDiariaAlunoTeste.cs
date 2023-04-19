@@ -42,11 +42,12 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
         {
             await CriarUsuarioLogado();
             CriarClaimProfessorFundamental();
+            await CriarItensBasicos();
             var useCase = ServiceProvider.GetService<IObterFrequenciaDiariaAlunoUseCase>();
 
             var controller = new FrequenciaAcompanhamentoController();
 
-            var retorno = await controller.ObterFrequenciaDiariaAluno(111, 138, 1, 2,1, useCase);
+            var retorno = await controller.ObterFrequenciaDiariaAluno(1, 138, 1, 2,1, useCase);
 
             retorno.ShouldNotBeNull();
 
@@ -64,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
             variaveis.Add("login", "1");
             variaveis.Add("Claims", new List<InternalClaim> {
                 new InternalClaim { Value = "1", Type = "rf" },
-                new InternalClaim { Value = "40e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
+                new InternalClaim { Value = Perfis.PERFIL_ADMUE.ToString(), Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }
