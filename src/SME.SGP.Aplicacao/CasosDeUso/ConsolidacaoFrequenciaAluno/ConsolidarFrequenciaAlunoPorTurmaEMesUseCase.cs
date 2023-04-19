@@ -53,7 +53,10 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var frequencia in frequenciasAtuais)
             {
-                var dadosAlteradosAluno = consolidacoesExistentes.FirstOrDefault(a => a.AlunoCodigo.Contains(frequencia.AlunoCodigo) && a.Percentual != frequencia.Percentual);
+                var dadosAlteradosAluno = consolidacoesExistentes.FirstOrDefault(a => a.AlunoCodigo.Contains(frequencia.AlunoCodigo) && 
+                    (a.QuantidadeAulas != frequencia.QuantidadeAulas || a.QuantidadeAusencias != frequencia.QuantidadeAusencias || a.QuantidadeCompensacoes != frequencia.QuantidadeCompensacoes)
+                );
+
                 if (dadosAlteradosAluno != null)
                 {
                     await mediator.Send(new AlterarConsolidacaoFrequenciaAlunoMensalCommand(dadosAlteradosAluno.Id, frequencia.Percentual, frequencia.QuantidadeAulas,
