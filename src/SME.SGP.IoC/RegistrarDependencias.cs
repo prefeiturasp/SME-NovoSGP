@@ -1239,7 +1239,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
             services.TryAddScoped<IEnviarFilaGravarHistoricoEscolarObservacaoUseCase, EnviarFilaGravarHistoricoEscolarObservacaoUseCase>();
 
-            services.TryAddScoped<ISalvarCompensasaoAusenciaUseCase, SalvarCompensasaoAusenciaUseCase>();
+            services.TryAddScoped<ISalvarCompensacaoAusenciaUseCase, SalvarCompensacaoAusenciaUseCase>();
 
             // Notificação
             services.TryAddScoped<IObterNotificacaoPorIdUseCase, ObterNotificacaoPorIdUseCase>();
