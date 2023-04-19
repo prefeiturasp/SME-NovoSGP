@@ -27,6 +27,8 @@ namespace SME.SGP.Dominio
         private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
+        private Usuario usuarioLogado { get; set; }
+
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
                               IServicoEol servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
@@ -140,16 +142,26 @@ namespace SME.SGP.Dominio
 
         public async Task<Usuario> ObterUsuarioLogado()
         {
+            if (usuarioLogado == null)
+                usuarioLogado = await IdentificaUsuarioLogado();
+
+            return usuarioLogado;
+        }
+
+        private async Task<Usuario> IdentificaUsuarioLogado()
+        {
             var login = ObterLoginAtual();
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
 
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
 
+            if (!string.IsNullOrEmpty(contextoAplicacao.NomeUsuario))
+                usuario.Nome = contextoAplicacao.NomeUsuario;
+
             var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
-
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
