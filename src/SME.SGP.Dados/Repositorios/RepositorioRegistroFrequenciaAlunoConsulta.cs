@@ -132,7 +132,7 @@ namespace SME.SGP.Dados.Repositorios
                     rfa.codigo_aluno as AlunoCodigo,
                     a.disciplina_id as ComponenteCurricularId
                 from registro_frequencia_aluno rfa
-                inner join aula a on rfa.aula_id = a.id                
+                inner join aula a on rfa.aula_id = a.id and not a.excluido                 
                 inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
                 where
 	                rfa.codigo_aluno = any(@codigoAlunos)	                
