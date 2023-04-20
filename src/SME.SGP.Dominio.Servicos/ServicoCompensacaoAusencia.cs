@@ -262,10 +262,12 @@ namespace SME.SGP.Dominio.Servicos
                 if (alunosAlterarFaltasCompensada.Any())
                 {
                     var alunosCodigos = alunosAlterarFaltasCompensada?.Select(x => x.CodigoAluno);
-                    var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(o => alunosCodigos.Contains(o.CodigoAluno) && o.DisciplinaId == disciplinaId && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turmaId);
+                    var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(o => alunosCodigos.Contains(o.CodigoAluno) && componentesCurricularesId.Contains(long.Parse(o.DisciplinaId)) && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turmaId);
                     foreach (var aluno in alunosAlterarFaltasCompensada)
                     {
-                        var frequenciaAluno = consultaAlunosAlterarFaltasCompensada.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DisciplinaId == disciplinaId && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
+                        var frequenciaAluno = consultaAlunosAlterarFaltasCompensada
+                            .FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && componentesCurricularesId.Contains(long.Parse(x.DisciplinaId)) && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
+
                         if (frequenciaAluno == null)
                         {
                             mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
