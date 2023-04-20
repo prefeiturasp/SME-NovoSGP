@@ -566,10 +566,9 @@ namespace SME.SGP.Dados.Repositorios
                            and a.turma_id = @turmaId
                            and a.disciplina_id = @disciplinaId
                            and a.data_aula between @periodoInicio and @periodoFim
-                           and pu.usuario_id = @usuarioRf ";
+                           and pu.usuario_id = @usuarioId ";
 
-            return (await database.Conexao.QueryAsync<long>(sql, new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim,
-                usuarioRf = usuarioId })).ToArray();
+            return (await database.Conexao.QueryAsync<long>(sql, new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim, usuarioId })).ToArray();
         }
     }
 }
