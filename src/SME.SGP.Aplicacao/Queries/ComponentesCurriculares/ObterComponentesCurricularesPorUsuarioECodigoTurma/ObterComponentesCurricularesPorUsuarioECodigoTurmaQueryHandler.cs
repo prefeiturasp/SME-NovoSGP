@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
 
             return MapearParaComponenteNomeDto(disciplinasEol);
         }
