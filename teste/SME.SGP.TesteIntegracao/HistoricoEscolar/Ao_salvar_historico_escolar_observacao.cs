@@ -9,6 +9,7 @@ using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Excecoes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -51,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.HistoricoEscolar
         public async Task Deve_executar_gravacao_observacao_complementar_historico_escolar()
         {
             var historicoEscolarObservacaoDto = new HistoricoEscolarObservacaoDto("456789", "Inserir observação nova para aluno");
-            var mensagemHabbit = CriarMensagemRabbit(historicoEscolarObservacaoDto);
+            var mensagemHabbit = CriarMensagemRabbit(new List<HistoricoEscolarObservacaoDto>() { historicoEscolarObservacaoDto });
 
             var salvarHistoricoEscolarObservacaoUseCase = ServiceProvider.GetService<IExecutarGravarHistoricoEscolarObservacaoUseCase>();
 
@@ -74,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.HistoricoEscolar
             await InserirNaBase(historicoEscolar);
 
             var historicoEscolarObservacaoDto = new HistoricoEscolarObservacaoDto(alunoCodigo, "Nova observação para o aluno");
-            var mensagemHabbit = CriarMensagemRabbit(historicoEscolarObservacaoDto);
+            var mensagemHabbit = CriarMensagemRabbit(new List<HistoricoEscolarObservacaoDto>() { historicoEscolarObservacaoDto });
 
             var salvarHistoricoEscolarObservacaoUseCase = ServiceProvider.GetService<IExecutarGravarHistoricoEscolarObservacaoUseCase>();
 
@@ -92,9 +93,9 @@ namespace SME.SGP.TesteIntegracao.HistoricoEscolar
 
             var salvarHistoricoEscolarObservacaoUseCase = ServiceProvider.GetService<IExecutarGravarHistoricoEscolarObservacaoUseCase>();
 
-            var exAlunoCodigoVazio = await Should.ThrowAsync<ValidacaoException>(() => salvarHistoricoEscolarObservacaoUseCase.Executar(CriarMensagemRabbit(historicoEscolarObservacaoAlunoCodigoVazio)));
-            var exObservacaoVazio = await Should.ThrowAsync<ValidacaoException>(() => salvarHistoricoEscolarObservacaoUseCase.Executar(CriarMensagemRabbit(historicoEscolarObservacaoObservacaoVazio)));
-            var exObservacaoTamanhoMaximo = await Should.ThrowAsync<ValidacaoException>(() => salvarHistoricoEscolarObservacaoUseCase.Executar(CriarMensagemRabbit(historicoEscolarObservacaoObservacaoTamanhoMaximo)));
+            var exAlunoCodigoVazio = await Should.ThrowAsync<ValidacaoException>(() => salvarHistoricoEscolarObservacaoUseCase.Executar(CriarMensagemRabbit(new List<HistoricoEscolarObservacaoDto>() { historicoEscolarObservacaoAlunoCodigoVazio })));
+            var exObservacaoVazio = await Should.ThrowAsync<ValidacaoException>(() => salvarHistoricoEscolarObservacaoUseCase.Executar(CriarMensagemRabbit(new List<HistoricoEscolarObservacaoDto>() { historicoEscolarObservacaoObservacaoVazio })));
+            var exObservacaoTamanhoMaximo = await Should.ThrowAsync<ValidacaoException>(() => salvarHistoricoEscolarObservacaoUseCase.Executar(CriarMensagemRabbit(new List<HistoricoEscolarObservacaoDto>() { historicoEscolarObservacaoObservacaoTamanhoMaximo })));
 
             exAlunoCodigoVazio.Erros.FirstOrDefault().ErrorMessage.ShouldBe("O Código do Aluno deve ser informado.");
             exObservacaoVazio.Erros.FirstOrDefault().ErrorMessage.ShouldBe("Observação deve ser informado.");
@@ -109,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.HistoricoEscolar
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private static MensagemRabbit CriarMensagemRabbit(object objeto)
+        private static MensagemRabbit CriarMensagemRabbit(List<HistoricoEscolarObservacaoDto> objeto)
         {
             var json = JsonConvert.SerializeObject(objeto);
 
