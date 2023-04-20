@@ -555,19 +555,21 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<long[]> ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+        public async Task<long[]> ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, long usuarioId)
         {
-            var tipo = new int[] { (int)TipoPendencia.PlanoAula, (int)TipoPendencia.Frequencia, (int)TipoPendencia.Avaliacao };
+            var tipo = new [] { (int)TipoPendencia.PlanoAula, (int)TipoPendencia.Frequencia, (int)TipoPendencia.Avaliacao };
             var sql = @"select p.id from pendencia p 
                         inner join pendencia_aula pa on pa.pendencia_id = p.id
+                        inner join pendencia_usuario pu on pu.pendencia_id = p.id    
                         inner join aula a on a.id = pa.aula_id 
                         where p.tipo = any(@tipo) and not p.excluido
                            and a.turma_id = @turmaId
                            and a.disciplina_id = @disciplinaId
-                           and a.data_aula between @periodoInicio and @periodoFim"
-            ;
+                           and a.data_aula between @periodoInicio and @periodoFim
+                           and pu.usuario_id = @usuarioRf ";
 
-            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim })).ToArray();
+            return (await database.Conexao.QueryAsync<long>(sql, new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim,
+                usuarioRf = usuarioId })).ToArray();
         }
     }
 }
