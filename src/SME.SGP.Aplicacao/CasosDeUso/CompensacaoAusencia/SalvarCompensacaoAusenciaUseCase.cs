@@ -82,10 +82,11 @@ namespace SME.SGP.Aplicacao
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
                 IEnumerable<string> codigosAlunosCompensacao = new List<string>();
-                if (compensacaoDto.Alunos.Any())
+                var ehAlteracao = id > 0;
+                if (compensacaoDto.Alunos.Any() || ehAlteracao)
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(id > 0, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
-                    codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(id > 0, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
+                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
+                    codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
                 unitOfWork.PersistirTransacao();
