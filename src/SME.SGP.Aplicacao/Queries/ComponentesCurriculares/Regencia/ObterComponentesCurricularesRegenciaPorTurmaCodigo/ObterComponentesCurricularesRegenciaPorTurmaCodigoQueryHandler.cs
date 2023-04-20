@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
+            int ano = int.TryParse(turma.Ano, out int anoTurma) ? anoTurma : 1;
 
             if (turma == null)
             {
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
             var ehQtdeDuracaoAulaTurma4h = turma.QuantidadeDuracaoAula == 4;
             var turno = ehQtdeDuracaoAulaTurma4h ? turma.QuantidadeDuracaoAula : 0;
-            var ano = ehQtdeDuracaoAulaTurma4h ? Convert.ToInt64(turma.Ano.ToUpper().Replace('S', '1')) : 0;
+            ano = ehQtdeDuracaoAulaTurma4h ? anoTurma : 0;
 
             var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(ano, turno);
 
