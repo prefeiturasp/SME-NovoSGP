@@ -74,8 +74,10 @@ namespace SME.SGP.Aplicacao
 
                     if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any() && !disciplinasIdsConsideradas.Contains(componenteTerritorioEquivalente.codigoComponente))
                         disciplinasIdsConsideradas.Add(componenteTerritorioEquivalente.codigoComponente);
+                    
+                    var professorRfAula = turma.EhTurmaInfantil ? string.Empty : componenteTerritorioEquivalente.professor;
 
-                    var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, componenteTerritorioEquivalente.professor, request.TurmaId))).ToList();
+                    var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, professorRfAula, request.TurmaId))).ToList();
                     var periodosEscolaresParaFiltro = periodos.Select(p => (long?)p.Id);
                     var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, disciplinasIdsConsideradas.ToArray(), componenteTerritorioEquivalente.professor))).ToList();
 
