@@ -1237,7 +1237,6 @@ namespace SME.SGP.IoC
             
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
-            services.TryAddScoped<IEnviarFilaGravarHistoricoEscolarObservacaoUseCase, EnviarFilaGravarHistoricoEscolarObservacaoUseCase>();
 
             services.TryAddScoped<ISalvarCompensacaoAusenciaUseCase, SalvarCompensacaoAusenciaUseCase>();
 
