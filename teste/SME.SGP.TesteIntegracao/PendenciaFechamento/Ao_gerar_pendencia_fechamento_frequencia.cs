@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PendenciaFechamento.Base;
@@ -58,8 +57,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
             pendenciasAula.Count().ShouldBe(1);
-            pendencias.Count(pendencia => !pendencia.Excluido && pendencia.Tipo == TipoPendencia.Frequencia).ShouldBe(1);
-            pendencias.Any(pendencia => pendencia.Excluido).ShouldBeFalse();
+            pendencias.Count(pendencia => pendencia.Excluido && pendencia.Tipo == TipoPendencia.Frequencia).ShouldBe(1);
+            pendencias.Any(pendencia => pendencia.Excluido).ShouldBeTrue();
         }
 
         [Fact]
