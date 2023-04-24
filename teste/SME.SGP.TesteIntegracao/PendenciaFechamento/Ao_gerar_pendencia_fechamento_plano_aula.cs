@@ -58,8 +58,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
             pendenciasAula.Count().ShouldBe(1);
-            pendencias.Count(pendencia => !pendencia.Excluido && pendencia.Tipo == TipoPendencia.PlanoAula).ShouldBe(1);
-            pendencias.Any(pendencia => pendencia.Excluido).ShouldBeFalse();
+            pendencias.Count(pendencia => pendencia.Excluido && pendencia.Tipo == TipoPendencia.PlanoAula).ShouldBe(1);
+            pendencias.Any(pendencia => pendencia.Excluido).ShouldBeTrue();
         }
 
         [Fact]
