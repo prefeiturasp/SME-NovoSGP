@@ -18,6 +18,12 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
 {
     public class Ao_salvar_registro_itinerancia : ItineranciaBase
     {
+        protected const string RESPOSTA_ACOMPANHAMENTO_SITUACAO_GERAL = "Teste Acompanhamento da situação";
+        protected const string RESPOSTA_ENCAMINHAMENTOS_GERAL = "Teste Encaminhamentos";
+        protected const string RESPOSTA_ACOMPANHAMENTO_SITUACAO_ALUNO = "Teste Acompanhamento da situação Aluno";
+        protected const string RESPOSTA_ENCAMINHAMENTOS_ALUNO = "Teste Encaminhamentos Aluno";
+        protected const string RESPOSTA_DESCRITIVO_ESTUDANTE = "Teste Descritivo do estudante";
+
         public Ao_salvar_registro_itinerancia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -41,25 +47,89 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
 
             var itinerancias = ObterTodos<Dominio.Itinerancia>();
             itinerancias.ShouldNotBe(null, "Itinerância não persistida ao salvar");
-            itinerancias.Count.ShouldBe(1, "Quantidade de itinerâncias persistidas ao salvar deveria ser 1");
+            itinerancias.Count.ShouldBe(1, "Quantidade de itinerâncias persistidas ao salvar incorreta");
 
             var objetivosItinerancia = ObterTodos<Dominio.ItineranciaObjetivo>();
             objetivosItinerancia.ShouldNotBe(null, "Objetivos da Itinerância não persistida ao salvar");
-            objetivosItinerancia.Count.ShouldBe(3, "Quantidade de objetivos na itinerância persistida ao salvar deveria ser 3");
+            objetivosItinerancia.Count.ShouldBe(3, "Quantidade de objetivos na itinerância persistida ao salvar incorreta");
 
             var questoesItinerancia = ObterTodos<Dominio.ItineranciaQuestao>();
             questoesItinerancia.ShouldNotBe(null, "Questões/Repostas da Itinerância não persistidas ao salvar");
-            questoesItinerancia.Count.ShouldBe(3, "Quantidade de questões na itinerância persistida ao salvar deveria ser 3");
+            questoesItinerancia.Count.ShouldBe(2, "Quantidade de questões na itinerância persistida ao salvar incorreta");
 
             var itineranciasAluno = ObterTodos<Dominio.ItineranciaAluno>();
             itineranciasAluno.ShouldNotBe(null, "Itinerâncias Alunos persistidas deveria ser null");
-            
-            /*var arquivos = ObterTodos<Arquivo>();
-            arquivos.Count.ShouldBeEquivalentTo(1);
-            arquivos.FirstOrDefault()?.Codigo.ShouldBeEquivalentTo(salvar.Codigo);
-            arquivos.FirstOrDefault()?.Nome.ShouldBeEquivalentTo(nomeArquivo);
-            arquivos.FirstOrDefault()?.TipoConteudo.ShouldBeEquivalentTo(extensaoArquivo);
-            arquivos.FirstOrDefault()?.Tipo.ShouldBeEquivalentTo(TipoArquivo.Itinerancia);*/
+        }
+
+        [Fact(DisplayName = "Registro de itinerância - Salvar itinerância com alunos, sem informações/questões globais")]
+        public async Task Salvar_itinerancia_com_alunos()
+        {
+            await CriarDadosBase(new FiltroItineranciaDto() { AnoTurma = "5", ConsiderarAnoAnterior = false, Modalidade = Modalidade.Fundamental, Perfil = ObterPerfilCoordenadorCefai() });
+
+            var useCase = SalvarItineranciaUseCase();
+            var retorno = await useCase.Executar(ObterItineranciaDTO(ObterObjetivosVisita(), null, ObterItineranciasAluno()));
+            retorno.ShouldNotBeNull("Itinerância não persistida ao salvar");
+            retorno.Id.ShouldBe(1, "Id da itinerância persistida deveria ser 1");
+
+            var itinerancias = ObterTodos<Dominio.Itinerancia>();
+            itinerancias.ShouldNotBe(null, "Itinerância não persistida ao salvar");
+            itinerancias.Count.ShouldBe(1, "Quantidade de itinerâncias persistidas ao salvar incorreta");
+
+            var objetivosItinerancia = ObterTodos<Dominio.ItineranciaObjetivo>();
+            objetivosItinerancia.ShouldNotBe(null, "Objetivos da Itinerância não persistida ao salvar");
+            objetivosItinerancia.Count.ShouldBe(3, "Quantidade de objetivos na itinerância persistida ao salvar incorreta");
+
+            var questoesItinerancia = ObterTodos<Dominio.ItineranciaQuestao>();
+            questoesItinerancia.ShouldNotBe(null, "Questões/Repostas da Itinerância persistida deveria ser null");
+
+            var itineranciasAluno = ObterTodos<Dominio.ItineranciaAluno>();
+            itineranciasAluno.ShouldNotBe(null, "Itinerância por alunos da Itinerância não persistidas ao salvar");
+            itineranciasAluno.Count.ShouldBe(2, "Quantidade de Itinerâncias por aluno na itinerância persistida ao salvar incorreta");
+
+            var questoesItineranciasAluno = ObterTodos<Dominio.ItineranciaAlunoQuestao>();
+            questoesItineranciasAluno.ShouldNotBe(null, "Questões das itinerâncias por alunos não persistidas ao salvar");
+            questoesItineranciasAluno.Count.ShouldBe(6, "Quantidade de Questões das itinerâncias por aluno persistidas ao salvar incorreta");
+
+            questoesItineranciasAluno.Where(resposta => resposta.Resposta == RESPOSTA_ACOMPANHAMENTO_SITUACAO_ALUNO).Count().ShouldBe(2, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_ACOMPANHAMENTO_SITUACAO_ALUNO}]");
+            questoesItineranciasAluno.Where(resposta => resposta.Resposta == RESPOSTA_DESCRITIVO_ESTUDANTE).Count().ShouldBe(2, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_DESCRITIVO_ESTUDANTE}]");
+            questoesItineranciasAluno.Where(resposta => resposta.Resposta == RESPOSTA_ENCAMINHAMENTOS_ALUNO).Count().ShouldBe(2, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_ENCAMINHAMENTOS_ALUNO}]");
+        }
+
+        [Fact(DisplayName = "Registro de itinerância Misto - Salvar itinerância com alunos e informações/questões globais")]
+        public async Task Salvar_itinerancia_com_alunos_e_questoes_globais()
+        {
+            await CriarDadosBase(new FiltroItineranciaDto() { AnoTurma = "5", ConsiderarAnoAnterior = false, Modalidade = Modalidade.Fundamental, Perfil = ObterPerfilCoordenadorCefai() });
+
+            var useCase = SalvarItineranciaUseCase();
+            var retorno = await useCase.Executar(ObterItineranciaDTO(ObterObjetivosVisita(), ObterQuestoesItinerancia(), ObterItineranciasAluno()));
+            retorno.ShouldNotBeNull("Itinerância não persistida ao salvar");
+            retorno.Id.ShouldBe(1, "Id da itinerância persistida deveria ser 1");
+
+            var itinerancias = ObterTodos<Dominio.Itinerancia>();
+            itinerancias.ShouldNotBe(null, "Itinerância não persistida ao salvar");
+            itinerancias.Count.ShouldBe(1, "Quantidade de itinerâncias persistidas ao salvar incorreta");
+
+            var objetivosItinerancia = ObterTodos<Dominio.ItineranciaObjetivo>();
+            objetivosItinerancia.ShouldNotBe(null, "Objetivos da Itinerância não persistida ao salvar");
+            objetivosItinerancia.Count.ShouldBe(3, "Quantidade de objetivos na itinerância persistida ao salvar incorreta");
+
+            var questoesItinerancia = ObterTodos<Dominio.ItineranciaQuestao>();
+            questoesItinerancia.ShouldNotBe(null, "Questões/Repostas da Itinerância não persistidas ao salvar");
+            questoesItinerancia.Count.ShouldBe(2, "Quantidade de questões na itinerância persistida ao salvar incorreta");
+            questoesItinerancia.Where(resposta => resposta.Resposta == RESPOSTA_ACOMPANHAMENTO_SITUACAO_GERAL).Count().ShouldBe(1, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_ACOMPANHAMENTO_SITUACAO_GERAL}]");
+            questoesItinerancia.Where(resposta => resposta.Resposta == RESPOSTA_ENCAMINHAMENTOS_GERAL).Count().ShouldBe(1, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_ENCAMINHAMENTOS_GERAL}]");
+
+            var itineranciasAluno = ObterTodos<Dominio.ItineranciaAluno>();
+            itineranciasAluno.ShouldNotBe(null, "Itinerância por alunos da Itinerância não persistidas ao salvar");
+            itineranciasAluno.Count.ShouldBe(2, "Quantidade de Itinerâncias por aluno na itinerância persistida ao salvar incorreta");
+
+            var questoesItineranciasAluno = ObterTodos<Dominio.ItineranciaAlunoQuestao>();
+            questoesItineranciasAluno.ShouldNotBe(null, "Questões das itinerâncias por alunos não persistidas ao salvar");
+            questoesItineranciasAluno.Count.ShouldBe(6, "Quantidade de Questões das itinerâncias por aluno persistidas ao salvar incorreta");
+
+            questoesItineranciasAluno.Where(resposta => resposta.Resposta == RESPOSTA_ACOMPANHAMENTO_SITUACAO_ALUNO).Count().ShouldBe(2, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_ACOMPANHAMENTO_SITUACAO_ALUNO}]");
+            questoesItineranciasAluno.Where(resposta => resposta.Resposta == RESPOSTA_DESCRITIVO_ESTUDANTE).Count().ShouldBe(2, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_DESCRITIVO_ESTUDANTE}]");
+            questoesItineranciasAluno.Where(resposta => resposta.Resposta == RESPOSTA_ENCAMINHAMENTOS_ALUNO).Count().ShouldBe(2, $"Quantidade de Respostas incorretas para questão [{NOME_COMPONENTE_ENCAMINHAMENTOS_ALUNO}]");
         }
 
         private List<ItineranciaObjetivoDto> ObterObjetivosVisita()
@@ -96,7 +166,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
                     Obrigatorio = true,
                     QuestaoId = ID_QUESTAO_ACOMPANHAMENTO_SITUACAO_GERAL,
                     TipoQuestao = TipoQuestao.Texto,
-                    Resposta = "Teste Acompanhamento da situação"
+                    Resposta = RESPOSTA_ACOMPANHAMENTO_SITUACAO_GERAL
                 },
                 new ItineranciaQuestaoDto()
                 {
@@ -105,7 +175,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
                     Obrigatorio = true,
                     QuestaoId = ID_QUESTAO_ENCAMINHAMENTOS_GERAL,
                     TipoQuestao = TipoQuestao.Texto,
-                    Resposta = "Teste Encaminhamentos"
+                    Resposta = RESPOSTA_ENCAMINHAMENTOS_GERAL
                 }
             };
         }
@@ -140,21 +210,21 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
                     Descricao = "Descritivo do estudante",
                     Obrigatorio = true,
                     QuestaoId = ID_QUESTAO_DESCRITIVO_ESTUDANTE,
-                    Resposta = "Teste Descritivo do estudante",
+                    Resposta = RESPOSTA_DESCRITIVO_ESTUDANTE,
                 },
                 new ItineranciaAlunoQuestaoDto()
                 {
                     Descricao = "Acompanhamento da situação",
                     Obrigatorio = true,
                     QuestaoId = ID_QUESTAO_ACOMPANHAMENTO_SITUACAO_ALUNO,
-                    Resposta = "Teste Acompanhamento da situação Aluno",
+                    Resposta = RESPOSTA_ACOMPANHAMENTO_SITUACAO_ALUNO,
                 },
                 new ItineranciaAlunoQuestaoDto()
                 {
                     Descricao = "Encaminhamentos",
                     Obrigatorio = true,
                     QuestaoId = ID_QUESTAO_ENCAMINHAMENTOS_ALUNO,
-                    Resposta = "Teste Encaminhamentos Aluno"
+                    Resposta = RESPOSTA_ENCAMINHAMENTOS_ALUNO
                 }
             };
         }

@@ -158,6 +158,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ItineranciaAlunoQuestaoMap());
                config.AddMap(new ItineranciaQuestaoMap());
                config.AddMap(new ItineranciaObjetivoMap());
+               config.AddMap(new ItineranciaObjetivoBaseMap());
                config.AddMap(new PendenciaRegistroIndividualMap());
                config.AddMap(new PendenciaRegistroIndividualAlunoMap());
                config.AddMap(new PlanoAEEMap());
