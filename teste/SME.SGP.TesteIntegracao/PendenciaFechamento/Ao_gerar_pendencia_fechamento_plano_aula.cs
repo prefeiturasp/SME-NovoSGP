@@ -117,15 +117,6 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
             });
-
-            await InserirNaBase(new Dominio.PendenciaUsuario
-            {
-                  UsuarioId   = USUARIO_ID_1,
-                  PendenciaId = PENDENCIA_ID_1,
-                  CriadoEm  = DateTimeExtension.HorarioBrasilia(),
-                  CriadoPor = "Sistema",
-                  CriadoRF = "1"
-            });
         }
     }
 }
