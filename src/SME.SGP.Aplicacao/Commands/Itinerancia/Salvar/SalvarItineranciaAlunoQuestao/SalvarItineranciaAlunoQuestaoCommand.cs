@@ -28,9 +28,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.ItineranciaAlunoId)
                    .GreaterThan(0)
                    .WithMessage("O id da itinerância do aluno deve ser informado!");
-            RuleFor(x => x.Resposta)
-                   .NotEmpty()
-                   .WithMessage("A resposta da questão deve ser informada!");
         }
     }
 }

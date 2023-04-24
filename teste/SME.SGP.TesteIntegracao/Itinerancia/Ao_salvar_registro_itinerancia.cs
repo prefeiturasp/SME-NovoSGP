@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
         }
 
 
-        [Fact(DisplayName = "Registro de itinerância - Salvar itinerância sem alunos, somente com informações globais")]
+        [Fact(DisplayName = "Registro de itinerância - Salvar itinerância sem alunos, somente com informações/questões globais")]
         public async Task Salvar_itinerancia_sem_alunos()
         {
             await CriarDadosBase(new FiltroItineranciaDto() { AnoTurma = "5", ConsiderarAnoAnterior = false, Modalidade = Modalidade.Fundamental, Perfil = ObterPerfilCoordenadorCefai() });
