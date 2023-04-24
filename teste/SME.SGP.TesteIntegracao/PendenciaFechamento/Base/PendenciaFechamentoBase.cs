@@ -118,6 +118,15 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
                 AulaId = aulaId,
                 PendenciaId = pendenciaId
             });
+            
+            await InserirNaBase(new Dominio.PendenciaUsuario
+            {
+                UsuarioId = 1,
+                PendenciaId = PENDENCIA_ID_1,
+                CriadoPor = SISTEMA_NOME,
+                CriadoEm = DateTime.Now,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         protected async Task CriarPendenciaFechamento(long fechamentoTurmaDisciplinaId, long pendenciaId)
