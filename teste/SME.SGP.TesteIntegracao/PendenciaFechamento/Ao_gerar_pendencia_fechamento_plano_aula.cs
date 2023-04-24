@@ -100,7 +100,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             pendeciasSemPlano.Exists(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento).ShouldBeFalse();
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
-            pendencias.Where(pendencia => !pendencia.Excluido).ShouldBeEmpty();
+            pendenciasAula.Count().ShouldBe(1);
+            pendencias.Count(pendencia => pendencia.Excluido && pendencia.Tipo == TipoPendencia.PlanoAula).ShouldBe(1);
+            pendencias.Any(pendencia => !pendencia.Excluido).ShouldBeFalse();
         }
 
         private async Task CriaPlanoDeAula()
@@ -114,6 +116,15 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
+            });
+
+            await InserirNaBase(new Dominio.PendenciaUsuario
+            {
+                  UsuarioId   = USUARIO_ID_1,
+                  PendenciaId = PENDENCIA_ID_1,
+                  CriadoEm  = DateTimeExtension.HorarioBrasilia(),
+                  CriadoPor = "Sistema",
+                  CriadoRF = "1"
             });
         }
     }
