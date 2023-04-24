@@ -13,7 +13,7 @@ using Usuario = SME.SGP.Dominio.Usuario;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirFrequenciasAulaCommandHandler : IRequestHandler<InserirFrequenciasAulaCommand, AuditoriaDto>
+    public class InserirFrequenciasAulaCommandHandler : IRequestHandler<InserirFrequenciasAulaCommand, FrequenciaAuditoriaAulaDto>
     {
         private readonly IMediator mediator;
 
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<AuditoriaDto> Handle(InserirFrequenciasAulaCommand request, CancellationToken cancellationToken)
+        public async Task<FrequenciaAuditoriaAulaDto> Handle(InserirFrequenciasAulaCommand request, CancellationToken cancellationToken)
         {
             var alunos = request.Frequencia.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
 
@@ -77,23 +77,29 @@ namespace SME.SGP.Aplicacao
             var alteracaoRegistro = registroFrequencia != null;
             
             registroFrequencia ??= new RegistroFrequencia(aula);
-
             registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia), cancellationToken);
 
-            await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id,
-                long.Parse(aula.DisciplinaId),aula.Id), cancellationToken);
+            var registrouComSucesso = await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id,
+                long.Parse(aula.DisciplinaId),aula.Id, aula.DataAula), cancellationToken);
 
-            // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
-            if (alteracaoRegistro)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.NotificacaoFrequencia, registroFrequencia, Guid.NewGuid(), usuario), cancellationToken);
+            if (registrouComSucesso)
+            {
+                // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
+                if (alteracaoRegistro)
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.NotificacaoFrequencia, registroFrequencia, Guid.NewGuid(), usuario), cancellationToken);
 
-            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId), cancellationToken);
-            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia), cancellationToken);
+                if (request.CalcularFrequencia)
+                    await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId), cancellationToken);
+                
+                await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia), cancellationToken);
 
-            foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
-                await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo), cancellationToken);
+                foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
+                    await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo), cancellationToken);
 
-            return (AuditoriaDto)registroFrequencia;
+                return new FrequenciaAuditoriaAulaDto() { Auditoria = (AuditoriaDto)registroFrequencia, DataAula = aula.DataAula, TurmaId = aula.TurmaId, DisciplinaId = aula.DisciplinaId };
+            }
+
+            return new FrequenciaAuditoriaAulaDto() { AulaIdComErro = aula.Id, DataAulaComErro = aula.DataAula };
         }
 
         private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)

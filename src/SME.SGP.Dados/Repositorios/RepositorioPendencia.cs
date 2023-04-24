@@ -72,8 +72,41 @@ namespace SME.SGP.Dados.Repositorios
                                     select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
+		                                inner join pendencia_aula pa on p.id = pa.pendencia_id
 		                            where not p.excluido 
-		                            and pu.usuario_id = @usuarioId 
+		                            and pu.usuario_id = @usuarioId
+		                            and situacao = @situacao
+                                    union all
+                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+		                            from pendencia p 
+		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
+		                                inner join pendencia_professor pp on p.id = pp.pendencia_id
+		                            where not p.excluido 
+		                            and pu.usuario_id = @usuarioId
+		                            and situacao = @situacao
+                                    union all
+                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+		                            from pendencia p 
+		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
+		                                inner join pendencia_fechamento pf on p.id = pf.pendencia_id
+		                            where not p.excluido 
+		                            and pu.usuario_id = @usuarioId
+		                            and situacao = @situacao
+		                            union all
+                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+		                            from pendencia p 
+		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
+		                                inner join pendencia_diario_bordo pdb on p.id = pdb.pendencia_id
+		                            where not p.excluido 
+		                            and pu.usuario_id = @usuarioId
+		                            and situacao = @situacao 
+		                            union all
+		                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+		                            from pendencia p 
+		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
+		                                inner join pendencia_devolutiva pd on p.id = pd.pendencia_id
+		                            where not p.excluido 
+		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao 
                                     union all
                                     select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
@@ -333,15 +366,23 @@ namespace SME.SGP.Dados.Repositorios
                 if (!string.IsNullOrEmpty(turmaCodigo))
                     query.Append(" AND t.turma_id = @turmaCodigo ");                
             }
-            
-            return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
-                pendenciasIdsAula,
-                pendenciasIdsCalendario,
-                pendenciasIdsProfessor,
-                pendenciasIdsRegistroIndividual,
-                pendenciasIdsDevolutiva,
-                pendenciasIds,
-                turmaCodigo });
+
+            try
+            {
+                return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
+                    pendenciasIdsAula,
+                    pendenciasIdsCalendario,
+                    pendenciasIdsProfessor,
+                    pendenciasIdsRegistroIndividual,
+                    pendenciasIdsDevolutiva,
+                    pendenciasIds,
+                    turmaCodigo });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)

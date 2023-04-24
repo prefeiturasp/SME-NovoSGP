@@ -46,9 +46,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>),
                 typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular), ServiceLifetime.Scoped));
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
-
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia), ServiceLifetime.Scoped));
 
@@ -62,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFakeAlunoCodigo1), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica em ano anterior como Professor Titular e ir para aprovação de WF")]
         public async Task Deve_lancar_nota_ano_anterior_professor_titular()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -74,7 +71,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -89,9 +85,21 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNotaBimestre.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => b.EmAprovacao)).ShouldBeTrue();
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(0);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(0);
+            
+            var wfAprovacaoNotaFechamento = ObterTodos<WfAprovacaoNotaFechamento>();
+            wfAprovacaoNotaFechamento.Count.ShouldBe(4);
+            
+            var workflowAprovacao = ObterTodos<WorkflowAprovacao>();
+            workflowAprovacao.Count.ShouldBe(0);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica em ano anterior como CP sem gerar WF")]
         public async Task Deve_lancar_nota_ano_anterior_cp()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilCP(),
@@ -103,7 +111,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -118,9 +125,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica em ano anterior como DIRETOR sem gerar WF")]
         public async Task Deve_lancar_nota_ano_anterior_diretor()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilDiretor(),
@@ -132,7 +145,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -147,9 +159,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica em ano anterior como DIRETOR sem gerar WF para estudante inativo")]
         public async Task Deve_lancar_nota_se_estudante_ficou_inativo_durante_periodo_fechamento()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilDiretor(),
@@ -165,7 +183,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosInativosDurantePeriodoFechamento(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -180,9 +197,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(7);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(7);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - não deve lançar nota numérica e sim apresentar exceção para aluno inativo")]
         public async Task Deve_retornar_aviso_aluno_inativo()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilDiretor(),
@@ -196,7 +219,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosInativosForaPeriodoFechamento(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas, true);

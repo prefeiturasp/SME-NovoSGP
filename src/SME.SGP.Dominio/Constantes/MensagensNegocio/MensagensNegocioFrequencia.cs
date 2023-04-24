@@ -29,5 +29,7 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string Aula_nao_encontrada_anotacao = "Aula não encontrada.";
         public const string Motivo_ausencia_nao_encontrado = "O motivo de ausência informado não foi localizado.";
         public const string Anotacao_nao_localizada_com_id_informado = "Anotação não localizada com o Id informado";
+        public const string Nao_foi_possivel_registrar_a_frequencia_do_dia_x = "Não foi possível registrar a frequência do dia {0}";
+        public const string TURMA_NAO_ENCONTRADA_POR_CODIGO = "Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.";
     }
 }

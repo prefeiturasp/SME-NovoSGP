@@ -44,4 +44,8 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\RelatorioAnaliticoSondagemController.cs" />
+  </ItemGroup>
+
 </Project>

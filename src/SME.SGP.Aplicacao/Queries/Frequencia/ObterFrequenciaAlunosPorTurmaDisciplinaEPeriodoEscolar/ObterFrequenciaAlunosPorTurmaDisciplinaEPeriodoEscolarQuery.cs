@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, string professor = null)
-            :this(turma, componentesCurricularesId)
+            : this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
             Professor = professor;

@@ -70,8 +70,11 @@ namespace SME.SGP.Aplicacao
                 {
                     try
                     {
-                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
+                        var professor = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmas.Key.IdTurma.ToString(), turmas.Key.DisciplinaId.ToString()));
+                        if (professor == null && turmas.Key.ProfessorRf == "Sistema") continue;
+                        var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf));
 
+                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
                         var pendenciaExistente = pendenciaId != 0;
 
                         var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));
@@ -82,8 +85,7 @@ namespace SME.SGP.Aplicacao
                             await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
                             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
 
-                            var professor = await mediator.Send(new ObterProfessorDaTurmaPorAulaIdQuery(turmas.FirstOrDefault().aulaId));
-                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, professor.Id));
+                            await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
                         }
 
                         foreach (var aula in turmas)

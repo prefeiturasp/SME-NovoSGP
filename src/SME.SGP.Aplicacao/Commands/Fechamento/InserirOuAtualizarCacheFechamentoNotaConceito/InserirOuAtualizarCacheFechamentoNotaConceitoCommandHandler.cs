@@ -39,7 +39,8 @@ namespace SME.SGP.Aplicacao
                 var cacheAluno = retornoCacheMapeado.FirstOrDefault(c =>
                     c.AlunoCodigo == fechamentoNotaConceito.CodigoAluno &&
                     c.ComponenteCurricularId == fechamentoNotaConceito.DiscplinaId &&
-                    (c.Bimestre == request.Bimestre || !c.Bimestre.HasValue));
+                    (c.Bimestre == request.Bimestre || (request.Bimestre is 0 or null && c.Bimestre is 0 or null))
+                    );
 
                 if (cacheAluno == null)
                 {

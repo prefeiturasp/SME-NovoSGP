@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
-                Quantidade = 1
+                Quantidade = 2
             });
 
             await InserirNaBase(new RegistroFrequencia
@@ -193,7 +193,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
                 DataAula = new DateTime(2022, 04, 26),
-                Quantidade = 1
+                Quantidade = 2
             });
 
             await InserirNaBase(new RegistroFrequencia

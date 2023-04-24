@@ -130,6 +130,28 @@ namespace SME.SGP.Dados.Repositorios
                     alteradoEm = DateTimeExtension.HorarioBrasilia()
                 });
         }
+        
+        public virtual async Task<bool> RemoverLogico(long[] ids, string coluna = null)
+        {
+            var tableName = Dommel.Resolvers.Table(typeof(T), database.Conexao);
+            var columName = coluna ?? "id";
+
+            var query = $@"update {tableName} 
+                            set excluido = true
+                              , alterado_por = @alteradoPor
+                              , alterado_rf = @alteradoRF 
+                              , alterado_em = @alteradoEm
+                        where {columName}= ANY(@id)";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(query
+                , new
+                {
+                    id = ids,
+                    alteradoPor = database.UsuarioLogadoNomeCompleto,
+                    alteradoRF = database.UsuarioLogadoRF,
+                    alteradoEm = DateTimeExtension.HorarioBrasilia()
+                });
+        }
 
         protected async Task AuditarAsync(long identificador, string acao)
         {

@@ -49,7 +49,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
-            var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
+
+                var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
                                 , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre, pf.fechamento_turma_disciplina_id as FechamentoId
                                 , p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.criado_rf as CriadoRf, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRf,
                                   ft.turma_id as turmaId
@@ -61,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join pendencia p on p.id = pf.pendencia_id
                          where p.id = @pendenciaId";
 
-            return await database.Conexao.QueryFirstAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
+                return await database.Conexao.QueryFirstOrDefaultAsync<PendenciaFechamentoCompletoDto>(query, new { pendenciaId });
         }
 
         public async Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId)
@@ -213,6 +214,19 @@ namespace SME.SGP.Dados.Repositorios
                              and not ftd.excluido ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DetalhamentoPendenciaAulaDto>(query, new { pendenciaId });
+        }
+
+        public async Task<IEnumerable<long>> ObterIdPendenciaFechamentoAprovadaResolvida(long fechamentoId, TipoPendencia tipoPendencia)
+        {
+            var situacao = (int)SituacaoPendencia.Pendente;
+            var query = @"select pf.id          
+                           from pendencia p
+                           inner join pendencia_fechamento pf on pf.pendencia_id = p.id
+                           where p.situacao <> @situacao 
+                            and p.tipo = @tipoPendencia
+                            and pf.fechamento_turma_disciplina_id = @fechamentoId";
+
+            return await database.Conexao.QueryAsync<long>(query, new { situacao, fechamentoId, tipoPendencia = (int)tipoPendencia });
         }
     }
 }

@@ -348,9 +348,7 @@ namespace SME.SGP.Aplicacao
 
                         // Carrega Frequencia Aluno
                         var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodoConsulta.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
-                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno == null ? null :
-                                        ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString();
-
+                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno == null ? null : frequenciaAluno.PercentualFrequenciaFormatado;
 
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }

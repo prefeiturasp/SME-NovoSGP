@@ -5,7 +5,7 @@
         public FrequenciaPreDefinida()
         {
         }
-        public FrequenciaPreDefinida(int id, long turmaId, string codigoAluno, long componenteCurricularId, TipoFrequencia tipoFrequencia)
+        public FrequenciaPreDefinida(long id, long turmaId, string codigoAluno, long componenteCurricularId, TipoFrequencia tipoFrequencia)
         {
             Id = id;
             TurmaId = turmaId;
@@ -14,7 +14,7 @@
             TipoFrequencia = tipoFrequencia;
         }
 
-        public int Id { get; set; }
+        public long Id { get; set; }
         public long TurmaId { get; set; }
         public string CodigoAluno { get; set; }
         public long ComponenteCurricularId { get; set; }

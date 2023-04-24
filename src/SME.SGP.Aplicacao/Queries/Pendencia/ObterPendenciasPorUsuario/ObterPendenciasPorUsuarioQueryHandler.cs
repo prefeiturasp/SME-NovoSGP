@@ -115,6 +115,10 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)
         {
             return pendencia.EhPendenciaAula() ?
+                await ObterPendenciasAulasFormatadas(pendencia) :
+                pendencia.EhPendenciaCadastroEvento () ?
+                    await ObterPendenciasAulasFormatadas(pendencia) :
+                pendencia.EhPendenciaCalendarioUe () ?
                     await ObterPendenciasAulasFormatadas(pendencia) :
                 pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
                     await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
@@ -130,7 +134,7 @@ namespace SME.SGP.Aplicacao
                     await ObterPendenciasProfessorFormatadas(pendencia) :
                 pendencia.EhPendenciaDevolutiva() ?
                     await ObterPendenciasDevolutivaFormatadas(pendencia) :
-                new List<PendenciaDto>();
+                    new List<PendenciaDto>();
         }
         
         private async Task<IEnumerable<PendenciaDto>> ObterPendenciasProfessorFormatadas(Pendencia pendencia)
@@ -303,11 +307,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterBimestreTurma(Pendencia pendencia)
         {
+            if (pendencia.EhPendenciaFechamento())
+            {
+                var pendenciaCompleto =
+                    await mediator.Send(new ObterTurmaDaPendenciaFechamentoCompletoQuery(pendencia.Id));
+                
+               return pendenciaCompleto !=null ? ObterNomeBimestre(pendenciaCompleto.Bimestre) : string.Empty;
+            }
+
             var turma = pendencia.EhPendenciaAula() ? 
                     await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
-                pendencia.EhPendenciaFechamento() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
-                pendencia.EhPendenciaProfessor() ?
+                    pendencia.EhPendenciaProfessor() ?
                     await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
                 pendencia.EhPendenciaDiarioBordo() ?
                     await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :

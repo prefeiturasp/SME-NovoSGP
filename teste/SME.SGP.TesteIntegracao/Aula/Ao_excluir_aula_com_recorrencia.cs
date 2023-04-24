@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SME.SGP.Infra;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaRecorrencia
@@ -28,19 +30,103 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Deve permitir excluir aula recorrente no bimestre")]
         public async Task Excluir_aula_com_recorrencia_no_bimestre()
         {
-            await Excluir_aula_com_regencia(RecorrenciaAula.RepetirBimestreAtual);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.RepetirBimestreAtual);
+            
+            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual);
+
+            await CriarPeriodoEscolarEAbertura();
+            
+            await CriarFrequencia(); 
+                
+            await CriarCompensacaoAusencia();
+
+            var useCaseExcluirAulaUseCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
+            
+            var excluirAulaDto = ObterExcluirAulaDto(RecorrenciaAula.RepetirBimestreAtual);
+
+            var retorno = await useCaseExcluirAulaUseCase.Executar(excluirAulaDto);
+            retorno.ShouldNotBeNull();
+
+            var aulas = ObterTodos<Dominio.Aula>();
+            aulas.ShouldNotBeEmpty();
+            aulas.FirstOrDefault().Excluido.ShouldBe(true);
+            
+            var mensagem = new MensagemRabbit(
+                JsonConvert.SerializeObject(new FiltroIdDto(AULA_ID)),
+                Guid.NewGuid(),
+                USUARIO_PROFESSOR_LOGIN_2222222,
+                USUARIO_PROFESSOR_LOGIN_2222222,
+                Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
+                false,
+                TesteBaseComuns.USUARIO_ADMIN_RF);
+             
+            //Essa fila está dentro do processo do ExcluirAulaUseCase e está sendo chamada aqui de forma exclusiva
+            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase>();
+            await excluirCompensacaoAusenciaPorAulaIdUseCase.Executar(mensagem);
+            
+            var compensacoesCompensacaoAusenciaAlunos = ObterTodos<Dominio.CompensacaoAusenciaAluno>();
+            compensacoesCompensacaoAusenciaAlunos.Any(a=> a.Excluido).ShouldBeTrue();
+            compensacoesCompensacaoAusenciaAlunos.Any(a=> !a.Excluido).ShouldBeFalse();
+            
+            var compensacaoAusenciaAlunoAula = ObterTodos<Dominio.CompensacaoAusenciaAlunoAula>();
+            compensacaoAusenciaAlunoAula.Any(a=> a.Excluido).ShouldBeTrue();
+            compensacaoAusenciaAlunoAula.Any(a=> !a.Excluido).ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Deve permitir excluir aula recorrente em todos os bimestre")]
         public async Task Excluir_aula_com_recorrencia_em_todos_os_bimestres()
         {
-            await Excluir_aula_com_regencia(RecorrenciaAula.RepetirTodosBimestres);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.RepetirTodosBimestres);
+            
+            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirTodosBimestres);
+
+            await CriarPeriodoEscolarEAbertura();
+            
+            await CriarFrequencia(); 
+                
+            await CriarCompensacaoAusencia();
+
+            var useCaseExcluirAulaUseCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
+            
+            var excluirAulaDto = ObterExcluirAulaDto(RecorrenciaAula.RepetirTodosBimestres);
+
+            var retorno = await useCaseExcluirAulaUseCase.Executar(excluirAulaDto);
+            retorno.ShouldNotBeNull();
+
+            var aulas = ObterTodos<Dominio.Aula>();
+            aulas.ShouldNotBeEmpty();
+            aulas.FirstOrDefault().Excluido.ShouldBe(true);
+            
+            var mensagem = new MensagemRabbit(
+                JsonConvert.SerializeObject(new FiltroIdDto(AULA_ID)),
+                Guid.NewGuid(),
+                USUARIO_PROFESSOR_LOGIN_2222222,
+                USUARIO_PROFESSOR_LOGIN_2222222,
+                Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
+                false,
+                TesteBaseComuns.USUARIO_ADMIN_RF);
+             
+            //Essa fila está dentro do processo do ExcluirAulaUseCase e está sendo chamada aqui de forma exclusiva 
+            var excluirCompensacaoAusenciaPorAulaIdUseCase = ServiceProvider.GetService<IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase>();
+            await excluirCompensacaoAusenciaPorAulaIdUseCase.Executar(mensagem);
+            
+            var compensacoesCompensacaoAusenciaAlunos = ObterTodos<Dominio.CompensacaoAusenciaAluno>();
+            compensacoesCompensacaoAusenciaAlunos.Any(a=> a.Excluido).ShouldBeTrue();
+            compensacoesCompensacaoAusenciaAlunos.Any(a=> !a.Excluido).ShouldBeFalse();
+            
+            var compensacaoAusenciaAlunoAula = ObterTodos<Dominio.CompensacaoAusenciaAlunoAula>();
+            compensacaoAusenciaAlunoAula.Any(a=> a.Excluido).ShouldBeTrue();
+            compensacaoAusenciaAlunoAula.Any(a=> !a.Excluido).ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Não deve permitir excluir aula que tenha avaliação vinculada")]
         public async Task Aula_com_avaliacao_vinculada()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
@@ -53,48 +139,18 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             await CriarPeriodoEscolarEAbertura();
 
-            var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
+            var useCaseExcluirAulaUseCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
             
-            var dto = ObterExcluirAulaDto(RecorrenciaAula.RepetirBimestreAtual);
+            var excluirAulaDto = ObterExcluirAulaDto(RecorrenciaAula.RepetirBimestreAtual);
             
-            var retorno = await useCase.Executar(dto);
-
+            var retorno = await useCaseExcluirAulaUseCase.Executar(excluirAulaDto);
             retorno.ShouldNotBeNull();
 
-            var lista = ObterTodos<Notificacao>();
-
-            lista.ShouldNotBeEmpty();
-            
-            lista.FirstOrDefault().Mensagem.ShouldContain("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+            var aulas = ObterTodos<Notificacao>();
+            aulas.ShouldNotBeEmpty();
+            aulas.FirstOrDefault().Mensagem.ShouldContain("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
         }
-
-        protected async Task Excluir_aula_com_regencia(RecorrenciaAula recorrencia)
-        {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
-
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, recorrencia);
-            
-            await CriaAulaRecorrentePortugues(recorrencia);
-
-            await CriarPeriodoEscolarEAbertura();
-
-            var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            
-            var dto = ObterExcluirAulaDto(recorrencia);
-
-            await CriarPeriodoEscolarEAbertura();
-
-            var retorno = await useCase.Executar(dto);
-
-            retorno.ShouldNotBeNull();
-
-            var lista = ObterTodos<Dominio.Aula>();
-
-            lista.ShouldNotBeEmpty();
-
-            lista.FirstOrDefault().Excluido.ShouldBe(true);
-        }
-
+        
         private async Task CriarPeriodoEscolarEAbertura()
         {
             await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
@@ -106,6 +162,94 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+        }
+        
+        private async Task CriarFrequencia()
+        {
+            await InserirNaBase(new RegistroFrequencia
+            {
+                AulaId = AULA_ID,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new RegistroFrequenciaAluno()
+            {
+                Valor = (int)TipoFrequencia.F, 
+                CodigoAluno = ALUNO_CODIGO_1, 
+                NumeroAula = NUMERO_AULA_1, 
+                RegistroFrequenciaId = 1, 
+                AulaId = AULA_ID_1, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new RegistroFrequenciaAluno()
+            {
+                Valor = (int)TipoFrequencia.F, 
+                CodigoAluno = ALUNO_CODIGO_1, 
+                NumeroAula = NUMERO_AULA_2, 
+                RegistroFrequenciaId = 1, 
+                AulaId = AULA_ID_1, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new RegistroFrequenciaAluno()
+            {
+                Valor = (int)TipoFrequencia.F, 
+                CodigoAluno = ALUNO_CODIGO_1, 
+                NumeroAula = NUMERO_AULA_3, 
+                RegistroFrequenciaId = 1, 
+                AulaId = AULA_ID_1, 
+                CriadoEm = DateTimeExtension.HorarioBrasilia().Date, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarCompensacaoAusencia()
+        {
+            await InserirNaBase(new CompensacaoAusencia
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                Bimestre = BIMESTRE_2,
+                TurmaId = TURMA_ID_1,
+                Nome = "Atividade de compensação",
+                Descricao = "Breve descrição da atividade de compensação",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CompensacaoAusenciaAluno
+            {
+                CodigoAluno = CODIGO_ALUNO_1,
+                CompensacaoAusenciaId = 1,
+                QuantidadeFaltasCompensadas = NUMERO_AULA_3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CompensacaoAusenciaAlunoAula()
+            {
+                DataAula = DATA_02_05,
+                NumeroAula = NUMERO_AULA_1,
+                CompensacaoAusenciaAlunoId = 1,
+                RegistroFrequenciaAlunoId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new CompensacaoAusenciaAlunoAula()
+            {
+                DataAula = DATA_02_05,
+                NumeroAula = NUMERO_AULA_2,
+                CompensacaoAusenciaAlunoId = 1,
+                RegistroFrequenciaAlunoId = 2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new CompensacaoAusenciaAlunoAula()
+            {
+                DataAula = DATA_02_05,
+                NumeroAula = NUMERO_AULA_3,
+                CompensacaoAusenciaAlunoId = 1,
+                RegistroFrequenciaAlunoId = 3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
     }
 }
