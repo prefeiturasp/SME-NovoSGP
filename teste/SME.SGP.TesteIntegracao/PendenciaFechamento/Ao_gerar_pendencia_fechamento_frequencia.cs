@@ -98,7 +98,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             pendeciasSemPlano.Exists(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento).ShouldBeFalse();
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
-            pendencias.Where(pendencia => !pendencia.Excluido).ShouldBeEmpty();
+            pendenciasAula.Count().ShouldBe(1);
+            pendencias.Count(pendencia => !pendencia.Excluido && pendencia.Tipo == TipoPendencia.Frequencia).ShouldBe(1);
+            pendencias.Any(pendencia => pendencia.Excluido).ShouldBeFalse();
         }
 
         private async Task CriaFrequencia()
