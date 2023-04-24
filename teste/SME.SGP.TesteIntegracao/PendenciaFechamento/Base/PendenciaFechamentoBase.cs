@@ -189,7 +189,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
                 Situacao = SituacaoFechamento.ProcessadoComPendencias,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
+                CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_2222222
             });
         }
 
