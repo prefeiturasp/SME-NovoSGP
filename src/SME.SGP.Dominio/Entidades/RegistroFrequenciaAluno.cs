@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         public Aula Aula { get; set; }
         public long RegistroFrequenciaId { get; set; }
         public long AulaId { get; set; }
+        public bool Excluido { get; set; }
 
         public object Clone()
          => new RegistroFrequenciaAluno()

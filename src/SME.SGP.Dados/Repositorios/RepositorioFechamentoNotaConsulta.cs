@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
                                         inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
                                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
-                                         left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = n.id
+                                         left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = n.id and not wf.excluido
                                         where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
 
         const string queryNotasFechamento = @"with lista as (
@@ -127,7 +127,7 @@ namespace SME.SGP.Dados.Repositorios
                             from wf_aprovacao_nota_fechamento w
                           inner join fechamento_nota n on n.id = w.fechamento_nota_id 
                           inner join fechamento_aluno a on a.id = n.fechamento_aluno_id
-                          where a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
+                          where not w.excluido and a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
 
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamento>(query, new { fechamentoTurmaDisciplinaId });
         }
@@ -137,14 +137,14 @@ namespace SME.SGP.Dados.Repositorios
             const string query = @"select ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
                                 fa.aluno_codigo as CodigoAluno, fn.nota as NotaAnterior, ftd.id as FechamentoTurmaDisciplinaId,
                                 fn.conceito_id as ConceitoAnteriorId, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
-                                cc.eh_regencia as ComponenteCurricularEhRegencia, wanf.*, fn.*, fa.*, ftd.*, ft.* from wf_aprovacao_nota_fechamento wanf 
+                                cc.eh_regencia as ComponenteCurricularEhRegencia, wanf.criado_rf as UsuarioSolicitanteRf, wanf.*, fn.*, fa.*, ftd.*, ft.* from wf_aprovacao_nota_fechamento wanf 
                             inner join fechamento_nota fn on fn.id = wanf.fechamento_nota_id 
                             inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
                             inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
                             inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
                             inner join componente_curricular cc on cc.id = fn.disciplina_id 
                             left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
-                            where wf_aprovacao_id = @wfAprovacaoId";
+                            where not wanf.excluido and wf_aprovacao_id = @wfAprovacaoId";
 
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamentoTurmaDto, WfAprovacaoNotaFechamento, FechamentoNota, FechamentoAluno, FechamentoTurmaDisciplina
                                      , FechamentoTurma, WfAprovacaoNotaFechamentoTurmaDto>(query
@@ -207,7 +207,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoNotaAprovacaoDto>> ObterNotasEmAprovacaoPorIdsFechamento(IEnumerable<long> Ids)
         {
             const string query = @" select coalesce(coalesce(w.nota,w.conceito_id),-1) as NotaEmAprovacao, w.fechamento_nota_id as Id 
-                           from wf_aprovacao_nota_fechamento w where w.fechamento_nota_id = ANY(@Ids)";
+                           from wf_aprovacao_nota_fechamento w where not w.excluido and w.fechamento_nota_id = ANY(@Ids)";
 
             return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i => i).ToArray() });
         }

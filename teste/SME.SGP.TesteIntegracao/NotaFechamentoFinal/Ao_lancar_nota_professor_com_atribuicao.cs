@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Xunit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 
@@ -26,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre Final - Deve lançar nota conceito pelo Professor com atribuição")]
         public async Task Deve_permitir_lancamento_nota_para_professor_com_atribuicao()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
@@ -43,9 +45,24 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await InserirPeriodoEscolarCustomizado(true);
 
             await ExecutarTeste(filtroNotaFechamento);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(5);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(5);
+            
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
         }
         
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre Final - Deve lançar nota conceito pelo Gestor")]
         public async Task Deve_permitir_lancamento_nota_para_gestor()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
@@ -56,6 +73,21 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
             await ExecutarTeste(filtroNotaFechamento);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(5);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(5);
+            
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
         }
 
         private async Task InserirPeriodoEscolarCustomizado(bool periodoEscolarValido = false)
@@ -70,55 +102,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
-        
-        private async Task InserirPeriodoAberturaCustomizado()
-        {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
-            await InserirNaBase(new PeriodoFechamento()
-                { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
-
-            await InserirNaBase(new PeriodoFechamentoBimestre()
-            {
-                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
-                PeriodoFechamentoId = 1, 
-                InicioDoFechamento = dataReferencia.AddDays(-209),
-                FinalDoFechamento =  dataReferencia.AddDays(-205)
-            });
-            
-            await InserirNaBase(new PeriodoFechamentoBimestre()
-            {
-                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
-                InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
-            });
-            
-            await InserirNaBase(new PeriodoFechamentoBimestre()
-            {
-                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
-                InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
-            });
-            
-            await InserirNaBase(new PeriodoFechamentoBimestre()
-            {
-                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_3,
-                PeriodoFechamentoId = 1, 
-                InicioDoFechamento = dataReferencia.AddDays(-38),
-                FinalDoFechamento =  dataReferencia.AddDays(-34)
-            });  
-            
-            await InserirNaBase(new PeriodoFechamentoBimestre()
-            {
-                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
-                PeriodoFechamentoId = 1, 
-                InicioDoFechamento = dataReferencia,
-                FinalDoFechamento =  dataReferencia.AddDays(4)
-            });  
-        }
-        
         private async Task InserirPeriodoReaberturaCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
@@ -171,15 +155,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
             
             await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarDto);
-        }
-        
-        private async Task ExecutarTesteComExcecao(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
-        {
-            await CriarDadosBase(filtroNotaFechamentoDto);
-
-            var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
-            
-            await ExecutarComandosFechamentoFinalComExcecao(fechamentoFinalSalvarDto);
         }
         
         private FechamentoFinalSalvarDto ObterFechamentoFinalSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)

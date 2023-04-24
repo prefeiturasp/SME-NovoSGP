@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             periodos.ToList().ForEach(p =>
             {
                 var frequenciaCorrespondente = frequenciaAlunoPeriodos.OrderByDescending(x => x.AlteradoEm ?? x.CriadoEm).FirstOrDefault(x => x.Bimestre == p.Bimestre);
-                frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente != null ? frequenciaCorrespondente.PercentualFrequencia : 100);
+                frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente != null ? frequenciaCorrespondente.PercentualFrequencia : 0);
             });
 
             return frequenciaAluno;

@@ -31,7 +31,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoBaseDto> Handle(ExcluirAulaUnicaCommand request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
 
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf), cancellationToken))
@@ -43,7 +42,7 @@ namespace SME.SGP.Aplicacao
             if (aula.WorkflowAprovacaoId.HasValue)
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, request.Usuario);
 
-            var filas = new string[]
+            var filas = new []
             {
                 RotasRabbitSgpAula.NotificacoesDaAulaExcluir,
                 RotasRabbitSgpFrequencia.FrequenciaDaAulaExcluir,
@@ -59,6 +58,8 @@ namespace SME.SGP.Aplicacao
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
 
+            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.Id),cancellationToken);
+            
             await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id), cancellationToken);
 
             await ExcluirArquivoAnotacaoFrequencia(request.AulaId);

@@ -294,13 +294,13 @@ namespace SME.SGP.Aplicacao
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
-                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequenciaFormatado;
                     }
                     else
                     {
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
-                        alunoDto.PercentualFrequencia = turmaPossuiFrequenciaRegistrada ? "100" : string.Empty;
+                        alunoDto.PercentualFrequencia = string.Empty;
                     }
 
                     // Carrega Frequencia do aluno
@@ -311,7 +311,7 @@ namespace SME.SGP.Aplicacao
                             if (!turmaPossuiFrequenciaRegistrada)
                                 throw new NegocioException("Não é possível registrar fechamento pois não há registros de frequência no bimestre.");
 
-                            var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
+                            var percentualFrequencia = frequenciaAluno == null ? 0 : frequenciaAluno.PercentualFrequencia;
                             var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, turma.AnoLetivo));
 
                             alunoDto.SinteseId = sinteseDto.Id;

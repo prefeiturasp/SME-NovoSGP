@@ -31,8 +31,8 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
         }
 
-        [Fact]
-        public async Task Altera_quantidade_de_aulas_com_recorrencia_no_bimestre_atual()
+        [Fact(DisplayName = "Aula - Deve permitir alterar a quantidade de aula recorrente no bimestre atual")]
+        public async Task Altera_quantidade_de_aulas_com_recorrente_no_bimestre_atual()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);
 
@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalAulasPorSemanasRecorrencia+1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aula - Deve permitir alterar a quantidade de aula recorrente para todos os bimestre")]
         public async Task Altera_quantidade_de_aulas_com_recorrencia_para_todos_bimestres()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1, false);
@@ -88,6 +88,34 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalAulasPorSemanasRecorrencia + 1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
 
+        }
+
+        [Fact(DisplayName = "Aula - Deve permitir alterar a quantidade de aula recorrente no bimestre atual")]
+        public async Task Editar_quantidade_aula_recorrente_com_recorrente_no_bimestre_atual()
+        {
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.RepetirBimestreAtual);
+
+            var dataAula = DATA_02_05.AddDays(7);
+            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual, dataAula);
+            
+            dataAula = dataAula.AddDays(7);
+            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual, dataAula);
+
+            await CriarPeriodoEscolarEAbertura();
+
+            var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
+
+            var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, 138, DATA_02_05);
+            aula.Quantidade = 2;
+            aula.Id = 1;
+
+            var retorno = await usecase.Executar(aula);
+            retorno.ShouldNotBeNull();
+            retorno.Mensagens.Contains("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.").ShouldBe(true);
+            var aulas = ObterTodos<Dominio.Aula>();
+            aulas.All(aula => aula.Quantidade == 2).ShouldBe(true);
         }
 
         private async Task CriarPeriodoEscolarEAbertura()

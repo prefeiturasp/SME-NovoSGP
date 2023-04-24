@@ -55,7 +55,11 @@ namespace SME.SGP.Aplicacao
 
             bool temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
 
-            return await MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto, temEventoDeRecesso);
+            var compensacoesAusenciasAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id));
+            if (compensacoesAusenciasAulas == null)
+                compensacoesAusenciasAulas = new List<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
+
+            return await MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto, temEventoDeRecesso, compensacoesAusenciasAulas.Any());
         }
 
         private async Task<bool> AulaDentroDoPeriodo(string turmaCodigo, DateTime dataAula)
@@ -104,7 +108,7 @@ namespace SME.SGP.Aplicacao
             return disciplina != null;
         }
 
-        private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto, bool temEventoDeRecesso)
+        private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto, bool temEventoDeRecesso, bool possuiCompensacao)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -134,7 +138,8 @@ namespace SME.SGP.Aplicacao
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
                           || usuarioLogado.EhProfessorPosl()))
-                          || (usuarioLogado.EhProfessorPap() && aula.EhPAP)
+                          || (usuarioLogado.EhProfessorPap() && aula.EhPAP),
+                PossuiCompensacao = possuiCompensacao
             };
 
             return dto;

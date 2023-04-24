@@ -426,5 +426,10 @@ namespace SME.SGP.Dominio
             if (!regexSenha.IsMatch(novaSenha))
                 throw new NegocioException("A senha deve conter pelo menos 1 letra maiúscula, 1 minúscula, 1 número e/ou 1 caractere especial.");
         }
+
+        public string ObterCodigoRfLogin()
+        {
+            return CodigoRf ?? Login;
+        }
     }
 }

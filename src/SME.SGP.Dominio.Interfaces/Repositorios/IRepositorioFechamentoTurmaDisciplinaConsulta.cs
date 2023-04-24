@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Elastic.Apm.Api;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 
@@ -27,5 +29,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<(long fechamentoTurmaDisciplinaId, long periodoEscolarId, string codigoRf)>> ObterFechamentosTurmaDisciplinaEmProcessamentoComTempoExpirado(DateTime dataInicio, int tempoConsideradoExpiracaoMinutos);
         Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplinaPorId(long id);
         Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentoTurmaDisciplinaPorTurmaidDisciplinaId(string turmaCodigo, long disciplinaId, int? bimestre = 0);
+        Task<FechamentoTurmaDisciplinaPendenciaDto> ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(string turmaCodigo, long disciplinaId, int bimestre, SituacaoFechamento[] situacoesFechamento);
+        Task<bool> VerificaExistenciaFechamentoTurmaDisciplinPorTurmaDisciplinaBimestreSituacao(long turmaId, long disciplinaId, long periodoId, SituacaoFechamento[] situacoesFechamento);
+        Task<IEnumerable<FechamentoTurmaDisciplinaPendenciaDto>> ObterFechamentosTurmaDisciplinaDTOPorUeSituacao(long idUe, SituacaoFechamento[] situacoesFechamento, long[] fechamentoTurmaDisciplinaIdsIgnorados = null);
+
     }
 }

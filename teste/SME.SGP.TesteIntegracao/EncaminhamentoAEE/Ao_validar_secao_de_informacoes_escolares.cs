@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.CodigoAluno.ShouldBe(CODIGO_ALUNO_1);
             informacoes.DescricaoNecessidadeEspecial.ShouldBe("Cego");
-            informacoes.FrequenciaGlobal.ShouldBe("100");
+            informacoes.FrequenciaGlobal.ShouldBe("100,00");
             informacoes.FrequenciaAlunoPorBimestres.ShouldNotBeNull();
             var frenquenciaBimestre = informacoes.FrequenciaAlunoPorBimestres.FirstOrDefault();
             frenquenciaBimestre.Frequencia.ShouldBe(100);

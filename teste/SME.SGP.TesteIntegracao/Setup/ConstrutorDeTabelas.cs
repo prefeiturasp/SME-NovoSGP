@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             var scripts = ObterScripts();
             DirectoryInfo d = new DirectoryInfo(scripts);
 
-            var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name)));
+            var files = d.GetFiles("*.sql").OrderBy(a => int.Parse(CleanStringOfNonDigits_V1(a.Name.Replace("\uFEFF",""))));
 
             foreach (var file in files)
             {
@@ -127,9 +127,18 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         private string CleanStringOfNonDigits_V1(string s)
         {
-            s = s.ToUpper().Replace("V", "");
-            var clearStr = s.Split("__");
-            return clearStr[0];
+            try
+            {
+                s = s.ToUpper().Replace("V", "");
+                var clearStr = s.Split("__");
+                return clearStr[0];
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
 
         private string ObterScripts()

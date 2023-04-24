@@ -15,12 +15,10 @@ namespace SME.SGP.Dados
 {
     public class RepositorioRegistroFrequenciaAluno : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
-        private readonly ISgpContextConsultas sgpContextConsultas;
+        private readonly ISgpContext sgpContext;
 
-        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria, ISgpContextConsultas sgpContextConsultas) : base(conexao, servicoAuditoria)
-        {
-            this.sgpContextConsultas = sgpContextConsultas ?? throw new ArgumentNullException(nameof(sgpContextConsultas));
-        }
+        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        {}
 
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada)
         {
@@ -92,81 +90,11 @@ namespace SME.SGP.Dados
             return true;
         }
 
-        public async Task ExcluirVarios(long[] idsParaExcluir)
+        public async Task ExcluirRegistroFrequenciaAlunoPorAulaECodigosAlunos(long aulaId, string[] codigosAlunos)
         {
-            var query = "delete from registro_frequencia_aluno where id = any(@idsParaExcluir)";
+            var query = @"DELETE from registro_frequencia_aluno WHERE NOT excluido AND aula_id = @aulaId and codigo_aluno = any(@codigosAlunos)";
 
-            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
-        }
-
-        public async Task ExcluirVariosLogicamente(long[] idsParaExcluir)
-        {
-            var query = "update registro_frequencia_aluno set excluido = true where id = any(@idsParaExcluir)";
-
-            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
-        }
-
-        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> alunos, bool somenteAusencias = false, string professor = null)
-        {
-            var query = "with lista1 as (";
-            var listaAlunos = alunos.ToList();
-
-            for (int i = 0; i < listaAlunos.Count; i++)
-            {
-                query += $@"
-                    select a.id aula_id,
-                           pe.id periodo_id,
-                      	   pe.periodo_inicio,
-                      	   pe.periodo_fim,
-                      	   pe.bimestre,
-                      	   rfa.codigo_aluno,
-                      	   a.disciplina_id, 
-                      	   rfa.valor,  	
-                      	   rfa.criado_em,
-                           rfa.numero_aula,
-                           rfa.id registro_frequencia_aluno_id                    	   
-                      	from aula a
-                      		inner join periodo_escolar pe
-                      			on a.tipo_calendario_id = pe.tipo_calendario_id
-                      		inner join registro_frequencia_aluno rfa 
-                      			on a.id = rfa.aula_id								   
-                    where not a.excluido and
-                          not rfa.excluido and
-						  rfa.codigo_aluno = '{listaAlunos[i].codigo}' and
-                    	  a.turma_id = any(@turmasId) and
-                          {(!string.IsNullOrWhiteSpace(professor) ? "a.professor_rf = @professor and" : string.Empty)}
-                          @dataAula::date between pe.periodo_inicio and pe.periodo_fim and
-                          a.data_aula::date between pe.periodo_inicio and pe.periodo_fim and
-                          a.data_aula::date > '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
-                          {(listaAlunos[i].dataSituacao.HasValue ? $" and a.data_aula::date <= '{listaAlunos[i].dataSituacao.Value:yyyy-MM-dd}'::date" : string.Empty)}";
-
-                query += i + 1 == listaAlunos.Count ? string.Empty : " union ";
-            }
-            
-            query += $@"), lista2 as (
-                    select *,
-                           row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id desc) sequencia
-                    from lista1)
-                    select {(somenteAusencias ? string.Empty : "count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 1) TotalPresencas,")}
-                    	   count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 2) TotalAusencias,
-                    	   {(somenteAusencias ? string.Empty : "count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 3) TotalRemotos,")}
-                    	   tmp.periodo_id as PeriodoEscolarId,
-                    	   tmp.periodo_inicio as PeriodoInicio,
-                    	   tmp.periodo_fim as PeriodoFim,
-                    	   tmp.bimestre,
-                           tmp.codigo_aluno as AlunoCodigo,
-                           tmp.disciplina_id as ComponenteCurricularId
-                    	from lista2 tmp
-                    where tmp.sequencia = 1	                               
-                    group by tmp.periodo_id,
-                        	 tmp.periodo_inicio,
-                        	 tmp.periodo_fim,
-                        	 tmp.bimestre,
-                        	 tmp.codigo_aluno,
-                        	 tmp.disciplina_id;";
-
-            return await sgpContextConsultas.Conexao
-                .QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId, professor }, commandTimeout: 120);
+            await database.Conexao.ExecuteAsync(query, new { aulaId, codigosAlunos });
         }
     }
 }

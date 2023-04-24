@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
 
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve retornar lista com frequencia")]
         public async Task Deve_Retornar_Lista_Com_Frequencia()
         {
             await CriarUsuarioLogado();
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
             Assert.IsType<OkObjectResult>(retorno);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Dev retornar código 200 - sem dados")]
         public async Task Deve_Retornar_200_Sem_Dados()
         {
             await CriarUsuarioLogado();

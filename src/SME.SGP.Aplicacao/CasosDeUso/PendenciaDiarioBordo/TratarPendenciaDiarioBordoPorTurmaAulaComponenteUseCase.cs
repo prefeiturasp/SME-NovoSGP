@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
             var tipoEscola = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(turma.Ue.CodigoUe));
 
             // Não gerar pendências para turmas de escolas do tipo CEI.
-            if (tipoEscola == TipoEscola.CEIDIRET || tipoEscola == TipoEscola.CEIINDIR || tipoEscola == TipoEscola.CEUCEI)
-                return false;
+            var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(tipoEscola, turma.Ue.CodigoUe));
+            if (ignorarGeracaoPendencia) return false;
 
             var pendenciaProfessorDisciplinaCache = new List<PendenciaProfessorComponenteCurricularDto>();
             long pendenciaId = 0;

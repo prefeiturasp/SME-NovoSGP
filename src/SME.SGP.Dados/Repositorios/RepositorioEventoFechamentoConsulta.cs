@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -151,6 +152,38 @@ namespace SME.SGP.Dados.Repositorios
             };
 
             return await database.Conexao.QueryAsync<PeriodoFechamentoBimestre>(query.ToString(), parametros);
+        }
+
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodoFechamentoEmAbertoTurma(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)
+        {
+            var query = @"  select distinct  * from (     
+                         select pe.id, pe.tipo_calendario_id, pe.bimestre, pe.periodo_inicio, pe.periodo_fim
+                          from periodo_fechamento_bimestre pfb  
+                          join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+                          join tipo_calendario tc on pe.tipo_calendario_id = tc.id
+                          inner join turma t on t.ano_letivo = tc.ano_letivo 
+                         where pfb.inicio_fechamento <= @dataReferencia
+                           and pfb.final_fechamento >= @dataReferencia
+                           and turma_id = @codigoTurma
+                           and tc.modalidade = @modalidade
+                           and not tc.excluido
+                        union all
+                        select pe.id, pe.tipo_calendario_id, pe.bimestre, pe.periodo_inicio, pe.periodo_fim
+                          from fechamento_reabertura fr 
+                          left join ue on fr.ue_id = ue.id
+                          join fechamento_reabertura_bimestre frb on frb.fechamento_reabertura_id = fr.id
+                          join periodo_escolar pe on pe.tipo_calendario_id = fr.tipo_calendario_id and pe.bimestre = frb.bimestre
+                          join tipo_calendario tc on pe.tipo_calendario_id = tc.id
+                          inner join turma t on t.ano_letivo = tc.ano_letivo 
+                         where fr.inicio <= @dataReferencia
+                           and fr.fim >= @dataReferencia
+                           and turma_id = @codigoTurma
+                           and tc.modalidade = @modalidade
+                           and (ue.id is null or ue.id = t.ue_id)
+                           and not tc.excluido
+                           ) as periodos";
+
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { codigoTurma, dataReferencia, modalidade });
         }
     }
 }

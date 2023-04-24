@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
     {
         public int NumeroAula { get; set; }
         public int TipoFrequencia { get; set; }
-        public long AlunoCodigo { get; set; }
-        public long FrequenciaAlunoCodigo { get; set; }
+        public string AlunoCodigo { get; set; }
+        public long FrequenciaAlunoId { get; set; }
     }
 }

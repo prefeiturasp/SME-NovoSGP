@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.FechamentoNotaId).ToColumn("fechamento_nota_id");
             Map(c => c.Nota).ToColumn("nota");
             Map(c => c.ConceitoId).ToColumn("conceito_id");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }
