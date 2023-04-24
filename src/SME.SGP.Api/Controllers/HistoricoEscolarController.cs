@@ -26,5 +26,17 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await historicoEscolarUseCase.Executar(filtroHistoricoEscolarDto));
         }
+
+        [HttpGet]
+        [Route("aluno/{codigoAluno}/observacao-complementar")]
+        [ProducesResponseType(typeof(HistoricoEscolarObservacaoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.HE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObservacaoHistoricoEscolar(string codigoAluno,
+            [FromServices] IObterHistoricoEscolarObservacaoUseCase obterHistoricoEscolarObservacaoUseCase)
+        {
+            return Ok(await obterHistoricoEscolarObservacaoUseCase.Executar(codigoAluno));
+        }
     }
 }
