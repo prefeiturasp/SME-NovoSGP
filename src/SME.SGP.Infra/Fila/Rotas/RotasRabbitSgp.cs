@@ -19,6 +19,8 @@
         public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
         public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
+        public const string ExclusaoCompensacaoAusenciaAlunoEAula = "sgp.compensacao.ausencia.aluno.e.aula.excluir";
+        public const string ExclusaoCompensacaoAusenciaPorIds = "sgp.compensacao.ausencia.excluir";
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
         public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
@@ -44,7 +46,10 @@
         public const string ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA = "sgp.atualizar.informacoes.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA = "sgp.atualizar.turma.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA = "sgp.atualizar.endereco.encaminhamento.naapa";
-        
+        public const string ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA = "sgp.atualizacao.situacao.aluno.encaminhamento.naapa.notificar";
+        public const string ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA = "sgp.transferencia.ue.dre.encaminhamento.naapa.notificar";
+        public const string ExecutarAtualizacaoDasTurmasProgramaDoEncaminhamentoNAAPA = "sgp.atualizar.turmas.programa.encaminhamento.naapa";
+
         #region Relatórios
 
         public const string RotaRelatoriosProntos = "sgp.relatorios.prontos.notificar";
@@ -132,5 +137,7 @@
         public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.remover.atribuicao.responsaveis.aspp.dre";
 
         #endregion
+
+        public const string ExecutarGravarObservacaoHistorioEscolar = "sgp.executar.gravar.observacao.historico.escolar";
     }
 }

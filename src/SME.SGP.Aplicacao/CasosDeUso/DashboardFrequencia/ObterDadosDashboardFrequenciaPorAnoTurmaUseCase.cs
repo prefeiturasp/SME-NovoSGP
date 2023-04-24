@@ -69,75 +69,47 @@ namespace SME.SGP.Aplicacao
             else if (dreId != -99)
                 dreCodigo = await mediator.Send(new ObterCodigoDREPorUeIdQuery(dreId));
 
-            var totalEstudantesAgrupado = await ObterQuantidadeAlunosMatriculadosEol(anoLetivo, ueId, modalidade, anoTurma, dreCodigo, ueCodigo, visaoDre);
-            return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia, totalEstudantesAgrupado, visaoDre);
+            return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia);
         }
 
-        private async Task<IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>>> ObterQuantidadeAlunosMatriculadosEol(int anoLetivo, long ueId, int modalidade, string anoTurma, string dreCodigo, string ueCodigo, bool visaoDre)
-        {
-            var totalAlunos = await mediator.Send(new ObterQuantidadeAlunosEolMatriculadosQuery(anoLetivo, dreCodigo, ueCodigo, modalidade, anoTurma));
-
-            if (totalAlunos == null || !totalAlunos.Any())
-                return null;
-
-            IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>> totalEstudantesAgrupado;
-
-            if (visaoDre)
-                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.DreCodigo);
-            else if (ueId != -99)
-                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.TurmaComModalidade());
-            else
-                totalEstudantesAgrupado = totalAlunos.GroupBy(c => c.AnoComModalidade());
-
-            return totalEstudantesAgrupado;
-        }
-
-        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, string tagTotalFrequencia, IEnumerable<IGrouping<string, QuantidadeAlunoMatriculadoDTO>> totalEstudantesAgrupado, bool visaoDre)
+        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, string tagTotalFrequencia)
         {
             var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
 
             foreach (var frequenciasGroup in frequenciasAlunos.GroupBy(f => f.Descricao))
             {
                 var frequencia = frequenciasGroup.FirstOrDefault();
+                var totalPresentes = frequenciasGroup.Select(f => f.Presentes).Sum();
+                var totalAusentes = frequenciasGroup.Select(f => f.Ausentes).Sum();
+                var totalRemotos = frequenciasGroup.Select(f => f.Remotos).Sum();
+
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Presentes.Name(),
                     TurmaAno = frequencia.Descricao,
-                    Quantidade = frequenciasGroup.Select(f => f.Presentes).Sum()
+                    Quantidade = totalPresentes
                 }); ;
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Remotos.Name(),
                     TurmaAno = frequencia.Descricao,
-                    Quantidade = frequenciasGroup.Select(f => f.Remotos).Sum()
+                    Quantidade = totalRemotos
                 });
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
                     Descricao = TipoFrequenciaDashboard.Ausentes.Name(),
                     TurmaAno = frequencia.Descricao,
-                    Quantidade = frequenciasGroup.Select(f => f.Ausentes).Sum()
+                    Quantidade = totalAusentes
                 });
 
-                if (visaoDre)
+                dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
-                    dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
-                    {
-                        Descricao = TipoFrequenciaDashboard.TotalEstudantes.Name(),
-                        TurmaAno = frequencia.Descricao,
-                        Quantidade = totalEstudantesAgrupado != null ? (totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequencia.DreCodigo) != null ? totalEstudantesAgrupado.First(c => c.Key == frequencia.DreCodigo).Select(x => x.Quantidade).Sum() : 0) : 0
-                    });
-                }
-                else
-                {
-                    dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
-                    {
-                        Descricao = TipoFrequenciaDashboard.TotalEstudantes.Name(),
-                        TurmaAno = frequencia.Descricao,
-                        Quantidade = totalEstudantesAgrupado != null ? (totalEstudantesAgrupado.FirstOrDefault(c => c.Key == frequencia.Descricao) != null ? totalEstudantesAgrupado.First(c => c.Key == frequencia.Descricao).Select(x => x.Quantidade).Sum() : 0) : 0
-                    });
-                }
+                    Descricao = TipoFrequenciaDashboard.TotalEstudantes.Name(),
+                    TurmaAno = frequencia.Descricao,
+                    Quantidade = totalPresentes + totalAusentes + totalRemotos
+                });
             }
 
             return new GraficoFrequenciaAlunoDto()

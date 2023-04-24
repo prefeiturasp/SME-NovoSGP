@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -26,6 +27,12 @@ namespace SME.SGP.Infra
                 else
                     return "";
             }
+        }
+
+        public IEnumerable<int> MesesDoPeriodo()
+        {
+            for (int mes = PeriodoInicio.Month; mes <= PeriodoFim.Month; mes++)
+                yield return mes;
         }
     }
 }

@@ -17,6 +17,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<NotificacaoUsuarioDto>> ObterUsuariosNotificacoesPorIds(long[] notificacoesIds);
         Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis();
         Task<string> ObterUsuarioNotificacaoPorId(long id);
-        Task<Notificacao> ObterPorCodigo(long codigo);  
+        Task<Notificacao> ObterPorCodigo(long codigo);
+        Task<IEnumerable<Notificacao>> ObterPorWorkFlowAprovacaoId(long requestWorkFlowAprovacaoId);
     }
 }

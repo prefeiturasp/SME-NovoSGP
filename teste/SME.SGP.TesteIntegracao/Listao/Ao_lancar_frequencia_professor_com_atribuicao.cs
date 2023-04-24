@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        //[Fact(DisplayName = "Lançar frequência antes da data de encerramento da atribuição")]
+        [Fact(DisplayName = "Frequência Listão - Deve lançar frequência antes da data de encerramento da atribuição")]
         public async Task Deve_lancar_frquencia_professor_antes_encerramento_atribuicao()
         {
             var filtroListao = new FiltroListao
@@ -44,12 +44,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 TurmaHistorica = false,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
-
-            await ExecutarTeste(filtroListao);            
-        }
-        
-        private async Task ExecutarTeste(FiltroListao filtroListao)
-        {
+          
             await CriarDadosBasicos(filtroListao);
 
             var listaAulaId = ObterTodos<Dominio.Aula>().Select(c => c.Id).Distinct().ToList();
@@ -63,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             useCaseSalvar.ShouldNotBeNull();
             var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
             retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBeGreaterThan(0);
+            retorno.AulasIDsComErros.Any().ShouldBeFalse();
         }
     }
 }

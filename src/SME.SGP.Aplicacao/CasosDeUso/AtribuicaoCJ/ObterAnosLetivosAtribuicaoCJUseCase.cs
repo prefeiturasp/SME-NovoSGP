@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
         {
             var codigoRf = await mediator.Send(new ObterUsuarioLogadoRFQuery());
 
-            var listaRetorno = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, null, 0,
-                codigoRf, null, true));
+            var listaRetorno = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, null, 0,
+                codigoRf, null, true))).ToList();
 
-            if (listaRetorno == null || !listaRetorno.Any())
+            if (!listaRetorno.Any())
                 return null;
 
             var anosLetivos = listaRetorno.Select(a => a.Turma.AnoLetivo).Distinct().OrderByDescending(a => a);

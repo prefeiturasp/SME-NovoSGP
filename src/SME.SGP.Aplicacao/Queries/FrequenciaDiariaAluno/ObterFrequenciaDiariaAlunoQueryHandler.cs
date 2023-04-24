@@ -43,8 +43,10 @@ namespace SME.SGP.Aplicacao
                 professorConsiderado = componentesCurricularesTerritorioEquivalentes.First().professor;
             }
 
+            var professorRfAula = turma.EhTurmaInfantil ? string.Empty : professorConsiderado;
+            
             var quantidadeDiasPorTipoFrequencia = await repositorioFrequenciaDiaria.ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao, bimestres, request.AlunoCodigo.ToString()
-                , request.TurmaId, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), professorConsiderado);
+                , request.TurmaId, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), professorRfAula);
 
             var lista = MapearMotivoAusencia(quantidadeDiasPorTipoFrequencia.Items);
             retornoPaginado = new PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>()

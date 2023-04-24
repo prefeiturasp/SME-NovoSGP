@@ -97,13 +97,14 @@ namespace SME.SGP.Aplicacao
         {
             int somatorioAusencias = 0;
             int somatorioAulasRealizadas = 0;
+            int somatorioCompensacoes = 0;
             double? mediaFrequencia;
             var bimestres = new List<FrequenciaAlunoBimestreDto>();
 
             somatorioAulasRealizadas = (dados1 == null ? 0 : dados1.AulasRealizadas) + (dados2 == null ? 0 : dados2.AulasRealizadas);
             somatorioAusencias = (dados1 == null ? 0 : dados1.Ausencias) + (dados2 == null ? 0 : dados2.Ausencias);
-            mediaFrequencia = ((dados1 == null ? 0 : dados1.Frequencia) + (dados2 == null ? 0 : dados2.Frequencia));
-            mediaFrequencia = (dados1 != null && dados2 != null) ? (mediaFrequencia / 2) : mediaFrequencia;
+            somatorioCompensacoes = (dados1 == null ? 0 : dados1.Compensacoes) + (dados2 == null ? 0 : dados2.Compensacoes);
+            mediaFrequencia = (dados1 ?? dados2).CalcularPercentualFrequencia(somatorioAulasRealizadas, somatorioAusencias - somatorioCompensacoes);
 
             mediaFrequencia = mediaFrequencia != null ? Math.Round(mediaFrequencia.Value, 2) : mediaFrequencia;
 
@@ -113,7 +114,7 @@ namespace SME.SGP.Aplicacao
                 Ausencias = somatorioAusencias,
                 AulasRealizadas = somatorioAulasRealizadas,
                 Semestre = bimestreReferencia <= 2 ? 1 : 2,
-                Bimestre = "0",
+                Bimestre = "0"
             });
 
             return bimestres;

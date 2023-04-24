@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
             var anoLetivoAnterior = await mediator
                 .Send(new ObterAnoLetivoUltimoTipoCalendarioPorAnoReferenciaQuery(request.AnoLetivo, request.ModalidadeTipoCalendario));
             
-            await repositorioParametrosSistema
+            var inseriuRegistro = await repositorioParametrosSistema
                 .ReplicarParametrosAnoAnteriorAsync(request.AnoLetivo, anoLetivoAnterior);
 
-            return true;
+            return inseriuRegistro > 0;
         }
     }
 }

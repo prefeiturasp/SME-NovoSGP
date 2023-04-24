@@ -23,6 +23,7 @@
         public const string RotaExecutaPendenciasAulaAvaliacao = "sgp.pendencias.aulas.avaliacao.executa";
         public const string RotaExecutaPendenciasAulaFrequencia = "sgp.pendencias.aulas.frequencia.executa";
         public const string RotaExecutaPendenciasAulaPlanoAula = "sgp.pendencias.aulas.plano.aula.executa";
+        public const string RotaAvaliarPendenciasAulaDiarioClasseFechamento = "sgp.pendencias.aulas.diario.classe.fechamento.avaliar";
         public const string RotaExecutaExclusaoPendenciasAula = "sgp.pendencias.gerais.pendencias.aula.excluir";
         public const string RotaNotificacaoAlunosFaltososDre = "sgp.aulas.alunos.faltosos.Dre.notificar";
         public const string RotaNotificacaoAlunosFaltososDreUe = "sgp.aulas.alunos.faltosos.Dre.Ue.notificar";

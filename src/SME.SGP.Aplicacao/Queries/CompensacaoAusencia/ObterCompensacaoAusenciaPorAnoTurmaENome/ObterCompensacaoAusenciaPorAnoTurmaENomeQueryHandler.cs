@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<CompensacaoAusencia> Handle(ObterCompensacaoAusenciaPorAnoTurmaENomeQuery request, CancellationToken cancellationToken)
-            => await repositorioCompensacaoAusenciaConsulta.ObterPorAnoTurmaENome(request.AnoLetivo, request.TurmaId, request.Atividade, request.Id);
+            => await repositorioCompensacaoAusenciaConsulta.ObterPorAnoTurmaENome(request.AnoLetivo, request.TurmaId, request.Atividade, request.Id,request.DisciplinaId);
     }
 }
 

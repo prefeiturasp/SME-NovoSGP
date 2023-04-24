@@ -36,56 +36,174 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito lançada pelo Professor Titular em ano atual")]
         public async Task Deve_permitir_excluir_nota_titular_fundamental()
         {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(),ANO_7);
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(),ANO_1);
 
-            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-        }
+            await CriarDadosBase(filtroNotaFechamento);
 
-        [Fact]
-        public async Task Deve_permitir_excluir_nota_cp_fundamental()
-        {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_7);
-
-            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-        }
-
-        [Fact]
-        public async Task Deve_permitir_excluir_nota_diretor_fundamental()
-        {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilDiretor(), ANO_7);
-
-            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-        }
-
-        [Fact]
-        public async Task Deve_permitir_excluir_nota_titular_regencia_classe_fundamental()
-        {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_1);
-
-            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
-        }
-
-        private async Task ExecutarTesteInsercaoELimpeza(FiltroFechamentoNotaDto filtroNotaFechamentoDto, long disciplina)
-        {
-            await CriarDadosBase(filtroNotaFechamentoDto);
-
-            var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(disciplina), disciplina);
+            var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
             var fechamentoDto = dto.FirstOrDefault();
 
             retorno.ShouldNotBeNull();
 
-            fechamentoDto.Id = retorno.FirstOrDefault().Id;            
+            fechamentoDto.Id = retorno.FirstOrDefault().Id;
+
+            foreach (var fechamentoAluno in fechamentoDto.NotaConceitoAlunos)
+            {
+                fechamentoAluno.ConceitoId = null;
+            }
 
             await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(8);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(8);
+            
+            historicoNotas.Count(w=> !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w=> w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            
+            historicoNotas.Any(w=> w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+        }
+
+        [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito lançada pelo CP em ano atual")]
+        public async Task Deve_permitir_excluir_nota_cp_fundamental()
+        {
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilCP(),ANO_1);
+
+            await CriarDadosBase(filtroNotaFechamento);
+
+            var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
+            var fechamentoDto = dto.FirstOrDefault();
+
+            retorno.ShouldNotBeNull();
+
+            fechamentoDto.Id = retorno.FirstOrDefault().Id;
+
+            foreach (var fechamentoAluno in fechamentoDto.NotaConceitoAlunos)
+            {
+                fechamentoAluno.ConceitoId = null;
+            }
+
+            await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(8);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(8);
+            
+            historicoNotas.Count(w=> !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w=> w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            
+            historicoNotas.Any(w=> w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+        }
+
+        [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito lançada pelo DIRETOR em ano atual")]
+        public async Task Deve_permitir_excluir_nota_diretor_fundamental()
+        {
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilDiretor(),ANO_1);
+
+            await CriarDadosBase(filtroNotaFechamento);
+
+            var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
+            var fechamentoDto = dto.FirstOrDefault();
+
+            retorno.ShouldNotBeNull();
+
+            fechamentoDto.Id = retorno.FirstOrDefault().Id;
+
+            foreach (var fechamentoAluno in fechamentoDto.NotaConceitoAlunos)
+            {
+                fechamentoAluno.ConceitoId = null;
+            }
+
+            await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(8);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(8);
+            
+            historicoNotas.Count(w=> !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w=> w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            
+            historicoNotas.Any(w=> w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+        }
+
+        [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito de regência de classe fundamental em ano atual")]
+        public async Task Deve_permitir_excluir_nota_titular_regencia_classe_fundamental()
+        {
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_1);
+
+            await CriarDadosBase(filtroNotaFechamento);
+
+            var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
+            var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
+            var fechamentoDto = dto.FirstOrDefault();
+
+            retorno.ShouldNotBeNull();
+
+            fechamentoDto.Id = retorno.FirstOrDefault().Id;
+
+            foreach (var fechamentoAluno in fechamentoDto.NotaConceitoAlunos)
+            {
+                fechamentoAluno.ConceitoId = null;
+            }
+
+            await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(8);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(8);
+            
+            historicoNotas.Count(w=> !w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            historicoNotas.Count(w=> w.ConceitoAnteriorId.HasValue).ShouldBe(4);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.P).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.NS).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.ConceitoAnteriorId.HasValue && w.ConceitoNovoId == (long)ConceitoValores.S).ShouldBeTrue();
+            
+            historicoNotas.Any(w=> w.Id == 5 && w.ConceitoAnteriorId == (long)ConceitoValores.P && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 6 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 7 && w.ConceitoAnteriorId == (long)ConceitoValores.NS && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 8 && w.ConceitoAnteriorId == (long)ConceitoValores.S && !w.ConceitoNovoId.HasValue).ShouldBeTrue();
         }
 
         private List<FechamentoNotaDto> ObterListaDeFechamentoConceito(long disciplina)

@@ -7,6 +7,7 @@ using System.Data;
 using System.Text;
 using Dapper.FluentMap;
 using Xunit;
+using System.Globalization;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -37,7 +38,13 @@ namespace SME.SGP.TesteIntegracao.Setup
             Services.AddMemoryCache();
             
             FluentMapper.EntityMaps.Clear();
-            
+
+            var culture = CultureInfo.CreateSpecificCulture("pt-BR");
+
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
             new RegistradorDependencias().Registrar(Services, config);
         }
 

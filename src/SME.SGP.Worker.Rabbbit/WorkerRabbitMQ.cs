@@ -107,6 +107,12 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA, new ComandoRabbit("Atualiza informações do encaminhamento NAAPA", typeof(IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA, new ComandoRabbit("Atualiza turma do encaminhamento NAAPA", typeof(IAtualizarTurmaDoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA, new ComandoRabbit("Atualiza Endereço do encaminhamento NAAPA", typeof(IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA, new ComandoRabbit("Notifica responsáveis sobre inativação de aluno na turma do encaminhamento NAAPA", typeof(INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA, new ComandoRabbit("Notifica responsáveis sobre transferencia do aluno entre ues e dres do encaminhamento NAAPA", typeof(INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDasTurmasProgramaDoEncaminhamentoNAAPA, new ComandoRabbit("Atualiza Turmas de Programa do encaminhamento NAAPA", typeof(IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, new ComandoRabbit("Executar a gravação das observações complementares histórico escolar", typeof(IExecutarGravarHistoricoEscolarObservacaoUseCase)));
+            Comandos.Add(RotasRabbitSgp.ExclusaoCompensacaoAusenciaAlunoEAula, new ComandoRabbit("Executa exclusão lógica de compensações de ausências aluno e aula por aula", typeof(IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase)));
+            Comandos.Add(RotasRabbitSgp.ExclusaoCompensacaoAusenciaPorIds, new ComandoRabbit("Executa exclusão lógica de compensações de ausências que não tem compensação ausência aluno e aula por ids", typeof(IExcluirCompensacaoAusenciaPorIdsUseCase)));
         }
     }
 }

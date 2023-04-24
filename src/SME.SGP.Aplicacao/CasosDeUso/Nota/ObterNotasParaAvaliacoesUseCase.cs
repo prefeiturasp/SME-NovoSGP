@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-        
+
         public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -167,8 +167,6 @@ namespace SME.SGP.Aplicacao
 
             var frequenciasDosAlunos = await mediator
                 .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
-
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, new string[] { filtro.DisciplinaCodigo.ToString() }, filtro.PeriodoEscolarId));
 
             PeriodoFechamentoVigenteDto periodoFechamentoBimestre = null;
 
@@ -353,13 +351,8 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var frequenciaAluno = frequenciasDosAlunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                if (frequenciaAluno == null && turmaPossuiFrequenciaRegistrada)
-                    notaConceitoAluno.PercentualFrequencia = "100";
+                notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequenciaFormatado : "";
 
-                else
-                    notaConceitoAluno.PercentualFrequencia = frequenciaAluno != null ?
-                                                   (Math.Round(frequenciaAluno.PercentualFrequencia, 2)).ToString() :
-                                                   "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
 
@@ -372,7 +365,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                                   turmaCompleta.CodigoTurma,
                                                                                                                                   turmaCompleta.TipoTurma == TipoTurma.Programa,
                                                                                                                                   componenteReferencia.Regencia);
-            }               
+            }
 
             foreach (var avaliacao in atividadesAvaliativasdoBimestre)
             {

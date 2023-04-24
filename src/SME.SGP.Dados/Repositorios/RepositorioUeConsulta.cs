@@ -404,6 +404,24 @@ namespace SME.SGP.Dados.Repositorios
             }, new { codigoUes });
         }
 
+        public async Task<IEnumerable<TodosUesIdsComPendenciaCalendarioDto>> ObterTodosUesIdComPendenciasCalendario(int anoLetivo)
+        {
+            var query = @"select
+                                p.id as PendenciaId,
+		                        t.ue_id as UeId,
+	                            t.ano_letivo as AnoLetivo
+                        from pendencia p
+	                        join pendencia_aula pa on p.id = pa.pendencia_id
+	                        inner join aula a on a.id = pa.aula_id
+	                        inner join turma t on t.turma_id = a.turma_id
+                        where
+	                        not p.excluido
+	                        and p.tipo in (11,12,13)
+	                        and p.situacao in (1,3)
+	                        and t.ano_letivo = @anoLetivo ";
+            return await contexto.QueryAsync<TodosUesIdsComPendenciaCalendarioDto>(query, new {anoLetivo});
+        }
+
         public Task<IEnumerable<long>> ObterIdsPorDre(long dreId)
         {
             var query = "select id from UE where dre_id = @dreId";

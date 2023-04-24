@@ -13,5 +13,7 @@ namespace SME.SGP.Infra
         public int TotalPresencas { get; set; }
         public string AlunoCodigo { get; set; }
         public string ComponenteCurricularId { get; set; }
+
+        public int TotalAulas => TotalAusencias + TotalRemotos + TotalPresencas;
     }
 }

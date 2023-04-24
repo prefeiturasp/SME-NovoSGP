@@ -105,6 +105,18 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var frequenciaAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, new string[] { turma.CodigoTurma }, tipoCalendarioId,informacoesAluno != null ? informacoesAluno.DataMatricula : null, bimestre));
 
+            var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
+
+            if (fechamentoTurma != null) turma = fechamentoTurma?.Turma;
+            else
+            {
+                if (bimestre > 0)
+                    periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+            }
+
+            var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, new string[] { turma.CodigoTurma }, disciplinas.Select(d => !d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : d.CodigoComponenteTerritorioSaber.ToString()).ToArray(),
+                periodoEscolar?.Id));
+
             if (fechamentoTurma != null)
                 turma = fechamentoTurma.Turma;
 
@@ -138,7 +150,7 @@ namespace SME.SGP.Aplicacao
                             { DisciplinaId = Convert.ToInt32(x.DisciplinaId), TotalAulas = x.TotalAulas });
                     }
 
-                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre,
+                    var componenteCurricularDto = await MapearDto(frequenciaAluno, componenteCurricular, bimestre, registrosFrequencia,
                         turma.ModalidadeCodigo, turma.AnoLetivo, totalAulasComponenteSemNota,
                         totalCompensacoesComponenteSemNota);
 
@@ -335,10 +347,6 @@ namespace SME.SGP.Aplicacao
 
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
-                var turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma)
-                    ? turmasCodigos
-                    : new string[] { codigoTurma };
-
                 if (alunoNaTurma != null)
                     validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
 
@@ -726,15 +734,7 @@ namespace SME.SGP.Aplicacao
                     : totalAulasAlunoDisciplina.ToString();
         }
 
-        private string ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
-        {
-            var retorno = frequenciaDisciplina.Any() ? (frequenciaDisciplina.Sum(x => x.PercentualFrequencia) / frequenciaDisciplina.Count()).ToString() : "";
-            return retorno;
-        }
-
-        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno,
-            DisciplinaResposta componenteCurricular, int bimestre, Modalidade modalidade, int anoLetivo,
-            IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoes)
+        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade, int anoLetivo, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoes)
         {
             var dto = MapearDisciplinasDto(componenteCurricular);
 
@@ -759,9 +759,7 @@ namespace SME.SGP.Aplicacao
 
         private string CalcularPercentualFrequenciaComponente(FrequenciaAluno frequenciaComponente, int anoLetivo)
         {
-            return anoLetivo == 2020 ?
-                frequenciaComponente?.PercentualFrequenciaFinal.ToString() ?? "0" :
-                frequenciaComponente?.PercentualFrequencia.ToString() ?? "0";
+            return (anoLetivo == 2020 ? frequenciaComponente?.PercentualFrequenciaFinalFormatado : frequenciaComponente?.PercentualFrequenciaFormatado) ?? FrequenciaAluno.FormatarPercentual(0);
         }
 
         private FrequenciaAluno VerificaTotalAulasParaCalcularPercentualFrequencia(FrequenciaAluno frequenciaAluno, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas)
@@ -855,7 +853,10 @@ namespace SME.SGP.Aplicacao
                         foreach (var frequenciaAlunoAtual in frequenciasAlunoAtual)
                         {
                             frequenciaAlunoAtual.PercentuaisFrequenciaPorBimestre
-                                .Add((bimestreAtual, frequenciasAlunoAtual.SingleOrDefault(f => f.Bimestre == bimestreAtual)?.PercentualFrequencia ?? 100));
+                                .Add((bimestreAtual, 
+                                    frequenciasAlunoAtual.Any(f => f.Bimestre == bimestreAtual) 
+                                        ? frequenciasAlunoAtual.FirstOrDefault(f => f.Bimestre == bimestreAtual).PercentualFrequencia 
+                                        : 0));
                         }
                     }
                 }
@@ -974,8 +975,8 @@ namespace SME.SGP.Aplicacao
             var bimestre = periodoEscolar?.Bimestre == null ? 0 : periodoEscolar.Bimestre;
             var percentualFrequencia = double.MinValue;
 
-            if (turmaPossuiRegistroFrequencia)
-                percentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100;
+            if (turmaPossuiRegistroFrequencia && frequenciaAluno != null)
+                percentualFrequencia = frequenciaAluno.PercentualFrequencia;
 
             if (componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
                 totalAulas = await mediator.Send(new ObterTotalAulasPorAlunoTurmaQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma));
@@ -995,7 +996,7 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = frequenciaAluno?.TotalAulas ?? 0,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : percentualFrequencia.ToString(),
+                Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : FrequenciaAluno.FormatarPercentual(percentualFrequencia),
                 NotasFechamentos = ObterNotasFechamentoOuConselho(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = await ObterNotasPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, visualizaNota, turma.CodigoTurma, turmasComplementares),
                 Aulas = frequenciaAluno?.TotalAulas.ToString() ?? "0",
@@ -1048,7 +1049,7 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = frequenciaAluno.TotalAulas,
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = percentualFrequencia <= 0 ? "" : percentualFrequencia.ToString()
+                Frequencia = percentualFrequencia <= 0 ? "" : FrequenciaAluno.FormatarPercentual(percentualFrequencia)
             };
 
             foreach (var componenteRegencia in componentesRegencia)

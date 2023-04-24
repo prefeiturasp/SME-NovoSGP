@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Humanizer;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -19,6 +23,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         
         public Ao_cadastrar_editar_encaminhamento_naapa_aguardandoatendimento(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigoPorIdQuery, string>), typeof(ObterTurmaCodigoPorIdQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
+        }
 
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA para Aguardando Atendimento (observação obrigatória não preenchida)")]

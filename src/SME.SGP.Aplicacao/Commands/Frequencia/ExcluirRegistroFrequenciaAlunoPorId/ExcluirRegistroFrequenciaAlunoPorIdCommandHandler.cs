@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                await repositorioRegistroFrequenciaAluno.ExcluirVariosLogicamente(request.Ids);
+                await repositorioRegistroFrequenciaAluno.RemoverLogico(request.Ids);
                 return true;
             }
             catch(Exception ex)

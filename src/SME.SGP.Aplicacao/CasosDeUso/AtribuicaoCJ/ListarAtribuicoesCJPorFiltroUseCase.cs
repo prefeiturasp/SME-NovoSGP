@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Executar(AtribuicaoCJListaFiltroDto filtroDto)
         {
-            var listaRetorno = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, filtroDto.UeId, 0,
-               filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo, historico: filtroDto.Historico));
+            var listaRetorno = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, filtroDto.UeId, 0,
+                filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo, historico: filtroDto.Historico))).ToList();
 
             if (listaRetorno.Any())
                 return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
@@ -55,14 +55,14 @@ namespace SME.SGP.Aplicacao
 
                 var professorDisciplina = a.FirstOrDefault();
 
-                var exibeNomeTurmaNovoInfantil = professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;
+                var exibeNomeTurmaNovoInfantil = professorDisciplina != null && professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;
 
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
                 {
                     Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
                     ModalidadeId = (int)a.Key.Modalidade,
-                    Turma = professorDisciplina.Turma.Nome,
-                    TurmaId = professorDisciplina.TurmaId,
+                    Turma = professorDisciplina?.Turma.Nome,
+                    TurmaId = professorDisciplina?.TurmaId,
                     Disciplinas = exibeNomeTurmaNovoInfantil
                     ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil).ToArray()
                     : disciplinasDescricoes.Select(d => d.Nome).ToArray(),

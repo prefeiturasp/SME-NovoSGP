@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
             if (usuario.EhProfessorCj())
             {
-                var disciplinas = await consultasDisciplina.ObterDisciplinasCJ(filtroTurmaDto.TurmaCodigo, usuario.CodigoRf);
+                var disciplinas = await consultasDisciplina.ObterDisciplinasPerfilCJ(filtroTurmaDto.TurmaCodigo, usuario.CodigoRf);
 
                 if (filtroTurmaDto.TurmaCodigo != null)
                 {
