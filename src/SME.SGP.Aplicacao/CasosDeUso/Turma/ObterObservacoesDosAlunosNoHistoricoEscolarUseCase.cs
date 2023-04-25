@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
                 alunosObs.Add(new AlunoComObservacaoDoHistoricoEscolarDto()
                 {
                     NumeroChamada = aluno.NumeroChamada,
-                    CodigoAluno = aluno.Codigo,
-                    NomeAluno = aluno.Nome,
+                    Codigo = aluno.Codigo,
+                    Nome = aluno.Nome,
                     Observacao = observacoes.Find(obs => obs.AlunoCodigo == aluno.Codigo)?.Observacao ?? string.Empty
                 });
             }
