@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
     {
         public List<DateTime> DiasParaIncluirRecorrencia { get; set; }
         public string TurmaCodigo { get; set; }
-        public string ComponenteCurricularCodigo { get; set; }
+        public string[] ComponentesCurricularesCodigos { get; set; }
         public bool ProfessorCJ { get; set; }
 
-        public ObterAulaPorDataAulasExistentesQuery(List<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, string componenteCurricularCodigo, bool professorCJ)
+        public ObterAulaPorDataAulasExistentesQuery(List<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, string[] componentesCurricularesCodigos, bool professorCJ)
         {
             DiasParaIncluirRecorrencia = diasParaIncluirRecorrencia;
             TurmaCodigo = turmaCodigo;
-            ComponenteCurricularCodigo = componenteCurricularCodigo;
+            ComponentesCurricularesCodigos = componentesCurricularesCodigos;
             ProfessorCJ = professorCJ;
         }
     }
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado.");
 
-            RuleFor(x => x.ComponenteCurricularCodigo)
+            RuleFor(x => x.ComponentesCurricularesCodigos)
                 .NotEmpty()
                 .WithMessage("O código do componente curricular deve ser informado.");
         }

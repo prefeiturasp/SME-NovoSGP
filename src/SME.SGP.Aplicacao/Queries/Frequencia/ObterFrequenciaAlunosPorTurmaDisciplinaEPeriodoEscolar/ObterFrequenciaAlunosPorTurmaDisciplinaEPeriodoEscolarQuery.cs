@@ -2,7 +2,6 @@
 using MediatR;
 using SME.SGP.Dominio;
 using System.Collections.Generic;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,23 +10,27 @@ namespace SME.SGP.Aplicacao
         public Turma Turma { get; set; }
         public long[] ComponentesCurricularesId { get; set; }
         public IEnumerable<long> PeriodosEscolaresIds { get; set; }
+        public string Professor { get; set; }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, string professor = null)
         {
             Turma = turma;
             ComponentesCurricularesId = componentesCurricularesId;
+            Professor = professor;
         }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds)
-            :this(turma, componentesCurricularesId)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, string professor = null)
+            : this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
+            Professor = professor;
         }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, long periodoEscolarId)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, long periodoEscolarId, string professor = null)
             : this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = new List<long> { periodoEscolarId };
+            Professor = professor;
         }
     }
 

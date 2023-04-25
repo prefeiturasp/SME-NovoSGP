@@ -32,30 +32,29 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         }
 
         [Fact]
-        public async Task Deve_remover_aluno_na_compensacao()
+        public async Task Deve_adicionar_aluno_na_compensacao_sem_aulas_selecionadas()
         {
-            await ExecutarTesteRemoverAlunoCompensacao(ObterPerfilDiretor());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            await ExecuteInserirCompensasaoAusenciaSemAulasSelecionadas(dtoDadoBase);
         }
 
-        //bulk insert
-        //[Fact]
-        public async Task Deve_adicionar_aluno_na_compensacao()
+        [Fact]
+        public async Task Deve_adicionar_aluno_na_compensacao_com_aulas_selecionadas()
         {
-            await ExecutarTesteAdicionarAlunoCompensacao(ObterPerfilDiretor());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            await ExecuteInserirCompensasaoAusenciaComAulasSelecionadas(dtoDadoBase);
         }
 
-        //bulk insert
-        //[Fact]
+        [Fact]
         public async Task Deve_alterar_quantidade_ausencias_compensadas()
         {
             await ExecutarTesteAlterar(ObterPerfilDiretor());
         }
 
-        private async Task ExecutarTesteAdicionarAlunoCompensacao(string perfil)
+        [Fact]
+        public async Task Deve_remover_aluno_na_compensacao()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(perfil, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-
-            await ExecuteTeste(dtoDadoBase);
+            await ExecutarTesteRemoverAlunoCompensacao(ObterPerfilDiretor());
         }
 
         private async Task ExecutarTesteRemoverAlunoCompensacao(string perfil)
@@ -67,40 +66,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await CriaCompensacaoAusenciaAluno();
             await CriaRegistroDeFrequencia();
 
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
+            var comando = ServiceProvider.GetService<IExcluirCompensacaoAusenciaUseCase>();
             var listaIds = new long[] { COMPENSACAO_AUSENCIA_ID_1 };
 
-            await comando.Excluir(listaIds);
+            await comando.Executar(listaIds);
 
             var compensacaoAusenciaAlunos = ObterTodos<CompensacaoAusenciaAluno>();
             compensacaoAusenciaAlunos.ForEach(x => x.Excluido.ShouldBeTrue());
-        }
-
-        private List<CompensacaoAusenciaAlunoDto> ObterListaDeAlunos()
-        {
-            return new List<CompensacaoAusenciaAlunoDto>()
-            {
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_1,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_2,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA_2
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_3,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_4,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                }
-            };
         }
 
         private async Task CriaCompensacaoAusenciaAluno()
@@ -126,8 +98,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
             await CrieRegistroDeFrenquencia();
             await RegistroFrequenciaAluno(CODIGO_ALUNO_1, QUANTIDADE_AULA, TipoFrequencia.F);
-            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA, TipoFrequencia.F);
-            await RegistroFrequenciaAluno(CODIGO_ALUNO_3, QUANTIDADE_AULA, TipoFrequencia.F);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA_3, TipoFrequencia.F);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_3, QUANTIDADE_AULA_2, TipoFrequencia.F);
             await RegistroFrequenciaAluno(CODIGO_ALUNO_4, QUANTIDADE_AULA, TipoFrequencia.F);
         }
 
@@ -196,19 +168,23 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             var dtoDadoBase = ObterDtoDadoBase(perfil, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarDadosBase(dtoDadoBase);
             await CriaFrequenciaAlunos(dtoDadoBase);
+            await CriaRegistroDeFrequencia();
 
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, ObterListaDeAlunos());
+            var comando = ServiceProvider.GetService<ISalvarCompensasaoAusenciaUseCase>();
+            var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, ObtenhaListaDeAlunosSemAulasSelecionadas());
 
-            await comando.Inserir(dto);
+            await comando.Executar(0, dto);
             var compensacaoAusencias = ObterTodos<CompensacaoAusencia>();
+            var compensacaoAusenciaAlunos = ObterTodos<CompensacaoAusenciaAluno>();
+
             var compensacaoAusenciaAlterada = compensacaoAusencias.FirstOrDefault();
-            compensacaoAusenciaAlterada.Alunos.FirstOrDefault().QuantidadeFaltasCompensadas = 10;
+            compensacaoAusenciaAlterada.Alunos = compensacaoAusenciaAlunos.Where(t => t.CompensacaoAusenciaId == compensacaoAusenciaAlterada.Id);
+            compensacaoAusenciaAlterada.Alunos.FirstOrDefault(t => t.CodigoAluno == CODIGO_ALUNO_2).QuantidadeFaltasCompensadas = 2;
 
             var compensacaoAusenciaAlunoDto = new List<CompensacaoAusenciaAlunoDto>()
             { new CompensacaoAusenciaAlunoDto()
-                { Id = compensacaoAusenciaAlterada.Alunos.FirstOrDefault().Id.ToString(),
-                    QtdFaltasCompensadas = compensacaoAusenciaAlterada.Alunos.FirstOrDefault().QuantidadeFaltasCompensadas
+                { Id = compensacaoAusenciaAlterada.Alunos.FirstOrDefault(t => t.CodigoAluno == CODIGO_ALUNO_2).Id.ToString(),
+                    QtdFaltasCompensadas = compensacaoAusenciaAlterada.Alunos.FirstOrDefault(t => t.CodigoAluno == CODIGO_ALUNO_2).QuantidadeFaltasCompensadas
                 }
             };
 
@@ -217,15 +193,16 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 Alunos = compensacaoAusenciaAlunoDto,
                 Bimestre = compensacaoAusenciaAlterada.Bimestre,
                 Descricao = compensacaoAusenciaAlterada.Descricao,
+                Atividade = compensacaoAusenciaAlterada.Nome,
                 DisciplinaId = compensacaoAusenciaAlterada.DisciplinaId,
                 Id = compensacaoAusenciaAlterada.Id,
                 TurmaId = compensacaoAusenciaAlterada.TurmaId.ToString()
             };
 
-            await comando.Alterar(dtoAlterado.Id, dtoAlterado);
+            await comando.Executar(dtoAlterado.Id, dtoAlterado);
             var listaAlterada = ObterTodos<CompensacaoAusencia>();
 
-            listaAlterada.ToList().Exists(x => x.Alunos.Any(z => z.QuantidadeFaltasCompensadas == 10)).ShouldBeTrue();
+            listaAlterada.ToList().Exists(x => x.Alunos.Any(z => z.QuantidadeFaltasCompensadas == 2)).ShouldBeTrue();
         }
 
         private CompensacaoDeAusenciaDBDto ObterDtoDadoBase(string perfil, string componente)

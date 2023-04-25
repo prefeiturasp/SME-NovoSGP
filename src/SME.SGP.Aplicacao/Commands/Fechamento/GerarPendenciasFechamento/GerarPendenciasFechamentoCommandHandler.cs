@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
                 if (quantidadePendencias > 0)
                 {
                     situacaoFechamento = SituacaoFechamento.ProcessadoComPendencias;
-                    await GerarNotificacaoFechamento(request.ComponenteCurricularId, request.TurmaCodigo, request.UsuarioId, request.Bimestre, servicoPendenciaFechamento);
+                    await GerarNotificacaoFechamento(request.ComponenteCurricularId, request.TurmaCodigo, request.UsuarioId, request.Bimestre, servicoPendenciaFechamento, request.PerfilUsuario);
                 }
 
                 await mediator.Send(new AtualizarSituacaoFechamentoTurmaDisciplinaCommand(request.FechamentoTurmaDisciplinaId, situacaoFechamento));
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
             return true;
         }
 
-        private async Task GerarNotificacaoFechamento(long componenteCurricularId, string turmaCodigo, long usuarioLogadoId, int bimestre, IServicoPendenciaFechamento servicoPendenciaFechamento)
+        private async Task GerarNotificacaoFechamento(long componenteCurricularId, string turmaCodigo, long usuarioLogadoId, int bimestre, IServicoPendenciaFechamento servicoPendenciaFechamento, string perfilUsuario)
         {
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turmaCodigo));
             if (componentes == null || !componentes.Any())
@@ -103,10 +103,10 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
                     usuarioLogadoId, 
                     dre.CodigoDre, 
                     ue.CodigoUe, 
-                    turma.CodigoTurma);
+                    turma.CodigoTurma, perfilUsuario);
         }
 
-        private async Task NotificarUsuarios(string titulo, string mensagem, long usuarioLogadoId, string codigoDre, string codigoUe, string codigoTurma)
+        private async Task NotificarUsuarios(string titulo, string mensagem, long usuarioLogadoId, string codigoDre, string codigoUe, string codigoTurma, string perfilUsuario)
         {
             // Notifica Usuario
             if (usuarioLogadoId != 0)
@@ -119,12 +119,20 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
                         codigoUe,
                         codigoTurma));
 
+
+            var enviarPara = new List<Cargo>() { Cargo.Diretor, Cargo.CP};
+
+            if (Perfis.PERFIL_CP.ToString().Equals(perfilUsuario))
+                enviarPara.Remove(Cargo.CP);
+            if (Perfis.PERFIL_DIRETOR.ToString().Equals(perfilUsuario))
+                enviarPara.Remove(Cargo.Diretor);
+
             // Notifica CP e Diretor
             await mediator.Send(new EnviarNotificacaoCommand(titulo,
                 mensagem,
                 NotificacaoCategoria.Aviso,
                 NotificacaoTipo.Fechamento,
-                new Cargo[] { Cargo.CP, Cargo.Diretor },
+                enviarPara.ToArray(),
                 codigoDre,
                 codigoUe,
                 codigoTurma));

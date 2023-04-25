@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(AlterarAulaFrequenciaTratarCommand request, CancellationToken cancellationToken)
         {
-            var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunoPorAulaIdQuery(request.Aula.Id));
+            var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunoPorAulaIdQuery(request.Aula.Id), cancellationToken);
 
             var quantidadeAtual = request.Aula.Quantidade;
             var quantidadeOriginal = request.QuantidadeAulasOriginal;
@@ -44,17 +44,20 @@ namespace SME.SGP.Aplicacao
 
                 if (ausenciasParaAdicionar.Any())
                     await repositorioRegistroFrequenciaAluno.InserirVarios(ausenciasParaAdicionar);
-
             }
             else
             {
                 // Excluir os registros de aula maior que o atual
                 var idsParaExcluir = registrosFrequenciaAlunos.Where(a => a.NumeroAula > quantidadeAtual).Select(a => a.Id).ToList();
 
-                //TODO: Criar método genérico com Auditoria
                 if (idsParaExcluir.Count > 0)
-                    await repositorioRegistroFrequenciaAluno.ExcluirVarios(idsParaExcluir);                
-
+                {
+                    await repositorioRegistroFrequenciaAluno.RemoverLogico(idsParaExcluir.ToArray());
+                    foreach (var aula in registrosFrequenciaAlunos.Where(a => a.NumeroAula > quantidadeAtual).Select(s => new { s.AulaId, s.NumeroAula }).Distinct())
+                    {
+                        await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.AulaId, aula.NumeroAula), cancellationToken);
+                    }
+                }
             }
 
             return true;

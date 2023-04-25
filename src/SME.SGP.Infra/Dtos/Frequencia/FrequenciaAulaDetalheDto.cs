@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public FrequenciaAulaDetalheDto(Aula aula,
                                         AlunoPorTurmaResposta aluno,
                                         IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
+                                        IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunos,
                                         IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
                                         FrequenciaPreDefinidaDto frequenciaPreDefinida, DateTime PeriodoFim)
         {
@@ -22,7 +23,7 @@ namespace SME.SGP.Infra
             EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
 
             var registrosFrequenciaAula = registrosFrequenciaAlunos.Where(a => a.AulaId == AulaId);
-            CarregarDetalheFrequencia(aula, registrosFrequenciaAula, frequenciaPreDefinida);
+            CarregarDetalheFrequencia(aula, registrosFrequenciaAula, compensacaoAusenciaAlunos, frequenciaPreDefinida);
             Tipo = ObterTipoFrequenciaDaAula();
         }
 
@@ -35,14 +36,19 @@ namespace SME.SGP.Infra
         public IList<FrequenciaDetalheAulaDto> DetalheFrequencia { get; set; }
         public bool EhReposicao { get; set; }
 
-        private void CarregarDetalheFrequencia(Aula aula, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAula, FrequenciaPreDefinidaDto frequenciaPreDefinida)
+        private void CarregarDetalheFrequencia(
+            Aula aula, 
+            IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAula,
+            IEnumerable<CompensacaoAusenciaAlunoAulaSimplificadoDto> compensacaoAusenciaAlunos,
+            FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
             for (int numeroAula = 1; numeroAula <= aula.Quantidade; numeroAula++)
             {
                 DetalheFrequencia.Add(new FrequenciaDetalheAulaDto()
                 {
                     NumeroAula = numeroAula,
-                    Tipo = ObterTipoFrequencia(numeroAula, registrosFrequenciaAula, frequenciaPreDefinida)
+                    Tipo = ObterTipoFrequencia(numeroAula, registrosFrequenciaAula, frequenciaPreDefinida),
+                    PossuiCompensacao = compensacaoAusenciaAlunos.Any(t => t.AulaId == aula.Id && t.NumeroAula == numeroAula)
                 });
             }
         }

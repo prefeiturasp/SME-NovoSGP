@@ -67,11 +67,14 @@ namespace SME.SGP.Aplicacao
                         var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos
                             .Where(a => a.AlunoCodigo == aluno.CodigoAluno);
 
+                        var compensacoesAusenciaAluno = request.CompensacaoAusenciaAlunoAulas
+                            .Where(t => t.CodigoAluno == aluno.CodigoAluno);
+
                         var anotacoesAluno = request.AnotacoesTurma
                             .Where(a => a.AlunoCodigo == aluno.CodigoAluno);
 
                         registroFrequenciaAluno
-                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, request.PeriodoEscolar.PeriodoFim);
+                            .CarregarAulas(request.Aulas, registrosFrequenciaAluno, compensacoesAusenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, request.PeriodoEscolar.PeriodoFim);
                     }
 
                     registrosFrequencias.Alunos.Add(registroFrequenciaAluno);

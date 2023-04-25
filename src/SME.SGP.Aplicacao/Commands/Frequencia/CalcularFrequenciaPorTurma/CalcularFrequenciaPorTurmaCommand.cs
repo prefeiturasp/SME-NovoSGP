@@ -11,14 +11,16 @@ namespace SME.SGP.Aplicacao
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
         public bool ConsideraTodosAlunos { get; set; }
+        public (string rf, string perfil) UsuarioConsiderado { get; set; }
 
-        public CalcularFrequenciaPorTurmaCommand(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId, bool consideraTodosAlunos = false)
+        public CalcularFrequenciaPorTurmaCommand(IEnumerable<string> alunos, DateTime dataAula, string turmaId, string disciplinaId, bool consideraTodosAlunos = false, (string rf, string perfil) usuarioConsiderado = default)
         {
             Alunos = alunos;
             DataAula = dataAula;
             TurmaId = turmaId;
             DisciplinaId = disciplinaId;
             ConsideraTodosAlunos = consideraTodosAlunos;
+            UsuarioConsiderado = usuarioConsiderado;
         }
     }
 }

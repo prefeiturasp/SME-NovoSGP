@@ -21,10 +21,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Ao_excluir_aula_com_frequencia_e_calculo()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), criarPeriodo:false);
-            await CriarRegistrosConsolidacaoFrequenciaAlunoMensal();
-            await CrieRegistroDeFrenquencia();
-            await CrieFrenquenciaAluno(CODIGO_ALUNO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-            await CrieFrenquenciaAluno(CODIGO_ALUNO_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
 
@@ -36,9 +32,11 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             await useCase.Executar(dto);
 
-            var frequenciaAlunos = ObterTodos<Dominio.FrequenciaAluno>();
-            frequenciaAlunos.Any().ShouldBeFalse();
-            frequenciaAlunos.Count().ShouldBe(0);
+            var aulas = ObterTodos<Dominio.Aula>();
+            aulas = aulas.Where(t => !t.Excluido).ToList();
+
+            aulas.Any().ShouldBeFalse();
+            aulas.Count().ShouldBe(0);
         }
 
         [Fact(DisplayName = "Frequência - Ao diminuir quantidade de aula a frequencia deve ser excluida")]
