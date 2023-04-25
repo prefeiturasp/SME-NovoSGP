@@ -8,7 +8,9 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("frequencia_aluno");
             Map(a => a.PercentualFrequencia).Ignore();
+            Map(a => a.PercentualFrequenciaFormatado).Ignore();
             Map(a => a.PercentualFrequenciaFinal).Ignore();
+            Map(a => a.PercentualFrequenciaFinalFormatado).Ignore();
             Map(a => a.NumeroFaltasNaoCompensadas).Ignore();
             Map(c => c.Bimestre).ToColumn("bimestre");
             Map(c => c.CodigoAluno).ToColumn("codigo_aluno");

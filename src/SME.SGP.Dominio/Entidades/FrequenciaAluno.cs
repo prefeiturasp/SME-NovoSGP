@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SME.SGP.Dominio
 {
     public class FrequenciaAluno : EntidadeBase
     {
+        public const int PERCENTUAL_FREQUENCIA_PRECISAO = 2;
+
         public FrequenciaAluno(string codigoAluno,
             string turmaId,
             string disciplinaId,
@@ -61,9 +64,11 @@ namespace SME.SGP.Dominio
 
                 var porcentagem = 100 - (((double)NumeroFaltasNaoCompensadas / TotalAulas) * 100);
 
-                return Math.Round(porcentagem > 100 ? 100 : porcentagem);
+                return ArredondarPercentual(porcentagem > 100 ? 100 : porcentagem);
             }
         }
+
+        public string PercentualFrequenciaFormatado => FormatarPercentual(PercentualFrequencia);
 
         public long? PeriodoEscolarId { get; set; }
         public DateTime PeriodoFim { get; set; }
@@ -89,12 +94,11 @@ namespace SME.SGP.Dominio
         {
             get
             {
-                return PercentuaisFrequenciaPorBimestre.Any()
-                    ? Math.Round(
-                        PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count, 2)
-                    : 100;
+                return ArredondarPercentual(PercentuaisFrequenciaPorBimestre.Any() ? PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count : 0);
             }
         }
+
+        public string PercentualFrequenciaFinalFormatado => FormatarPercentual(PercentualFrequenciaFinal);
 
         public FrequenciaAluno DefinirFrequencia(string disciplinaId, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas, string professor)
         {
@@ -123,5 +127,12 @@ namespace SME.SGP.Dominio
 
         public bool FrequenciaNegativa()
             => (TotalAusencias - TotalCompensacoes) > TotalAulas;
+
+        public static double ArredondarPercentual(double percentual) => Math.Round(percentual, PERCENTUAL_FREQUENCIA_PRECISAO);
+
+        public static string FormatarPercentual(double percentual)
+        {
+            return percentual.ToString($"N{PERCENTUAL_FREQUENCIA_PRECISAO}", CultureInfo.CurrentCulture);
+        }
     }
 }

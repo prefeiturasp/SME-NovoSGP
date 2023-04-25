@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query.ToString(), new { tipo, valor, ano });
         }
 
-        public async Task ReplicarParametrosAnoAnteriorAsync(int anoAtual, int anoAnterior)
+        public async Task<int> ReplicarParametrosAnoAnteriorAsync(int anoAtual, int anoAnterior)
         {
             var query = @"insert into parametros_sistema
                                  (nome, tipo, descricao, valor, ano, ativo, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf)
@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
                                                  from parametros_sistema 
                                                 where ano = @anoAtual)";
 
-            await database.Conexao.ExecuteAsync(query.ToString(), new { anoAtual, anoAnterior });
+            return await database.Conexao.ExecuteAsync(query.ToString(), new { anoAtual, anoAnterior });
         }        
     }
 }

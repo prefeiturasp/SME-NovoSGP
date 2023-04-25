@@ -294,13 +294,13 @@ namespace SME.SGP.Aplicacao
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
-                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequenciaFormatado;
                     }
                     else
                     {
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
-                        alunoDto.PercentualFrequencia = turmaPossuiFrequenciaRegistrada ? "100" : string.Empty;
+                        alunoDto.PercentualFrequencia = string.Empty;
                     }
 
                     // Carrega Frequencia do aluno
@@ -311,7 +311,7 @@ namespace SME.SGP.Aplicacao
                             if (!turmaPossuiFrequenciaRegistrada)
                                 throw new NegocioException("Não é possível registrar fechamento pois não há registros de frequência no bimestre.");
 
-                            var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
+                            var percentualFrequencia = frequenciaAluno == null ? 0 : frequenciaAluno.PercentualFrequencia;
                             var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, turma.AnoLetivo));
 
                             alunoDto.SinteseId = sinteseDto.Id;
@@ -379,8 +379,8 @@ namespace SME.SGP.Aplicacao
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulaPrevistaBimestreAtual.Cumpridas;
             fechamentoBimestre.TotalAulasPrevistas = aulaPrevistaBimestreAtual.Previstas.Quantidade;
-
-            fechamentoBimestre.PodeProcessarReprocessar = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PeriodoAberto = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
 
             return fechamentoBimestre;
         }
@@ -439,6 +439,13 @@ namespace SME.SGP.Aplicacao
         {
             var sintese = Sinteses.FirstOrDefault(c => c.Id == id);
             return sintese != null ? sintese.Descricao : "";
+        }
+
+        private bool UsuarioPossuiPermissaoNaTelaParaReprocessar()
+        {
+            var permissoesUsuario = servicoUsuario.ObterPermissoes();
+
+            return permissoesUsuario.Any(p => p == Permissao.FB_A);
         }
     }
 }

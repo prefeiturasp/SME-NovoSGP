@@ -5,15 +5,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery : IRequest<(string codigoComponente, string professor)[]>
     {
-        public ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long codigoComponenteBase, string codigoTurma, string professor)
+        public ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long codigoComponenteBase, string codigoTurma, string professor,long turmaId = 0)
         {
             CodigoComponenteBase = codigoComponenteBase;
             CodigoTurma = codigoTurma;
             Professor = professor;
+            TurmaId = turmaId;
         }
 
         public long CodigoComponenteBase { get; set; }
         public string CodigoTurma { get; set; }
+        public long TurmaId { get; set; }
         public string Professor { get; set; }        
     }
 

@@ -13,6 +13,7 @@ using System;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Aplicacao.CasosDeUso;
+using System.Collections;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -21,7 +22,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class EncaminhamentoNAAPAController : ControllerBase
     {
-
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -30,11 +30,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await registrarEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
         }
-        
+
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")] 
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosNAAPA([FromQuery] FiltroEncaminhamentoNAAPADto filtro,
             [FromServices] IObterEncaminhamentoNAAPAUseCase useCase)
         {
@@ -121,7 +121,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
-        
+
         [HttpGet("{encaminhamentoId}")]
         [ProducesResponseType(typeof(EncaminhamentoNAAPARespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -165,6 +165,36 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterSituacao(long encaminhamentoNAAPAId, [FromServices] IObterSituacaoEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+        }
+
+        [HttpPost("encerrar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
+        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncerramentoEncaminhamentoNAAPADto parametros, [FromServices] IEncerrarEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
+        }
+
+        [HttpGet("fluxos-alerta")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoRespostaSimplesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFluxosAlerta([FromServices] IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase useCase) => Ok(await useCase.Executar());
+
+        [HttpGet("portas-entrada")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoRespostaSimplesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPortasEntrada([FromServices] IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase useCase) => Ok(await useCase.Executar());
+
+        [HttpPost("imprimir-detalhado")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImprimirDetalhado([FromBody] FiltroRelatorioEncaminhamentoNaapaDetalhadoDto filtro, [FromServices] IRelatorioEncaminhamentoNaapaDetalhadoUseCase detalhadoUseCase)
+        {
+            return Ok(await detalhadoUseCase.Executar(filtro));
         }
     }
 }

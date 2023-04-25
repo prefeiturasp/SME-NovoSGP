@@ -63,12 +63,11 @@ namespace SME.SGP.Aplicacao
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
             .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
 
-
             foreach (var ue in uesParaAtribuicao.ToList())
             {
                 var codUE = ue.Codigo;
                 var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE).ToList();
-                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao);
+                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao).Distinct();
                 if (quantidadeTipos.Count() < tipos.Count())
                 {
                     var naotemTipo = tipos.Except(quantidadeTipos).ToList();

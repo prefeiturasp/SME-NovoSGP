@@ -53,7 +53,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = encaminhamentoNAAPA.Turma.AnoLetivo,
                 Situacao = (int)encaminhamentoNAAPA.Situacao,
                 DescricaoSituacao = encaminhamentoNAAPA.Situacao.Name(),
-                Modalidade = (int)encaminhamentoNAAPA.Turma.ModalidadeCodigo
+                Modalidade = (int)encaminhamentoNAAPA.Turma.ModalidadeCodigo,
+                MotivoEncerramento = encaminhamentoNAAPA.MotivoEncerramento
             };
         }
 

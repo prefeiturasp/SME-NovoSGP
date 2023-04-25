@@ -9,5 +9,6 @@
         public bool EstaAfastado { get; set; }
         public string Login { get; set; }
         public bool PodeEditar { get; set; }
+        public int CodigoFuncaoExterna { get; set; }
     }
 }

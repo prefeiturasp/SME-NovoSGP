@@ -106,5 +106,6 @@ namespace SME.SGP.Dominio.Interfaces
                 string[] disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj);
 
         Task<IEnumerable<RegistroFrequenciaAulaParcialDto>> ObterListaDeRegistroFrequenciaAulaPorTurma(string codigoTurma);
+        Task<IEnumerable<PeriodoEscolarAulaDto>> ObterPeriodosEscolaresDasAulas(long[] aulasId);
     }
 }

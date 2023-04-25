@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using System;
@@ -44,13 +42,19 @@ namespace SME.SGP.Aplicacao
                     if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
                         return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
-                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
-                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                    long turmaid = request.TurmaId > 0 ? request.TurmaId : 0;
+                    if (request.TurmaId == 0)
+                    {
+                        var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
+                        turmaid = turma.Id;
+                    }
+
+                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaid));
                     bool existemProfessoresTitulares = professoresTitulares.Any() && professoresTitulares != null;
 
                     return componentesTurmaCorrespondentes
                         .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares
-                            ? professoresTitulares.Where(p => p.DisciplinasId.Contains(ct.Codigo) || p.DisciplinasId.Contains(ct.CodigoComponenteTerritorioSaber)).FirstOrDefault()?.ProfessorRf
+                            ? professoresTitulares?.Where(p => p.DisciplinasId.Contains(ct.Codigo) || p.DisciplinasId.Contains(ct.CodigoComponenteTerritorioSaber))?.FirstOrDefault()?.ProfessorRf
                             : string.Empty)))
                         .ToArray();
                 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -51,14 +52,15 @@ namespace SME.SGP.Aplicacao
             if (aulaOrigem == null)
                 throw new NegocioException("Não foi possível obter a aula.");
 
+            var listaAlteracoesFrequencia = new List<long>() { aulaOrigem.Id };
+
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(aulaOrigem.TipoCalendarioId, aulaOrigem.DataAula.Date, request.Recorrencia), cancellationToken);
             var aulasRecorrencia = await repositorioAulaConsulta.ObterAulasRecorrencia(aulaOrigem.AulaPaiId ?? aulaOrigem.Id, aulaOrigem.Id, fimRecorrencia);
+            listaAlteracoesFrequencia.AddRange(aulasRecorrencia.Select(aula => aula.Id));
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasRecorrencia);
 
             try
             {
-                List<(DateTime data, bool existeFrequencia, bool existePlanoAula)> aulasComFrenciaOuPlano = new();
-
                 var listaExclusoes = new List<(DateTime dataAula, bool sucesso, string mensagem, bool existeFrequente, bool existePlanoAula)>
                 {
                     await TratarExclusaoAula(aulaOrigem, request.Usuario)
@@ -69,7 +71,6 @@ namespace SME.SGP.Aplicacao
                     listaExclusoes.Add(await TratarExclusaoAula(aulaRecorrente, request.Usuario));
                 }
 
-                //usuario.PerfilAtual = perfilSelecionado;
                 await NotificarUsuario(aulaOrigem.Id, listaExclusoes, request.Usuario, request.ComponenteCurricularNome, aulaOrigem.Turma);
             }
             finally
@@ -81,9 +82,21 @@ namespace SME.SGP.Aplicacao
             await ExcluirArquivosPlanoAula(request.AulaId);
             await RemoverArquivosDiarioBordo(request.AulaId);
 
-            await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aulaOrigem.TurmaId, aulaOrigem.DisciplinaId, request.AulaId), cancellationToken);
-
+            await PublicarRecalculoFrequencia(listaAlteracoesFrequencia.ToArray(), aulaOrigem.TurmaId, aulaOrigem.DisciplinaId, cancellationToken);
+            
             return true;
+        }
+
+        private async Task PublicarRecalculoFrequencia(long[] aulasId, string turmaId, string disciplinaId, CancellationToken cancellationToken)
+        {
+            var periodosAula = await repositorioAulaConsulta.ObterPeriodosEscolaresDasAulas(aulasId);
+            var agrupamentoPeriodo = periodosAula.GroupBy(aula => aula.Bimestre);
+            foreach (var periodo in agrupamentoPeriodo)
+            {
+                var meses = periodo.Select(aula => aula.DataAula.Month).Distinct().ToArray();
+                var aulaId = periodo.Min(aula => aula.AulaId);
+                await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(turmaId, disciplinaId, aulaId, meses), cancellationToken);
+            }
         }
 
         private async Task ExcluirArquivosPlanoAula(long aulaId)
@@ -159,10 +172,12 @@ namespace SME.SGP.Aplicacao
             await PulicaFilaSgp(RotasRabbitSgpFrequencia.AnotacoesFrequenciaDaAulaExcluir, aula.Id, usuario);
             await PulicaFilaSgp(RotasRabbitSgp.DiarioBordoDaAulaExcluir, aula.Id, usuario);
             await PulicaFilaSgp(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula, aula.Id, usuario);
 
             aula.Excluido = true;
 
             await repositorioAula.SalvarAsync(aula);
+            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.Id));
         }
 
         private async Task PulicaFilaSgp(string fila, long id, Usuario usuario)

@@ -17,8 +17,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_obter_frequencia_geral_de_aluno : FrequenciaTesteBase
     {
-        private const string VALOR_83 = "83";
-        private const string VALOR_100 = "100";
+        private const string VALOR_8667 = "86,67";
+        private const string VALOR_100 = "100,00";
         public Ao_obter_frequencia_geral_de_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve obter frequencia geral de aluno com ausencia")]
         public async Task Deve_obter_frequencia_geral_de_aluno_com_ausencia()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DateTimeExtension.HorarioBrasilia().Date, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
@@ -44,11 +44,11 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             var mediator = ServiceProvider.GetService<IMediator>();
             var valor = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(CODIGO_ALUNO_1, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()));
             
-            valor.Replace(".",",").ShouldNotBeEmpty();
-            valor.Replace(".",",").ShouldBe(VALOR_83);
+            valor.ShouldNotBeEmpty();
+            valor.ShouldBe(VALOR_8667);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Frequência - Deve obter frequencia geral de aluno sem ausencia")]
         public async Task Deve_obter_frequencia_geral_de_aluno_sem_ausencia()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, NUMERO_AULAS_1);

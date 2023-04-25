@@ -123,6 +123,11 @@ namespace SME.SGP.Aplicacao
             
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
+            var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
+
+            var compensacoes = 
+                (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(alunosCodigos,compensacao.DisciplinaId,compensacao.Bimestre,turma.CodigoTurma)) : null) ?? 
+                new List<CompensacaoDataAlunoDto>();
 
             foreach (var aluno in compensacao.Alunos)
             {
@@ -132,7 +137,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var alunoDto = MapearParaDtoAlunos(aluno);
                     alunoDto.Nome = alunoEol.NomeAluno;
-
+                    alunoDto.Compensacoes = compensacoes.Where(x => x.CodigoAluno == aluno.CodigoAluno);
+                    
                     var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno.CodigoAluno, compensacao.Bimestre,TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, compensacao.DisciplinaId));
                     if (frequenciaAluno != null)
                     {
@@ -140,12 +146,7 @@ namespace SME.SGP.Aplicacao
                         alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia;
                         alunoDto.MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > alunoDto.QuantidadeFaltasTotais ? alunoDto.QuantidadeFaltasTotais : quantidadeMaximaCompensacoes;
                         alunoDto.Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta;
-                    }
-                    else
-                    {
-                        alunoDto.PercentualFrequencia = 100;
-                    }
-                       
+                    }                       
 
                     compensacaoDto.Alunos.Add(alunoDto);
                 }
