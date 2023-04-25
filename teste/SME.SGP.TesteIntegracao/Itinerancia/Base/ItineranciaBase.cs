@@ -60,6 +60,11 @@ namespace SME.SGP.TesteIntegracao.Itinerancia.Base
             return ServiceProvider.GetService<ISalvarItineranciaUseCase>();
         }
 
+        protected IAlterarItineranciaUseCase AlterarItineranciaUseCase()
+        {
+            return ServiceProvider.GetService<IAlterarItineranciaUseCase>();
+        }
+        
         protected async Task<IFormFile> GerarAquivoFakeParaUpload(string nomeArquivo = "arquivo.png",string extensaoArquivo = "image/png")
         {
             var fileMock = new Mock<IFormFile>();
