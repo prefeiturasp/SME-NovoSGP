@@ -54,12 +54,12 @@ namespace SME.SGP.TesteIntegracao.HistoricoEscolar
             var useCase = ServiceProvider.GetService<IObterObservacoesDosAlunosNoHistoricoEscolarUseCase>();
             var paginacaoResultado = await useCase.Executar(CODIGO_TURMA);
 
-            var aluno1 = paginacaoResultado.Items.ToList().Find(aluno => aluno.CodigoAluno == "1");
+            var aluno1 = paginacaoResultado.Items.ToList().Find(aluno => aluno.Codigo == "1");
             aluno1.ShouldNotBeNull();
             aluno1.Observacao.ShouldNotBeEmpty();
             aluno1.Observacao.ShouldBe("Observacao aluno 1");
 
-            foreach (var item in paginacaoResultado.Items.Where(aluno => aluno.CodigoAluno != "1"))
+            foreach (var item in paginacaoResultado.Items.Where(aluno => aluno.Codigo != "1"))
             {
                 item.Observacao.ShouldBeEmpty();
             }
