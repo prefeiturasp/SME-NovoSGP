@@ -659,6 +659,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterJustificativasAlunoPorComponenteCurricularUseCase, ObterJustificativasAlunoPorComponenteCurricularUseCase>();
             services.TryAddScoped<IObterFrequenciaDiariaAlunoUseCase, ObterFrequenciaDiariaAlunoUseCase>();
             services.TryAddScoped<IObterUsuarioFuncionarioUseCase, ObterUsuarioFuncionarioUseCase>();
+            services.TryAddScoped<IObterObservacoesDosAlunosNoHistoricoEscolarUseCase, ObterObservacoesDosAlunosNoHistoricoEscolarUseCase>();
 
             services.TryAddScoped<IExcluirDevolutivaUseCase, ExcluirDevolutivaUseCase>();
             services.TryAddScoped<IObterListaDevolutivasPorTurmaComponenteUseCase, ObterListaDevolutivasPorTurmaComponenteUseCase>();
