@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Commands.HistoricoEscolar;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Queries.HistoricoEscolarObservacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
@@ -26,19 +27,16 @@ namespace SME.SGP.Aplicacao
                 {
                     var historicoEscolarObservacao = await mediator.Send(new ObterHistoricoEscolarObservacaoPorAlunoQuery(historicoEscolarObservacaoDto.CodigoAluno));
 
-                    bool salvar;
                     if (historicoEscolarObservacao == null)
                     {
-                        historicoEscolarObservacao = new Dominio.HistoricoEscolarObservacao(historicoEscolarObservacaoDto.CodigoAluno, historicoEscolarObservacaoDto.Observacao);
-                        salvar = true;
+                        historicoEscolarObservacao = ObterNovoHistoricoObsevacao(historicoEscolarObservacaoDto);
                     }
                     else
                     {
-                        historicoEscolarObservacao.Alterar(historicoEscolarObservacaoDto.Observacao);
-                        salvar = true;
+                        historicoEscolarObservacao = await ObterAlteracaoHistoricoObservacao(historicoEscolarObservacao, historicoEscolarObservacaoDto);
                     }
 
-                    if (salvar)
+                    if (historicoEscolarObservacao != null)
                     {
                         await mediator.Send(new SalvarHistoricoEscolarObservacaoCommand(historicoEscolarObservacao));
                     }
@@ -46,6 +44,28 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private HistoricoEscolarObservacao ObterNovoHistoricoObsevacao(HistoricoEscolarObservacaoDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.Observacao))
+                return new HistoricoEscolarObservacao(dto.CodigoAluno, dto.Observacao);
+
+            return null;
+        }
+
+        private async Task<HistoricoEscolarObservacao> ObterAlteracaoHistoricoObservacao(HistoricoEscolarObservacao objeto, HistoricoEscolarObservacaoDto dto)
+        {
+            if (string.IsNullOrEmpty(dto.Observacao))
+            {
+                await mediator.Send(new RemoverHistoricoEscolarObservacaoCommad(objeto));
+
+                return null;
+            }
+
+            objeto.Alterar(dto.Observacao);
+
+            return objeto;
         }
     }
 }
