@@ -459,7 +459,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<PendenciaAulaDto>(sql.ToString(), new { aula = aulaId, hoje = DateTime.Today.Date, usuarioLogadoRf = usuarioLogado.CodigoRf, disciplinaIdTerritorio }));
         }
 
-        public async Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(long componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
+        public async Task<IEnumerable<PendenciaAulaProfessorDto>> ObterPendenciaIdPorComponenteProfessorEBimestre(string componenteCurricularId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
         {
             try
             {
@@ -470,9 +470,8 @@ namespace SME.SGP.Dados.Repositorios
                         join usuario u on u.id = pu.usuario_id 
                         join aula a on a.id = pa.aula_id 
                         join turma t on t.turma_id = a.turma_id 
-                        join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
-                        join componente_curricular cc on cc.id = a.disciplina_id::int8 
-                        where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
+                        join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id                        
+                        where u.rf_codigo = @codigoRf and a.disciplina_id = @componenteCurricularId 
                         and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
                         and t.turma_id = @turmaCodigo and t.ue_id = @ueId and not p.excluido  
                         order by pa.pendencia_id, a.id";
