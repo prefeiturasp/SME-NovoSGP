@@ -29,7 +29,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             filtroHistoricoEscolarDto.Usuario = usuarioLogado ?? throw new NegocioException("Não foi possível localizar o usuário.");
 
             var historicoEscolarObservacoes = filtroHistoricoEscolarDto.Alunos.Select(t => new HistoricoEscolarObservacaoDto(t.AlunoCodigo, t.ObservacaoComplementar));
-            return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, historicoEscolarObservacoes, Guid.NewGuid()));
+            
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, historicoEscolarObservacoes, Guid.NewGuid()));
 
             var tipoRelatorio = filtroHistoricoEscolarDto.Modalidade == Modalidade.Fundamental ? TipoRelatorio.HistoricoEscolarFundamentalRazor : TipoRelatorio.HistoricoEscolarFundamental;
 
