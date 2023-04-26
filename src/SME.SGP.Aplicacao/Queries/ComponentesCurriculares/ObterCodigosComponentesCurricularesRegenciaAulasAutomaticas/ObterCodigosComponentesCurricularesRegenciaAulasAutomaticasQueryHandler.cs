@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace SME.SGP.Aplicacao
             if (request.Modalidade == Modalidade.EJA)
                 return await Task.FromResult(new string[] { "1113", "1114", "1125" });
 
-            return null;
+            return await Task.FromResult(Array.Empty<string>());
         }
     }
 }
