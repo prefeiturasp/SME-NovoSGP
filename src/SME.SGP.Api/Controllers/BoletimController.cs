@@ -27,5 +27,16 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterListaAlunosDaTurmaUseCase.Executar(turmaCodigo));
         }
+
+        [HttpGet("alunos-obsevacoes")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<AlunoComObservacaoDoHistoricoEscolarDto>), 500)]
+        [Permissao(Permissao.B_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarAlunos([FromQuery] string turmaCodigo, [FromServices] IObterObservacoesDosAlunosNoHistoricoEscolarUseCase obterListaAlunosDaTurmaUseCase)
+        {
+            return Ok(await obterListaAlunosDaTurmaUseCase.Executar(turmaCodigo));
+        }
+
+        
     }
 }
