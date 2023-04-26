@@ -379,8 +379,8 @@ namespace SME.SGP.Aplicacao
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulaPrevistaBimestreAtual.Cumpridas;
             fechamentoBimestre.TotalAulasPrevistas = aulaPrevistaBimestreAtual.Previstas.Quantidade;
-
-            fechamentoBimestre.PodeProcessarReprocessar = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PeriodoAberto = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
 
             return fechamentoBimestre;
         }
@@ -439,6 +439,13 @@ namespace SME.SGP.Aplicacao
         {
             var sintese = Sinteses.FirstOrDefault(c => c.Id == id);
             return sintese != null ? sintese.Descricao : "";
+        }
+
+        private bool UsuarioPossuiPermissaoNaTelaParaReprocessar()
+        {
+            var permissoesUsuario = servicoUsuario.ObterPermissoes();
+
+            return permissoesUsuario.Any(p => p == Permissao.FB_A);
         }
     }
 }

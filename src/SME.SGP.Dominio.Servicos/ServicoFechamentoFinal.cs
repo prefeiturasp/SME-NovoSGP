@@ -168,7 +168,7 @@ namespace SME.SGP.Dominio.Servicos
                 await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
                 unitOfWork.PersistirTransacao();
 
-                await AtualizarCache(fechamentoFinal, turma, emAprovacao, fechamentosNotasCache);
+                await AtualizarCache(fechamentoFinal, turma, emAprovacao, fechamentosNotasCache, notasDto);
 
                 foreach (var consolidacaoNotaAluno in consolidacaoNotasAlunos)
                     await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAluno));
@@ -208,12 +208,14 @@ namespace SME.SGP.Dominio.Servicos
                 await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior, fechamentoNota.ConceitoId,fechamentoNota.Id, criadoRF:criadoRf, criadoPor:criadoPor));
         }
 
-        private async Task AtualizarCache(FechamentoTurmaDisciplina fechamentoFinal, Turma turma, bool emAprovacao, Dictionary<FechamentoAluno,List<FechamentoNota>> fechamentosNotasCache)
+        private async Task AtualizarCache(FechamentoTurmaDisciplina fechamentoFinal, Turma turma, bool emAprovacao, Dictionary<FechamentoAluno,List<FechamentoNota>> fechamentosNotasCache, IList<FechamentoFinalSalvarItemDto> notasDto)
         {
             foreach (var fechamentoAluno in fechamentosNotasCache.Keys)
             {
-                foreach (var fechamentoNota in fechamentosNotasCache[fechamentoAluno])
+                var notaAlterada = notasDto.FirstOrDefault(n => n.AlunoRf == fechamentoAluno.AlunoCodigo);
+                foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
+                    fechamentoNota.Nota = notaAlterada.Nota;
                     var nomeChaveCache = ObterChaveFechamentoNotaFinalComponenteTurma(fechamentoFinal.DisciplinaId.ToString(), turma.CodigoTurma);
 
                     var notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache);
