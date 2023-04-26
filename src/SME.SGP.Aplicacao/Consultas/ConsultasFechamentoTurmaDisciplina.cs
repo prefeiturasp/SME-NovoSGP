@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
                     var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
                     if (usuarioLogado.EhProfessor())
                     {
-                        usuarioRF = usuarioLogado.CodigoRf;
+                        usuarioRF = usuarioLogado.Login;
                         var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
                         var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.Equals(disciplinaId));
                         codigoTerritorioRelacionado = componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(disciplinaId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString() : componenteCorrespondente?.Codigo.ToString();
