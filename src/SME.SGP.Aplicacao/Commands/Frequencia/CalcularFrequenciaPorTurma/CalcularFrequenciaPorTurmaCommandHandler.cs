@@ -59,6 +59,7 @@ namespace SME.SGP.Aplicacao
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
             var periodoConsiderado = periodos?.SingleOrDefault(p => p.PeriodoInicio.Date <= request.DataAula.Date && p.PeriodoFim.Date >= request.DataAula.Date);
             var componentesTerritorioEquivalentes = await mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), turma.CodigoTurma, professor));
+            var componentesRegenciaAulasAutomaticas = await mediator.Send(new ObterCodigosComponentesCurricularesRegenciaAulasAutomaticasQuery(turma.ModalidadeCodigo));
 
             if (periodoConsiderado == null)
                 throw new NegocioException("A data da aula está fora dos períodos escolares da turma");
@@ -75,7 +76,7 @@ namespace SME.SGP.Aplicacao
                     if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any() && !disciplinasIdsConsideradas.Contains(componenteTerritorioEquivalente.codigoComponente))
                         disciplinasIdsConsideradas.Add(componenteTerritorioEquivalente.codigoComponente);
                     
-                    var professorRfAula = turma.EhTurmaInfantil ? string.Empty : componenteTerritorioEquivalente.professor;
+                    var professorRfAula = turma.EhTurmaInfantil || disciplinasIdsConsideradas.Any(d => componentesRegenciaAulasAutomaticas.Contains(d)) ? string.Empty : componenteTerritorioEquivalente.professor;
 
                     var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, professorRfAula, request.TurmaId))).ToList();
                     var periodosEscolaresParaFiltro = periodos.Select(p => (long?)p.Id);
