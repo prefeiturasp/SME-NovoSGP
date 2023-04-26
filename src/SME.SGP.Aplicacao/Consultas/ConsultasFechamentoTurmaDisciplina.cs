@@ -292,9 +292,12 @@ namespace SME.SGP.Aplicacao
 
                     if (marcador != null)
                         alunoDto.Informacao = marcador.Descricao;
-
-                    var frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId))
-                        ?? await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigoTerritorioRelacionado, periodoAtual.PeriodoFim, turmaId));
+                    var frequenciaAluno = new FrequenciaAluno();
+                    if (disciplina.TerritorioSaber)
+                        frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId))
+                           ?? await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigoTerritorioRelacionado, periodoAtual.PeriodoFim, turmaId));
+                    else
+                        frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId));
 
                     if (frequenciaAluno != null)
                     {
