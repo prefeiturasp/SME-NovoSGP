@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SME.SGP.IoC;
 using SME.SGP.Infra;
+using SME.SGP.IoC;
 
 namespace SME.SGP.Frequencia.Worker
 {
@@ -27,10 +27,6 @@ namespace SME.SGP.Frequencia.Worker
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoFrequenciaRabbitSgp(services);
-
-            services.AddHostedService<WorkerRabbitFrequencia>();
-            services.AddHealthChecks();
-            services.AddHealthChecksUiSgp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
