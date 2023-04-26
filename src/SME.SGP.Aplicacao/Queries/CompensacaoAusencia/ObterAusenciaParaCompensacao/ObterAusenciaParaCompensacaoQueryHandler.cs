@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var faltasNaoCompensadas = await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacao(
                 request.CompensacaoId,
                 request.TurmaCodigo,
-                codigoComponenteTerritorio != default ? codigoComponenteTerritorio.ToString() : request.DisciplinaId,
+                codigoComponenteTerritorio != default ? codigoComponenteTerritorio.codigo.ToString() : request.DisciplinaId,
                 request.AlunosQuantidadeCompensacoes.Select(t => t.CodigoAluno).Distinct().ToArray(),
                 request.Bimestre);
 
