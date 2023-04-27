@@ -77,6 +77,9 @@ namespace SME.SGP.Aplicacao
                 .FirstOrDefault(cp => cp.Codigo == request.CodigoComponenteBase ||
                                       cp.CodigoComponenteTerritorioSaber > 0 && cp.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase);
 
+            if (componenteProfessorCorrespondente != null && !componenteProfessorCorrespondente.TerritorioSaber)
+                return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
+
             if (componenteProfessorCorrespondente == null)
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), request.Professor) };
 
