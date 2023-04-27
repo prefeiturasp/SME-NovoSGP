@@ -52,25 +52,31 @@ namespace SME.SGP.Aplicacao
         {
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
             var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
-            var aulas = await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId, ObterTiposDeEscolasValidos()));
+            var aulas = (await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId, ObterTiposDeEscolasValidos()))).Where(aula => aula.TurmaId == "2502301");
 
             var diasComEventosNaoLetivos = diasLetivosENaoLetivos.Where(e => e.EhNaoLetivo);
 
             if (aulas != null)
             {
                 var listaAgrupada = aulas
-                    .Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data && d.UesIds.Contains(a.CodigoUe)))
+                    .Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data &&
+                                                                (d.UesIds.Contains(a.CodigoUe) || 
+                                                                 d.NaoPossuiDre || 
+                                                                 (d.DreIds.Contains(a.CodigoDre) && d.NaoPossuiUe))))
                     .GroupBy(x => new { x.TurmaId, x.IdTurma, x.DisciplinaId, x.ProfessorRf }).ToList();
 
                 var motivos = diasComEventosNaoLetivos
-                    .Where(d => aulas.Any(a => a.Data == d.Data && d.UesIds.Contains(a.CodigoUe)))
+                    .Where(d => aulas.Any(a => a.Data == d.Data &&
+                                          (d.UesIds.Contains(a.CodigoUe) ||
+                                                                 d.NaoPossuiDre ||
+                                                                 (d.DreIds.Contains(a.CodigoDre) && d.NaoPossuiUe))))
                     .Select(d => new { data = d.Data, motivo = d.Motivo, UesIds = d.UesIds }).ToList();
 
                 foreach (var turmas in listaAgrupada)
                 {
                     try
                     {
-                        var professor = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmas.Key.IdTurma.ToString(), turmas.Key.DisciplinaId.ToString()));
+                        var professor = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmas.Key.TurmaId.ToString(), turmas.Key.DisciplinaId.ToString()));
                         if (professor == null && turmas.Key.ProfessorRf == "Sistema") continue;
                         var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf));
 
