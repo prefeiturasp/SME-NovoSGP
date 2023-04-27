@@ -8,6 +8,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.IoC
 {
@@ -30,29 +31,30 @@ namespace SME.SGP.IoC
             {
                 var options = serviceProvider.GetService<IOptions<ConfiguracaoCacheOptions>>()?.Value;
                 var servicoTelemetria = serviceProvider.GetService<IServicoTelemetria>();
+                var servicoMensageriaLogs = serviceProvider.GetService<IServicoMensageriaLogs>();
 
-                return ObterRepositorio(serviceProvider, options, servicoTelemetria, services);
+                return ObterRepositorio(serviceProvider, options, servicoTelemetria, services,servicoMensageriaLogs);
             });
         }
 
-        private static IRepositorioCache ObterRepositorio(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServiceCollection services)
+        private static IRepositorioCache ObterRepositorio(IServiceProvider serviceProvider, ConfiguracaoCacheOptions options, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs)
             => options.UtilizaRedis ?
-                ObterRepositorioRedis(serviceProvider, servicoTelemetria) :
-                ObterRepositorioMemory(serviceProvider, servicoTelemetria, services);
+                ObterRepositorioRedis(serviceProvider, servicoTelemetria,servicoMensageriaLogs) :
+                ObterRepositorioMemory(serviceProvider, servicoTelemetria, services,servicoMensageriaLogs);
 
-        private static IRepositorioCache ObterRepositorioRedis(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria)
+        private static IRepositorioCache ObterRepositorioRedis(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs)
         {
             var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>()?.Value;
             var connection = new ConnectionMultiplexerSME(redisOptions);
-            return new RepositorioCacheRedis(connection, servicoTelemetria, redisOptions);
+            return new RepositorioCacheRedis(connection, servicoTelemetria, redisOptions,servicoMensageriaLogs);
         }
 
-        private static IRepositorioCache ObterRepositorioMemory(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServiceCollection services)
+        private static IRepositorioCache ObterRepositorioMemory(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServiceCollection services, IServicoMensageriaLogs servicoMensageriaLogs)
         {
             services.AddMemoryCache();
             var memoryCache = serviceProvider.GetService<IMemoryCache>();
 
-            return new RepositorioCacheMemoria(memoryCache, servicoTelemetria);
+            return new RepositorioCacheMemoria(memoryCache, servicoTelemetria,servicoMensageriaLogs);
         }
     }
 }
