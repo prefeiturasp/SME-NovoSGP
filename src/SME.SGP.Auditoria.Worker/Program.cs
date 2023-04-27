@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Auditoria.Worker
 {
@@ -21,6 +23,14 @@ namespace SME.SGP.Auditoria.Worker
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<WorkerRabbitAuditoria>();
+                    services.AddHealthChecks()
+                        .AddElasticSearchSgp();
+                    services.AddHealthChecksUiSgp();
+                })
+            ;
     }
 }
