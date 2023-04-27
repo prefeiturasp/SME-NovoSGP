@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             retornoSalvar.ShouldNotBeNull();
             retornoSalvar.Auditoria.ShouldNotBeNull();
-            retornoSalvar.Auditoria.AlteradoEm!.Value.Date.ShouldBeEquivalentTo(DateTime.Now.Date);
+            retornoSalvar.Auditoria.AlteradoEm!.Value.Date.ShouldBeEquivalentTo(DateTimeExtension.HorarioBrasilia().Date);
         }
     }
 }
