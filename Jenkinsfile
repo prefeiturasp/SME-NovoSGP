@@ -202,9 +202,7 @@ pipeline {
             steps {
                 script{
                   //if(testPassed){
-                        if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == '_release' ) {
-                            sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
-                                
+                        if ( env.branchname == 'main' ||  env.branchname == 'master' ) {
                             withCredentials([string(credentialsId: 'aprovadores-sgp', variable: 'aprovadores')]) {
                                 timeout(time: 24, unit: "HOURS") {
                                     input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: "${aprovadores}"
@@ -292,8 +290,12 @@ def sendTelegram(message) {
     def encodedMessage = URLEncoder.encode(message, "UTF-8")
     withCredentials([string(credentialsId: 'telegramToken', variable: 'TOKEN'),
     string(credentialsId: 'telegramChatId', variable: 'CHAT_ID')]) {
-
-        return message
+        response = httpRequest (consoleLogResponseBody: true,
+                contentType: 'APPLICATION_JSON',
+                httpMode: 'GET',
+                url: 'https://api.telegram.org/bot'+"$TOKEN"+'/sendMessage?text='+encodedMessage+'&chat_id='+"$CHAT_ID"+'&disable_web_page_preview=true',
+                validResponseCodes: '200')
+        return response
     }
 }
 def getKubeconf(branchName) {
