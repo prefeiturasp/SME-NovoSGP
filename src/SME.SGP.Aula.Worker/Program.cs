@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aula.Worker
 {
@@ -21,6 +23,13 @@ namespace SME.SGP.Aula.Worker
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<WorkerRabbitAula>();
+                    services.AddHealthChecks();
+                    services.AddHealthChecksUiSgp();
+                })
+            ;
     }
 }

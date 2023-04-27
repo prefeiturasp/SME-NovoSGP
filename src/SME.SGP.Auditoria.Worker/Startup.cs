@@ -40,13 +40,6 @@ namespace SME.SGP.Auditoria.Worker
             RegistrarMapeamentos();
             RegistrarRabbitMQ(services);
             RegistrarTelemetria(services);
-
-            services.AddHostedService<WorkerRabbitAuditoria>();
-            
-            services.AddHealthChecks()
-                .AddElasticSearchSgp();
-            
-            services.AddHealthChecksUiSgp();
         }
 
         private void RegistrarElasticSearch(IServiceCollection services)
