@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
             var diasLetivosENaoLetivos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
-            var aulas = (await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId, ObterTiposDeEscolasValidos()))).Where(aula => aula.TurmaId == "2502301");
+            var aulas = await mediator.Send(new ObterAulasReduzidaPorTipoCalendarioQuery(tipoCalendarioId, ObterTiposDeEscolasValidos()));
 
             var diasComEventosNaoLetivos = diasLetivosENaoLetivos.Where(e => e.EhNaoLetivo);
 
