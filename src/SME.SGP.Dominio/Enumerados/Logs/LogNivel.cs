@@ -4,6 +4,7 @@
     {
         Informacao = 1,
         Critico = 2,
-        Negocio = 3
+        Negocio = 3,
+        Alerta = 4,
     }
 }

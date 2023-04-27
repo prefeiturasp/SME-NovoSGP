@@ -51,10 +51,10 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception e)
             {
-                var mensagem = new LogMensagem("Erro ao obter cache Redis",
-                    LogNivel.Informacao.ToString(),
-                    LogContexto.Geral.ToString(),
-                    nomeChave,
+                var mensagem = new LogMensagem($"Erro ao obter cache - {NomeServicoCache}",
+                    LogNivel.Alerta.ToString(),
+                    LogContexto.Cache.ToString(),
+                    $"Nome chave: {nomeChave}",
                     "SGP",
                     e.StackTrace,
                     e.InnerException?.Message,
@@ -94,10 +94,10 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception e)
             {
-                var mensagem = new LogMensagem("Erro ao obter cache Redis",
-                    LogNivel.Informacao.ToString(),
-                    LogContexto.Geral.ToString(),
-                    nomeChave,
+                var mensagem = new LogMensagem($"Erro ao obter cache - {NomeServicoCache}",
+                    LogNivel.Alerta.ToString(),
+                    LogContexto.Cache.ToString(),
+                    $"Nome chave: {nomeChave}",
                     "SGP",
                     e.StackTrace,
                     e.InnerException?.Message,
@@ -144,10 +144,10 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception e)
             {
-                var mensagem = new LogMensagem("Erro ao obter cache Redis",
-                    LogNivel.Informacao.ToString(),
-                    LogContexto.Geral.ToString(),
-                    nomeChave,
+                var mensagem = new LogMensagem($"Erro ao obter cache - {NomeServicoCache}",
+                    LogNivel.Alerta.ToString(),
+                    LogContexto.Cache.ToString(),
+                    $"Nome chave: {nomeChave}",
                     "SGP",
                     e.StackTrace,
                     e.InnerException?.Message,
@@ -202,9 +202,18 @@ namespace SME.SGP.Dados.Repositorios
                 await servicoTelemetria.RegistrarAsync(async () => await RemoverValor(nomeChave),
                     NomeServicoCache, $"{NomeServicoCache} Remover async", "", param.ToString());
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                var mensagem = new LogMensagem($"Erro ao remover cache - {NomeServicoCache}",
+                    LogNivel.Alerta.ToString(),
+                    LogContexto.Cache.ToString(),
+                    $"Nome chave: {nomeChave}",
+                    "SGP",
+                    e.StackTrace,
+                    e.InnerException?.Message,
+                    e.InnerException?.ToString());
+                
+                servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
             }
         }
 
@@ -231,9 +240,18 @@ namespace SME.SGP.Dados.Repositorios
                         NomeServicoCache, $"{NomeServicoCache} Salvar async", "", param.ToString());
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                var mensagem = new LogMensagem($"Erro ao salvar cache - {NomeServicoCache}",
+                    LogNivel.Alerta.ToString(),
+                    LogContexto.Cache.ToString(),
+                    $"Nome chave: {nomeChave}",
+                    "SGP",
+                    e.StackTrace,
+                    e.InnerException?.Message,
+                    e.InnerException?.ToString());
+                
+                servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
             }
         }
 
