@@ -573,7 +573,7 @@ namespace SME.SGP.Aplicacao
                                 disciplina.Nome = disciplinasAtibuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular).Nome; 
                             });
 
-            disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+                        disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
                     }
                     else disciplinas = null;
                 }
