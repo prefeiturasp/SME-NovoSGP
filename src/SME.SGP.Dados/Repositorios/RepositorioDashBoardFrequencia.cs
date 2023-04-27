@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select 
  	                                           count(*) filter(where x.QuantidadePresencas > 0) as Presentes
  	                                         , count(*) filter(where x.QuantidadeRemotos > 0) as Remotos
- 	                                         , count(*) filter(where x.QuantidadeAusencias > 0 and x.QuantidadePresencas=0 and x.QuantidadeRemotos=0) as Ausentes 	                            
+ 	                                         , count(*) filter(where x.QuantidadeAusencias > 0) as Ausentes 	                            
                                          from
                                              ( 
 		                                        select rfa.codigo_aluno,			   
