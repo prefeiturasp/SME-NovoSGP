@@ -4,12 +4,15 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCache : IRepositorioCache
     {
         private readonly IServicoTelemetria servicoTelemetria;
+        private readonly IServicoMensageriaLogs servicoMensageriaLogs;
 
         protected string NomeServicoCache { get; set; }
 
@@ -22,26 +25,45 @@ namespace SME.SGP.Dados.Repositorios
         protected virtual Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar)
             => throw new NotImplementedException($"Método SalvarValor do serviço {NomeServicoCache} não implementado");
 
-        public RepositorioCache(IServicoTelemetria servicoTelemetria)
+        public RepositorioCache(IServicoTelemetria servicoTelemetria,IServicoMensageriaLogs servicoMensageriaLogs)
         {
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
+            this.servicoMensageriaLogs = servicoMensageriaLogs ?? throw new ArgumentNullException(nameof(servicoMensageriaLogs));
         }
 
         public string Obter(string nomeChave, string telemetriaNome, bool utilizarGZip = false)
         {
-            var param = new
+            try
             {
-                NomeChave = nomeChave,
-                UtilizarGZip = utilizarGZip
-            };
-            
-            var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), 
-                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
+                var param = new
+                {
+                    NomeChave = nomeChave,
+                    UtilizarGZip = utilizarGZip
+                };
+                
+                var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), 
+                    NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
-            if (utilizarGZip)
-                cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
+                if (utilizarGZip)
+                    cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
 
-            return cacheParaRetorno;            
+                return cacheParaRetorno;    
+            }
+            catch (Exception e)
+            {
+                var mensagem = new LogMensagem("Erro ao obter cache Redis",
+                    LogNivel.Informacao.ToString(),
+                    LogContexto.Geral.ToString(),
+                    nomeChave,
+                    "SGP",
+                    e.StackTrace,
+                    e.InnerException?.Message,
+                    e.InnerException?.ToString());
+
+                servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
+                
+                return string.Empty;
+            }
         }
         
         public string Obter(string nomeChave, bool utilizarGZip = false)
@@ -51,22 +73,40 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<string> ObterAsync(string nomeChave, string telemetriaNome, bool utilizarGZip = false)
         {
-            var param = new
+            try
             {
-                NomeChave = nomeChave,
-                UtilizarGZip = utilizarGZip
-            };
-                
-            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
-                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
+                var param = new
+                {
+                    NomeChave = nomeChave,
+                    UtilizarGZip = utilizarGZip
+                };
+                    
+                var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
+                    NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
-            if (string.IsNullOrWhiteSpace(stringCache)) 
-                return await Task.FromResult(string.Empty);
-            
-            if (utilizarGZip)
-                stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
-            
-            return stringCache;
+                if (string.IsNullOrWhiteSpace(stringCache)) 
+                    return await Task.FromResult(string.Empty);
+                
+                if (utilizarGZip)
+                    stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+                
+                return stringCache;
+            }
+            catch (Exception e)
+            {
+                var mensagem = new LogMensagem("Erro ao obter cache Redis",
+                    LogNivel.Informacao.ToString(),
+                    LogContexto.Geral.ToString(),
+                    nomeChave,
+                    "SGP",
+                    e.StackTrace,
+                    e.InnerException?.Message,
+                    e.InnerException?.ToString());
+
+                servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
+                    
+                return string.Empty;
+            }
         }
 
         public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
@@ -77,28 +117,46 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, string telemetriaNome, int minutosParaExpirar = 720,
             bool utilizarGZip = false)
         {
-            var param = new
+            try
             {
-                NomeChave = nomeChave,
-                MinutosParaExpirar = minutosParaExpirar,
-                UtilizarGZip = utilizarGZip
-            };
+                var param = new
+                {
+                    NomeChave = nomeChave,
+                    MinutosParaExpirar = minutosParaExpirar,
+                    UtilizarGZip = utilizarGZip
+                };
             
-            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
-                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
+                var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
+                    NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
-            if (!string.IsNullOrWhiteSpace(stringCache))
-            {
-                if (utilizarGZip)
-                    stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+                if (!string.IsNullOrWhiteSpace(stringCache))
+                {
+                    if (utilizarGZip)
+                        stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
 
-                return JsonConvert.DeserializeObject<T>(stringCache);
+                    return JsonConvert.DeserializeObject<T>(stringCache);
+                }
+
+                var dados = await buscarDados();
+                await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
+
+                return dados;
             }
+            catch (Exception e)
+            {
+                var mensagem = new LogMensagem("Erro ao obter cache Redis",
+                    LogNivel.Informacao.ToString(),
+                    LogContexto.Geral.ToString(),
+                    nomeChave,
+                    "SGP",
+                    e.StackTrace,
+                    e.InnerException?.Message,
+                    e.InnerException?.ToString());
 
-            var dados = await buscarDados();
-            await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
-
-            return dados;            
+                servicoMensageriaLogs.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
+                
+                return await buscarDados();
+            }
         }
 
         public async Task<T> ObterObjetoAsync<T>(string nomeChave, bool utilizarGZip = false) where T : new()
