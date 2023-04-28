@@ -93,8 +93,8 @@ namespace SME.SGP.Aplicacao
                         foreach (var codigoAluno in alunosComFrequencia)
                         {
                             var totalAulasNaDisciplinaParaAluno = registroFreqAlunos
-                                .Where(t => t.AlunoCodigo.Equals(codigoAluno) && t.ComponenteCurricularId.Equals(request.DisciplinaId))
-                                .Sum(s => s.TotalAulas);
+                                .FirstOrDefault(t => t.AlunoCodigo.Equals(codigoAluno) && t.ComponenteCurricularId.Equals(request.DisciplinaId))?
+                                .TotalAulas ?? 0;
 
                             var totalAulasParaAluno = registroFreqAlunos
                                 .Where(t => t.AlunoCodigo.Equals(codigoAluno))
