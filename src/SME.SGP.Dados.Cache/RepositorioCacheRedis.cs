@@ -3,6 +3,7 @@ using SME.SGP.Infra.Interfaces;
 using StackExchange.Redis;
 using System;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Dados.Repositorios
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioCacheRedis(IConnectionMultiplexerSME connectionMultiplexerSme,
             IServicoTelemetria servicoTelemetria,
-            RedisOptions redisOptions) : base(servicoTelemetria)
+            RedisOptions redisOptions, IServicoMensageriaLogs servicoMensageriaLogs) : base(servicoTelemetria,servicoMensageriaLogs)
         {
             ConnectionMultiplexerSme = connectionMultiplexerSme ?? throw new ArgumentNullException(nameof(connectionMultiplexerSme));
             redis = connectionMultiplexerSme.GetDatabase() ?? throw new ArgumentNullException(nameof(connectionMultiplexerSme.GetDatabase), "RedisDatabase");
