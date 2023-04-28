@@ -14,7 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterDevolutivasPorTurmaComponenteNoPeriodo(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio1, DateTime periodoInicio2);
         Task<ConsolidacaoDevolutivaTurmaDTO> ObterDevolutivasPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo);
 
-        Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo);
+        Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoComDevolutivasPorTurmaEAnoLetivo(long turmaId, int anoLetivo);
 
         Task<IEnumerable<QuantidadeTotalDevolutivasPorAnoDTO>> ObterDevolutivasPorAnoDre(int anoLetivo, int mes, long dreId);
 
