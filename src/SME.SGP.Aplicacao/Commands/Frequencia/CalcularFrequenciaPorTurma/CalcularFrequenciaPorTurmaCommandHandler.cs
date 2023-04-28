@@ -295,7 +295,7 @@ namespace SME.SGP.Aplicacao
                 {
                     if (frequenciaParaTratar == null)
                     {
-                        var frequenciaFinal = new FrequenciaAluno(
+                        frequenciaParaTratar = new FrequenciaAluno(
                                      alunoCodigo,
                                      turma.CodigoTurma,
                                      componenteCurricularId,
@@ -311,7 +311,7 @@ namespace SME.SGP.Aplicacao
                                      registrosFrequenciaAluno?.Sum(rfa => rfa.TotalPresencas) ?? totalAulasNaDisciplina,
                                      professor);
 
-                        frequenciaDosAlunos.Add(frequenciaFinal);
+                        frequenciaDosAlunos.Add(frequenciaParaTratar);
                     }
                     else
                     {
