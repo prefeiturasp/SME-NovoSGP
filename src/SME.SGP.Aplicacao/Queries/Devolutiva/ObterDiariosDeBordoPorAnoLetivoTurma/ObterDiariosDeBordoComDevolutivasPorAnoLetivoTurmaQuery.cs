@@ -4,15 +4,15 @@ using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDiariosDeBordoPorAnoLetivoTurmaQuery : IRequest<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>
+    public class ObterDiariosDeBordoComDevolutivasPorAnoLetivoTurmaQuery : IRequest<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>
     {
-        public ObterDiariosDeBordoPorAnoLetivoTurmaQuery(string turmaCodigo, int anoLetivo)
+        public ObterDiariosDeBordoComDevolutivasPorAnoLetivoTurmaQuery(long turmaId, int anoLetivo)
         {
-            TurmaCodigo = turmaCodigo;
+            TurmaId = turmaId;
             AnoLetivo = anoLetivo;
         }
 
-        public string TurmaCodigo { get; set; }
+        public long TurmaId { get; set; }
         public int AnoLetivo { get; set; }
     }
 
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.TurmaCodigo)
             .NotEmpty()
-            .WithMessage("O Código da Turma deve ser informado para consulta de devolutivas.");
+            .WithMessage("O identificador da Turma deve ser informado para consulta de devolutivas.");
 
             RuleFor(c => c.AnoLetivo)
             .NotEmpty()

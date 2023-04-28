@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra.Dtos
 {
@@ -15,34 +15,34 @@ namespace SME.SGP.Infra.Dtos
     {
         public string DreId { get; set; }
         public string UeId { get; set; }
-        public string TurmaId { get; set; }
-        public int QuantidadeDiarioBordoRegistrado { get; set; }
+        public string TurmaCodigo { get; set; }
+        public long TurmaId { get; set; }
+        public int QtdeDiarioBordoRegistrados { get; set; }
+        public int QtdeRegistradaDevolutivas { get; set; }
     }
 
     public class DevolutivaTurmaDTO
     {
-        public string TurmaId { get; set; }
+        public long TurmaId { get; set; }
         public int AnoLetivo { get; set; }
         public long UeId { get; set; }
         public long Id { get; set; }
         public int AnoAtual { get; set; }
         public DevolutivaTurmaDTO()
         {
-            AnoAtual = DateTime.Now.Year;
+            AnoAtual = DateTimeExtension.HorarioBrasilia().Year;
         }
     }
 
     public class FiltroDevolutivaTurmaDTO
     {
-        public string TurmaId { get; set; }
+        public long TurmaId { get; set; }
         public int AnoLetivo { get; set; }
-        public long UeId { get; set; }
 
-        public FiltroDevolutivaTurmaDTO(string turmaId, int anoLetivo, long ueId)
+        public FiltroDevolutivaTurmaDTO(long turmaId, int anoLetivo)
         {
             TurmaId = turmaId;
             AnoLetivo = anoLetivo;
-            UeId = ueId;
         }
     }
 }
