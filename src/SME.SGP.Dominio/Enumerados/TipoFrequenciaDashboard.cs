@@ -14,6 +14,9 @@ namespace SME.SGP.Dominio.Enumerados
         Ausentes = 3,
 
         [Display(Name = "Total de Estudantes")]
-        TotalEstudantes = 4
+        TotalEstudantes = 4,
+
+        [Display(Name = "Total de Crianças")]
+        TotalCriancas = 5
     }
 }
