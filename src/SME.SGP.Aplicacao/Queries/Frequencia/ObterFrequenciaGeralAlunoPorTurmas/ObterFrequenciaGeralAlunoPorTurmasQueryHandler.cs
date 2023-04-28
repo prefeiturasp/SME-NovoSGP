@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 };
             }                
 
-            if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
+            if (frequenciaAluno == null && (aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0))
                 return FrequenciaAluno.FormatarPercentual(0);
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequenciaFormatado;
@@ -128,6 +128,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return frequenciaGeralObtida;
-        }
+        }        
     }
 }

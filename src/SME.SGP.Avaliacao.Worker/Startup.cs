@@ -24,14 +24,9 @@ namespace SME.SGP.Avaliacao.Worker
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoAvaliacaoRabbitSgp(services);
-
-            services.AddHostedService<WorkerRabbitAvaliacao>();
-            services.AddHealthChecks();
-            services.AddHealthChecksUiSgp();            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

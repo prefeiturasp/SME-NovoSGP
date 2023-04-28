@@ -80,6 +80,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase, NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase, AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IExecutarGravarHistoricoEscolarObservacaoUseCase, ExecutarGravarHistoricoEscolarObservacaoUseCase>();
+            services.TryAddScoped<IObterCodigoTurmaInfantilPorAnoUseCase, ObterCodigoTurmaInfantilPorAnoUseCase>();
+            services.TryAddScoped<IObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase, ObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase>();
         }
     }
 }
