@@ -42,6 +42,7 @@ namespace SME.SGP.Aplicacao
 
                     CodigoComponenteCurricular = disciplinaEol.Codigo,
                     CodigoComponenteCurricularPai = disciplinaEol.CodigoComponenteCurricularPai,
+                    CodigoComponenteTerritorioSaber = disciplinaEol.CodigoComponenteTerritorioSaber,
                     Nome = disciplinaEol.Descricao,
                     Regencia = disciplinaEol.Regencia,
                     Compartilhada = disciplinaEol.Compartilhada,
