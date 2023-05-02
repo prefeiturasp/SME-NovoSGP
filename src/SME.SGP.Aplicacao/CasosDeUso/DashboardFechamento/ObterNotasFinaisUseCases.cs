@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                     notaFinal.NotaAcimaMedia = notaFinal.Conceito != "NS";
             }
 
-            var groupKey = param.DreId == 0 && param.UeId == 0 ? "Ano" : "TurmaAnoNome";
+            var groupKey = (param.DreId == 0 && param.UeId == 0) || (param.DreId != 0 && param.UeId == 0) ? "Ano" : "TurmaAnoNome";
             var notasFinaisGrupo = notasFinaisRetorno.GroupBy(nf => nf.GetType().GetProperty(groupKey).GetValue(nf).ToString());
 
             foreach (var notaFinalGrupo in notasFinaisGrupo)
