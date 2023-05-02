@@ -226,6 +226,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select
                                             x.TurmaAnoNome,
+                                            x.Ano,
                                             x.Bimestre,
                                             x.ComponenteCurricularCodigo,
                                             x.ConselhoClasseNotaId,
