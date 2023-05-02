@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -69,10 +70,10 @@ namespace SME.SGP.Aplicacao
             else if (dreId != -99)
                 dreCodigo = await mediator.Send(new ObterCodigoDREPorUeIdQuery(dreId));
 
-            return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia);
+            return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia, modalidade);
         }
 
-        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, string tagTotalFrequencia)
+        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, string tagTotalFrequencia, int modalidade)
         {
             var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
 
@@ -106,7 +107,7 @@ namespace SME.SGP.Aplicacao
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
-                    Descricao = TipoFrequenciaDashboard.TotalEstudantes.Name(),
+                    Descricao = modalidade == (int)Modalidade.EducacaoInfantil ? TipoFrequenciaDashboard.TotalCriancas.Name() : TipoFrequenciaDashboard.TotalEstudantes.Name(),
                     TurmaAno = frequencia.Descricao,
                     Quantidade = totalPresentes + totalAusentes + totalRemotos
                 });
