@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodo = await repositorioAula.ObterPeriodoEscolarDaAula(request.AulaId);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId), cancellationToken);
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo), cancellationToken);
 
             if (periodo == null)
             {
@@ -33,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 if (aula.TipoAula != TipoAula.Reposicao)
                     throw new NegocioException(mensagemErro);
 
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo), cancellationToken);
+                
                 var eventoReposicaoAulaNoDia = await repositorioEvento
                     .EventosNosDiasETipo(aula.DataAula, aula.DataAula, TipoEvento.ReposicaoDoDia, aula.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
 
@@ -57,6 +59,8 @@ namespace SME.SGP.Aplicacao
 
             var alunos = (await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo, true), cancellationToken)).Select(c => c.CodigoAluno).Distinct();
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, request.TurmaCodigo, request.ComponenteCurricularId, request.Meses), cancellationToken);
+            foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
+                await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo));
 
             return await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, periodo.Bimestre, request.ComponenteCurricularId, periodo.DataInicio, periodo.DataFim), cancellationToken);
         }
