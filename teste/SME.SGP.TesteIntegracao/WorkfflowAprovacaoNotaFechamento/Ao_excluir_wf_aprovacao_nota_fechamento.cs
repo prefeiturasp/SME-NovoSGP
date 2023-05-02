@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             await CriarDreUePerfil();
             await CriarTurma(Modalidade.Fundamental);
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
             await CriaFechamento();
             var wf = new WfAprovacaoNotaFechamento()
             {
@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             await CriarDreUePerfil();
             await CriarTurma(Modalidade.Fundamental);
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
             await CriaFechamento();
             await InserirNaBase(new WfAprovacaoNotaFechamento
             {
@@ -93,7 +93,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             await CriarDreUePerfil();
             await CriarTurma(Modalidade.Fundamental);
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
             await CriaFechamento();
             await InserirNaBase(new WfAprovacaoNotaFechamento
             {
@@ -127,7 +127,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             await CriarDreUePerfil();
             await CriarTurma(Modalidade.Fundamental);
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
             await CriaFechamento();
             await InserirNaBase(new WfAprovacaoNotaFechamento
             {
@@ -154,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             await CriarDreUePerfil();
             await CriarTurma(Modalidade.Fundamental);
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
             await CriaFechamento();
             await InserirNaBase(new WfAprovacaoNotaFechamento
             {
@@ -182,7 +182,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
             await CriarDreUePerfil();
             await CriarTurma(Modalidade.Fundamental);
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
             await CriaFechamento();
             await CriarTipoAvaliacao();
             await CriarAtividadeAvaliativa(DATA_03_01_INICIO_BIMESTRE_1);

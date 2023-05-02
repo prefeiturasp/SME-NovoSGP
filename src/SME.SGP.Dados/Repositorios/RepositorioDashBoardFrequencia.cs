@@ -99,10 +99,11 @@ namespace SME.SGP.Dados.Repositorios
  	                                         , count(*) filter(where x.QuantidadeAusencias > 0) as Ausentes 	                            
                                          from
                                              ( 
-		                                        select rfa.codigo_aluno,			   
+		                                        select rfa.codigo_aluno, a.criado_em,			   
                                                        count(rfa.id) filter(where rfa.valor = 1) as QuantidadePresencas,
 			                                           count(rfa.id) filter(where rfa.valor = 2) as QuantidadeAusencias,
-                                                       count(rfa.id) filter(where rfa.valor = 3) as QuantidadeRemotos              
+                                                       count(rfa.id) filter(where rfa.valor = 3) as QuantidadeRemotos,
+                                                       ROW_NUMBER() OVER (PARTITION BY rfa.codigo_aluno ORDER BY a.criado_em DESC) AS sequencia
                                                   from registro_frequencia_aluno rfa
                                                  inner join aula a on a.id = rfa.aula_id
                                                  inner join turma t on t.turma_id = a.turma_id
@@ -123,8 +124,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(@"and extract(month from a.data_aula) = @mes 
                                    and extract(year from a.data_aula) = @anoLetivo ");
 
-            query.AppendLine(@"group by rfa.codigo_aluno
-                               ) as x ");
+            query.AppendLine(@"group by rfa.codigo_aluno, a.criado_em
+                               ) as x where x.sequencia = 1");
 
             var parametros = new
             {

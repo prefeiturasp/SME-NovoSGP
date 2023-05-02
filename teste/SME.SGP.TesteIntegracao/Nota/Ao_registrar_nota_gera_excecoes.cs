@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             };
 
             await CriarDadosBase(filtroNota);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_2);
             await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
@@ -124,7 +124,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             };
 
             await CriarDadosBase(filtroNota);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2);
             await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1), RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
             await CrieTipoNotaAnoAnterior();
