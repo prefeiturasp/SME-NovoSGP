@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao.Queries.DashboardDevolutivas.ObterDevolutivasEstimad
 {
     public class ObterDevolutivasEstimadasEConfirmadasQueryHandler : IRequestHandler<ObterDevolutivasEstimadasEConfirmadasQuery, IEnumerable<GraficoDevolutivasEstimadasEConfirmadasDto>>
     {
-        private readonly IRepositorioConsolidacaoDevolutivas repositorioConsolidacaoDevolutivas;
+        private readonly IRepositorioConsolidacaoDevolutivasConsulta repositorioConsolidacaoDevolutivas;
 
-        public ObterDevolutivasEstimadasEConfirmadasQueryHandler(IRepositorioConsolidacaoDevolutivas repositorioConsolidacaoDevolutivas)
+        public ObterDevolutivasEstimadasEConfirmadasQueryHandler(IRepositorioConsolidacaoDevolutivasConsulta repositorioConsolidacaoDevolutivas)
         {
             this.repositorioConsolidacaoDevolutivas = repositorioConsolidacaoDevolutivas;
         }

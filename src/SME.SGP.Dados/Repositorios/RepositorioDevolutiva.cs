@@ -126,7 +126,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo, long ueId)
         {
             var query = @" select distinct
-                            t.turma_id as turmaId,
+                            t.id as turmaId,
                             t.ano_letivo as anoLetivo
                         from diario_bordo db 
                             inner join aula a on a.id = db.aula_id
@@ -140,27 +140,29 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo, ueId }, commandTimeout: 60);
         }
 
-        public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)
+        public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoComDevolutivasPorTurmaEAnoLetivo(long turmaId, int anoLetivo)
         {
             var query = @" select 
 	                            ue.ue_id as ueid,
 	                            ue.dre_id as dreId,
-                                a.turma_id as turmaid,
-                                count(distinct db.id) as quantidadeDiarioBordoRegistrado
+                                t.id as turmaid,
+                                count(distinct db.id) as QtdeDiarioBordoRegistrados,
+                                count(d.id) as QtdeRegistradaDevolutivas 
                             from diario_bordo db
 	                            inner join aula a on a.id = db.aula_id
 	                            inner join turma t on t.turma_id = a.turma_id 
 	                            inner join ue ue on ue.id = t.ue_id	
+                                left join devolutiva d on db.devolutiva_id = d.id
                             where not db.excluido
                                 and t.ano_letivo = @anoLetivo 
-                                and t.turma_id = @turmaCodigo
+                                and t.id = @turmaId
                                 and a.data_aula < current_date 
                             group by
 	                            ue.ue_id,
 	                            ue.dre_id,
-                                a.turma_id";
+                                t.id";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>(query, new { turmaCodigo, anoLetivo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO>(query, new { turmaId, anoLetivo });
         }
 
         public async Task<IEnumerable<QuantidadeTotalDevolutivasPorAnoDTO>> ObterDevolutivasPorAnoDre(int anoLetivo, int mes, long dreId)
