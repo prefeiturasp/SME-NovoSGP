@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Minio.DataModel;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
@@ -67,7 +69,8 @@ namespace SME.SGP.Aplicacao
                     var fechamento = new FechamentoSituacaoPorEstudanteDto();
                     fechamento.AdicionarQuantidadeCompleto(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Completo).Count());
                     fechamento.AdicionarQuantidadeParcial(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.Parcial).Count());
-                    fechamento.AdicionarQuantidadeSemRegistro(alunoFechamentoStatus.Where(a => a.Situacao == Dominio.SituacaoFechamentoAluno.SemRegistros).Count());
+                    fechamento.AdicionarQuantidadeSemRegistro(await TotalAlunosSemRegistroPorTurma(alunoFechamentoStatus.FirstOrDefault().TurmaId, param.Bimestre, 
+                                                                (fechamento.QuantidadeParcial + fechamento.QuantidadeCompleto)));
 
                     if(fechamento.QuantidadeSemRegistro > 0)
                         fechamentos.Add(new GraficoBaseDto(turmaNome, fechamento.QuantidadeSemRegistro, fechamento.LegendaSemRegistro));
@@ -116,6 +119,32 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return alunoFechamento;
+        }
+
+        private async Task<int> TotalAlunosSemRegistroPorTurma(long turmaId, int bimestre, int totalParcialOuCompleto)
+        {
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+            var alunos = await mediator
+                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
+
+            if(periodoEscolar != null && (alunos.Any() && alunos != null))
+            {
+                var alunosAtivos = from a in alunos
+                                   where a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date
+                                   && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoEscolar.PeriodoInicio.Date)
+                                   group a by new { a.CodigoAluno, a.NumeroAlunoChamada } into grupoAlunos
+                                   orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
+                                   select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
+
+
+                return alunosAtivos.Count() > totalParcialOuCompleto
+                       ? alunosAtivos.Count() - totalParcialOuCompleto
+                       : 0;
+            }
+
+            return 0;
+                
         }
     }
 }
