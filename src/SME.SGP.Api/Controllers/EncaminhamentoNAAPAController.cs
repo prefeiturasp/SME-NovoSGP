@@ -196,5 +196,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await detalhadoUseCase.Executar(filtro));
         }
+
+        [HttpGet("{encaminhamentoNAAPAId}/obsevacoes")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObservacoes(long encaminhamentoNAAPAId,
+            [FromServices] IObterObservacoesDeEncaminhamentoNAAPAUseCase obterObservacoesDeEncaminhamentoNAAPAUseCase)
+        {
+            return Ok(await obterObservacoesDeEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
+        }
     }
 }
