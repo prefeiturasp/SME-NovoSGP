@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +17,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Unit> Handle(RemoverPerfisUsuarioAtualCommand request, CancellationToken cancellationToken)
         {
-            var chaveRedis = $"perfis-usuario-{request.Login}";
+            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, request.Login);
 
-            await repositorioCache.RemoverAsync(chaveRedis);
+            await repositorioCache.RemoverAsync(chaveCache);
 
             return Unit.Value;
         }
