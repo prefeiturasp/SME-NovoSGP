@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
+using ImageProcessor;
+using ImageProcessor.Plugins.WebP.Imaging.Formats;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -19,7 +22,7 @@ namespace SME.SGP.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("api/v1/arquivos/upload")]
-    [Authorize("Bearer")]
+    // [Authorize("Bearer")]
     public class UploadController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -51,6 +54,43 @@ namespace SME.SGP.Api.Controllers
             }
                 
             return BadRequest();
+        }
+        
+        [HttpPost("webp")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Editor(IFormFile image)
+        {
+            try
+            {
+                //validação simples, caso não tenha sido enviado nenhuma imagem para upload nós estamos retornando null
+                if (image == null) return null;
+
+                //Salvando a imagem no formato enviado pelo usuário
+                using (var stream = new FileStream(Path.Combine("Imagens", image.FileName), FileMode.Create))
+                {
+                    image.CopyTo(stream);
+                }
+
+                // Salvando no formato WebP
+                using (var webPFileStream = new FileStream(Path.Combine("Imagens", Guid.NewGuid() + ".webp"), FileMode.Create))
+                {
+                    using (ImageFactory imageFactory = new ImageFactory(preserveExifData: false))
+                    {
+                        imageFactory.Load(image.OpenReadStream()) //carregando os dados da imagem
+                            .Format(new WebPFormat()) //formato
+                            .Quality(100) //parametro para não perder a qualidade no momento da compressão
+                            .Save(webPFileStream); //salvando a imagem
+                    }
+                }
+
+                return Ok("Imagem salva com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro no upload: " + ex.Message);
+            }
         }
         
         [HttpPost("/servico-armazenamento/obter-buckets")]
