@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +9,8 @@ using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
 using ImageProcessor;
+using ImageProcessor.Imaging;
+using ImageProcessor.Imaging.Formats;
 using ImageProcessor.Plugins.WebP.Imaging.Formats;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -64,26 +68,52 @@ namespace SME.SGP.Api.Controllers
         {
             try
             {
-                //validação simples, caso não tenha sido enviado nenhuma imagem para upload nós estamos retornando null
-                if (image == null) return null;
-
-                //Salvando a imagem no formato enviado pelo usuário
-                using (var stream = new FileStream(Path.Combine("Imagens", image.FileName), FileMode.Create))
+                using (Bitmap bitMap = new Bitmap(@"C:\\Repo\\SME-NovoSGP\\src\\SME.SGP.Api\\Imagens\\" + image.FileName))
                 {
-                    image.CopyTo(stream);
-                }
+                    ImageCodecInfo info = GetEncoder(ImageFormat.Jpeg);
 
-                // Salvando no formato WebP
-                using (var webPFileStream = new FileStream(Path.Combine("Imagens", Guid.NewGuid() + ".webp"), FileMode.Create))
-                {
-                    using (ImageFactory imageFactory = new ImageFactory(preserveExifData: false))
-                    {
-                        imageFactory.Load(image.OpenReadStream()) //carregando os dados da imagem
-                            .Format(new WebPFormat()) //formato
-                            .Quality(100) //parametro para não perder a qualidade no momento da compressão
-                            .Save(webPFileStream); //salvando a imagem
-                    }
+                    System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
+                    EncoderParameters myEncodePArams = new EncoderParameters(1);
+                    EncoderParameter myEncoderParam = new EncoderParameter(myEncoder, 50);
+                    myEncodePArams.Param[0] = myEncoderParam;
+
+                    string newOutput = @"C:\\Repo\\SME-NovoSGP\\src\\SME.SGP.Api\\Imagens\\" + Guid.NewGuid().ToString() + "-" + image.FileName;
+                    bitMap.Save(newOutput, info, myEncodePArams);
                 }
+                
+                // //validação simples, caso não tenha sido enviado nenhuma imagem para upload nós estamos retornando null
+                // if (image == null) return null;
+                //
+                // //Salvando a imagem no formato enviado pelo usuário
+                // using (var stream = new FileStream(Path.Combine("Imagens", image.FileName), FileMode.Create))
+                // {
+                //     image.CopyTo(stream);
+                //     
+                // }
+                //
+                //
+                // // Salvando no formato WebP
+                // // using (var webPFileStream = new FileStream(Path.Combine("Imagens", Guid.NewGuid() + ".webp"), FileMode.Create))
+                // using (var webPFileStream = new FileStream(Path.Combine("Imagens", Guid.NewGuid() + ".jpeg"), FileMode.Create))
+                // {
+                //     using (ImageFactory imageFactory = new ImageFactory(preserveExifData: false))
+                //     {
+                //         // var ratioX = (double)1024 / image.Length; 
+                //         // var ratioY = (double)maxHeight / image.Height; 
+                //         // var ratio = Math.Min(ratioX, ratioY); 
+                //         // var newWidth = (int)(image.Width * ratio); 
+                //         // var newHeight = (int)(image.Height * ratio); 
+                //         // var newImage = new Bitmap(newWidth, newHeight); 
+                //         
+                //         imageFactory.Load(image.OpenReadStream()) //carregando os dados da imagem
+                //             .Format(new JpegFormat()) //formato
+                //             .Quality(50) //parametro para não perder a qualidade no momento da compressão
+                //             // .Resize(new ResizeLayer(new Size(1024,1024))) //redimensionando a imagem
+                //             .Save(webPFileStream); //salvando a imagem
+                //     }
+                // }
+                
+                
 
                 return Ok("Imagem salva com sucesso!");
             }
@@ -92,7 +122,21 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(500, "Erro no upload: " + ex.Message);
             }
         }
-        
+
+        private ImageCodecInfo GetEncoder(ImageFormat format)
+        {
+            System.Drawing.Imaging.ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+            foreach (var codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
+            }
+
+            return null;
+        }
+
         [HttpPost("/servico-armazenamento/obter-buckets")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
