@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                                                                                                               tipoPeriodoDashboard,
                                                                                                               visaoDre));
 
-            if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
+            if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any() || dadosFrequenciaAlunos.Any(f => f.Ausentes == 0 && f.Presentes == 0 && f.Remotos == 0))
                 return null;
 
 
