@@ -55,7 +55,14 @@ namespace SME.SGP.Aplicacao
                                 if (PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
                                     await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
                             }
-                            
+                            else
+                            {
+                               var dadosMatricula = dadosMatriculaAlunoNaUEPlano.Where(x => x.CodigoTurma == long.Parse(turmaDoPlanoAee.CodigoTurma))?.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
+                                if (PlanoDeveSerEncerrado(dadosMatricula.CodigoSituacaoMatricula) || (!situacoesAlunoNaUEAnoAtual.Any() && dadosMatricula.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido))
+                                    await EncerrarPlanoAee(planoAEE, dadosMatricula?.SituacaoMatricula ?? "Inativo", dadosMatricula.DataSituacao);
+                            }
+                                
+
                         }
                         else
                             throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
