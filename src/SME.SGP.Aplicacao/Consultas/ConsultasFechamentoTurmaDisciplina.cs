@@ -228,7 +228,6 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(disciplinaId, turma.CodigoTurma, usuarioLogado.EhPerfilProfessor() ? usuarioLogado.Login : null));
                 }
 
-
                 if (codigosTerritoriosEquivalentes != null && codigosTerritoriosEquivalentes.Any())
                     codigosDisciplinas.AddRange(codigosTerritoriosEquivalentes.Select(c => c.codigoComponente).Except(codigosDisciplinas));
 
@@ -276,13 +275,7 @@ namespace SME.SGP.Aplicacao
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
 
                     if (marcador != null)
-                        alunoDto.Informacao = marcador.Descricao;
-                    var frequenciaAluno = new FrequenciaAluno();
-                    if (disciplina.TerritorioSaber)
-                        frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId))
-                           ?? await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigoTerritorioRelacionado, periodoAtual.PeriodoFim, turmaId));
-                    else
-                        frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId));
+                        alunoDto.Informacao = marcador.Descricao;                    
 
                     var frequenciaAluno = await mediator
                         .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId, professorConsiderado));
