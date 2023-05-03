@@ -505,6 +505,7 @@ namespace SME.SGP.IoC
 
             // Consolidação Devolutivas
             services.TryAddScoped<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
+            services.TryAddScoped<IRepositorioConsolidacaoDevolutivasConsulta, RepositorioConsolidacaoDevolutivasConsulta>();
 
             // Frequência
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();

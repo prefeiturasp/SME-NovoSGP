@@ -32,5 +32,6 @@
         Pendencia = 28,
         AtribuicaoReponsavel = 29,
         PlanoAula = 30,
+        Cache = 31,
     }
 }
