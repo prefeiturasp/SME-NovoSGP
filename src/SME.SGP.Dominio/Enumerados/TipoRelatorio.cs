@@ -147,7 +147,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/analitico-sondagem", ShortName = "AnaliticoSondagem", Description = "Relatório analítico da Sondagem")]
         RelatorioAnaliticoSondagem = 48,
 
-        [Display(Name = "relatorios/listagem-itinerancias", ShortName = "Itinerâncias", Description = "Relatório de Registros de Itinerância")]
+        [Display(Name = "relatorios/listagem-itinerancias", ShortName = "Itinerâncias", Description = "Relatório de Registro de Itinerância")]
         ListagemItinerancias = 49,
     }
 }
