@@ -160,7 +160,7 @@ namespace SME.SGP.Dominio
             if (!string.IsNullOrEmpty(contextoAplicacao.NomeUsuario))
                 usuario.Nome = contextoAplicacao.NomeUsuario;
 
-            if (usuario.Perfis.Any())
+            if (usuario.Perfis != null && usuario.Perfis.Any())
                 return usuario;
 
             var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
