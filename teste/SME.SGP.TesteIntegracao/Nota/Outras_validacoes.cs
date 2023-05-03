@@ -196,7 +196,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TurmaCodigo = TURMA_CODIGO_1,
                 TurmaHistorico = false,
                 PeriodoInicioTicks = filtroNota.ConsiderarAnoAnterior ? DATA_03_01_INICIO_BIMESTRE_1.AddYears(-1).Ticks : DATA_03_01_INICIO_BIMESTRE_1.Ticks,
-                PeriodoFimTicks = filtroNota.ConsiderarAnoAnterior ? DATA_28_04_FIM_BIMESTRE_1.AddYears(-1).Ticks : DATA_28_04_FIM_BIMESTRE_1.Ticks,
+                PeriodoFimTicks = filtroNota.ConsiderarAnoAnterior ? DATA_01_05_FIM_BIMESTRE_1.AddYears(-1).Ticks : DATA_01_05_FIM_BIMESTRE_1.Ticks,
             };
         }
         private ListaNotasConceitosDto ObterNotaConceitoListar(FiltroNotasDto filtroNota, DateTime periodoInicio, DateTime periodoFim)
