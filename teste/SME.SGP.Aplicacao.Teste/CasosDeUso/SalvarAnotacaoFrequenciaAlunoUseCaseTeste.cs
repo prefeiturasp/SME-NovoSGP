@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new Usuario());
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorCodigoEolQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorTurmaAlunoCodigoQuery>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(new AlunoPorTurmaResposta()
               {
                   CodigoAluno = "123",

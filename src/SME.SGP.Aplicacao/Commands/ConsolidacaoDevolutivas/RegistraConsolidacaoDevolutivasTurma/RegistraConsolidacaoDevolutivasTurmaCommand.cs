@@ -1,18 +1,15 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RegistraConsolidacaoDevolutivasTurmaCommand : IRequest<long>
+    public class RegistraConsolidacaoDevolutivasTurmaCommand : IRequest
     {
-        public RegistraConsolidacaoDevolutivasTurmaCommand(long turmaId, int quantidadeEstimadaDevolutivas, int quantidadeRegistradaDevolutivas)
+        public RegistraConsolidacaoDevolutivasTurmaCommand(ConsolidacaoDevolutivas consolidacaoDevolutivas)
         {
-            TurmaId = turmaId;
-            QuantidadeEstimadaDevolutivas = quantidadeEstimadaDevolutivas;
-            QuantidadeRegistradaDevolutivas = quantidadeRegistradaDevolutivas;
+            ConsolidacaoDevolutivas = consolidacaoDevolutivas;
         }
 
-        public long TurmaId { get; }
-        public int QuantidadeEstimadaDevolutivas { get; }
-        public int QuantidadeRegistradaDevolutivas { get; }
+        public ConsolidacaoDevolutivas ConsolidacaoDevolutivas { get; }
     }
 }

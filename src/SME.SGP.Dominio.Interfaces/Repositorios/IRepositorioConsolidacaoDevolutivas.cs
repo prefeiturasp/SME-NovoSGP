@@ -6,12 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioConsolidacaoDevolutivas
     {
-        Task<IEnumerable<QuantidadeDevolutivasEstimadasEConfirmadasPorTurmaAnoDto>> ObterDevolutivasEstimadasEConfirmadasAsync(int anoLetivo, Modalidade modalidade, long? dreId, long? ueId);
-        
-        Task<long> Inserir(ConsolidacaoDevolutivas consolidacao);
-
-        Task LimparConsolidacaoDevolutivasPorAno(int anoLetivo);
-        Task<bool> ExisteConsolidacaoDevolutivaTurmaPorAno(int ano);
-        Task<IEnumerable<GraficoBaseDto>> ObterTotalDevolutivasPorDre(int anoLetivo, string ano);
+        Task Salvar(ConsolidacaoDevolutivas consolidacaoDevolutivas);
     }
 }
