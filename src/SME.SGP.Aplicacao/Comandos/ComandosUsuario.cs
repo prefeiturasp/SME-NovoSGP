@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -128,7 +129,9 @@ namespace SME.SGP.Aplicacao
             retornoAutenticacaoEol.Item1.DataHoraExpiracao = dadosAcesso.DataExpiracaoToken;
 
             usuario.AtualizaUltimoLogin();
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario));
+
+            await SalvarCacheUsuario(usuario);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario, usuarioLogado: usuario));
 
             await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
@@ -138,6 +141,10 @@ namespace SME.SGP.Aplicacao
 
             return retornoAutenticacaoEol.Item1;
         }
+
+        private Task SalvarCacheUsuario(Usuario usuario)
+            => mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.CHAVE_USUARIO, usuario.Login)
+                                                                , usuario));
 
         private AdministradorSuporteDto ObterAdministradorSuporte(SuporteUsuario suporte, Usuario usuarioSimulado)
         {
@@ -244,8 +251,8 @@ namespace SME.SGP.Aplicacao
         public void Sair()
         {
             var login = servicoUsuario.ObterLoginAtual();
-            var chaveRedis = $"perfis-usuario-{login}";
-            repositorioCache.SalvarAsync(chaveRedis, string.Empty);
+            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
+            repositorioCache.SalvarAsync(chaveCache, string.Empty);
         }
 
         public Task<string> SolicitarRecuperacaoSenha(string login)
