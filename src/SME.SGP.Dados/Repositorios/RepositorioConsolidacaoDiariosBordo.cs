@@ -30,10 +30,9 @@ namespace SME.SGP.Dados.Repositorios
                             , count(a.id) filter (where db.id is not null) as QuantidadePreenchidos
                             , count(a.id) filter (where db.id is null and a.data_aula < NOW()) as QuantidadePendentes
                           from aula a
-                          left join diario_bordo db on db.aula_id = a.id and not db.excluido 
-                         inner join turma t on t.turma_id = a.turma_id 
-                         where not a.excluido 
-                           and t.ue_id = @ueId
+                          left join diario_bordo db on db.aula_id = a.id and not db.excluido and not a.excluido 
+                          inner join turma t on t.turma_id = a.turma_id 
+                          where t.ue_id = @ueId
                            and t.ano_letivo = @anoLetivo
                         group by t.id, t.ano_letivo";
 

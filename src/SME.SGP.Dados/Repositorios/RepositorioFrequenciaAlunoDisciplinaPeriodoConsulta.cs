@@ -153,6 +153,23 @@ namespace SME.SGP.Dados
                     componenteCurricularCodigo
                 });
         }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralPorAlunosETurmas(string[] alunosCodigos, string turmaCodigo)
+        {
+            var query = new StringBuilder($@"select * 
+                            from frequencia_aluno
+                           where tipo = 2
+	                        and codigo_aluno = any(@alunosCodigos)
+                            and turma_id = @turmaCodigo ");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunosCodigos,
+                    turmaCodigo,                   
+                });
+        }
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia = TipoFrequenciaAluno.PorDisciplina)
         {
             var query = @"select * from (
@@ -275,7 +292,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo)
+        public FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo, string professor = null)
         {
             var query = @"select *
                         from frequencia_aluno fa
@@ -286,18 +303,22 @@ namespace SME.SGP.Dados
 	                        and pe.id = @periodoEscolarId ";
 
             if (!string.IsNullOrEmpty(turmaCodigo))
-                query += "and fa.turma_id = @turmaCodigo";
+                query += "and fa.turma_id = @turmaCodigo ";
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query += "and (fa.professor_rf = @professor or fa.professor_rf is null)";
 
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
                 disciplinaIds,
                 periodoEscolarId,
-                turmaCodigo
+                turmaCodigo, 
+                professor
             });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo, string professor = null)
         {
             var query = @"select *
                         from frequencia_aluno fa
@@ -308,14 +329,18 @@ namespace SME.SGP.Dados
 	                        and pe.id = @periodoEscolarId ";
 
             if (!string.IsNullOrEmpty(turmaCodigo))
-                query += "and fa.turma_id = @turmaCodigo";
+                query += "and fa.turma_id = @turmaCodigo ";
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query += "and (fa.professor_rf = @professor or fa.professor_rf is null)";
 
             return await database.QueryAsync<FrequenciaAluno>(query, new
             {
                 codigosAlunos,
                 disciplinaIds,
                 periodoEscolarId,
-                turmaCodigo
+                turmaCodigo,
+                professor
             });
         }
 
@@ -620,19 +645,21 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<TurmaComponenteQntAulasDto>> ObterTotalAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
         {
-            var query = new StringBuilder();
-            query.AppendLine(@"select a.disciplina_id as ComponenteCurricularCodigo, a.turma_id as TurmaCodigo, 
-                               p.bimestre as Bimestre, p.periodo_inicio as PeriodoInicio, p.periodo_fim as PeriodoFim,
-                               COALESCE(SUM(a.quantidade),0) AS AulasQuantidade from 
-                                    aula a 
+            StringBuilder query = new StringBuilder();
+            query.AppendLine("with lista as (");
+            query.AppendLine(@"select distinct a.id, 
+                                               a.disciplina_id as ComponenteCurricularCodigo, 
+                                               a.turma_id as TurmaCodigo, p.bimestre as Bimestre,
+                                               a.quantidade 
+                                  from aula a 
                                     inner join registro_frequencia_aluno rfa on 
-                                    rfa.aula_id = a.id 
+                                        rfa.aula_id = a.id 
                                     inner join periodo_escolar p on 
-                                    a.tipo_calendario_id = p.tipo_calendario_id 
-                                    where not a.excluido 
+                                        a.tipo_calendario_id = p.tipo_calendario_id 
+                                  where not a.excluido 
                                     and not rfa.excluido
                                     and a.tipo_calendario_id = @tipoCalendarioId
-                                    and a.data_aula::date between p.periodo_inicio and p.periodo_fim ");
+                                    and a.data_aula between p.periodo_inicio and p.periodo_fim ");
 
             if (componentesCurricularesId.Length > 0)
                 query.AppendLine("and a.disciplina_id = any(@componentesCurricularesId) ");
@@ -646,7 +673,8 @@ namespace SME.SGP.Dados
             else if (dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date < @dataSituacaoAluno");
 
-            query.AppendLine(" and a.turma_id = any(@turmasCodigo) group by a.disciplina_id, a.turma_id, p.bimestre, p.periodo_inicio, p.periodo_fim");
+            query.AppendLine(" and a.turma_id = any(@turmasCodigo)");
+            query.AppendLine(") select ComponenteCurricularCodigo, TurmaCodigo, Bimestre, sum(quantidade) AulasQuantidade from lista group by ComponenteCurricularCodigo, TurmaCodigo, Bimestre;");
 
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(),
            new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });
