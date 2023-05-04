@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
 
                 var componentesCurricularesAtribuicaoEol = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-
+                
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
                     var componenteTerritorio = componenteAtual.TerritorioSaber ?
@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao
                     disciplinasDto = disciplinasDto.DistinctBy(d => d.CodigoComponenteCurricular)?.OrderBy(c => c.Nome)?.ToList();
                 }
             }
-
+            
             //Exceção para disciplinas 1060 e 1061 que são compartilhadas entre EF e EJA
             if (turma.ModalidadeCodigo == Modalidade.EJA && disciplinasDto.Any())
             {
@@ -241,7 +241,20 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
+            if(disciplinasDto.Any(x => x.TerritorioSaber))
+                await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);
+
             return disciplinasDto;
+        }
+
+        private async Task tratarDisciplinasTerritorioSaber(IEnumerable<DisciplinaDto> disciplinasDto, string codigoTurma)
+        {
+            foreach (var disciplina in disciplinasDto)
+            {
+                var componenteCurricularCorrespondente = await mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(disciplina.CodigoComponenteCurricular, codigoTurma, string.Empty));
+                disciplina.CodigoTerritorioSaber = long.Parse(componenteCurricularCorrespondente.FirstOrDefault().codigoComponente);
+            }
+
         }
 
         private async Task<long[]> ObterDisciplinasAtribuicaoCJParaTurma(string codigoTurma, List<ComponenteCurricularEol> componentesCurriculares, long[] idsDisciplinas)
@@ -558,10 +571,17 @@ namespace SME.SGP.Aplicacao
 
                 if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
                 {
+                    var disciplinasAtribuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, login);
                     var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
                     if (atribuicoes != null && atribuicoes.Any())
                     {
-                        var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+                        var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());                        
+
+                        disciplinasEol?.Where(disciplina => disciplina.TerritorioSaber)
+                        .ToList()
+                        .ForEach(disciplina => {
+                            disciplina.Nome = disciplinasAtribuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular).Nome;
+                        });
 
                         disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
                     }
@@ -577,6 +597,10 @@ namespace SME.SGP.Aplicacao
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
                 }
             }
+            
+            if (disciplinasDto.Any(x => x.TerritorioSaber))
+                await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);
+
             return disciplinasDto;
         }
 
