@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public enum TipoAuditoriaEncaminhamentoNAAPA
+    public enum TipoHistoricoAlteracoesEncaminhamentoNAAPA
     {
         [Display(Name = "Impressão")]
         Impressao = 1,

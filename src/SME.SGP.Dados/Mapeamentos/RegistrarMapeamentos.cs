@@ -221,7 +221,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new PendenciaFechamentoAulaMap());
                config.AddMap(new PendenciaFechamentoAtividadeAvaliativaMap());
                config.AddMap(new HistoricoEscolarObservacaoMap());
-               config.AddMap(new EncaminhamentoNAAPAAuditoriaMap());
+               config.AddMap(new EncaminhamentoNAAPAHistoricoAlteracoesMap());
 
                config.ForDommel();
            });

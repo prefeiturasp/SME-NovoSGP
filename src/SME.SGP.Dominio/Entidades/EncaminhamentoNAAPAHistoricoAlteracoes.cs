@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public class EncaminhamentoNAAPAAuditoria
+    public class EncaminhamentoNAAPAHistoricoAlteracoes
     {
         public long Id { get; set; }
         public long EncaminhamentoNAAPAId { get; set; }
@@ -12,7 +12,8 @@ namespace SME.SGP.Dominio
         public Usuario Usuario { get; set; }
         public string CamposInseridos { get; set; }
         public string CamposAlterados { get; set; }
-        public DateTime DataAuditoria { get; set; }
-        public TipoAuditoriaEncaminhamentoNAAPA TipoAuditoria { get; set; }
+        public string AtendimentoExcluido { get; set; }
+        public DateTime DataHistorico { get; set; }
+        public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistorico { get; set; }
     }
 }

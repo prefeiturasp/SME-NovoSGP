@@ -3,11 +3,11 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class EncaminhamentoNAAPAAuditoriaMap : DommelEntityMap<EncaminhamentoNAAPAAuditoria>
+    public class EncaminhamentoNAAPAHistoricoAlteracoesMap : DommelEntityMap<EncaminhamentoNAAPAHistoricoAlteracoes>
     {
-        public EncaminhamentoNAAPAAuditoriaMap()
+        public EncaminhamentoNAAPAHistoricoAlteracoesMap()
         {
-            ToTable("encaminhamento_naapa_auditoria");
+            ToTable("encaminhamento_naapa_historico_alteracoes");
 
             Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.EncaminhamentoNAAPAId).ToColumn("encaminhamento_naapa_id");
@@ -15,8 +15,9 @@ namespace SME.SGP.Dados
             Map(c => c.UsuarioId).ToColumn("usuario_id");
             Map(c => c.CamposInseridos).ToColumn("campos_inseridos");
             Map(c => c.CamposInseridos).ToColumn("campos_alterados");
-            Map(c => c.DataAuditoria).ToColumn("data_auditoria");
-            Map(c => c.TipoAuditoria).ToColumn("tipo_auditoria");
+            Map(c => c.AtendimentoExcluido).ToColumn("atendimento_excluido");
+            Map(c => c.DataHistorico).ToColumn("data_historico");
+            Map(c => c.TipoHistorico).ToColumn("tipo_historico");
         }
     }
 }
