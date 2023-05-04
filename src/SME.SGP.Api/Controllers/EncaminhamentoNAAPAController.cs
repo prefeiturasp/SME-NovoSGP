@@ -197,7 +197,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await detalhadoUseCase.Executar(filtro));
         }
 
-        [HttpGet("{encaminhamentoNAAPAId}/obsevacoes")]
+        [HttpGet("{encaminhamentoNAAPAId}/observacoes")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
@@ -207,12 +207,20 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterObservacoesDeEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
         }
 
-        [HttpPost("salvar-obsevacao")]
+        [HttpPost("salvar-observacao")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> SalvarObservacao([FromBody]EncaminhamentoNAAPAObservacaoSalvarDto filtro)
+        public async Task<IActionResult> SalvarObservacao([FromBody]EncaminhamentoNAAPAObservacaoSalvarDto filtro,[FromServices]ISalvarObservacoesDeEncaminhamentoNAAPAUseCase useCase)
         {
-            return Ok();
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpDelete("excluir-observacao/{observacaoId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirObservacao(long observacaoId, [FromServices] IExcluirObservacoesDeEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(useCase.Executar(observacaoId));
         }
     }
 }
