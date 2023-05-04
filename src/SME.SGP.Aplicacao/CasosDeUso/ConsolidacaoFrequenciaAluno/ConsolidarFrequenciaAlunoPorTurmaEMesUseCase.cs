@@ -20,6 +20,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaAlunoMensal>();
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaCodigo));
+            if (turma == null)
+                throw new NegocioException("Não foi possível localizar a turma informada!");
+
             var frequenciasAlunosTurmaEMes = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(filtro.TurmaCodigo, filtro.Mes));
 
             var turmaId = frequenciasAlunosTurmaEMes.Select(c => c.TurmaId).FirstOrDefault();
@@ -31,7 +35,6 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.IniciarTransacao();
                 try
                 {
-
                     await AtualizaAlunos(consolidacoesExistentesDaTurma, frequenciasAlunosTurmaEMes, filtro.Mes);
 
                     unitOfWork.PersistirTransacao();
@@ -43,7 +46,9 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turmaId, filtro.Mes);
+                var comandoConsolidacaoFrequenciaTurmaEvasaoAcumulado = new FiltroConsolidacaoFrequenciaTurmaEvasaoAcumulado(turma.AnoLetivo, turmaId);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaTurmaEvasao, comandoConsolidacaoFrequenciaTurmaEvasao, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaTurmaEvasaoAcumulado, comandoConsolidacaoFrequenciaTurmaEvasaoAcumulado, Guid.NewGuid(), null));
             }
 
             return true;
