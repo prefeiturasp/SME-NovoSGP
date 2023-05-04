@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
+using SME.SGP.Dados.Cache;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -14,8 +15,11 @@ namespace SME.SGP.Dados.Repositorios
         private readonly RedisOptions redisOptions;
 
         public RepositorioCacheRedis(IConnectionMultiplexerSME connectionMultiplexerSme,
-            IServicoTelemetria servicoTelemetria,
-            RedisOptions redisOptions, IServicoMensageriaLogs servicoMensageriaLogs) : base(servicoTelemetria,servicoMensageriaLogs)
+                                     IServicoTelemetria servicoTelemetria,
+                                     RedisOptions redisOptions,
+                                     IServicoMensageriaLogs servicoMensageriaLogs,
+                                     IMetricasCache metricasCache) 
+            : base(servicoTelemetria, servicoMensageriaLogs, metricasCache)
         {
             ConnectionMultiplexerSme = connectionMultiplexerSme ?? throw new ArgumentNullException(nameof(connectionMultiplexerSme));
             redis = connectionMultiplexerSme.GetDatabase() ?? throw new ArgumentNullException(nameof(connectionMultiplexerSme.GetDatabase), "RedisDatabase");
