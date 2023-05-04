@@ -465,13 +465,11 @@ namespace SME.SGP.Dados.Repositorios
 	                            inner join dre d on d.id = u.dre_id 
                             where t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_abaixo_50_porcento > 0)
-                            and t.ano_letivo = @anoLetivo";
+                            and t.ano_letivo = @anoLetivo
+                            and fte.mes = @mes ";
 
             if (semestre > 0)
                 query += " and t.semestre = @semestre ";
-
-            if (mes > 0)
-                query += " and fte.mes = @mes ";
 
             query += @" group by d.dre_id, d.Abreviacao
                         order by d.dre_id ";
@@ -497,13 +495,11 @@ namespace SME.SGP.Dados.Repositorios
                             where d.dre_id = @dreCodigo
                             and t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_abaixo_50_porcento > 0)
-                            and t.ano_letivo = @anoLetivo";
+                            and t.ano_letivo = @anoLetivo
+                            and fte.mes = @mes";
 
             if (semestre > 0)
                 query += " and t.semestre = @semestre ";
-
-            if (mes > 0)
-                query += " and fte.mes = @mes ";
 
             query += @" group by te.descricao, u.nome
                         order by te.descricao, u.nome ";
@@ -531,13 +527,11 @@ namespace SME.SGP.Dados.Repositorios
                           AND u.ue_id = @ueCodigo
                           AND t.modalidade_codigo = @modalidade
                           AND (fte.quantidade_alunos_abaixo_50_porcento>0)
-                          AND t.ano_letivo = @anoLetivo";
+                          AND t.ano_letivo = @anoLetivo
+                          AND fte.mes = @mes";
 
             if (semestre > 0)
-                query += " and t.semestre = @semestre ";
-
-            if (mes > 0)
-                query += " and fte.mes = @mes ";
+                query += " and t.semestre = @semestre ";            
 
             query += @" group by t.nome
                         order by t.nome ";
