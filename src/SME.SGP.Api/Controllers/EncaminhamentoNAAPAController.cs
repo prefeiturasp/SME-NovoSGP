@@ -206,5 +206,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await obterObservacoesDeEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
         }
+
+        [HttpPost("salvar-obsevacao")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> SalvarObservacao([FromBody]EncaminhamentoNAAPAObservacaoSalvarDto filtro)
+        {
+            return Ok();
+        }
     }
 }
