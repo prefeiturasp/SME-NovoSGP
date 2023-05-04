@@ -42,21 +42,6 @@ namespace SME.SGP.Aplicacao
             };
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(filtro.TurmaId, filtro.Bimestre));
-            IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasAluno = null;
-            IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
-
-            if (fechamentoTurma != null)
-            {
-                var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
-                var fechamentosTurmaDisciplina = filtro.ComponenteCurricularId.HasValue ? await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre)) : null;
-
-                if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
-                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), filtro.AlunoCodigo));
-
-                if (conselhoClasseId != null)
-                    conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, filtro.AlunoCodigo, filtro.Bimestre ?? 0, filtro.ComponenteCurricularId));
-            }
 
             if (!filtro.Inativo)
             {
@@ -126,14 +111,6 @@ namespace SME.SGP.Aplicacao
                 consolidadoTurmaAluno.Id = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
                 var consolidadoTurmaAlunoId = await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
-
-                var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, filtro.Bimestre, filtro.ComponenteCurricularId);
-                consolidadoNota ??= new ConselhoClasseConsolidadoTurmaAlunoNota()
-                {
-                    ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
-                    Bimestre = filtro.Bimestre,
-                    ComponenteCurricularId = filtro.ComponenteCurricularId
-                };
 
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
                 if (!filtro.EhParecer)

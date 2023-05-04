@@ -28,10 +28,6 @@ namespace SME.SGP.Notificacoes.Worker
             services.ConfigurarTelemetria(Configuration);
 
             RegistrarHub(services);
-
-            services.AddHostedService<WorkerRabbitNotificacao>();
-            services.AddHealthChecks();
-            services.AddHealthChecksUiSgp();            
         }
 
         private void RegistrarHub(IServiceCollection services)
