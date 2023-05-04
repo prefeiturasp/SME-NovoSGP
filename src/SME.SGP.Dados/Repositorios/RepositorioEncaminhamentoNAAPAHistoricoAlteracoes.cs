@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioEncaminhamentoNAAPAAuditoria : IRepositorioEncaminhamentoNAAPAAuditoria
+    public class RepositorioEncaminhamentoNAAPAHistoricoAlteracoes : IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes
     {
         protected readonly ISgpContext database;
 
-        protected RepositorioEncaminhamentoNAAPAAuditoria(ISgpContext database)
+        protected RepositorioEncaminhamentoNAAPAHistoricoAlteracoes(ISgpContext database)
         {
             this.database = database;
         }
 
-        public async Task<long> SalvarAsync(EncaminhamentoNAAPAAuditoria entidade)
+        public async Task<long> SalvarAsync(EncaminhamentoNAAPAHistoricoAlteracoes entidade)
         {
             return (long)(await database.Conexao.InsertAsync(entidade));
         }

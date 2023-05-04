@@ -539,7 +539,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEncaminhamentoNAAPASecao, RepositorioEncaminhamentoNAAPASecao>();
             services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
             services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
-            services.TryAddScoped<IRepositorioEncaminhamentoNAAPAAuditoria, RepositorioEncaminhamentoNAAPAAuditoria>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes, RepositorioEncaminhamentoNAAPAHistoricoAlteracoes>();
 
             services.TryAddScoped<IRepositorioHistoricoEscolarObservacao, RepositorioHistoricoEscolarObservacao>();
         }
