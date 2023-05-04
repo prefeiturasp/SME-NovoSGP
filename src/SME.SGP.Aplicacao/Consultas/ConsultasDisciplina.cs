@@ -97,8 +97,9 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível encontrar a turma");
 
             bool ehEnsinoMedio = turma.ModalidadeCodigo == Modalidade.Medio;
-
+            
             IEnumerable<DisciplinaResposta> disciplinasAtribuicaoCj;
+
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
 
@@ -113,7 +114,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componenteTerritorio = componenteAtual.TerritorioSaber ?
                         await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteAtual.CodigoComponenteTerritorioSaber)) : null;
-                    
+
                     disciplinasAtribuicaoCj = disciplinasAtribuicaoCj.Append(new DisciplinaResposta()
                     {
                         CodigoComponenteCurricular = componenteAtual.Codigo,
@@ -461,8 +462,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login, bool verificaPerfilGestao = false, string codigoDre = null, string codigoUe = null)
         {
-            var atribuicoes = verificaPerfilGestao ? await repositorioAtribuicaoCJ.ObterAtribuicaoCJPorDreUeTurmaRF(codigoTurma, codigoDre, codigoUe) :
-                await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+            var atribuicoes = verificaPerfilGestao ? await repositorioAtribuicaoCJ.ObterAtribuicaoCJPorDreUeTurmaRF(codigoTurma, codigoDre, codigoUe, string.Empty) :
+               await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
 
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
