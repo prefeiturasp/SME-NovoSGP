@@ -13,11 +13,19 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioQuestao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
+
         public async Task<bool> VerificaObrigatoriedade(long questaoId)
         {
             var query = @"select obrigatorio from questao where id = @questaoId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new {questaoId});
+        }
+
+        public async Task<IEnumerable<Questao>> ObterQuestoesPorIds(long[] questaoIds)
+        {
+            var query = @"select * from questao where id = ANY(@questaoIds)";
+
+            return await database.Conexao.QueryAsync<Questao>(query, new { questaoIds });
         }
     }
 }
