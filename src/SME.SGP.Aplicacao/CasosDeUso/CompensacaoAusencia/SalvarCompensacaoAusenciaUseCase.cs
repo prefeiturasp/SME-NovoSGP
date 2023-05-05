@@ -15,12 +15,12 @@ using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarCompensasaoAusenciaUseCase : AbstractUseCase, ISalvarCompensasaoAusenciaUseCase
+    public class SalvarCompensacaoAusenciaUseCase : AbstractUseCase, ISalvarCompensacaoAusenciaUseCase
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
-        public SalvarCompensasaoAusenciaUseCase(IMediator mediator, IUnitOfWork unitOfWork, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
+        public SalvarCompensacaoAusenciaUseCase(IMediator mediator, IUnitOfWork unitOfWork, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -38,6 +38,15 @@ namespace SME.SGP.Aplicacao
                 // Consiste periodo
                 var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
                 var periodo = periodos?.SingleOrDefault(p => p.Bimestre == compensacaoDto.Bimestre);
+
+                var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
+                if (parametroSistema is not { Ativo: true })
+                {
+                    var turmaEmPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodo.Bimestre, false, periodo.TipoCalendarioId));
+
+                    if (!turmaEmPeriodoAberto)
+                        throw new NegocioException($"Período do {periodo.Bimestre}º Bimestre não está aberto.");
+                }
 
                 var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -73,10 +82,11 @@ namespace SME.SGP.Aplicacao
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
                 IEnumerable<string> codigosAlunosCompensacao = new List<string>();
-                if (compensacaoDto.Alunos.Any())
+                var ehAlteracao = id > 0;
+                if (compensacaoDto.Alunos.Any() || ehAlteracao)
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(id > 0, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
-                    codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(id > 0, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
+                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
+                    codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
                 unitOfWork.PersistirTransacao();

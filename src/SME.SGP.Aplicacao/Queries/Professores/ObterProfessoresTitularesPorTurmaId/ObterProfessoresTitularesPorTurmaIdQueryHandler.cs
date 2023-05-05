@@ -10,6 +10,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -28,6 +30,9 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
             var turma = await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
+            
+            if (turma == null)
+                throw new NegocioException(MensagensNegocioFrequencia.TURMA_NAO_ENCONTRADA_POR_CODIGO);
 
             StringBuilder url = new StringBuilder();
 

@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
                 codigosComponentesConsiderados.AddRange(componentesCurricularesDoProfessor.Where(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0").Select(c => long.Parse(c.codigoTerritorioSaber)).Except(codigosComponentesConsiderados));
                 
                 componentesCurriculares = await mediator
-                    .Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentesConsiderados.ToArray(), possuiTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));
+                    .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), possuiTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {

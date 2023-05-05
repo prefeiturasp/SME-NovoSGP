@@ -216,20 +216,40 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaRetornoDto>> ObterTurmasParaCopia(string turmaOrigemId)
         {
-            var professorRf = servicoUsuario.ObterRf();
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
             var turmaOrigem = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaOrigemId));
 
             var ue = consultasUe.ObterPorId(turmaOrigem.UeId);
-            var turmas = servicoEOL.ObterListaTurmasPorProfessor(professorRf);
 
-            return turmas.Where(t => t.CodTurma.ToString() != turmaOrigem.CodigoTurma
-                            && t.CodEscola == ue.CodigoUe 
-                            && t.AnoLetivo == turmaOrigem.AnoLetivo 
+            if (usuario.PerfilAtual == Perfis.PERFIL_CP)
+                return await ObtemTurmasUsuarioCPParaCopiaCompensacao(turmaOrigem, usuario.CodigoRf);
+            else
+            {
+                var turmas = servicoEOL.ObterListaTurmasPorProfessor(usuario.CodigoRf);
+                return turmas.Where(t => t.CodTurma.ToString() != turmaOrigem.CodigoTurma
+                                && t.CodEscola == ue.CodigoUe
+                                && t.AnoLetivo == turmaOrigem.AnoLetivo
+                                && t.Ano == turmaOrigem.Ano)
+                        .Select(t => new TurmaRetornoDto()
+                        {
+                            Codigo = t.CodTurma.ToString(),
+                            Nome = t.NomeTurma
+                        });
+            }   
+        }
+
+        private async Task<IEnumerable<TurmaRetornoDto>> ObtemTurmasUsuarioCPParaCopiaCompensacao(Turma turmaOrigem,string usuarioRf)
+        {
+            var turmasUsuarioCP = await mediator.Send(new ObterAbrangenciaTurmasCPParaCopiaAvaliacaoQuery(turmaOrigem.AnoLetivo, usuarioRf, (int)turmaOrigem.ModalidadeCodigo, turmaOrigem.Ano, turmaOrigem.Id));
+
+            return turmasUsuarioCP.Where(t => t.CodigoTurma.ToString() != turmaOrigem.CodigoTurma
+                            && t.UeId == turmaOrigem.UeId
+                            && t.AnoLetivo == turmaOrigem.AnoLetivo
                             && t.Ano == turmaOrigem.Ano)
                     .Select(t => new TurmaRetornoDto()
                     {
-                        Codigo = t.CodTurma.ToString(),
-                        Nome = t.NomeTurma
+                        Codigo = t.CodigoTurma.ToString(),
+                        Nome = t.Nome
                     });
         }
     }

@@ -539,6 +539,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEncaminhamentoNAAPASecao, RepositorioEncaminhamentoNAAPASecao>();
             services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
             services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioObservacaoEncaminhamentoNAAPA, RepositorioObservacaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes, RepositorioEncaminhamentoNAAPAHistoricoAlteracoes>();
 
             services.TryAddScoped<IRepositorioHistoricoEscolarObservacao, RepositorioHistoricoEscolarObservacao>();
         }
@@ -659,6 +661,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterJustificativasAlunoPorComponenteCurricularUseCase, ObterJustificativasAlunoPorComponenteCurricularUseCase>();
             services.TryAddScoped<IObterFrequenciaDiariaAlunoUseCase, ObterFrequenciaDiariaAlunoUseCase>();
             services.TryAddScoped<IObterUsuarioFuncionarioUseCase, ObterUsuarioFuncionarioUseCase>();
+            services.TryAddScoped<IObterObservacoesDosAlunosNoHistoricoEscolarUseCase, ObterObservacoesDosAlunosNoHistoricoEscolarUseCase>();
 
             services.TryAddScoped<IExcluirDevolutivaUseCase, ExcluirDevolutivaUseCase>();
             services.TryAddScoped<IObterListaDevolutivasPorTurmaComponenteUseCase, ObterListaDevolutivasPorTurmaComponenteUseCase>();
@@ -1216,6 +1219,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAtribuirUeResponsavelUseCase, AtribuirUeResponsavelUseCase>();
             services.TryAddScoped<IObterListaTipoReponsavelUseCase, ObterListaTipoReponsavelUseCase>();
             services.TryAddScoped<IListarAtribuicoesResponsaveisPorFiltroUseCase, ListarAtribuicoesResponsaveisPorFiltroUseCase>();
+            services.TryAddScoped<IObterObservacoesDeEncaminhamentoNAAPAUseCase, ObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase, SalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase, ExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
 
             // Encaminhamento NAAPA
             services.TryAddScoped<IObterSecoesEncaminhamentosSecaoNAAPAUseCase, ObterSecoesEncaminhamentosSecaoNAAPAUseCase>();
@@ -1237,9 +1243,8 @@ namespace SME.SGP.IoC
             
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
-            services.TryAddScoped<IEnviarFilaGravarHistoricoEscolarObservacaoUseCase, EnviarFilaGravarHistoricoEscolarObservacaoUseCase>();
 
-            services.TryAddScoped<ISalvarCompensasaoAusenciaUseCase, SalvarCompensasaoAusenciaUseCase>();
+            services.TryAddScoped<ISalvarCompensacaoAusenciaUseCase, SalvarCompensacaoAusenciaUseCase>();
 
             // Notificação
             services.TryAddScoped<IObterNotificacaoPorIdUseCase, ObterNotificacaoPorIdUseCase>();

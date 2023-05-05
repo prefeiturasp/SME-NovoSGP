@@ -255,16 +255,18 @@ namespace SME.SGP.Aplicacao
             var existeFrequenciaComponenteCurricular = await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
                new string[] { filtros.DisciplinaCodigo.ToString() }, periodosEscolares.Select(c => c.Id).ToArray());
 
-            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 0;
+            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia;
 
             if (frequenciaAluno != null && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
+
+            var percentualFrequenciaFormatado = percentualFrequencia.HasValue ? FrequenciaAluno.FormatarPercentual(percentualFrequencia.GetValueOrDefault()) : string.Empty;
 
             var fechamentoFinalAluno = new FechamentoFinalConsultaRetornoAlunoDto
             {
                 Nome = aluno.NomeAluno,
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = existeFrequenciaComponenteCurricular ? FrequenciaAluno.FormatarPercentual(percentualFrequencia) : null,
+                Frequencia = existeFrequenciaComponenteCurricular ? percentualFrequenciaFormatado : null,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))

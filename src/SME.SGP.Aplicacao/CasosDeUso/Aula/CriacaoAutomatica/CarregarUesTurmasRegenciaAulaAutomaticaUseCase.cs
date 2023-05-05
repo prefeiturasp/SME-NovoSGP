@@ -11,14 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class CarregarUesTurmasRegenciaAulaAutomaticaUseCase : AbstractUseCase, ICarregarUesTurmasRegenciaAulaAutomaticaUseCase
     {
-        private readonly string[] componentesCurricularesFundamental;
-        private readonly string[] componentesCurricularesEja;
-
         public CarregarUesTurmasRegenciaAulaAutomaticaUseCase(IMediator mediator)
             : base(mediator)
         {
-            componentesCurricularesFundamental = new string[] { "508", "1105", "1112", "1115", "1117", "1121", "1124", "1211", "1212", "1213", "1290", "1301" };
-            componentesCurricularesEja = new string[] { "1113", "1114", "1125" };
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -100,7 +95,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task PublicarMensagens(Modalidade modalidade, Turma turma, int anoAtual, long tipoCalendarioId, IList<DateTime> diasForaDoPeriodoEscolar, IList<DiaLetivoDto> diasLetivosENaoLetivos, string ueCodigo)
         {
-            var componentesCurriculares = modalidade == Modalidade.Fundamental ? componentesCurricularesFundamental : componentesCurricularesEja;
+            var componentesCurriculares = await mediator.Send(new ObterCodigosComponentesCurricularesRegenciaAulasAutomaticasQuery(modalidade));
             var dadosTurmaComponente = new List<DadosTurmaAulasAutomaticaDto>();
             if (turma != null)
                 await DefinirParaTurma(turma, componentesCurriculares, dadosTurmaComponente);

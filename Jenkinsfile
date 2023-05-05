@@ -40,7 +40,7 @@ pipeline {
           parallel {
             stage('Sonar') {
             agent { node { label 'SME-AGENT-SGP-SONAR' } }
-            when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch '_release'; branch 'release-r2'; branch 'infra/*'; } } 
+            when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
                 steps {
                   checkout scm
                   script{
@@ -202,9 +202,7 @@ pipeline {
             steps {
                 script{
                   //if(testPassed){
-                        if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == '_release' ) {
-                            sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
-                                
+                        if ( env.branchname == 'main' ||  env.branchname == 'master' ) {
                             withCredentials([string(credentialsId: 'aprovadores-sgp', variable: 'aprovadores')]) {
                                 timeout(time: 24, unit: "HOURS") {
                                     input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: "${aprovadores}"

@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao.Queries
             turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(request.AlunoCodigo, request.PeriodoEscolar, turmasCodigos);
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
-            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: request.Turma.CodigoTurma), cancellationToken);
+            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: request.Turma.CodigoTurma), cancellationToken);
 
             // Checa se todas as disciplinas da turma receberam nota
             var disciplinasLancamNota = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null);

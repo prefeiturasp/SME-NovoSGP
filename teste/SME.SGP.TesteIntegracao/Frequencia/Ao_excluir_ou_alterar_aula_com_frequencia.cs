@@ -57,7 +57,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var listaDeRegistroFrequencia = ObterTodos<RegistroFrequenciaAluno>();
             listaDeRegistroFrequencia.ShouldNotBeEmpty();
-            listaDeRegistroFrequencia.Exists(frequencia => frequencia.NumeroAula == QUANTIDADE_AULA_3).ShouldBe(false);
+            listaDeRegistroFrequencia.Exists(frequencia => frequencia.NumeroAula == QUANTIDADE_AULA_3 && !frequencia.Excluido).ShouldBe(false);
+            listaDeRegistroFrequencia.Exists(frequencia => frequencia.NumeroAula == QUANTIDADE_AULA_3 && frequencia.Excluido).ShouldBe(true);
         }
 
         [Fact(DisplayName = "Frequência - Ao aumentar quantidade de aula a frequencia anterior deve ser replicada")]
@@ -112,7 +113,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             listaDeRegistroFrequencia = ObterTodos<RegistroFrequenciaAluno>();
             listaDeRegistroFrequencia.ShouldNotBeEmpty();
-            listaDeRegistroFrequencia.Where(frequencia => frequencia.NumeroAula == QUANTIDADE_AULA_3).Count().ShouldBe(0);
+            listaDeRegistroFrequencia.Where(frequencia => frequencia.NumeroAula == QUANTIDADE_AULA_3 && !frequencia.Excluido).Count().ShouldBe(0);
+            listaDeRegistroFrequencia.Where(frequencia => frequencia.NumeroAula == QUANTIDADE_AULA_3 && frequencia.Excluido).Count().ShouldBe(alunos.Count() * QUANTIDADE_AULA_NORMAL_MAIS_RECORRENTES_3);
         }
     }
 }
