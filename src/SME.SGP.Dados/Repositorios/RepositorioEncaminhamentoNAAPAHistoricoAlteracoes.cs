@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         protected readonly ISgpContext database;
 
-        protected RepositorioEncaminhamentoNAAPAHistoricoAlteracoes(ISgpContext database)
+        public RepositorioEncaminhamentoNAAPAHistoricoAlteracoes(ISgpContext database)
         {
             this.database = database;
         }

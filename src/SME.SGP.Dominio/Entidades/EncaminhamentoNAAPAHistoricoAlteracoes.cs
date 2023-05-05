@@ -12,7 +12,7 @@ namespace SME.SGP.Dominio
         public Usuario Usuario { get; set; }
         public string CamposInseridos { get; set; }
         public string CamposAlterados { get; set; }
-        public string AtendimentoExcluido { get; set; }
+        public string DataAtendimento { get; set; }
         public DateTime DataHistorico { get; set; }
         public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistorico { get; set; }
     }
