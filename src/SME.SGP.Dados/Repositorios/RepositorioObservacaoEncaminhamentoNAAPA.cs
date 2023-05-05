@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
                              CASE
                                 WHEN Criado_RF = @usuarioLogadoId THEN true
                                 ELSE false
-                             end PodeEditarExcluir
+                             end Proprietario
                              Alterado_Em as AlteradoEm,
                              Alterado_Por as AlteradoPor,
                              Alterado_RF as AlteradoRF,
