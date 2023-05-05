@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
@@ -17,6 +18,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirObservacaoNAAPACommand request, CancellationToken cancellationToken)
         {
+            var observacao = await repositorioObs.ObterPorIdAsync(request.ObservacaoId);
+
+            if(observacao == null)
+                throw new NegocioException("Observação não encontrada");
+
             await repositorioObs.RemoverLogico(request.ObservacaoId);
             return true;
         }
