@@ -14,6 +14,6 @@ CREATE TABLE if not exists encaminhamento_naapa_observacao (
 CREATE INDEX IF NOT EXISTS encaminhamento_naapa_observacao_encaminhamento_idx ON encaminhamento_naapa_observacao USING btree (encaminhamento_naapa_id);
 
 ALTER TABLE encaminhamento_naapa_observacao 
-ADD CONSTRAINT IF NOT EXISTS encaminhamento_naapa_observacao_encaminhamento_fk FOREIGN KEY (encaminhamento_naapa_id) 
+ADD CONSTRAINT  encaminhamento_naapa_observacao_encaminhamento_fk FOREIGN KEY (encaminhamento_naapa_id) 
 REFERENCES public.encaminhamento_naapa(id);
 
