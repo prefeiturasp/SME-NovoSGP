@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Features;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -28,19 +29,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<OcorrenciaListagemDto>> Handle(ListarOcorrenciasQuery request, CancellationToken cancellationToken)
         {
-            var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao);
+            try
+            {
+                var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao);
 
-            await CarregarServidores(lstOcorrencias);
+                await CarregarServidores(lstOcorrencias);
 
-            if (!string.IsNullOrEmpty(request.Filtro.ServidorNome))
-                lstOcorrencias = ObterOcorrenciaPorFiltroDeServidores(lstOcorrencias, request.Filtro.ServidorNome);
+                if (!string.IsNullOrEmpty(request.Filtro.ServidorNome))
+                    lstOcorrencias = ObterOcorrenciaPorFiltroDeServidores(lstOcorrencias, request.Filtro.ServidorNome);
 
-            await CarregarAlunos(lstOcorrencias);
+                await CarregarAlunos(lstOcorrencias);
 
-            if (!string.IsNullOrEmpty(request.Filtro.AlunoNome))
-                lstOcorrencias = ObterOcorrenciaPorFiltroDeAlunos(lstOcorrencias, request.Filtro.AlunoNome);
+                if (!string.IsNullOrEmpty(request.Filtro.AlunoNome))
+                    lstOcorrencias = ObterOcorrenciaPorFiltroDeAlunos(lstOcorrencias, request.Filtro.AlunoNome);
 
-            return await MapearParaDto(lstOcorrencias);
+                return await MapearParaDto(lstOcorrencias);
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao executar ListarOcorrenciasQueryHandler", LogNivel.Critico, LogContexto.Geral, ex.Message));
+                throw;
+            }
         }
 
         private async Task CarregarServidores(PaginacaoResultadoDto<Ocorrencia> ocorrencias)
@@ -57,6 +66,7 @@ namespace SME.SGP.Aplicacao
                     if (funcionarios != null)
                         servidores.AddRange(funcionarios);
                 }
+
                 this.Servidores = servidores;
             }
         }
@@ -112,7 +122,7 @@ namespace SME.SGP.Aplicacao
         private async Task<PaginacaoResultadoDto<OcorrenciaListagemDto>> MapearParaDto(PaginacaoResultadoDto<Ocorrencia> ocorrencias)
         {
             var uesOcorrencias = new List<UesOcorreciaDto>();
-            if(ocorrencias.Items.Any())
+            if (ocorrencias.Items.Any())
                 uesOcorrencias = await ObterNomeUe(ocorrencias.Items.Select(x => x.UeId).Distinct().ToArray());
             var listaRetorno = new PaginacaoResultadoDto<OcorrenciaListagemDto>()
             {
