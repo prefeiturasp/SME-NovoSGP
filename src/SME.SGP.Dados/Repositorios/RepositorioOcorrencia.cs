@@ -13,6 +13,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioOcorrencia : RepositorioBase<Ocorrencia>, IRepositorioOcorrencia
     {
+        private const long TODAS_UES = -99;
         public RepositorioOcorrencia(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
 
         public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao)
@@ -23,8 +24,11 @@ namespace SME.SGP.Dados
 						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id 
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id";
 
-            var gerador = new GeradorDeCondicoes(" where not o.excluido and o.ue_id = @ueId and extract(year from o.data_ocorrencia) = @anoLetivo ");
+            var gerador = new GeradorDeCondicoes(" where not o.excluido and extract(year from o.data_ocorrencia) = @anoLetivo ");
 
+            var filtrarPorUe = (filtro.UeId == TODAS_UES); 
+            
+            gerador.AdicioneCondicao(!filtrarPorUe,"and o.ue_id = @ueId ");
             gerador.AdicioneCondicao(filtro.TurmaId.HasValue, "and tu.id = @turmaId ");
             gerador.AdicioneCondicao(filtro.Modalidade.HasValue, "and tu.modalidade_codigo = @modalidade ");
             gerador.AdicioneCondicao(filtro.Semestre.HasValue, "and tu.semestre = @semestre ");
@@ -61,6 +65,7 @@ namespace SME.SGP.Dados
 							o.alterado_em,
 							o.alterado_por,
 							o.alterado_rf,
+							o.ue_id ,
 							ot.id,
 							ot.descricao,
 							oa.id,
