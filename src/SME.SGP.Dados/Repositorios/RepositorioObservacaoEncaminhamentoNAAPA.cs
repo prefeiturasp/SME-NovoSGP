@@ -12,17 +12,17 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioObservacaoEncaminhamentoNAAPA(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
-            
+
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId,long usuarioLogadoId, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, long usuarioLogadoId, Paginacao paginacao)
         {
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>();
             var sql = @$"select 
                              id as IdObservacao,
                              observacao,
                              CASE
-                                WHEN Criado_RF = @usuarioLogadoId THEN true
+                                WHEN Criado_RF = @usuarioId THEN true
                                 ELSE false
                              end Proprietario,
                              alterado_em as AlteradoEm,
@@ -34,18 +34,11 @@ namespace SME.SGP.Dados.Repositorios
                             from encaminhamento_naapa_observacao 
                         where encaminhamento_naapa_id = @encaminhamentoNAAPAId";
 
-            var observacoes = await database.Conexao
-                                            .QueryAsync<EncaminhamentoNAAPAObservacoesDto, AuditoriaDto, EncaminhamentoNAAPAObservacoesDto>(
-                                                        sql, (encaminhamentoObservacao, auditoria) => 
-                                                        {
-                                                            encaminhamentoObservacao.Auditoria = auditoria;
-                                                            return encaminhamentoObservacao;
-                                                        } , new { encaminhamentoNAAPAId,usuarioId = usuarioLogadoId.ToString() });
-
+            var observacoes = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesDto>(sql, new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoId.ToString() });
 
             retorno.Items = observacoes;
             retorno.TotalRegistros = observacoes.Count();
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.TotalPaginas = observacoes.Count() > 0 ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros) : 0;
             return retorno;
         }
     }
