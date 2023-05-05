@@ -102,8 +102,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             var planosAee = ObterTodos<Dominio.PlanoAEE>();
             planosAee.ShouldNotBeNull();
-            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP).ShouldBeEquivalentTo(0);
-            planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(1);
+            Assert.Equal(0, planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.ParecerCP));
+            Assert.Equal(1, planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente));
         }
 
 
