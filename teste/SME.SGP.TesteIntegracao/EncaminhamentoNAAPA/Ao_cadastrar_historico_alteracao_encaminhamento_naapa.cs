@@ -162,6 +162,44 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             historico.DataAtendimento.ShouldBe(dataQueixa.ToString("dd/MM/yyyy"));
         }
+
+        [Fact(DisplayName = "Encaminhamento NAAPA Histórico de alteração - cadastra o histórico ao imprimir o encaminhamento")]
+        public async Task Ao_cadastrar_historico_alteracao_ao_imprimir_o_encaminhamento_naapa()
+        {
+            const long ENCAMINHAMENTO_NAAPA_ID = 1;
+            const long USUARIO_LOGADO_ID = 1;
+
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            await CriarEncaminhamentoNAAPA();
+
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            var ids = new long[] { ENCAMINHAMENTO_NAAPA_ID };
+
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoDeImpressaoDoEncaminhamentoNAAPACommand(ids, USUARIO_LOGADO_ID));
+
+            var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
+
+            historico.ShouldNotBeNull();
+
+            historico.EncaminhamentoNAAPAId.ShouldBe(ENCAMINHAMENTO_NAAPA_ID);
+            historico.TipoHistorico.ShouldBe(TipoHistoricoAlteracoesEncaminhamentoNAAPA.Impressao);
+        }
+
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             await CriarEncaminhamentoNAAPA();
