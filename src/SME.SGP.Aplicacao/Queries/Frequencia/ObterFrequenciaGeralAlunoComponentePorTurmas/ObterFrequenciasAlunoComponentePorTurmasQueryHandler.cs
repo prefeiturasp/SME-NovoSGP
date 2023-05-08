@@ -37,8 +37,16 @@ namespace SME.SGP.Aplicacao
                                                                                                                          bimestres.ToArray()));
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
             {
+                var codigosComponentesConsiderados = new List<string>() { aulaComponenteTurma.ComponenteCurricularCodigo };
+
+                var componentesTerritorioEquivalentes = mediator
+                    .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(aulaComponenteTurma.ComponenteCurricularCodigo), aulaComponenteTurma.TurmaCodigo, null)).Result;
+
+                if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any())
+                    codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ct => ct.codigoComponente).Except(codigosComponentesConsiderados));
+
                 if (!frequenciaAlunoPeriodos.Any(a => a.TurmaId == aulaComponenteTurma.TurmaCodigo
-                                                   && a.DisciplinaId == aulaComponenteTurma.ComponenteCurricularCodigo
+                                                   && codigosComponentesConsiderados.Contains(a.DisciplinaId)
                                                    && a.Bimestre == aulaComponenteTurma.Bimestre))
                 {
                     frequenciaAlunoPeriodos.Add(new FrequenciaAluno()
@@ -51,7 +59,8 @@ namespace SME.SGP.Aplicacao
                         PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId,
                         TotalPresencas = aulaComponenteTurma.AulasQuantidade,
                         PeriodoInicio = aulaComponenteTurma.PeriodoInicio,
-                        PeriodoFim = aulaComponenteTurma.PeriodoFim
+                        PeriodoFim = aulaComponenteTurma.PeriodoFim,
+                        Professor = aulaComponenteTurma.Professor
                     });
                 }
             }
@@ -60,13 +69,14 @@ namespace SME.SGP.Aplicacao
                 frequenciaAlunoPeriodos = frequenciaAlunoPeriodos.Where(f => f.PeriodoFim > request.DataMatricula.Value).ToList();
 
             return frequenciaAlunoPeriodos
-                .GroupBy(a => a.DisciplinaId)
+                .GroupBy(a => (a.DisciplinaId, a.Professor))
                 .Select(f => new FrequenciaAluno()
                 {
-                    DisciplinaId = f.Key,
+                    DisciplinaId = f.Key.DisciplinaId,
                     TotalAulas = f.Sum(x => x.TotalAulas),
                     TotalAusencias = f.Sum(x => x.TotalAusencias),
                     TotalCompensacoes = f.Sum(x => x.TotalCompensacoes),
+                    Professor = f.FirstOrDefault()?.Professor
                 });
         }
     }

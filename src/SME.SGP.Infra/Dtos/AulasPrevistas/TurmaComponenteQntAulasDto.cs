@@ -11,5 +11,6 @@ namespace SME.SGP.Infra.Dtos
         public long PeriodoEscolarId { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
+        public string Professor { get; set; }
     }
 }
