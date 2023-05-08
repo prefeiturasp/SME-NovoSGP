@@ -122,10 +122,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var secao = encaminhamento.Secoes.FirstOrDefault();
-
-            secao.SecaoEncaminhamentoNAAPA.EncaminhamentoNAAPASecao = secao;
-
             var secaoDto = new EncaminhamentoNAAPASecaoDto()
             {
                 SecaoId = 1,
@@ -171,7 +167,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             historico.CamposAlterados.ShouldBe("Data de entrada da queixa | Descrição do encaminhamento");
             historico.CamposInseridos.ShouldBe("NIS (Número de Identificação Social)");
             historico.EncaminhamentoNAAPAId.ShouldBe(1);
-            historico.EncaminhamentoNAAPASecaoId.ShouldBe(1);
+            historico.SecaoEncaminhamentoNAAPAId.ShouldBe(1);
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA Histórico de alteração - Obter campos alterados com resposta id ")]
@@ -335,7 +331,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             historico.CamposAlterados.ShouldBe("Prioridade | Questões no agrupamento promoção de cuidados | Selecione um tipo");
             historico.CamposInseridos.ShouldBe("Selecione um tipo");
             historico.EncaminhamentoNAAPAId.ShouldBe(1);
-            historico.EncaminhamentoNAAPASecaoId.ShouldBe(1);
+            historico.SecaoEncaminhamentoNAAPAId.ShouldBe(1);
         }
     }
 }
