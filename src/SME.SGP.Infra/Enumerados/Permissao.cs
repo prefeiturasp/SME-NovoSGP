@@ -699,6 +699,9 @@
         RENAAPA_C = 241,
         
         [PermissaoMenu(Menu = "SONDAGEM", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, EhConsulta = true, Url = "/relatorios/sondagem/analitico", EhSubMenu = true, SubMenu = "Relatório Analítico")]
-        RESON_C = 242
+        RESON_C = 242,
+
+        [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, EhConsulta = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, SubMenu = "Registro de itinerância")]
+        RERI_C = 243
     }
 }
