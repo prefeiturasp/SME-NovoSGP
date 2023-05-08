@@ -828,7 +828,7 @@ namespace SME.SGP.Aplicacao
                                                          TipoFrequenciaAluno.PorDisciplina,
                                                          disciplinasId,
                                                          turmasCodigo, bimestres);
-
+            
             var aulasComponentesTurmas = await mediator
                 .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinasId, bimestres, alunoTurma.DataMatricula, alunoTurma.Inativo ? alunoTurma.DataSituacao : null));
 
@@ -844,7 +844,7 @@ namespace SME.SGP.Aplicacao
                         CodigoAluno = alunoTurma.CodigoAluno,
                         DisciplinaId = aulaComponenteTurma.ComponenteCurricularCodigo,
                         TurmaId = aulaComponenteTurma.TurmaCodigo,
-                        TotalAulas = aulaComponenteTurma.AulasQuantidade,
+                        TotalAulas = 0,
                         Bimestre = aulaComponenteTurma.Bimestre,
                         PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId
                     });
