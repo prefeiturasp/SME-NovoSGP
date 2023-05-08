@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = ocorrencias.TotalPaginas
             };
 
-            listaRetorno.Items = listaRetorno.Items.OrderBy(x => x.UeOcorrencia);
+            listaRetorno.Items = listaRetorno.Items.OrderBy(x => x.UeOcorrencia).ThenBy(t =>t.DataOcorrencia);
             return listaRetorno;
         }
 
