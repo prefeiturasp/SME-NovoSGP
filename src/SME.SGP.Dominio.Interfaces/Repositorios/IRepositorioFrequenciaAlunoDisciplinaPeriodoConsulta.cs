@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio.Interfaces
         IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaPorDisciplinaNoPeriodo(long periodoId, bool eja);
         IEnumerable<AlunoFaltosoBimestreDto> ObterAlunosFaltososBimestre(ModalidadeTipoCalendario modalidade, double percentualFrequenciaMinimo, int bimestre, int? anoLetivo);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "");
+        Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralPorAlunosETurmas(string[] alunoCodigo, string turmaCodigo);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorTurmas(string codigoAluno, string[] codigosTurmas, long tipoCalendarioId);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaComponentesAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId, int bimestre = 0);
         Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia = TipoFrequenciaAluno.PorDisciplina);
