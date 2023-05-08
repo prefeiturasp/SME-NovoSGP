@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 return new EncaminhamentoNAAPAHistoricoAlteracoes()
                 {
                     EncaminhamentoNAAPAId = EncaminhamentoExistente.Id,
-                    EncaminhamentoNAAPASecaoId = encaminhamentoNAAPAAlterado.SecaoId,
+                    SecaoEncaminhamentoNAAPAId = encaminhamentoNAAPAAlterado.SecaoId,
                     DataHistorico = DateTimeExtension.HorarioBrasilia(),
                     TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao,
                     CamposAlterados = ObterCamposFormatados(camposAlterados),
@@ -84,28 +84,13 @@ namespace SME.SGP.Aplicacao
             return string.Empty;
         }
 
-        private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoDaSituacao(EncaminhamentoNAAPADto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPA EncaminhamentoExistente)
-        {
-            if (encaminhamentoNAAPAAlterado.Situacao != EncaminhamentoExistente.Situacao)
-                return new EncaminhamentoNAAPAHistoricoAlteracoes()
-                {
-                    EncaminhamentoNAAPAId = EncaminhamentoExistente.Id,
-                    DataHistorico = DateTimeExtension.HorarioBrasilia(),
-                    TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao,
-                    CamposAlterados = "Situação",
-                    UsuarioId = usuarioLogado.Id
-                };
-
-            return null;
-        }
-
         private async Task ExecuteValidacaoAlteracaoCamposDaSecao(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, EncaminhamentoNAAPA EncaminhamentoExistente)
         {
             var secoesExistente = EncaminhamentoExistente.Secoes.Find(secao => secao.SecaoEncaminhamentoNAAPAId == encaminhamentoNAAPASecaoAlterado.SecaoId);
 
             foreach (var questaoAlterada in encaminhamentoNAAPASecaoAlterado.Questoes.GroupBy(q => q.QuestaoId))
             {
-                var questaoExistente = secoesExistente?.SecaoEncaminhamentoNAAPA?.EncaminhamentoNAAPASecao?.Questoes?.Find(questao => questao.QuestaoId == questaoAlterada.Key);
+                var questaoExistente = secoesExistente?.Questoes?.Find(questao => questao.QuestaoId == questaoAlterada.Key);
 
                 await AdicionarCamposInseridos(questaoExistente, questaoAlterada);
                 await AdicionarCamposAlterados(questaoExistente, questaoAlterada);

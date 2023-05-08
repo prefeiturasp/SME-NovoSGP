@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>();
             var sql = @$"select 
                              id as IdObservacao,
-                             observacao,
+                             observacao as Observacao,
                              CASE
                                 WHEN Criado_RF = @usuarioId THEN true
                                 ELSE false
@@ -32,9 +33,12 @@ namespace SME.SGP.Dados.Repositorios
                              Criado_Por as CriadoPor,
                              Criado_RF as CriadoRF
                             from encaminhamento_naapa_observacao 
-                        where encaminhamento_naapa_id = @encaminhamentoNAAPAId";
+                        where encaminhamento_naapa_id = @encaminhamentoNAAPAId ";
 
-            var observacoes = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesDto>(sql, new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoId.ToString() });
+            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+                paginacao = new Paginacao(1, 10);
+            
+            IEnumerable<EncaminhamentoNAAPAObservacoesDto> observacoes = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesDto>(sql, new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoId.ToString() });
 
             retorno.Items = observacoes;
             retorno.TotalRegistros = observacoes.Count();

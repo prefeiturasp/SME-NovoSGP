@@ -1,0 +1,50 @@
+﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao
+{
+    public class RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommandHandler : IRequestHandler<RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommand, long>
+    {
+        private readonly IMediator mediator;
+        private readonly IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
+
+        public RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommandHandler(IMediator mediator, IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes)
+        {
+            this.mediator = mediator;
+            this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
+        }
+
+        public async Task<long> Handle(RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
+        {
+            var historicoAlteracao = await ObterHistoricoAlteracaoDaSituacao(request.EncaminhamentoNAAPA, request.SituacaoAlterada);
+
+            if (historicoAlteracao != null)
+                return await repositorioEncaminhamentoNAAPAHistoricoAlteracoes.SalvarAsync(historicoAlteracao);
+
+            return 0;
+        }
+
+        private async Task<EncaminhamentoNAAPAHistoricoAlteracoes> ObterHistoricoAlteracaoDaSituacao(EncaminhamentoNAAPA encaminhamento, SituacaoNAAPA situacao)
+        {
+            if (encaminhamento.Situacao != situacao)
+            {
+                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                return new EncaminhamentoNAAPAHistoricoAlteracoes()
+                {
+                    EncaminhamentoNAAPAId = encaminhamento.Id,
+                    DataHistorico = DateTimeExtension.HorarioBrasilia(),
+                    TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao,
+                    CamposAlterados = "Situação",
+                    UsuarioId = usuarioLogado.Id
+                };
+            }
+
+            return null;
+        }
+    }
+}
