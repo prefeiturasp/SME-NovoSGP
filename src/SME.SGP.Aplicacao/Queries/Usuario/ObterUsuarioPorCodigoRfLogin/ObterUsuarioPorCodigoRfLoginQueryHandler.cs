@@ -20,7 +20,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Usuario> Handle(ObterUsuarioPorCodigoRfLoginQuery request, CancellationToken cancellationToken)
         {
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_USUARIO, request.Login);
+            var valorChave = !string.IsNullOrEmpty(request.CodigoRf) ? 
+                                request.CodigoRf : 
+                                request.Login;
+            var chaveCache = string.Format(NomeChaveCache.CHAVE_USUARIO, valorChave);
 
             return await repositorioCache.ObterAsync<Usuario>(chaveCache, 
                 () => repositorioUsuarioConsulta.ObterPorCodigoRfLogin(request.CodigoRf, request.Login));
