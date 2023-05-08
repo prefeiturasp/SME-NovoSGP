@@ -28,5 +28,14 @@ namespace SME.SGP.Infra
             return (login.ToCharArray().All(c => char.IsDigit(c)) && login.Length > 7);
         } 
         
+        public static bool EhArquivoImagemParaOtimizar(this string extensao)
+        {
+            return (extensao.ToLower().Equals(".jpg") || extensao.ToLower().Equals(".jpeg") || extensao.ToLower().Equals(".png"));
+        }
+        
+        public static bool EhArquivoVideoParaOtimizar(this string extensao)
+        {
+            return (extensao.ToLower().Equals(".mp4") || extensao.ToLower().Equals(".mpeg"));
+        }
     }
 }

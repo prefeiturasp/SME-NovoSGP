@@ -15,10 +15,13 @@ namespace SME.SGP.Aplicacao
 
         private readonly IServicoArmazenamento servicoArmazenamento;
         
+        private readonly IMediator mediator;
+        
         public CopiarArquivoCommandHandler(IRepositorioArquivo repositorioArquivo,IServicoArmazenamento servicoArmazenamento)
         {
             this.repositorioArquivo = repositorioArquivo ?? throw new ArgumentNullException(nameof(repositorioArquivo));
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string> Handle(CopiarArquivoCommand request, CancellationToken cancellationToken)
@@ -26,6 +29,8 @@ namespace SME.SGP.Aplicacao
             var retorno = await servicoArmazenamento.Copiar(request.Nome);
                 
             await SalvarCopiaArquivo(request.TipoArquivoDestino, request.Nome);
+            
+            await mediator.Send(new OtimizarArquivosCommand(request.Nome));
             
             return retorno;
         }

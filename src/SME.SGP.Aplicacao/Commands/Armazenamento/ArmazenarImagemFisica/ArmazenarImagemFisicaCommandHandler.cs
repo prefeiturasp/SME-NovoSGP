@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
@@ -30,8 +31,11 @@ namespace SME.SGP.Aplicacao
             if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
                 await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,msImagem,request.Formato);
             else
+            {
                 await servicoArmazenamento.Armazenar(request.NomeFisico,msImagem, request.Formato);
-            
+                
+                await mediator.Send(new OtimizarArquivosCommand(request.NomeFisico));
+            }
             return true;
         }
         
