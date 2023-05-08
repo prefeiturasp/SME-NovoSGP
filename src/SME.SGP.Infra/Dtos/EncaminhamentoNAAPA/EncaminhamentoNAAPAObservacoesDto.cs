@@ -4,9 +4,9 @@ namespace SME.SGP.Infra
 {
     public class EncaminhamentoNAAPAObservacoesDto
     {
-        long IdObservacao { get; set; }
-        string Observacao { get; set; }
-        bool Proprietario { get; set; }
+        public long IdObservacao { get; set; }
+        public string Observacao { get; set; }
+        public bool Proprietario { get; set; }
         public DateTime? AlteradoEm { get; set; }
         public string AlteradoPor { get; set; }
         public string AlteradoRF { get; set; }

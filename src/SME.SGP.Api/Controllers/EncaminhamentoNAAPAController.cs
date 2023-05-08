@@ -200,7 +200,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{encaminhamentoNAAPAId}/observacoes")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterObservacoes(long encaminhamentoNAAPAId,
             [FromServices] IObterObservacoesDeEncaminhamentoNAAPAUseCase obterObservacoesDeEncaminhamentoNAAPAUseCase)
         {
