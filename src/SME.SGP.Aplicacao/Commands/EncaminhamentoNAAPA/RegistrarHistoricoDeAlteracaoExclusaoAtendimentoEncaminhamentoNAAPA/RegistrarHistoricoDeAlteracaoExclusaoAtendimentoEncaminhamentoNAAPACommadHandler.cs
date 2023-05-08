@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,9 +19,9 @@ namespace SME.SGP.Aplicacao
                                                     IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes,
                                                     IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAAPA)
         {
-            this.mediator = mediator;
-            this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
-            this.repositorioSecaoEncaminhamentoNAAPA = repositorioSecaoEncaminhamentoNAAPA;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); 
+            this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPAHistoricoAlteracoes));
+            this.repositorioSecaoEncaminhamentoNAAPA = repositorioSecaoEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioSecaoEncaminhamentoNAAPA));
         }
 
         public async Task<long> Handle(RegistrarHistoricoDeAlteracaoExclusaoAtendimentoEncaminhamentoNAAPACommad request, CancellationToken cancellationToken)
