@@ -553,7 +553,7 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder(@"select * 
 	                                        from (select fa.*,
-				                                         row_number() over (partition by fa.bimestre, fa.disciplina_id order by fa.id desc) sequencia
+				                                         row_number() over (partition by fa.bimestre, fa.disciplina_id, fa.professor_rf order by fa.id desc) sequencia
           	                                        from frequencia_aluno fa
             	                                        inner join periodo_escolar pe 
             		                                        on fa.periodo_escolar_id = pe.id
