@@ -19,28 +19,35 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurmaEvasao>();
+            var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurmaEvasao>();            
+            var quantidadeAlunosAbaixo50Porcento = 0;
+            var quantidadeAlunox0Porcento = 0;
 
+           
             var consolidacoesFrequenciaAlunoMensal = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMesQuery(filtro.TurmaId, filtro.Mes));
+            consolidacoesFrequenciaAlunoMensal = consolidacoesFrequenciaAlunoMensal.DistinctBy(c => c.AlunoCodigo);
 
-            var quantidadeAlunosAbaixo50Porcento = consolidacoesFrequenciaAlunoMensal
-                .Where(c => c.Percentual is < 50 and > decimal.Zero)
-                .Select(c => c.AlunoCodigo)
-                .Distinct()
-                .Count();
+            foreach (var consolidacao in consolidacoesFrequenciaAlunoMensal)
+            {
+                if (consolidacao.Percentual < 50 && consolidacao.Percentual > decimal.Zero)
+                {
+                    quantidadeAlunosAbaixo50Porcento++;
+                }
+            }
 
-            var quantidadeAlunox0Porcento = consolidacoesFrequenciaAlunoMensal
-                .Where(c => c.Percentual == decimal.Zero)
-                .Select(c => c.AlunoCodigo)
-                .Distinct()
-                .Count();
+            foreach (var consolidacao in consolidacoesFrequenciaAlunoMensal)
+            {
+                if (consolidacao.Percentual == decimal.Zero)
+                {
+                    quantidadeAlunox0Porcento++;
+                }
+            }
 
             unitOfWork.IniciarTransacao();
             try
             {
                 await mediator.Send(new LimparFrequenciaTurmaEvasaoPorTurmasEMesesCommand(new long[] { filtro.TurmaId }, new int[] { filtro.Mes }));
                 await RegistrarFrequenciaTurmaEvasao(filtro.TurmaId, filtro.Mes, quantidadeAlunosAbaixo50Porcento, quantidadeAlunox0Porcento);
-
                 unitOfWork.PersistirTransacao();
             }
             catch

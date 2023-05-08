@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
 
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada");
+            
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date));
 
-            var periodoEscolar = turma.AnoLetivo.Equals(DateTime.Today.Year) ? await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date)) : null;
-
-            return periodoEscolar == null ? null :
+            return periodoEscolar == null? null :
                 new BimestreDto() { Id = periodoEscolar.Id, Numero = periodoEscolar.Bimestre };
         }
     }

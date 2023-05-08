@@ -75,7 +75,12 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(aula.TurmaId));
 
-                    Usuario professor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
+                    var professor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
+
+                    var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(professor.CodigoRf));
+
+                    if (usuarioCoreSSO != null && usuarioCoreSSO.CodigoRf == professor.CodigoRf)
+                        professor.Nome = usuarioCoreSSO.Nome;
 
                     mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                     mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");

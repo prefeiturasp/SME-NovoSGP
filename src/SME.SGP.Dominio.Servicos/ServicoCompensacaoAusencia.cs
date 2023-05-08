@@ -125,6 +125,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
                 await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
 
@@ -235,7 +237,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
-            var codigoComponenteTerritorioCorrespondente = await VerificarSeComponenteEhDeTerritorio(turma, long.Parse(disciplinaId));
+            var codigoComponenteTerritorioCorrespondente = await mediator.Send(new ObterCodigoComponenteCurricularProfessorRfPorTurmaCodigoComponenteBaseQuery(turma, long.Parse(disciplinaId)));
 
             var componentesCurricularesId = new List<long>() { long.Parse(disciplinaId) };
             if (codigoComponenteTerritorioCorrespondente != default)
@@ -261,10 +263,12 @@ namespace SME.SGP.Dominio.Servicos
                 if (alunosAlterarFaltasCompensada.Any())
                 {
                     var alunosCodigos = alunosAlterarFaltasCompensada?.Select(x => x.CodigoAluno);
-                    var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(o => alunosCodigos.Contains(o.CodigoAluno) && o.DisciplinaId == disciplinaId && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turmaId);
+                    var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(o => alunosCodigos.Contains(o.CodigoAluno) && componentesCurricularesId.Contains(long.Parse(o.DisciplinaId)) && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turmaId);
                     foreach (var aluno in alunosAlterarFaltasCompensada)
                     {
-                        var frequenciaAluno = consultaAlunosAlterarFaltasCompensada.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DisciplinaId == disciplinaId && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
+                        var frequenciaAluno = consultaAlunosAlterarFaltasCompensada
+                            .FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && componentesCurricularesId.Contains(long.Parse(x.DisciplinaId)) && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
+
                         if (frequenciaAluno == null)
                         {
                             mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
@@ -374,33 +378,6 @@ namespace SME.SGP.Dominio.Servicos
         {
             var componentes = await consultasDisciplina.ObterDisciplinasPerfilCJ(turmaId, codigoRf);
             return componentes != null && componentes.Any();
-        }
-        
-        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
-        {
-            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            if (usuarioLogado.EhProfessor())
-            {
-                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
-            }
-            else if (usuarioLogado.EhProfessorCj())
-            {
-                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor != null)
-                {
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                    if (componenteProfessorRelacionado != null)
-                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
-                }
-            }
-
-            return codigoComponenteTerritorioCorrespondente;
         }
     }
 }

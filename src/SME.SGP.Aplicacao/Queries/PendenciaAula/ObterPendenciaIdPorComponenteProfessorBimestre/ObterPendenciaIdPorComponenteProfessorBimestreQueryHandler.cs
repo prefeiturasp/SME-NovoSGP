@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<PendenciaAulaProfessorDto>> Handle(ObterPendenciaIdPorComponenteProfessorBimestreQuery request, CancellationToken cancellationToken)
-        => await repositorioPendenciaAula.ObterPendenciaIdPorComponenteProfessorEBimestre(request.ComponenteCurricularId, request.CodigoRf, request.PeriodoEscolarId, request.TipoPendencia, request.TurmaCodigo, request.UeId);
+            => await repositorioPendenciaAula.ObterPendenciaIdPorComponenteProfessorEBimestre(request.ComponenteCurricularId, request.CodigoRf, request.PeriodoEscolarId, request.TipoPendencia, request.TurmaCodigo, request.UeId);
     }
 }
