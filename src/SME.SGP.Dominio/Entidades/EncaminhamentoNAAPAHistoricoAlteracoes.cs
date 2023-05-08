@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio
     {
         public long Id { get; set; }
         public long EncaminhamentoNAAPAId { get; set; }
-        public long SecaoEncaminhamentoNAAPAId { get; set; }
+        public long? SecaoEncaminhamentoNAAPAId { get; set; }
         public long UsuarioId { get; set; }
         public EncaminhamentoNAAPASecao EncaminhamentoNAAPASecao { get; set; }
         public Usuario Usuario { get; set; }

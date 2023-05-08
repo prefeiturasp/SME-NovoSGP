@@ -31,10 +31,9 @@ namespace SME.SGP.Aplicacao
             {
                 EncaminhamentoNAAPAId = atendimento.EncaminhamentoId,
                 SecaoEncaminhamentoNAAPAId = atendimento.SecaoEncaminhamentoNAAPAId,
-                DataAtendimento = atendimento.DataDoAtendimento.ToString("dd/MM/yyyy"),
+                DataAtendimento = atendimento.DataAtendimento.ToString("dd/MM/yyyy"),
                 DataHistorico = DateTimeExtension.HorarioBrasilia(),
                 TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Exclusao,
-                CamposAlterados = "Situação",
                 UsuarioId = usuarioLogado.Id
             };
 

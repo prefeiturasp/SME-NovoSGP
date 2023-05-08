@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -16,6 +17,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
     public class Ao_cadastrar_historico_alteracao_encaminhamento_naapa : EncaminhamentoNAAPATesteBase
     {
+        private const long ID_ATENDIMENTO_NAO_PRESENCIAL = 12;
+        private const long ID_ACOES_LUDICAS = 14;
+
         public Ao_cadastrar_historico_alteracao_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -88,6 +92,76 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             historico.CamposAlterados.ShouldBe("Data de entrada da queixa");
         }
 
+        [Fact(DisplayName = "Encaminhamento NAAPA Histórico de alteração - cadastra o histórico ao alterar situação")]
+        public async Task Ao_cadastrar_historico_alteracao_ao_alterar_situacao_do_encaminhamento_naapa()
+        {
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+
+            var encaminhamento = ObterTodos<Dominio.EncaminhamentoNAAPA>().FirstOrDefault();
+
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommand(encaminhamento, SituacaoNAAPA.EmAtendimento));
+
+            var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
+
+            historico.ShouldNotBeNull();
+
+            historico.CamposAlterados.ShouldBe("Situação");
+        }
+
+        [Fact(DisplayName = "Encaminhamento NAAPA Histórico de alteração - cadastra o histórico ao excluir atendimento")]
+        public async Task Ao_cadastrar_historico_alteracao_ao_excluir_atendimento_do_encaminhamento_naapa()
+        {
+            const long ENCAMINHAMENTO_NAAPA_SECAO_ID = 2;
+
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+            await GerarDadosEncaminhamentoNAAPAItinerario(dataQueixa);
+
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoExclusaoAtendimentoEncaminhamentoNAAPACommad(ENCAMINHAMENTO_NAAPA_SECAO_ID));
+
+            var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
+
+            historico.ShouldNotBeNull();
+
+            historico.DataAtendimento.ShouldBe(dataQueixa.ToString("dd/MM/yyyy"));
+        }
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             await CriarEncaminhamentoNAAPA();
@@ -162,6 +236,103 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 SituacaoMatriculaAluno = SituacaoMatriculaAluno.Concluido
+            });
+        }
+
+        private async Task GerarDadosEncaminhamentoNAAPAItinerario(DateTime dataQueixa)
+        {
+            await CriarEncaminhamentoNAAPASecaoItinerario();
+            await CriarQuestoesEncaminhamentoNAAPAItinerario();
+            await CriarRespostasEncaminhamentoNAAPAItinerario(dataQueixa);
+        }
+
+        private async Task CriarEncaminhamentoNAAPASecaoItinerario()
+        {
+            await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
+            {
+                EncaminhamentoNAAPAId = 1,
+                SecaoEncaminhamentoNAAPAId = 2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarQuestoesEncaminhamentoNAAPAItinerario()
+        {
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 2,
+                QuestaoId = ID_QUESTAO_DATA_ATENDIMENTO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 2,
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 2,
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
+            {
+                EncaminhamentoNAAPASecaoId = 2,
+                QuestaoId = ID_QUESTAO_DESCRICAO_ATENDIMENTO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarRespostasEncaminhamentoNAAPAItinerario(DateTime dataQueixa)
+        {
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 3,
+                Texto = dataQueixa.ToString("yyyy-MM-ddT00:00:00"),
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 4,
+                RespostaId = ID_ATENDIMENTO_NAO_PRESENCIAL,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 5,
+                RespostaId = ID_ACOES_LUDICAS,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = 6,
+                Texto = "Descrição do atendimento",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
     }
