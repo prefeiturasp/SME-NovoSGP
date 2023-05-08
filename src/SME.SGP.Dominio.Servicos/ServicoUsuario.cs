@@ -152,6 +152,9 @@ namespace SME.SGP.Dominio
         private async Task<Usuario> IdentificaUsuarioLogado()
         {
             var login = ObterLoginAtual();
+            if (string.IsNullOrEmpty(login))
+                return null;
+
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
 
             if (usuario == null)
