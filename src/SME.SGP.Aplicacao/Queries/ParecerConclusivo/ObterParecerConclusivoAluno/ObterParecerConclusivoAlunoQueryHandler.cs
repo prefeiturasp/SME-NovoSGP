@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
                                     CodigoAluno = informacoesAluno.First().CodigoAluno,
                                     DisciplinaId = valorAulaRegistrada.ComponenteCurricularCodigo,
                                     TurmaId = valorAulaRegistrada.TurmaCodigo,
-                                    TotalAulas = valorAulaRegistrada.AulasQuantidade,
+                                    TotalAulas = 0,
                                     Bimestre = valorAulaRegistrada.Bimestre,
                                     PeriodoEscolarId = valorAulaRegistrada.PeriodoEscolarId,
                                     PeriodoFim = periodosEscolares.Where(p => valorAulaRegistrada.Bimestre == p.Bimestre).Select(p => p.PeriodoFim).FirstOrDefault(),
