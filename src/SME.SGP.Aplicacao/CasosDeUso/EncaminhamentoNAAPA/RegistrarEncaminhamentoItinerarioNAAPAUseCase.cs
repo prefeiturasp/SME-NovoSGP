@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,7 +56,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
             await mediator.Send(new AlterarEncaminhamentoNAAPASecaoCommand(secaoExistente));
 
-            return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoCommand(secaoDto, secaoExistente));
+            await RegistrarHistoricoDeAlteracao(secaoDto, secaoExistente);
+
+            await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoCommand(secaoDto, secaoExistente));
+          
+            return true;
         }
 
         private async Task<bool> Salvar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
@@ -75,14 +80,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                 await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, secaoQuestaoId, questao.TipoQuestao));
             }
 
+            await RegistrarHistoricoDeAlteracao(secaoDto, secaoEncaminhamento);
+
             return true;
         }
 
         private async Task AlterarSituacaoDoAtendimento(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
-            encaminhamentoNAAPA.Situacao = SituacaoNAAPA.EmAtendimento;
-
-            await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+            await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, SituacaoNAAPA.EmAtendimento));
         }
 
         private void ValidarAlteracao(EncaminhamentoNAAPASecao secaoExistente, EncaminhamentoNAAPASecaoDto secaoDto)
@@ -143,6 +148,20 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                     MensagemNegocioEncaminhamentoNAAPA.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
                     string.Join(", ", mensagem)));
             }
+        }
+
+        private async Task RegistrarHistoricoDeAlteracao(EncaminhamentoNAAPASecaoDto secaoDto, EncaminhamentoNAAPASecao encaminhamentoNAAPASecao)
+        {
+            if (!encaminhamentoNAAPASecao.Questoes.Any())
+            {
+                encaminhamentoNAAPASecao = (await mediator.Send(new ObterEncaminhamentoNAAPAPorIdESecaoQuery(
+                    encaminhamentoNAAPASecao.EncaminhamentoNAAPAId,
+                    encaminhamentoNAAPASecao.Id))).Secoes.FirstOrDefault();
+
+                encaminhamentoNAAPASecao.Questoes.ForEach(questao => questao.Respostas = new List<RespostaEncaminhamentoNAAPA>());
+            }
+
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, encaminhamentoNAAPASecao));
         }
     }
 }

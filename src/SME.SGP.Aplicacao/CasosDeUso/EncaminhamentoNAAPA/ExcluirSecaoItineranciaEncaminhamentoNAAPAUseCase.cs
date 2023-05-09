@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio.Enumerados;
@@ -15,6 +16,8 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new ExcluirSecaoEncaminhamentoNAAPACommand(encaminhamentoSecaoNAAPAId));
 
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoExclusaoAtendimentoEncaminhamentoNAAPACommad(encaminhamentoSecaoNAAPAId));
+
             await AlterarSituacaoDoAtendimento(encaminhamentoNAAPAId);
 
             return true;
@@ -28,9 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
 
-                encaminhamentoNAAPA.Situacao = SituacaoNAAPA.AguardandoAtendimento;
-
-                await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+                await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, SituacaoNAAPA.AguardandoAtendimento));
             }
         }
     }

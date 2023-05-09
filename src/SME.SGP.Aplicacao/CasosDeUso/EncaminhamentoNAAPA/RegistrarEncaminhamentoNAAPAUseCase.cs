@@ -105,8 +105,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task AlterarEncaminhamento(EncaminhamentoNAAPADto encaminhamentoNAAPADto, EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
-            encaminhamentoNAAPA.Situacao = encaminhamentoNAAPADto.Situacao;
-            await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+            await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, encaminhamentoNAAPADto.Situacao));
 
             foreach (var secao in encaminhamentoNAAPADto.Secoes)
             {
@@ -124,6 +123,8 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var resultadoEncaminhamentoSecao = secaoExistente.Id;
+
+                await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secao, secaoExistente));
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {

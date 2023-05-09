@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,13 +13,13 @@ namespace SME.SGP.Aplicacao
 
         public RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommandHandler(IMediator mediator, IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes repositorioEncaminhamentoNAAPAHistoricoAlteracoes)
         {
-            this.mediator = mediator;
-            this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioEncaminhamentoNAAPAHistoricoAlteracoes = repositorioEncaminhamentoNAAPAHistoricoAlteracoes ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPAHistoricoAlteracoes)); 
         }
 
         public async Task<long> Handle(RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var historicoAlteracao = await mediator.Send(new ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPAExistente));
+            var historicoAlteracao = await mediator.Send(new ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente));
 
             if (historicoAlteracao != null)
                 return await repositorioEncaminhamentoNAAPAHistoricoAlteracoes.SalvarAsync(historicoAlteracao);
