@@ -35,10 +35,13 @@ namespace SME.SGP.Aplicacao
 
             await ExecuteValidacaoAlteracaoCamposDaSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente);
 
-            return ObterHistoricoAlteracaoSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente);
+            return ObterHistoricoAlteracaoSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
         }
 
-        private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
+        private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
+                                                        EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, 
+                                                        EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
+                                                        TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
             if (camposInseridos.Any() || camposAlterados.Any())
             {
@@ -47,7 +50,7 @@ namespace SME.SGP.Aplicacao
                     EncaminhamentoNAAPAId = encaminhamentoSecaoExistente.EncaminhamentoNAAPAId,
                     SecaoEncaminhamentoNAAPAId = encaminhamentoNAAPAAlterado.SecaoId,
                     DataHistorico = DateTimeExtension.HorarioBrasilia(),
-                    TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao,
+                    TipoHistorico = tipoHistoricoAlteracoes,
                     CamposAlterados = ObterCamposFormatados(camposAlterados),
                     CamposInseridos = ObterCamposFormatados(camposInseridos),
                     DataAtendimento = ObterDataDoAtendimento(encaminhamentoNAAPAAlterado, encaminhamentoSecaoExistente),
