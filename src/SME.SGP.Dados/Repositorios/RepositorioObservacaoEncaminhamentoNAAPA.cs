@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, long usuarioLogadoId, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, string usuarioLogadoRf, Paginacao paginacao)
         {
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>();
             var sql = @$"select 
@@ -34,16 +34,53 @@ namespace SME.SGP.Dados.Repositorios
                              Criado_RF as CriadoRF
                             from encaminhamento_naapa_observacao 
                         where not excluido  and encaminhamento_naapa_id = @encaminhamentoNAAPAId ";
+            
+            var observacoesConsulta = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesConsultaDto>(sql,new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoRf },commandTimeout: 300);
+            var observacoes = MapearAuditoria(observacoesConsulta);
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
-            
-            IEnumerable<EncaminhamentoNAAPAObservacoesDto> observacoes = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesDto>(sql, new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoId.ToString() });
 
-            retorno.Items = observacoes;
-            retorno.TotalRegistros = observacoes.Count();
-            retorno.TotalPaginas = observacoes.Count() > 0 ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros) : 0;
-            return retorno;
+
+            var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>
+            {
+                TotalRegistros = observacoes.Any() ? observacoes.Count() : 0
+            };
+
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+            retornoPaginado.Items = paginacao.QuantidadeRegistros > 0
+                                    ? observacoes
+                                        .Skip(paginacao.QuantidadeRegistrosIgnorados)
+                                        .Take(paginacao.QuantidadeRegistros)
+                                    : observacoes;
+
+            return retornoPaginado;
+        }
+
+        private List<EncaminhamentoNAAPAObservacoesDto> MapearAuditoria(IEnumerable<EncaminhamentoNAAPAObservacoesConsultaDto> observacoes)
+        {
+            var lista = new List<EncaminhamentoNAAPAObservacoesDto>(); 
+            foreach (var item in observacoes)
+            {
+                var obs = new EncaminhamentoNAAPAObservacoesDto 
+                {
+                    IdObservacao = item.IdObservacao,
+                    Observacao = item.Observacao,
+                    Proprietario = item.Proprietario,
+                    Auditoria = new AuditoriaDto
+                    {
+                        AlteradoEm = item.AlteradoEm,
+                        AlteradoPor = item.AlteradoPor,
+                        AlteradoRF = item.AlteradoRF,
+                        CriadoEm = item.CriadoEm,
+                        CriadoPor = item.CriadoPor,
+                        CriadoRF = item.CriadoRF
+                    }
+                };
+                lista.Add(obs);
+            }
+
+            return lista;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> Handle(ObterObservacaoEncaminhamentosNAAPAQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioObs.ListarPaginadoPorEncaminhamentoNAAPAId(request.EncaminhamentoNAAPId,request.UsuarioLogadoId,Paginacao);
+            return await repositorioObs.ListarPaginadoPorEncaminhamentoNAAPAId(request.EncaminhamentoNAAPId,request.UsuarioLogadoRf,Paginacao);
         }
     }
 }

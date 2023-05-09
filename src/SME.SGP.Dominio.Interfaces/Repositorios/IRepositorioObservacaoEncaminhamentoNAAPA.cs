@@ -5,6 +5,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioObservacaoEncaminhamentoNAAPA : IRepositorioBase<EncaminhamentoNAAPAObservacao>
     {
-       Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId,long usuarioLogadoId, Paginacao paginacao);
+       Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId,string UsuarioLogadoRf, Paginacao paginacao);
     }
 }
