@@ -26,6 +26,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>> ListarPaginadoPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId, Paginacao paginacao)
         {
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>();
+
             var sql = @$"select ha.Id, u.login as UsuarioLogin, u.nome as UsuarioNome, tipo_historico as TipoHistoricoAlteracoes, 
                                 sen.nome as Secao, campos_inseridos as CamposInseridos, campos_alterados as CamposAlterados, 
                                 data_atendimento as DataAtendimento, data_historico as DataHistorico, ha.Id as IdHistorico
@@ -33,17 +34,22 @@ namespace SME.SGP.Dados.Repositorios
 		                         inner join usuario u on u.id = ha.usuario_id
 		                         left join secao_encaminhamento_naapa sen on sen.id = ha.secao_encaminhamento_naapa_id
                         where ha.encaminhamento_naapa_id = @encaminhamentoNAAPAId
-                        order by data_historico desc";
+                        order by data_historico desc
+                        OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY;
+                        select count(ha.Id)
+                        from encaminhamento_naapa_historico_alteracoes ha
+		                         inner join usuario u on u.id = ha.usuario_id
+		                         left join secao_encaminhamento_naapa sen on sen.id = ha.secao_encaminhamento_naapa_id
+                        where ha.encaminhamento_naapa_id = @encaminhamentoNAAPAId;";
 
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
-                paginacao = new Paginacao(1, 10);
+            using (var historicoAlteracoes = await database.Conexao.QueryMultipleAsync(sql, new { encaminhamentoNAAPAId }))
+            {
+                retorno.Items = historicoAlteracoes.Read<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>();
+                retorno.TotalRegistros = historicoAlteracoes.ReadFirst<int>();
+            }
 
-            var historicos = await database.Conexao.QueryAsync<EncaminhamentoNAAPAHistoricoDeAlteracaoDto>(sql, new { encaminhamentoNAAPAId });
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
-            retorno.Items = historicos;
-            retorno.TotalRegistros = historicos.Count();
-            retorno.TotalPaginas = historicos.Count() > 0 ? (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros) : 0;
-            
             return retorno;
         }
     }
