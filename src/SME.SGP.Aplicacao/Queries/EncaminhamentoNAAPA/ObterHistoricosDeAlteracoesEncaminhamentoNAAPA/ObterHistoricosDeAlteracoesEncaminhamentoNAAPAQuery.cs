@@ -10,11 +10,16 @@ namespace SME.SGP.Aplicacao
     {
         public EncaminhamentoNAAPASecaoDto EncaminhamentoNAAPASecaoAlterado { get; set; }
         public EncaminhamentoNAAPASecao EncaminhamentoNAAPASecaoExistente { get; set; }
+        public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistoricoAlteracoes { get; set; }
 
-        public ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, EncaminhamentoNAAPASecao encaminhamentoNAAPASecaoExistente)
+        public ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(
+                                    EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
+                                    EncaminhamentoNAAPASecao encaminhamentoNAAPASecaoExistente,
+                                    TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
             EncaminhamentoNAAPASecaoAlterado = encaminhamentoNAAPASecaoAlterado;
             EncaminhamentoNAAPASecaoExistente = encaminhamentoNAAPASecaoExistente;
+            TipoHistoricoAlteracoes = tipoHistoricoAlteracoes;
         }
     }
 
@@ -24,6 +29,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.EncaminhamentoNAAPASecaoAlterado).NotEmpty().WithMessage("O encaminhamentos NAAPA da seção alterado deve ser informado");
             RuleFor(c => c.EncaminhamentoNAAPASecaoExistente).NotEmpty().WithMessage("O encaminhamentos NAAPA da seção atual deve ser informado");
+            RuleFor(c => c.TipoHistoricoAlteracoes).NotEmpty().WithMessage("O tipo do histórico de alteração do encaminhamentos NAAPA deve ser informado");
         }
     }
 }

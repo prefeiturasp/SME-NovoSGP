@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
             await mediator.Send(new AlterarEncaminhamentoNAAPASecaoCommand(secaoExistente));
 
-            await RegistrarHistoricoDeAlteracao(secaoDto, secaoExistente);
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, secaoExistente, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
 
             await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoCommand(secaoDto, secaoExistente));
           
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                 await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, secaoQuestaoId, questao.TipoQuestao));
             }
 
-            await RegistrarHistoricoDeAlteracao(secaoDto, secaoEncaminhamento);
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
 
             return true;
         }
@@ -148,20 +148,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                     MensagemNegocioEncaminhamentoNAAPA.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
                     string.Join(", ", mensagem)));
             }
-        }
-
-        private async Task RegistrarHistoricoDeAlteracao(EncaminhamentoNAAPASecaoDto secaoDto, EncaminhamentoNAAPASecao encaminhamentoNAAPASecao)
-        {
-            if (!encaminhamentoNAAPASecao.Questoes.Any())
-            {
-                encaminhamentoNAAPASecao = (await mediator.Send(new ObterEncaminhamentoNAAPAPorIdESecaoQuery(
-                    encaminhamentoNAAPASecao.EncaminhamentoNAAPAId,
-                    encaminhamentoNAAPASecao.Id))).Secoes.FirstOrDefault();
-
-                encaminhamentoNAAPASecao.Questoes.ForEach(questao => questao.Respostas = new List<RespostaEncaminhamentoNAAPA>());
-            }
-
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, encaminhamentoNAAPASecao));
         }
     }
 }
