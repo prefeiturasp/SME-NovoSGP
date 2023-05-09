@@ -42,8 +42,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
             RegistrarRabbitMQ(services);
             RegistrarTelemetria(services);
 
-            services.AddHealthChecks()
-                .AddElasticSearchSgp();
+            services.AddHealthChecks();
             
             services.AddHealthChecksUiSgp();
         }
@@ -88,9 +87,10 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
         private static void RegistrarMediator(IServiceCollection services)
         {
-            var assembly = AppDomain.CurrentDomain.Load("SME.SGP.ComprimirArquivos.Worker");
+            var assembly = Assembly.GetExecutingAssembly();
             services.AddMediatR(assembly);
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidacoesPipeline<,>));
+
             AssemblyScanner
                 .FindValidatorsInAssembly(assembly)
                 .ForEach(result => services.AddScoped(result.InterfaceType, result.ValidatorType));

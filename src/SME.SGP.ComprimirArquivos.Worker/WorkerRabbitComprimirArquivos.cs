@@ -161,7 +161,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
         private IOtimizarUseCase ObterUseCases(string rota)
         {
-            using var scope = serviceScopeFactory.CreateScope();
+            var scope = serviceScopeFactory.CreateScope();
             
             return rota switch
             {
