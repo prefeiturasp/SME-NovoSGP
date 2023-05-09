@@ -316,5 +316,14 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(lista);
         }
+
+        [HttpPost("listagem-itinerancias")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarItinerancias([FromBody] FiltroRelatorioListagemItineranciasDto filtro, [FromServices] IRelatorioListagemItineranciasUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
     }
 }

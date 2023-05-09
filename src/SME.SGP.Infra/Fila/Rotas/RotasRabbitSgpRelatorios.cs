@@ -15,6 +15,7 @@
         public const string RotaRelatoriosSolicitadosRelatorioAcompanhamentoAprendizagem = "sr.relatorios.solicitados.relatorioacompanhamentoaprendizagem";
         public const string RotaRelatoriosSolicitadosCalendarioEscolar = "sr.relatorios.solicitados.calendárioescolar";
         public const string RotaRelatoriosSolicitadosRegistroItinerancia = "sr.relatorios.solicitados.registroitinerancia";
+        public const string RotaRelatoriosSolicitadosListagemRegistrosItinerancia = "sr.relatorios.solicitados.listagem.registrositinerancia";
         public const string RotaRelatoriosSolicitadosPendencias = "sr.relatorios.solicitados.pendencias";
         public const string RotaRelatoriosSolicitadosAcompanhamentoFechamento = "sr.relatorios.solicitados.acompanhamentofechamento";
         public const string RotaRelatoriosSolicitadosParecerConclusivo = "sr.relatorios.solicitados.parecerconclusivo";
