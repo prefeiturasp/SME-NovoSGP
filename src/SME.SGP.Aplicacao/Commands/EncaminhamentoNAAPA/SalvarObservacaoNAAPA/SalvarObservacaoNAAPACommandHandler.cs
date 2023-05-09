@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,14 +19,29 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarObservacaoNAAPACommand request, CancellationToken cancellationToken)
         {
+            if (request.encaminhamentoNAAPAObservacaoSalvarDto.Id > 0)
+                await AtualizacaoObservacao(request.encaminhamentoNAAPAObservacaoSalvarDto);
+            else
+                await SalvarObservacao(request.encaminhamentoNAAPAObservacaoSalvarDto);
+
+            return true;
+        }
+
+        private async Task SalvarObservacao(EncaminhamentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto)
+        {
             await repositorioObs.SalvarAsync(new EncaminhamentoNAAPAObservacao
             {
-                EncaminhamentoNAAPAId = request.encaminhamentoNAAPAObservacaoSalvarDto.EncaminhamentoNAAPAId,
-                Observacao = request.encaminhamentoNAAPAObservacaoSalvarDto.Observacao,
+                EncaminhamentoNAAPAId = encaminhamentoNAAPAObservacaoSalvarDto.EncaminhamentoNAAPAId,
+                Observacao = encaminhamentoNAAPAObservacaoSalvarDto.Observacao,
                 Excluido = false,
-                Id = request.encaminhamentoNAAPAObservacaoSalvarDto.Id
+                Id = encaminhamentoNAAPAObservacaoSalvarDto.Id
             });
-            return true;
+        }
+        private async Task AtualizacaoObservacao(EncaminhamentoNAAPAObservacaoSalvarDto encaminhamentoNAAPAObservacaoSalvarDto)
+        {
+            var observacaoExistente = await repositorioObs.ObterPorIdAsync(encaminhamentoNAAPAObservacaoSalvarDto.Id);
+            observacaoExistente.Observacao = encaminhamentoNAAPAObservacaoSalvarDto.Observacao;
+            await repositorioObs.SalvarAsync(observacaoExistente);
         }
     }
 }

@@ -220,7 +220,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ExcluirObservacao(long observacaoId, [FromServices] IExcluirObservacoesDeEncaminhamentoNAAPAUseCase useCase)
         {
-            return Ok(useCase.Executar(observacaoId));
+            return Ok(await useCase.Executar(observacaoId));
         }
     }
 }

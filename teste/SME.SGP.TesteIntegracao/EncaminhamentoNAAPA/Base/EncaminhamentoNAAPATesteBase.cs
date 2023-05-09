@@ -143,6 +143,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();    
         }
 
+        protected IObterObservacoesDeEncaminhamentoNAAPAUseCase ObterObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected IExcluirObservacoesDeEncaminhamentoNAAPAUseCase ExcluirObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected ISalvarObservacoesDeEncaminhamentoNAAPAUseCase SalvarObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+
         protected INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
