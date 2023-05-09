@@ -22,15 +22,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            if (!request.EncaminhamentoNAAPASecaoExistente.Questoes.Any())
-            {
-                request.EncaminhamentoNAAPASecaoExistente = (await mediator.Send(new ObterEncaminhamentoNAAPAPorIdESecaoQuery(
-                    request.EncaminhamentoNAAPASecaoExistente.EncaminhamentoNAAPAId,
-                    request.EncaminhamentoNAAPASecaoExistente.Id))).Secoes.FirstOrDefault();
-
-                request.EncaminhamentoNAAPASecaoExistente.Questoes.ForEach(questao => questao.Respostas = new List<RespostaEncaminhamentoNAAPA>());
-            }
-
             var historicoAlteracao = await mediator.Send(new ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes));
 
             if (historicoAlteracao != null)

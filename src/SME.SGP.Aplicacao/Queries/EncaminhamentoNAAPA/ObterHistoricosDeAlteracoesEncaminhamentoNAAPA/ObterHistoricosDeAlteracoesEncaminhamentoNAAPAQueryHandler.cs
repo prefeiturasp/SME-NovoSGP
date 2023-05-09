@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         {
             this.usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await ExecuteValidacaoAlteracaoCamposDaSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente);
+            await ExecuteValidacaoAlteracaoCamposDaSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
 
             return ObterHistoricoAlteracaoSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
         }
@@ -86,13 +86,16 @@ namespace SME.SGP.Aplicacao
             return string.Empty;
         }
 
-        private async Task ExecuteValidacaoAlteracaoCamposDaSecao(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
+        private async Task ExecuteValidacaoAlteracaoCamposDaSecao(
+                                EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
+                                EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
+                                TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
             foreach (var questaoAlterada in encaminhamentoNAAPASecaoAlterado.Questoes.GroupBy(q => q.QuestaoId))
             {
                 var questaoExistente = encaminhamentoSecaoExistente?.Questoes?.Find(questao => questao.QuestaoId == questaoAlterada.Key);
 
-                await AdicionarCamposInseridos(questaoExistente, questaoAlterada);
+                await AdicionarCamposInseridos(questaoExistente, questaoAlterada, tipoHistoricoAlteracoes);
                 await AdicionarCamposAlterados(questaoExistente, questaoAlterada);
             }
 
@@ -100,7 +103,10 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task AdicionarCamposInseridos(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostas)
+        private async Task AdicionarCamposInseridos(
+                            QuestaoEncaminhamentoNAAPA questaoExistente, 
+                            IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostas,
+                            TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
             var novasRespostas = respostas.ToList().Find(c => c.RespostaEncaminhamentoId == 0);
 
@@ -108,12 +114,11 @@ namespace SME.SGP.Aplicacao
             {
                 var ids = new long[] { novasRespostas.QuestaoId };
                 var questao = questaoExistente?.Questao ?? (await repositorioQuestao.ObterQuestoesPorIds(ids)).FirstOrDefault();
-                var nomeQuestao = questao?.Nome;
 
-                if (CampoPodeSerIncluido(questaoExistente, novasRespostas))
-                    camposInseridos.Add(nomeQuestao);
+                if (tipoHistoricoAlteracoes == TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido)
+                    if (!string.IsNullOrEmpty(novasRespostas.Resposta)) camposInseridos.Add(await ObterNomeQuestao(questao));
                 else if (CampoPodeSerAlterado(questaoExistente, novasRespostas))
-                    camposAlterados.Add(nomeQuestao);
+                    camposAlterados.Add(await ObterNomeQuestao(questao));
             }
         }
 
@@ -132,28 +137,18 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private bool CampoPodeSerIncluido(
-                        QuestaoEncaminhamentoNAAPA questaoExistente, 
-                        EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
-        {
-            if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
-                return questaoExistente == null || !questaoExistente.Respostas.Any();
-
-            if (EhCampoLista(respostasEncaminhamento))
-                return !String.IsNullOrEmpty(respostasEncaminhamento.Resposta) && respostasEncaminhamento.Resposta != "[]";
-
-            return true;
-        }
-
         private bool CampoPodeSerAlterado(
                             QuestaoEncaminhamentoNAAPA questaoExistente,
                             EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
         {
             if (EhCampoLista(respostasEncaminhamento))
                 return ((questaoExistente == null && respostasEncaminhamento.Resposta != "[]") ||
-                        (questaoExistente?.Respostas?.FirstOrDefault()?.Texto != respostasEncaminhamento.Resposta));
+                        (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && questaoExistente?.Respostas?.FirstOrDefault()?.Texto != respostasEncaminhamento.Resposta));
 
-            return EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha });
+            if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
+                return questaoExistente == null || !questaoExistente.Respostas.Any();
+
+            return false;
         }
 
         private async Task AdicionarCamposAlterados(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
@@ -167,7 +162,7 @@ namespace SME.SGP.Aplicacao
                     var respostaAlterada = respostasEncaminhamento.ToList().Find(resposta => resposta.RespostaEncaminhamentoId == respostaExistente.Id);
 
                     if (await CampoFoiAlterado(respostaExistente, respostaAlterada))
-                        camposAlterados.Add(questaoExistente.Questao?.Nome);
+                        camposAlterados.Add(await ObterNomeQuestao(questaoExistente.Questao));
                 }
             }
         }
@@ -229,6 +224,26 @@ namespace SME.SGP.Aplicacao
         private string ObterCampoJsonSemId(string campo)
         {
             return Regex.Replace(campo, @"""id"":""(.*?)""", "");
+        }
+
+        private async Task<string> ObterNomeQuestao(Questao questao)
+        {
+            var nomeQuestao = await ObterNomeQuestaoObservacao(questao);
+
+            return string.IsNullOrEmpty(nomeQuestao) ? questao?.Nome : nomeQuestao;
+        }
+
+        private async Task<string> ObterNomeQuestaoObservacao(Questao questaoFilha)
+        {
+            if (questaoFilha != null && questaoFilha.NomeComponente.StartsWith("OBS_"))
+            {
+                var nomeComponentePai = questaoFilha.NomeComponente.Substring(4);
+                var questaoPai = await repositorioQuestao.ObterPorNomeComponente(nomeComponentePai);
+
+                return $"{questaoPai?.Nome} - {questaoFilha.Nome}"; 
+            }
+
+            return string.Empty;
         }
     }
 }
