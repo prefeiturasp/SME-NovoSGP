@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
         [Fact(DisplayName = "ObterAlunosDentroPeriodoQuery - Deve retornar exceção de alunos não localizados")]
         public async Task DeveRetornarErroAlunosNaoLocalizados()
         {
-            mediator.Setup(x => x.Send(It.IsAny<ObterAlunosAtivosPorTurmaCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Enumerable.Empty<AlunoPorTurmaResposta>);
 
             await Assert.ThrowsAsync<NegocioException>(() =>
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
                 new AlunoPorTurmaResposta() { CodigoSituacaoMatricula = SituacaoMatriculaAluno.VinculoIndevido }
             };
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterAlunosAtivosPorTurmaCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaAlunos.AsEnumerable());
 
             var query = new ObterAlunosDentroPeriodoQuery("1", consideraSomenteAtivos: true);
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
                 new AlunoPorTurmaResposta() { CodigoAluno = "6", DataMatricula = new DateTime(anoAtual, 3, 7), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo }
             };
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterAlunosAtivosPorTurmaCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaAlunos.AsEnumerable());
 
             var dataUnica = new DateTime(anoAtual, 3, 5);
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
                 new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 3, 10), DataSituacao = new DateTime(anoAtual, 8, 20), CodigoSituacaoMatricula = SituacaoMatriculaAluno.ReclassificadoSaida }
             };
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterAlunosAtivosPorTurmaCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaAlunos.AsEnumerable());
 
             var dataUnica = new DateTime(anoAtual, 3, 8);
@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
                 new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 8, 10), CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo }
             };
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterAlunosAtivosPorTurmaCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaAlunos.AsEnumerable());
 
             var periodo = (new DateTime(anoAtual, 4, 1), new DateTime(anoAtual, 5, 31));
@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aluno.ObterAlunosDentroPeriodo
                 new AlunoPorTurmaResposta() { DataMatricula = new DateTime(anoAtual, 8, 2), DataSituacao = new DateTime(anoAtual, 10, 10), CodigoSituacaoMatricula = SituacaoMatriculaAluno.ReclassificadoSaida }
             };
 
-            mediator.Setup(x => x.Send(It.IsAny<ObterAlunosAtivosPorTurmaCodigoQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(x => x.Send(It.IsAny<ObterTodosAlunosNaTurmaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaAlunos.AsEnumerable());
 
             var periodo = (new DateTime(anoAtual, 8, 1), new DateTime(anoAtual, 10, 15));
