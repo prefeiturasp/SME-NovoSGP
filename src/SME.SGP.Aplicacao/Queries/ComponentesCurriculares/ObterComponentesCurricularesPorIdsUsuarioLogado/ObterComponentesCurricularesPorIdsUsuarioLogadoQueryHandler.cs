@@ -90,6 +90,8 @@ namespace SME.SGP.Aplicacao
                             disciplina.RegistraFrequencia = await mediator
                                 .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
 
+                            disciplina.LancaNota = disciplina.TerritorioSaber ? false : disciplina.LancaNota;
+
                             if (disciplina.GrupoMatrizId == 0 || String.IsNullOrEmpty(disciplina.GrupoMatrizNome))
                             {
                                 var dadosGrupoMatriz = await mediator.Send(new ObterComponenteCurricularGrupoMatrizPorComponenteIdQuery() { ComponenteCurricularId = disciplina.CodigoComponenteCurricular });

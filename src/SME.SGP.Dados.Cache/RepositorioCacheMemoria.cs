@@ -3,15 +3,16 @@ using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Dados.Cache;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCacheMemoria : RepositorioCache
     {
         private readonly IMemoryCache memoryCache;
-        private readonly IServicoMensageriaLogs servicoMensageriaLogs;
 
-        public RepositorioCacheMemoria(IMemoryCache memoryCache, IServicoTelemetria servicoTelemetria,IServicoMensageriaLogs servicoMensageriaLogs) : base(servicoTelemetria,servicoMensageriaLogs)
+        public RepositorioCacheMemoria(IMemoryCache memoryCache, IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache) 
+            : base(servicoTelemetria, servicoMensageriaLogs, metricasCache)
         {
             this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
 

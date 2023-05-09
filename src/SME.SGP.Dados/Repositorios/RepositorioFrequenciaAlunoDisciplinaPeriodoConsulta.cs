@@ -153,6 +153,23 @@ namespace SME.SGP.Dados
                     componenteCurricularCodigo
                 });
         }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralPorAlunosETurmas(string[] alunosCodigos, string turmaCodigo)
+        {
+            var query = new StringBuilder($@"select * 
+                            from frequencia_aluno
+                           where tipo = 2
+	                        and codigo_aluno = any(@alunosCodigos)
+                            and turma_id = @turmaCodigo ");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    alunosCodigos,
+                    turmaCodigo,                   
+                });
+        }
+
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaBimestresAsync(string codigoAluno, int bimestre, string codigoTurma, TipoFrequenciaAluno tipoFrequencia = TipoFrequenciaAluno.PorDisciplina)
         {
             var query = @"select * from (
