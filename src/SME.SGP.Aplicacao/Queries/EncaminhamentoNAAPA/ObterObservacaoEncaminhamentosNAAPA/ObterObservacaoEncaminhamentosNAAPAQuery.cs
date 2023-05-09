@@ -6,14 +6,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterObservacaoEncaminhamentosNAAPAQuery: IRequest<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>>
     {
-        public ObterObservacaoEncaminhamentosNAAPAQuery(long encaminhamentoNAAPId,long usuarioLogadoId)
+        public ObterObservacaoEncaminhamentosNAAPAQuery(long encaminhamentoNAAPId,string usuarioLogadoRf)
         {
             EncaminhamentoNAAPId = encaminhamentoNAAPId;
-            UsuarioLogadoId = usuarioLogadoId;
+            UsuarioLogadoRf = usuarioLogadoRf;
         }
 
         public long EncaminhamentoNAAPId { get; set; }
-        public long UsuarioLogadoId { get; set; }
+        public string UsuarioLogadoRf { get; set; }
     }
 
     public class ObterObservacaoEncaminhamentosNAAPAQueryValidator : AbstractValidator<ObterObservacaoEncaminhamentosNAAPAQuery>
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public ObterObservacaoEncaminhamentosNAAPAQueryValidator()
         {
             RuleFor(x => x.EncaminhamentoNAAPId).GreaterThan(0).WithMessage("Informe o Id do Encaminhamento NAAPA para consultar as Observações");
-            RuleFor(x => x.UsuarioLogadoId).GreaterThan(0).WithMessage("Informe o Id do Usuario Logado para consultar as Observações");
+            RuleFor(x => x.UsuarioLogadoRf).NotEmpty().WithMessage("Informe o Id do Usuario Logado para consultar as Observações");
         }
     }
 }

@@ -5,19 +5,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterObservacoesDeEncaminhamentoNAAPAUseCase : IObterObservacoesDeEncaminhamentoNAAPAUseCase
+    public class ObterObservacoesDeEncaminhamentoNAAPAUseCase : AbstractUseCase, IObterObservacoesDeEncaminhamentoNAAPAUseCase
     {
-        private readonly IMediator mediator;
 
-        public ObterObservacoesDeEncaminhamentoNAAPAUseCase(IMediator mediator)
+        public ObterObservacoesDeEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> Executar(long encaminhamentoNAAPAId)
         {
-            var usuarioLogadoId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-            return await mediator.Send(new ObterObservacaoEncaminhamentosNAAPAQuery(encaminhamentoNAAPAId, usuarioLogadoId));
+            var usuarioLohadoRf = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            return await mediator.Send(new ObterObservacaoEncaminhamentosNAAPAQuery(encaminhamentoNAAPAId, usuarioLohadoRf));
         }
     }
 }
