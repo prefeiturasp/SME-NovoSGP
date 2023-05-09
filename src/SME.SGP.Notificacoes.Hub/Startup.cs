@@ -54,6 +54,7 @@ namespace SME.SGP.Notificacoes.Hub
 
         private void RegistrarCache(IServiceCollection services)
         {
+            services.ConfigurarMetricasCache();
             services.ConfigurarCache(Configuration);
 
             services.AddSingleton<IRepositorioUsuario>(serviceProvider =>

@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 DisciplinaId = filtroListao.ComponenteCurricularId.ToString(),
                 ComponenteCurricularId = filtroListao.ComponenteCurricularId.ToString(),
                 DataInicio = DATA_25_07_INICIO_BIMESTRE_3,
-                DataFim = DATA_30_09_FIM_BIMESTRE_3
+                DataFim = DATA_02_10_FIM_BIMESTRE_3
             };
             var frequencias = await useCaseObterFrequencia.Executar(filtroFrequenciaPeriodo);
             frequencias.ShouldNotBeNull();
