@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
                              Criado_Por as CriadoPor,
                              Criado_RF as CriadoRF
                             from encaminhamento_naapa_observacao 
-                        where encaminhamento_naapa_id = @encaminhamentoNAAPAId ";
+                        where not excluido  and encaminhamento_naapa_id = @encaminhamentoNAAPAId ";
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);

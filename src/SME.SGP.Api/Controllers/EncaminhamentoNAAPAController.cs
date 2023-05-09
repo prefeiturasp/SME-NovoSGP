@@ -220,7 +220,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ExcluirObservacao(long observacaoId, [FromServices] IExcluirObservacoesDeEncaminhamentoNAAPAUseCase useCase)
         {
-            return Ok(useCase.Executar(observacaoId));
+            return Ok(await useCase.Executar(observacaoId));
+        }
+
+        [HttpGet("{encaminhamentoNAAPAId}/historico-alteracoes")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterHistoricoDeAlteracoes(long encaminhamentoNAAPAId,
+            [FromServices] IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
     }
 }

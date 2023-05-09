@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,24 +33,27 @@ namespace SME.SGP.Aplicacao
         {
             this.usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await ExecuteValidacaoAlteracaoCamposDaSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPAExistente);
+            await ExecuteValidacaoAlteracaoCamposDaSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente);
 
-            return ObterHistoricoAlteracaoSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPAExistente);
+            return ObterHistoricoAlteracaoSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
         }
 
-        private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPA EncaminhamentoExistente)
+        private EncaminhamentoNAAPAHistoricoAlteracoes ObterHistoricoAlteracaoSecao(
+                                                        EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, 
+                                                        EncaminhamentoNAAPASecao encaminhamentoSecaoExistente,
+                                                        TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
             if (camposInseridos.Any() || camposAlterados.Any())
             {
                 return new EncaminhamentoNAAPAHistoricoAlteracoes()
                 {
-                    EncaminhamentoNAAPAId = EncaminhamentoExistente.Id,
+                    EncaminhamentoNAAPAId = encaminhamentoSecaoExistente.EncaminhamentoNAAPAId,
                     SecaoEncaminhamentoNAAPAId = encaminhamentoNAAPAAlterado.SecaoId,
                     DataHistorico = DateTimeExtension.HorarioBrasilia(),
-                    TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao,
+                    TipoHistorico = tipoHistoricoAlteracoes,
                     CamposAlterados = ObterCamposFormatados(camposAlterados),
                     CamposInseridos = ObterCamposFormatados(camposInseridos),
-                    DataAtendimento = ObterDataDoAtendimento(encaminhamentoNAAPAAlterado, EncaminhamentoExistente),
+                    DataAtendimento = ObterDataDoAtendimento(encaminhamentoNAAPAAlterado, encaminhamentoSecaoExistente),
                     UsuarioId = usuarioLogado.Id
                 };
             }
@@ -57,9 +61,9 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private string ObterDataDoAtendimento(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPA EncaminhamentoExistente)
+        private string ObterDataDoAtendimento(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
         {
-            if (SecaoEhItinerancia(encaminhamentoNAAPAAlterado, EncaminhamentoExistente))
+            if (SecaoEhItinerancia(encaminhamentoSecaoExistente))
             {
                 var questoesData = encaminhamentoNAAPAAlterado.Questoes.FindAll(questao => questao.TipoQuestao == TipoQuestao.Data);
 
@@ -69,11 +73,9 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private bool SecaoEhItinerancia(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPAAlterado, EncaminhamentoNAAPA EncaminhamentoExistente)
+        private bool SecaoEhItinerancia(EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
         {
-            var secao = EncaminhamentoExistente.Secoes.Find(secao => secao.Id == encaminhamentoNAAPAAlterado.SecaoId);
-
-            return secao?.SecaoEncaminhamentoNAAPA?.NomeComponente == SECAO_ITINERANCIA;
+            return encaminhamentoSecaoExistente?.SecaoEncaminhamentoNAAPA?.NomeComponente == SECAO_ITINERANCIA;
         }
 
         private string ObterCamposFormatados(List<string> campos)
@@ -84,19 +86,17 @@ namespace SME.SGP.Aplicacao
             return string.Empty;
         }
 
-        private async Task ExecuteValidacaoAlteracaoCamposDaSecao(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, EncaminhamentoNAAPA EncaminhamentoExistente)
+        private async Task ExecuteValidacaoAlteracaoCamposDaSecao(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, EncaminhamentoNAAPASecao encaminhamentoSecaoExistente)
         {
-            var secoesExistente = EncaminhamentoExistente.Secoes.Find(secao => secao.SecaoEncaminhamentoNAAPAId == encaminhamentoNAAPASecaoAlterado.SecaoId);
-
             foreach (var questaoAlterada in encaminhamentoNAAPASecaoAlterado.Questoes.GroupBy(q => q.QuestaoId))
             {
-                var questaoExistente = secoesExistente?.Questoes?.Find(questao => questao.QuestaoId == questaoAlterada.Key);
+                var questaoExistente = encaminhamentoSecaoExistente?.Questoes?.Find(questao => questao.QuestaoId == questaoAlterada.Key);
 
                 await AdicionarCamposInseridos(questaoExistente, questaoAlterada);
                 await AdicionarCamposAlterados(questaoExistente, questaoAlterada);
             }
 
-            AdicionarCamposExcluidos(secoesExistente, encaminhamentoNAAPASecaoAlterado);
+            AdicionarCamposExcluidos(encaminhamentoSecaoExistente, encaminhamentoNAAPASecaoAlterado);
         }
 
 
@@ -107,25 +107,25 @@ namespace SME.SGP.Aplicacao
             if (novasRespostas != null)
             {
                 var ids = new long[] { novasRespostas.QuestaoId };
-                var questoes = await repositorioQuestao.ObterQuestoesPorIds(ids);
-                var nomeQuestao = questoes.FirstOrDefault().Nome;
+                var questao = questaoExistente?.Questao ?? (await repositorioQuestao.ObterQuestoesPorIds(ids)).FirstOrDefault();
+                var nomeQuestao = questao?.Nome;
 
                 if (CampoPodeSerIncluido(questaoExistente, novasRespostas))
                     camposInseridos.Add(nomeQuestao);
-                else
+                else if (CampoPodeSerAlterado(questaoExistente, novasRespostas))
                     camposAlterados.Add(nomeQuestao);
             }
         }
 
         private void AdicionarCamposExcluidos(EncaminhamentoNAAPASecao secaoExistente, EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado)
         {
-            var idsQuestaoExistente = secaoExistente?.SecaoEncaminhamentoNAAPA?.EncaminhamentoNAAPASecao?.Questoes?.Select(questao => questao.QuestaoId);
+            var idsQuestaoExistente = secaoExistente?.Questoes?.Select(questao => questao.QuestaoId);
             var idsQuestaoAlterado = encaminhamentoNAAPASecaoAlterado.Questoes.Select(questao => questao.QuestaoId);
             var idsQuestaoRemovidas = idsQuestaoExistente?.Except(idsQuestaoAlterado);
 
             if (idsQuestaoRemovidas != null && idsQuestaoRemovidas.Any())
             {
-                var questoes = secaoExistente?.SecaoEncaminhamentoNAAPA?.EncaminhamentoNAAPASecao?.Questoes?.FindAll(questao => idsQuestaoRemovidas.Contains(questao.QuestaoId));
+                var questoes = secaoExistente?.Questoes?.FindAll(questao => idsQuestaoRemovidas.Contains(questao.QuestaoId));
                 var nomeQuestoes = questoes.Select(questao => questao.Questao.Nome).ToList();
 
                 camposAlterados.AddRange(nomeQuestoes);
@@ -139,7 +139,21 @@ namespace SME.SGP.Aplicacao
             if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
                 return questaoExistente == null || !questaoExistente.Respostas.Any();
 
+            if (EhCampoLista(respostasEncaminhamento))
+                return !String.IsNullOrEmpty(respostasEncaminhamento.Resposta) && respostasEncaminhamento.Resposta != "[]";
+
             return true;
+        }
+
+        private bool CampoPodeSerAlterado(
+                            QuestaoEncaminhamentoNAAPA questaoExistente,
+                            EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
+        {
+            if (EhCampoLista(respostasEncaminhamento))
+                return ((questaoExistente == null && respostasEncaminhamento.Resposta != "[]") ||
+                        (questaoExistente?.Respostas?.FirstOrDefault()?.Texto != respostasEncaminhamento.Resposta));
+
+            return EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha });
         }
 
         private async Task AdicionarCamposAlterados(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
@@ -160,7 +174,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> CampoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
-            var funcoes = new List<Func<RespostaEncaminhamentoNAAPA, EncaminhamentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado };
+            var funcoes = new List<Func<RespostaEncaminhamentoNAAPA, EncaminhamentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado, CampoPorJsonFoiAlterado };
 
             foreach(var funcao in funcoes)
             {
@@ -184,10 +198,17 @@ namespace SME.SGP.Aplicacao
         private bool? CampoPorTextoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto,
-                                                                                         TipoQuestao.Data, TipoQuestao.Numerico, TipoQuestao.Endereco,
-                                                                                         TipoQuestao.ContatoResponsaveis, TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma }))
+                                                                                         TipoQuestao.Data, TipoQuestao.Numerico }))
                 return RespostaAtual.Texto != respostaAlteracao.Resposta;
 
+            return null;
+        }
+
+        private bool? CampoPorJsonFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        {
+            if (EhCampoLista(respostaAlteracao))
+                return ObterCampoJsonSemId(RespostaAtual.Texto) != ObterCampoJsonSemId(respostaAlteracao.Resposta);
+            
             return null;
         }
 
@@ -197,6 +218,17 @@ namespace SME.SGP.Aplicacao
                 return RespostaAtual.RespostaId != (!string.IsNullOrEmpty(respostaAlteracao.Resposta) ? long.Parse(respostaAlteracao.Resposta) : null);
 
             return null;
+        }
+
+        private bool EhCampoLista(EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        {
+            return EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Endereco, TipoQuestao.ContatoResponsaveis,
+                                                                                            TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma});
+        }
+
+        private string ObterCampoJsonSemId(string campo)
+        {
+            return Regex.Replace(campo, @"""id"":""(.*?)""", "");
         }
     }
 }

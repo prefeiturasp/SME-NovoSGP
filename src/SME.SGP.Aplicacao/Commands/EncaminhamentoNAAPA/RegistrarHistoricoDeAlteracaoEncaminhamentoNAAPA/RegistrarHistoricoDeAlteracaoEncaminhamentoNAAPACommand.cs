@@ -8,12 +8,17 @@ namespace SME.SGP.Aplicacao
     public class RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand : IRequest<long>
     {
         public EncaminhamentoNAAPASecaoDto EncaminhamentoNAAPASecaoAlterado { get; set; }
-        public EncaminhamentoNAAPA EncaminhamentoNAAPAExistente { get; set; }
+        public EncaminhamentoNAAPASecao EncaminhamentoNAAPASecaoExistente { get; set; }
+        public TipoHistoricoAlteracoesEncaminhamentoNAAPA TipoHistoricoAlteracoes { get; set; }
 
-        public RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, EncaminhamentoNAAPA encaminhamentoNAAPAExistente)
+        public RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(
+                                EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado, 
+                                EncaminhamentoNAAPASecao encaminhamentoNAAPASecaoExistente,
+                                TipoHistoricoAlteracoesEncaminhamentoNAAPA tipoHistoricoAlteracoes)
         {
             EncaminhamentoNAAPASecaoAlterado = encaminhamentoNAAPASecaoAlterado;
-            EncaminhamentoNAAPAExistente = encaminhamentoNAAPAExistente;
+            EncaminhamentoNAAPASecaoExistente = encaminhamentoNAAPASecaoExistente;
+            TipoHistoricoAlteracoes = tipoHistoricoAlteracoes;
         }
     }
 
@@ -22,7 +27,8 @@ namespace SME.SGP.Aplicacao
         public RegistrarEncaminhamentoNAAPAHistoricoDeAlteracaoCommandValidator()
         {
             RuleFor(c => c.EncaminhamentoNAAPASecaoAlterado).NotEmpty().WithMessage("O encaminhamentos NAAPA da seção alterado deve ser informado");
-            RuleFor(c => c.EncaminhamentoNAAPAExistente).NotEmpty().WithMessage("O encaminhamentos NAAPA atual deve ser informado");
+            RuleFor(c => c.EncaminhamentoNAAPASecaoExistente).NotEmpty().WithMessage("O encaminhamentos NAAPA da seção atual deve ser informado");
+            RuleFor(c => c.TipoHistoricoAlteracoes).NotEmpty().WithMessage("O tipo do histórico de alteração do encaminhamentos NAAPA deve ser informado");
         }
     }
 }

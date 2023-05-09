@@ -84,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, encaminhamento));
+            await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secaoDto, encaminhamento.Secoes.FirstOrDefault(), TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao));
 
             var historico = ObterTodos<EncaminhamentoNAAPAHistoricoAlteracoes>()?.FirstOrDefault();
 
