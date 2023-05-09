@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private IEnumerable<TurmasDoAlunoDto> Alunos;
         private IEnumerable<UsuarioEolRetornoDto> Servidores;
+        private const long TODAS_UES = -99;
 
         public ListarOcorrenciasQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator) : base(contextoAplicacao)
         {
@@ -30,7 +31,12 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao);
+                long[] idUes = Array.Empty<long>();
+
+                if(request.Filtro.UeId == TODAS_UES)
+                    idUes = await ObterIdUesAbrangencia(request);
+
+                var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao, idUes);
 
                 await CarregarServidores(lstOcorrencias);
 
@@ -49,6 +55,16 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao executar ListarOcorrenciasQueryHandler", LogNivel.Critico, LogContexto.Geral, ex.Message));
                 throw;
             }
+        }
+
+        private async Task<long[]> ObterIdUesAbrangencia(ListarOcorrenciasQuery request)
+        {
+            var login = await mediator.Send(new ObterLoginAtualQuery());
+            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var dre = await mediator.Send(new ObterDREPorIdQuery(request.Filtro.DreId));
+            var ues = await mediator.Send(new ObterUEsPorDREQuery(dre.CodigoDre, login, perfil, 0, 0, request.Filtro.ConsideraHistorico, request.Filtro.AnoLetivo));
+
+            return ues.Select(x => x.Id).ToArray();
         }
 
         private async Task CarregarServidores(PaginacaoResultadoDto<Ocorrencia> ocorrencias)
@@ -150,7 +166,7 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = ocorrencias.TotalPaginas
             };
 
-            listaRetorno.Items = listaRetorno.Items.OrderBy(x => x.UeOcorrencia).ThenBy(t =>t.DataOcorrencia);
+            listaRetorno.Items = listaRetorno.Items.OrderBy(x => x.UeOcorrencia).ThenByDescending(t =>t.DataOcorrencia);
             return listaRetorno;
         }
 

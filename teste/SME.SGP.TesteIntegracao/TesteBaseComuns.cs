@@ -54,6 +54,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected const long DRE_ID_1 = 1;
         protected const long UE_ID_1 = 1;
+        protected const long UE_ID_2 = 2;
+        protected const long UE_ID_3 = 3;
 
         protected const long USUARIO_ID_1 = 1;
         protected const long USUARIO_ID_2 = 2;
@@ -1204,20 +1206,6 @@ namespace SME.SGP.TesteIntegracao
                 Nome = UE_NOME_1,
             });
             
-            await InserirNaBase(new Ue
-            {
-                CodigoUe = UE_CODIGO_2,
-                DreId = 1,
-                Nome = UE_NOME_2,
-            });
-            
-            await InserirNaBase(new Ue
-            {
-                CodigoUe = UE_CODIGO_3,
-                DreId = 1,
-                Nome = UE_NOME_3,
-            });
-            
             await InserirNaBase(new Dre
             {
                 CodigoDre = DRE_CODIGO_2,
@@ -1230,6 +1218,13 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_2,
                 DreId = 2,
                 Nome = UE_NOME_2,
+            });
+
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_3,
+                DreId = 2,
+                Nome = UE_NOME_3,
             });
 
             await InserirNaBase(new PrioridadePerfil

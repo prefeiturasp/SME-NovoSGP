@@ -16,7 +16,7 @@ namespace SME.SGP.Dados
         private const long TODAS_UES = -99;
         public RepositorioOcorrencia(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
 
-        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao, long[] idUes = null)
         {
             var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
@@ -29,6 +29,7 @@ namespace SME.SGP.Dados
             var filtrarPorUe = (filtro.UeId == TODAS_UES); 
             
             gerador.AdicioneCondicao(!filtrarPorUe,"and o.ue_id = @ueId ");
+            gerador.AdicioneCondicao(filtrarPorUe, " and o.ue_id = any(@ueIds) ");
             gerador.AdicioneCondicao(filtro.TurmaId.HasValue, "and tu.id = @turmaId ");
             gerador.AdicioneCondicao(filtro.Modalidade.HasValue, "and tu.modalidade_codigo = @modalidade ");
             gerador.AdicioneCondicao(filtro.Semestre.HasValue, "and tu.semestre = @semestre ");
@@ -107,6 +108,7 @@ namespace SME.SGP.Dados
                 dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(),
                 turmaId = filtro.TurmaId.GetValueOrDefault(),
                 ueId = filtro.UeId,
+                ueIds = idUes,
                 modalidade = filtro.Modalidade.GetValueOrDefault(),
                 semestre = filtro.Semestre.GetValueOrDefault(),
                 tipoOcorrencia = filtro.TipoOcorrencia.GetValueOrDefault(),
