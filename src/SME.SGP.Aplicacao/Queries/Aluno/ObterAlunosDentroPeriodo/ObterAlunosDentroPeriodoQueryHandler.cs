@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosDentroPeriodoQuery request, CancellationToken cancellationToken)
         {
             var alunosEol = await mediator
-                .Send(new ObterAlunosAtivosPorTurmaCodigoQuery(request.CodigoTurma, request.Periodo.dataFim.Date));
+                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(request.CodigoTurma)));
 
             if (alunosEol == null || !alunosEol.Any())
                 throw new NegocioException("Não foram localizados alunos para a turma e data informados.");
