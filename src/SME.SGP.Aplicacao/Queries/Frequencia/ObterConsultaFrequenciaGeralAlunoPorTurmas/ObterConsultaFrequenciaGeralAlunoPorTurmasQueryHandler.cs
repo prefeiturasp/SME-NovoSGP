@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                     periodos.ToList().ForEach(p =>
                     {
                         var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
-                            .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, disciplina.CodigoComponenteCurricular.ToString()).Result;
+                            .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, new string[] { disciplina.CodigoComponenteCurricular.ToString() }).Result;
 
                         somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 0;
                     });

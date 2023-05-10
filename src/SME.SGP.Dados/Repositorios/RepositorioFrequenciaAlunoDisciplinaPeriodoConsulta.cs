@@ -195,7 +195,7 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);
         }
 
-        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string disciplinaId = "")
+        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string[] disciplinasId = null, string professor = null)
         {
             var query = new StringBuilder(@"select *
                         from frequencia_aluno
@@ -204,8 +204,11 @@ namespace SME.SGP.Dados
 	                        and bimestre = @bimestre 
                             and turma_id = @codigoTurma ");
 
-            if (!string.IsNullOrEmpty(disciplinaId))
-                query.AppendLine("and disciplina_id = @disciplinaId");
+            if (disciplinasId != null && disciplinasId.Any())
+                query.AppendLine("and disciplina_id = any(@disciplinasId)");
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and (professor_rf = @professor or professor_rf is null)");
 
             query.AppendLine(" order by id desc");
             return await database.Conexao.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
@@ -213,8 +216,9 @@ namespace SME.SGP.Dados
                 codigoAluno,
                 bimestre,
                 tipoFrequencia,
-                disciplinaId,
-                codigoTurma
+                disciplinasId,
+                codigoTurma,
+                professor
             });
         }
 
