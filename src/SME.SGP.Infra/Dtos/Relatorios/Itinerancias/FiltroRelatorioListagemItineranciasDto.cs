@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         public string UeCodigo { get; set; }
         public int[] SituacaoIds { get; set; }
         public string[] CodigosPAAIResponsavel { get; set; }
-        public string UsuarioNome { get; set; }
-        public string UsuarioRf { get; set; }
+        public string UsuarioLogadoNome { get; set; }
+        public string UsuarioLogadoRf { get; set; }
     }
 }
