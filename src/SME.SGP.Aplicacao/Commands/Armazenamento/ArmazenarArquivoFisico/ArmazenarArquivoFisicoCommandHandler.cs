@@ -26,15 +26,11 @@ namespace SME.SGP.Aplicacao
 
             var stream = request.Arquivo.OpenReadStream();
 
-            var extensao = Path.GetExtension(request.Arquivo.FileName);
-
-            var nomeArquivo = $"{request.NomeFisico}{extensao}";
-
             if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
                 enderecoArquivo =
-                    await servicoArmazenamento.ArmazenarTemporaria(nomeArquivo, stream, request.Arquivo.ContentType);
+                    await servicoArmazenamento.ArmazenarTemporaria(request.Arquivo.FileName, stream, request.Arquivo.ContentType);
             else
-                enderecoArquivo = await servicoArmazenamento.Armazenar(nomeArquivo, stream, request.Arquivo.ContentType);
+                enderecoArquivo = await servicoArmazenamento.Armazenar(request.Arquivo.FileName, stream, request.Arquivo.ContentType);
              
             return enderecoArquivo;
         }
