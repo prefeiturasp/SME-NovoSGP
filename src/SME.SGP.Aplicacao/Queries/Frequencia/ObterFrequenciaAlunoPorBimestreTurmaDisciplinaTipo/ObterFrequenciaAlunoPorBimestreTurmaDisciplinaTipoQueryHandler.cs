@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
         public async Task<FrequenciaAluno> Handle(ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery request, CancellationToken cancellationToken)
-         => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoBimestreAsync(request.CodigoAluno, request.Bimestre, request.TipoFrequencia, request.CodigoTurma, request.DisciplinaId);
+         => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoBimestreAsync(request.CodigoAluno, request.Bimestre, request.TipoFrequencia, request.CodigoTurma, request.DisciplinasId, request.Professor);
     }
 }
