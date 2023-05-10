@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioQuestao repositorioQuestao;
         private readonly IMediator mediator;
         private Usuario usuarioLogado;
+        private List<Questao> Questoes;
 
         public ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQueryHandler(IRepositorioQuestao repositorioQuestao, IMediator mediator)
         {
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
         public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
             this.usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
+            await CarreguarQuestoesAInserir(request.EncaminhamentoNAAPASecaoAlterado);
             await ExecuteValidacaoAlteracaoCamposDaSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
 
             return ObterHistoricoAlteracaoSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
@@ -102,7 +103,6 @@ namespace SME.SGP.Aplicacao
             AdicionarCamposExcluidos(encaminhamentoSecaoExistente, encaminhamentoNAAPASecaoAlterado);
         }
 
-
         private async Task AdicionarCamposInseridos(
                             QuestaoEncaminhamentoNAAPA questaoExistente, 
                             IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostas,
@@ -112,13 +112,25 @@ namespace SME.SGP.Aplicacao
 
             if (novasRespostas != null)
             {
-                var ids = new long[] { novasRespostas.QuestaoId };
-                var questao = questaoExistente?.Questao ?? (await repositorioQuestao.ObterQuestoesPorIds(ids)).FirstOrDefault();
+                var questao = questaoExistente?.Questao ?? Questoes?.FirstOrDefault(questao => questao.Id == novasRespostas.QuestaoId);
 
                 if (tipoHistoricoAlteracoes == TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido)
+                {
                     if (!string.IsNullOrEmpty(novasRespostas.Resposta)) camposInseridos.Add(await ObterNomeQuestao(questao));
+                }
                 else if (CampoPodeSerAlterado(questaoExistente, novasRespostas))
                     camposAlterados.Add(await ObterNomeQuestao(questao));
+            }
+        }
+
+        private async Task CarreguarQuestoesAInserir(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado)
+        {
+            var questoesIds = encaminhamentoNAAPASecaoAlterado.Questoes.Where(questao => questao.RespostaEncaminhamentoId == 0)
+                                                                       .Select(questao => questao.QuestaoId).Distinct();
+
+            if (questoesIds.Any())
+            {
+                Questoes = (await repositorioQuestao.ObterQuestoesPorIds(questoesIds.ToArray())).ToList();
             }
         }
 
@@ -146,7 +158,7 @@ namespace SME.SGP.Aplicacao
                         (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && questaoExistente?.Respostas?.FirstOrDefault()?.Texto != respostasEncaminhamento.Resposta));
 
             if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
-                return questaoExistente == null || !questaoExistente.Respostas.Any();
+                return questaoExistente == null || questaoExistente.Respostas.Any();
 
             return false;
         }
