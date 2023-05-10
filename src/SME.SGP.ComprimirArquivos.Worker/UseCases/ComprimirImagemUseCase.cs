@@ -6,18 +6,18 @@ using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
-    public class OtimizarImagemUseCase : IOtimizarImagensUseCase
+    public class ComprimirImagemUseCase : IComprimirImagensUseCase
     {
         private readonly IMediator mediator;
         
-        public OtimizarImagemUseCase(IMediator mediator)
+        public ComprimirImagemUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            return await mediator.Send(new OtimizarImagemCommand(mensagem.Mensagem.ToString()));
+            return await mediator.Send(new ComprimirImagemCommand(mensagem.Mensagem.ToString()));
         }
     }
 }

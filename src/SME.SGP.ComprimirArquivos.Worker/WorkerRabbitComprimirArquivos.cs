@@ -159,16 +159,16 @@ namespace SME.SGP.ComprimirArquivos.Worker
             }
         }
 
-        private IOtimizarUseCase ObterUseCases(string rota)
+        private IComprimirUseCase ObterUseCases(string rota)
         {
             var scope = serviceScopeFactory.CreateScope();
             
             return rota switch
             {
                 RotasRabbitOtimizarArquivos.OtimizarArquivoImagem => scope.ServiceProvider
-                    .GetService<IOtimizarImagensUseCase>(),
+                    .GetService<IComprimirImagensUseCase>(),
                 RotasRabbitOtimizarArquivos.OtimizarArquivoVideo => scope.ServiceProvider
-                    .GetService<IOtimizarVideoUseCase>(),
+                    .GetService<IComprimirVideoUseCase>(),
                 _ => null
             };
         }

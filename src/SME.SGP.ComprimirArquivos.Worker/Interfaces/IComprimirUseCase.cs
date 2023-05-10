@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
-    public interface IOtimizarUseCase
+    public interface IComprimirUseCase
     {
         Task<bool> Executar(MensagemRabbit mensagem);
     }

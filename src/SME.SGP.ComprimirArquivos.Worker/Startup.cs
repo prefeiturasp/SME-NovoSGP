@@ -15,13 +15,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using SME.SGP.Auditoria.Worker;
 using SME.SGP.ComprimirArquivos.Worker;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using ConfiguracaoRabbitOptions = SME.SGP.Auditoria.Worker.ConfiguracaoRabbitOptions;
+using TelemetriaOptions = SME.SGP.Auditoria.Worker.TelemetriaOptions;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
@@ -40,6 +44,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
             RegistrarMediator(services);
             RegistrarDependencias(services);
             RegistrarRabbitMQ(services);
+            RegistrarRabbitMQLog(services);
             RegistrarTelemetria(services);
 
             services.AddHealthChecks();
@@ -75,14 +80,27 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
                 return factory;
             });
-            services.AddSingleton<ConfiguracaoRabbitOptions>();
+        }
+        
+        private void RegistrarRabbitMQLog(IServiceCollection services)
+        {
+            services.AddOptions<ConfiguracaoRabbitLogOptions>()
+                .Bind(Configuration.GetSection(ConfiguracaoRabbitLogOptions.Secao), c => c.BindNonPublicProperties = true);
+           
+            services.AddSingleton<ConfiguracaoRabbitLogOptions>();
+            services.AddSingleton<IConexoesRabbitFilasLog>(serviceProvider =>
+            {
+                var options = serviceProvider.GetService<IOptions<ConfiguracaoRabbitLogOptions>>().Value;
+                var provider = serviceProvider.GetService<IOptions<DefaultObjectPoolProvider>>().Value;
+                return new ConexoesRabbitFilasLog(options, provider);
+            });
         }
 
         private void RegistrarDependencias(IServiceCollection services)
         {
             services.ConfigurarTelemetria(Configuration);
-            services.TryAddScoped<IOtimizarImagensUseCase, OtimizarImagemUseCase>();
-            services.TryAddScoped<IOtimizarVideoUseCase, OtimizarVideoUseCase>();
+            services.TryAddScoped<IComprimirImagensUseCase, ComprimirImagemUseCase>();
+            services.TryAddScoped<IComprimirVideoUseCase, ComprimirVideoUseCase>();
         }
 
         private static void RegistrarMediator(IServiceCollection services)
@@ -108,18 +126,6 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
-            
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoConstantes.PastaArquivos)),
-                RequestPath = $"/{ArquivoConstantes.PastaArquivos}",
-            });
-            
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoConstantes.PastaTemp)),
-                RequestPath = $"/{ArquivoConstantes.PastaTemp}",
-            });
 
             app.Run(async (context) =>
             {

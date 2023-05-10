@@ -11,16 +11,16 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
-    public class OtimizarVideoCommandHandler : IRequestHandler<OtimizarVideoCommand, bool>
+    public class ComprimirVideoCommandHandler : IRequestHandler<ComprimirVideoCommand, bool>
     {
         private readonly IMediator mediator;
         
-        public OtimizarVideoCommandHandler(IMediator mediator)
+        public ComprimirVideoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<bool> Handle(OtimizarVideoCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ComprimirVideoCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo vídeo", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo vídeo", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()));
                 return false;
             }
             

@@ -18,8 +18,4 @@
       <ProjectReference Include="..\SME.SGP.Auditoria.Worker\SME.SGP.Auditoria.Worker.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="lib\" />
-    </ItemGroup>
-
 </Project>

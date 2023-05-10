@@ -10,16 +10,16 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
-    public class OtimizarImagemCommandHandler : IRequestHandler<OtimizarImagemCommand, bool>
+    public class ComprimirImagemCommandHandler : IRequestHandler<ComprimirImagemCommand, bool>
     {
         private readonly IMediator mediator;
         
-        public OtimizarImagemCommandHandler(IMediator mediator)
+        public ComprimirImagemCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         
-        public async Task<bool> Handle(OtimizarImagemCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ComprimirImagemCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo imagem", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo imagem", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()));
                 return false;
             }
         }

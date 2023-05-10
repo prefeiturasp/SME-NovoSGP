@@ -4,9 +4,9 @@ using System.IO;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
-    public class OtimizarImagemCommand : IRequest<bool>
+    public class ComprimirVideoCommand : IRequest<bool>
     {
-        public OtimizarImagemCommand(string nomeArquivo)
+        public ComprimirVideoCommand(string nomeArquivo)
         {
             NomeArquivo = nomeArquivo;
         }
@@ -14,9 +14,9 @@ namespace SME.SGP.ComprimirArquivos.Worker
         public string NomeArquivo { get; set; }
     }
 
-    public class OtimizarImagensCommandValidator : AbstractValidator<OtimizarImagemCommand>
+    public class OtimizarVideoCommandValidator : AbstractValidator<ComprimirVideoCommand>
     {
-        public OtimizarImagensCommandValidator()
+        public OtimizarVideoCommandValidator()
         {
             RuleFor(c => c.NomeArquivo)
             .NotEmpty()

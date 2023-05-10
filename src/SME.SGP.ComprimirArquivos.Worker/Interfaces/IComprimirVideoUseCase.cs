@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
-    public interface IOtimizarVideoUseCase :IOtimizarUseCase
+    public interface IComprimirVideoUseCase :IComprimirUseCase
     {}
 }
 
