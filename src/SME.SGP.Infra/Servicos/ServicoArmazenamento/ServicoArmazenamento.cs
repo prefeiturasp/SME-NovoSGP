@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -16,11 +17,13 @@ namespace SME.SGP.Infra
         private MinioClient minioClient;
         private ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
         private readonly IConfiguration configuration;
+        private readonly IServicoMensageriaSGP servicoMensageria;
 
-        public ServicoArmazenamento(IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions, IConfiguration configuration)
+        public ServicoArmazenamento(IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions, IConfiguration configuration, IServicoMensageriaSGP servicoMensageria)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
 
             Inicializar();
         }
@@ -57,11 +60,13 @@ namespace SME.SGP.Infra
                 .WithContentType(contentType);
 
             await minioClient.PutObjectAsync(args);
+            
+            await OtimizarArquivos(nomeArquivo);
 
             return await ObterUrl(nomeArquivo, bucket);
         }
 
-        public async Task<string> Copiar(string nomeArquivo)
+        private async Task<string> Copiar(string nomeArquivo)
         {
             if (!configuracaoArmazenamentoOptions.BucketTemp.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
             {
@@ -87,9 +92,26 @@ namespace SME.SGP.Infra
                 await Copiar(nomeArquivo);
 
                 await Excluir(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp);
+                
+                await OtimizarArquivos(nomeArquivo);
             }
 
             return $"{configuracaoArmazenamentoOptions.BucketArquivos}/{nomeArquivo}";
+        }
+
+        private async Task OtimizarArquivos(string nomeArquivo)
+        {
+            string extensao = Path.GetExtension(nomeArquivo);
+            
+            var ehImagem = extensao.EhExtensaoImagemParaOtimizar();
+            
+            var ehVideo = extensao.EhExtensaoVideoParaOtimizar();
+
+            if (ehImagem || ehVideo)
+            {
+                var nomeFila = ehImagem ? RotasRabbitSgp.OtimizarArquivoImagem : RotasRabbitSgp.OtimizarArquivoVideo;
+                await servicoMensageria.Publicar(new MensagemRabbit(Guid.NewGuid()), nomeFila, ExchangeSgpRabbit.Sgp, "PublicarFilaSgp");
+            }
         }
 
         public async Task<bool> Excluir(string nomeArquivo, string nomeBucket = "")

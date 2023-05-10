@@ -18,8 +18,6 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = await servicoArmazenamento.Excluir(nomeArquivo, bucketTemp);
             
-            await mediator.Send(new OtimizarArquivosCommand(nomeArquivo));
-            
             return retorno;
         }
     }

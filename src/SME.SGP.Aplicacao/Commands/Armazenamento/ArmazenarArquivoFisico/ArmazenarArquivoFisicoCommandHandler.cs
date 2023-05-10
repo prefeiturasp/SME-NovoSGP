@@ -34,12 +34,7 @@ namespace SME.SGP.Aplicacao
                 enderecoArquivo =
                     await servicoArmazenamento.ArmazenarTemporaria(nomeArquivo, stream, request.Arquivo.ContentType);
             else
-            {
                 enderecoArquivo = await servicoArmazenamento.Armazenar(nomeArquivo, stream, request.Arquivo.ContentType);
-                
-                await mediator.Send(new OtimizarArquivosCommand(request.NomeFisico));
-            }
-                
              
             return enderecoArquivo;
         }

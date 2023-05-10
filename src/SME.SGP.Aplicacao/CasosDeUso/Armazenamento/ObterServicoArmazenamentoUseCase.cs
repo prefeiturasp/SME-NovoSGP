@@ -18,8 +18,6 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = await servicoArmazenamento.Obter(nomeArquivo,ehPastaTemporaria);
             
-            await mediator.Send(new OtimizarArquivosCommand(nomeArquivo));
-            
             return retorno;
         }
     }

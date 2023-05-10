@@ -31,11 +31,8 @@ namespace SME.SGP.Aplicacao
             if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
                 await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,msImagem,request.Formato);
             else
-            {
                 await servicoArmazenamento.Armazenar(request.NomeFisico,msImagem, request.Formato);
-                
-                await mediator.Send(new OtimizarArquivosCommand(request.NomeFisico));
-            }
+            
             return true;
         }
         

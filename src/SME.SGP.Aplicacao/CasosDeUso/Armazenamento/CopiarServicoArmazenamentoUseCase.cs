@@ -16,8 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Executar(string nomeArquivo)
         {
-            var retorno = await servicoArmazenamento.Copiar(nomeArquivo);
-            await mediator.Send(new OtimizarArquivosCommand(nomeArquivo));
+            var retorno = await servicoArmazenamento.Mover(nomeArquivo);
             return retorno;
         }
     }
