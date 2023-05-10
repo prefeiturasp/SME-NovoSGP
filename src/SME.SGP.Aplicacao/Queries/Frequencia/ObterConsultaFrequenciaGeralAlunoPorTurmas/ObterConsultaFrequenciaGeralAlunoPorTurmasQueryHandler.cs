@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 
 namespace SME.SGP.Aplicacao
 {
@@ -41,7 +40,7 @@ namespace SME.SGP.Aplicacao
             var matriculasAluno = aluno.Select(a => ((DateTime?)a.DataMatricula, a.Inativo ? a.DataSituacao : (DateTime?)null, a.Inativo));
 
             var disciplinasTurma = new List<DisciplinaResposta>();
-            
+
             foreach (var turmaCodigo in request.TurmaCodigo)
                 disciplinasTurma.AddRange(await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turmaCodigo)));
 
@@ -77,10 +76,10 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplina in grupoDisciplinasMatriz)
                 {
                     var somaPercentualFrequenciaDisciplinaBimestre = 0.0;
-                    periodos.ToList().ForEach(p =>
+                    periodos.ToList().ForEach(async p =>
                     {
-                        var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
-                            .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, new string[] { disciplina.CodigoComponenteCurricular.ToString() }).Result;
+                        var frequenciaAlunoPeriodo = await repositorioFrequenciaAlunoDisciplinaPeriodo
+                            .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, new string[] { disciplina.CodigoComponenteCurricular.ToString() });
 
                         somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 0;
                     });
