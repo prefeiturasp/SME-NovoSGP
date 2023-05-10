@@ -31,7 +31,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
 
                 var output = Path.Combine(UtilArquivo.ObterDiretorioCompletoTemporario(), request.NomeArquivo);                
 
-                FFMpeg.Convert(input, output, VideoType.Mp4, Speed.UltraFast, VideoSize.Ld, AudioQuality.Low, true);
+                FFMpeg.Convert(input, output, VideoType.Mp4, Speed.UltraFast, VideoSize.Ld, AudioQuality.Normal, true);
 
                 await mediator.Send(new MoverExcluirArquivoFisicoCommand(input, output));
             
