@@ -702,6 +702,9 @@
         RESON_C = 242,
 
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, EhConsulta = true, Url = "/relatorios/aee/registro-itinerancia", EhSubMenu = true, SubMenu = "Registro de itinerância")]
-        RERI_C = 243
+        RERI_C = 243,
+
+        [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/controle-mensal", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Controle de frequência mensal")]
+        RCFM_C = 234,
     }
 }
