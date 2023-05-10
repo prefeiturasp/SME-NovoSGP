@@ -27,5 +27,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<Questao>(query, new { questaoIds });
         }
+
+        public async Task<Questao> ObterPorNomeComponente(string nomeComponente)
+        {
+            var query = @"select * from questao where nome_componente = @nomeComponente";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<Questao>(query, new { nomeComponente });
+        }
     }
 }
