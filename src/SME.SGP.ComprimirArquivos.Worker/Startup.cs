@@ -111,14 +111,14 @@ namespace SME.SGP.ComprimirArquivos.Worker
             
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constantes.Arquivos)),
-                RequestPath = $"/{Constantes.Arquivos}",
+                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoConstantes.PastaArquivos)),
+                RequestPath = $"/{ArquivoConstantes.PastaArquivos}",
             });
             
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constantes.Temp)),
-                RequestPath = $"/{Constantes.Temp}",
+                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoConstantes.PastaTemp)),
+                RequestPath = $"/{ArquivoConstantes.PastaTemp}",
             });
 
             app.Run(async (context) =>

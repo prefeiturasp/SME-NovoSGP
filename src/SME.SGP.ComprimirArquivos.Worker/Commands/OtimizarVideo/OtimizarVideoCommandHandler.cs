@@ -1,27 +1,48 @@
-﻿using MediatR;
+﻿using System;
+using System.IO;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
+using FFMpegCore;
+using FFMpegCore.Enums;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
     public class OtimizarVideoCommandHandler : IRequestHandler<OtimizarVideoCommand, bool>
     {
-        public Task<bool> Handle(OtimizarVideoCommand request, CancellationToken cancellationToken)
+        private readonly IMediator mediator;
+        
+        public OtimizarVideoCommandHandler(IMediator mediator)
         {
-            //if (!request.NomeArquivo.EhArquivoImagemOuVideoParaOtimizar())
-            //    return Task.FromResult(false);
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+        
+        public async Task<bool> Handle(OtimizarVideoCommand request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (!request.NomeArquivo.EhArquivoVideoParaOtimizar())
+                    return false;
 
-            //var outStream = new MemoryStream();
+                var input = Path.Combine(UtilArquivo.ObterDiretorioCompletoArquivos(), request.NomeArquivo);               
 
-            //var input = @"C:\Repo\FFMpeg-Converter\FFMpeg-Converter\FFMpeg-Converter\Arquivos\VID_20230505_150506115.mp4";               
+                var output = Path.Combine(UtilArquivo.ObterDiretorioCompletoTemporario(), request.NomeArquivo);                
 
-            //Console.WriteLine($"Iniciando a conversão da imagem {input}!");
+                FFMpeg.Convert(input, output, VideoType.Mp4, Speed.UltraFast, VideoSize.Ld, AudioQuality.Low, true);
 
-            //var output = @"C:\Repo\FFMpeg-Converter\FFMpeg-Converter\FFMpeg-Converter\Arquivos\" + Guid.NewGuid() + ".mp4";                
-
-            //FFMpeg.Convert(input, output, VideoType.Mp4, Speed.UltraFast, VideoSize.Ld, AudioQuality.Low, true);
-
-            return Task.FromResult(true);
+                await mediator.Send(new MoverExcluirArquivoFisicoCommand(input, output));
+            
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao comprimir arquivo vídeo", LogNivel.Critico, LogContexto.ComprimirArquivos, ex.Message));
+                return false;
+            }
+            
         }
     }
 }

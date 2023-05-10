@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
         {
             string extensao = Path.GetExtension(request.NomeArquivo);
             
-            var ehImagem = extensao.EhArquivoImagemParaOtimizar();
+            var ehImagem = extensao.EhExtensaoImagemParaOtimizar();
             
-            var ehVideo = extensao.EhArquivoVideoParaOtimizar();
+            var ehVideo = extensao.EhExtensaoVideoParaOtimizar();
 
             if (ehImagem || ehVideo)
             {
