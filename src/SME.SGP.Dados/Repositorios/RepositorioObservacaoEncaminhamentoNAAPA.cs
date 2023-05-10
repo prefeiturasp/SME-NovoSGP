@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var obs = new EncaminhamentoNAAPAObservacoesDto 
                 {
-                    IdObservacao = item.IdObservacao,
+                    Id = item.IdObservacao,
                     Observacao = item.Observacao,
                     Proprietario = item.Proprietario,
                     Auditoria = new AuditoriaDto

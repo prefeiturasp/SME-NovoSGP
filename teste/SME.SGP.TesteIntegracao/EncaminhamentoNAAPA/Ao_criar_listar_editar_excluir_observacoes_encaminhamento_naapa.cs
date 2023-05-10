@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var observacaoAtualizar = new EncaminhamentoNAAPAObservacaoSalvarDto
             {
                 Observacao = "Primeira Observacao Atualizada",
-                Id = obterObservacaoParaAtualizar.IdObservacao,
+                Id = obterObservacaoParaAtualizar.Id,
                 EncaminhamentoNAAPAId = encaminhamentoExistente.Id,
             };
 
@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
 
             var observacaoParaExclusao = listaObservacoesAtualizada.Items.FirstOrDefault(x => x.Observacao == observacaoAtualizar.Observacao);
-            await useCaseExcluir.Executar(observacaoParaExclusao.IdObservacao);
+            await useCaseExcluir.Executar(observacaoParaExclusao.Id);
             var listaObservacoesAposExclusao = await useCaseListar.Executar(encaminhamentoExistente.Id);
             listaObservacoesAposExclusao.Items.Count().ShouldBeEquivalentTo(1);
 
