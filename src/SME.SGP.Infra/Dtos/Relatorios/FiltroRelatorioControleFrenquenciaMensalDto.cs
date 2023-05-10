@@ -11,7 +11,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string CodigoUe { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
-        public IList<string> CodigosTurmas { get; set; }
+        public string CodigoTurma { get; set; }
         public string[] AlunosCodigo { get; set; }
         public IList<string> MesesReferencias { get; set; }
         public TipoFormatoRelatorio TipoFormatoRelatorio { get; set; }
