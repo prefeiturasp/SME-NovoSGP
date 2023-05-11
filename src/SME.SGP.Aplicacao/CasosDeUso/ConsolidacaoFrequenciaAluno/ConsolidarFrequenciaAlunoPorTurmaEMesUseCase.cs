@@ -41,8 +41,8 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
             
-            var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turmaId, filtro.Mes);
-            var comandoConsolidacaoFrequenciaTurmaEvasaoAcumulado = new FiltroConsolidacaoFrequenciaTurmaEvasaoAcumulado(turma.AnoLetivo, turmaId);
+            var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turma.Id, filtro.Mes);
+            var comandoConsolidacaoFrequenciaTurmaEvasaoAcumulado = new FiltroConsolidacaoFrequenciaTurmaEvasaoAcumulado(turma.AnoLetivo, turma.Id);
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaTurmaEvasao, comandoConsolidacaoFrequenciaTurmaEvasao, Guid.NewGuid(), null));
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaTurmaEvasaoAcumulado, comandoConsolidacaoFrequenciaTurmaEvasaoAcumulado, Guid.NewGuid(), null));            
             
