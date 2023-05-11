@@ -59,8 +59,9 @@ namespace SME.SGP.Infra
                 .WithContentType(contentType);
 
             await minioClient.PutObjectAsync(args);
-            
-            await OtimizarArquivos(nomeArquivo);
+
+            if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
+                await OtimizarArquivos(nomeArquivo);
 
             return await ObterUrl(nomeArquivo, bucket);
         }
