@@ -382,32 +382,6 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
         }
 
-        public async Task<IEnumerable<FrequenciaRegistradaDto>> ObterFrequenciaRegistradaPorTurmaDisciplinaEPeriodo(string codigoTurma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds)
-        {            
-            var query = $@"WITH lista AS (
-                                        SELECT rfa.codigo_aluno AS CodigoAluno,
-                                                COUNT(*) AS QuantidadePresencas
-                                        FROM registro_frequencia_aluno rfa
-                                        INNER JOIN registro_frequencia rf
-                                                ON rfa.registro_frequencia_id = rf.id
-                                        INNER JOIN aula a
-                                                ON a.id = rf.aula_id 
-                                        INNER JOIN tipo_calendario tc
-                                                ON tc.id = a.tipo_calendario_id
-                                        INNER JOIN periodo_escolar pe
-                                                ON pe.tipo_calendario_id = tc.id
-                                        WHERE a.turma_id = @codigoTurma
-                                            AND a.disciplina_id = ANY(@componentesCurricularesId)
-                                            AND pe.id = any(@periodosEscolaresIds) 
-                                            AND a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim 
-                                        GROUP BY pe.bimestre, a.turma_id, a.disciplina_id, rfa.codigo_aluno
-                                    ) 
-                                    SELECT CodigoAluno, QuantidadePresencas FROM lista;";
-
-            var parametros = new { codigoTurma, componentesCurricularesId = componentesCurricularesId.Select(cc => cc.ToString()).ToList(), periodosEscolaresIds = periodosEscolaresIds.ToList() };
-            return await database.Conexao.QueryAsync<FrequenciaRegistradaDto>(query, parametros);            
-        }
-
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId)
         {
             var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
