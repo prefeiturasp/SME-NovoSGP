@@ -453,6 +453,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 SomenteLeitura = true,
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Data,
+                NomeComponente = "DATA_ENTRADA_QUEIXA",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -464,6 +465,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = "Prioridade",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
+                NomeComponente = "PRIORIDADE",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -633,6 +635,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = 1,
                 Ordem = 2,
                 Nome = "NIS (Número de Identificação Social)",
+                NomeComponente = "NIS",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Numerico,
                 CriadoPor = SISTEMA_NOME,
@@ -646,6 +649,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = 1,
                 Ordem = 3,
                 Nome = "UBS de referência",
+                NomeComponente = "UBS",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Texto,
                 CriadoPor = SISTEMA_NOME,
@@ -659,6 +663,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = 1,
                 Ordem = 4,
                 Nome = "Descrição do encaminhamento",
+                NomeComponente = "DESCRICAO_ENCAMINHAMENTO",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.EditorTexto,
                 CriadoPor = SISTEMA_NOME,
