@@ -31,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         [Route("dres/{dreId}/paais")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
-        [Permissao(Permissao.AS_C, Policy = "Bearer")]
+        [Permissao(Permissao.AS_C, Permissao.RERI_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterFuncionariosPAAIs(long dreId, [FromServices] IObterFuncionariosPAAIPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(dreId));
