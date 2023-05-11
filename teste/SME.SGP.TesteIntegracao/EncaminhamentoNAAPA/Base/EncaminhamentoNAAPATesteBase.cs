@@ -143,6 +143,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();    
         }
 
+        protected IObterObservacoesDeEncaminhamentoNAAPAUseCase ObterObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected IExcluirObservacoesDeEncaminhamentoNAAPAUseCase ExcluirObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected ISalvarObservacoesDeEncaminhamentoNAAPAUseCase SalvarObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+
         protected INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
@@ -612,6 +625,45 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 NomeComponente = "TURMAS_PROGRAMA"
+            });
+
+            //id 14
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 2,
+                Nome = "NIS (Número de Identificação Social)",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Numerico,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 15
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 3,
+                Nome = "UBS de referência",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 16
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 4,
+                Nome = "Descrição do encaminhamento",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.EditorTexto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
 
