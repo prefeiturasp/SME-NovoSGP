@@ -100,16 +100,14 @@ namespace SME.SGP.Infra
 
         private async Task OtimizarArquivos(string nomeArquivo)
         {
-            string extensao = Path.GetExtension(nomeArquivo);
+            var ehImagem = nomeArquivo.EhArquivoImagemParaOtimizar();
             
-            var ehImagem = extensao.EhExtensaoImagemParaOtimizar();
-            
-            var ehVideo = extensao.EhExtensaoVideoParaOtimizar();
+            var ehVideo = nomeArquivo.EhArquivoVideoParaOtimizar();
 
             if (ehImagem || ehVideo)
             {
                 var nomeFila = ehImagem ? RotasRabbitSgp.OtimizarArquivoImagem : RotasRabbitSgp.OtimizarArquivoVideo;
-                await servicoMensageria.Publicar(new MensagemRabbit(Guid.NewGuid()), nomeFila, ExchangeSgpRabbit.Sgp, "PublicarFilaSgp");
+                await servicoMensageria.Publicar(new MensagemRabbit(nomeArquivo), nomeFila, ExchangeSgpRabbit.Sgp, "PublicarFilaSgp");
             }
         }
 
