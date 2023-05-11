@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
