@@ -147,8 +147,7 @@ namespace SME.SGP.Aplicacao
 
                     if (bimestre == (int)Bimestre.Final && componentePermiteFrequencia)
                     {
-                        totalAulasComponenteSemNota = await mediator
-                            .Send(new ObterTotalAulasPorTurmaDisciplinaCodigoAlunoQuery(codigoComponenteCurricular.ToString(), codigoTurma, alunoCodigo));
+                        totalAulasComponenteSemNota = await mediator.Send(new ObterTotalAulasPorTurmaDisciplinaCodigoAlunoQuery(codigoComponenteCurricular.ToString(), codigoTurma, alunoCodigo));
                     }
                     else if (bimestre == (int)Bimestre.Final && !componentePermiteFrequencia)
                     {
@@ -746,11 +745,16 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade, int anoLetivo, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoes)
         {
-            var dto = MapearDisciplinasDto(componenteCurricular);                        
+            var dto = MapearDisciplinasDto(componenteCurricular);
+
+            var codigoComponenteCurricular = ObterCodigoComponenteCurricular(componenteCurricular);
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var professorConsideradoTerritorio = componenteCurricular.TerritorioSaber && usuarioLogado.EhProfessor() ? usuarioLogado.Login : null;
 
             var frequenciaComponente = frequenciaAluno
-                .FirstOrDefault(a => (!componenteCurricular.TerritorioSaber && a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString()) ||
-                                     (componenteCurricular.TerritorioSaber && (a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString() || a.DisciplinaId == componenteCurricular.CodigoComponenteTerritorioSaber.ToString()) && a.Professor == componenteCurricular.Professor));
+                .FirstOrDefault(a => (a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString() || a.DisciplinaId == codigoComponenteCurricular.ToString() || (componenteCurricular.CodigosTerritoriosAgrupamento?.Contains(long.Parse(a.DisciplinaId)) ?? false)) &&
+                                     (string.IsNullOrWhiteSpace(professorConsideradoTerritorio) || (!string.IsNullOrWhiteSpace(professorConsideradoTerritorio) && a.Professor == professorConsideradoTerritorio)));
 
             frequenciaComponente = VerificaTotalAulasParaCalcularPercentualFrequencia(frequenciaComponente, totalAulas);
             var percentualFrequencia = CalcularPercentualFrequenciaComponente(frequenciaComponente, anoLetivo);
