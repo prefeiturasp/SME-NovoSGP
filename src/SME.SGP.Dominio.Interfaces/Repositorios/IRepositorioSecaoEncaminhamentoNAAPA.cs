@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int modalidade, long? encaminhamentoNAAPAId = null);
         Task<SecaoQuestionarioDto> ObterSecaoQuestionarioDtoPorId(long secaoId);
         Task<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDtoPaginado(long encaminhamentoNAAPAId, Paginacao paginacao);
+        Task<EncaminhamentoNAAPAItineranciaAtendimentoDto> ObterAtendimentoSecaoItinerancia(long secaoId);
     }
 }

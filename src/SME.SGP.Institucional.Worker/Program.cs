@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Institucional.Worker
 {
@@ -21,6 +23,13 @@ namespace SME.SGP.Institucional.Worker
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddHostedService<WorkerRabbitInstitucional>();
+                    services.AddHealthChecks();
+                    services.AddHealthChecksUiSgp();
+                })
+            ;
     }
 }

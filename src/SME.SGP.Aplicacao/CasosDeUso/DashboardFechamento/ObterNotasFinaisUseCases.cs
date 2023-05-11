@@ -32,14 +32,20 @@ namespace SME.SGP.Aplicacao
                     notaFinal.NotaAcimaMedia = notaFinal.Conceito != "NS";
             }
 
-            foreach(var notaFinalTurma in notasFinaisRetorno.GroupBy(nf => nf.TurmaAnoNome))
-            {
-                var grupo = $"{notaFinalTurma.Key}";
-                if(notaFinalTurma.Count(a => !a.NotaAcimaMedia) > 0)
-                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => !a.NotaAcimaMedia), "Abaixo do mínimo"));
+            var groupKey = (param.DreId == 0 && param.UeId == 0) || (param.DreId != 0 && param.UeId == 0) ? "Ano" : "TurmaAnoNome";
+            var notasFinaisGrupo = notasFinaisRetorno.GroupBy(nf => nf.GetType().GetProperty(groupKey).GetValue(nf).ToString());
 
-                if(notaFinalTurma.Count(a => a.NotaAcimaMedia) > 0)
-                    notasFinais.Add(new GraficoBaseDto(grupo, notaFinalTurma.Count(a => a.NotaAcimaMedia), "Acima do mínimo"));
+            foreach (var notaFinalGrupo in notasFinaisGrupo)
+            {
+                var grupo = $"{notaFinalGrupo.Key}";
+
+                var countBelow = notaFinalGrupo.Count(a => !a.NotaAcimaMedia);
+                if (countBelow > 0)
+                    notasFinais.Add(new GraficoBaseDto(grupo, countBelow, "Abaixo do mínimo"));
+
+                var countAbove = notaFinalGrupo.Count(a => a.NotaAcimaMedia);
+                if (countAbove > 0)
+                    notasFinais.Add(new GraficoBaseDto(grupo, countAbove, "Acima do mínimo"));
             }
 
             return notasFinais.OrderBy(a => a.Grupo).ToList();

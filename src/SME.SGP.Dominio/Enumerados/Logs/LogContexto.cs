@@ -32,6 +32,7 @@
         Pendencia = 28,
         AtribuicaoReponsavel = 29,
         PlanoAula = 30,
-        ComprimirArquivos = 31,
+        Cache = 31,
+        ComprimirArquivos = 32,
     }
 }

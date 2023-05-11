@@ -215,11 +215,13 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new SecaoEncaminhamentoNAAPAMap());
                config.AddMap(new EncaminhamentoNAAPAMap());
                config.AddMap(new EncaminhamentoNAAPASecaoMap());
+               config.AddMap(new EncaminhamentoNAAPAObservacaoMap());
                config.AddMap(new QuestaoEncaminhamentoNAAPAMap());
                config.AddMap(new RespostaEncaminhamentoNAAPAMap());
                config.AddMap(new PendenciaFechamentoAulaMap());
                config.AddMap(new PendenciaFechamentoAtividadeAvaliativaMap());
                config.AddMap(new HistoricoEscolarObservacaoMap());
+               config.AddMap(new EncaminhamentoNAAPAHistoricoAlteracoesMap());
 
                config.ForDommel();
            });

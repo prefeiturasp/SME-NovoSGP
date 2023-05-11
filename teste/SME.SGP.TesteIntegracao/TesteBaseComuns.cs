@@ -54,6 +54,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected const long DRE_ID_1 = 1;
         protected const long UE_ID_1 = 1;
+        protected const long UE_ID_2 = 2;
+        protected const long UE_ID_3 = 3;
 
         protected const long USUARIO_ID_1 = 1;
         protected const long USUARIO_ID_2 = 2;
@@ -273,12 +275,12 @@ namespace SME.SGP.TesteIntegracao
         protected const int TIPO_CALENDARIO_ID = 1;
 
         protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
-        protected DateTime DATA_28_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
+        protected DateTime DATA_01_05_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 01);
         protected DateTime DATA_29_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
         protected DateTime DATA_02_05_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        protected DateTime DATA_08_07_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected DateTime DATA_24_07_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 24);
         protected DateTime DATA_25_07_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
-        protected DateTime DATA_30_09_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
+        protected DateTime DATA_02_10_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 02);
         protected DateTime DATA_03_10_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         
@@ -1204,20 +1206,6 @@ namespace SME.SGP.TesteIntegracao
                 Nome = UE_NOME_1,
             });
             
-            await InserirNaBase(new Ue
-            {
-                CodigoUe = UE_CODIGO_2,
-                DreId = 1,
-                Nome = UE_NOME_2,
-            });
-            
-            await InserirNaBase(new Ue
-            {
-                CodigoUe = UE_CODIGO_3,
-                DreId = 1,
-                Nome = UE_NOME_3,
-            });
-            
             await InserirNaBase(new Dre
             {
                 CodigoDre = DRE_CODIGO_2,
@@ -1230,6 +1218,13 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_2,
                 DreId = 2,
                 Nome = UE_NOME_2,
+            });
+
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_3,
+                DreId = 2,
+                Nome = UE_NOME_3,
             });
 
             await InserirNaBase(new PrioridadePerfil
