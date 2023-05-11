@@ -403,7 +403,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             await CriaFrequenciaAluno(
                 dtoDadoBase,
                 DATA_03_01_INICIO_BIMESTRE_1,
-                DATA_28_04_FIM_BIMESTRE_1,
+                DATA_01_05_FIM_BIMESTRE_1,
                 codigoAluno,
                 totalPresenca,
                 totalAusencia,

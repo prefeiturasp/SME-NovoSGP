@@ -159,8 +159,8 @@ namespace SME.SGP.TesteIntegracao.Listao
             tipoCalendarioId.ShouldBeGreaterThan(0);
             
             await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1, tipoCalendarioId, turmaHistorica);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, tipoCalendarioId, turmaHistorica);
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, tipoCalendarioId, turmaHistorica);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, tipoCalendarioId, turmaHistorica);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, tipoCalendarioId, turmaHistorica);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, tipoCalendarioId, turmaHistorica);
         }
 
@@ -234,19 +234,19 @@ namespace SME.SGP.TesteIntegracao.Listao
                 case BIMESTRE_1:
                 {
                     dataInicio = turmaHistorica ? DATA_03_01_INICIO_BIMESTRE_1_ANO_ANTERIOR : DATA_03_01_INICIO_BIMESTRE_1;
-                    dataFim = turmaHistorica ? DATA_28_04_FIM_BIMESTRE_1_ANO_ANTERIOR : DATA_28_04_FIM_BIMESTRE_1;
+                    dataFim = turmaHistorica ? DATA_28_04_FIM_BIMESTRE_1_ANO_ANTERIOR : DATA_01_05_FIM_BIMESTRE_1;
                     break;
                 }
                 case BIMESTRE_2:
                 {
                     dataInicio = turmaHistorica ? DATA_02_05_INICIO_BIMESTRE_2_ANO_ANTERIOR : DATA_02_05_INICIO_BIMESTRE_2;
-                    dataFim = turmaHistorica ? DATA_08_07_FIM_BIMESTRE_2_ANO_ANTERIOR : DATA_08_07_FIM_BIMESTRE_2;
+                    dataFim = turmaHistorica ? DATA_08_07_FIM_BIMESTRE_2_ANO_ANTERIOR : DATA_24_07_FIM_BIMESTRE_2;
                     break;
                 }
                 case BIMESTRE_3:
                 {
                     dataInicio = turmaHistorica ? DATA_25_07_INICIO_BIMESTRE_3_ANO_ANTERIOR : DATA_25_07_INICIO_BIMESTRE_3;
-                    dataFim = turmaHistorica ? DATA_30_09_FIM_BIMESTRE_3_ANO_ANTERIOR : DATA_30_09_FIM_BIMESTRE_3;
+                    dataFim = turmaHistorica ? DATA_30_09_FIM_BIMESTRE_3_ANO_ANTERIOR : DATA_02_10_FIM_BIMESTRE_3;
                     break;
                 }
                 case BIMESTRE_4:

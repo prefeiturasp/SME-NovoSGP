@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ExisteConsolidacaoDevolutivaTurmaPorAnoQueryHandler : IRequestHandler<ExisteConsolidacaoDevolutivaTurmaPorAnoQuery, bool>
     {
-        private readonly IRepositorioConsolidacaoDevolutivas repositorio;
+        private readonly IRepositorioConsolidacaoDevolutivasConsulta repositorio;
 
-        public ExisteConsolidacaoDevolutivaTurmaPorAnoQueryHandler(IRepositorioConsolidacaoDevolutivas repositorio)
+        public ExisteConsolidacaoDevolutivaTurmaPorAnoQueryHandler(IRepositorioConsolidacaoDevolutivasConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

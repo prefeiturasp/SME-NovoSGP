@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalDevolutivasPorDreQueryHandler : IRequestHandler<ObterTotalDevolutivasPorDreQuery, IEnumerable<GraficoBaseDto>>
     {
-        private readonly IRepositorioConsolidacaoDevolutivas repositorio;
+        private readonly IRepositorioConsolidacaoDevolutivasConsulta repositorio;
 
-        public ObterTotalDevolutivasPorDreQueryHandler(IRepositorioConsolidacaoDevolutivas repositorio)
+        public ObterTotalDevolutivasPorDreQueryHandler(IRepositorioConsolidacaoDevolutivasConsulta repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }

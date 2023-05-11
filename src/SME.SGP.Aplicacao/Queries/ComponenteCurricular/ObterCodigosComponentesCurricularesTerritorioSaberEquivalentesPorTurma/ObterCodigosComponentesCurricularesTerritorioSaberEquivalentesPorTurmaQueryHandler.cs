@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,67 +24,77 @@ namespace SME.SGP.Aplicacao
 
         public async Task<(string codigoComponente, string professor)[]> Handle(ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.Professor))
+            if (FiltrarProfessor(request))
             {
-                var disciplinasEOL = await servicoEol
-                    .ObterDisciplinasPorIdsAgrupadas(new long[] { request.CodigoComponenteBase }, request.CodigoTurma);
+                var componentesProfessor = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, request.Professor, Perfis.PERFIL_PROFESSOR));
 
-                if (disciplinasEOL == null || !disciplinasEOL.Any())
+                var componenteProfessorCorrespondente = componentesProfessor
+                    .FirstOrDefault(cp => cp.Codigo == request.CodigoComponenteBase ||
+                                          cp.CodigoComponenteTerritorioSaber > 0 && cp.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase);
+
+                if (componenteProfessorCorrespondente != null && !componenteProfessorCorrespondente.TerritorioSaber)
                     return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
-                if (disciplinasEOL.All(d => d.CodigoTerritorioSaber == 0))
-                {
-                    var componentesTurma = await mediator
-                        .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, "Sistema", Perfis.PERFIL_ADMSME));
+                if (componenteProfessorCorrespondente == null)
+                    return new (string, string)[] { (request.CodigoComponenteBase.ToString(), request.Professor) };
 
-                    var componentesTurmaCorrespondentes = componentesTurma
-                        .Where(ct => ct.CodigoComponenteTerritorioSaber.Equals(request.CodigoComponenteBase));
+                return new (string, string)[] { (
+                    (componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber > 0 &&
+                        componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase) || componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber == 0 ?
+                            componenteProfessorCorrespondente.Codigo.ToString() : componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber.ToString(), request.Professor) };
 
-                    if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
-                        return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
+            }
 
-                    long turmaid = request.TurmaId > 0 ? request.TurmaId : 0;
-                    if (request.TurmaId == 0)
-                    {
-                        var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
-                        turmaid = turma.Id;
-                    }
+            var disciplinasEOL = await servicoEol
+                    .ObterDisciplinasPorIdsAgrupadas(new long[] { request.CodigoComponenteBase }, request.CodigoTurma);
 
-                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaid));
-                    bool existemProfessoresTitulares = professoresTitulares.Any() && professoresTitulares != null;
+            if (disciplinasEOL == null || !disciplinasEOL.Any())
+                return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
-                    return componentesTurmaCorrespondentes
-                        .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares
-                            ? professoresTitulares?.Where(p => p.DisciplinasId.Contains(ct.Codigo) || p.DisciplinasId.Contains(ct.CodigoComponenteTerritorioSaber))?.FirstOrDefault()?.ProfessorRf
-                            : string.Empty)))
-                        .ToArray();
-                }
-
+            if (PossuiTerritorioSaber(disciplinasEOL))
+            {
                 var retorno = new List<(string, string)>();
 
                 retorno.AddRange(disciplinasEOL
                     .Select(d => (d.CodigoTerritorioSaber.ToString(), d.Professor)));
 
                 retorno.AddRange(new List<(string, string)>() {
-                        (request.CodigoComponenteBase.ToString(), disciplinasEOL.FirstOrDefault(d => d.CodigoComponenteCurricular == request.CodigoComponenteBase).Professor) }.Except(retorno));
+                    (request.CodigoComponenteBase.ToString(), disciplinasEOL.FirstOrDefault(d => d.CodigoComponenteCurricular == request.CodigoComponenteBase).Professor) }.Except(retorno));
 
                 return retorno.ToArray();
             }
 
-            var componentesProfessor = await mediator
-                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, request.Professor, Perfis.PERFIL_PROFESSOR));
+            var componentesTurma = await mediator
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, "Sistema", Perfis.PERFIL_ADMSME, checaMotivoDisponibilizacao: false));
 
-            var componenteProfessorCorrespondente = componentesProfessor
-                .FirstOrDefault(cp => cp.Codigo == request.CodigoComponenteBase ||
-                                      cp.CodigoComponenteTerritorioSaber > 0 && cp.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase);
+            var componentesTurmaCorrespondentes = componentesTurma
+                .Where(ct => ct.CodigoComponenteTerritorioSaber.Equals(request.CodigoComponenteBase));
 
-            if (componenteProfessorCorrespondente == null)
-                return new (string, string)[] { (request.CodigoComponenteBase.ToString(), request.Professor) };
+            if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
+                return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
-            return new (string, string)[] { (
-                    (componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber > 0 &&
-                        componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase) || componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber == 0 ?
-                            componenteProfessorCorrespondente.Codigo.ToString() : componenteProfessorCorrespondente.CodigoComponenteTerritorioSaber.ToString(), request.Professor) };
+            long turmaid = request.TurmaId > 0 ? request.TurmaId : 0;
+            if (request.TurmaId == 0)
+            {
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
+                turmaid = turma.Id;
+            }
+
+            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaid));
+            bool existemProfessoresTitulares = professoresTitulares.Any() && professoresTitulares != null;
+
+            return componentesTurmaCorrespondentes
+                .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares
+                    ? professoresTitulares?.Where(p => p.DisciplinasId.Contains(ct.Codigo) || p.DisciplinasId.Contains(ct.CodigoComponenteTerritorioSaber))?.FirstOrDefault()?.ProfessorRf
+                    : string.Empty)))
+                .ToArray();
         }
+
+        private bool PossuiTerritorioSaber(IEnumerable<DisciplinaDto> disciplinasEOL)
+            => disciplinasEOL.Any(d => d.CodigoTerritorioSaber != 0);
+
+        private bool FiltrarProfessor(ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery request)
+            => !string.IsNullOrEmpty(request.Professor);
     }
 }

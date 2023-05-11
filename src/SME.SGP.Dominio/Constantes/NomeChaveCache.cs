@@ -2,6 +2,8 @@
 {
     public static class NomeChaveCache
     {
+        public const string CHAVE_USUARIO = "usuario:{0}";
+        public const string CHAVE_PERFIS_USUARIO = "perfis-usuario:{0}";
         public const string CHAVE_TURMA_ID = "turma:{0}";
         public const string CHAVE_TURMA_CODIGO = "turma-codigo:{0}";
         public const string CHAVE_TURMA_UE_DRE_ID = "turma-ue-dre:{0}";

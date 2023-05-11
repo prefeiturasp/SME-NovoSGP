@@ -6,6 +6,7 @@ namespace SME.SGP.Infra
     {
         public long TurmaId { get; set; }
         public string TurmaAnoNome { get; set; }
+        public string Ano { get; set; }
         public string AlunoCodigo { get; set; }
         public int Bimestre { get; set; }
         public double? Nota { get; set; }

@@ -152,7 +152,7 @@ namespace SME.SGP.Aplicacao
                 .ObterComponentesCurricularesPorProfessorETurma(codigoTurma, false);
 
             return componentesCurricularesTurma
-                .Any(cc => cc.CodigoComponenteCurricular.Equals(disciplinasInglesAtualizacao.codigoAntiga)) ? 
+                .Any(cc => cc.CodigoComponenteCurricular.ToString().Equals(disciplinasInglesAtualizacao.codigoAntiga)) ? 
                     disciplinasInglesAtualizacao.codigoAntiga : disciplinasInglesAtualizacao.codigoNova;
         }
     }
