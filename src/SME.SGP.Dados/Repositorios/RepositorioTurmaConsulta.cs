@@ -859,7 +859,7 @@ namespace SME.SGP.Dados.Repositorios
                             distinct t.id as TurmaId, 
                             t.ano,
                             t.tipo_turma as TurmaTipo,
-                            t.nome as TurmaNome,
+                            " + (modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome") + @" as TurmaNome,
                             t.modalidade_codigo as TurmaModalidade, cccatn.bimestre as Bimestre, cccat.aluno_codigo as AlunoCodigo 
                        from consolidado_conselho_classe_aluno_turma cccat
                       inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
