@@ -42,12 +42,6 @@ namespace SME.SGP.Aplicacao
             var alunosAtivos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
 
-            var disciplinasEOL = await repositorioComponenteCurricular
-                .ObterDisciplinasPorIds(new long[] { long.Parse(request.DisciplinaId) }); 
-
-            if (disciplinasEOL == null || !disciplinasEOL.Any())
-                throw new NegocioException("Componente curricular informado não localizado no EOL.");
-
             var usuarioLogado = await mediator
                 .Send(new ObterUsuarioLogadoQuery());
 
@@ -61,7 +55,13 @@ namespace SME.SGP.Aplicacao
             {
                 componentesCurricularesId.AddRange(codigosTerritoriosEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(componentesCurricularesId));
                 professor = codigosTerritoriosEquivalentes.First().professor;
-            }            
+            }
+
+            var disciplinasEOL = await repositorioComponenteCurricular
+                .ObterDisciplinasPorIds(componentesCurricularesId.ToArray()); 
+
+            if (disciplinasEOL == null || !disciplinasEOL.Any())
+                throw new NegocioException("Componente curricular informado não localizado.");
 
             var quantidadeMaximaCompensacoes = int.Parse(await mediator
                 .Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));

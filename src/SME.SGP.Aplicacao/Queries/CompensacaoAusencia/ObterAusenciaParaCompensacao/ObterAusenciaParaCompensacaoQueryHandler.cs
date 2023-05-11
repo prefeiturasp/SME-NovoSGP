@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Org.BouncyCastle.Crypto.Tls;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -23,14 +24,25 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> Handle(ObterAusenciaParaCompensacaoQuery request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-            var codigoComponenteTerritorio = await mediator.Send(new ObterCodigoComponenteCurricularProfessorRfPorTurmaCodigoComponenteBaseQuery(turma, long.Parse(request.DisciplinaId)));
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var professorConsiderado = (string)null;
+            var codigosComponentesConsiderados = new List<string>() { request.DisciplinaId };
+            var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), request.TurmaCodigo, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
+
+            if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
+            {
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
+                professorConsiderado = codigosTerritorioEquivalentes.First().professor;
+            }
+
             var faltasNaoCompensadas = await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacao(
                 request.CompensacaoId,
                 request.TurmaCodigo,
-                codigoComponenteTerritorio != default ? codigoComponenteTerritorio.codigo.ToString() : request.DisciplinaId,
+                codigosComponentesConsiderados.ToArray(),
                 request.AlunosQuantidadeCompensacoes.Select(t => t.CodigoAluno).Distinct().ToArray(),
-                request.Bimestre);
+                request.Bimestre,
+                professorConsiderado);
 
             foreach (var alunoQuantidadeCompensar in request.AlunosQuantidadeCompensacoes)
             {
