@@ -54,7 +54,6 @@ namespace SME.SGP.Aplicacao
 
             var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma,
                     (bimestreDoPeriodo.PeriodoInicio, bimestreDoPeriodo.PeriodoFim), ehBimestreFinal)))
-                .DistinctBy(a => a.CodigoAluno)
                 .OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno);
 
             if (!alunos?.Any() ?? true)
@@ -227,41 +226,29 @@ namespace SME.SGP.Aplicacao
             var frequenciaAlunosRegistrada = await mediator
                 .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componentesCurricularesId, periodosEscolaresIds, professor));
 
-            var presencasRegistradas = await mediator
-                .Send(new ObterFrequenciasRegistradasPorTurmasComponentesPeriodoQuery(turma.CodigoTurma, componentesCurricularesId, periodosEscolaresIds));
-
             var alunosPorTurma = alunos.ToList();
 
             return frequenciaAlunosRegistrada
                 .GroupBy(x => x.CodigoAluno)
-                .Select(x => ObterFrequenciaAluno(x, alunosPorTurma, presencasRegistradas).Result)
+                .Select(x => ObterFrequenciaAluno(x, alunosPorTurma).Result)
                 .ToList();
         }
 
-        private async Task<FrequenciaAluno> ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<AlunoPorTurmaResposta> alunos, IEnumerable<FrequenciaRegistradaDto> presencasRegistradas)
+        private async Task<FrequenciaAluno> ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<AlunoPorTurmaResposta> alunos)
         {
             var frequenciasAluno = agrupamentoAluno.ToList();
 
             var frequenciasConsideradas = from frequenciaAluno in frequenciasAluno
                                           join aluno in alunos on frequenciaAluno.CodigoAluno equals aluno.CodigoAluno
-                                          join presenca in presencasRegistradas on frequenciaAluno.CodigoAluno equals presenca.CodigoAluno
                                           where aluno.DataMatricula.Date <= frequenciaAluno.PeriodoFim.Date
-                                          select new
-                                          {
-                                              frequenciaAluno.CodigoAluno,
-                                              frequenciaAluno.TotalAulas,
-                                              frequenciaAluno.TotalCompensacoes,
-                                              frequenciaAluno.TotalRemotos,
-                                              frequenciaAluno.TotalAusencias,
-                                              presenca.QuantidadePresencas                                              
-                                          };
+                                          select frequenciaAluno;
             return new FrequenciaAluno
             {
                 CodigoAluno = agrupamentoAluno.Key,
                 TotalAulas = frequenciasConsideradas.Sum(y => y.TotalAulas),
                 TotalAusencias = frequenciasConsideradas.Sum(y => y.TotalAusencias),
                 TotalCompensacoes = frequenciasConsideradas.Sum(y => y.TotalCompensacoes),
-                TotalPresencas = frequenciasConsideradas.Sum(y => y.QuantidadePresencas),
+                TotalPresencas = frequenciasConsideradas.Sum(y => y.TotalPresencas),
                 TotalRemotos = frequenciasConsideradas.Sum(y => y.TotalRemotos),
             };
         }
