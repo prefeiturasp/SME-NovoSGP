@@ -15,11 +15,11 @@ using RabbitMQ.Client;
 using SME.SGP.Auditoria.Worker.Interfaces;
 using SME.SGP.Auditoria.Worker.Repositorio;
 using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
-using SME.SGP.Dados.ElasticSearch;
 using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
-using System;
+using System.Threading;
 
 namespace SME.SGP.Auditoria.Worker
 {
@@ -108,6 +108,11 @@ namespace SME.SGP.Auditoria.Worker
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
+
+            var threadPoolOptions = new ThreadPoolOptions();
+            Configuration.GetSection(ThreadPoolOptions.Secao).Bind(threadPoolOptions, c => c.BindNonPublicProperties = true);
+            if (threadPoolOptions.WorkerThreads > 0 && threadPoolOptions.CompletionPortThreads > 0)
+                ThreadPool.SetMinThreads(threadPoolOptions.WorkerThreads, threadPoolOptions.CompletionPortThreads);
 
             app.Run(async (context) =>
             {
