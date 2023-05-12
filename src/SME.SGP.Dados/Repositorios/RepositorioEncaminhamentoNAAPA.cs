@@ -332,14 +332,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> EncaminhamentoContemAtendimentosItinerancia(long encaminhamentoId)
         {
-            var query = $@" select ens.id
-                              from encaminhamento_naapa_secao ens 
-                              INNER JOIN secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id 
-                            WHERE NOT ens.excluido and sen.nome_componente  = ${SECAO_ITINERANCIA_NOME}
-                            and ens.encaminhamento_naapa_id = :@encaminhamentoId";
+            var query = $@"select ens.id
+                        from encaminhamento_naapa_secao ens 
+                        INNER JOIN secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id 
+                        WHERE NOT ens.excluido and sen.nome_componente = @secaoNome
+                                and ens.encaminhamento_naapa_id = @id";
 
-            var encaminhamentoSecaoId = (await database.Conexao.QueryFirstOrDefault(query, new { encaminhamentoId }));
-            return encaminhamentoSecaoId.HasValue;
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME }));           
         }
 
         public async Task<SituacaoDto> ObterSituacao(long id)
@@ -369,12 +368,12 @@ namespace SME.SGP.Dados.Repositorios
                          on sen.id = ens.secao_encaminhamento_id 
                         where not en.excluido 
                         and en.situacao = @situacao
-                        and sen.nome_componente = 'QUESTOES_ITINERACIA'
+                        and sen.nome_componente = @secaoNome
                         and ens.concluido 
                         and not ens.excluido and 
                         en.id = @encaminhamentoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME });
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()

@@ -5,12 +5,10 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Dominio.Enumerados;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
-using SME.SGP.Dados;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Aplicacao
@@ -42,15 +40,16 @@ namespace SME.SGP.Aplicacao
             if (matriculaVigenteAluno == null || matriculaVigenteAluno.Inativo)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO);
 
-            var situacaoDTO = new SituacaoDto() { Codigo = (int)encaminhamentoNAAPA.Situacao, Descricao = encaminhamentoNAAPA.Situacao.GetAttribute<DisplayAttribute>().Name };
-            encaminhamentoNAAPA.Situacao = (await repositorioEncaminhamentoNAAPA.EncaminhamentoContemAtendimentosItinerancia(request.EncaminhamentoId)) 
+            encaminhamentoNAAPA.Situacao = (await repositorioEncaminhamentoNAAPA.EncaminhamentoContemAtendimentosItinerancia(request.EncaminhamentoId))
                                             ? SituacaoNAAPA.EmAtendimento : SituacaoNAAPA.AguardandoAtendimento;
-
+            var situacaoDTO = new SituacaoDto() { Codigo = (int)encaminhamentoNAAPA.Situacao, Descricao = encaminhamentoNAAPA.Situacao.GetAttribute<DisplayAttribute>().Name };
+            
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
                 {
                     await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamentoNAAPA);
+                    unitOfWork.PersistirTransacao();
                 }
                 catch (Exception)
                 {
