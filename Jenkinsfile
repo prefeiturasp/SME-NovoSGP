@@ -15,7 +15,7 @@ pipeline {
       deployment10 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
       deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
       deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
-      deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao' : 'sme-worker-compressao' }"
+      deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao-r2' : 'sme-worker-compressao' }"
     }
   
     agent {
