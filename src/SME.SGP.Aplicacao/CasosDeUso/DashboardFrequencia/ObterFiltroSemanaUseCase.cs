@@ -10,28 +10,37 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFiltroSemanaUseCase : IObterFiltroSemanaUseCase
     {
+        private readonly IMediator mediator;
 
-        public ObterFiltroSemanaUseCase()
+        public ObterFiltroSemanaUseCase(IMediator mediator)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<FiltroSemanaDto>> Executar(int anoLetivo)
+        public async Task<IEnumerable<FiltroSemanaDto>> Executar(int anoLetivo, int modalidade, int semestre)
         {
             List<FiltroSemanaDto> semanas;
 
-            semanas = ObterSemanas(anoLetivo);
+            semanas = await ObterSemanas(anoLetivo, modalidade, semestre);
 
             return await Task.FromResult(semanas);
         }
 
-        private List<FiltroSemanaDto> ObterSemanas(int anoLetivo)
+        private async Task<List<FiltroSemanaDto>> ObterSemanas(int anoLetivo, int modalidade, int semestre)
         {
             List<FiltroSemanaDto> semanas = new List<FiltroSemanaDto>();
+            var periodosEscolaresReferentes = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery((Modalidade) modalidade, anoLetivo, semestre));
             var dataReferencia = anoLetivo == DateTime.Now.Year ? DateTime.Now : new DateTime(anoLetivo, 12, 31);
-            for (int mes = 1; mes <= dataReferencia.Month; mes++)
+
+            DateTime inicioPeriodoEscolar = periodosEscolaresReferentes.Any() && periodosEscolaresReferentes != null
+             ? periodosEscolaresReferentes.FirstOrDefault(p => p.Bimestre == 1).PeriodoInicio
+             : new DateTime(dataReferencia.Year, 2, 1);
+
+            for (int mes = inicioPeriodoEscolar.Month; mes <= dataReferencia.Month; mes++)
             {
                 var diasNoMes = DateTime.DaysInMonth(dataReferencia.Year, mes);
-                DateTime primeiroDiaMes = new DateTime(dataReferencia.Year, mes, 1);
+                DateTime primeiroDiaMes = mes == inicioPeriodoEscolar.Month ? inicioPeriodoEscolar.Date : new DateTime(dataReferencia.Year, mes, 1);
+
                 for (int dia = 0; dia < diasNoMes && primeiroDiaMes.AddDays(dia) <= dataReferencia; dia++)
                 {
                     if (primeiroDiaMes.AddDays(dia).DayOfWeek == DayOfWeek.Monday)

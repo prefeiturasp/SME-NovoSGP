@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterFiltroSemanaUseCase
     {
-        Task<IEnumerable<FiltroSemanaDto>> Executar(int anoLetivo);
+        Task<IEnumerable<FiltroSemanaDto>> Executar(int anoLetivo, int modalidade, int semestre);
     }
 }

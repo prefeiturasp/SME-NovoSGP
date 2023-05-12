@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -859,7 +859,7 @@ namespace SME.SGP.Dados.Repositorios
                             distinct t.id as TurmaId, 
                             t.ano,
                             t.tipo_turma as TurmaTipo,
-                            t.nome as TurmaNome,
+                            " + (modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome") + @" as TurmaNome,
                             t.modalidade_codigo as TurmaModalidade, cccatn.bimestre as Bimestre, cccat.aluno_codigo as AlunoCodigo,
                             count(distinct cccatn.componente_curricular_id) filter (where cccatn.nota is not null or cccatn.conceito_id is not null) AS QuantidadeDisciplinaFechadas
                        from consolidado_conselho_classe_aluno_turma cccat

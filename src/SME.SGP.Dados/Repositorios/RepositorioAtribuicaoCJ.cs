@@ -173,7 +173,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteScalarAsync<bool>(sql.ToString(), new { turmaCodigo, dreCodigo, ueCodigo, professorRf, disciplinaId });
         }
 
-        public Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoCJPorDreUeTurmaRF(string turmaId, string dreCodigo, string ueCodigo, string professorRf)
+        public Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoCJPorDreUeTurmaRF(string turmaId, string dreCodigo, string ueCodigo, string professorRf = null)
         {
             StringBuilder sql = new StringBuilder();
 
