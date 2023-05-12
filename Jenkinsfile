@@ -16,6 +16,7 @@ pipeline {
       deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
       deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
       deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
+      deployment14 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao' : 'sme-worker-compressao' }"
     }
   
     agent {
@@ -173,6 +174,16 @@ pipeline {
                 }
               }
             }
+            stage('sme-worker-compressao') {
+              agent { node { label 'SME-AGENT-SGP' } }
+              steps{
+                checkout scm
+                script {
+                  imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-compressao"
+                  dockerImage13 = docker.build(imagename, "-f src/SME.SGP.ComprimirArquivos.Worker/Dockerfile .")
+                }
+              }
+            }			
           }
     }
     stage('Push'){
@@ -193,6 +204,7 @@ pipeline {
                 dockerImage10.push()
                 dockerImage11.push()
                 dockerImage12.push()
+                dockerImage13.push()
               }
         }
       }
@@ -224,6 +236,7 @@ pipeline {
                                 sh "kubectl rollout restart deployment/${deployment11} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment12} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment13} -n sme-novosgp"
+                                sh "kubectl rollout restart deployment/${deployment14} -n sme-novosgp"
                                 sh('rm -f '+"$home"+'/.kube/config')
                         }
                     //}
