@@ -196,7 +196,7 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<FrequenciaAluno>(query, parametros);
         }
 
-        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string disciplinaId = "")
+        public async Task<FrequenciaAluno> ObterPorAlunoBimestreAsync(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string[] disciplinasId = null, string professor = null)
         {
             var query = new StringBuilder(@"select *
                         from frequencia_aluno
@@ -205,8 +205,11 @@ namespace SME.SGP.Dados
 	                        and bimestre = @bimestre 
                             and turma_id = @codigoTurma ");
 
-            if (!string.IsNullOrEmpty(disciplinaId))
-                query.AppendLine("and disciplina_id = @disciplinaId");
+            if (disciplinasId != null && disciplinasId.Any())
+                query.AppendLine("and disciplina_id = any(@disciplinasId)");
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and (professor_rf = @professor or professor_rf is null)");
 
             query.AppendLine(" order by id desc");
             return await database.Conexao.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
@@ -214,8 +217,9 @@ namespace SME.SGP.Dados
                 codigoAluno,
                 bimestre,
                 tipoFrequencia,
-                disciplinaId,
-                codigoTurma
+                disciplinasId,
+                codigoTurma,
+                professor
             });
         }
 
@@ -297,7 +301,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo)
+        public FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo, string professor = null)
         {
             var query = @"select *
                         from frequencia_aluno fa
@@ -308,18 +312,22 @@ namespace SME.SGP.Dados
 	                        and pe.id = @periodoEscolarId ";
 
             if (!string.IsNullOrEmpty(turmaCodigo))
-                query += "and fa.turma_id = @turmaCodigo";
+                query += "and fa.turma_id = @turmaCodigo ";
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query += "and (fa.professor_rf = @professor or fa.professor_rf is null)";
 
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
                 disciplinaIds,
                 periodoEscolarId,
-                turmaCodigo
+                turmaCodigo, 
+                professor
             });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo, string professor = null)
         {
             var query = @"select *
                         from frequencia_aluno fa
@@ -330,14 +338,18 @@ namespace SME.SGP.Dados
 	                        and pe.id = @periodoEscolarId ";
 
             if (!string.IsNullOrEmpty(turmaCodigo))
-                query += "and fa.turma_id = @turmaCodigo";
+                query += "and fa.turma_id = @turmaCodigo ";
+
+            if (!string.IsNullOrWhiteSpace(professor))
+                query += "and (fa.professor_rf = @professor or fa.professor_rf is null)";
 
             return await database.QueryAsync<FrequenciaAluno>(query, new
             {
                 codigosAlunos,
                 disciplinaIds,
                 periodoEscolarId,
-                turmaCodigo
+                turmaCodigo,
+                professor
             });
         }
 

@@ -73,9 +73,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<TotalCompensacaoAlunoPorCompensacaoIdDto>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
         }
 
-        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(int bimestre, List<string> alunoCodigos, string turmaCodigo)
+        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(int bimestre, List<string> alunoCodigos, string turmaCodigo, string professor = null)
         {
-            var query = @"
+            var query = @$"
                 select
 	                coalesce(sum(caa.qtd_faltas_compensadas), 0) as compensacoes,
 	                caa.codigo_aluno as alunoCodigo,
@@ -93,12 +93,13 @@ namespace SME.SGP.Dados.Repositorios
 	                and c.bimestre = @bimestre
 	                and caa.codigo_aluno = any(@alunoCodigos)
 	                and t.turma_id = @turmaCodigo
+                    {(!string.IsNullOrWhiteSpace(professor) ? " and (c.professor_rf = @professor or c.professor_rf is null) " : string.Empty)}
                 group by
 	                caa.codigo_aluno,
 	                c.disciplina_id,
 	                c.bimestre";
 
-            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, alunoCodigos, turmaCodigo });
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, alunoCodigos, turmaCodigo, professor });
         }
 
         public async Task<IEnumerable<CompensacaoAusenciaAlunoEDataDto>> ObterCompensacaoAusenciaAlunoEAulaPorAulaId(long aulaId)
