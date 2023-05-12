@@ -54,10 +54,10 @@ namespace SME.SGP.Aplicacao
                         CodigoAluno = request.CodigoAluno,
                         DisciplinaId = aulaComponenteTurma.ComponenteCurricularCodigo,
                         TurmaId = aulaComponenteTurma.TurmaCodigo,
-                        TotalAulas = aulaComponenteTurma.AulasQuantidade,
+                        TotalAulas = 0,
                         Bimestre = aulaComponenteTurma.Bimestre,
                         PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId,
-                        TotalPresencas = aulaComponenteTurma.AulasQuantidade,
+                        TotalPresencas = 0,
                         PeriodoInicio = aulaComponenteTurma.PeriodoInicio,
                         PeriodoFim = aulaComponenteTurma.PeriodoFim,
                         Professor = aulaComponenteTurma.Professor

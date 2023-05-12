@@ -269,8 +269,8 @@ namespace SME.SGP.Dados.Repositorios
                                from (
                                      select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
                                                count(cfct.id) as Quantidade, 
-                                               t.ano as Ano, 
-                                               t.nome as AnoTurma,
+                                               t.ano as Ano,                                                 
+                                               {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")} as AnoTurma,
                                                t.modalidade_codigo  as Modalidade
                                           from consolidado_fechamento_componente_turma cfct 
                                          inner join turma t on t.id = cfct.turma_id
@@ -311,7 +311,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             queryBuilder.AppendLine(queryWhere.ToString());
-            queryBuilder.AppendLine($@" group by cfct.status, t.ano, t.nome, t.modalidade_codigo) x
+            queryBuilder.AppendLine($@" group by cfct.status, t.ano,{(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")}, t.modalidade_codigo) x
                                    group by x.Situacao, x.Ano, x.AnoTurma, x.Modalidade
                                    order by x.Ano;");
 
@@ -329,7 +329,7 @@ namespace SME.SGP.Dados.Repositorios
                                      select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
                                                count(cfct.id) as Quantidade, 
                                                t.ano as Ano, 
-                                               t.ano as AnoTurma,
+                                               {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")} as AnoTurma,
                                                t.modalidade_codigo  as Modalidade
                                           from consolidado_fechamento_componente_turma cfct 
                                          inner join turma t on t.id = cfct.turma_id
@@ -365,7 +365,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             queryBuilder.AppendLine(queryWhere.ToString());
-            queryBuilder.AppendLine($@" group by cfct.status, t.ano, t.nome, t.modalidade_codigo  
+            queryBuilder.AppendLine($@" group by cfct.status, t.ano, {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")}, t.modalidade_codigo  
             UNION 
             select  case  when cfct.status in (0, 1) then 0 else cfct.status end as Situacao,
                                                count(cfct.id) as Quantidade, 
@@ -405,7 +405,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private string ObterSituacaoPendenteFechamentoSMEQuery(int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var sqlQuery = new StringBuilder($@"select t.ano as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+            var sqlQuery = new StringBuilder($@"select {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")} as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
                                 from pendencia_fechamento pf
                                 inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
@@ -436,7 +436,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sqlQuery.AppendLine(queryWhere.ToString());
 
-            sqlQuery.AppendLine($"group by t.ano , t.modalidade_codigo ");
+            sqlQuery.AppendLine($"group by {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")} , t.modalidade_codigo ");
 
             sqlQuery.AppendLine(@"UNION select 'Ed. Física' as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
                                 from pendencia_fechamento pf
@@ -457,7 +457,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private string ObterSituacaoPendenteFechamentoQuery(long ueId, int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var sqlQuery = $@"select t.nome as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
+            var sqlQuery = $@"select {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")} as Ano , t.modalidade_codigo as Modalidade,  count(pf.id) as Quantidade
                                 from pendencia_fechamento pf
                                 inner join fechamento_turma_disciplina ftd  on ftd.id = pf.fechamento_turma_disciplina_id 
                                 inner join fechamento_turma ft  on ft.id = ftd.fechamento_turma_id 
@@ -489,7 +489,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre >= 0)
                 queryBuilder.Append(" and pe.bimestre = @bimestre ");
 
-            queryBuilder.Append($"group by t.nome , t.modalidade_codigo order by t.nome;");
+            queryBuilder.Append($"group by {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")} , t.modalidade_codigo order by {(modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome")};");
 
             return queryBuilder.ToString();
         }
