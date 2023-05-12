@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -61,16 +62,23 @@ namespace SME.SGP.Dados.Repositorios
 
             sqlQuery.Append(@" group by t.id, fa.aluno_codigo order by t.ano;");
 
-
-            return await database.Conexao.QueryAsync<TurmaAlunoBimestreFechamentoDto>(sqlQuery.ToString(), new
+            try
             {
-                ueId,
-                ano,
-                dreId,
-                modalidade,
-                semestre,
-                bimestre
-            });
+                return await database.Conexao.QueryAsync<TurmaAlunoBimestreFechamentoDto>(sqlQuery.ToString(), new
+                {
+                    ueId,
+                    ano,
+                    dreId,
+                    modalidade,
+                    semestre,
+                    bimestre
+                });
+            }
+            catch(Exception ex)
+            {
+                var a = ex;
+                return null;
+            }
         }
 
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)
