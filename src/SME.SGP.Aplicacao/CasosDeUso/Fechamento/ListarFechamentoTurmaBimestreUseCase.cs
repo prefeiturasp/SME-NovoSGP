@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Infra.Utilitarios;
-using Minio.DataModel;
 
 namespace SME.SGP.Aplicacao
 {
