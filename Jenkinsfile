@@ -235,7 +235,6 @@ pipeline {
                                 sh "kubectl rollout restart deployment/${deployment11} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment12} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment13} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment14} -n sme-novosgp"
                                 sh('rm -f '+"$home"+'/.kube/config')
                         }
                     //}
