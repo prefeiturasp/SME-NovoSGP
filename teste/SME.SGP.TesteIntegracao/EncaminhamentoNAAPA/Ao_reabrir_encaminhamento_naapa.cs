@@ -19,9 +19,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
-    public class Ao_reabrir_encaminhamento_editar_para_encerramento : EncaminhamentoNAAPATesteBase
+    public class Ao_reabrir_encaminhamento_naapa : EncaminhamentoNAAPATesteBase
     {
-        public Ao_reabrir_encaminhamento_editar_para_encerramento(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_reabrir_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
         protected override void RegistrarFakes(IServiceCollection services)
