@@ -54,6 +54,7 @@ namespace SME.SGP.Aplicacao
 
             var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma,
                     (bimestreDoPeriodo.PeriodoInicio, bimestreDoPeriodo.PeriodoFim), ehBimestreFinal)))
+                .DistinctBy(a => a.CodigoAluno)
                 .OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno);
 
             if (!alunos?.Any() ?? true)
