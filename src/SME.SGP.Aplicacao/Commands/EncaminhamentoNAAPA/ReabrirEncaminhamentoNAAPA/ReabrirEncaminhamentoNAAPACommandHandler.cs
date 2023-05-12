@@ -28,20 +28,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SituacaoDto> Handle(ReabrirEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(request.EncaminhamentoId));
-            if (encaminhamentoNAAPA == null || encaminhamentoNAAPA.Id == 0)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
+            var encaminhamentoNAAPA = (await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(request.EncaminhamentoId)));
+            await ValidarRegras(encaminhamentoNAAPA);
 
-            if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Encerrado)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_REABERTO_NESTA_SITUACAO);
-
-            var matriculasAlunoEol = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPA.AlunoCodigo), true)));
-            var matriculaVigenteAluno = FiltrarMatriculaVigenteAluno(matriculasAlunoEol);
-            if (matriculaVigenteAluno == null || matriculaVigenteAluno.Inativo)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO);
-
-            encaminhamentoNAAPA.Situacao = (await repositorioEncaminhamentoNAAPA.EncaminhamentoContemAtendimentosItinerancia(request.EncaminhamentoId))
-                                            ? SituacaoNAAPA.EmAtendimento : SituacaoNAAPA.AguardandoAtendimento;
+            var encaminhamentoNAAPAPersistido = encaminhamentoNAAPA.Clone();
+            encaminhamentoNAAPA.Situacao = await ObterSituacaoNAAPAReabertura(request.EncaminhamentoId);
             var situacaoDTO = new SituacaoDto() { Codigo = (int)encaminhamentoNAAPA.Situacao, Descricao = encaminhamentoNAAPA.Situacao.GetAttribute<DisplayAttribute>().Name };
             
             using (var transacao = unitOfWork.IniciarTransacao())
@@ -49,6 +40,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamentoNAAPA);
+                    await mediator.Send(new RegistrarHistoricoDeAlteracaoDaSituacaoDoEncaminhamentoNAAPACommand(encaminhamentoNAAPAPersistido, encaminhamentoNAAPA.Situacao));
                     unitOfWork.PersistirTransacao();
                 }
                 catch (Exception)
@@ -61,6 +53,24 @@ namespace SME.SGP.Aplicacao
             return situacaoDTO;
         }
 
+        private async Task<SituacaoNAAPA> ObterSituacaoNAAPAReabertura(long encaminhamentoId)
+        {
+            return (await repositorioEncaminhamentoNAAPA.EncaminhamentoContemAtendimentosItinerancia(encaminhamentoId))
+                    ? SituacaoNAAPA.EmAtendimento : SituacaoNAAPA.AguardandoAtendimento;
+        }
+        private async Task ValidarRegras(EncaminhamentoNAAPA encaminhamentoNAAPA)
+        {
+            if (encaminhamentoNAAPA == null || encaminhamentoNAAPA.Id == 0)
+                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
+
+            if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Encerrado)
+                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_REABERTO_NESTA_SITUACAO);
+
+            var matriculasAlunoEol = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPA.AlunoCodigo), true)));
+            var matriculaVigenteAluno = FiltrarMatriculaVigenteAluno(matriculasAlunoEol);
+            if (matriculaVigenteAluno == null || matriculaVigenteAluno.Inativo)
+                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO);
+        }
         private TurmasDoAlunoDto FiltrarMatriculaVigenteAluno(IEnumerable<TurmasDoAlunoDto> matriculasAluno)
         {
             return matriculasAluno.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular
