@@ -858,6 +858,9 @@ namespace SME.SGP.IoC
 
             //Editor
             services.TryAddScoped<IUploadArquivoEditorUseCase, UploadArquivoEditorUseCase>();
+            services.TryAddScoped<ICopiarServicoArmazenamentoUseCase, CopiarServicoArmazenamentoUseCase>();
+            services.TryAddScoped<IExcluirTemporarioServicoArmazenamentoUseCase, ExcluirTemporarioServicoArmazenamentoUseCase>();
+            services.TryAddScoped<IObterServicoArmazenamentoUseCase, ObterServicoArmazenamentoUseCase>();
 
             // EncaminhamentoAEE
             services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase, ObterSecoesPorEtapaDeEncaminhamentoAEEUseCase>();
