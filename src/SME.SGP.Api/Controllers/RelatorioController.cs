@@ -325,5 +325,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioUseCase.Executar(filtro));
         }
+
+        [HttpPost("controle-frequencia-mensal")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RCFM_C, Policy = "Bearer")]
+        public async Task<IActionResult> Gerar([FromBody] FiltroRelatorioControleFrenquenciaMensalDto filtro, [FromServices] IRelatorioControleFrequenciaMensalUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
