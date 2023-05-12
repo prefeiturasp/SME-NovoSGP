@@ -658,7 +658,7 @@ namespace SME.SGP.Dados
             query.AppendLine(@"with aulasRegFrequencias as (
                                         select distinct a.id, a.disciplina_id, a.turma_id, 
                                                p.bimestre, p.periodo_inicio, p.periodo_fim,
-                                               a.quantidade 
+                                               a.quantidade, a.professor_rf
                                         from aula a 
                                         inner join registro_frequencia rf on rf.aula_id = a.id and not rf.excluido 
                                         inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id 
@@ -682,9 +682,9 @@ namespace SME.SGP.Dados
             query.AppendLine(" and a.turma_id = any(@turmasCodigo)");
             query.AppendLine(@") select a.disciplina_id as ComponenteCurricularCodigo, a.turma_id as TurmaCodigo, 
                                         a.bimestre as Bimestre, a.periodo_inicio as PeriodoInicio, a.periodo_fim as PeriodoFim,
-                                        COALESCE(SUM(a.quantidade), 0) AS AulasQuantidade from
+                                        COALESCE(SUM(a.quantidade), 0) AS AulasQuantidade, a.professor_rf Professor from
                                         aulasRegFrequencias a
-                                group by a.disciplina_id, a.turma_id, a.bimestre, a.periodo_inicio, a.periodo_fim");
+                                group by a.disciplina_id, a.turma_id, a.bimestre, a.periodo_inicio, a.periodo_fim, a.professor_rf");
 
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(),
            new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });
