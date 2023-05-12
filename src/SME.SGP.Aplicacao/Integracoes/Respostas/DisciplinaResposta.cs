@@ -45,5 +45,6 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         public string NomeComponenteInfantil { get; internal set; }
         [JsonIgnore]
         public string Professor { get; set; }
+        public long[] CodigosTerritoriosAgrupamento { get; set; }
     }
 }

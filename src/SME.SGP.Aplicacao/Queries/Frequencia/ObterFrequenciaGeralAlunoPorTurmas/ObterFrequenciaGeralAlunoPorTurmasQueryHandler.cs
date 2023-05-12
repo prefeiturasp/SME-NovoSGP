@@ -45,12 +45,11 @@ namespace SME.SGP.Aplicacao
                                                                                  bimestres.ToArray(),
                                                                                  matricula.dataMatricula,
                                                                                  !matricula.inativo && periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
-            }            
+            }
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
             {
-                if (!frequenciaAlunoPeriodos.Any(a => a.TurmaId == aulaComponenteTurma.TurmaCodigo
-                                                   && a.DisciplinaId == aulaComponenteTurma.ComponenteCurricularCodigo
+                if (!frequenciaAlunoPeriodos.Any(a => a.TurmaId == aulaComponenteTurma.TurmaCodigo                                                   
                                                    && a.Bimestre == aulaComponenteTurma.Bimestre))
                 {
                     frequenciaAlunoPeriodos.Add(new FrequenciaAluno()
@@ -73,7 +72,7 @@ namespace SME.SGP.Aplicacao
             };
 
             if (aulasComponentesTurmas.Any())
-                disciplinasAluno = aulasComponentesTurmas.Where(a=> request.CodigosDisciplinasTurma.Any(c=> c == a.ComponenteCurricularCodigo))
+                disciplinasAluno = aulasComponentesTurmas.Where(a => request.CodigosDisciplinasTurma.Any(c => c == a.ComponenteCurricularCodigo))
                                                          .Select(a => a.ComponenteCurricularCodigo).Distinct().ToArray();
 
             var frequenciaAlunoObtidoIndividual = new List<FrequenciaAluno>();
@@ -91,7 +90,7 @@ namespace SME.SGP.Aplicacao
                     TotalAusencias = frequenciaAlunoObtidoIndividual.Sum(f => f.TotalAusencias),
                     TotalCompensacoes = frequenciaAlunoObtidoIndividual.Sum(f => f.TotalCompensacoes)
                 };
-            }                
+            }
 
             if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
                 return FrequenciaAluno.FormatarPercentual(0);
@@ -121,7 +120,7 @@ namespace SME.SGP.Aplicacao
             {
                 return new FrequenciaAluno()
                 {
-                    TotalAulas = frequenciasDoAluno.Sum(f=> f.TotalAulas),
+                    TotalAulas = frequenciasDoAluno.Sum(f => f.TotalAulas),
                     TotalAusencias = frequenciasDoAluno.Sum(f => f.TotalAusencias),
                     TotalCompensacoes = frequenciasDoAluno.Sum(f => f.TotalCompensacoes > f.TotalAusencias ? f.TotalAusencias : f.TotalCompensacoes)
                 };

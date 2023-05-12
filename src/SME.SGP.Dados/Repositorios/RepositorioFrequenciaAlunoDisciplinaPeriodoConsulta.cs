@@ -268,13 +268,13 @@ namespace SME.SGP.Dados
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo)
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string[] disciplinasId, DateTime dataAtual, string turmaCodigo, string professor = null)
         {
             var query = @"select *
                           from frequencia_aluno fa
                           inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
                           where codigo_aluno = @codigoAluno
-                            and disciplina_id = @disciplinaId
+                            and disciplina_id = any(@disciplinasId)
 	                        and tipo = 1
 	                        and pe.periodo_inicio <= @dataAtual
 	                        and pe.periodo_fim >= @dataAtual";
@@ -282,14 +282,18 @@ namespace SME.SGP.Dados
             if (!string.IsNullOrEmpty(turmaCodigo))
                 query += " and fa.turma_id = @turmaCodigo";
 
+            if (!string.IsNullOrWhiteSpace(professor))
+                query += " and (fa.professor_rf = @professor or fa.professor_rf is null)";
+
             query += " order by fa.id desc limit 1";
 
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
-                disciplinaId,
+                disciplinasId,
                 dataAtual,
-                turmaCodigo
+                turmaCodigo,
+                professor
             });
         }
 
@@ -568,7 +572,7 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder(@"select * 
 	                                        from (select fa.*,
-				                                         row_number() over (partition by fa.bimestre, fa.disciplina_id order by fa.id desc) sequencia
+				                                         row_number() over (partition by fa.bimestre, fa.disciplina_id, fa.professor_rf order by fa.id desc) sequencia
           	                                        from frequencia_aluno fa
             	                                        inner join periodo_escolar pe 
             		                                        on fa.periodo_escolar_id = pe.id
@@ -668,7 +672,7 @@ namespace SME.SGP.Dados
             query.AppendLine(@"with aulasRegFrequencias as (
                                         select distinct a.id, a.disciplina_id, a.turma_id, 
                                                p.bimestre, p.periodo_inicio, p.periodo_fim,
-                                               a.quantidade 
+                                               a.quantidade, a.professor_rf
                                         from aula a 
                                         inner join registro_frequencia rf on rf.aula_id = a.id and not rf.excluido 
                                         inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id 
@@ -692,9 +696,9 @@ namespace SME.SGP.Dados
             query.AppendLine(" and a.turma_id = any(@turmasCodigo)");
             query.AppendLine(@") select a.disciplina_id as ComponenteCurricularCodigo, a.turma_id as TurmaCodigo, 
                                         a.bimestre as Bimestre, a.periodo_inicio as PeriodoInicio, a.periodo_fim as PeriodoFim,
-                                        COALESCE(SUM(a.quantidade), 0) AS AulasQuantidade from
+                                        COALESCE(SUM(a.quantidade), 0) AS AulasQuantidade, a.professor_rf Professor from
                                         aulasRegFrequencias a
-                                group by a.disciplina_id, a.turma_id, a.bimestre, a.periodo_inicio, a.periodo_fim");
+                                group by a.disciplina_id, a.turma_id, a.bimestre, a.periodo_inicio, a.periodo_fim, a.professor_rf");
 
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(),
            new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });

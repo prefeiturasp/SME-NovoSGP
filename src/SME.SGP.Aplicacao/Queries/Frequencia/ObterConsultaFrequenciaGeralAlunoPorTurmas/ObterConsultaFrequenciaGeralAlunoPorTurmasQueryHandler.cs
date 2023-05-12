@@ -45,11 +45,18 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in request.TurmaCodigo)
                 disciplinasTurma.AddRange(await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turmaCodigo)));
 
-            string[] codigoDisciplinasTurma = disciplinasTurma.Any()
-                ? disciplinasTurma.Select(d => d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.ToString() : d.CodigoComponenteCurricular.ToString()).ToArray()
-                : new string[] { };
+            var codigoDisciplinasTurma = disciplinasTurma.Any()
+                ? disciplinasTurma.Select(d => d.CodigoComponenteCurricular.ToString()).ToList()
+                : new List<string>();
 
-            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, codigoDisciplinasTurma, tipoCalendario.Id, matriculasAluno));
+            if (disciplinasTurma.Any(d => d.TerritorioSaber))
+            {
+                codigoDisciplinasTurma
+                    .AddRange(disciplinasTurma
+                        .Where(d => d.TerritorioSaber).Select(d => d.CodigoComponenteTerritorioSaber.ToString()).ToList());
+            }
+
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, codigoDisciplinasTurma.ToArray(), tipoCalendario.Id, matriculasAluno));
         }
 
         private async Task<Turma> ObterTurma(string[] turmasCodigos)
