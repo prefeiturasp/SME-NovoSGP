@@ -756,15 +756,10 @@ namespace SME.SGP.Aplicacao
         private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade, int anoLetivo, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoes)
         {
             var dto = MapearDisciplinasDto(componenteCurricular);
-
-            var codigoComponenteCurricular = ObterCodigoComponenteCurricular(componenteCurricular);
-
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var professorConsideradoTerritorio = componenteCurricular.TerritorioSaber && usuarioLogado.EhProfessor() ? usuarioLogado.Login : null;
-
+            
             var frequenciaComponente = frequenciaAluno
-                .FirstOrDefault(a => (a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString() || a.DisciplinaId == codigoComponenteCurricular.ToString() || (componenteCurricular.CodigosTerritoriosAgrupamento?.Contains(long.Parse(a.DisciplinaId)) ?? false)) &&
-                                     (string.IsNullOrWhiteSpace(professorConsideradoTerritorio) || (!string.IsNullOrWhiteSpace(professorConsideradoTerritorio) && a.Professor == professorConsideradoTerritorio)));
+                .FirstOrDefault(a => (!componenteCurricular.TerritorioSaber && a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString()) ||
+                                     (componenteCurricular.TerritorioSaber && (a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString() || a.DisciplinaId == componenteCurricular.CodigoComponenteTerritorioSaber.ToString()) && a.Professor == componenteCurricular.Professor));
 
             frequenciaComponente = VerificaTotalAulasParaCalcularPercentualFrequencia(frequenciaComponente, totalAulas);
 
