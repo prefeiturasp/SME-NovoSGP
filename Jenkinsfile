@@ -3,20 +3,19 @@ pipeline {
       branchname =  env.BRANCH_NAME.toLowerCase()
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
-      deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
-      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"      
-      deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
-      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-geral-r2' : 'sme-worker-geral' }"
-      deployment5 = "${env.branchname == 'release-r2' ? 'sme-worker-aee-r2' : 'sme-worker-aee' }"
-      deployment6 = "${env.branchname == 'release-r2' ? 'sme-worker-aula-r2' : 'sme-worker-aula' }"
-      deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
-      deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
-      deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
-      deployment10 = "${env.branchname == 'release-r2' ? 'sme-worker-avaliacao-r2' : 'sme-worker-avaliacao' }"
-      deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
-      deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
-      deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
-      deployment14 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao' : 'sme-worker-compressao' }"
+      deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"           
+      deployment2 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
+      deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-geral-r2' : 'sme-worker-geral' }"
+      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-aee-r2' : 'sme-worker-aee' }"
+      deployment5 = "${env.branchname == 'release-r2' ? 'sme-worker-aula-r2' : 'sme-worker-aula' }"
+      deployment6 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
+      deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
+      deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
+      deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-avaliacao-r2' : 'sme-worker-avaliacao' }"
+      deployment10 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
+      deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
+      deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
+      deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao' : 'sme-worker-compressao' }"
     }
   
     agent {
@@ -173,7 +172,7 @@ pipeline {
                   dockerImage12 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Hub/Dockerfile .")
                 }
               }
-            }
+            }            
             stage('sme-worker-compressao') {
               agent { node { label 'SME-AGENT-SGP' } }
               steps{
