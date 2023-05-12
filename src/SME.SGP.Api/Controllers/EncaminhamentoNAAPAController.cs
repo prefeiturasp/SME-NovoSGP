@@ -176,6 +176,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
 
+        [HttpPost("reabrir/{encaminhamentoNAAPAId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
+        public async Task<IActionResult> ReabrirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IReabrirEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+        }
+
         [HttpGet("fluxos-alerta")]
         [ProducesResponseType(typeof(IEnumerable<OpcaoRespostaSimplesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
