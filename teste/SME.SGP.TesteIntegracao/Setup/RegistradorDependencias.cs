@@ -15,7 +15,10 @@ using SME.SGP.IoC;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using System.Data;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.ObjectPool;
+using RabbitMQ.Client;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -50,6 +53,12 @@ namespace SME.SGP.TesteIntegracao.Setup
             services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
             services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
             services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamentoFake>();
+            services.TryAddScoped<IServicoMensageriaLogs, ServicoMensageriaLogsFake>();
+            services.TryAddScoped<IServicoTelemetria, TelemetriaFake>();
+            services.TryAddScoped<IConexoesRabbitFilasLog, ConexoesRabbitFilasLogFake>();
+            services.TryAddScoped<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicyFake>();
+            services.AddSingleton<ConfiguracaoRabbitLogOptions>();
+            services.TryAddScoped<ObjectPoolProvider, DefaultObjectPoolProvider>();
             base.RegistrarServicos(services);
         }
 

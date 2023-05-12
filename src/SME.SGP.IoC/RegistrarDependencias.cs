@@ -28,6 +28,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
+using SME.SGP.Dados.Cache;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
@@ -56,9 +57,11 @@ namespace SME.SGP.IoC
             RegistrarCasosDeUso(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
+            RegistrarMetricas(services);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
             RegistrarServicoArmazenamento(services, configuration);
+
 
             RegistrarMapeamentos.Registrar();
         }
@@ -97,11 +100,17 @@ namespace SME.SGP.IoC
             RegistrarServicos(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
+            RegistrarMetricas(services);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
             RegistrarServicoArmazenamento(services,configuration);
 
             RegistrarMapeamentos.Registrar();
+        }
+
+        private void RegistrarMetricas(IServiceCollection services)
+        {
+            services.ConfigurarMetricasCache();
         }
 
         public virtual void RegistrarConsumoFilas(IServiceCollection services, IConfiguration configuration)
@@ -505,6 +514,7 @@ namespace SME.SGP.IoC
 
             // Consolidação Devolutivas
             services.TryAddScoped<IRepositorioConsolidacaoDevolutivas, RepositorioConsolidacaoDevolutivas>();
+            services.TryAddScoped<IRepositorioConsolidacaoDevolutivasConsulta, RepositorioConsolidacaoDevolutivasConsulta>();
 
             // Frequência
             services.TryAddScoped<IRepositorioFrequenciaPreDefinida, RepositorioFrequenciaPreDefinida>();
@@ -539,6 +549,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioEncaminhamentoNAAPASecao, RepositorioEncaminhamentoNAAPASecao>();
             services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
             services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioObservacaoEncaminhamentoNAAPA, RepositorioObservacaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes, RepositorioEncaminhamentoNAAPAHistoricoAlteracoes>();
 
             services.TryAddScoped<IRepositorioHistoricoEscolarObservacao, RepositorioHistoricoEscolarObservacao>();
         }
@@ -672,6 +684,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioCompensacaoAusenciaUseCase, RelatorioCompensacaoAusenciaUseCase>();
             services.TryAddScoped<IRelatorioCalendarioUseCase, RelatorioCalendarioUseCase>();
             services.TryAddScoped<IRelatorioAnaliticoSondagemUseCase, RelatorioAnaliticoSondagemUseCase>();
+            services.TryAddScoped<IRelatorioListagemItineranciasUseCase, RelatorioListagemItineranciasUseCase>();
 
             services.TryAddScoped<ICartaIntencoesPersistenciaUseCase, CartaIntencoesPersistenciaUseCase>();
             services.TryAddScoped<IObterCartasDeIntencoesPorTurmaEComponenteUseCase, ObterCartasDeIntencoesPorTurmaEComponenteUseCase>();
@@ -1220,6 +1233,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAtribuirUeResponsavelUseCase, AtribuirUeResponsavelUseCase>();
             services.TryAddScoped<IObterListaTipoReponsavelUseCase, ObterListaTipoReponsavelUseCase>();
             services.TryAddScoped<IListarAtribuicoesResponsaveisPorFiltroUseCase, ListarAtribuicoesResponsaveisPorFiltroUseCase>();
+            services.TryAddScoped<IObterObservacoesDeEncaminhamentoNAAPAUseCase, ObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase, SalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase, ExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase, ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
 
             // Encaminhamento NAAPA
             services.TryAddScoped<IObterSecoesEncaminhamentosSecaoNAAPAUseCase, ObterSecoesEncaminhamentosSecaoNAAPAUseCase>();

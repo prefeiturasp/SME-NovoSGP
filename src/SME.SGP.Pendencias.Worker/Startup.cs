@@ -27,10 +27,6 @@ namespace SME.SGP.Pendencias.Worker
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoPendenciasRabbitSgp(services);
-
-            services.AddHostedService<WorkerRabbitPendencias>();
-            services.AddHealthChecks();
-            services.AddHealthChecksUiSgp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
