@@ -581,9 +581,7 @@ namespace SME.SGP.Aplicacao
                         disciplinasEol?.Where(disciplina => disciplina.TerritorioSaber)
                         .ToList()
                         .ForEach(disciplina => {
-                            disciplina.Nome = disciplinasAtribuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular
-                            || d.Id == disciplina.CodigoComponenteCurricular
-                            ).Nome;
+                            disciplina.Nome = disciplinasAtribuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular).Nome;
                         });
 
                         disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
