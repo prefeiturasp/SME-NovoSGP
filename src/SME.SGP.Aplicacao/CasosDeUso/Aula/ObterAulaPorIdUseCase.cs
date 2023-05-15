@@ -98,9 +98,9 @@ namespace SME.SGP.Aplicacao
 
                 var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(aula.TurmaId, turma.TipoTurma == TipoTurma.Programa);
 
-                if (disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)) || 
-                    disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId)))
-                    return true;
+                return disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)) ||
+                       disciplinas.Any(d => d.CodigoTerritorioSaber == long.Parse(aula.DisciplinaId)) ||
+                       disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId));                
             }
 
             var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
@@ -140,7 +140,8 @@ namespace SME.SGP.Aplicacao
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
                           || usuarioLogado.EhProfessorPosl()))
                           || (usuarioLogado.EhProfessorPap() && aula.EhPAP),
-                PossuiCompensacao = possuiCompensacao
+                PossuiCompensacao = possuiCompensacao,
+                AulaCJ = aula.AulaCJ
             };
 
             return dto;
