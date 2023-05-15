@@ -171,7 +171,8 @@ namespace SME.SGP.Aplicacao
                                 CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteCurricular : 0,
                                 Descricao = c.Nome,
                                 GrupoMatriz = new Dominio.GrupoMatriz() { Id = c.GrupoMatriz.Id, Nome = c.GrupoMatriz.Nome },
-                                TurmaCodigo = c.TurmaCodigo
+                                TurmaCodigo = c.TurmaCodigo,
+                                Regencia = c.Regencia
                             }).ToList();
                         }
                     }
