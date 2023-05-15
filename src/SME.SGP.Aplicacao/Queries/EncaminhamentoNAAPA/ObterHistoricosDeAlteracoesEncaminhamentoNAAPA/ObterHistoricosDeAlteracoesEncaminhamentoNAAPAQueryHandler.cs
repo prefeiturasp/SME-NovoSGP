@@ -116,11 +116,23 @@ namespace SME.SGP.Aplicacao
 
                 if (tipoHistoricoAlteracoes == TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido)
                 {
-                    if (!string.IsNullOrEmpty(novasRespostas.Resposta)) camposInseridos.Add(await ObterNomeQuestao(questao));
+                    if (CampoPodeSerInserido(novasRespostas)) 
+                        camposInseridos.Add(await ObterNomeQuestao(questao));
                 }
                 else if (CampoPodeSerAlterado(questaoExistente, novasRespostas))
                     camposAlterados.Add(await ObterNomeQuestao(questao));
             }
+        }
+
+        private bool CampoPodeSerInserido(EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
+        {
+            if (respostasEncaminhamento.TipoQuestao == TipoQuestao.TurmasPrograma)
+                return respostasEncaminhamento.Resposta != "[]";
+
+            if (EhCampoLista(respostasEncaminhamento))
+                return respostasEncaminhamento.Resposta != "\"\"";
+
+            return !string.IsNullOrEmpty(respostasEncaminhamento.Resposta);
         }
 
         private async Task CarreguarQuestoesAInserir(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoAlterado)

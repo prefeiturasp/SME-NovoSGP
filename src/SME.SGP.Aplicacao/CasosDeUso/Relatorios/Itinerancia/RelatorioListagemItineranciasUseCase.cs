@@ -18,9 +18,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioListagemItineranciasDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            filtro.UsuarioNome = usuarioLogado.Nome;
-            filtro.UsuarioRf = usuarioLogado.CodigoRf;
+            filtro.UsuarioLogadoNome = usuarioLogado.Nome;
+            filtro.UsuarioLogadoRf = usuarioLogado.CodigoRf;
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ListagemItinerancias, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosListagemRegistrosItinerancia));
         }

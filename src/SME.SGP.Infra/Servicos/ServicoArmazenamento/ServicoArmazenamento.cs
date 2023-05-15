@@ -107,8 +107,8 @@ namespace SME.SGP.Infra
 
             if (ehImagem || ehVideo)
             {
-                var nomeFila = ehImagem ? RotasRabbitSgp.OtimizarArquivoImagem : RotasRabbitSgp.OtimizarArquivoVideo;
-                await servicoMensageria.Publicar(new MensagemRabbit(nomeArquivo), nomeFila, ExchangeSgpRabbit.Sgp, "PublicarFilaSgp");
+                var nomeFila = ehImagem ? RotasRabbitSgpComprimirArquivos.OtimizarArquivoImagem : RotasRabbitSgpComprimirArquivos.OtimizarArquivoVideo;
+                await servicoMensageria.Publicar(new MensagemRabbit(nomeArquivo), nomeFila, ExchangeSgpRabbit.Sgp, "PublicarFilaSgpComprimirArquivos");
             }
         }
 

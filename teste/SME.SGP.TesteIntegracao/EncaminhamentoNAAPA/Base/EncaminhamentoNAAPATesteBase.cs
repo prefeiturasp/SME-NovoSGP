@@ -453,6 +453,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 SomenteLeitura = true,
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Data,
+                NomeComponente = "DATA_ENTRADA_QUEIXA",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -464,6 +465,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = "Prioridade",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
+                NomeComponente = "PRIORIDADE",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -633,7 +635,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = 1,
                 Ordem = 2,
                 Nome = "NIS (Número de Identificação Social)",
-                Obrigatorio = true,
+                NomeComponente = "NIS",
+                Obrigatorio = false,
                 Tipo = TipoQuestao.Numerico,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -646,7 +649,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = 1,
                 Ordem = 3,
                 Nome = "UBS de referência",
-                Obrigatorio = true,
+                NomeComponente = "UBS",
+                Obrigatorio = false,
                 Tipo = TipoQuestao.Texto,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -659,7 +663,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 QuestionarioId = 1,
                 Ordem = 4,
                 Nome = "Descrição do encaminhamento",
-                Obrigatorio = true,
+                NomeComponente = "DESCRICAO_ENCAMINHAMENTO",
+                Obrigatorio = false,
                 Tipo = TipoQuestao.EditorTexto,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
