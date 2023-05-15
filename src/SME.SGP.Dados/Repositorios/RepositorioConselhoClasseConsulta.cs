@@ -162,12 +162,13 @@ namespace SME.SGP.Dados.Repositorios
 
             var sqlQuery = new StringBuilder($@"select Situacao, 
                                                        sum(x.Quantidade) as Quantidade,
-                                                       x.AnoTurma
+                                                       x.AnoTurma,
+                                                       x.CodigoTurma
                                                   from (
                                                         select  cccat.status as Situacao,
                                                                 count(distinct cccat.aluno_codigo) as Quantidade, ");
             if (ueId > 0)
-                sqlQuery.AppendLine(" t.nome as AnoTurma ");
+                sqlQuery.AppendLine(" t.nome as AnoTurma, t.turma_id as CodigoTurma ");
             else
                 sqlQuery.AppendLine(" t.ano as AnoTurma ");
             sqlQuery.AppendLine(@" 
@@ -211,11 +212,11 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine(queryWhere.ToString());
             sqlQuery.AppendLine($@" group by cccat.status, ");
             if (ueId > 0)
-                sqlQuery.AppendLine(" t.nome  ");
+                sqlQuery.AppendLine(" t.nome, t.turma_id ");
             else
                 sqlQuery.AppendLine(" t.ano ");
 
-            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma
+            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma, x.CodigoTurma
                                    order by x.AnoTurma;");
 
 
