@@ -21,6 +21,7 @@
         public const string RotaCalcularFrequenciaGeralSync = "sgp.frequencia.calcular.geral.sync";
         public const string RotaConsolidacaoFrequenciaAlunoPorTurmaMensal = "sgp.frequencia.aluno.turma.mensal.consolidar";
         public const string RotaConsolidacaoFrequenciaTurmaEvasao = "sgp.frequencia.turma.evasao.consolidar";
+        public const string RotaConsolidacaoFrequenciaTurmaEvasaoAcumulado = "sgp.frequencia.turma.evasao.acumulado.consolidar";
         public const string RotaConciliacaoFrequenciaTurmaMes = "sgp.frequencia.turma.conciliacao.mes";
         public const string RotaNotificacaoFrequenciaUe = "sgp.frequencia.ue.notificar";
         public const string CarregarDadosAlunosFrequenciaMigracao = "sgp.migracao.frequencia.alunos.carregar";

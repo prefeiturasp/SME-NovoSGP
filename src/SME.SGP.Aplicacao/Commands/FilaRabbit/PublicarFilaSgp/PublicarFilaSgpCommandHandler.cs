@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
 
             var mensagem = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
-                                             usuario.Nome,
-                                             usuario.CodigoRf,
-                                             usuario.PerfilAtual,
+                                             usuario?.Nome,
+                                             usuario?.CodigoRf,
+                                             usuario?.PerfilAtual,
                                              command.NotificarErroUsuario,
                                              administrador.Login);
 
