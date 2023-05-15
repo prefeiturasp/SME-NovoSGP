@@ -33,14 +33,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.CodigoTurma)
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado.");
-            
+
             RuleFor(c => c.CodigosComponentesCurriculares)
                 .NotEmpty()
                 .WithMessage("O código do componente curricular deve ser informado.");
-            
-            RuleFor(c => c.CodigoRfProfessor)
-                .NotEmpty()
-                .WithMessage("O código RF do professor deve ser informado.");
+
         }
     }
 }

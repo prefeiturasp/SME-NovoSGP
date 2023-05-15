@@ -16,20 +16,29 @@ namespace SME.SGP.Aplicacao
         private static readonly long[] IDS_COMPONENTES_REGENCIA = { 2, 7, 8, 89, 138 };
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IMediator mediator;
 
         public ObterComponentesCJQueryHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-                                              IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular)
+                                              IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                              IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCJQuery request, CancellationToken cancellationToken)
         {
+            var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricular, request.TurmaCodigo, null));
+
+            var codigoTerritorioConsiderado = codigosTerritorioEquivalentes != null ?
+                codigosTerritorioEquivalentes.OrderBy(c => c.codigoComponente.Length).First().codigoComponente : null;
+
             var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(request.Modalidade,
                 request.TurmaCodigo,
                 request.UeCodigo,
-                request.ComponenteCurricular,
+                !string.IsNullOrWhiteSpace(codigoTerritorioConsiderado) ? long.Parse(codigoTerritorioConsiderado) : request.ComponenteCurricular,
                 request.ProfessorRf,
                 string.Empty,
                 true);

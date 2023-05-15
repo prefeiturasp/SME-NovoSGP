@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             if (listaRetorno.Any())
                 return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
-            else 
+            else
                 return Enumerable.Empty<AtribuicaoCJListaRetornoDto>();
         }
 
@@ -44,13 +44,14 @@ namespace SME.SGP.Aplicacao
             {
                 var disciplinasIds = a.Select(b => b.DisciplinaId);
                 var disciplinasEol = mediator
-                    .Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds.ToArray(), codigoTurma: a.Key.TurmaId)).Result;
+                    .Send(new ObterDisciplinasPorCodigoTurmaQuery(a.Key.TurmaId)).Result;
 
                 if (!disciplinasEol.Any())
                     throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
 
                 var disciplinasDescricoes = disciplinasEol
-                    .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular))
+                    .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular) || 
+                               (c.TerritorioSaber && (disciplinasIds.Contains(c.CodigoComponenteTerritorioSaber.Value) || disciplinasIds.Intersect(c.CodigosTerritoriosAgrupamento).Any())))
                     .ToList();
 
                 var professorDisciplina = a.FirstOrDefault();
