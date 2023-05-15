@@ -16,11 +16,11 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> ObterAusenciaParaCompensacao(long compensacaoId, string turmaId, string disciplinaId, string[] codigoAlunos, int bimestre)
+        public async Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> ObterAusenciaParaCompensacao(long compensacaoId, string turmaId, string[] disciplinasId, string[] codigoAlunos, int bimestre, string professor = null)
         {
             var tipoFrequenciaFalta = (int)TipoFrequencia.F;
 
-            var query = @" select
+            var query = @$" select
 								rfa.codigo_aluno as CodigoAluno,
 								a.id AulaId,
 								a.data_aula as DataAula,
@@ -36,7 +36,7 @@ namespace SME.SGP.Dados
 							inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
 							left join compensacao_ausencia_aluno_aula caaa on caaa.registro_frequencia_aluno_id = rfa.id and not caaa.excluido 
 							left join compensacao_ausencia_aluno caa on caa.id = caaa.compensacao_ausencia_aluno_id and not caa.excluido
-							left join compensacao_ausencia ca on ca.id = caa.compensacao_ausencia_id and not ca.excluido 
+							left join compensacao_ausencia ca on ca.id = caa.compensacao_ausencia_id and not ca.excluido {(!string.IsNullOrWhiteSpace(professor) ? "and ca.professor_rf = @professor" : string.Empty)}
 							where not rfa.excluido
 							  and not a.excluido
 							  and rfa.numero_aula <= a.quantidade
@@ -46,26 +46,28 @@ namespace SME.SGP.Dados
 							  and a.turma_id = @turmaId
 							  and rfa.valor = @tipoFrequenciaFalta
 							  and p.bimestre = @bimestre
-							  and a.disciplina_id = @disciplinaId
-							  and (ca.id = @compensacaoId or caaa.id is null)
+							  and a.disciplina_id = any(@disciplinasId)
+							  and (ca.id = @compensacaoId or ca.id is null)
+							  {(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor " : string.Empty)}
 							order by a.data_aula, rfa.numero_aula";
 
             var parametros = new
             {
                 compensacaoId,
                 turmaId,
-                disciplinaId,
+                disciplinasId,
                 codigoAlunos,
                 bimestre,
-                tipoFrequenciaFalta
+                tipoFrequenciaFalta,
+				professor
             };
 
             return await database.Conexao.QueryAsync<RegistroFaltasNaoCompensadaDto>(query, parametros);
         }
 
-        public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string disciplinaId, int bimestre, string turmacodigo)
+        public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo, string professor = null)
         {
-            var query = @"select
+            var query = @$"select
 							    caaa.id  as CompensacaoAusenciaAlunoAulaId,
 								rfa.aula_id as AulaId,
 								caaa.data_aula as DataAula,
@@ -78,13 +80,14 @@ namespace SME.SGP.Dados
 							inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
 							where not caaa.excluido 
 							    and rfa.codigo_aluno = any(@codigosAlunos)
-								and a.disciplina_id = @disciplinaId
+								and a.disciplina_id = any(@disciplinasId)
 								and p.bimestre = @bimestre
 								and a.turma_id = @turmacodigo
 								and rfa.valor = 2
+								{(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor " : string.Empty)}
 								order by caaa.data_aula ";
 
-            var parametros = new { codigosAlunos, disciplinaId, bimestre, turmacodigo };
+            var parametros = new { codigosAlunos, disciplinasId, bimestre, turmacodigo, professor };
             return await database.Conexao.QueryAsync<CompensacaoDataAlunoDto>(query, parametros);
         }
 

@@ -18,7 +18,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FrequenciaAluno> Handle(ObterPorAlunoDisciplinaDataQuery request, CancellationToken cancellationToken)
         {
-            return repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(request.CodigoAluno, request.DisciplinaId, request.DataAtual, request.TurmaId);
+            return await Task.FromResult(repositorioFrequenciaAlunoDisciplinaPeriodo
+                .ObterPorAlunoDisciplinaData(request.CodigoAluno, request.DisciplinasId, request.DataAtual, request.TurmaId, request.Professor));
         }
     }
 }

@@ -6,6 +6,7 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,12 +34,18 @@ namespace SME.SGP.Infra
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
+            if (!ValidarPublicacao(request))
+                return true;
+
             await servicoTelemetria.RegistrarAsync(async () =>
                     await policy.ExecuteAsync(async () => await PublicarMensagem(rota, body, exchange, canalRabbit)),
                             "RabbitMQ", nomeAcao, rota, ObterParametrosMensagem(request));
 
             return true;
         }
+
+        protected virtual bool ValidarPublicacao(T request)
+            => true;
 
         private Task PublicarMensagem(string rota, byte[] body, string exchange = null, IModel canalRabbit = null)
         {
@@ -71,6 +78,9 @@ namespace SME.SGP.Infra
 
     public class ServicoMensageriaLogs : ServicoMensageria<LogMensagem>, IServicoMensageriaLogs
     {
+        public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+            : base(conexaoRabbit, servicoTelemetria, registry) { }
+
         public override string ObterParametrosMensagem(LogMensagem mensagemLog)
         {
             var json = JsonConvert.SerializeObject(mensagemLog);
@@ -78,8 +88,12 @@ namespace SME.SGP.Infra
             return mensagem!.Mensagem +", ExcecaoInterna:" + mensagem.ExcecaoInterna;
         }
 
-        public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
-            : base(conexaoRabbit, servicoTelemetria, registry) { }
+        protected override bool ValidarPublicacao(LogMensagem mensagem)
+            => !(AmbienteTestes() && mensagem.Nivel != "Critico");
+
+        private bool AmbienteTestes()
+            => new string[] { "Homologacao", "Homologacao-R2", "Desenvolvimento", "Testes", "Development", "Treinamento" }
+            .Contains(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
     }
 
 }

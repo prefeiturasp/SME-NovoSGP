@@ -76,9 +76,9 @@ namespace SME.SGP.Aplicacao
                     if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any() && !disciplinasIdsConsideradas.Contains(componenteTerritorioEquivalente.codigoComponente))
                         disciplinasIdsConsideradas.Add(componenteTerritorioEquivalente.codigoComponente);
 
-                    var professorRfAula = turma.EhTurmaInfantil || disciplinasIdsConsideradas.Any(d => componentesRegenciaAulasAutomaticas.Contains(d)) ? string.Empty : componenteTerritorioEquivalente.professor;
+                    var professorConsiderado = turma.EhTurmaInfantil || disciplinasIdsConsideradas.Any(d => componentesRegenciaAulasAutomaticas.Contains(d)) ? string.Empty : componenteTerritorioEquivalente.professor;
 
-                    var registroFreqAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, professorRfAula, request.TurmaId));
+                    var registroFreqAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, professorConsiderado, request.TurmaId));
                     var periodosEscolaresParaFiltro = periodos.Select(p => (long?)p.Id);
                     var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, disciplinasIdsConsideradas.ToArray(), componenteTerritorioEquivalente.professor))).ToList();
 
@@ -88,13 +88,13 @@ namespace SME.SGP.Aplicacao
                     {
                         var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                         var registroFrequenciaAgregado = ObterRegistroFrequenciaAgregado(registroFreqAlunos);
-                        var totalCompensacoesDisciplinaAlunos = await mediator.Send(new ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery(periodoConsiderado.Bimestre, alunosComFrequencia, request.TurmaId));
+                        var totalCompensacoesDisciplinaAlunos = await mediator.Send(new ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery(periodoConsiderado.Bimestre, alunosComFrequencia, request.TurmaId, professorConsiderado));
 
                         foreach (var codigoAluno in alunosComFrequencia)
                         {
                             var totalAulasNaDisciplinaParaAluno = registroFreqAlunos
-                                .FirstOrDefault(t => t.AlunoCodigo.Equals(codigoAluno) && t.ComponenteCurricularId.Equals(request.DisciplinaId))?
-                                .TotalAulas ?? 0;
+                                .Where(t => t.AlunoCodigo.Equals(codigoAluno) && disciplinasIdsConsideradas.Contains(t.ComponenteCurricularId))?
+                                .Sum(t => t.TotalAulas) ?? 0;
 
                             var totalAulasParaAluno = registroFreqAlunos
                                 .Where(t => t.AlunoCodigo.Equals(codigoAluno))
@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
 
                             if (totalAulasNaDisciplinaParaAluno == 0)
                                 excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos
-                                    .Where(w => w.Tipo == TipoFrequenciaAluno.PorDisciplina && w.DisciplinaId.Equals(request.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno))
+                                    .Where(w => w.Tipo == TipoFrequenciaAluno.PorDisciplina && disciplinasIdsConsideradas.Contains(w.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno))
                                     .Select(s => s.Id));
 
                             if (totalAulasParaAluno == 0)

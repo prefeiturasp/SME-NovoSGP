@@ -190,7 +190,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IEncerrarEncaminhamentoNAAPAUseCase>();
         }
-        
+
+        protected IReabrirEncaminhamentoNAAPAUseCase ObterServicoReaberturaEncaminhamento()
+        {
+            return ServiceProvider.GetService<IReabrirEncaminhamentoNAAPAUseCase>();
+        }
+
         protected IObterEncaminhamentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAPorIdUseCase>();    

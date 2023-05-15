@@ -8,7 +8,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAusenciaParaCompensacaoPorAlunosQueryHandler :IRequestHandler<ObterAusenciaParaCompensacaoPorAlunosQuery,IEnumerable<CompensacaoDataAlunoDto>>
+    public class ObterAusenciaParaCompensacaoPorAlunosQueryHandler : IRequestHandler<ObterAusenciaParaCompensacaoPorAlunosQuery, IEnumerable<CompensacaoDataAlunoDto>>
     {
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
 
@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<CompensacaoDataAlunoDto>> Handle(ObterAusenciaParaCompensacaoPorAlunosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacaoPorAlunos(request.CodigosAlunos,request.DisciplinaId,request.Bimestre,request.Turmacodigo);
+            return await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacaoPorAlunos(request.CodigosAlunos, request.DisciplinasId, request.Bimestre, request.Turmacodigo, request.Professor);
         }
     }
 }

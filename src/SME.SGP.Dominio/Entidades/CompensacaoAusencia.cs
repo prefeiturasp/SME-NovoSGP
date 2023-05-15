@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
 {
@@ -20,6 +18,7 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
+        public string ProfessorRf { get; set; }
 
         public IEnumerable<CompensacaoAusenciaAluno> Alunos { get; set; }
 

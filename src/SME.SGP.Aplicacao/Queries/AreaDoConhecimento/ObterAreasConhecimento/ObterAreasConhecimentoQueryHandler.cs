@@ -22,8 +22,20 @@ namespace SME.SGP.Aplicacao
         {
             var listaCodigosComponentes = request.ComponentesCurriculares
                 .Where(cc => request.ConsideraRegencia || (!request.ConsideraRegencia && !cc.Regencia))
-                .Select(a => a.CodigoComponenteCurricular);
+                .Select(a => a.CodigoComponenteCurricular).ToList();
 
+            TratarComponentesRegencia(request, listaCodigosComponentes);
+            TratarComponentesTerritorio(request, listaCodigosComponentes);
+
+            if (listaCodigosComponentes == null || !listaCodigosComponentes.Any())
+                return default;
+
+            return await mediator
+                .Send(new ObterAreasConhecimentoComponenteCurricularQuery(listaCodigosComponentes.Distinct().ToArray()));
+        }
+
+        private void TratarComponentesRegencia(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
+        {
             if (request.ConsideraRegencia)
             {
                 var codigosTurmas = request.ComponentesCurriculares.Where(c => !string.IsNullOrEmpty(c.TurmaCodigo))
@@ -34,19 +46,36 @@ namespace SME.SGP.Aplicacao
                 codigosTurmas.ToList().ForEach(ct =>
                 {
                     var componentesRegencia = mediator
-                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho:true))
+                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho: true))
                         .Result;
-                    if(componentesRegencia != null && componentesRegencia.Any())
-                        listaCodigosComponentes = listaCodigosComponentes
-                            .Concat(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
+
+                    if (componentesRegencia != null && componentesRegencia.Any())
+                        listaCodigosComponentes.AddRange(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
                 });
             }
+        }
 
-            if (listaCodigosComponentes == null || !listaCodigosComponentes.Any())
-                return default;
+        private void TratarComponentesTerritorio(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
+        {
+            if (request.ComponentesCurriculares.Any(cc => cc.TerritorioSaber))
+            {
+                var componentesTerritorio = request.ComponentesCurriculares
+                    .Where(cc => cc.TerritorioSaber).ToList();
 
-            return await mediator
-                .Send(new ObterAreasConhecimentoComponenteCurricularQuery(listaCodigosComponentes.Distinct().ToArray()));
+                componentesTerritorio.ForEach(cc =>
+                {
+                    var componenteTerritorioEquivalente = mediator
+                        .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(cc.CodigoComponenteCurricular, cc.TurmaCodigo, null)).Result;
+
+                    if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
+                    {
+                        var codigoConsiderado = componenteTerritorioEquivalente.Select(ct => ct.codigoComponente)
+                            .Except(new string[] { cc.CodigoComponenteCurricular.ToString() }).FirstOrDefault();
+                        if (codigoConsiderado != null && long.Parse(codigoConsiderado) < cc.CodigoComponenteCurricular)
+                            listaCodigosComponentes.Add(long.Parse(codigoConsiderado));
+                    }
+                });
+            }
         }
     }
 }
