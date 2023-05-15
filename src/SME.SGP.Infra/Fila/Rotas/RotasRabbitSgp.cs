@@ -108,8 +108,6 @@
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoCarregar = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.carregar";
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoSync = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.sync";
         public const string AtualizaUltimoLoginUsuario = "sgp.usuario.login.atualizar";
-        public const string OtimizarArquivoImagem = "sgp.otimizar.arquivo.imagem";
-        public const string OtimizarArquivoVideo = "sgp.otimizar.arquivo.video";
 
         #region Agendamento
 

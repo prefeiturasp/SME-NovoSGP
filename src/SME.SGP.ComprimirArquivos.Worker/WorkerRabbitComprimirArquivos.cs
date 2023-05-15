@@ -78,7 +78,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
             canalRabbit.QueueBind(filaLimboImagem, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, filaDeadLetterImagem);
             
             canalRabbit.QueueDeclare(filaLimboVideo, true, false, false, argsLimbo);
-            canalRabbit.QueueBind(filaLimboVideo, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, RotasRabbitOtimizarArquivos.OtimizarArquivoVideo, null);
+            canalRabbit.QueueBind(filaLimboVideo, RotasRabbitOtimizarArquivos.ExchangeSgpDeadLetter, filaDeadLetterImagem, null);
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
