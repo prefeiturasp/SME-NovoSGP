@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
                         .Where(c => c.TerritorioSaber && c.CodigosTerritoriosAgrupamento != null && c.CodigosTerritoriosAgrupamento.Any())
                         .SelectMany(c => c.CodigosTerritoriosAgrupamento);
 
-                    disciplinasDto.AddRange(MapearParaDto(disciplinasAtribuicaoCj.Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular)), turmaPrograma, turma.EnsinoEspecial));
+                    disciplinasDto.AddRange(MapearParaDto(disciplinasAtribuicaoCj?.Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular)), turmaPrograma, turma.EnsinoEspecial));
                     disciplinasDto = disciplinasDto.DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))?.OrderBy(c => c.Nome)?.ToList();
                 }
             }
