@@ -1,10 +1,7 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using ImageProcessor;
-using SME.SGP.Infra;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
