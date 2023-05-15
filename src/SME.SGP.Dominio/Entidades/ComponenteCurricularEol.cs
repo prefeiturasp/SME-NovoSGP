@@ -21,6 +21,7 @@ namespace SME.SGP.Dominio
         public GrupoMatriz GrupoMatriz { get; set; }
         public string TurmaCodigo { get; set; }
         public string Professor { get; set; }
+        public long[] CodigosTerritoriosAgrupamento { get; set; }
 
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
         {
