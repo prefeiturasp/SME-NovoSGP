@@ -26,7 +26,10 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 if (!request.NomeArquivo.EhArquivoImagemParaOtimizar())
                     return false;
             
-                var input = Path.Combine(UtilArquivo.ObterDiretorioCompletoArquivos(), request.NomeArquivo);               
+                var input = Path.Combine(UtilArquivo.ObterDiretorioCompletoArquivos(), request.NomeArquivo);
+
+                if (!new FileInfo(input).Exists)
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"O arquivo '{request.NomeArquivo}' não foi localizado no endereço '{input}'", LogNivel.Critico, LogContexto.ComprimirArquivos)); 
 
                 var output = Path.Combine(UtilArquivo.ObterDiretorioCompletoTemporario(), request.NomeArquivo);
 
