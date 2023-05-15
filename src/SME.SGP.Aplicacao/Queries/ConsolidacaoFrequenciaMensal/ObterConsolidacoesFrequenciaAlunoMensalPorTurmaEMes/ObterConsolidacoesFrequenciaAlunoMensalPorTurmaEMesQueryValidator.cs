@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O ID da turma percisa ser informado");
 
             RuleFor(c => c.Mes)
-                .GreaterThanOrEqualTo(1)
+                .GreaterThanOrEqualTo(0)
                 .LessThanOrEqualTo(12)
                 .WithMessage("Um mês válido precisa ser informado");
         }

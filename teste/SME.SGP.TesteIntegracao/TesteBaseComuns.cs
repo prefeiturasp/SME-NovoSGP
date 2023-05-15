@@ -440,7 +440,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_DESCRICAO = "Percentual de alunos com nota/conceito insuficientes para exigência de justificativ";
 
 
-        protected readonly string ALUNO_CODIGO_1 = "1";
+        protected const string ALUNO_CODIGO_1 = "1";
         protected const string ALUNO_NOME_1 = "Nome do Aluno 1";
         protected readonly string ALUNO_CODIGO_2 = "2";
         protected readonly string ALUNO_CODIGO_3 = "3";

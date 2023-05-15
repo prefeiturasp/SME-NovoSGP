@@ -1,11 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,15 +10,17 @@ namespace SME.SGP.Aplicacao
         public int Bimestre { get; set; }
         public TipoFrequenciaAluno TipoFrequencia { get; set; }
         public string CodigoTurma { get; set; }
-        public string DisciplinaId { get; set; }
+        public string[] DisciplinasId { get; set; }
+        public string Professor { get; set; }
 
-        public ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string disciplinaId = null)
+        public ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(string codigoAluno, int bimestre, TipoFrequenciaAluno tipoFrequencia, string codigoTurma, string[] disciplinasId = null, string professor = null)
         {
             CodigoAluno = codigoAluno;
             Bimestre = bimestre;
             TipoFrequencia = tipoFrequencia;
             CodigoTurma = codigoTurma;
-            DisciplinaId = disciplinaId;
+            DisciplinasId = disciplinasId;
+            Professor = professor;
         }
     }
 

@@ -18,20 +18,20 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var filtro = new FiltroConsolidacaoFrequenciaTurma();
             try
             {
-                filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
+                var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
                 var turma = !string.IsNullOrWhiteSpace(filtro.TurmaCodigo) ?
                     await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo)) :
                     await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
                 if (turma != null)
                 {
-                    var anoAnterior = turma.AnoLetivo < DateTime.Today.Year;
+                    var dataAtual = DateTimeExtension.HorarioBrasilia();
+                    var anoAnterior = turma.AnoLetivo < dataAtual.Year;
 
                     var alunos = await mediator
-                        .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, anoAnterior));
+                        .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (dataAtual, dataAtual)));
 
                     if (filtro.PercentualFrequenciaMinimo == 0)
                     {
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                         filtro.PercentualFrequenciaMinimo = double.Parse(parametro.Valor);
                     }
 
-                    await ConsolidarFrequenciaAlunos(turma.Id, turma.CodigoTurma, filtro.PercentualFrequenciaMinimo, anoAnterior ? alunos : alunos.Where(a => !a.Inativo), anoAnterior);
+                    await ConsolidarFrequenciaAlunos(turma.Id, turma.CodigoTurma, filtro.PercentualFrequenciaMinimo, alunos, anoAnterior);
                 }
 
                 return true;
@@ -67,31 +67,23 @@ namespace SME.SGP.Aplicacao
             var quantidadeReprovados = 0;
             var quantidadeAprovados = 0;
 
-            if (anoAnterior)
-            {
-                var frequenciasAgrupadasPorAluno = frequenciasConsideradas.GroupBy(f => f.AlunoCodigo);
-                var listaAlunoPercentualGeral = (from fa in frequenciasAgrupadasPorAluno
-                                                 where fa.Any(f => f.TotalAulas > 0)
-                                                 select new
-                                                 {
-                                                     codigoAluno = fa.Key,
-                                                     totalAulas = Convert.ToDouble(fa.Sum(f => f.TotalAulas)),
-                                                     totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes))
-                                                 })
-                                                 .Select(fa => new
-                                                 {
-                                                     fa.codigoAluno,
-                                                     percentualTotal = Math.Round(100 - ((fa.totalAusencias / fa.totalAulas) * 100))
-                                                 });
+            var frequenciasAgrupadasPorAluno = frequenciasConsideradas.GroupBy(f => f.AlunoCodigo);
+            var listaAlunoPercentualGeral = (from fa in frequenciasAgrupadasPorAluno
+                                                where fa.Any(f => f.TotalAulas > 0)
+                                                select new
+                                                {
+                                                    codigoAluno = fa.Key,
+                                                    totalAulas = Convert.ToDouble(fa.Sum(f => f.TotalAulas)),
+                                                    totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes))
+                                                })
+                                                .Select(fa => new
+                                                {
+                                                    fa.codigoAluno,
+                                                    percentualTotal = Math.Round(100 - ((fa.totalAusencias / fa.totalAulas) * 100))
+                                                });
 
-                quantidadeReprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal < percentualFrequenciaMinimo);
-                quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
-            }
-            else
-            {
-                quantidadeReprovados = frequenciasConsideradas?.Where(c => c.PercentualFrequencia < percentualFrequenciaMinimo).Count() ?? 0;
-                quantidadeAprovados = frequenciasConsideradas?.Where(c => c.PercentualFrequencia >= percentualFrequenciaMinimo).Count() ?? 0;
-            }
+            quantidadeReprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal < percentualFrequenciaMinimo);
+            quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
 
             await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados);
         }
