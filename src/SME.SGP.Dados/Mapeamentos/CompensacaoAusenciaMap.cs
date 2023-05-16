@@ -15,6 +15,7 @@ namespace SME.SGP.Dados
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.Nome).ToColumn("nome");
             Map(c => c.Descricao).ToColumn("descricao");
+            Map(c => c.ProfessorRf).ToColumn("professor_rf");
         }
     }
 }

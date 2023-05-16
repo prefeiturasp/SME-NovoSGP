@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using SME.SGP.IoC;
 using System;
 using SME.SGP.Infra;
+using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.AEE.Worker
 {
@@ -44,6 +45,8 @@ namespace SME.SGP.AEE.Worker
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            RegistrarConfigsThreads.Registrar(Configuration);
 
             app.Run(async context =>
             {

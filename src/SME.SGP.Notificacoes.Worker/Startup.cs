@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using System.Threading;
 
 namespace SME.SGP.Notificacoes.Worker
 {
@@ -63,6 +65,11 @@ namespace SME.SGP.Notificacoes.Worker
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            var threadPoolOptions = new ThreadPoolOptions();
+            Configuration.GetSection(ThreadPoolOptions.Secao).Bind(threadPoolOptions, c => c.BindNonPublicProperties = true);
+            if (threadPoolOptions.WorkerThreads > 0 && threadPoolOptions.CompletionPortThreads > 0)
+                ThreadPool.SetMinThreads(threadPoolOptions.WorkerThreads, threadPoolOptions.CompletionPortThreads);
 
             app.Run(async (context) =>
             {

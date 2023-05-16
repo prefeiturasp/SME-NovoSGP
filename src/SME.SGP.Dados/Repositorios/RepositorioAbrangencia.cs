@@ -644,7 +644,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year });
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)
@@ -885,7 +885,7 @@ namespace SME.SGP.Dados.Repositorios
                 var dres = retorno.Select(d => d.Id).ToList();
 
                 var dresComplementares = (from da in dadosAbrangenciaSupervisor
-                                          where (Modalidade)da.Modalidade == modalidade &&
+                                          where (modalidade == 0 || (Modalidade)da.Modalidade == modalidade) &&
                                                 (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
                                                 !dres.Contains(da.DreId)
                                           select new
