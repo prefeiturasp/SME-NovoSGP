@@ -601,7 +601,7 @@ namespace SME.SGP.Aplicacao
                         .ToList()
                         .ForEach(disciplina =>
                         {
-                            disciplina.Nome = disciplinasAtribuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular).Nome;
+                            disciplina.Nome = disciplinasAtribuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular || d.CodigoComponenteTerritorioSaber == disciplina.CodigoComponenteCurricular).Nome;
                         });
 
                         disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
@@ -663,6 +663,7 @@ namespace SME.SGP.Aplicacao
         {
             CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
             CodigoComponenteCurricularPai = disciplinaEol.CdComponenteCurricularPai,
+            CodigoComponenteTerritorioSaber = disciplinaEol.CodigoTerritorioSaber,
             Nome = disciplinaEol.Nome,
             Regencia = disciplinaEol.Regencia,
             Compartilhada = disciplinaEol.Compartilhada,
@@ -688,7 +689,7 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool ehEnsinoMedio = false, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
-            Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue ? disciplina.CodigoComponenteTerritorioSaber.Value : (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
+            Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue && disciplina.CodigoComponenteTerritorioSaber.Value > 0 ? disciplina.CodigoComponenteTerritorioSaber.Value : (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
