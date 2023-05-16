@@ -149,5 +149,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/listagem-itinerancias", ShortName = "Itinerâncias", Description = "Relatório de Registro de Itinerância")]
         ListagemItinerancias = 49,
+
+        [Display(Name = "relatorios/controle-frequencia-mensal", ShortName = "Frequência", Description = "Relatório de Controle de frequência mensal")]
+        RelatorioControleFrequenciaMensal = 50
     }
 }
