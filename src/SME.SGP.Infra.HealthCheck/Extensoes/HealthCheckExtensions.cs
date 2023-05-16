@@ -80,7 +80,7 @@ namespace SME.SGP.Infra
                 opt.MaximumHistoryEntriesPerEndpoint(10);
                 opt.SetApiMaxActiveRequests(1);
 
-                opt.AddHealthCheckEndpoint("Health-API Indicadores", "/healthz");
+                opt.AddHealthCheckEndpoint("Health-API Indicadores", "http://localhost/healthz");
             }).AddInMemoryStorage();
         }
     }
