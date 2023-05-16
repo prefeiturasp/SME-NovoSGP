@@ -41,7 +41,7 @@ namespace SME.SGP.Dominio
         public void DefinirPerfilAtual(Guid perfilAtual)
             => PerfilAtual = perfilAtual;
 
-        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesProfessor)
+        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<ComponenteCurricularEol> componentesUsuario, params string[] professoresDesconsideradosTerritorio)
         {
             if (TemPerfilGestaoUes() || TemPerfilAdmUE())
                 return aulas;
@@ -52,9 +52,9 @@ namespace SME.SGP.Dominio
                 else
                 {
                     return (from a in aulas
-                            from ccp in componentesCurricularesProfessor
-                            where (!string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) && (ccp.codigoTerritorioSaber.Equals(a.DisciplinaId) || ccp.codigo.Equals(a.DisciplinaId))) ||
-                                  ((string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) || ccp.codigoTerritorioSaber == "0") && ccp.codigo.Equals(a.DisciplinaId)) ||
+                            from ccp in componentesUsuario
+                            where ((!ccp.TerritorioSaber && a.DisciplinaId == ccp.Codigo.ToString()) || 
+                                   (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString()) && (professoresDesconsideradosTerritorio != null && !professoresDesconsideradosTerritorio.Contains(a.ProfessorRf)))) ||
                                   a.ProfessorRf == CodigoRf
                             select a).Distinct();
                 }

@@ -45,14 +45,12 @@ namespace SME.SGP.Aplicacao
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                 Mes = mes,
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
-            });
-
-            var componentesCurricularesDoProfessor = new List<(string codigo, string codigoTerritorioSaber)>();
+            });            
 
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
             IEnumerable<Aula> aulasParaVisualizar;
-            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
+            var componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
 
             if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
                 aulasParaVisualizar = aulas;
@@ -71,31 +69,35 @@ namespace SME.SGP.Aplicacao
 
                     if (componentesCurricularesDoProfessorCJ.Any())
                     {
-                        var dadosComponentes = await mediator
-                            .Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
-
-                        if (dadosComponentes.Any())
+                        componentesCurricularesDoProfessorCJ.ToList().ForEach(ccj =>
                         {
-                            componentesCurricularesDoProfessor.AddRange(dadosComponentes
-                                .Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")));
-                        }
+                            componentesCurricularesEolProfessor.Add(new ComponenteCurricularEol()
+                            {
+                                Codigo = ccj.DisciplinaId,
+                                Professor = ccj.ProfessorRf
+                            });
+                        });
                     }
                 }
 
-                if (componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any())
-                {
-                    componentesCurricularesEolProfessor.ToList()
-                        .ForEach(cc => componentesCurricularesDoProfessor
-                            .Add((cc.Codigo.ToString(), cc.CodigoComponenteTerritorioSaber.ToString())));
-                }
+                var codigosTerritorio = componentesCurricularesEolProfessor
+                    .Where(c => c.TerritorioSaber)
+                    .Select(c => c.Codigo);
+
+                var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
+                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado.Login)) : null;
 
                 aulasParaVisualizar = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, professoresDesconsiderados);
+
+                // códigos disciplinas normais + regência + território
+                var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())
+                    .Concat(componentesCurricularesEolProfessor.Where(c => c.Regencia && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0).Select(c => c.CodigoComponenteCurricularPai.Value.ToString()))
+                    .Concat(componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber.ToString()))                    
+                    .ToArray();
 
                 avaliacoes = usuarioLogado
-                    .ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor
-                        .Select(c => c.codigo)
-                            .ToArray());
+                    .ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, codigosComponentesUsuario);
             }
 
             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
