@@ -19,6 +19,7 @@ using System.IO.Compression;
 using System.Threading;
 using SME.SGP.Infra;
 using SME.SGP.Api.Configuracoes;
+using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.Api
 {
@@ -79,10 +80,7 @@ namespace SME.SGP.Api
                 endpoints.MapControllers();
             });
 
-            var threadPoolOptions = new ThreadPoolOptions();
-            Configuration.GetSection(ThreadPoolOptions.Secao).Bind(threadPoolOptions, c => c.BindNonPublicProperties = true);
-            if (threadPoolOptions.WorkerThreads > 0 && threadPoolOptions.CompletionPortThreads > 0)
-                ThreadPool.SetMinThreads(threadPoolOptions.WorkerThreads, threadPoolOptions.CompletionPortThreads);
+            RegistrarConfigsThreads.Registrar(Configuration);
 
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
