@@ -31,11 +31,9 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
+            var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);            
 
-            var componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
-
-            componentesCurricularesEolProfessor = (await mediator
+            var componentesCurricularesEolProfessor = (await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
                                                                               usuarioLogado.Login,
                                                                               usuarioLogado.PerfilAtual,
@@ -58,6 +56,10 @@ namespace SME.SGP.Aplicacao
                     });
                 }
             }
+            
+            componentesCurricularesEolProfessor = componentesCurricularesEolProfessor
+                .Where(c => c.Codigo == componenteCurricularId || (c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value == componenteCurricularId) || c.CodigoComponenteTerritorioSaber == componenteCurricularId)
+                .ToList();
 
             // códigos disciplinas normais + regência + território
             var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())
@@ -65,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 .Concat(componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber.ToString()))
                 .ToArray();
 
-            var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, codigosComponentesUsuario, string.Empty);
+            var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, codigosComponentesUsuario, componentesCurricularesEolProfessor.Any(c => c.TerritorioSaber) ? componentesCurricularesEolProfessor.First().Professor : null);
 
             if (datasAulas == null || !datasAulas.Any())
                 return default;
