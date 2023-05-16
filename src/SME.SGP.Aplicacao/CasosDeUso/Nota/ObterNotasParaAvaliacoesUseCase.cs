@@ -268,7 +268,8 @@ namespace SME.SGP.Aplicacao
 
                         if (dadosAuditoriaAlteracaoBimestre.Any())
                         {
-                            var ultimoDadoDeAuditoria = dadosAuditoriaAlteracaoBimestre
+
+                            var ultimoDadoDeAuditoriaAlteradoEm = dadosAuditoriaAlteracaoBimestre
                                                                 .OrderByDescending(nc => nc.AlteradoEm)
                                                                 .Select(nc => new
                                                                 {
@@ -278,7 +279,40 @@ namespace SME.SGP.Aplicacao
                                                                 })
                                                                 .First();
 
+                            var ultimoDadoDeAuditoriaCriadoEm = dadosAuditoriaAlteracaoBimestre
+                                                                .OrderByDescending(nc => nc.CriadoEm)
+                                                                .Select(nc => new
+                                                                {
+                                                                    AlteradoPor = nc.CriadoPor,
+                                                                    AlteradoRf = nc.CriadoRF,
+                                                                    AlteradoEm = nc.CriadoEm,
+                                                                })
+                                                                .First();
+
+                            var ultimoDadoDeAuditoria = ultimoDadoDeAuditoriaCriadoEm.AlteradoEm > ultimoDadoDeAuditoriaAlteradoEm.AlteradoEm
+                                ? ultimoDadoDeAuditoriaCriadoEm
+                                : ultimoDadoDeAuditoriaAlteradoEm;
+
                             retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(ultimoDadoDeAuditoria.AlteradoPor)}({ultimoDadoDeAuditoria.AlteradoRf}) em {ultimoDadoDeAuditoria.AlteradoEm.ToString("dd/MM/yyyy")}, às {ultimoDadoDeAuditoria.AlteradoEm.ToString("HH:mm")}.";
+                        }
+                        else
+                        {
+                            //para casos onde teve uma inserção de nota, saiu da tela, e inseriu outra nota, mas em outro aluno.
+                            if(fechamentoTurma.FechamentoAlunos.Count() > 1)
+                            {
+                                var ultimoDadoDeAuditoria = fechamentoTurma.FechamentoAlunos
+                                                               .SelectMany(a => a.FechamentoNotas).ToList()
+                                                               .OrderByDescending(nc => nc.CriadoEm)
+                                                               .Select(nc => new
+                                                               {
+                                                                   AlteradoPor = nc.CriadoPor,
+                                                                   AlteradoRf = nc.CriadoRF,
+                                                                   AlteradoEm = nc.CriadoEm,
+                                                               })
+                                                               .First();
+
+                                retorno.AuditoriaBimestreAlterado = $"Nota final do bimestre alterada por {(ultimoDadoDeAuditoria.AlteradoPor)}({ultimoDadoDeAuditoria.AlteradoRf}) em {ultimoDadoDeAuditoria.AlteradoEm.ToString("dd/MM/yyyy")}, às {ultimoDadoDeAuditoria.AlteradoEm.ToString("HH:mm")}.";
+                            }
                         }
                     }
 
