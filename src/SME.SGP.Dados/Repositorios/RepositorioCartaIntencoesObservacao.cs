@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -33,6 +34,17 @@ namespace SME.SGP.Dados.Repositorios
                         order by criado_em desc";
 
             return await database.Conexao.QueryAsync<CartaIntencoesObservacaoDto>(sql, new { turmaId, componenteCurricularId, usuarioLogadoId });
+        }
+
+        public async Task<CartaIntencoesObservacaoDto> ObterCartaIntencoesObservacaoPorObservacaoId(long observacaoId)
+        {
+            const string sql = @" select dbob.Observacao, dbob.diario_bordo_id as DiarioBordoId, u.rf_codigo as UsuarioCodigoRfDiarioBordo, u.nome as UsuarioNomeDiarioBordo
+								  from diario_bordo_observacao dbob
+								  inner join diario_bordo db on dbob.diario_bordo_id = db.id
+								  inner join usuario u on u.rf_codigo = db.criado_rf 	
+								where dbob.id = @observacaoId";
+
+            return await database.Conexao.QuerySingleOrDefaultAsync<CartaIntencoesObservacaoDto>(sql, new { observacaoId });
         }
     }
 }
