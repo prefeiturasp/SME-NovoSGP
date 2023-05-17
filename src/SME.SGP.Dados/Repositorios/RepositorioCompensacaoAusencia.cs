@@ -4,9 +4,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
@@ -59,7 +58,7 @@ namespace SME.SGP.Dados
                 codigoAlunos,
                 bimestre,
                 tipoFrequenciaFalta,
-				professor
+                professor
             };
 
             return await database.Conexao.QueryAsync<RegistroFaltasNaoCompensadaDto>(query, parametros);
@@ -91,10 +90,10 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<CompensacaoDataAlunoDto>(query, parametros);
         }
 
-		public async Task<IEnumerable<long>> ObterSemAlunoPorIds(long[] ids)
-		{
-			// TODO fazer o update for select para atualizar os dados utilizando a transação em aberto.
-			var query = new StringBuilder(@"select ca.id
+        public async Task<IEnumerable<long>> ObterSemAlunoPorIds(long[] ids)
+        {
+            // TODO fazer o update for select para atualizar os dados utilizando a transação em aberto.
+            var query = new StringBuilder(@"select ca.id
                                             from compensacao_ausencia ca
                                             left join compensacao_ausencia_aluno caa on ca.id = caa.compensacao_ausencia_id
                                             where not ca.excluido 
@@ -102,8 +101,36 @@ namespace SME.SGP.Dados
                                             group by ca.id
                                             having coalesce(sum(caa.qtd_faltas_compensadas) filter (where not caa.excluido),0)  = 0 ");
 
-			return await database.Conexao.QueryAsync<long>(query.ToString(), new { ids });
-		}
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { ids });
+        }
 
-	}
+        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(int bimestre, string turmaCodigo)
+        {
+            var query = @$"
+                select
+	                coalesce(sum(caa.qtd_faltas_compensadas), 0) as compensacoes,
+	                caa.codigo_aluno as alunoCodigo,
+	                c.disciplina_id as componenteCurricularId,
+	                c.bimestre, 
+                    c.professor_rf professor
+                from
+	                compensacao_ausencia_aluno caa
+                inner join compensacao_ausencia c on
+	                c.id = caa.compensacao_ausencia_id
+                inner join turma t on
+	                t.id = c.turma_id
+                where
+	                not caa.excluido
+                    and not c.excluido 
+	                and c.bimestre = @bimestre
+	                and t.turma_id = @turmaCodigo
+                group by
+	                caa.codigo_aluno,
+	                c.disciplina_id,
+	                c.bimestre,
+                    c.professor_rf";
+
+            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, turmaCodigo });
+        }
+    }
 }

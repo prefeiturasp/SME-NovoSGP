@@ -103,13 +103,13 @@ namespace SME.SGP.Aplicacao
                     codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
-                unitOfWork.PersistirTransacao();
+                unitOfWork.PersistirTransacao();                
 
                 await MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
 
                 if (codigosAlunosCompensacao.Any())
                 {
-                    Task.Delay(TimeSpan.FromSeconds(5)).Wait();
+                    await mediator.Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaCommand(turma.CodigoTurma, periodo.Bimestre));
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                 }
 
