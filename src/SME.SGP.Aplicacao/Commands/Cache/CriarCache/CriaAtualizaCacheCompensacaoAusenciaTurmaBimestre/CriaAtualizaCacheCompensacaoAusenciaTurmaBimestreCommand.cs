@@ -3,9 +3,9 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriaAtualizaCacheCompensacaoAusenciaTurmaCommand : IRequest<bool>
+    public class CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand : IRequest<bool>
     {
-        public CriaAtualizaCacheCompensacaoAusenciaTurmaCommand(string codigoTurma, int bimestre)
+        public CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand(string codigoTurma, int bimestre)
         {
             CodigoTurma = codigoTurma;
             Bimestre = bimestre;
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public int Bimestre { get; set; }
     }
 
-    public class CriaAtualizaCacheCompensacaoAusenciaTurmaCommandValidator : AbstractValidator<CriaAtualizaCacheCompensacaoAusenciaTurmaCommand>
+    public class CriaAtualizaCacheCompensacaoAusenciaTurmaCommandValidator : AbstractValidator<CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand>
     {
         public CriaAtualizaCacheCompensacaoAusenciaTurmaCommandValidator()
         {
