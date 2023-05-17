@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> Handle(ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery request, CancellationToken cancellationToken)
         {
-            var valorNomeChave = string.Format(NomeChaveCache.NOME_CHAVE_COMPENSACAO_TURMA, request.TurmaCodigo, request.Bimestre);
+            var valorNomeChave = string.Format(NomeChaveCache.NOME_CHAVE_COMPENSACAO_TURMA_BIMESTRE, request.TurmaCodigo, request.Bimestre);
 
             var compensacoesTurma = await repositorioCache
                 .ObterAsync(valorNomeChave,

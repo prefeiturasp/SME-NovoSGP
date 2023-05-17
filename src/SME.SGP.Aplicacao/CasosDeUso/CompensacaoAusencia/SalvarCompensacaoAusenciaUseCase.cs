@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
 
                 if (codigosAlunosCompensacao.Any())
                 {
-                    await mediator.Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaCommand(turma.CodigoTurma, periodo.Bimestre));
+                    await mediator.Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand(turma.CodigoTurma, periodo.Bimestre));
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                 }
 

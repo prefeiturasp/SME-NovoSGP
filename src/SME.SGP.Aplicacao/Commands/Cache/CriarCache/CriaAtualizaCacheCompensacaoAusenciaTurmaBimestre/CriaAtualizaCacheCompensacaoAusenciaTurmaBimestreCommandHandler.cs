@@ -8,25 +8,25 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriaAtualizaCacheCompensacaoAusenciaTurmaCommandHandler : IRequestHandler<CriaAtualizaCacheCompensacaoAusenciaTurmaCommand, bool>
+    public class CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommandHandler : IRequestHandler<CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand, bool>
     {
         private const int MINUTOS_EXPIRACAO_CACHE = 5;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCache repositorioCache;
 
-        public CriaAtualizaCacheCompensacaoAusenciaTurmaCommandHandler(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
+        public CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommandHandler(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                                                        IRepositorioCache repositorioCache)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioCache = repositorioCache;
         }
 
-        public async Task<bool> Handle(CriaAtualizaCacheCompensacaoAusenciaTurmaCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand request, CancellationToken cancellationToken)
         {
             var compensacoesTurma = await repositorioCompensacaoAusencia
                 .ObterTotalCompensacoesPorAlunosETurmaAsync(request.Bimestre, request.CodigoTurma);
 
-            var valorNomeChave = string.Format(NomeChaveCache.NOME_CHAVE_COMPENSACAO_TURMA, request.CodigoTurma, request.Bimestre);            
+            var valorNomeChave = string.Format(NomeChaveCache.NOME_CHAVE_COMPENSACAO_TURMA_BIMESTRE, request.CodigoTurma, request.Bimestre);            
 
             await repositorioCache
                 .SalvarAsync(valorNomeChave, 
