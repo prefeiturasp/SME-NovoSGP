@@ -2,7 +2,6 @@
 {
     public class RotasRabbitSgpFrequencia
     {
-        public const string RotaValidacaoAusenciaConciliacaoFrequenciaTurma = "sgp.frequencia.turma.conciliacao.validar";
         public const string RotaCalculoFrequenciaPorTurmaComponente = "sgp.frequencia.turma.componente";
         public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
         public const string RotaConsolidacaoDashBoardFrequencia = "sgp.consolidacao.frequencia.dashboard";
