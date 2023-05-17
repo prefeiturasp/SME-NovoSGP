@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                                                          inserirAulaDto.EhRegencia,
                                                          inserirAulaDto.TipoAula));
 
-            var professorConsiderado = codigosTerritorioEquivalentes != default && !usuarioLogado.EhProfessor() ?
+            var professorConsiderado = codigosTerritorioEquivalentes != default && usuarioLogado.EhGestorEscolar() ?
                                        codigosTerritorioEquivalentes.First().professor : usuarioLogado.Login;
 
             // Para inserção considera o código extenso de território se for o caso
