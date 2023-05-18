@@ -362,11 +362,13 @@ namespace SME.SGP.Aplicacao
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, codigosDisciplinasArray, tipoCalendario.Id, bimestre, usuarioRF);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, codigosDisciplinasArray, tipoCalendario.Id, periodoAtual.Id, usuarioRF));
 
+            var periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today, bimestreAtual.Value));
+            
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulasDadas;
             fechamentoBimestre.TotalAulasPrevistas = aulasPrevistas;
-            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
-            fechamentoBimestre.PeriodoAberto = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && periodoAberto;
+            fechamentoBimestre.PeriodoAberto = periodoAberto;
 
             return fechamentoBimestre;
         }

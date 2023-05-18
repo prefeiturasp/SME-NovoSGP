@@ -280,7 +280,7 @@ namespace SME.SGP.Dominio
 
                 var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
 
-                var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoQuery(bimestreAvaliacao, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.TipoCalendarioId, atividadeAvaliativa.DreId, atividadeAvaliativa.UeId));
+                var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoReaberturaQuery(bimestreAvaliacao, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.TipoCalendarioId, atividadeAvaliativa.DreId, atividadeAvaliativa.UeId));
 
                 var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
                                             || fechamentoReabertura == null;

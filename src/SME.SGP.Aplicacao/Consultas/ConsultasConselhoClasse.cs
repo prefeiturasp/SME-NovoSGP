@@ -140,10 +140,10 @@ namespace SME.SGP.Aplicacao
 
             if (bimestre == 0)
             {
-                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today);
+                periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today));
             }
             else
-                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre);
+                periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today, bimestre));
 
             return new ConselhoClasseAlunoResumoDto()
             {
@@ -237,10 +237,5 @@ namespace SME.SGP.Aplicacao
 
         public ConselhoClasse ObterPorId(long conselhoClasseId)
             => repositorioConselhoClasseConsulta.ObterPorId(conselhoClasseId);
-
-        public async Task<(int, bool)> ValidaConselhoClasseUltimoBimestre(Turma turma)
-        {
-            return await mediator.Send(new ObterUltimoBimestreTurmaQuery(turma));
-        }
     }
 }

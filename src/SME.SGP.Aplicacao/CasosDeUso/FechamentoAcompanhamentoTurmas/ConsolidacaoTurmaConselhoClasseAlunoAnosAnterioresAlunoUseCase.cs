@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
@@ -12,11 +13,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase : AbstractUseCase, IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase
     {
-        private readonly IRepositorioConselhoClasseConsolidado repositorio;
+        private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
 
-        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioFechamentoNotaConsulta) : base(mediator)
+        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidadoConsultaFechamentoNotaConsulta) : base(mediator)
         {
-            this.repositorio = repositorioFechamentoNotaConsulta;
+            this.repositorioConselhoClasseConsolidadoConsulta = repositorioConselhoClasseConsolidadoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoConsulta));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                var alunoConsolidacoesPorAluno = await repositorio.ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
+                var alunoConsolidacoesPorAluno = await repositorioConselhoClasseConsolidadoConsulta.ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
                 foreach (var alunoNota in filtro.AlunoNotas)
                 {
@@ -42,7 +43,7 @@ namespace SME.SGP.Aplicacao
                             Status = 0,
                             TurmaId = filtro.TurmaId
                         };
-                        alunoConsolidacoesPorAluno = await repositorio.SalvarAsync(conselhoClasseAlunoTurma);
+                        alunoConsolidacoesPorAluno = await repositorioConselhoClasseConsolidadoConsulta.SalvarAsync(conselhoClasseAlunoTurma);
                     }
 
                     var migracaoConsolidacaoTurmaCommand = new ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresCommand()

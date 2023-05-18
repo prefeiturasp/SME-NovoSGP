@@ -14,13 +14,13 @@ namespace SME.SGP.Aplicacao
     public class ConsolidarTurmaConselhoClasseAlunoCommandHandler : IRequestHandler<ConsolidarTurmaConselhoClasseAlunoCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
         private readonly IConsultasDisciplina consultasDisciplina;
 
-        public ConsolidarTurmaConselhoClasseAlunoCommandHandler(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado, IConsultasDisciplina consultasDisciplina)
+        public ConsolidarTurmaConselhoClasseAlunoCommandHandler(IMediator mediator, IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta, IConsultasDisciplina consultasDisciplina)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
+            this.repositorioConselhoClasseConsolidadoConsulta = repositorioConselhoClasseConsolidadoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoConsulta));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         {
             var statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
-            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
+            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidadoConsulta
                     .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(request.TurmaId, request.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao
 
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
 
-            await repositorioConselhoClasseConsolidado
+            await repositorioConselhoClasseConsolidadoConsulta
                 .SalvarAsync(consolidadoTurmaAluno);
 
             return true;

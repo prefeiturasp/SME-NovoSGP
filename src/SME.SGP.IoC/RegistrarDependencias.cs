@@ -228,7 +228,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasConselhoClasseAluno, ConsultasConselhoClasseAluno>();
             services.TryAddScoped<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();
             services.TryAddScoped<IConsultaComunicado, ConsultaComunicado>();
-            services.TryAddScoped<IConsultasConselhoClasseRecomendacao, ConsultasConselhoClasseRecomendacao>();
             services.TryAddScoped<IConsultasRelatorioSemestralTurmaPAP, ConsultasRelatorioSemestralTurmaPAP>();
             services.TryAddScoped<IConsultasRelatorioSemestralPAPAluno, ConsultasRelatorioSemestralPAPAluno>();
             services.TryAddScoped<IConsultasRelatorioSemestralPAPAlunoSecao, ConsultasRelatorioSemestralPAPAlunoSecao>();
@@ -321,6 +320,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioFechamentoReabertura, RepositorioFechamentoReabertura>();
             services.TryAddScoped<IRepositorioFechamentoConsolidado, RepositorioFechamentoConsolidado>();
             services.TryAddScoped<IRepositorioConselhoClasseConsolidado, RepositorioConselhoClasseConsolidado>();
+            services.TryAddScoped<IRepositorioConselhoClasseConsolidadoConsulta, RepositorioConselhoClasseConsolidadoConsulta>();
             services.TryAddScoped<IRepositorioConselhoClasseConsolidadoNota, RepositorioConselhoClasseConsolidadoNota>();
             services.TryAddScoped<IRepositorioCompensacaoAusencia, RepositorioCompensacaoAusencia>();
             services.TryAddScoped<IRepositorioCompensacaoAusenciaConsulta, RepositorioCompensacaoAusenciaConsulta>();
@@ -446,6 +446,7 @@ namespace SME.SGP.IoC
 
             // Fechamento
             services.TryAddScoped<IRepositorioAnotacaoFechamentoAluno, RepositorioAnotacaoFechamentoAluno>();
+            services.TryAddScoped<IRepositorioAnotacaoFechamentoAlunoConsulta, RepositorioAnotacaoFechamentoAlunoConsulta>();
 
             // Pendencias do EncaminhamentoAEE
             services.TryAddScoped<IRepositorioPendenciaEncaminhamentoAEE, RepositorioPendenciaEncaminhamentoAEE>();
@@ -790,6 +791,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarConselhoClasseUseCase, ConsolidarConselhoClasseUseCase>();
             services.TryAddScoped<IGerarParecerConclusivoUseCase, GerarParecerConclusivoUseCase>();
             services.TryAddScoped<ISalvarConselhoClasseAlunoNotaUseCase, SalvarConselhoClasseAlunoNotaUseCase>();
+            services.TryAddScoped<IConsultaConselhoClasseRecomendacaoUseCase, ConsultaConselhoClasseRecomendacaoUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
@@ -927,6 +929,7 @@ namespace SME.SGP.IoC
 
             // Periodo Fechamento
             services.TryAddScoped<IObterPeriodoFechamentoVigenteUseCase, ObterPeriodoFechamentoVigenteUseCase>();
+            services.TryAddScoped<IPeriodoFechamentoUseCase, PeriodoFechamentoUseCase>();
 
             //PeriodoEscolar
             services.TryAddScoped<IObterPeriodosPorComponenteUseCase, ObterPeriodosPorComponenteUseCase>();

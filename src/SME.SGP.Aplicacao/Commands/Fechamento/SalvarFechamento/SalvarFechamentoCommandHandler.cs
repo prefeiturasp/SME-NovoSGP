@@ -462,7 +462,7 @@ namespace SME.SGP.Aplicacao
 
                 if (await mediator.Send(new ExisteEventoNaDataPorTipoDreUEQuery(hoje, tipoCalendarioId, (TipoEvento)tipodeEventoReabertura, ue.CodigoUe, ue.Dre.CodigoDre)))
                 {
-                    var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoQuery(bimestre, hoje, tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
+                    var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoReaberturaQuery(bimestre, hoje, tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
 
                     if (fechamentoReabertura == null)
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {bimestre}º Bimestre");
