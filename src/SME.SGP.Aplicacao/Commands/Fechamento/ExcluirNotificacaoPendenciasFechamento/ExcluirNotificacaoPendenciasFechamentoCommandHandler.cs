@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
+namespace SME.SGP.Aplicacao
 {
     public class ExcluirNotificacaoPendenciasFechamentoCommandHandler : IRequestHandler<ExcluirNotificacaoPendenciasFechamentoCommand, bool>
     {
