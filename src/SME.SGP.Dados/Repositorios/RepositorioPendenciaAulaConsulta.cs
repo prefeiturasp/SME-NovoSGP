@@ -158,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
                 commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo, bool exibirRegistroSemPendencia = true)
+        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo, bool exibirRegistroSemPendencia = true, TipoAvaliacaoCodigo tipoAtividadeAvaliativaIgnorada = TipoAvaliacaoCodigo.AtividadeClassroom)
         { 
             var sqlQuery = @"
                     with vw_pendencia as (
@@ -170,6 +170,7 @@ namespace SME.SGP.Dados.Repositorios
                     select distinct a.id, a.turma_id as TurmaId, a.disciplina_id, a.professor_rf, a.aula_cj as AulaCJ,
                                     a.tipo_calendario_id, a.data_aula, t.id Id, t.modalidade_codigo ModalidadeCodigo
 	                from atividade_avaliativa aa
+                    inner join tipo_avaliacao ta on ta.id = aa.tipo_avaliacao_id
 	                inner join dre on dre.dre_id = aa.dre_id
 	                inner join atividade_avaliativa_disciplina aad
 		                on aa.id = aad.atividade_avaliativa_id
@@ -189,7 +190,8 @@ namespace SME.SGP.Dados.Repositorios
                     and dre.id = @dreId
                     and a.data_aula::date < @hoje
                     and t.ano_letivo = @anoLetivo
-                    and nc.id is null ";
+                    and nc.id is null
+                    and ta.codigo <> @tipoAtividadeAvaliativaIgnorada";
             if(exibirRegistroSemPendencia)
                 sqlQuery += "  and p.id is null ";
 
@@ -207,7 +209,8 @@ namespace SME.SGP.Dados.Repositorios
                     hoje = DateTime.Today.Date,
                     tipo = TipoPendencia.Avaliacao,
                     dreId,
-                    ueId
+                    ueId,
+                    tipoAtividadeAvaliativaIgnorada = (int)tipoAtividadeAvaliativaIgnorada
                 }, splitOn: "Id", commandTimeout: 120);
 
         }
