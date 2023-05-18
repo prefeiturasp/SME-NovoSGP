@@ -17,11 +17,19 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var anoletivo = JsonConvert.DeserializeObject<int?>(param.Mensagem.ToString());
-                var pendencias = await mediator.Send(new ObterPendenciasParaInserirAulasEDiasQuery(anoletivo));
-                foreach (var pendencia in pendencias)
+                int? anoletivo = null;
+                if(!string.IsNullOrEmpty(param.Mensagem?.ToString()))
+                        anoletivo = JsonConvert.DeserializeObject<int>(param.Mensagem.ToString()!);
+
+                var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
+                foreach (var ue in listaUes)
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaCargaAdicionarQuantidadeAulaDiaPendencia, new CargaAulasDiasPendenciaDto(pendencia.PendenciaId, pendencia.QuantidadeDias,pendencia.QuantidadeAulas), Guid.NewGuid()));
+                    var dto = new ObterQuantidadeAulaDiaPendenciaUseDto
+                    {
+                        UeId = ue,
+                        AnoLetivo = anoletivo
+                    };
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaBuscarAdicionarQuantidadeAulaDiaPendenciaUe, dto, Guid.NewGuid()));
                 }
 
                 return true;

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<CargaAulasDiasPendenciaDto>> Handle(ObterPendenciasParaInserirAulasEDiasQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioPendencia.ObterPendenciasParaCargaDiasAulas(request.AnoLetivo);
+            return await repositorioPendencia.ObterPendenciasParaCargaDiasAulas(request.AnoLetivo,request.UeId);
         }
     }
 }

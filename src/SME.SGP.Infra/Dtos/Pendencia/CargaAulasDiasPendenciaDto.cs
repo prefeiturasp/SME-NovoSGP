@@ -2,15 +2,8 @@
 {
     public class CargaAulasDiasPendenciaDto
     {
-        public CargaAulasDiasPendenciaDto(long pendenciaId, int quantidadeDias, int quantidadeAulas)
-        {
-            PendenciaId = pendenciaId;
-            QuantidadeDias = quantidadeDias;
-            QuantidadeAulas = quantidadeAulas;
-        }
-
         public long PendenciaId { get; set; }
-        public int QuantidadeDias { get; set; }
-        public int QuantidadeAulas { get; set; }
+        public long QuantidadeDias { get; set; }
+        public long QuantidadeAulas { get; set; }
     }
 }
