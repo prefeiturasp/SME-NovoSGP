@@ -263,6 +263,9 @@ namespace SME.SGP.Aplicacao
             if (disciplinasDto.Any(x => x.TerritorioSaber))
                 await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);
 
+            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+               disciplinasDto = disciplinasDto.DistinctBy(x => x.CodigoComponenteCurricular).ToList();
+
             return disciplinasDto;
         }
 
