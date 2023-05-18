@@ -8,20 +8,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirPendenciasAulaDiarioClasseFechamentoCommand : IRequest<bool>
     {
-        public ExcluirPendenciasAulaDiarioClasseFechamentoCommand(string turmaCodigo, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, long usuarioId)
+        public ExcluirPendenciasAulaDiarioClasseFechamentoCommand(string turmaCodigo, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
         {
             TurmaCodigo = turmaCodigo;
             DisciplinaId = disciplinaId;
             PeriodoInicio = periodoInicio;
             PeriodoFim = periodoFim;
-            UsuarioId = usuarioId;
         }
 
         public string TurmaCodigo { get; set; }
         public string DisciplinaId { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
-        public long UsuarioId { get; set; }
 
     }
 
@@ -41,9 +39,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.PeriodoFim)
             .NotEmpty()
             .WithMessage("A data/período fim do bimestre deve ser informado para exclusão de todas suas pendências do período do fechamento.");
-            RuleFor(c => c.UsuarioId)
-                .NotEmpty()
-                .WithMessage("O identificador do usuário deve ser informado para exclusão de todas suas pendências do período do fechamento.");
         }
     }
 }
