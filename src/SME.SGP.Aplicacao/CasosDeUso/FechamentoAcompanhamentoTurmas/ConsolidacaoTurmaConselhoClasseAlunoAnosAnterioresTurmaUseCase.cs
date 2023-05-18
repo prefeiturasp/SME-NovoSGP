@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
@@ -12,11 +13,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase : AbstractUseCase, IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase
     {
-        private readonly IRepositorioConselhoClasseConsolidado repositorio;
+        private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
 
-        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado) : base(mediator)
+        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta) : base(mediator)
         {
-            this.repositorio = repositorioConselhoClasseConsolidado;
+            this.repositorioConselhoClasseConsolidadoConsulta = repositorioConselhoClasseConsolidadoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoConsulta));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             try
             {                
-                var alunoNotas = await repositorio.ObterFechamentoNotaAlunoOuConselhoClasseAsync(filtro.TurmaId);
+                var alunoNotas = await repositorioConselhoClasseConsolidadoConsulta.ObterFechamentoNotaAlunoOuConselhoClasseAsync(filtro.TurmaId);
 
                 var agrupamentoPorAluno = alunoNotas.GroupBy(g => new { g.AlunoCodigo }, (key, group) =>
                 new { key.AlunoCodigo, Result = group.Select(s => s).ToList() });

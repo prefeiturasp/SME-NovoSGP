@@ -5,9 +5,9 @@ using System;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaEmPeriodoFechamentoQuery : IRequest<FechamentoReabertura>
+    public class ObterTurmaEmPeriodoFechamentoReaberturaQuery : IRequest<FechamentoReabertura>
     {
-        public ObterTurmaEmPeriodoFechamentoQuery(int bimestre, DateTime dataReferencia, long tipoCalendarioId, string ueCodigo, string dreCodigo)
+        public ObterTurmaEmPeriodoFechamentoReaberturaQuery(int bimestre, DateTime dataReferencia, long tipoCalendarioId, string ueCodigo, string dreCodigo)
         {
             Bimestre = bimestre;
             DataReferencia = dataReferencia;
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public string DreCodigo { get; set; }
     }
 
-    public class ObterTurmaEmPeriodoFechamentoQueryValidator : AbstractValidator<ObterTurmaEmPeriodoFechamentoQuery>
+    public class ObterTurmaEmPeriodoFechamentoQueryValidator : AbstractValidator<ObterTurmaEmPeriodoFechamentoReaberturaQuery>
     {
         public ObterTurmaEmPeriodoFechamentoQueryValidator()
         {

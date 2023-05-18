@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaEmPeriodoFechamentoQueryHandler : IRequestHandler<ObterTurmaEmPeriodoFechamentoQuery, FechamentoReabertura>
+    public class ObterTurmaEmPeriodoFechamentoReaberturaQueryHandler : IRequestHandler<ObterTurmaEmPeriodoFechamentoReaberturaQuery, FechamentoReabertura>
     {
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
 
-        public ObterTurmaEmPeriodoFechamentoQueryHandler(IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
+        public ObterTurmaEmPeriodoFechamentoReaberturaQueryHandler(IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
 
-        public async Task<FechamentoReabertura> Handle(ObterTurmaEmPeriodoFechamentoQuery request, CancellationToken cancellationToken)
+        public async Task<FechamentoReabertura> Handle(ObterTurmaEmPeriodoFechamentoReaberturaQuery request, CancellationToken cancellationToken)
         {
             return await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(
                                                             request.Bimestre,

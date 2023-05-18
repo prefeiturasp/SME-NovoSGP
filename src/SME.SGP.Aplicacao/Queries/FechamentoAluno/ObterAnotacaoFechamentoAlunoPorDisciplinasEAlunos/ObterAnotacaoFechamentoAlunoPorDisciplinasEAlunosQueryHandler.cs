@@ -10,14 +10,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAnotacaoFechamentoAlunoPorDisciplinasEAlunosQueryHandler : IRequestHandler<ObterAnotacaoFechamentoAlunoPorDisciplinasEAlunosQuery, IEnumerable<AnotacaoFechamentoAluno>>
     {
-        private readonly IRepositorioAnotacaoFechamentoAluno repositorioAnotacaoFechamentoAluno;
+        private readonly IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta;
 
-        public ObterAnotacaoFechamentoAlunoPorDisciplinasEAlunosQueryHandler(IRepositorioAnotacaoFechamentoAluno repositorioAnotacaoFechamentoAluno)
+        public ObterAnotacaoFechamentoAlunoPorDisciplinasEAlunosQueryHandler(IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta)
         {
-            this.repositorioAnotacaoFechamentoAluno = repositorioAnotacaoFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFechamentoAluno));
+            this.repositorioAnotacaoFechamentoAlunoConsulta = repositorioAnotacaoFechamentoAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFechamentoAlunoConsulta));
         }
 
         public async Task<IEnumerable<AnotacaoFechamentoAluno>> Handle(ObterAnotacaoFechamentoAlunoPorDisciplinasEAlunosQuery request, CancellationToken cancellationToken)
-            => await repositorioAnotacaoFechamentoAluno.ObterPorFechamentoEAluno(request.FechamentosTurmasDisciplinasIds, request.AlunosCodigos);
+            => await repositorioAnotacaoFechamentoAlunoConsulta.ObterPorFechamentoEAluno(request.FechamentosTurmasDisciplinasIds, request.AlunosCodigos);
     }
 }
