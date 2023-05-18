@@ -117,10 +117,10 @@ namespace SME.SGP.Aplicacao
                 // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
 
                 periodoEscolar = consultasPeriodoEscolar
-                    .ObterPeriodoPorData(periodosEscolares, DateTime.Today);
+                    .ObterPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
 
                 if (periodoEscolar == null)
-                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
             }
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
@@ -362,7 +362,7 @@ namespace SME.SGP.Aplicacao
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, codigosDisciplinasArray, tipoCalendario.Id, bimestre, usuarioRF);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, codigosDisciplinasArray, tipoCalendario.Id, periodoAtual.Id, usuarioRF));
 
-            var periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today, bimestreAtual.Value));
+            var periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreAtual.Value));
             
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulasDadas;
