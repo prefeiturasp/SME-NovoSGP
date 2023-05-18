@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
 {
     public class ObterAlunosEolPorTurmaQueryHandlerFake : IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
+        , IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly string ALUNO_CODIGO_1 = "1";
         private readonly string ALUNO_CODIGO_2 = "2";
@@ -28,7 +29,14 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";
         private readonly string CELULAR_RESPONSAVEL = "11111111111";
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosEolPorTurmaQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosEolPorTurmaQuery request, CancellationToken cancellationToken)
+            => ObterAlunos(int.Parse(request.TurmaId));
+
+
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTodosAlunosNaTurmaQuery request, CancellationToken cancellationToken)
+            => ObterAlunos(request.CodigoTurma);
+
+        private Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(int turmaCodigo)
         {
             var alunos = new List<AlunoPorTurmaResposta> {
 
@@ -38,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_1,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -56,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_2,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -74,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_3,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -92,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_4,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -110,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_5,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -128,7 +136,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_6,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -146,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_7,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -164,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_8,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -182,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_9,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -200,7 +208,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                       CodigoAluno = ALUNO_CODIGO_10,
                       CodigoComponenteCurricular = 0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.TurmaId),
+                      CodigoTurma=turmaCodigo,
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
@@ -214,7 +222,7 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                 }
             };
 
-            return alunos.Where(x => x.CodigoTurma.ToString() == request.TurmaId);
+            return Task.FromResult(alunos.Where(x => x.CodigoTurma == turmaCodigo));
         }
     }
 }
