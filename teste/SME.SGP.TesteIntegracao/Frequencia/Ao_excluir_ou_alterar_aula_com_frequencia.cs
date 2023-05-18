@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RecalcularFrequenciaPorTurmaCommand, bool), typeof(RecalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RecalcularFrequenciaPorTurmaCommand, bool>), typeof(RecalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
             
         }
 
