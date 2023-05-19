@@ -10,6 +10,6 @@ namespace SME.SGP.Notificacoes.Hub
             => repositorioUsuario = repositorioUsuarioObj;
 
         public static IClientProxy Usuario(this IHubCallerClients clients, string usuarioRf)
-            => clients.Client(repositorioUsuario.Obter(usuarioRf).Result);
+            => clients.Clients(repositorioUsuario.Obter(usuarioRf).Result);
     }
 }

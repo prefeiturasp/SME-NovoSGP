@@ -614,14 +614,13 @@ namespace SME.SGP.Dados.Repositorios
                                                             a.professor_rf AS ProfessorRf,
                                                             a.criado_por AS CriadoPor, 
                                                             a.tipo_aula AS TipoAula,
-                                                            CASE WHEN rf.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
+                                                            CASE WHEN rfa.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
             query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
-            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
-            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
-            query.AppendLine(" LEFT JOIN registro_frequencia rf ON rf.aula_id = a.id ");
+            query.AppendLine("                and a.data_aula::date between pe.periodo_inicio and pe.periodo_fim");
+            query.AppendLine("LEFT JOIN registro_frequencia_aluno rfa ON rfa.aula_id = a.id and not rfa.excluido");
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
             query.AppendLine("and a.turma_id = @turmaCodigo ");
