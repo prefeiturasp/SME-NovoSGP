@@ -27,7 +27,5 @@ namespace SME.SGP.Infra
             AlteradoPor = AlteradoPor,
             AlteradoRF = AlteradoRF
         };
-        public string UsuarioCodigoRfCartaIntencaoObs { get; set; }
-        public string UsuarioNomeCartaIntencaoObs { get; set; }
     }
 }
