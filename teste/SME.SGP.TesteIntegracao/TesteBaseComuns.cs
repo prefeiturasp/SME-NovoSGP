@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao
         protected const long USUARIO_ID_1 = 1;
         protected const long USUARIO_ID_2 = 2;
 
-        private int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
+        protected int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
         private const string ANO_LETIVO_Ano_Atual_NOME = "Ano Letivo Ano Atual";
         protected const string FALSE = "false";
         protected const string TRUE = "true";
