@@ -28,20 +28,6 @@ namespace SME.SGP.Aplicacao
 
             var ue = await mediator.Send(new ObterUePorIdQuery(turma.UeId));
             
-            var professorRf = string.Empty;
-            var professorNome = string.Empty;
-
-            if (request.ObservacaoId.HasValue)
-            {
-                var CartaIntencoesObs = await mediator.Send(new ObterCartaIntencoesObservacaoPorObservacaoIdQuery(request.ObservacaoId.Value));
-
-                if (CartaIntencoesObs is null)
-                    throw new NegocioException("A observação da Carta de Intenções informada não foi encontrada.");
-
-                professorRf = CartaIntencoesObs.UsuarioCodigoRfCartaIntencaoObs;
-                professorNome = CartaIntencoesObs.UsuarioNomeCartaIntencaoObs;
-            }
-
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, request.ComponenteCurricular));
