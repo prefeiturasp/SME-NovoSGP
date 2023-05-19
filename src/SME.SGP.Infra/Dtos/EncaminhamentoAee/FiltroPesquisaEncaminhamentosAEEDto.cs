@@ -14,5 +14,6 @@ namespace SME.SGP.Infra
         public string AlunoCodigo { get; set; }
         public SituacaoAEE? Situacao { get; set; }
         public string ResponsavelRf { get; set; }
+        public bool ExibirEncerrados { get; set; }
     }
 }
