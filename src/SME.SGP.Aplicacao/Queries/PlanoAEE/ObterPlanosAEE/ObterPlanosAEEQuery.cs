@@ -6,13 +6,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanosAEEQuery : IRequest<PaginacaoResultadoDto<PlanoAEEResumoDto>>
     {
-        public ObterPlanosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoPlanoAEE? situacao)
+        public ObterPlanosAEEQuery(FiltroPlanosAEEDto filtro)
         {
-            DreId = dreId;
-            UeId = ueId;
-            TurmaId = turmaId;
-            AlunoCodigo = alunoCodigo;
-            Situacao = situacao;
+            DreId = filtro.DreId;
+            UeId = filtro.UeId;
+            TurmaId = filtro.TurmaId;
+            AlunoCodigo = filtro.AlunoCodigo;
+            Situacao = filtro.Situacao;
+            ResponsavelRf = filtro.ResponsavelRf;
+            PaaiReponsavelRf = filtro.PaaiReponsavelRf;
+            ExibirEncerrados = filtro.ExibirEncerrados;
         }
 
         public long DreId { get; }
@@ -20,5 +23,8 @@ namespace SME.SGP.Aplicacao
         public long TurmaId { get; }
         public string AlunoCodigo { get; }
         public SituacaoPlanoAEE? Situacao { get; }
+        public string ResponsavelRf { get; set; }
+        public string PaaiReponsavelRf { get; set; }
+        public bool ExibirEncerrados { get; set; }
     }
 }
