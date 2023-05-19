@@ -38,11 +38,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<CartaIntencoesObservacaoDto> ObterCartaIntencoesObservacaoPorObservacaoId(long observacaoId)
         {
-            const string sql = @" select dbob.Observacao, dbob.diario_bordo_id as DiarioBordoId, u.rf_codigo as UsuarioCodigoRfDiarioBordo, u.nome as UsuarioNomeDiarioBordo
-								  from diario_bordo_observacao dbob
-								  inner join diario_bordo db on dbob.diario_bordo_id = db.id
-								  inner join usuario u on u.rf_codigo = db.criado_rf 	
-								where dbob.id = @observacaoId";
+            const string sql = @" select cio.observacao, u.rf_codigo as UsuarioCodigoRfCartaIntencaoObs, u.nome as UsuarioNomeCartaIntencaoObs
+									from carta_intencoes_observacao cio  
+									inner join usuario u on u.rf_codigo = cio.criado_rf 	
+									where cio.id = @observacaoId";
 
             return await database.Conexao.QuerySingleOrDefaultAsync<CartaIntencoesObservacaoDto>(sql, new { observacaoId });
         }

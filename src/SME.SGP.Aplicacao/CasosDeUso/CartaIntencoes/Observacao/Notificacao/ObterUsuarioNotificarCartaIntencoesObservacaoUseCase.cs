@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UsuarioNotificarCartaIntencoesObservacaoDto>> Executar(ObterUsuarioNotificarCartaIntencoesObservacaoDto dto)
         {
-            var usuariosNotificados = await mediator.Send(new ObterCartaIntencoesNotificacaoQuery(dto.TurmaId, dto.ObservacaoId, dto.CartaIntencoesObservacaoId));
+            var usuariosNotificados = await mediator.Send(new ObterCartaIntencoesNotificacaoQuery(dto.TurmaId, dto.ObservacaoId, dto.CartaIntencoesObservacaoId, dto.ComponenteCurricular));
 
             return usuariosNotificados;
         }

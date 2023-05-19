@@ -1,8 +1,11 @@
 ﻿using MediatR;
+using Minio.DataModel;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,37 +26,65 @@ namespace SME.SGP.Aplicacao
             if (turma is null)
                 throw new NegocioException("A turma informada não foi encontrada.");
 
+            var ue = await mediator.Send(new ObterUePorIdQuery(turma.UeId));
+            
             var professorRf = string.Empty;
             var professorNome = string.Empty;
 
-            if (request.CartaIntencoesObservacaoId > 0)
-            {
-                var CartaIntencoes = await mediator.Send(new ObterCartaIntentocesPorIdQuery(request.CartaIntencoesObservacaoId));
-
-                if (CartaIntencoes is null)
-                    throw new NegocioException("A carta de intenções informada não foi encontrada.");
-
-                professorRf = CartaIntencoes.CriadoRF;
-                professorNome = CartaIntencoes.CriadoPor;
-            }
-            else if (request.ObservacaoId.HasValue)
+            if (request.ObservacaoId.HasValue)
             {
                 var CartaIntencoesObs = await mediator.Send(new ObterCartaIntencoesObservacaoPorObservacaoIdQuery(request.ObservacaoId.Value));
 
                 if (CartaIntencoesObs is null)
-                    throw new NegocioException("A carta de intenções observação informada não foi encontrada.");
+                    throw new NegocioException("A observação da Carta de Intenções informada não foi encontrada.");
 
-                professorRf = CartaIntencoesObs.Auditoria.CriadoRF;
-                professorNome = CartaIntencoesObs.Auditoria.CriadoPor;
+                professorRf = CartaIntencoesObs.UsuarioCodigoRfCartaIntencaoObs;
+                professorNome = CartaIntencoesObs.UsuarioNomeCartaIntencaoObs;
             }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            if (!professorRf.Equals(usuarioLogado.CodigoRf))
-                return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(professorRf, professorNome)));
+            var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, request.ComponenteCurricular));
 
+            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string> { turma.CodigoTurma }));
+
+            var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(ue.CodigoUe, (int)Cargo.Diretor));
+
+            IEnumerable<UsuarioNotificarCartaIntencoesObservacaoDto> professoresNotificar = new List<UsuarioNotificarCartaIntencoesObservacaoDto>();
+
+            if (funcionariosDiretor != null && funcionariosDiretor.Any(d => d.CodigoRF == usuarioLogado.CodigoRf) && professoresDaTurma.Any())
+            {
+                foreach (var professor in professoresDaTurma)
+                {                    
+                    var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(professor));
+                    if (usuario == null)
+                        throw new NegocioException("Usuário não encontrado no SGP");
+
+                    var usuariosNotificar = await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(usuario.CodigoRf, usuario.Nome)));
+                    professoresNotificar = professoresNotificar.Concat(usuariosNotificar.ToList());                        
+                }
+
+                return professoresNotificar;
+            }
+
+
+            if (professorTitular.ProfessorRf.Equals(usuarioLogado.CodigoRf))
+            {                
+                var segundoTitular = professoresDaTurma.FirstOrDefault(p => p != usuarioLogado.CodigoRf);
+                var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(segundoTitular));
+                if (usuario == null)
+                    throw new NegocioException("Usuário não encontrado no SGP");
+
+                return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(segundoTitular, usuario.Nome)));
+
+            }
+            else if(professoresDaTurma.Any(p => p == usuarioLogado.CodigoRf))
+            {
+                return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(professorTitular.ProfessorRf, professorTitular.ProfessorNome)));
+            }
             else
                 return default;
+
         }
 
         private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(string codigoRf, string nome)
