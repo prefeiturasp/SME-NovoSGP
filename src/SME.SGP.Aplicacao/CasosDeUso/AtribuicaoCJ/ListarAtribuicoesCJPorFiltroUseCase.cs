@@ -54,6 +54,18 @@ namespace SME.SGP.Aplicacao
                                (c.TerritorioSaber && (disciplinasIds.Contains(c.CodigoComponenteTerritorioSaber.Value) || disciplinasIds.Intersect(c.CodigosTerritoriosAgrupamento).Any())))
                     .ToList();
 
+                if (a.Key.Modalidade == Modalidade.EducacaoInfantil)
+                {
+                    var componentesInfantilSgp = mediator
+                        .Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds.ToArray())).Result;
+
+                    disciplinasDescricoes.ForEach(d =>
+                    {
+                        d.NomeComponenteInfantil = componentesInfantilSgp
+                            .FirstOrDefault(c => c.CodigoComponenteCurricular == d.CodigoComponenteCurricular)?.NomeComponenteInfantil;
+                    });
+                }
+
                 var professorDisciplina = a.FirstOrDefault();
 
                 var exibeNomeTurmaNovoInfantil = professorDisciplina != null && professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;
@@ -65,7 +77,7 @@ namespace SME.SGP.Aplicacao
                     Turma = professorDisciplina?.Turma.Nome,
                     TurmaId = professorDisciplina?.TurmaId,
                     Disciplinas = exibeNomeTurmaNovoInfantil
-                    ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil).ToArray()
+                    ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil ?? d.Nome).ToArray()
                     : disciplinasDescricoes.Select(d => d.Nome).ToArray(),
                     ProfessorRf = professorDisciplina.ProfessorRf
                 };
