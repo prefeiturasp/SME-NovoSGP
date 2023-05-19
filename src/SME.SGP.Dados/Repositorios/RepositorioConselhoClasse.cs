@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -47,6 +48,30 @@ namespace SME.SGP.Dados.Repositorios
 	                        and ft.turma_id = @turmaId
 	                        and pe.bimestre = @bimestre ";
             return await database.Conexao.QueryAsync<AlunoTemRecomandacaoDto>(query, new { turmaId,bimestre });
+        }
+
+        public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(long turmaId, int bimestre)
+        {
+            var sql = new StringBuilder(); 
+            sql.AppendLine(@"select");
+            sql.AppendLine(@"	cccat.aluno_codigo as AlunoCodigo,");
+            sql.AppendLine(@"	coalesce(cccatn.nota,cccatn.conceito_id)  as Nota,");
+            sql.AppendLine(@"	cccatn.componente_curricular_id as ComponenteCurricularId,");
+            sql.AppendLine(@"	cc.descricao_sgp as Descricao");
+            sql.AppendLine(@"from");
+            sql.AppendLine(@"	consolidado_conselho_classe_aluno_turma_nota cccatn");
+            sql.AppendLine(@"join consolidado_conselho_classe_aluno_turma cccat on");
+            sql.AppendLine(@"	cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id");
+            sql.AppendLine(@"join turma t on");
+            sql.AppendLine(@"	t.id = cccat.turma_id");
+            sql.AppendLine(@"join componente_curricular cc on");
+            sql.AppendLine(@"	cc.id = cccatn.componente_curricular_id");
+            sql.AppendLine(@"where");
+            sql.AppendLine(@"	not cccat.excluido");
+            sql.AppendLine(@"	and not cccat.excluido");
+            sql.AppendLine(@"	and t.id = @turmaId ");
+            sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
+            return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmaId,bimestre });
         }
     }
 }
