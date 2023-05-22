@@ -25,6 +25,14 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
         }
 
+        public async Task AtualizarQuantidadeDiasAulas(long pendenciaId, long quantidadeAulas,long quantidadeDias)
+        {
+                var sql = new StringBuilder(); 
+                sql.AppendLine(@"update pendencia ");
+                sql.AppendLine(@"set qtde_aulas = @qtdeaulas , qtde_dias = @qtdedias");
+                sql.AppendLine(@"where id =@pendenciaId ");
+                await database.Conexao.ExecuteAsync(sql.ToString(), new { pendenciaId, qtdeaulas = quantidadeAulas, qtdedias = quantidadeDias });
+        }
         public void ExclusaoLogicaPendenciaIds(long[] pendenciasIds)
         {
             database.Conexao.Execute("update pendencia set excluido = true where id = ANY(@pendenciasIds)", new { pendenciasIds });
@@ -432,6 +440,43 @@ namespace SME.SGP.Dados.Repositorios
                             where p.id = @pendenciaId and t.id = @turmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
+        }
+
+        public async Task<IEnumerable<CargaAulasDiasPendenciaDto>> ObterPendenciasParaCargaDiasAulas(int? anoLetivo, long ueid)
+        {
+                var anoLetivoInformado = anoLetivo ?? DateTime.Now.Year;
+                var sql = new StringBuilder(); 
+                sql.AppendLine(@"     select distinct ");
+                sql.AppendLine(@"      p.id as PendenciaId,");
+                sql.AppendLine(@"      count(a.data_aula) as QuantidadeDias,");
+                sql.AppendLine(@"      sum(a.quantidade) as QuantidadeAulas");
+                sql.AppendLine(@"     from pendencia_fechamento pf");
+                sql.AppendLine(@"      inner join pendencia p on pf.pendencia_id  = p.id");
+                sql.AppendLine(@"      inner join pendencia_fechamento_aula pfa on pf.id = pfa.pendencia_fechamento_id ");
+                sql.AppendLine(@"      inner join aula a on a.id = pfa.aula_id ");
+                sql.AppendLine(@"      inner join turma t on t.turma_id  = a.turma_id 	");
+                sql.AppendLine(@"     where  not p.excluido and not a.excluido  ");
+                sql.AppendLine(@"         and t.ano_letivo = @anoLetivoInformado ");
+                sql.AppendLine(@"         and t.ue_id = @ueid ");
+                sql.AppendLine(@"      and p.tipo in(3,4)");
+                sql.AppendLine(@"       and p.situacao in (1,2)");
+                sql.AppendLine(@"      group by p.id	                       ");
+                sql.AppendLine(@"	union all	                    ");
+                sql.AppendLine(@"     select distinct ");
+                sql.AppendLine(@"     	p.id as PendenciaId,");
+                sql.AppendLine(@"      count(a.data_aula) as QuantidadeDias,");
+                sql.AppendLine(@"      sum(a.quantidade) as QuantidadeAula");
+                sql.AppendLine(@"  from pendencia_aula pa");
+                sql.AppendLine(@"      inner join pendencia p on pa.pendencia_id  = p.id");
+                sql.AppendLine(@"      inner join aula a on a.id  = pa.aula_id");
+                sql.AppendLine(@" 	    inner join turma t  on t.turma_id = a.turma_id ");
+                sql.AppendLine(@"     where not p.excluido and not a.excluido  ");
+                sql.AppendLine(@"      and t.ano_letivo = @anoLetivoInformado ");
+                sql.AppendLine(@"      and t.ue_id = @ueid ");
+                sql.AppendLine(@"      and p.tipo in(7,8,9)");
+                sql.AppendLine(@"       and p.situacao in (1,2)");
+                sql.AppendLine(@"      group by p.id ");
+                return await database.Conexao.QueryAsync<CargaAulasDiasPendenciaDto>(sql.ToString(), new { anoLetivoInformado,ueid },commandTimeout:60);
         }
 
         private static string RetornaQueryParaUnicoTipoPendenciaGrupo(TipoPendenciaGrupo tipoPendenciaGrupo, string turmaCodigo)
