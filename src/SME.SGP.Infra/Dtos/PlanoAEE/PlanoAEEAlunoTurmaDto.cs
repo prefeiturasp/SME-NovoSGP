@@ -24,6 +24,8 @@ namespace SME.SGP.Infra
         public string RfPaaiReponsavel { get; set; }
         public string NomePaaiReponsavel { get; set; }
         public long PlanoAeeVersaoId { get; set; }
+        public string UeNome { get; set; }
+        public TipoEscola TipoEscola { get; set; }
 
         public string ObterVersaoPlano()
             => $"v{Versao} ({DataVersao:dd/MM/yyyy})";
