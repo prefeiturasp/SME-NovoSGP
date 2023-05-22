@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -19,17 +21,38 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(IncluirFilaConciliacaoFrequenciaTurmaCommand request, CancellationToken cancellationToken)
         {
-            var alunos = await mediator.Send(new ObterAlunosDentroPeriodoQuery(request.TurmaCodigo, (request.DataInicio, request.DataFim)));
+            var alunos = await ObterAlunosTurma(request.TurmaCodigo, (request.DataInicio, request.DataFim));
 
-            foreach(var componenteCurricularId in await ObterComponentesCurriculares(request.TurmaCodigo, request.ComponenteCurricularId))
+            if (!alunos?.Any() != true)
             {
-                var alunosCodigo = alunos.Select(a => a.CodigoAluno);
+                foreach(var componenteCurricularId in await ObterComponentesCurriculares(request.TurmaCodigo, request.ComponenteCurricularId))
+                {
+                    var alunosCodigo = alunos.Select(a => a.CodigoAluno);
 
-                var comando = new CalcularFrequenciaPorTurmaCommand(alunosCodigo, request.DataFim, request.TurmaCodigo, componenteCurricularId);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+                    var comando = new CalcularFrequenciaPorTurmaCommand(alunosCodigo, request.DataFim, request.TurmaCodigo, componenteCurricularId);
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null));
+                }
             }
 
             return true;
+        }
+
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosTurma(string turmaCodigo, (DateTime DataInicio, DateTime DataFim) periodo)
+        {
+            try
+            {
+                return await mediator.Send(new ObterAlunosDentroPeriodoQuery(turmaCodigo, periodo));
+            }
+            catch (NegocioException nex)
+            {
+                await RegistraExcecao(nex, LogNivel.Negocio);
+            }
+            catch (Exception ex)
+            {
+                await RegistraExcecao(ex);
+            }
+
+            return Enumerable.Empty<AlunoPorTurmaResposta>();
         }
 
         private async Task<IEnumerable<string>> ObterComponentesCurriculares(string turmaCodigo, string componenteCurricularId)
@@ -38,11 +61,31 @@ namespace SME.SGP.Aplicacao
                 return new List<string>() { componenteCurricularId };
 
             // Listar componentes da turma
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasQuery(new string[] { turmaCodigo }));
-            if (componentesCurriculares?.Any() != true)
-                throw new Exception("Não foi possível obter os componentes curriculares da turma");
+            try
+            {
+                var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasQuery(new string[] { turmaCodigo }));
+                if (componentesCurriculares?.Any() != true)
+                    throw new NegocioException("Não foi possível obter os componentes curriculares da turma para conciliação de frequência");
 
-            return componentesCurriculares.Select(a => a.Codigo.ToString());
+                return componentesCurriculares.Select(a => a.Codigo.ToString());
+            }
+            catch (NegocioException ex)
+            {
+                await RegistraExcecao(ex, LogNivel.Negocio);
+            }
+            catch (Exception ex)
+            {
+                await RegistraExcecao(ex);
+            }
+
+            return Enumerable.Empty<string>();
         }
-    }
+
+        public Task RegistraExcecao(Exception ex, LogNivel nivel = LogNivel.Critico)
+            => mediator.Send(new SalvarLogViaRabbitCommand(ex.Message,
+                                                           LogNivel.Critico,
+                                                           LogContexto.Frequencia,
+                                                           rastreamento: ex.StackTrace,
+                                                           excecaoInterna: ex.InnerException?.ToString()));
+    };
 }
