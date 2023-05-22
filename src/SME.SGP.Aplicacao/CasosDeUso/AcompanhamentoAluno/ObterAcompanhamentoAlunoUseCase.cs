@@ -103,8 +103,8 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<Turma> ObterTurma(long turmaId)
-        {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+        {            
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId.ToString()));
 
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma informada!");
