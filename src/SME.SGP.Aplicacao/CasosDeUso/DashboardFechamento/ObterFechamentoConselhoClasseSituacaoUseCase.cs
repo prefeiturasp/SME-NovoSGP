@@ -58,7 +58,8 @@ namespace SME.SGP.Aplicacao
                         
                     }
 
-                    conselhos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, param.Bimestre, quantidadeEmAndamentoEConcluido), SituacaoConselhoClasse.NaoIniciado.Name()));
+                    if(quantidadeEmAndamentoEConcluido > 0)
+                        conselhos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, param.Bimestre, quantidadeEmAndamentoEConcluido), SituacaoConselhoClasse.NaoIniciado.Name()));
                 }
             }
 
