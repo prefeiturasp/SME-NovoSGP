@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                                                                               usuarioLogado.PerfilAtual,
                                                                               usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
 
-            if (usuarioLogado.EhSomenteProfessorCj())
+            if (usuarioLogado.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
