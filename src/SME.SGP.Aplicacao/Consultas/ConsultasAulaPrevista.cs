@@ -59,11 +59,13 @@ namespace SME.SGP.Aplicacao
             var codigoTerritorioCorrespondente = (long?)null;
             var rf = usuarioLogado.CodigoRf;
 
-            if (usuarioLogado.EhProfessor())
+            if (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())
             {
                 var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
                 var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
                 codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
+                if (usuarioLogado.EhGestorEscolar())
+                    rf = componenteCorrespondente.Professor;
             }
             else if (usuarioLogado.EhProfessorCj())
             {
@@ -77,6 +79,7 @@ namespace SME.SGP.Aplicacao
                     codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
                 }
             }
+            
             var aulaPrevista = codigoTerritorioCorrespondente.HasValue ?
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.CriadoRF.Equals(rf) && (x.DisciplinaId == disciplinaId || x.DisciplinaId == codigoTerritorioCorrespondente.Value.ToString())) :
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
@@ -91,7 +94,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
 
             if (aulaPrevista != null)
-                aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
+                aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id, codigoTerritorioCorrespondente?.ToString() ?? null, rf);
             else
             {
                 totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId, false));
@@ -106,7 +109,7 @@ namespace SME.SGP.Aplicacao
                     aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
                 }
                 else
-                    aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
+                    aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id, codigoTerritorioCorrespondente?.ToString() ?? null);
             }
 
             return MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);
@@ -206,9 +209,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId)
+        private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId, string disciplinaIdConsiderada = null, string professor = null)
         {
-            return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevistaId);
+            return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevistaId, disciplinaIdConsiderada, professor);
         }
 
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)

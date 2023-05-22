@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAulaPrevistaBimestreConsulta : RepositorioBase<AulaPrevistaBimestre>, IRepositorioAulaPrevistaBimestreConsulta
-    {
+    {        
         const string Select = @"
                         select
                                 apb.id, 
@@ -36,32 +36,34 @@ namespace SME.SGP.Dados.Repositorios
                           inner join aula_prevista ap on ap.tipo_calendario_id = p.tipo_calendario_id
                            left join aula_prevista_bimestre apb on ap.id = apb.aula_prevista_id and p.bimestre = apb.bimestre and not apb.excluido 
                            left join aula a on a.turma_id = ap.turma_id and		
-                                            a.disciplina_id = ap.disciplina_id and
+                                            (a.disciplina_id = ap.disciplina_id{0}) and
                                             a.tipo_calendario_id = p.tipo_calendario_id and
                                             a.data_aula BETWEEN p.periodo_inicio AND p.periodo_fim
-                                            and (a.id is null or not a.excluido)        
-                                left join componente_curricular cc on a.disciplina_id::int8 = cc.id  ";
+                                            and (a.id is null or not a.excluido)
+                                            {1}
+                                left join componente_curricular cc on ap.disciplina_id::int8 = cc.id  ";
 
         const string GroupOrderBy = @" group by p.bimestre, p.periodo_inicio, p.periodo_fim, apb.aulas_previstas, apb.Id,
                          	   ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
                                ap.alterado_rf, ap.criado_rf, cc.permite_registro_frequencia, ap.disciplina_id; ";
 
         public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-        {
+        {            
         }
 
-        public async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorFiltro(long tipoCalendarioId, string turmaId, string disciplinaId)
+        public async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorFiltro(long tipoCalendarioId, string turmaId, string disciplinaId, string disciplinaIdEquivalenteConsiderada = null, string professor = null)
         {
-            StringBuilder query = new StringBuilder();
+            StringBuilder query = new StringBuilder();            
 
-            query.Append(Select);
+            query.Append(string.Format(Select, !string.IsNullOrEmpty(disciplinaIdEquivalenteConsiderada) ? " or a.disciplina_id = @disciplinaIdEquivalenteConsiderada " : string.Empty,
+                                               !string.IsNullOrEmpty(professor) ? "and a.professor_rf = @professor" : string.Empty));
             query.Append(@" where tp.situacao and not tp.excluido and
                         p.tipo_calendario_id = @tipoCalendarioId and
                         ap.turma_id = @turmaId and
                         ap.disciplina_id = @disciplinaId ");
             query.Append(GroupOrderBy);
 
-            return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { tipoCalendarioId, turmaId, disciplinaId }));
+            return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { tipoCalendarioId, turmaId, disciplinaId, disciplinaIdEquivalenteConsiderada, professor }));
         }
 
         public async Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string[] disciplinasId, int? bimestre, string codigoRf = null)
@@ -106,16 +108,17 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AulaPrevistaBimestre>(sql, parametros);
         }
 
-        public async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorId(long? aulaPrevistaId)
+        public async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestresAulasPrevistasPorId(long? aulaPrevistaId, string disciplinaIdEquivalenteConsiderada = null, string professor = null)
         {
             StringBuilder query = new StringBuilder();
 
-            query.Append(Select);
+            query.Append(string.Format(Select, !string.IsNullOrEmpty(disciplinaIdEquivalenteConsiderada) ? " or a.disciplina_id = @disciplinaIdEquivalenteConsiderada " : string.Empty,
+                                               !string.IsNullOrEmpty(professor) ? "and a.professor_rf = @professor" : string.Empty));
             query.Append(@" where tp.situacao and not tp.excluido and
                         ap.id = @aulaPrevistaId ");
             query.Append(GroupOrderBy);
 
-            return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { aulaPrevistaId }));
+            return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { aulaPrevistaId, disciplinaIdEquivalenteConsiderada, professor }));
         }
         public async Task<IEnumerable<AulaPrevistaTurmaComponenteDto>> ObterBimestresAulasTurmasComponentesCumpridasAsync(string[] turmasCodigos, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres)
         {
