@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var pendencia = JsonConvert.DeserializeObject<CargaAulasDiasPendenciaDto>(param.Mensagem.ToString());
+                var pendencia = param.ObterObjetoMensagem<CargaAulasDiasPendenciaDto>();
                 await mediator.Send(new CargaPendenciasQuantidadeDiasQuantidadeAulasCommand(pendencia));
                 return true;
                 
