@@ -44,6 +44,8 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             if(tipoCalendarioId == 0)
                 throw new NegocioException($"Não foi possível obter o id do tipo calêndario para a turma : {turma.CodigoTurma}");
+            
+            var turmaEmPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, false, tipoCalendarioId));
 
             if (turma.EhTurmaInfantil)
             {
@@ -53,7 +55,8 @@ namespace SME.SGP.Aplicacao
 
                 return (dataReferencia >= periodosFechamento.LastOrDefault().InicioDoFechamento.Date &&
                        dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date)
-                       || await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre);
+                       || await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre)
+                       || turmaEmPeriodoAberto;
             }
             return await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre);
         }
