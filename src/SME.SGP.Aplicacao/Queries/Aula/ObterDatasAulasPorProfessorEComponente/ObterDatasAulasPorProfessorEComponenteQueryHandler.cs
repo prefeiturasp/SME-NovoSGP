@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())
                 .Concat(componentesCurricularesEolProfessor.Where(c => c.Regencia && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0).Select(c => c.CodigoComponenteCurricularPai.Value.ToString()))
                 .Concat(componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber.ToString()))
-                .ToArray();
+                .Distinct().ToArray();
 
             var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, codigosComponentesUsuario, componentesCurricularesEolProfessor.Any(c => c.TerritorioSaber) ? componentesCurricularesEolProfessor.First().Professor : null);
 
