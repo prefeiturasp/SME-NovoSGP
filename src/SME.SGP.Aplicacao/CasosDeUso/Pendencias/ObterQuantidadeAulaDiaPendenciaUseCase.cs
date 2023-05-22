@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             {
                 int? anoletivo = null;
                 if(!string.IsNullOrEmpty(param.Mensagem?.ToString()))
-                        anoletivo = JsonConvert.DeserializeObject<int>(param.Mensagem.ToString()!);
+                        anoletivo = int.Parse(param.Mensagem.ToString()!);
 
                 var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
                 foreach (var ue in listaUes)

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var filtro = JsonConvert.DeserializeObject<ObterQuantidadeAulaDiaPendenciaUseDto>(param.Mensagem.ToString()!);
+                var filtro = param.ObterObjetoMensagem<ObterQuantidadeAulaDiaPendenciaUseDto>();
                 var pendencias = await mediator.Send(new ObterPendenciasParaInserirAulasEDiasQuery(filtro.AnoLetivo,filtro.UeId));
                 foreach (var pendencia in pendencias)
                 {
