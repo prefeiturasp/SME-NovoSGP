@@ -462,7 +462,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"         and t.ano_letivo = @anoLetivoInformado ");
                 sql.AppendLine(@"         and t.ue_id = @ueid ");
                 sql.AppendLine(@"      and p.tipo = any(@tiposPendenciaFechamento)");
-                sql.AppendLine(@"       and p.situacao in (@situacoesPendencia)");
+                sql.AppendLine(@"       and p.situacao = any(@situacoesPendencia)");
                 sql.AppendLine(@"      group by p.id	                       ");
                 sql.AppendLine(@"	union all	                    ");
                 sql.AppendLine(@"     select distinct ");
