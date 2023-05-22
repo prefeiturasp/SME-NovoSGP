@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var pendencia = param.ObterObjetoMensagem<CargaAulasDiasPendenciaDto>();
+                var pendencia = param.ObterObjetoMensagem<AulasDiasPendenciaDto>();
                 await mediator.Send(new CargaPendenciasQuantidadeDiasQuantidadeAulasCommand(pendencia));
                 return true;
                 
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao realizar a carga de dias e aulas  na pendencia", LogNivel.Negocio, LogContexto.Pendencia, ex.Message));
-                throw;
+                return false;
             }
         }
     }

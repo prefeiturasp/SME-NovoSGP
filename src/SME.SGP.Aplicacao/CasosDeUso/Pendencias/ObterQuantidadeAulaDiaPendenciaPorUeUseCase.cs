@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeAulaDiaPendenciaUseUeCase : AbstractUseCase,IObterQuantidadeAulaDiaPendenciaUseUeCase
+    public class ObterQuantidadeAulaDiaPendenciaPorUeUseCase : AbstractUseCase,IObterQuantidadeAulaDiaPendenciaPorUeUseCase
     {
-        public ObterQuantidadeAulaDiaPendenciaUseUeCase(IMediator mediator) : base(mediator)
+        public ObterQuantidadeAulaDiaPendenciaPorUeUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -17,11 +16,11 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var filtro = param.ObterObjetoMensagem<ObterQuantidadeAulaDiaPendenciaUseDto>();
+                var filtro = param.ObterObjetoMensagem<ObterQuantidadeAulaDiaPendenciaDto>();
                 var pendencias = await mediator.Send(new ObterPendenciasParaInserirAulasEDiasQuery(filtro.AnoLetivo,filtro.UeId));
                 foreach (var pendencia in pendencias)
                 {
-                    var dto = new CargaAulasDiasPendenciaDto
+                    var dto = new AulasDiasPendenciaDto
                     {
                         PendenciaId = pendencia.PendenciaId,
                         QuantidadeDias = pendencia.QuantidadeDias,
@@ -35,7 +34,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao realizar a carga de dias e aulas  na pendencia", LogNivel.Negocio, LogContexto.Pendencia, ex.Message,innerException:ex.InnerException?.ToString()));
-                throw;
+                return false;
             }
         }
     }

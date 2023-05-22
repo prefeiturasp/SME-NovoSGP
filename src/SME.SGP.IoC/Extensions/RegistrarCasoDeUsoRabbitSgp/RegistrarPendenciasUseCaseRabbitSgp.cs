@@ -29,7 +29,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoUseCase, RemoverPendenciasNoFinalDoAnoLetivoUseCase>();
             services.TryAddScoped<IObterQuantidadeAulaDiaPendenciaUseCase, ObterQuantidadeAulaDiaPendenciaUseCase>();
             services.TryAddScoped<ICargaQuantidadeAulaDiaPendenciaUseCase, CargaQuantidadeAulaDiaPendenciaUseCase>();
-            services.TryAddScoped<IObterQuantidadeAulaDiaPendenciaUseUeCase, ObterQuantidadeAulaDiaPendenciaUseUeCase>();
+            services.TryAddScoped<IObterQuantidadeAulaDiaPendenciaPorUeUseCase, ObterQuantidadeAulaDiaPendenciaPorUeUseCase>();
         }
     }
 }

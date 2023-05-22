@@ -6,12 +6,12 @@ namespace SME.SGP.Aplicacao
 {
     public class CargaPendenciasQuantidadeDiasQuantidadeAulasCommand : IRequest<bool>
     {
-        public CargaPendenciasQuantidadeDiasQuantidadeAulasCommand(CargaAulasDiasPendenciaDto carga)
+        public CargaPendenciasQuantidadeDiasQuantidadeAulasCommand(AulasDiasPendenciaDto carga)
         {
             Carga = carga;
         }
 
-        public CargaAulasDiasPendenciaDto Carga { get; set; }
+        public AulasDiasPendenciaDto Carga { get; set; }
     }
 
     public class CargaPendenciasQuantidadeDiasQuantidadeAulasCommandValidator : AbstractValidator<CargaPendenciasQuantidadeDiasQuantidadeAulasCommand>

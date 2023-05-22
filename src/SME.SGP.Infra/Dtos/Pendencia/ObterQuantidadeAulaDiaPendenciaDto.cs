@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class ObterQuantidadeAulaDiaPendenciaUseDto
+    public class ObterQuantidadeAulaDiaPendenciaDto
     {
         public int? AnoLetivo { get; set; }
         public long UeId { get; set; }
