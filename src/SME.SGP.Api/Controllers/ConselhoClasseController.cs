@@ -252,6 +252,15 @@ namespace SME.SGP.Api.Controllers
             else
                 return StatusCode(204);
         }
+
+        [HttpGet("validar-inconsistencias/turma/{turmaId}/bimestre/{bimestre}")]
+        [ProducesResponseType(typeof(IEnumerable<InconsistenciasAlunoFamiliaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> ObterAlunosSemNotasRecomendacoes(long turmaId,int bimestre,[FromServices] IObterAlunosSemNotasRecomendacoesUseCase useCase)
+        {
+            return Ok(useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId,bimestre)));
+        }
     }
 
 }
