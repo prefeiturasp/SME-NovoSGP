@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<IObterQuantidadeAulaDiaPendenciaPorUeUseCase>();
             var filtro = new ObterQuantidadeAulaDiaPendenciaDto {AnoLetivo = null, UeId = 1};
-            var retornoUsecase = await useCase.Executar(new MensagemRabbit() { Mensagem = filtro });
+            var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(filtro)));
             retornoUsecase.ShouldBeTrue();
         }
         
@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<IObterQuantidadeAulaDiaPendenciaPorUeUseCase>();
             var filtro = new ObterQuantidadeAulaDiaPendenciaDto {AnoLetivo = 2023, UeId = 1};
-            var retornoUsecase = await useCase.Executar(new MensagemRabbit() { Mensagem = filtro });
+            var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(filtro)));
             retornoUsecase.ShouldBeTrue();
         }
 
@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             pendenciasExistentesNaBase.Count(x => x.QuantidadeDias == null && x.QuantidadeAulas == null).ShouldBeEquivalentTo(2);
             
             var carga = new AulasDiasPendenciaDto {PendenciaId = 1, QuantidadeAulas = 1, QuantidadeDias = 1};
-            var retornoUsecase = await useCase.Executar(new MensagemRabbit() { Mensagem = carga });
+            var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(carga)));
             retornoUsecase.ShouldBeTrue();
             
             var pendenciasNaBaseAposAtualizacao = ObterTodos<Pendencia>();
