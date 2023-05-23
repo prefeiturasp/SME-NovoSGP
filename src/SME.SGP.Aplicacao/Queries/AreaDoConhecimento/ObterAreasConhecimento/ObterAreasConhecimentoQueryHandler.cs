@@ -64,15 +64,18 @@ namespace SME.SGP.Aplicacao
 
                 componentesTerritorio.ForEach(cc =>
                 {
-                    var componenteTerritorioEquivalente = mediator
+                    if(cc.CodigoComponenteCurricular > 0 && !string.IsNullOrEmpty(cc.TurmaCodigo))
+                    {
+                        var componenteTerritorioEquivalente = mediator
                         .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(cc.CodigoComponenteCurricular, cc.TurmaCodigo, null)).Result;
 
-                    if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
-                    {
-                        var codigoConsiderado = componenteTerritorioEquivalente.Select(ct => ct.codigoComponente)
-                            .Except(new string[] { cc.CodigoComponenteCurricular.ToString() }).FirstOrDefault();
-                        if (codigoConsiderado != null && long.Parse(codigoConsiderado) < cc.CodigoComponenteCurricular)
-                            listaCodigosComponentes.Add(long.Parse(codigoConsiderado));
+                        if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
+                        {
+                            var codigoConsiderado = componenteTerritorioEquivalente.Select(ct => ct.codigoComponente)
+                                .Except(new string[] { cc.CodigoComponenteCurricular.ToString() }).FirstOrDefault();
+                            if (codigoConsiderado != null && long.Parse(codigoConsiderado) < cc.CodigoComponenteCurricular)
+                                listaCodigosComponentes.Add(long.Parse(codigoConsiderado));
+                        }
                     }
                 });
             }
