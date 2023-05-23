@@ -335,7 +335,11 @@ namespace SME.SGP.Dominio.Servicos
                                 await SalvarHistoricoNotaFechamento(fechamentoNota.Id, tipoNotaOuConceito.TipoNota,null,fechamentoNota.Nota, null,fechamentoNota.ConceitoId,usuarioLogado.CodigoRf, usuarioLogado.Nome);
                             }
                         }
-                        ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
+
+
+                        var alunoInativo = alunos.FirstOrDefault(t => t.CodigoAluno == fechamentoAluno.AlunoCodigo)?.Inativo ?? false;
+
+                        ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota, alunoInativo);
                     }
 
                     if (!componenteSemNota)
@@ -468,7 +472,7 @@ namespace SME.SGP.Dominio.Servicos
             return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, codigoTurma);
         }
 
-        private static void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        private static void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota, bool inativo)
         {
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
@@ -478,7 +482,8 @@ namespace SME.SGP.Dominio.Servicos
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
-                ComponenteCurricularId = fechamentoNota.DisciplinaId
+                ComponenteCurricularId = fechamentoNota.DisciplinaId,
+                Inativo = inativo
             });
         }
 
