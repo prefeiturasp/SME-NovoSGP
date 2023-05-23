@@ -21,7 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoAlunoTurmaSemestreDto> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
         {
-            var turma = await ObterTurma(filtro.TurmaId);
+            var turmaCodigo = await mediator.Send(new ObterTurmaCodigoPorIdQuery(filtro.TurmaId));
+            var turma = await ObterTurma(turmaCodigo);
 
             var acompanhamentoAlunoTurmaSemestre = await ObterAcompanhamentoSemestre(filtro.AlunoId, turma.Id, filtro.Semestre);
 
@@ -44,6 +45,8 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             if(tipoCalendarioId == 0)
                 throw new NegocioException($"Não foi possível obter o id do tipo calêndario para a turma : {turma.CodigoTurma}");
+            
+            var turmaEmPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, false, tipoCalendarioId));
 
             if (turma.EhTurmaInfantil)
             {
@@ -53,7 +56,8 @@ namespace SME.SGP.Aplicacao
 
                 return (dataReferencia >= periodosFechamento.LastOrDefault().InicioDoFechamento.Date &&
                        dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date)
-                       || await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre);
+                       || await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre)
+                       || turmaEmPeriodoAberto;
             }
             return await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre);
         }
@@ -99,9 +103,9 @@ namespace SME.SGP.Aplicacao
             acompanhamentosAlunoTurmaSemestre.PeriodoFim = periodosSemestre.Max(a => a.PeriodoFim);
         }
 
-        private async Task<Turma> ObterTurma(long turmaId)
-        {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+        private async Task<Turma> ObterTurma(string turmaCodigo)
+        {            
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma informada!");
