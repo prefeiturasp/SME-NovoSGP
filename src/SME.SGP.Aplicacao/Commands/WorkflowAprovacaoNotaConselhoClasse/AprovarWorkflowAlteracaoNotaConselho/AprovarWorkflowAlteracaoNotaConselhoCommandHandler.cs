@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
-using SME.SGP.Infra.Consts;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -32,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var notaEmAprovacao in notasEmAprovacao)
                         await AtualizarNotaConselho(notaEmAprovacao, request);
-                    
+
                     await mediator.Send(new NotificarAprovacaoNotasConselhoCommand(notasEmAprovacao,
                                                                           request.CodigoDaNotificacao,
                                                                           request.TurmaCodigo,
@@ -73,6 +71,11 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
 
+            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma, notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo, consideraInativos: true));
+
+            if (aluno == null)
+                throw new NegocioException($"Não foram encontrados alunos para a turma {notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma} no Eol");
+
             var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo,
@@ -81,7 +84,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.AnoLetivo,
                 Nota = notaConselhoClasse.Nota,
                 ConceitoId = notaConselhoClasse.ConceitoId,
-                ComponenteCurricularId = notaConselhoClasse.ComponenteCurricularCodigo
+                ComponenteCurricularId = notaConselhoClasse.ComponenteCurricularCodigo,
+                Inativo = aluno.Inativo
             };
             await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
         }

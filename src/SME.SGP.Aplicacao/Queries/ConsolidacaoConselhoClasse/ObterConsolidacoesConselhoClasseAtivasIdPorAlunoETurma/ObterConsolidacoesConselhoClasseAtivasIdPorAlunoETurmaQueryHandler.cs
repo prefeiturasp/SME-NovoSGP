@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +15,7 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioConsolidacaoConselhoClasseConsulta = repositorioConsolidacaoConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoConselhoClasseConsulta));
         }
+
         public async Task<IEnumerable<long>> Handle(ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQuery request, CancellationToken cancellationToken)
           => await repositorioConsolidacaoConselhoClasseConsulta.ObterConsolidacoesAtivasIdPorAlunoETurmaAsync(request.CodigoAluno, request.TurmaId);
     }

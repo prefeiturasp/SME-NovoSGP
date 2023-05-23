@@ -144,21 +144,10 @@ namespace SME.SGP.Aplicacao
                 auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
             }
                         
-            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(recomendacaoDto.AlunoCodigo, bimestre, recomendacaoDto.FechamentoTurmaId, conselhosClassesIds));
-        
-            var alunos = await mediator
-                            .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
-        
-            if (alunos == null || !alunos.Any())
-                throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
-        
-            var alunoFiltrado = alunos.FirstOrDefault(a => a.CodigoAluno == recomendacaoDto.AlunoCodigo);
-            
-            if (bimestre.HasValue && alunoFiltrado != null)
-                await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(recomendacaoDto.AlunoCodigo, turma.Id, bimestre.Value, alunoFiltrado.Inativo));
-        
+            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(recomendacaoDto.AlunoCodigo, bimestre, turma.Id, conselhosClassesIds));
+
             var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(recomendacaoDto.AlunoCodigo, turma);
-        
+
             consultasConselhoClasseRecomendacaoConsultaDto.SituacaoConselho = situacaoConselhoAluno.GetAttribute<DisplayAttribute>().Name;
             consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesAluno = anotacoesDoAluno;
             consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesPedagogicas = anotacoesPedagogicas.ToString();
