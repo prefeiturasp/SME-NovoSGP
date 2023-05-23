@@ -9,16 +9,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosDentroPeriodoQuery : IRequest<IEnumerable<AlunoPorTurmaResposta>>
     {
-        public ObterAlunosDentroPeriodoQuery(string codigoTurma, (DateTime dataInicio, DateTime dataFim) periodo = default, bool consideraSomenteAtivos = false)
+        public ObterAlunosDentroPeriodoQuery(string codigoTurma, (DateTime dataInicio, DateTime dataFim) periodo = default, bool consideraSomenteAtivos = false, int tempoArmazenamentoCache = 720)
         {
             CodigoTurma = codigoTurma;
             Periodo = periodo;
             ConsideraSomenteAtivos = consideraSomenteAtivos;
+            TempoArmazenamentoCache = tempoArmazenamentoCache;
         }
 
         public string CodigoTurma { get; set; }        
         public (DateTime dataInicio, DateTime dataFim) Periodo { get; set; }
         public bool ConsideraSomenteAtivos { get; set; }
+        public int TempoArmazenamentoCache { get; }
     }
 
     public class ObterAlunosDentroPeriodoQueryValidator : AbstractValidator<ObterAlunosDentroPeriodoQuery>
