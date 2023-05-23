@@ -96,7 +96,8 @@ namespace SME.SGP.Aplicacao
                 else
                     repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
 
-                await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
+                if(!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
+                    await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
 
             }
         }

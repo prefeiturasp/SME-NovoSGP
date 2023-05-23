@@ -161,18 +161,22 @@ namespace SME.SGP.Dados.Repositorios
 
             var sqlQuery = new StringBuilder($@"select Situacao, 
                                                        sum(x.Quantidade) as Quantidade,
-                                                       x.AnoTurma
+                                                       x.AnoTurma,
+                                                       x.CodigoTurma
                                                   from (
                                                         select  cccat.status as Situacao,
                                                                 count(distinct cccat.aluno_codigo) as Quantidade, ");
             if (ueId > 0)
-                sqlQuery.AppendLine(" t.nome as AnoTurma ");
+                sqlQuery.AppendLine(" t.nome as AnoTurma, t.turma_id as CodigoTurma ");
             else
                 sqlQuery.AppendLine(" t.ano as AnoTurma ");
             sqlQuery.AppendLine(@" 
                                   from consolidado_conselho_classe_aluno_turma cccat
                                  inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
-                                 inner join turma t on t.id = cccat.turma_id 
+                                 inner join conselho_classe_aluno cca on cca.aluno_codigo = cccat.aluno_codigo
+                                 inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
+                                 inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                                 inner join turma t on t.id = ft.turma_id and cccat.turma_id = t.id 
                                  inner join ue on ue.id = t.ue_id where t.tipo_turma = 1 ");
 
             var queryWhere = new StringBuilder("");
@@ -207,14 +211,16 @@ namespace SME.SGP.Dados.Repositorios
                 queryWhere.AppendLine(" and cccatn.bimestre = @bimestre ");
             }
 
+            queryWhere.AppendLine(" and not cccat.excluido");
+
             sqlQuery.AppendLine(queryWhere.ToString());
             sqlQuery.AppendLine($@" group by cccat.status, ");
             if (ueId > 0)
-                sqlQuery.AppendLine(" t.nome  ");
+                sqlQuery.AppendLine(" t.nome, t.turma_id ");
             else
                 sqlQuery.AppendLine(" t.ano ");
 
-            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma
+            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma, x.CodigoTurma
                                    order by x.AnoTurma;");
 
 

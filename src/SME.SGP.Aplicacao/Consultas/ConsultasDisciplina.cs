@@ -229,7 +229,9 @@ namespace SME.SGP.Aplicacao
                         .SelectMany(c => c.CodigosTerritoriosAgrupamento);
 
                     disciplinasDto.AddRange(MapearParaDto(disciplinasAtribuicaoCj?.Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular)), turmaPrograma, turma.EnsinoEspecial));
-                    disciplinasDto = disciplinasDto.DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))?.OrderBy(c => c.Nome)?.ToList();
+                    disciplinasDto = disciplinasDto != null && disciplinasDto.Any() ? disciplinasDto.Where(d => d.TerritorioSaber).DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))
+                        .Concat(disciplinasDto.Where(d => !d.TerritorioSaber).DistinctBy(d => d.CodigoComponenteCurricular))
+                        .OrderBy(c => c.Nome).ToList() : null;
                 }
             }
 
@@ -693,7 +695,7 @@ namespace SME.SGP.Aplicacao
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
-            Nome = disciplina.Nome,
+            Nome = disciplina.NomeComponenteInfantil ?? disciplina.Nome,
             NomeComponenteInfantil = disciplina.NomeComponenteInfantil,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,
