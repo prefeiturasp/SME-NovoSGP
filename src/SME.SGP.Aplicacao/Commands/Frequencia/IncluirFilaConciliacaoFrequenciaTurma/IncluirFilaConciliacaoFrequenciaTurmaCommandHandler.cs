@@ -41,7 +41,8 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                return await mediator.Send(new ObterAlunosDentroPeriodoQuery(turmaCodigo, periodo));
+                var tempoCacheEmMinutos = 5;
+                return await mediator.Send(new ObterAlunosDentroPeriodoQuery(turmaCodigo, periodo, tempoArmazenamentoCache: tempoCacheEmMinutos));
             }
             catch (NegocioException nex)
             {
