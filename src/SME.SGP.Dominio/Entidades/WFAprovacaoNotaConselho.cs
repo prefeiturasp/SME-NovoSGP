@@ -11,5 +11,8 @@
         public double? Nota { get; set; }
         public long? ConceitoId { get; set; }
         public Conceito Conceito { get; set; }
+        public double? NotaAnterior { get; set; }
+        public long? ConceitoIdAnterior { get; set; }
+        public bool Excluido { get; set; }
     }
 }
