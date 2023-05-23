@@ -67,6 +67,7 @@ namespace SME.SGP.Aplicacao
                             Id = disciplinaCorrespondente.TerritorioSaber ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo,
                             CodigoComponenteCurricular = disciplinaCorrespondente.Codigo,
                             CdComponenteCurricularPai = disciplinaCorrespondente.CodigoComponenteCurricularPai,
+                            CodigoTerritorioSaber = disciplinaCorrespondente.CodigoComponenteTerritorioSaber,
                             Compartilhada = disciplinaCorrespondente.Compartilhada,
                             Nome = disciplinaCorrespondente.Descricao,
                             NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(id)) : disciplinaCorrespondente.Descricao,
