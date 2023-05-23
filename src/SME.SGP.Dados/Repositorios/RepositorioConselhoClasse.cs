@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ConselhoClasseAlunosNotaPorFechamentoIdDto>(query, new { fechamentoTurmaId });
         }
 
-        public async Task<IEnumerable<AlunoTemRecomandacaoDto>> VerificarSeExisteRecomendacaoPorTurma(long turmaId,int bimestre)
+        public async Task<IEnumerable<AlunoTemRecomandacaoDto>> VerificarSeExisteRecomendacaoPorTurma(string[] turmasId,int bimestre)
         {
             var query = @"select
 	                        distinct cca.aluno_codigo AluncoCodigo,
@@ -44,13 +44,14 @@ namespace SME.SGP.Dados.Repositorios
                         join conselho_classe_aluno_recomendacao ccar on ccar.conselho_classe_aluno_id = cca.id
                         join conselho_classe_recomendacao ccr on ccr.id = ccar.conselho_classe_recomendacao_id
                         join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                        join turma t on t.id = ft.turma_id
                         where not cca.excluido
-	                        and ft.turma_id = @turmaId
+	                        and t.turma_id = any(@turmasId)
 	                        and pe.bimestre = @bimestre ";
-            return await database.Conexao.QueryAsync<AlunoTemRecomandacaoDto>(query, new { turmaId,bimestre });
+            return await database.Conexao.QueryAsync<AlunoTemRecomandacaoDto>(query, new { turmasId,bimestre });
         }
 
-        public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(long turmaId, int bimestre)
+        public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(string[] turmasId, int bimestre)
         {
             var sql = new StringBuilder(); 
             sql.AppendLine(@"select");
@@ -69,9 +70,9 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"where");
             sql.AppendLine(@"	not cccat.excluido");
             sql.AppendLine(@"	and not cccat.excluido");
-            sql.AppendLine(@"	and t.id = @turmaId ");
+            sql.AppendLine(@"	and t.turma_id = any(@turmaId) ");
             sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
-            return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmaId,bimestre });
+            return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasId,bimestre });
         }
     }
 }

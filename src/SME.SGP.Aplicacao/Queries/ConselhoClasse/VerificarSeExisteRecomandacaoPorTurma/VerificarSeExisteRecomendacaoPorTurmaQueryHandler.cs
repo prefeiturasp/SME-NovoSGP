@@ -8,7 +8,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class VerificarSeExisteRecomendacaoPorTurmaQueryHandler : IRequestHandler<VerificarSeExisteRecemandacaoPorTurmaQuery,IEnumerable<AlunoTemRecomandacaoDto>>
+    public class VerificarSeExisteRecomendacaoPorTurmaQueryHandler : IRequestHandler<VerificarSeExisteRecomendacaoPorTurmaQuery,IEnumerable<AlunoTemRecomandacaoDto>>
     {
         private readonly IRepositorioConselhoClasse repoConselhoClasse;
 
@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repoConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
         }
 
-        public async Task<IEnumerable<AlunoTemRecomandacaoDto>> Handle(VerificarSeExisteRecemandacaoPorTurmaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<AlunoTemRecomandacaoDto>> Handle(VerificarSeExisteRecomendacaoPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await repoConselhoClasse.VerificarSeExisteRecomendacaoPorTurma(request.TurmaId, request.Bimestre);
+            return await repoConselhoClasse.VerificarSeExisteRecomendacaoPorTurma(request.TurmasCodigo, request.Bimestre);
         }
     }
 }
