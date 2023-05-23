@@ -21,7 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoAlunoTurmaSemestreDto> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
         {
-            var turma = await ObterTurma(filtro.TurmaId);
+            var turmaCodigo = await mediator.Send(new ObterTurmaCodigoPorIdQuery(filtro.TurmaId));
+            var turma = await ObterTurma(turmaCodigo);
 
             var acompanhamentoAlunoTurmaSemestre = await ObterAcompanhamentoSemestre(filtro.AlunoId, turma.Id, filtro.Semestre);
 
@@ -102,9 +103,9 @@ namespace SME.SGP.Aplicacao
             acompanhamentosAlunoTurmaSemestre.PeriodoFim = periodosSemestre.Max(a => a.PeriodoFim);
         }
 
-        private async Task<Turma> ObterTurma(long turmaId)
+        private async Task<Turma> ObterTurma(string turmaCodigo)
         {            
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId.ToString()));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma informada!");
