@@ -444,9 +444,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulasDiasPendenciaDto>> ObterPendenciasParaCargaDiasAulas(int? anoLetivo, long ueid)
         {
-                var situacoesPendencia = new SituacaoPendencia[]{SituacaoPendencia.Aprovada,SituacaoPendencia.Pendente};
-                var tiposPendenciaFechamento = new TipoPendencia[] {TipoPendencia.AulasSemFrequenciaNaDataDoFechamento,TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento };
-                var tiposPendenciaDiarioClasse = new TipoPendencia[] {TipoPendencia.Frequencia,TipoPendencia.PlanoAula,TipoPendencia.DiarioBordo };
+                var situacoesPendencia = new int[]{(int)SituacaoPendencia.Aprovada,(int)SituacaoPendencia.Pendente};
+                var tiposPendenciaFechamento = new int[] {(int)TipoPendencia.AulasSemFrequenciaNaDataDoFechamento,(int)TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento };
+                var tiposPendenciaDiarioClasse = new int[] {(int)TipoPendencia.Frequencia,(int)TipoPendencia.PlanoAula,(int)TipoPendencia.DiarioBordo };
                 var anoLetivoInformado = anoLetivo ?? DateTime.Now.Year;
                 var sql = new StringBuilder(); 
                 sql.AppendLine(@"     select distinct ");
