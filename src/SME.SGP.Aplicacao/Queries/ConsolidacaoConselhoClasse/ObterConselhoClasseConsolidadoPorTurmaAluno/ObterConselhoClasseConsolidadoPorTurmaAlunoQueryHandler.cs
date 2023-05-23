@@ -8,16 +8,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseConsolidadoPorTurmaAlunoQueryHandler : IRequestHandler<ObterConselhoClasseConsolidadoPorTurmaAlunoQuery, ConselhoClasseConsolidadoTurmaAluno>
     {
-        private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
 
-        public ObterConselhoClasseConsolidadoPorTurmaAlunoQueryHandler(IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado)
+        public ObterConselhoClasseConsolidadoPorTurmaAlunoQueryHandler(IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta)
         {
-            this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
+            this.repositorioConselhoClasseConsolidadoConsulta = repositorioConselhoClasseConsolidadoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoConsulta));
         }
 
         public Task<ConselhoClasseConsolidadoTurmaAluno> Handle(ObterConselhoClasseConsolidadoPorTurmaAlunoQuery request, CancellationToken cancellationToken)
         {
-            return repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(request.TurmaId, request.AlunoCodigo);
+            return repositorioConselhoClasseConsolidadoConsulta.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(request.TurmaId, request.AlunoCodigo);
         }
     }
 }

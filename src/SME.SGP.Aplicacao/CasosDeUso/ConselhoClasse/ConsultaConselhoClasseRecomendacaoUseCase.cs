@@ -144,9 +144,9 @@ namespace SME.SGP.Aplicacao
                 auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
             }
                         
-            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre, fechamentoTurmaId, conselhosClassesIds));
+            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(recomendacaoDto.AlunoCodigo, bimestre, turma.Id, conselhosClassesIds));
 
-            var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, turma);
+            var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(recomendacaoDto.AlunoCodigo, turma);
 
             consultasConselhoClasseRecomendacaoConsultaDto.SituacaoConselho = situacaoConselhoAluno.GetAttribute<DisplayAttribute>().Name;
             consultasConselhoClasseRecomendacaoConsultaDto.AnotacoesAluno = anotacoesDoAluno;
