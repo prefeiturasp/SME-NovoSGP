@@ -301,7 +301,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<double?> VerificaNotaConselhoEmAprovacao(long conselhoClasseNotaId)
         {
             var query = $@"select coalesce(coalesce(wf.nota, wf.conceito_id),-1) from wf_aprovacao_nota_conselho wf 
-                                where wf.conselho_classe_nota_id = @conselhoClasseNotaId";
+                                where wf.conselho_classe_nota_id = @conselhoClasseNotaId and not wf.excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<double?>(query, new { conselhoClasseNotaId });
         }
@@ -314,7 +314,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join conselho_classe_aluno cca on cca.id = n.conselho_classe_aluno_id
                           inner join conselho_classe cc on cc.id = cca.conselho_classe_id
                           inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                          where w.wf_aprovacao_id = @workFlowId";
+                          where w.wf_aprovacao_id = @workFlowId and not w.excluido";
 
             return (await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, WFAprovacaoNotaConselho>(query,
                 (wfAprovacaoNota, conselhoNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma) =>

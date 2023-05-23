@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommand : IRequest
+    public class NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommand : IRequest <bool>
     {
     }
 }
