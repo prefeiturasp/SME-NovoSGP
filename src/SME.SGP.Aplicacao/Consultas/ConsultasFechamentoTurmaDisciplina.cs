@@ -330,7 +330,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
 
-                                if (notaConceitoBimestre != null && notaConceitoBimestre.SinteseId.HasValue)
+                                if (notaConceitoBimestre != null && (notaConceitoBimestre.SinteseId.HasValue && frequenciaAluno != null))
                                 {
                                     alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
                                     alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
