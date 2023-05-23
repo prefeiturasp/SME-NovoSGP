@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Elasticsearch.Net.Specification.CatApi;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -25,30 +26,33 @@ namespace SME.SGP.Aplicacao
             if (componenteCurricular == null)
                 throw new NegocioException("Componente curricular não localizado");
 
-            string disciplinaAula = componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai != null ?
+            var disciplinaAula = componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai != null ?
                 componenteCurricular.CdComponenteCurricularPai.ToString() :
                 componenteCurricular.CodigoComponenteCurricular.ToString();
 
             var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
 
             var codigosComponentesTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.CodigoRf));
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorCj() ? usuarioLogado.Login : null));
 
+            var professorConsiderado = (string)null;
             if (codigosComponentesTerritorioEquivalentes != null && codigosComponentesTerritorioEquivalentes.Any())
+            {
                 codigosComponentesBusca.AddRange(codigosComponentesTerritorioEquivalentes.Select(ct => ct.codigoComponente));
+                professorConsiderado = codigosComponentesTerritorioEquivalentes.First().professor;
+            }
 
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhPerfilProfessor() && componenteCurricular.TerritorioSaber ? usuarioLogado.CodigoRf : null);
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj(), professorConsiderado);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
 
             var percentualCritico = await ObterParametro(TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo);
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
-
-            var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
-            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id));
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id));
-            
+                        
+            var registraFrequencia = await ObterComponenteRegistraFrequencia(codigosComponentesBusca.OrderBy(c => c.Length).Last(), componenteCurricular.TerritorioSaber ? long.Parse(codigosComponentesBusca.OrderBy(c => c.Length).First()) : null);
+            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id, professorConsiderado));
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id, professorConsiderado));
 
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
                                                                                                                   codigosComponentesBusca.ToArray(),
@@ -56,8 +60,8 @@ namespace SME.SGP.Aplicacao
                                                                                                                   param.DataInicio,
                                                                                                                   param.DataFim));
 
-            var compensacaoAusenciaAlunoAulas = 
-                (registrosFrequenciaAlunos.Any() ? await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(registrosFrequenciaAlunos.Select(t => t.AulaId).Distinct().ToArray())) : null) ?? 
+            var compensacaoAusenciaAlunoAulas =
+                (registrosFrequenciaAlunos.Any() ? await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(registrosFrequenciaAlunos.Select(t => t.AulaId).Distinct().ToArray())) : null) ??
                 new List<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
 
             var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoPorPeriodoQuery(param.TurmaId, param.DataInicio, param.DataFim));
@@ -80,8 +84,8 @@ namespace SME.SGP.Aplicacao
                                                                           percentualCritico));
         }
 
-        private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId)
-            => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId)));
+        private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId, long? codigoTerritorioSaber = null)
+            => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId), codigoTerritorioSaber));
 
         private async Task<int> ObterParametro(TipoParametroSistema parametro, int anoLetivo)
         {
