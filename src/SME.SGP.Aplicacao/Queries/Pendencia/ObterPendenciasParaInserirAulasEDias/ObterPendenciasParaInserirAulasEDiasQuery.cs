@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciasParaInserirAulasEDiasQuery : IRequest<IEnumerable<CargaAulasDiasPendenciaDto>>
+    public class ObterPendenciasParaInserirAulasEDiasQuery : IRequest<IEnumerable<AulasDiasPendenciaDto>>
     {
         public ObterPendenciasParaInserirAulasEDiasQuery(int? anoLetivo,long ueid)
         {

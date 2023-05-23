@@ -21,7 +21,7 @@
         public const string RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorUe = "sgp.pendencias.excluir.final.anoletivo.ue";
         public const string RotaExecutarExclusaoPendenciasDiarioDeClasseNoFinalDoAnoLetivo = "sgp.pendencias.excluir.final.anoletivo.diario.classe";
         public const string RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo = "sgp.pendencias.excluir.final.anoletivo";
-        public const string RotaBuscarAdicionarQuantidadeAulaDiaPendencia = "sgp.atualizar.totalizadores.pendencia";
+        public const string ExecutarAtualizacaoDosTotalizadoresDasPendencias = "sgp.atualizar.totalizadores.pendencias";
         public const string RotaBuscarAdicionarQuantidadeAulaDiaPendenciaUe = "sgp.atualizar.totalizadores.pendencia.ue";
         public const string RotaCargaAdicionarQuantidadeAulaDiaPendencia = "sgp.atualizar.totalizadores.pendencia.carga";
     }

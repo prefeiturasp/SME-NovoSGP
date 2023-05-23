@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
                 foreach (var ue in listaUes)
                 {
-                    var dto = new ObterQuantidadeAulaDiaPendenciaUseDto
+                    var dto = new ObterQuantidadeAulaDiaPendenciaDto
                     {
                         UeId = ue,
                         AnoLetivo = anoletivo
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao realizar a carga de dias e aulas  na pendencia", LogNivel.Negocio, LogContexto.Pendencia, ex.Message));
-                throw;
+                return false;
             }
         }
     }
