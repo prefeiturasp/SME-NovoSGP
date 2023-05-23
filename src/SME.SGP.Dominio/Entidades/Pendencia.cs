@@ -38,6 +38,8 @@ namespace SME.SGP.Dominio
         public string DescricaoHtml { get; set; }
         public long? UeId { get; set; }
         public long? TurmaId { get; set; }
+        public long? QuantidadeAulas { get; set; }
+        public long? QuantidadeDias { get; set; }
 
         public TipoPendenciaAssunto PendenciaAssunto
         {
