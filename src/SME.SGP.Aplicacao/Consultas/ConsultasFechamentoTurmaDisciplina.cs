@@ -97,8 +97,7 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
-            var periodosEscolares = await consultasPeriodoEscolar
-                .ObterPeriodosEscolares(tipoCalendario.Id);
+            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
             if (periodosEscolares == null)
                 throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");

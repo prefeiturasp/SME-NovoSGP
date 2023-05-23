@@ -139,7 +139,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var fechamentosTurmas = ObterTodos<FechamentoTurma>();
             var fechamentoTurmaId = fechamentosTurmas.Select(c => c.Id).FirstOrDefault();
             
-            var retorno = await consulta.Executar(new ObterConselhoClasseRecomendacaoConsultaDto()
+            var retorno = await consulta.Executar(new ConselhoClasseRecomendacaoDto()
             {
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurmaId,

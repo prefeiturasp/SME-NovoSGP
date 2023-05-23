@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
 
                             if (componenteCurricular.Regencia)
                             {
-                                var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
+                                var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoEolQuery(
                                                                     turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
                                 foreach (var regencia in componentesRegencia)

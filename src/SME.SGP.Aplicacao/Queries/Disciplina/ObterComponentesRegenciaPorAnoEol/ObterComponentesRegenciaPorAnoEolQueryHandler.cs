@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesRegenciaPorAnoQueryHandler : IRequestHandler<ObterComponentesRegenciaPorAnoQuery, IEnumerable<ComponenteCurricularEol>>
+    public class ObterComponentesRegenciaPorAnoEolQueryHandler : IRequestHandler<ObterComponentesRegenciaPorAnoEolQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        public ObterComponentesRegenciaPorAnoQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterComponentesRegenciaPorAnoEolQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoEolQuery request, CancellationToken cancellationToken)
         {
             var url = $"v1/componentes-curriculares/anos/{request.AnoTurma}/regencia";
             var httpClient = httpClientFactory.CreateClient("servicoEOL");

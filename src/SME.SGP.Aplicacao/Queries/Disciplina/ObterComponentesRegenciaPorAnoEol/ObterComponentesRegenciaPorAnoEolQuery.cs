@@ -5,18 +5,18 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesRegenciaPorAnoQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
+    public class ObterComponentesRegenciaPorAnoEolQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
-        public ObterComponentesRegenciaPorAnoQuery(int anoTurma)
+        public ObterComponentesRegenciaPorAnoEolQuery(int anoTurma)
         {
             this.AnoTurma = anoTurma;
         }
         public int AnoTurma { get; set; }
     }
     
-    public class ObterComponentesRegenciaPorAnoQueryValidator : AbstractValidator<ObterComponentesRegenciaPorAnoQuery>
+    public class ObterComponentesRegenciaPorAnoEolQueryValidator : AbstractValidator<ObterComponentesRegenciaPorAnoEolQuery>
     {
-        public ObterComponentesRegenciaPorAnoQueryValidator()
+        public ObterComponentesRegenciaPorAnoEolQueryValidator()
         {
 
             RuleFor(c => c.AnoTurma)

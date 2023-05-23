@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
@@ -13,14 +14,17 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IRepositorioPeriodoEscolarConsulta repositorio;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
+        private readonly IMediator mediator;
 
         public ConsultasPeriodoEscolar(IRepositorioPeriodoEscolarConsulta repositorio,
                                     IConsultasPeriodoFechamento consultasPeriodoFechamento,
-                                    IConsultasTipoCalendario consultasTipoCalendario)
+                                    IConsultasTipoCalendario consultasTipoCalendario,
+                                    IMediator mediator)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PeriodoEscolarListaDto> ObterPorTipoCalendario(long tipoCalendarioId)
@@ -117,30 +121,17 @@ namespace SME.SGP.Aplicacao.Consultas
 
             return await ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
         }
-
-        public async Task<PeriodoEscolar> ObterUltimoPeriodoAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre)
-            => await repositorio.ObterUltimoBimestreAsync(anoLetivo, modalidade, semestre);
-
         public async Task<PeriodoEscolar> ObterPeriodoAtualPorModalidade(Modalidade modalidade)
             => await ObterPeriodoPorModalidade(modalidade, DateTime.Today);
 
         public async Task<PeriodoEscolar> ObterPeriodoPorModalidade(Modalidade modalidade, DateTime data, int semestre = 0)
         {
             var tipoCalendario = await ObterTipoCalendario(modalidade, data.Year, semestre);
-            var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id);            
+            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));            
 
             return periodosEscolares.FirstOrDefault(x => x.PeriodoInicio <= data.Date && x.PeriodoFim >= data.Date) ?? 
                    periodosEscolares.OrderBy(x => x.Bimestre).FirstOrDefault(x => data.Date < x.PeriodoInicio) ??
                    periodosEscolares.OrderByDescending(x => x.Bimestre).FirstOrDefault(x => data.Date > x.PeriodoFim);
-        }
-
-        public async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
-        {
-            var periodosEscolares = await repositorio.ObterPorTipoCalendario(tipoCalendarioId);
-            if (periodosEscolares == null || !periodosEscolares.Any())
-                throw new NegocioException("Não encontrado periodo escolar cadastrado");
-
-            return periodosEscolares;
         }
 
         private async Task<TipoCalendarioCompletoDto> ObterTipoCalendario(Modalidade modalidade, int anoLetivo, int semestre = 0)
@@ -182,11 +173,10 @@ namespace SME.SGP.Aplicacao.Consultas
         private async Task<PeriodoEscolar> BuscaUltimoPeriodoEscolar(TipoCalendarioCompletoDto tipoCalendario)
         {
             // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
-            var periodosEscolares = await ObterPeriodosEscolares(tipoCalendario.Id)
-                ?? throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
+            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
-            return ObterPeriodoPorData(periodosEscolares, DateTime.Today)
-                ?? ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+            return ObterPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date)
+                ?? ObterUltimoPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
         }
 
         private PeriodoEscolar FiltraEObtemUltimoPeriodoEmAberto(IEnumerable<PeriodoEscolar> periodosAberto, TipoCalendarioCompletoDto tipoCalendario)

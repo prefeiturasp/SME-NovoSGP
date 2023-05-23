@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioConselhoClasseAlunoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
-
+        
         public async Task<ConselhoClasseAluno> ObterPorConselhoClasseAlunoCodigoAsync(long conselhoClasseId, string alunoCodigo)
         {
             var query = @"select cca.*, cc.*, pc.*

@@ -201,7 +201,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterComponenteRegencia(Turma turma)
         {
-            var componentesRegencia = await consultasDisciplina.ObterComponentesRegencia(turma);
+            var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
             if (componentesRegencia == null || !componentesRegencia.Any())
                 throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
