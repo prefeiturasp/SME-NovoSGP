@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediatR;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
@@ -15,14 +16,16 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendario;
         private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorio;
+        private readonly Mock<IMediator> mediator;
 
         public ConsultasPeriodoEscolarTeste()
         {
             repositorio = new Mock<IRepositorioPeriodoEscolarConsulta>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasTipoCalendario = new Mock<IConsultasTipoCalendario>();
+            mediator = new Mock<IMediator>();
 
-            consultas = new ConsultasPeriodoEscolar(repositorio.Object, consultasPeriodoFechamento.Object, consultasTipoCalendario.Object);
+            consultas = new ConsultasPeriodoEscolar(repositorio.Object, consultasPeriodoFechamento.Object, consultasTipoCalendario.Object, mediator.Object);
         }
 
         [Fact(DisplayName = "Deve_Consultar_Periodo_Escolar")]
@@ -36,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "Deve_Disparar_Excecao_Se_Instanciar_Sem_Dependencia")]
         public void Deve_Disparar_Excecao_Se_Instanciar_Sem_Dependencia()
         {
-            Assert.Throws<ArgumentNullException>(() => new ConsultasPeriodoEscolar(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new ConsultasPeriodoEscolar(null, null, null, null));
         }
     }
 }

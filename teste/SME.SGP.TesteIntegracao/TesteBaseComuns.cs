@@ -191,6 +191,8 @@ namespace SME.SGP.TesteIntegracao
         protected const long PERIODO_ESCOLAR_CODIGO_3 = 3;
         protected const long PERIODO_ESCOLAR_CODIGO_4 = 4;
 
+        protected const long PERIODO_FECHAMENTO_ID_1 = 1;
+
         protected const string PROVA = "Prova";
         protected const string TESTE = "Teste";
 
@@ -981,7 +983,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new Ue
             {
                 CodigoUe = codigoUe,
-                DreId = 2,
+                DreId = 1,
                 Nome = UE_NOME_1,
             });
         }
@@ -1330,15 +1332,15 @@ namespace SME.SGP.TesteIntegracao
         
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
         {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1);
 
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2);
 
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3);
 
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4);
         }
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false)
@@ -1372,13 +1374,13 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoReabertura(tipoCalendarioId);
         }
 
-        protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
+        protected async Task CriarPeriodoReabertura(long tipoCalendarioId, DateTime? dataInicio = null, DateTime? dataFim = null)
         {
             await InserirNaBase(new FechamentoReabertura()
             {
                 Descricao = REABERTURA_GERAL,
-                Inicio = DATA_01_01,
-                Fim = DATA_31_12,
+                Inicio = dataInicio.HasValue ? dataInicio.Value : DATA_01_01,
+                Fim = dataFim.HasValue ? dataFim.Value : DATA_31_12,
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,

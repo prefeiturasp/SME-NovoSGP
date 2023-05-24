@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> Executar(ObterConselhoClasseRecomendacaoConsultaDto recomendacaoDto)
+        public async Task<ConsultasConselhoClasseRecomendacaoConsultaDto> Executar(ConselhoClasseRecomendacaoDto recomendacaoDto)
         {
             int? bimestre = recomendacaoDto.Bimestre > 0 ? recomendacaoDto.Bimestre : null;
         

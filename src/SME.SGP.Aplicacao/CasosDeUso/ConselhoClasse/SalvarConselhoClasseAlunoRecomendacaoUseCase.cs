@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
         private const int BIMESTRE_FINAL_FUNDAMENTAL_MEDIO = 4;
         private const int BIMESTRE_FINAL_EJA = 2;
         private const int BIMESTRE_FINAL_CONSULTA_NOTA = 0;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
 
         public SalvarConselhoClasseAlunoRecomendacaoUseCase(IMediator mediator) : base(mediator)
         {

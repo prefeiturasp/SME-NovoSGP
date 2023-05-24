@@ -48,9 +48,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse.EmAndamento,
                 true);
 
-            var consultasConselhoClasseAluno = ServiceProvider.GetService<IConsultasConselhoClasseAluno>();
+            var consultasConselhoClasseAluno = ServiceProvider.GetService<IObterNotasFrequenciaUseCase>();
 
-            var retorno = await consultasConselhoClasseAluno.ObterNotasFrequencia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_3, ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_3, false);
+            var retorno = await consultasConselhoClasseAluno.Executar(new ConselhoClasseNotasFrequenciaDto(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_3, ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_3, false));
 
             retorno.ShouldNotBeNull();
             var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
@@ -74,11 +74,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await ExecutarTesteSemValidacao(salvarConselhoClasseAlunoNotaDto);
 
-            var consultasConselhoClasseAluno = ServiceProvider.GetService<IConsultasConselhoClasseAluno>();
+            var consultasConselhoClasseAluno = ServiceProvider.GetService<IObterNotasFrequenciaUseCase>();
 
             var ret = ObterTodos<ConselhoClasseNota>();
 
-            var retorno = await consultasConselhoClasseAluno.ObterNotasFrequencia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_3, ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_3, false);
+            var retorno = await consultasConselhoClasseAluno.Executar(new ConselhoClasseNotasFrequenciaDto(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_3, ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_3, false));
 
             retorno.ShouldNotBeNull();
             var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
