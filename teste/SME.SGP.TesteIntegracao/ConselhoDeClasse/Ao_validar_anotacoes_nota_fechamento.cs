@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
             consulta.ShouldNotBeNull();
             
-            var retorno = await consulta.Executar(new ObterConselhoClasseRecomendacaoConsultaDto()
+            var retorno = await consulta.Executar(new ConselhoClasseRecomendacaoDto()
                 {
                     ConselhoClasseId = CONSELHO_CLASSE_ID_1,
                     FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,

@@ -7,25 +7,26 @@ using MediatR;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System.Linq;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
     public class ComandosConselhoClasseAluno : IComandosConselhoClasseAluno
     {
-        private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IMediator mediator;
         private const int BIMESTRE_FINAL_FUNDAMENTAL_MEDIO = 4;
         private const int BIMESTRE_FINAL_EJA = 2;
         private const int BIMESTRE_FINAL_CONSULTA_NOTA = 0;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
 
-        public ComandosConselhoClasseAluno(IConsultasConselhoClasseAluno consultasConselhoClasseAluno,
-                                           IConsultasConselhoClasse consultasConselhoClasse,
-                                           IMediator mediator)
+        public ComandosConselhoClasseAluno(IConsultasConselhoClasse consultasConselhoClasse,
+                                           IMediator mediator,
+                                           IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
         {
-            this.consultasConselhoClasseAluno = consultasConselhoClasseAluno ?? throw new ArgumentNullException(nameof(consultasConselhoClasseAluno));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
         }
 
         public async Task<ConselhoClasseAluno> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
@@ -93,7 +94,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ConselhoClasseAluno> MapearParaEntidade(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
         {
-            var conselhoClasseAluno = await consultasConselhoClasseAluno.ObterPorConselhoClasseAsync(conselhoClasseAlunoDto.ConselhoClasseId, conselhoClasseAlunoDto.AlunoCodigo);
+            var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseAlunoDto.ConselhoClasseId, conselhoClasseAlunoDto.AlunoCodigo);
             if (conselhoClasseAluno == null)
             {
                 ConselhoClasse conselhoClasse = conselhoClasseAlunoDto.ConselhoClasseId == 0 ?
