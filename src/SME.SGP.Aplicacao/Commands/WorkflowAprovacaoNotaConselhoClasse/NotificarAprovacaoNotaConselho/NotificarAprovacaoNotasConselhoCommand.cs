@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoNotasConselhoCommand : IRequest
+    public class NotificarAprovacaoNotasConselhoCommand : IRequest<bool>
     {
         public NotificarAprovacaoNotasConselhoCommand(IEnumerable<WFAprovacaoNotaConselho> notasEmAprovacao,
                                                      long? codigoDaNotificacao,

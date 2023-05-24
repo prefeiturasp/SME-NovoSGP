@@ -193,7 +193,7 @@ namespace SME.SGP.Dados.Repositorios
                            cca.conselho_classe_id = cc.id
                            and cca.aluno_codigo = fa.aluno_codigo
                            left join conselho_classe_nota ccn on
-                           ccn.conselho_classe_aluno_id = cca.id
+                           ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                            and ccn.componente_curricular_codigo = fn.disciplina_id
                            where
                            {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
@@ -219,7 +219,7 @@ namespace SME.SGP.Dados.Repositorios
                            inner join conselho_classe_aluno cca on
                            cca.conselho_classe_id = cc.id
                            inner join conselho_classe_nota ccn on
-                           ccn.conselho_classe_aluno_id = cca.id
+                           ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                            inner join componente_curricular comp 
                            on comp.id = ccn.componente_curricular_codigo
                            left join fechamento_turma_disciplina ftd on

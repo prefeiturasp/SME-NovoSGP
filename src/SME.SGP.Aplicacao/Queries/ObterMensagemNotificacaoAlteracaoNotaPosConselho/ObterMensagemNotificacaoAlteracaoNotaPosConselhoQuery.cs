@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterMensagemNotificacaoAlteracaoNotaPosConselhoQuery : IRequest<string>
+    public class ObterMensagemNotificacaoAlteracaoParecerConclusivoQuery : IRequest<string>
     {
-        public ObterMensagemNotificacaoAlteracaoNotaPosConselhoQuery(long workflowAprovacaoId, long notificacaoId)
+        public ObterMensagemNotificacaoAlteracaoParecerConclusivoQuery(long workflowAprovacaoId, long notificacaoId)
         {
             WorkflowAprovacaoId = workflowAprovacaoId;
             NotificacaoId = notificacaoId;

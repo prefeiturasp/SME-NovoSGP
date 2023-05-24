@@ -7,12 +7,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public abstract class AprovacaoNotaConselhoCommandBase<T> : AsyncRequestHandler<T> where T : IRequest
+    public abstract class AprovacaoNotaConselhoCommandBase<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
+        where TRequest : IRequest<TResponse>
     {
+        protected const string MENSAGEM_DINAMICA_TABELA_POR_ALUNO = "<mensagemDinamicaTabelaPorAluno>";
         protected readonly IMediator mediator;
         protected List<WFAprovacaoNotaConselho> WFAprovacoes;
         protected List<Ue> Ues;
@@ -26,11 +29,11 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected abstract string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar);
+        public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
-        protected abstract string ObterTitulo(Ue ue, Turma turma);
+        protected virtual string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar) => string.Empty;
 
-        protected async Task IniciarAprovacao(IEnumerable<WFAprovacaoNotaConselho> wfAprovacoes)
+        protected async Task CarregarInformacoesParaNotificacao(IEnumerable<WFAprovacaoNotaConselho> wfAprovacoes)
         {
             WFAprovacoes = wfAprovacoes.ToList();
             if (WFAprovacoes == null || !WFAprovacoes.Any()) return;
@@ -42,17 +45,17 @@ namespace SME.SGP.Aplicacao
             await CarregarConceitos();
         }
 
-        protected async Task<string> ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        protected string ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
         {
             var periodoEscolar = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
             var descricao = new StringBuilder(ObterTexto(ue, turma, periodoEscolar));
 
-            descricao.Append(await ObterTabelaDosAlunos(aprovacoesPorTurma, turma));
+            descricao.Append(ObterTabelaDosAlunos(aprovacoesPorTurma, turma));
 
             return descricao.ToString();
         }
 
-        private async Task<string> ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma, Turma turma)
+        protected virtual string ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma, Turma turma)
         {
             var descricao = new StringBuilder();
             descricao.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
@@ -93,6 +96,10 @@ namespace SME.SGP.Aplicacao
                       </tr>";
         }
 
+        protected virtual string ObterTitulo(Ue ue, Turma turma)
+        {
+            return $@"Alteração em nota/conceito pós-conselho - {ue.Nome} ({ue.Dre.Abreviacao}) - {turma.NomeFiltro} (ano anterior)";
+        }
         private (string, string) ObterValoresNotasNovoAnterior(long? conceitoIdConselhoClasse, double? notaConselhoClasse, long? conceitoId, double? nota)
         {
             var valorAnterior = string.Empty;
@@ -149,8 +156,8 @@ namespace SME.SGP.Aplicacao
                 DescricaoComponenteCurricular = componenteCurricular.Descricao,
                 Nota = aprovacao.Nota,
                 ConceitoId = aprovacao.ConceitoId,
-                NotaConselhoClasse = aprovacao.ConselhoClasseNota.Nota,
-                ConceitoIdConselhoClasse = aprovacao.ConselhoClasseNota.ConceitoId
+                NotaConselhoClasse = aprovacao.NotaAnterior,
+                ConceitoIdConselhoClasse = aprovacao.ConceitoIdAnterior
             };
 
             if (!retorno.NotaConselhoClasse.HasValue && !retorno.ConceitoIdConselhoClasse.HasValue)

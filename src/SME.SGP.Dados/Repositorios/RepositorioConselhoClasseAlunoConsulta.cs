@@ -95,7 +95,7 @@ namespace SME.SGP.Dados.Repositorios
                  inner join turma t on t.id = ft.turma_id
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                  where {condicaoPeriodoEscolar}                   
                    and t.turma_id = ANY(@turmasCodigos)
                    and cca.aluno_codigo = @alunoCodigo ";
@@ -140,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN conselho_classe_aluno cca
                                            ON cca.conselho_classe_id = cc.id
                                    INNER JOIN conselho_classe_nota ccn
-                                           ON ccn.conselho_classe_aluno_id = cca.id 
+                                           ON ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido 
                                    inner join componente_curricular ccr on ccn.componente_curricular_codigo  = ccr.id 
                                    LEFT JOIN fechamento_turma_disciplina ftd
                                           ON ftd.fechamento_turma_id = ft.id
@@ -163,7 +163,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select coalesce(ccn.componente_curricular_codigo, ftd.disciplina_id) as ComponenteCurricularId 
                             from conselho_classe_aluno cca 
 	                        left join conselho_classe_nota ccn
-		                        on ccn.conselho_classe_aluno_id  = cca.id 
+		                        on ccn.conselho_classe_aluno_id  = cca.id and not ccn.excluido
 	                        inner join conselho_classe cc 
 		                        on cca.conselho_classe_id = cc.id
 	                        inner join fechamento_turma ft 
@@ -223,7 +223,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select coalesce(ccn.componente_curricular_codigo, ftd.disciplina_id) as ComponenteCurricularId 
                             from conselho_classe_aluno cca 
 	                        left join conselho_classe_nota ccn
-		                        on ccn.conselho_classe_aluno_id  = cca.id 
+		                        on ccn.conselho_classe_aluno_id  = cca.id and not ccn.excluido
 	                        inner join conselho_classe cc 
 		                        on cca.conselho_classe_id = cc.id
 	                        inner join fechamento_turma ft 

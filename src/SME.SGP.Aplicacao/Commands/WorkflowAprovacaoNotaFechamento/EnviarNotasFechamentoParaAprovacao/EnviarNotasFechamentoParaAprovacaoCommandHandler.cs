@@ -34,6 +34,8 @@ namespace SME.SGP.Aplicacao
                     CriadoEm = DateTimeExtension.HorarioBrasilia(),
                     CriadoPor = request.Usuario.Nome,
                     CriadoRF = request.Usuario.CodigoRf,
+                    ConceitoIdAnterior = notaFechamento.ConceitoIdAnterior,
+                    NotaAnterior = notaFechamento.NotaAnterior
                 });
             }
         } 

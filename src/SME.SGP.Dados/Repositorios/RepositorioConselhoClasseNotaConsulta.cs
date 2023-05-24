@@ -21,7 +21,8 @@ namespace SME.SGP.Dados.Repositorios
             const string query = @"select * 
                         from conselho_classe_nota 
                         where conselho_classe_aluno_id = @conselhoClasseAlunoId
-                          and componente_curricular_codigo = @componenteCurricularCodigo";
+                          and componente_curricular_codigo = @componenteCurricularCodigo
+                          and not excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseNota>(query, new { conselhoClasseAlunoId, componenteCurricularCodigo });
         }
@@ -30,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"select ccn.id, ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.conceito_id as ConceitoId, ccn.nota
                           from conselho_classe_aluno cca 
-                         inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                         inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                           where cca.aluno_codigo = @alunoCodigo
                             and cca.conselho_classe_id = @conselhoClasseId";
             if (componenteCurricularId != null)
@@ -57,7 +58,7 @@ namespace SME.SGP.Dados.Repositorios
                   left join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
                   left join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
-		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
+		                                        and ccn.componente_curricular_codigo = fn.disciplina_id and not ccn.excluido
                  where {condicaoPeriodoEscolar}
                    and t.turma_id = @turmaCodigo
                    and fa.aluno_codigo = @alunoCodigo
@@ -70,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                  inner join turma t on t.id = ft.turma_id 
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido 
                   left join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                   left join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
@@ -92,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
                  inner join turma t on t.id = ft.turma_id 
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido 
                  where {condicaoPeriodoEscolar}
                    and t.turma_id = ANY(@turmasCodigos)
                    and cca.aluno_codigo = @alunoCodigo ";
@@ -109,7 +110,7 @@ namespace SME.SGP.Dados.Repositorios
                  inner join turma t on t.id = ft.turma_id 
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                  where {condicaoPeriodoEscolar}
                    and t.turma_id = ANY(@turmasCodigos)
                    and cca.aluno_codigo = @alunoCodigo 
@@ -175,7 +176,7 @@ namespace SME.SGP.Dados.Repositorios
                   left join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
                   left join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
-		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
+		                                        and ccn.componente_curricular_codigo = fn.disciplina_id and not ccn.excluido
                  where t.turma_id = ANY(@turmasCodigo)
                    and fa.aluno_codigo = @alunoCodigo
                    {condicaoBimestre}
@@ -188,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
                  inner join turma t on t.id = ft.turma_id 
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                   left join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                   left join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
@@ -227,7 +228,7 @@ namespace SME.SGP.Dados.Repositorios
                  inner join turma t on t.id = ft.turma_id 
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                  where t.turma_id = @turmaCodigo
                    {condicaoTipoCalendario}
                    {condicaoBimestre}
@@ -263,7 +264,7 @@ namespace SME.SGP.Dados.Repositorios
                   left join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
 		                                        and cca.aluno_codigo = fa.aluno_codigo 
                   left join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
-		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
+		                                        and ccn.componente_curricular_codigo = fn.disciplina_id and not ccn.excluido
                  where cca.id is not null 
                    and t.turma_id = @turmaCodigo
                    and ue.ue_id = @ueCodigo
@@ -281,7 +282,7 @@ namespace SME.SGP.Dados.Repositorios
                  inner join ue on t.ue_id = ue.id
                  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                  inner join componente_curricular disciplina on ccn.componente_curricular_codigo = disciplina.id
                   left join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                   left join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
@@ -301,7 +302,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<double?> VerificaNotaConselhoEmAprovacao(long conselhoClasseNotaId)
         {
             var query = $@"select coalesce(coalesce(wf.nota, wf.conceito_id),-1) from wf_aprovacao_nota_conselho wf 
-                                where wf.conselho_classe_nota_id = @conselhoClasseNotaId";
+                                where wf.conselho_classe_nota_id = @conselhoClasseNotaId and not wf.excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<double?>(query, new { conselhoClasseNotaId });
         }
@@ -314,7 +315,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join conselho_classe_aluno cca on cca.id = n.conselho_classe_aluno_id
                           inner join conselho_classe cc on cc.id = cca.conselho_classe_id
                           inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                          where w.wf_aprovacao_id = @workFlowId";
+                          where w.wf_aprovacao_id = @workFlowId and not w.excluido";
 
             return (await database.Conexao.QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, WFAprovacaoNotaConselho>(query,
                 (wfAprovacaoNota, conselhoNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma) =>

@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
                 if (notaEmProvacao.ConselhoClasseNota.Nota == null && notaEmProvacao.ConselhoClasseNota.Conceito == null) //Conselho de classe nota gerado automaticamente pelo WF Conselho Nota
                 {
-                    await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId));
+                    await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId??0));
                 }
             }
 
