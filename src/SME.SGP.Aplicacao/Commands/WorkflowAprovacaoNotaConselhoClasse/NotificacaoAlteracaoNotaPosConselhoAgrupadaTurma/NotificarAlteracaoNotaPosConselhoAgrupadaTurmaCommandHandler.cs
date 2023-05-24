@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
             var turma = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);
-            var mensagem = await ObterMensagem(ue, turma, aprovacoesPorTurma);
+            var mensagem = ObterMensagem(ue, turma, aprovacoesPorTurma);
             var conselhoClasseId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasseId;
             var periodo = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
 
@@ -77,9 +77,9 @@ namespace SME.SGP.Aplicacao
                                                                     conselhoClasseId)); 
         }
 
-        protected override async Task<string> ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma, Turma turma)
+        protected override string ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma, Turma turma)
         {
-            return await Task.Run(() => MENSAGEM_DINAMICA_TABELA_POR_ALUNO); 
+            return MENSAGEM_DINAMICA_TABELA_POR_ALUNO; 
         }
     }
 }

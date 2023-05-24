@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var notasPosConselho =
                 (await mediator.Send(
-                    new ObterNotasConselhoEmAprovacaoPorWorkflowQuery(request.WorkflowAprovacaoId),
+                    new ObterWfsAprovacaoNotaConselhoPorWorkflowQuery(request.WorkflowAprovacaoId),
                     cancellationToken)).ToList();
 
             var notaPosConselho = notasPosConselho.FirstOrDefault();
@@ -40,17 +40,11 @@ namespace SME.SGP.Aplicacao
                 return mensagem;
             
             await CarregarInformacoesParaNotificacao(notasPosConselho);
-                
-            //var turma = await ObterTurma(parecerConclusivo.TurmaId);
-
+            var turma = WFAprovacoes?.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+          
             mensagem = mensagem.Replace(MENSAGEM_DINAMICA_TABELA_POR_ALUNO, ObterTabelaDosAlunos(notasPosConselho, turma));
 
             return mensagem;
-        }
-
-        protected override string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar)
-        {
-            throw new System.NotImplementedException();
         }
 
     }

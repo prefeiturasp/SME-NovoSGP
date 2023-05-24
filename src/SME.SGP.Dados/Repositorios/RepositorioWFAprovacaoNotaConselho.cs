@@ -67,6 +67,27 @@ namespace SME.SGP.Dados
                , new { workflowId }));
         }
 
+        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterWfsAprovacaoPorWorkflow(long workflowId)
+        {
+            var query = ObterQueryNotaEmAprovacaoPorWorkflow();
+            query += " where nwf.wf_aprovacao_id = @workflowId ";
+
+            return (await database.Conexao
+               .QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, Turma, PeriodoEscolar, WFAprovacaoNotaConselho>(query,
+               (wfAprovacao, conselhoClasseNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma, turma, periodoEscolar) =>
+               {
+                   fechamentoTurma.Turma = turma;
+                   conselhoClasse.FechamentoTurma = fechamentoTurma;
+                   conselhoClasse.FechamentoTurma.PeriodoEscolar = periodoEscolar;
+                   conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                   conselhoClasseNota.ConselhoClasseAluno = conselhoClasseAluno;
+                   wfAprovacao.ConselhoClasseNota = conselhoClasseNota;
+
+                   return wfAprovacao;
+               }
+               , new { workflowId }));
+        }
+
         public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId)
         {
             var query = @"select * from wf_aprovacao_nota_conselho where conselho_classe_nota_id = @conselhoClasseNotaId and not excluido";

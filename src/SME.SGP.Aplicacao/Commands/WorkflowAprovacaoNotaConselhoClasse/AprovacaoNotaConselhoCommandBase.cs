@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
         public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
-        protected abstract string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar);
+        protected virtual string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar) => string.Empty;
 
         protected async Task CarregarInformacoesParaNotificacao(IEnumerable<WFAprovacaoNotaConselho> wfAprovacoes)
         {
@@ -45,17 +45,17 @@ namespace SME.SGP.Aplicacao
             await CarregarConceitos();
         }
 
-        protected async Task<string> ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        protected string ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
         {
             var periodoEscolar = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
             var descricao = new StringBuilder(ObterTexto(ue, turma, periodoEscolar));
 
-            descricao.Append(await ObterTabelaDosAlunos(aprovacoesPorTurma, turma));
+            descricao.Append(ObterTabelaDosAlunos(aprovacoesPorTurma, turma));
 
             return descricao.ToString();
         }
 
-        protected virtual async Task<string> ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma, Turma turma)
+        protected virtual string ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma, Turma turma)
         {
             var descricao = new StringBuilder();
             descricao.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
