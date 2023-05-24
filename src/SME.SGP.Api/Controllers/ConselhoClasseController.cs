@@ -259,7 +259,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> ObterAlunosSemNotasRecomendacoes(long turmaId,int bimestre,[FromServices] IObterAlunosSemNotasRecomendacoesUseCase useCase)
         {
-            return Ok(useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId,bimestre)));
+            return Ok(await useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId,bimestre)));
         }
     }
 

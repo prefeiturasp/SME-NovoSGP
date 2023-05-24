@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AlunoTemRecomandacaoDto>(query, new { turmasId,bimestre });
         }
 
-        public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(string[] turmasId, int bimestre)
+        public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(string[] turmasCodigos, int bimestre)
         {
             var sql = new StringBuilder(); 
             sql.AppendLine(@"select");
@@ -70,9 +70,9 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"where");
             sql.AppendLine(@"	not cccat.excluido");
             sql.AppendLine(@"	and not cccat.excluido");
-            sql.AppendLine(@"	and t.turma_id = any(@turmaId) ");
+            sql.AppendLine(@"	and t.turma_id = any(@turmasCodigos) ");
             sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
-            return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasId,bimestre });
+            return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasCodigos,bimestre });
         }
     }
 }

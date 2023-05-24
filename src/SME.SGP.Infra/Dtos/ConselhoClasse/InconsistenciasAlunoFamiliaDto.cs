@@ -8,7 +8,7 @@ namespace SME.SGP.Infra
         {
             Inconsistencias = new List<string>();
         }
-        public int NumeroChamada { get; set; }
+        public int? NumeroChamada { get; set; }
         public string AlunoNome { get; set; }
         public string AlunoCodigo { get; set; }
         public List<string> Inconsistencias { get; set; }

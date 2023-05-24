@@ -10,6 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<ConselhoClasseAlunosNotaPorFechamentoIdDto>> ObterConselhoClasseAlunosNotaPorFechamentoId(long fechamentoTurmaId);
         Task<IEnumerable<AlunoTemRecomandacaoDto>> VerificarSeExisteRecomendacaoPorTurma(string[] turmasId, int bimestre);
-        Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(string[] turmasId, int bimestre);
+        Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(string[] turmasCodigos, int bimestre);
     }
 }
