@@ -73,8 +73,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task<NegocioException> ExecutarComandoSalvarAnotacoesConselhoClasseAluno(ConselhoClasseAlunoAnotacoesDto dto)
         {
-            var command = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
-            return await Assert.ThrowsAsync<NegocioException>(async () => await command.SalvarAsync(dto));
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
+            return await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dto));
         }
 
         private async Task<NegocioException> ExecutarComandoSalvarConselho(SalvarConselhoClasseAlunoNotaDto conselhoClasse)

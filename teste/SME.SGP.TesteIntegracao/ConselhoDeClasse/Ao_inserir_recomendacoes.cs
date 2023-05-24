@@ -27,7 +27,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await CriarDados();
 
-            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
+
             var dto = new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
@@ -36,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 RecomendacaoAlunoIds = new long[] { 1,2 },
                 RecomendacaoFamiliaIds = new long[] { 3,4 }
             };
-            var conselhoAluno = await comando.SalvarAsync(dto);
+            var conselhoAluno = await useCase.Executar(dto);
 
             conselhoAluno.ShouldNotBeNull();
             ValidaRecomendacaoPreCadastradas(dto);
@@ -48,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await CriarDados();
 
-            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
             var dto = new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
@@ -60,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 RecomendacaoFamiliaIds = new long[] { }
             };
 
-            var conselhoAluno = await comando.SalvarAsync(dto);
+            var conselhoAluno = await useCase.Executar(dto);
 
             ValidaRecomendacaoCampoLivres(conselhoAluno);
         }
@@ -71,9 +72,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await CriarDados();
 
-            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
             var dto = ObterConselhoAlunoAnotacaoDto();
-            var conselhoAluno = await comando.SalvarAsync(dto);
+            var conselhoAluno = await useCase.Executar(dto);
 
             ValidaRecomendacaoCampoLivres(conselhoAluno);
             ValidaRecomendacaoPreCadastradas(dto);
@@ -85,9 +86,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await CriarDados();
 
-            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
             var dto = ObterConselhoAlunoAnotacaoDto();
-            await comando.SalvarAsync(dto);
+            await useCase.Executar(dto);
 
             var dtoAlteracao = new ConselhoClasseAlunoAnotacoesDto()
             {
@@ -100,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 RecomendacaoFamiliaIds = new long[] { 4 }
             };
 
-            var conselhoAluno = await comando.SalvarAsync(dtoAlteracao);
+            var conselhoAluno = await useCase.Executar(dtoAlteracao);
             conselhoAluno.ShouldNotBeNull();
             conselhoAluno.RecomendacoesAluno.ShouldBe(TEXTO_LIVRE_ALUNO_ALTERAR);
             conselhoAluno.RecomendacoesFamilia.ShouldBe(TEXTO_LIVRE_FAMILIA_ALTERAR);
@@ -135,7 +136,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
 
-            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
             var dto = new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
@@ -147,7 +148,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 RecomendacaoFamiliaIds = new long[] { }
             };
 
-            await Assert.ThrowsAsync<NegocioException>(async () => await comando.SalvarAsync(dto));
+            await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dto));
         }
         
         [Fact]
@@ -170,7 +171,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoAberturaCustomizadoQuartoBimestre(false);
 
-            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
             var dto = new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
@@ -182,7 +183,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 RecomendacaoFamiliaIds = new long[] { }
             };
 
-            await Assert.ThrowsAsync<NegocioException>(async () => await comando.SalvarAsync(dto));
+            await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dto));
         }
 
         private ConselhoClasseAlunoAnotacoesDto ObterConselhoAlunoAnotacaoDto()
