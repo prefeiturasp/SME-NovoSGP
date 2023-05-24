@@ -17,7 +17,10 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExcluirConselhoClasseNotaCommand request, CancellationToken cancellationToken)
         {
-            await conselhoClasseNota.Excluir(request.ConselhoClasseNotaId);
+            if (request.SomenteLogico)
+                await conselhoClasseNota.RemoverLogico(request.ConselhoClasseNotaId);
+            else
+                await conselhoClasseNota.Excluir(request.ConselhoClasseNotaId);
         }
 
     }

@@ -156,8 +156,8 @@ namespace SME.SGP.Aplicacao
                 DescricaoComponenteCurricular = componenteCurricular.Descricao,
                 Nota = aprovacao.Nota,
                 ConceitoId = aprovacao.ConceitoId,
-                NotaConselhoClasse = aprovacao.ConselhoClasseNota.Nota,
-                ConceitoIdConselhoClasse = aprovacao.ConselhoClasseNota.ConceitoId
+                NotaConselhoClasse = aprovacao.NotaAnterior,
+                ConceitoIdConselhoClasse = aprovacao.ConceitoIdAnterior
             };
 
             if (!retorno.NotaConselhoClasse.HasValue && !retorno.ConceitoIdConselhoClasse.HasValue)

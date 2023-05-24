@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
-            var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma));
             var alunosEol =
                 await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
