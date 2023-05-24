@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<WorkflowAprovacao> ObterEntidadeCompletaPorId(long workflowId);
         IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo);
         Task<string> ObterCriador(long workflowId);
+        Task<IEnumerable<long>> ObterIdsWorkflowPorWfAprovacaoId(long id, string tabelaVinculada);
     }
 }
