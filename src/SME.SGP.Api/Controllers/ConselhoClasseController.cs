@@ -44,9 +44,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(AuditoriaConselhoClasseAlunoDto), 200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
+        public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] ISalvarConselhoClasseAlunoRecomendacaoUseCase salvarConselhoClasseAlunoRecomendacaoUseCase)
         {
-            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
+            return Ok(await salvarConselhoClasseAlunoRecomendacaoUseCase.Executar(conselhoClasseAlunoDto));
         }
 
         [HttpPost("{conselhoClasseId}/notas/alunos/{codigoAluno}/turmas/{codigoTurma}/bimestres/{bimestre}/fechamento-turma/{fechamentoTurmaId}")]
