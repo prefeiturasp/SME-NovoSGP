@@ -64,7 +64,15 @@ namespace SME.SGP.Aplicacao
                     AlunoNome = aluno.NomeAluno,
                     AlunoCodigo = aluno.CodigoAluno
                 };
-                
+                foreach (var nota in obterConselhoClasseAlunoNota)
+                {
+                    item.Inconsistencias.Add("");
+                }
+
+                foreach (var recomendacao in obterRecomendacoes)
+                {
+                    item.Inconsistencias.Add("");
+                }
                 retorno.Add(item);
             }
         }
