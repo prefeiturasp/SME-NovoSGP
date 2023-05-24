@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 
 namespace SME.SGP.Aplicacao.Integracoes.Respostas
 {
@@ -42,7 +43,8 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("nomeComponenteInfantil")]
         public string NomeComponenteInfantil { get; internal set; }
-        [JsonIgnore]
+        [JsonProperty("professor")]
         public string Professor { get; set; }
+        public long[] CodigosTerritoriosAgrupamento { get; set; }
     }
 }

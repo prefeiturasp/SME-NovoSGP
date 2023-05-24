@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             var componente = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(request.ComponenteCurricularId)));
             var componenteCurricularCodigo = !string.IsNullOrWhiteSpace(request.ComponenteCurricularCodigo) ? long.Parse(request.ComponenteCurricularCodigo) : 0;
 
-            var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, componente.TerritorioSaber && componenteCurricularCodigo > 0 ? componenteCurricularCodigo.ToString() : request.ComponenteCurricularId, usuarioLogado.EhProfessorCj(), ehProfessor && componente.TerritorioSaber ? codigoRf : null);
+            var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, new string[] { componente.TerritorioSaber && componenteCurricularCodigo > 0 ? componenteCurricularCodigo.ToString() : request.ComponenteCurricularId }, usuarioLogado.EhProfessorCj(), ehProfessor && componente.TerritorioSaber ? codigoRf : null);
 
             var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s => s.Id)));
 
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(ComponenteCurricularId))
             {
-                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { long.Parse(ComponenteCurricularId) }, codigoTurma: turma.CodigoTurma));
+                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { long.Parse(ComponenteCurricularId) }, codigoTurma: turma.CodigoTurma));
                 disciplinaDto = disciplinasRetorno.FirstOrDefault();
             }
 
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
             var planosAulaRetorno = new List<PlanoAulaRetornoDto>();
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;           
+            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;           
 
             var disciplinaId = (planoAulas != null && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
             var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,

@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
                     var nomeArquivo = Regex.Match(imagem.ToString(), ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
                     if (!ImagemJaExistente(imagem.ToString()) && ImagemExisteTemp(imagem.ToString()))
                     {
-                        var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
+                        var novoCaminho = nomeArquivo.Success ? await mediator.Send(new MoverArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
                         if (!string.IsNullOrEmpty(novoCaminho))
                         {
                             var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);

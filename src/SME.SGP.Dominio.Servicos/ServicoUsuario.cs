@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
@@ -26,6 +27,8 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
+
+        private Usuario usuarioLogado { get; set; }
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
                               IServicoEol servicoEOL,
@@ -102,7 +105,7 @@ namespace SME.SGP.Dominio
 
         public async Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login)
         {
-            var chaveRedis = $"perfis-usuario-{login}";
+            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
 
             var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
 
@@ -111,7 +114,7 @@ namespace SME.SGP.Dominio
 
             var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
 
-            _ = repositorioCache.SalvarAsync(chaveRedis, JsonConvert.SerializeObject(perfisDoUsuario));
+            _ = repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(perfisDoUsuario));
 
             return perfisDoUsuario;
         }
@@ -140,16 +143,33 @@ namespace SME.SGP.Dominio
 
         public async Task<Usuario> ObterUsuarioLogado()
         {
+            if (usuarioLogado == null)
+                usuarioLogado = await IdentificaUsuarioLogado();
+
+            return usuarioLogado;
+        }
+
+        private async Task<Usuario> IdentificaUsuarioLogado()
+        {
             var login = ObterLoginAtual();
+            if (string.IsNullOrEmpty(login))
+                return null;
+
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
 
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
 
-            var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
+            if (!string.IsNullOrEmpty(contextoAplicacao.NomeUsuario))
+                usuario.Nome = contextoAplicacao.NomeUsuario;
+
+            if (usuario.Perfis != null && usuario.Perfis.Any())
+                return usuario;
+
+            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
+            var perfisDoUsuario = await repositorioCache.ObterAsync(chaveCache, async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
-
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
@@ -160,7 +180,6 @@ namespace SME.SGP.Dominio
             var eNumero = long.TryParse(codigoRf, out long n);
 
             codigoRf = eNumero ? codigoRf : null;
-
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));
 
             if (usuario != null)
@@ -253,9 +272,9 @@ namespace SME.SGP.Dominio
 
         public void RemoverPerfisUsuarioCache(string login)
         {
-            var chaveRedis = $"perfis-usuario-{login}";
+            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
 
-            _ = repositorioCache.RemoverAsync(chaveRedis);
+            _ = repositorioCache.RemoverAsync(chaveCache);
         }
 
         public bool UsuarioLogadoPossuiPerfilSme()

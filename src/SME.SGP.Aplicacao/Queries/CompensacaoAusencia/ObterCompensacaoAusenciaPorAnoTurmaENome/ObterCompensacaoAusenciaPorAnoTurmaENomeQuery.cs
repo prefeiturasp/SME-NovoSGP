@@ -9,14 +9,18 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public long TurmaId { get; set; }
         public string Atividade { get; set; }
+        public string[] DisciplinasId { get; set; }
         public long Id { get; set; }
+        public string Professor { get; set; }
 
-        public ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(int anoLetivo, long turmaId, string atividade, long id)
+        public ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(int anoLetivo, long turmaId, string atividade, long id, string[] disciplinasId, string professor = null)
         {
             AnoLetivo = anoLetivo;
             TurmaId = turmaId;
             Atividade = atividade;
             Id = id;
+            DisciplinasId = disciplinasId;
+            Professor = professor;
         }
     }
 
@@ -34,7 +38,11 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(x => x.Atividade)
                 .NotEmpty()
-                .WithMessage("A atividade deve ser informado.");
+                .WithMessage("A atividade deve ser informado.");           
+            
+            RuleFor(x => x.DisciplinasId)
+                .NotEmpty()
+                .WithMessage("A disciplina deve ser informada.");
         }
     }
 }

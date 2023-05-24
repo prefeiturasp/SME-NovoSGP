@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
             var dto = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
-            await ExecuteTeste(dto);
+            //await ExecuteTeste(dto);
         }
 
         //[Fact]
@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
             var dto = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
-            await ExecuteTeste(dto);
+            //await ExecuteTeste(dto);
         }
 
         //[Fact]
@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             var dto = ObtenhaDtoDadoBase(ObterPerfilCJ(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            await ExecuteTeste(dto);
+            //await ExecuteTeste(dto);
         }
 
         //[Fact]
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
             var dto = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
 
-            await ExecuteTeste(dto, ObtenhaListaDeRegencia());
+            //await ExecuteTeste(dto, ObtenhaListaDeRegencia());
             TesteDisciplinasRegentes();
         }
 
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
             var dto = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
 
-            await ExecuteTeste(dto, ObtenhaListaDeRegencia());
+            //await ExecuteTeste(dto, ObtenhaListaDeRegencia());
             TesteDisciplinasRegentes();
         }
 

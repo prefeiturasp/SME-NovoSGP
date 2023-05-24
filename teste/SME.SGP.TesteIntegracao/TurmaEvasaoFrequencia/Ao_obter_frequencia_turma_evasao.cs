@@ -227,6 +227,23 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
+                Mes = 0,
+                QuantidadeAlunosAbaixo50Porcento = 10,
+                QuantidadeAlunos0Porcento = 0
+            });
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
+            {
+                Id = 1,
+                TurmaId = 2,
+                Mes = 0,
+                QuantidadeAlunosAbaixo50Porcento = 3,
+                QuantidadeAlunos0Porcento = 0
+            });
+
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
+            {
+                Id = 1,
+                TurmaId = 1,
                 Mes = 2,
                 QuantidadeAlunosAbaixo50Porcento = 3,
                 QuantidadeAlunos0Porcento = 0

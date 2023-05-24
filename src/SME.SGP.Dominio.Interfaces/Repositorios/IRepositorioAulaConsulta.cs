@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<bool> ExisteAulaNaDataAsync(DateTime data, string turmaCodigo, string componenteCurricular);
 
-        Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaId, string disciplinaId, string professorRf, TipoAula tipoAula);
+        Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaId, string[] disciplinasId, string professorRf, TipoAula tipoAula);
 
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
 
@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil);
 
-        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf);
+        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string[] disciplinasIdsConsideradas, string professorRf);
 
         Task<bool> ObterTurmaInfantilPorAula(long aulaId);
 
@@ -54,11 +54,11 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaDiaProfessor(string turma, string disciplina, DateTime dataAula, string codigoRf);
 
-        Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(string turma, string componenteCurricular, DateTime dataAula, string codigoRf, bool ehGestor);
+        Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDiaProfessor(string turma, string[] componentesCurriculares, DateTime dataAula, string codigoRf, bool ehGestor);
 
-        Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemanaProfessor(string turma, string componenteCurricular, int semana, string codigoRf);
+        Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaDisciplinaSemanaProfessor(string turma, string[] componentesCurriculares, int semana, string codigoRf);
 
-        Task<int> ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(string turma, string disciplina, int semana, string codigoRf, DateTime dataExcecao, bool ehGestor);
+        Task<int> ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(string turma, string[] disciplinas, int semana, string codigoRf, DateTime dataExcecao, bool ehGestor);
 
         Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula);
 
@@ -66,7 +66,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AulasPorTurmaDisciplinaDto>> ObterAulasTurmaExperienciasPedagogicasSemana(string turma, int semana);
 
-        Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string disciplina);
+        Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string[] disciplinas);
 
         Task<Aula> ObterCompletoPorIdAsync(long id);
         Task<Aula> ObterAulaPorComponenteCurricularIdTurmaIdEData(string componenteCurricularId, string turmaId, DateTime data);
@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<DateTime> ObterDataAula(long aulaId);
 
-        Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string disciplinaId, bool aulaCJ, long? aulaPaiId = null);
+        Task<IEnumerable<DateTime>> ObterDatasAulasExistentes(List<DateTime> datas, string turmaId, string[] disciplinasId, bool aulaCJ, long? aulaPaiId = null);
 
         IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj);
         IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(long periodoEscolarId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, bool aulaCJ = false, bool ehProfessor = false);
@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId);
 
-        Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string componenteCurricularId, bool aulaCj, string professor = null);
+        Task<IEnumerable<Aula>> ObterAulasPorDataPeriodo(DateTime dataInicio, DateTime dataFim, string turmaId, string[] componentesCurricularesId, bool aulaCj, string professor = null);
 
         Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim);
         Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, string componenteCurricularFilhoCodigo, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio);
@@ -106,5 +106,6 @@ namespace SME.SGP.Dominio.Interfaces
                 string[] disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj);
 
         Task<IEnumerable<RegistroFrequenciaAulaParcialDto>> ObterListaDeRegistroFrequenciaAulaPorTurma(string codigoTurma);
+        Task<IEnumerable<PeriodoEscolarAulaDto>> ObterPeriodosEscolaresDasAulas(long[] aulasId);
     }
 }

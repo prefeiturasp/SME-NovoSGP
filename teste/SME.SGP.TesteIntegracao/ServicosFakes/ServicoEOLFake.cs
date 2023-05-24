@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GrupoMatriz = SME.SGP.Dominio.GrupoMatriz;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
@@ -519,7 +520,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new ComponenteCurricularEol()
                 {
                     Codigo = 1106,
-                    TerritorioSaber = false
+                    TerritorioSaber = false,
+                    GrupoMatriz = new GrupoMatriz() { Id = 2, Nome = "Diversificada" },
+                    LancaNota = false            
+                },
+                new ComponenteCurricularEol()
+                {
+                    Codigo = 138,
+                    TerritorioSaber = false,
+                    GrupoMatriz = new GrupoMatriz() { Id = 1, Nome = "Base Nacional Comum" },
+                    LancaNota = true
                 }
             });
         }
@@ -544,7 +554,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true, bool tipoTurma = true)
         {
             if (codidoAluno.Equals("77777"))
                 return ObterAlunosPorTurma("1", true);
@@ -1073,6 +1083,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         Perfis.PERFIL_ADMSME
                     }
                 },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "1",
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_ADMUE
+                    }
+                }
             };
             return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login.ToUpper()).FirstOrDefault());
         }

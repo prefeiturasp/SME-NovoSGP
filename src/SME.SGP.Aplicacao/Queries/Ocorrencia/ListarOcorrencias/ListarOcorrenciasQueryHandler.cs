@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private IEnumerable<TurmasDoAlunoDto> Alunos;
         private IEnumerable<UsuarioEolRetornoDto> Servidores;
+        private const long TODAS_UES = -99;
 
         public ListarOcorrenciasQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator) : base(contextoAplicacao)
         {
@@ -27,29 +29,60 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<OcorrenciaListagemDto>> Handle(ListarOcorrenciasQuery request, CancellationToken cancellationToken)
         {
-            var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao);
+            try
+            {
+                long[] idUes = Array.Empty<long>();
 
-            await CarregarServidores(lstOcorrencias, request.Filtro.UeId);
+                if(request.Filtro.UeId == TODAS_UES)
+                    idUes = await ObterIdUesAbrangencia(request);
 
-            if (!string.IsNullOrEmpty(request.Filtro.ServidorNome))
-                lstOcorrencias = ObterOcorrenciaPorFiltroDeServidores(lstOcorrencias, request.Filtro.ServidorNome);
+                var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao, idUes);
 
-            await CarregarAlunos(lstOcorrencias);
+                await CarregarServidores(lstOcorrencias);
 
-            if (!string.IsNullOrEmpty(request.Filtro.AlunoNome))
-                lstOcorrencias = ObterOcorrenciaPorFiltroDeAlunos(lstOcorrencias, request.Filtro.AlunoNome);
+                if (!string.IsNullOrEmpty(request.Filtro.ServidorNome))
+                    lstOcorrencias = ObterOcorrenciaPorFiltroDeServidores(lstOcorrencias, request.Filtro.ServidorNome);
 
-            return MapearParaDto(lstOcorrencias);
+                await CarregarAlunos(lstOcorrencias);
+
+                if (!string.IsNullOrEmpty(request.Filtro.AlunoNome))
+                    lstOcorrencias = ObterOcorrenciaPorFiltroDeAlunos(lstOcorrencias, request.Filtro.AlunoNome);
+
+                return await MapearParaDto(lstOcorrencias);
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao executar ListarOcorrenciasQueryHandler", LogNivel.Critico, LogContexto.Geral, ex.Message));
+                throw;
+            }
         }
 
-        private async Task CarregarServidores(PaginacaoResultadoDto<Ocorrencia> ocorrencias, long ueId)
+        private async Task<long[]> ObterIdUesAbrangencia(ListarOcorrenciasQuery request)
+        {
+            var login = await mediator.Send(new ObterLoginAtualQuery());
+            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var dre = await mediator.Send(new ObterDREPorIdQuery(request.Filtro.DreId));
+            var ues = await mediator.Send(new ObterUEsPorDREQuery(dre.CodigoDre, login, perfil, 0, 0, request.Filtro.ConsideraHistorico, request.Filtro.AnoLetivo));
+
+            return ues.Select(x => x.Id).ToArray();
+        }
+
+        private async Task CarregarServidores(PaginacaoResultadoDto<Ocorrencia> ocorrencias)
         {
             var codigosServidores = ocorrencias.Items.SelectMany(ocorrencia => ocorrencia.Servidores).Select(aluno => aluno.CodigoServidor).ToArray();
-            
+            var servidores = new List<UsuarioEolRetornoDto>();
             if (codigosServidores.Any())
             {
-                var dtoUe = await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
-                this.Servidores = await mediator.Send(new ObterFuncionariosPorUeQuery(dtoUe.UeCodigo, codigosServidores));
+                var idUes = ocorrencias.Items.Select(ocorrencia => ocorrencia.UeId).Distinct().ToArray();
+                var dtoUes = await mediator.Send(new ObterUesPorIdsQuery(idUes));
+                foreach (var dtoue in dtoUes)
+                {
+                    var funcionarios = await mediator.Send(new ObterFuncionariosPorUeQuery(dtoue.CodigoUe, codigosServidores));
+                    if (funcionarios != null)
+                        servidores.AddRange(funcionarios);
+                }
+
+                this.Servidores = servidores;
             }
         }
 
@@ -65,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Items = ocorrenciasServidores.ToList(),
                     TotalRegistros = ocorrenciasServidores.Count(),
-                    TotalPaginas = (int)Math.Ceiling((double)ocorrenciasServidores.Count() / Paginacao.QuantidadeRegistros)
+                    TotalPaginas = (int) Math.Ceiling((double) ocorrenciasServidores.Count() / Paginacao.QuantidadeRegistros)
                 };
             }
 
@@ -94,33 +127,37 @@ namespace SME.SGP.Aplicacao
                 {
                     Items = ocorrenciasAluno.ToList(),
                     TotalRegistros = ocorrenciasAluno.Count(),
-                    TotalPaginas = (int)Math.Ceiling((double)ocorrenciasAluno.Count() / Paginacao.QuantidadeRegistros)
+                    TotalPaginas = (int) Math.Ceiling((double) ocorrenciasAluno.Count() / Paginacao.QuantidadeRegistros)
                 };
             }
 
             return ocorrencias;
         }
 
-        private PaginacaoResultadoDto<OcorrenciaListagemDto> MapearParaDto(PaginacaoResultadoDto<Ocorrencia> ocorrencias)
+        private async Task<PaginacaoResultadoDto<OcorrenciaListagemDto>> MapearParaDto(PaginacaoResultadoDto<Ocorrencia> ocorrencias)
         {
-            return new PaginacaoResultadoDto<OcorrenciaListagemDto>()
+            var uesOcorrencias = new List<UesOcorreciaDto>();
+            if (ocorrencias.Items.Any())
+                uesOcorrencias = await ObterNomeUe(ocorrencias.Items.Select(x => x.UeId).Distinct().ToArray());
+            var listaRetorno = new PaginacaoResultadoDto<OcorrenciaListagemDto>()
             {
-                Items = ocorrencias.Items.Select(ocorrencia => 
+                Items = ocorrencias.Items.Select(ocorrencia =>
                 {
                     var alunoOcorrencia = ocorrencia.Alunos?.Count > 1
-                    ? $"{ocorrencia.Alunos?.Count} crianças/estudantes"
-                    : DefinirDescricaoOcorrenciaAluno(ocorrencia);
+                        ? $"{ocorrencia.Alunos?.Count} crianças/estudantes"
+                        : DefinirDescricaoOcorrenciaAluno(ocorrencia);
 
                     var alunoServidor = ocorrencia.Servidores?.Count > 1
-                      ? $"{ocorrencia.Servidores?.Count} servidores"
-                      : DefinirDescricaoOcorrenciaServidor(ocorrencia);
-                    
+                        ? $"{ocorrencia.Servidores?.Count} servidores"
+                        : DefinirDescricaoOcorrenciaServidor(ocorrencia);
+
                     return new OcorrenciaListagemDto()
                     {
                         AlunoOcorrencia = alunoOcorrencia,
                         ServidorOcorrencia = alunoServidor,
                         DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
                         Id = ocorrencia.Id,
+                        UeOcorrencia = uesOcorrencias?.FirstOrDefault(x => x.IdUe == ocorrencia.UeId)?.NomeUe,
                         Titulo = ocorrencia.Titulo,
                         Turma = ocorrencia.Turma?.NomeFiltro,
                     };
@@ -128,7 +165,20 @@ namespace SME.SGP.Aplicacao
                 TotalRegistros = ocorrencias.TotalRegistros,
                 TotalPaginas = ocorrencias.TotalPaginas
             };
+
+            listaRetorno.Items = listaRetorno.Items.OrderBy(x => x.UeOcorrencia);
+            return listaRetorno;
         }
+
+        private async Task<List<UesOcorreciaDto>> ObterNomeUe(long[] ueIdis)
+        {
+            var ues = await mediator.Send(new ObterUesPorIdsQuery(ueIdis));
+            if (!ues.Any())
+                throw new NegocioException("Não foi possível encrontra nenhuma UE!");
+
+            return ues.Select(ue => new UesOcorreciaDto(ue.Id, $"{ue.TipoEscola.ShortName()} {ue.Nome}")).ToList();
+        }
+
         private string DefinirDescricaoOcorrenciaAluno(Ocorrencia ocorrencia)
         {
             var ocorrenciaAluno = ocorrencia.Alunos?.FirstOrDefault();

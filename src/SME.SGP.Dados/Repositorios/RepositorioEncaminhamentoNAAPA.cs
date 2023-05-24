@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         public const int QUESTAO_PRIORIDADE_ORDEM = 1;
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
+        public const string SECAO_ITINERANCIA_NOME = "QUESTOES_ITINERACIA";
 
         public RepositorioEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
@@ -328,6 +330,17 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { encaminhamentoId })).FirstOrDefault();
         }
 
+        public async Task<bool> EncaminhamentoContemAtendimentosItinerancia(long encaminhamentoId)
+        {
+            var query = $@"select ens.id
+                        from encaminhamento_naapa_secao ens 
+                        INNER JOIN secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id 
+                        WHERE NOT ens.excluido and sen.nome_componente = @secaoNome
+                                and ens.encaminhamento_naapa_id = @id";
+
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME }));           
+        }
+
         public async Task<SituacaoDto> ObterSituacao(long id)
         {
             var query = @" select situacao
@@ -344,6 +357,23 @@ namespace SME.SGP.Dados.Repositorios
                 };
 
             return new SituacaoDto();
+        }
+
+        public async Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId)
+        {
+            var query = @"select 1 from encaminhamento_naapa en 
+                        left join encaminhamento_naapa_secao ens 
+                         on ens.encaminhamento_naapa_id = en.id 
+                        left join secao_encaminhamento_naapa sen 
+                         on sen.id = ens.secao_encaminhamento_id 
+                        where not en.excluido 
+                        and en.situacao = @situacao
+                        and sen.nome_componente = @secaoNome
+                        and ens.concluido 
+                        and not ens.excluido and 
+                        en.id = @encaminhamentoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME });
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()

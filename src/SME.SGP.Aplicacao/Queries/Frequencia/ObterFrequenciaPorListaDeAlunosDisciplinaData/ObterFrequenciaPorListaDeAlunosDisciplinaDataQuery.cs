@@ -8,18 +8,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery : IRequest<IEnumerable<FrequenciaAluno>>
     {
-        public ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(string[] codigosAlunos, string disciplinaId, DateTime dataAtual, string turmaCodigo = "")
+        public ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(string[] codigosAlunos, string[] disciplinaId, long periodoEscolarId, string turmaCodigo = "", string professor = null)
         {
             CodigosAlunos = codigosAlunos;
             DisciplinaId = disciplinaId;
-            DataAtual = dataAtual;
+            PeriodoEscolarId = periodoEscolarId;
             TurmaCodigo = turmaCodigo;
+            Professor = professor;
         }
 
         public string[] CodigosAlunos { get; set; }
-        public string DisciplinaId{ get; set; }
-        public DateTime DataAtual { get; set; }
+        public string[] DisciplinaId{ get; set; }
+        public long PeriodoEscolarId { get; set; }
         public string TurmaCodigo { get; set; }
+        public string Professor { get; set; }
     }
 
     public class ObterFrequenciaPorListaDeAlunosDisciplinaDataQueryValidator : AbstractValidator<ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery>
@@ -28,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.CodigosAlunos).NotEmpty().WithMessage("Informe pelo menos um aluno para consultar a frequencia ");
             RuleFor(x => x.DisciplinaId).NotEmpty().WithMessage("Informe uma disciplina id para consultar a frequencia ");
-            RuleFor(x => x.DisciplinaId).NotEmpty().WithMessage("Informe uma data  para consultar a frequencia ");
+            RuleFor(x => x.PeriodoEscolarId).NotEmpty().WithMessage("Informe um período escolar para consultar a frequencia ");
         }
     }
 }

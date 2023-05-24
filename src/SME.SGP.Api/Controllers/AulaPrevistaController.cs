@@ -35,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(AulasPrevistasDadasAuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ADAP_I, Policy = "Bearer")]
         public async Task<IActionResult> Inserir([FromBody]AulaPrevistaDto dto, [FromServices]IComandosAulaPrevista comandos)

@@ -47,23 +47,46 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
             });
 
-            IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesDoProfessor = new List<(string, string)>();
+            var componentesCurricularesDoProfessor = new List<(string codigo, string codigoTerritorioSaber)>();
 
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
             IEnumerable<Aula> aulasParaVisualizar;
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
 
             if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
                 aulasParaVisualizar = aulas;
             else
             {
-                if (usuarioLogado.EhProfessor())
+                componentesCurricularesEolProfessor = (await mediator
+                   .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                 usuarioLogado.Login,
+                                                                                 usuarioLogado.PerfilAtual,
+                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
+
+                if (usuarioLogado.EhSomenteProfessorCj())
                 {
-                    componentesCurricularesDoProfessor = await mediator
-                        .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
-                                                                                         usuarioLogado.PerfilAtual,
-                                                                                         filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                                                         usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                    var componentesCurricularesDoProfessorCJ = await mediator
+                        .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                    if (componentesCurricularesDoProfessorCJ.Any())
+                    {
+                        var dadosComponentes = await mediator
+                            .Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+
+                        if (dadosComponentes.Any())
+                        {
+                            componentesCurricularesDoProfessor.AddRange(dadosComponentes
+                                .Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")));
+                        }
+                    }
+                }
+
+                if (componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any())
+                {
+                    componentesCurricularesEolProfessor.ToList()
+                        .ForEach(cc => componentesCurricularesDoProfessor
+                            .Add((cc.Codigo.ToString(), cc.CodigoComponenteTerritorioSaber.ToString())));
                 }
 
                 aulasParaVisualizar = usuarioLogado
@@ -81,7 +104,7 @@ namespace SME.SGP.Aplicacao
                 Aulas = aulasParaVisualizar,
                 EventosDaUeSME = eventosDaUeSME,
                 Avaliacoes = avaliacoes,
-                UsuarioCodigoRf = usuarioLogado.CodigoRf,
+                UsuarioCodigoRf = usuarioLogado.CodigoRf ?? usuarioLogado.Login,
                 Mes = mes,
                 AnoLetivo = filtroAulasEventosCalendarioDto.AnoLetivo
             });

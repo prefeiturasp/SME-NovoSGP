@@ -19,17 +19,17 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task<PaginacaoResultadoDto<CompensacaoAusencia>> Listar(Paginacao paginacao, string turmaId, string disciplinaId, int bimestre, string nomeAtividade)
+        public async Task<PaginacaoResultadoDto<CompensacaoAusencia>> Listar(Paginacao paginacao, string turmaId, string[] disciplinasId, int bimestre, string nomeAtividade, string professor = null)
         {
             var retorno = new PaginacaoResultadoDto<CompensacaoAusencia>();
 
-            var query = new StringBuilder(MontaQuery(paginacao, disciplinaId, bimestre, nomeAtividade));
+            var query = new StringBuilder(MontaQuery(paginacao, disciplinasId, bimestre, nomeAtividade, professor: professor));
             query.AppendLine(";");
-            query.AppendLine(MontaQuery(paginacao, disciplinaId, bimestre, nomeAtividade, true));
+            query.AppendLine(MontaQuery(paginacao, disciplinasId, bimestre, nomeAtividade, true, professor));
 
             var nomeAtividadeTratado = $"%{(nomeAtividade ?? "").ToLower()}%";
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { turmaId, disciplinaId, bimestre, nomeAtividade = nomeAtividadeTratado }))
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), new { turmaId, disciplinasId, bimestre, nomeAtividade = nomeAtividadeTratado, professor }))
             {
                 retorno.Items = multi.Read<CompensacaoAusencia>().ToList();
                 retorno.TotalRegistros = multi.ReadFirst<int>();
@@ -40,7 +40,7 @@ namespace SME.SGP.Dados
             return retorno;
         }
 
-        private string MontaQuery(Paginacao paginacao, string disciplinaId, int bimestre, string nomeAtividade, bool contador = false)
+        private string MontaQuery(Paginacao paginacao, string[] disciplinasId, int bimestre, string nomeAtividade, bool contador = false, string professor = null)
         {
             var select = contador ? "count(c.id)" : "c.id, c.bimestre, c.nome";
             var query = new StringBuilder(string.Format(@"select {0}
@@ -49,12 +49,14 @@ namespace SME.SGP.Dados
                           where not c.excluido  
                             and t.turma_id = @turmaId ", select));
 
-            if (!string.IsNullOrEmpty(disciplinaId))
-                query.AppendLine("and c.disciplina_id = @disciplinaId");
+            if (disciplinasId != null && disciplinasId.Any())
+                query.AppendLine("and c.disciplina_id = any(@disciplinasId)");
             if (bimestre != 0)
                 query.AppendLine("and c.bimestre = @bimestre");
             if (!string.IsNullOrEmpty(nomeAtividade))
                 query.AppendLine("and lower(f_unaccent(c.nome)) like @nomeAtividade");
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and (c.professor_rf = @professor or c.professor_rf is null)");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
@@ -62,18 +64,22 @@ namespace SME.SGP.Dados
             return query.ToString();
         }
 
-        public async Task<CompensacaoAusencia> ObterPorAnoTurmaENome(int anoLetivo, long turmaId, string nome, long idIgnorar)
+        public async Task<CompensacaoAusencia> ObterPorAnoTurmaENome(int anoLetivo, long turmaId, string nome, long idIgnorar, string[] disciplinasId, string professor = null)
         {
             var query = new StringBuilder(@"select * 
                                               from compensacao_ausencia c
                                              where not excluido
                                                and ano_letivo = @anoLetivo
                                                and turma_id = @turmaId
+                                               and disciplina_id = any(@disciplinasId)
                                                and nome = @nome ");
             if (idIgnorar > 0)
-                query.AppendLine("and id <> @idIgnorar");                                               
+                query.AppendLine("and id <> @idIgnorar ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<CompensacaoAusencia>(query.ToString(), new { anoLetivo, turmaId, nome, idIgnorar });
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and professor_rf = @professor ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<CompensacaoAusencia>(query.ToString(), new { anoLetivo, turmaId, nome, idIgnorar, disciplinasId, professor });
         }
 
         public async Task<IEnumerable<Infra.TotalCompensacaoAusenciaDto>> ObterCompesacoesAusenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
@@ -156,7 +162,7 @@ namespace SME.SGP.Dados
                 query.AppendLine(" and t.semestre = @semestre ");
 
             if (bimestre > 0)
-                query.AppendLine(" and ca.bimestre = @bimestre ");            
+                query.AppendLine(" and ca.bimestre = @bimestre ");
 
             query.AppendLine(@"group by t.ano_letivo 
                                     union
@@ -196,7 +202,7 @@ namespace SME.SGP.Dados
 
             query.AppendLine(" group by t.ano_letivo) as query");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<Infra.Dtos.TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre });                        
+            return await database.Conexao.QueryFirstOrDefaultAsync<Infra.Dtos.TotalCompensacaoAusenciaDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre, bimestre });
         }
 
         public async Task<IEnumerable<Infra.TotalCompensacaoAusenciaDto>> ObterAtividadesCompensacaoConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)

@@ -25,5 +25,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> Exists(long id, string coluna = null);
 
         Task<long> RemoverLogico(long id, string coluna = null);      
+        Task<bool> RemoverLogico(long[] id, string coluna = null);      
     }
 }

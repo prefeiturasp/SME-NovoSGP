@@ -3,19 +3,19 @@ pipeline {
       branchname =  env.BRANCH_NAME.toLowerCase()
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
-      deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
-      deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"      
-      deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
-      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-geral-r2' : 'sme-worker-geral' }"
-      deployment5 = "${env.branchname == 'release-r2' ? 'sme-worker-aee-r2' : 'sme-worker-aee' }"
-      deployment6 = "${env.branchname == 'release-r2' ? 'sme-worker-aula-r2' : 'sme-worker-aula' }"
-      deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
-      deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
-      deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
-      deployment10 = "${env.branchname == 'release-r2' ? 'sme-worker-avaliacao-r2' : 'sme-worker-avaliacao' }"
-      deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
-      deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
-      deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
+      deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"           
+      deployment2 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
+      deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-geral-r2' : 'sme-worker-geral' }"
+      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-aee-r2' : 'sme-worker-aee' }"
+      deployment5 = "${env.branchname == 'release-r2' ? 'sme-worker-aula-r2' : 'sme-worker-aula' }"
+      deployment6 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
+      deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
+      deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
+      deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-avaliacao-r2' : 'sme-worker-avaliacao' }"
+      deployment10 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
+      deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
+      deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
+      deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao-r2' : 'sme-worker-compressao' }"
     }
   
     agent {
@@ -40,7 +40,7 @@ pipeline {
           parallel {
             stage('Sonar') {
             agent { node { label 'SME-AGENT-SGP-SONAR' } }
-            when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch '_release'; branch 'release-r2'; branch 'infra/*'; } } 
+            when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
                 steps {
                   checkout scm
                   script{
@@ -172,7 +172,17 @@ pipeline {
                   dockerImage12 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Hub/Dockerfile .")
                 }
               }
-            }
+            }            
+            stage('sme-worker-compressao') {
+              agent { node { label 'SME-AGENT-SGP' } }
+              steps{
+                checkout scm
+                script {
+                  imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-compressao"
+                  dockerImage13 = docker.build(imagename, "-f src/SME.SGP.ComprimirArquivos.Worker/Dockerfile .")
+                }
+              }
+            }			
           }
     }
     stage('Push'){
@@ -193,6 +203,7 @@ pipeline {
                 dockerImage10.push()
                 dockerImage11.push()
                 dockerImage12.push()
+                dockerImage13.push()
               }
         }
       }
@@ -202,9 +213,7 @@ pipeline {
             steps {
                 script{
                   //if(testPassed){
-                        if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == '_release' ) {
-                            sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
-                                
+                        if ( env.branchname == 'main' ||  env.branchname == 'master' ) {
                             withCredentials([string(credentialsId: 'aprovadores-sgp', variable: 'aprovadores')]) {
                                 timeout(time: 24, unit: "HOURS") {
                                     input message: 'Deseja realizar o deploy?', ok: 'SIM', submitter: "${aprovadores}"

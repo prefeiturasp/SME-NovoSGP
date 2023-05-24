@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> ObterHorasGradeComponente(long grade, long componenteCurricular, int ano)
         {
-            return await repositorioGrade.ObterHorasComponente(grade, componenteCurricular, ano);
+            return await repositorioGrade.ObterHorasComponente(grade, new long[] { componenteCurricular }, ano);
         }
 
         private GradeDto MapearParaDto(Grade grade)

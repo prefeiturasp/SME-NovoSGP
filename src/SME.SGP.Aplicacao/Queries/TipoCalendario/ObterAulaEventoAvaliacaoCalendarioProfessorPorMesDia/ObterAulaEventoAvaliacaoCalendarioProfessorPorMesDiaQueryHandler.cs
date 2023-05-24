@@ -29,18 +29,29 @@ namespace SME.SGP.Aplicacao
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
-                        .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||                            
+                        .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||
                                              a.Id == long.Parse(aulaParaVisualizar.DisciplinaId) ||
                                              a.CodigoTerritorioSaber == long.Parse(aulaParaVisualizar.DisciplinaId));
 
                     if (componenteCurricular != null && !componenteCurricular.RegistraFrequencia)
                     {
-                        componenteCurricular.RegistraFrequencia = await mediator
-                            .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular));
+                        var componenteVerificacao = await mediator
+                            .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, long.Parse(aulaParaVisualizar.DisciplinaId), usuarioLogado));
+
+                        if (componenteVerificacao != default && componenteVerificacao.codigoTerritorio.HasValue && componenteVerificacao.codigoTerritorio.Value > 0)
+                        {
+                            componenteCurricular.RegistraFrequencia = await mediator
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente, componenteVerificacao.codigoTerritorio));
+                        }
+                        else
+                        {
+                            componenteCurricular.RegistraFrequencia = await mediator
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular));
+                        }
                     }
 
                     var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(aulaParaVisualizar.DisciplinaId)) ||
-                                                                                     (componenteCurricular != null && p.DisciplinasId.Contains(componenteCurricular.Id)));
+                                                                                     (componenteCurricular != null && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoTerritorioSaber))));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {

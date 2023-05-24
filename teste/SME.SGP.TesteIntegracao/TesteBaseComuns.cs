@@ -54,6 +54,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected const long DRE_ID_1 = 1;
         protected const long UE_ID_1 = 1;
+        protected const long UE_ID_2 = 2;
+        protected const long UE_ID_3 = 3;
 
         protected const long USUARIO_ID_1 = 1;
         protected const long USUARIO_ID_2 = 2;
@@ -273,12 +275,12 @@ namespace SME.SGP.TesteIntegracao
         protected const int TIPO_CALENDARIO_ID = 1;
 
         protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
-        protected DateTime DATA_28_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
+        protected DateTime DATA_01_05_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 01);
         protected DateTime DATA_29_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
         protected DateTime DATA_02_05_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        protected DateTime DATA_08_07_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected DateTime DATA_24_07_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 24);
         protected DateTime DATA_25_07_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
-        protected DateTime DATA_30_09_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
+        protected DateTime DATA_02_10_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 02);
         protected DateTime DATA_03_10_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         
@@ -305,6 +307,22 @@ namespace SME.SGP.TesteIntegracao
 
         protected const int NUMERO_AULA_1 = 1;
         protected const int NUMERO_AULA_2 = 2;
+        protected const int NUMERO_AULA_3 = 3;
+        protected const int NUMERO_AULA_4 = 4;
+        
+        protected const int AULA_ID_1 = 1;
+        protected const int AULA_ID_2 = 2;
+        protected const int AULA_ID_3 = 3;
+        protected const int AULA_ID_4 = 4;
+        protected const int AULA_ID_5 = 5;
+        protected const int AULA_ID_6 = 6;
+        protected const int AULA_ID_7 = 7;
+        protected const int AULA_ID_8 = 8;
+        protected const int AULA_ID_9 = 9;
+        protected const int AULA_ID_10 = 10;
+        
+        protected const long REGISTRO_FREQUENCIA_1 = 1;
+        protected const long REGISTRO_FREQUENCIA_2 = 2;
 
         protected const string ALFABETIZACAO = "ALFABETIZACAO";
         protected const string INTERDISCIPLINAR = "INTERDISCIPLINAR";
@@ -354,6 +372,8 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
 
         protected const int AULA_ID = 1;
+        protected const int QUANTIDADE_AULA_NORMAL_MAIS_RECORRENTES_3 = 3;
+        protected const int QUANTIDADE_AULA_RECORRENTE_2 = 2;
         protected const int QUANTIDADE_AULA = 1;
         protected const int QUANTIDADE_AULA_2 = 2;
         protected const int QUANTIDADE_AULA_3 = 3;
@@ -386,6 +406,8 @@ namespace SME.SGP.TesteIntegracao
         protected const int TOTAL_PRESENCAS_3 = 3;
         protected const int TOTAL_PRESENCAS_4 = 4;
         protected const int TOTAL_REMOTOS_0 = 0;
+        
+        protected const int COMPENSACAO_AUSENCIA_ID_1 = 1;
 
         protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);
@@ -418,7 +440,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_DESCRICAO = "Percentual de alunos com nota/conceito insuficientes para exigência de justificativ";
 
 
-        protected readonly string ALUNO_CODIGO_1 = "1";
+        protected const string ALUNO_CODIGO_1 = "1";
         protected const string ALUNO_NOME_1 = "Nome do Aluno 1";
         protected readonly string ALUNO_CODIGO_2 = "2";
         protected readonly string ALUNO_CODIGO_3 = "3";
@@ -459,7 +481,9 @@ namespace SME.SGP.TesteIntegracao
         protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
         protected readonly string NUMERO_PAGINA = "NumeroPagina";
         protected readonly string NUMERO_REGISTROS = "NumeroRegistros";
-
+        protected readonly string ADMINISTRADOR = "Administrador";
+        protected readonly string NOME_ADMINISTRADOR = "NomeAdministrador";
+        
         protected readonly CollectionFixture collectionFixture;
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -486,7 +510,8 @@ namespace SME.SGP.TesteIntegracao
                 { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
                 { NUMERO_PAGINA, "0" },
                 { NUMERO_REGISTROS, "10" },
-
+                { ADMINISTRADOR, rfLoginPerfil },
+                { NOME_ADMINISTRADOR, rfLoginPerfil },
                 {
                     USUARIO_CLAIMS_CHAVE,
                     new List<InternalClaim> {
@@ -1181,20 +1206,6 @@ namespace SME.SGP.TesteIntegracao
                 Nome = UE_NOME_1,
             });
             
-            await InserirNaBase(new Ue
-            {
-                CodigoUe = UE_CODIGO_2,
-                DreId = 1,
-                Nome = UE_NOME_2,
-            });
-            
-            await InserirNaBase(new Ue
-            {
-                CodigoUe = UE_CODIGO_3,
-                DreId = 1,
-                Nome = UE_NOME_3,
-            });
-            
             await InserirNaBase(new Dre
             {
                 CodigoDre = DRE_CODIGO_2,
@@ -1207,6 +1218,13 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_2,
                 DreId = 2,
                 Nome = UE_NOME_2,
+            });
+
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_3,
+                DreId = 2,
+                Nome = UE_NOME_3,
             });
 
             await InserirNaBase(new PrioridadePerfil
@@ -1333,7 +1351,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoCalendarioId = tipoCalendarioId,
                 ProfessorRf = professorRf,
                 Quantidade = 1,
-                DataAula = dataAula,
+                DataAula = dataAula.Date,
                 RecorrenciaAula = recorrenciaAula,
                 TipoAula = tipoAula,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),

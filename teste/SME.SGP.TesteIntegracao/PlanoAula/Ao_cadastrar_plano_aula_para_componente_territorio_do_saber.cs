@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 QuantidadeAula = 1,
                 DataAula = DateTimeExtension.HorarioBrasilia(),
                 DataInicio = DATA_02_05_INICIO_BIMESTRE_2,
-                DataFim = DATA_08_07_FIM_BIMESTRE_2,
+                DataFim = DATA_24_07_FIM_BIMESTRE_2,
                 CriarPeriodoEscolarBimestre = false,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(),

@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
                 : disciplinasEol.FirstOrDefault();
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
-            if (fechamentoTurma.ComponenteSemNota && fechamentoTurmaDisciplina.Id > 0)
+            if (fechamentoTurma.ComponenteSemNota && fechamentoTurmaDisciplina.Id > 0) 
                 fechamentoAlunos = await AtualizaSinteseAlunos(fechamentoTurmaDisciplina.Id, periodoEscolar.PeriodoFim, disciplina, turma.AnoLetivo, turma.CodigoTurma);
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(fechamentoTurmaDisciplina.Id, fechamentoTurma.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento, turma.AnoLetivo);
@@ -520,7 +520,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
                     var frequencia = await mediator.Send(new ObterFrequenciaPorAlunoDisciplinaDataQuery(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia, codigoTurma));
-                    var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
+                    var percentualFrequencia = frequencia == null ? 0 : frequencia.PercentualFrequencia;
                     var sinteseDto = await ObterSinteseAluno(percentualFrequencia, disciplina, anoLetivo);
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;

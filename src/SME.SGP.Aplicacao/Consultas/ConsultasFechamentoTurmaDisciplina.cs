@@ -181,11 +181,16 @@ namespace SME.SGP.Aplicacao
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()
             };
 
+            var codigosDisciplinas = new List<string>() { disciplinaId.ToString() };
+
+            var usuarioRF = (string)null;
+
             var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
             IEnumerable<DisciplinaResposta> disciplinasRegenciaEOL = null;
 
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             if (disciplina.Regencia)
-                disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQuery(turmaId, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
+                disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQuery(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             fechamentoBimestre.EhSintese = !disciplina.LancaNota;
 
@@ -216,36 +221,20 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(a => a.NomeAluno)
                     .ThenBy(a => a.NomeValido());
 
-                var codigoTerritorioRelacionado = (string)null;
-
+                (string codigoComponente, string professor)[] codigosTerritoriosEquivalentes = null;
                 if (disciplina.TerritorioSaber)
-                {                    
-                    var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-                    if (usuarioLogado.EhProfessor())
-                    {
-                        var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                        var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.Equals(disciplinaId));
-                        codigoTerritorioRelacionado = componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(disciplinaId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString() : componenteCorrespondente?.Codigo.ToString();
-                    }
-                    else
-                    {
-                        var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-                        var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(disciplinaId));
-                        if (professor != null) 
-                        {
-                            var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                            var componenteProfessorCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(disciplinaId));
-                            codigoTerritorioRelacionado = componenteProfessorCorrespondente?.Codigo.ToString();
-                        }
-                    }                    
+                {
+                    codigosTerritoriosEquivalentes = await mediator
+                        .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(disciplinaId, turma.CodigoTurma, usuarioLogado.EhPerfilProfessor() ? usuarioLogado.Login : null));
                 }
 
-                var codigosDisciplinas = new List<string>() { disciplinaId.ToString() };
+                if (codigosTerritoriosEquivalentes != null && codigosTerritoriosEquivalentes.Any())
+                    codigosDisciplinas.AddRange(codigosTerritoriosEquivalentes.Select(c => c.codigoComponente).Except(codigosDisciplinas));
 
-                if (!string.IsNullOrWhiteSpace(codigoTerritorioRelacionado))
-                    codigosDisciplinas.Add(codigoTerritorioRelacionado);
+                var turmaPossuiFrequenciaRegistrada = await mediator
+                    .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosDisciplinas.ToArray(), bimestreDoPeriodo.Id));
 
-                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosDisciplinas.ToArray(), bimestreDoPeriodo.Id));
+                var professorConsiderado = codigosTerritoriosEquivalentes?.First().professor;
 
                 var codigosAlunos = alunosValidosComOrdenacao.Select(c => c.CodigoAluno).Distinct().ToArray();
 
@@ -286,21 +275,22 @@ namespace SME.SGP.Aplicacao
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
 
                     if (marcador != null)
-                        alunoDto.Informacao = marcador.Descricao;
+                        alunoDto.Informacao = marcador.Descricao;                    
 
-                    var frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId));
+                    var frequenciaAluno = await mediator
+                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId, professorConsiderado));
 
                     if (frequenciaAluno != null)
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
-                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia.ToString();
+                        alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequenciaFormatado;
                     }
                     else
                     {
                         alunoDto.QuantidadeFaltas = 0;
                         alunoDto.QuantidadeCompensacoes = 0;
-                        alunoDto.PercentualFrequencia = turmaPossuiFrequenciaRegistrada ? "100" : string.Empty;
+                        alunoDto.PercentualFrequencia = string.Empty;
                     }
 
                     // Carrega Frequencia do aluno
@@ -311,7 +301,7 @@ namespace SME.SGP.Aplicacao
                             if (!turmaPossuiFrequenciaRegistrada)
                                 throw new NegocioException("Não é possível registrar fechamento pois não há registros de frequência no bimestre.");
 
-                            var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
+                            var percentualFrequencia = frequenciaAluno == null ? 0 : frequenciaAluno.PercentualFrequencia;
                             var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, turma.AnoLetivo));
 
                             alunoDto.SinteseId = sinteseDto.Id;
@@ -326,7 +316,7 @@ namespace SME.SGP.Aplicacao
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
 
                             // Excessão de disciplina ED. Fisica para modalidade EJA
-                            if (turma.EhEJA() && notasConceitoBimestre != null)
+                            if (turma.EhEJA() && notasConceitoBimestre != null && !turma.EhTurmaEdFisica())
                                 notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != 6);
 
                             if (fechamentoBimestre.EhSintese)
@@ -368,23 +358,19 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
-
-            var aulaPrevisa = await consultasAulaPrevista.ObterAulaPrevistaDada(turma.ModalidadeCodigo, turma.CodigoTurma, disciplinaId.ToString(), semestre);
-            var aulaPrevistaBimestreAtual = new AulasPrevistasDadasDto();
-            if (aulaPrevisa != null)
-            {
-                aulaPrevistaBimestreAtual = aulaPrevisa.AulasPrevistasPorBimestre.FirstOrDefault(a => a.Bimestre == bimestreAtual);
-            }
+            var codigosDisciplinasArray = Array.ConvertAll(codigosDisciplinas.ToArray(), long.Parse);
+            var aulasPrevistas = await ObterAulasPrevistasAsync(turma, codigosDisciplinasArray, tipoCalendario.Id, bimestre, usuarioRF);
+            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, codigosDisciplinasArray, tipoCalendario.Id, periodoAtual.Id, usuarioRF));
 
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
-            fechamentoBimestre.TotalAulasDadas = aulaPrevistaBimestreAtual.Cumpridas;
-            fechamentoBimestre.TotalAulasPrevistas = aulaPrevistaBimestreAtual.Previstas.Quantidade;
-
-            fechamentoBimestre.PodeProcessarReprocessar = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.TotalAulasDadas = aulasDadas;
+            fechamentoBimestre.TotalAulasPrevistas = aulasPrevistas;
+            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PeriodoAberto = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
 
             return fechamentoBimestre;
         }
-
+        
         private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
         {
             double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
@@ -440,5 +426,18 @@ namespace SME.SGP.Aplicacao
             var sintese = Sinteses.FirstOrDefault(c => c.Id == id);
             return sintese != null ? sintese.Descricao : "";
         }
+
+        private bool UsuarioPossuiPermissaoNaTelaParaReprocessar()
+        {
+            var permissoesUsuario = servicoUsuario.ObterPermissoes();
+
+            return permissoesUsuario.Any(p => p == Permissao.FB_A);
+        }
+
+        private async Task<int> ObterAulasPrevistasAsync(Turma turma, long[] componentesCurricularesId, long tipoCalendarioId, int? bimestre = null, string professor = null)
+            => turma.ModalidadeCodigo != Modalidade.EducacaoInfantil
+                ? await mediator.Send(new ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(turma.CodigoTurma, tipoCalendarioId, componentesCurricularesId, bimestre, professor))
+                : default;
+
     }
 }

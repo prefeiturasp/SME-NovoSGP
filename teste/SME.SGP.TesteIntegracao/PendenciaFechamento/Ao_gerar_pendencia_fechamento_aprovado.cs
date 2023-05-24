@@ -45,7 +45,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         FECHAMENTO_TURMA_DISCIPLINA_ID_1,
                                         "Pendência fechamento",
                                         USUARIO_PROFESSOR_CODIGO_RF_2222222,
-                                        TURMA_ID_1);
+                                        TURMA_ID_1,
+                                        string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
             var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
@@ -89,7 +90,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         FECHAMENTO_TURMA_DISCIPLINA_ID_1,
                                         "Pendência fechamento",
                                         USUARIO_PROFESSOR_CODIGO_RF_2222222,
-                                        TURMA_ID_1);
+                                        TURMA_ID_1,
+                                        string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
             var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
@@ -132,7 +134,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         FECHAMENTO_TURMA_DISCIPLINA_ID_1,
                                         "Pendência fechamento",
                                         USUARIO_PROFESSOR_CODIGO_RF_2222222,
-                                        TURMA_ID_1);
+                                        TURMA_ID_1,
+                                        string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
             var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento && p.Situacao == SituacaoPendencia.Pendente);
@@ -175,7 +178,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         FECHAMENTO_TURMA_DISCIPLINA_ID_1,
                                         "Pendência fechamento",
                                         USUARIO_PROFESSOR_CODIGO_RF_2222222,
-                                        TURMA_ID_1);
+                                        TURMA_ID_1,
+                                        string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
             var pendencia = ObterTodos<Pendencia>().Find(p => p.Tipo == TipoPendencia.AvaliacaoSemNotaParaNenhumAluno && p.Situacao == SituacaoPendencia.Pendente);

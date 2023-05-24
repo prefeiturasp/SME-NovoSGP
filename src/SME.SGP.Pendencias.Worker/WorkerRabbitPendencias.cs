@@ -43,6 +43,9 @@ namespace SME.SGP.Pendencias.Worker
             Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorUe, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo por ue", typeof(IRemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDiarioDeClasseNoFinalDoAnoLetivo, new ComandoRabbit("Executar exclusão de pendências de diário de classe no final do ano letivo", typeof(IRemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo", typeof(IRemoverPendenciasNoFinalDoAnoLetivoUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.ExecutarAtualizacaoDosTotalizadoresDasPendencias, new ComandoRabbit("Obter UEs para atualizar a tabela de pendência", typeof(IObterQuantidadeAulaDiaPendenciaUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaBuscarAdicionarQuantidadeAulaDiaPendenciaUe, new ComandoRabbit("Obter Por UE a Quantidade de Aulas e Quantidade de Dias para atualizar a tabela de pendência", typeof(IObterQuantidadeAulaDiaPendenciaPorUeUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaCargaAdicionarQuantidadeAulaDiaPendencia, new ComandoRabbit("Carga de Quantidade de Aulas e Quantidade de Dias na tabela de pendência", typeof(ICargaQuantidadeAulaDiaPendenciaUseCase)));
         }
     }
 }

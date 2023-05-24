@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.AulaRecorrenteFake;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
@@ -39,7 +40,8 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaAlteracaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaAlteracaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesDoProfessorNaTurmaQueryHandlerAulaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<DefinirComponenteCurricularParaAulaQuery, (long codigoComponente, long? codigoTerritorio)>), typeof(DefinirComponenteCurricularParaAulaQueryFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componentecurricularId, DateTime dataAula, bool ehRegente = false)
@@ -88,7 +90,7 @@ namespace SME.SGP.TesteIntegracao
             return new FiltroPodeCadastrarAulaDto()
             {
                 AulaId = aulaId,
-                ComponenteCurricular = componenteCurricular,
+                ComponentesCurriculares = new long[] { componenteCurricular },
                 DataAula = dataAula,
                 EhRegencia = ehRegencia,
                 TipoAula = tipoAula,
@@ -182,6 +184,12 @@ namespace SME.SGP.TesteIntegracao
                     Codigo = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113.ToString(),
                     Descricao = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME
                 };
+            else if (componenteCurricularId == COMPONENTE_CURRICULAR_ARTES_ID_139)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
+                    Descricao = COMPONENTE_CURRICULAR_ARTES_NOME
+                };
 
             return null;
         }
@@ -194,6 +202,14 @@ namespace SME.SGP.TesteIntegracao
         protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia)
         {
             var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
+            aula.AulaPaiId = 1;
+
+            await InserirNaBase(aula);
+        }
+
+        protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia, DateTime dataAula)
+        {
+            var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataAula, recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
             aula.AulaPaiId = 1;
 
             await InserirNaBase(aula);

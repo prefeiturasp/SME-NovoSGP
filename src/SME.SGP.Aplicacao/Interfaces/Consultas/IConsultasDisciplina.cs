@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         Task<List<DisciplinaDto>> ObterDisciplinasAgrupadasPorProfessorETurma(string codigoTurma, bool turmaPrograma);
 
-        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login);
+        Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login, bool verificaPerfilGestao = false, string codigoDre = null, string codigoUe = null);
 
         Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma);
 
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         Task<DisciplinaDto> ObterDisciplina(long disciplinaId);
 
         Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma);
-        IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas);
+        IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool ehEnsinoMedio = false);
         IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares);
     }
 }

@@ -20,5 +20,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<SituacaoDto> ObterSituacao(long id);
         Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado();
+
+        Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId);
+        Task<bool> EncaminhamentoContemAtendimentosItinerancia(long encaminhamentoId);
     }
 }

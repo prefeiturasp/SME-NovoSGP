@@ -131,9 +131,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
@@ -141,6 +141,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected IObterEncaminhamentoNAAPAUseCase ObterServicoListagemComFiltros()
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();    
+        }
+
+        protected IObterObservacoesDeEncaminhamentoNAAPAUseCase ObterObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected IExcluirObservacoesDeEncaminhamentoNAAPAUseCase ExcluirObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected ISalvarObservacoesDeEncaminhamentoNAAPAUseCase SalvarObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
         }
 
         protected INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
@@ -177,7 +190,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IEncerrarEncaminhamentoNAAPAUseCase>();
         }
-        
+
+        protected IReabrirEncaminhamentoNAAPAUseCase ObterServicoReaberturaEncaminhamento()
+        {
+            return ServiceProvider.GetService<IReabrirEncaminhamentoNAAPAUseCase>();
+        }
+
         protected IObterEncaminhamentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAPorIdUseCase>();    
@@ -440,6 +458,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 SomenteLeitura = true,
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Data,
+                NomeComponente = "DATA_ENTRADA_QUEIXA",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -451,6 +470,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = "Prioridade",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
+                NomeComponente = "PRIORIDADE",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -612,6 +632,48 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 NomeComponente = "TURMAS_PROGRAMA"
+            });
+
+            //id 14
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 2,
+                Nome = "NIS (Número de Identificação Social)",
+                NomeComponente = "NIS",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Numerico,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 15
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 3,
+                Nome = "UBS de referência",
+                NomeComponente = "UBS",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 16
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 4,
+                Nome = "Descrição do encaminhamento",
+                NomeComponente = "DESCRICAO_ENCAMINHAMENTO",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.EditorTexto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
 

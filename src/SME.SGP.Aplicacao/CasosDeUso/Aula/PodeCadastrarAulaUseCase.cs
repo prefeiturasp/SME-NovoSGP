@@ -3,6 +3,8 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,17 +17,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<CadastroAulaDto> Executar(FiltroPodeCadastrarAulaDto filtro)
         {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());           
+
             if (CriandoAula(filtro.AulaId) || await AlterandoDataAula(filtro.AulaId, filtro.DataAula))
-            {
-                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(filtro.DataAula, filtro.TurmaCodigo, filtro.ComponenteCurricular, usuarioLogado.CodigoRf, filtro.TipoAula)))
+            {                
+                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(filtro.DataAula, filtro.TurmaCodigo, filtro.ComponentesCurriculares, usuarioLogado.CodigoRf, filtro.TipoAula)))
                     throw new NegocioException($"Não é possível cadastrar aula do tipo '{filtro.TipoAula.Name()}' para o dia selecionado!");
             }
 
             return new CadastroAulaDto()
             {
                 PodeCadastrarAula = true,
-                Grade = filtro.TipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(filtro.TurmaCodigo, filtro.ComponenteCurricular, filtro.DataAula, ehRegencia: filtro.EhRegencia))
+                Grade = filtro.TipoAula == TipoAula.Reposicao ? null : await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(filtro.TurmaCodigo, filtro.ComponentesCurriculares, filtro.DataAula, ehRegencia: filtro.EhRegencia))
             };
         }
 

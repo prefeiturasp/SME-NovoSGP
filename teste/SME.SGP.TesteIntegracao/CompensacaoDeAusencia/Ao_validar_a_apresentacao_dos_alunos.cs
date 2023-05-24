@@ -33,11 +33,11 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve apresentar somente alunos que possuem ausências")]
         public async Task Deve_apresentar_somente_alunos_que_possuem_ausências()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObterDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarDadosBase(dtoDadoBase);
             await CriaFrequenciaAlunos(dtoDadoBase);
 
@@ -49,11 +49,11 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             listaDeAusencia.ToList().Exists(aluno => aluno.Id == CODIGO_ALUNO_4).ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Compensação de Ausência - Deve apresentar aleta para alunos com frequenca abaixo de 75 porcento")]
         public async Task Deve_apresentar_alerta_para_alunos_com_frequencia_abaixo_de_75_porcento()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObterDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarDadosBase(dtoDadoBase);
             await CriaFrequenciaAlunos(dtoDadoBase);
 
@@ -94,27 +94,11 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await CriaFrequenciaAluno(
                         dtoDadoBase,
                         DATA_03_01_INICIO_BIMESTRE_1,
-                        DATA_28_04_FIM_BIMESTRE_1,
+                        DATA_01_05_FIM_BIMESTRE_1,
                         codigoAluno,
                         totalPresenca,
                         totalAusencia,
                         PERIODO_ESCOLAR_ID_3);
-        }
-
-        private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)
-        {
-            return new CompensacaoDeAusenciaDBDto()
-            {
-                Perfil = perfil,
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                Bimestre = BIMESTRE_3,
-                ComponenteCurricular = componente,
-                TipoCalendarioId = TIPO_CALENDARIO_1,
-                AnoTurma = ANO_5,
-                DataReferencia = DATA_25_07_INICIO_BIMESTRE_3,
-                QuantidadeAula = QUANTIDADE_AULA_4
-            };
         }
     }
 }

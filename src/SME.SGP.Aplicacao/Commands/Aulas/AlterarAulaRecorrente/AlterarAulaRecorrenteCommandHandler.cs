@@ -46,23 +46,28 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarComponentesProfessor(AlterarAulaRecorrenteCommand aulaRecorrente)
         {
+            var componentesCurricularesDoProfessor = await mediator
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.Usuario.Login, aulaRecorrente.Usuario.PerfilAtual));
+
             if (aulaRecorrente.Usuario.EhProfessorCj())
             {
-                var componentesCurricularesDoProfessorCJ = await mediator.Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(aulaRecorrente.Usuario.Login));
+                var componentesCurricularesDoProfessorCJ = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(aulaRecorrente.Usuario.Login));
+
                 if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
                 {
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+                    if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
+                        throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
                 }
             }
             else
             {
-                var componentesCurricularesDoProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.Usuario.Login, aulaRecorrente.Usuario.PerfilAtual));
-                if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId))
-                {
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
-                }
+                if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
+                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);                
 
-                var usuarioPodePersistirTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario));
+                var usuarioPodePersistirTurmaNaData = await mediator
+                    .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario));
+
                 if (!usuarioPodePersistirTurmaNaData)
                     throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
             }
@@ -71,13 +76,18 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarRecorrencia(AlterarAulaRecorrenteCommand request, Aula aulaOrigem, Turma turma)
         {
             var listaAlteracoes = new List<(bool sucesso, bool erro, DateTime data, string mensagem)>();
+            var listaAlteracoesFrequencia = new List<(long Id, DateTime Data, int QdadeAnterior)>()
+            {
+                (aulaOrigem.Id, aulaOrigem.DataAula, aulaOrigem.Quantidade)
+            };
+
             var dataAula = request.DataAula;
             var aulaPaiIdOrigem = aulaOrigem.AulaPaiId ?? aulaOrigem.Id;
-
+            var aulaAnteriorQnt = aulaOrigem.Quantidade;
             var fimRecorrencia = await mediator.Send(new ObterFimPeriodoRecorrenciaQuery(request.TipoCalendarioId, dataAula, request.RecorrenciaAula));
 
             var aulasDaRecorrencia = await mediator.Send(new ObterRepositorioAulaPorAulaRecorrenteQuery(aulaPaiIdOrigem, aulaOrigem.Id, fimRecorrencia));
-                
+            listaAlteracoesFrequencia.AddRange(aulasDaRecorrencia.Select(aula => (aula.Id, aula.DataAula, aula.Quantidade)));
             var listaProcessos = await IncluirAulasEmManutencao(aulaOrigem, aulasDaRecorrencia);
 
             try
@@ -96,6 +106,9 @@ namespace SME.SGP.Aplicacao
                     else
                         listaAlteracoes.Add(await TratarAlteracaoAula(request, (Aula)aulaOrigem.Clone(), diaAula, turma));
                 }
+
+                if (request.Quantidade != aulaAnteriorQnt)
+                    await TrataAlteracaoDeFrequencia(request.Usuario, listaAlteracoesFrequencia);
             }
             finally
             {
@@ -103,6 +116,15 @@ namespace SME.SGP.Aplicacao
             }
 
             await NotificarUsuario(request.AulaId, listaAlteracoes, request.Usuario, request.NomeComponenteCurricular, turma);
+        }
+
+        private async Task TrataAlteracaoDeFrequencia(Usuario usuarioLogado, List<(long Id, DateTime Data, int QdadeAnterior)> listaAlteracoesFrequencia)
+        {
+            foreach(var aula in listaAlteracoesFrequencia)
+            {
+                var trataFrequenciaAulaModificada = new AulaAlterarFrequenciaRequestDto(aula.Id, aula.QdadeAnterior);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAlterarAulaFrequenciaTratar, trataFrequenciaAulaModificada, Guid.NewGuid(), usuarioLogado));
+            }
         }
 
         private IEnumerable<DateTime> ObterDiasDaRecorrencia(DateTime inicioRecorrencia, DateTime fimRecorrencia)
@@ -184,7 +206,15 @@ namespace SME.SGP.Aplicacao
         {
             await ValidarSeEhDiaLetivo(request.TipoCalendarioId, dataAula, turma);
 
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, request.ComponenteCurricularId, request.Usuario.CodigoRf));
+            var codigosComponentesEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
+
+            var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
+
+            if (codigosComponentesEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosComponentesEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+
+            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), request.Usuario.Login));
             aulasExistentes = aulasExistentes.Where(a => a.Id != request.AulaId);
             if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
@@ -209,9 +239,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)
         {
+            var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, request.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
+
+            var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
+
+            if (codigosTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,
-                                                                                   request.ComponenteCurricularId,
+                                                                                   codigosComponentesConsiderados.ToArray(),
                                                                                    dataAula,
                                                                                    request.Usuario.CodigoRf,
                                                                                    request.Quantidade,

@@ -63,10 +63,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.Aluno.Nome.ShouldBe("NOME ALUNO 1");
-            informacoes.Aluno.DataNascimento.Date.ShouldBe(new DateTime(DateTime.Now.AddYears(-10).Year, 1, 1).Date);
+            informacoes.Aluno.DataNascimento.Date.ShouldBe(new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-10).Year, 1, 1).Date);
             informacoes.Aluno.CodigoAluno.ShouldBe("1");
             informacoes.Aluno.Situacao.ShouldBe("RECLASSIFICADO SAIDA");
-            informacoes.Aluno.DataSituacao.Date.ShouldBe(DateTime.Now.AddDays(-10).Date);
+            informacoes.Aluno.DataSituacao.Date.ShouldBe(DateTimeExtension.HorarioBrasilia().AddDays(-10).Date);
             informacoes.Aluno.CodigoTurma.ShouldBe("1");
             informacoes.responsavelEncaminhamentoAEE.Id.ShouldBe(2);
         }
@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.ShouldNotBeNull();
             informacoes.CodigoAluno.ShouldBe(CODIGO_ALUNO_1);
             informacoes.DescricaoNecessidadeEspecial.ShouldBe("Cego");
-            informacoes.FrequenciaGlobal.ShouldBe("100");
+            informacoes.FrequenciaGlobal.ShouldBe("100,00");
             informacoes.FrequenciaAlunoPorBimestres.ShouldNotBeNull();
             var frenquenciaBimestre = informacoes.FrequenciaAlunoPorBimestres.FirstOrDefault();
             frenquenciaBimestre.Frequencia.ShouldBe(100);

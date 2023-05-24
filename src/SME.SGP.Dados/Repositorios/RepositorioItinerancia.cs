@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase(long[] tiposQuestionario)
         {
-            var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio, q.tipo as tipoquestao 
+            var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio, q.tipo as tipoquestao, q.nome_componente as nomeComponente 
                             from questao q
                            inner join questionario q1 on q1.id = q.questionario_id 
                            where q1.tipo = ANY(@tiposQuestionario)
@@ -386,14 +386,14 @@ namespace SME.SGP.Dados.Repositorios
             return registroItinerancia;
         }
 
-        public async Task<IEnumerable<ItineranciaObjetivoDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId)
+        public async Task<IEnumerable<ItineranciaNomeDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId)
         {
             var query = @"select iob.nome, io.descricao
                           from itinerancia_objetivo io 
                          inner join itinerancia_objetivo_base iob on iob.id = io.itinerancia_base_id
                          where io.itinerancia_id = @itineranciaId";
 
-            return await database.Conexao.QueryAsync<ItineranciaObjetivoDescricaoDto>(query, new {itineranciaId});
+            return await database.Conexao.QueryAsync<ItineranciaNomeDescricaoDto>(query, new {itineranciaId});
         }
 
         public async Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao)

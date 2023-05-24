@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurricularesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
             var existeTerritorio = componentesCurricularesDaTurmaEol.Any(c => c.TerritorioSaber = true);
-            var componentesCurricularesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), existeTerritorio,turma.CodigoTurma));
+            var componentesCurricularesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurricularesDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), existeTerritorio,turma.CodigoTurma));
 
             var retorno = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
@@ -210,7 +210,7 @@ namespace SME.SGP.Aplicacao
             if (componentesRegencia == null || !componentesRegencia.Any())
                 throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
-            var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100);
+            var percentualFrequencia = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequencia : 0;
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
@@ -229,7 +229,7 @@ namespace SME.SGP.Aplicacao
             PeriodoEscolar periodoEscolar, Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,
             IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int bimestre, int anoLetivo)
         {
-            var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 100 : 100);
+            var percentualFrequencia = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequencia : 0;
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))

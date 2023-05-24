@@ -10,14 +10,14 @@ namespace SME.SGP.Aplicacao
     public class ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery : IRequest<IEnumerable<PeriodoEscolarVerificaRegenciaDto>>
     {
         public string TurmaCodigo { get; set; }
-        public long ComponenteCodigo { get; set; }
+        public long[] ComponentesCodigos { get; set; }
         public int Bimestre { get; set; }
         public bool AulaCj { get; set; }
 
-        public ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(string turmaCodigo, long componenteCodigo, int bimestre, bool aulaCj)
+        public ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(string turmaCodigo, long[] componentesCodigos, int bimestre, bool aulaCj)
         {
             TurmaCodigo = turmaCodigo;
-            ComponenteCodigo = componenteCodigo;
+            ComponentesCodigos = componentesCodigos;
             Bimestre = bimestre;
             AulaCj = aulaCj;
         }
@@ -31,9 +31,9 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para buscar os períodos");
 
-            RuleFor(a => a.ComponenteCodigo)
+            RuleFor(a => a.ComponentesCodigos)
                .NotEmpty()
-               .WithMessage("O componente deve ser informado para buscar os períodos");
+               .WithMessage("Os componentes devem ser informados para buscar os períodos");
 
             RuleFor(a => a.Bimestre)
                .NotEmpty()

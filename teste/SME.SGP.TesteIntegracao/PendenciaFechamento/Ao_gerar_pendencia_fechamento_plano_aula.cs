@@ -47,7 +47,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         FECHAMENTO_TURMA_DISCIPLINA_ID_1,
                                         "Pendência fechamento",
                                         USUARIO_PROFESSOR_CODIGO_RF_2222222,
-                                        TURMA_ID_1);
+                                        TURMA_ID_1,
+                                        string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
             var pendeciasSemPlano = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
@@ -56,7 +57,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             pendeciasFechamento.ShouldNotBeNull();
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
-            pendencias.Where(pendencia => !pendencia.Excluido).ShouldBeEmpty();
+            pendenciasAula.Count().ShouldBe(1);
+            pendencias.Count(pendencia => pendencia.Excluido && pendencia.Tipo == TipoPendencia.PlanoAula).ShouldBe(1);
+            pendencias.Any(pendencia => pendencia.Excluido).ShouldBeTrue();
         }
 
         [Fact]
@@ -88,7 +91,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         FECHAMENTO_TURMA_DISCIPLINA_ID_1,
                                         "Pendência fechamento",
                                         USUARIO_PROFESSOR_CODIGO_RF_2222222,
-                                        TURMA_ID_1);
+                                        TURMA_ID_1,
+                                        string.Empty);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
             var pendeciasSemPlano = ObterTodos<Pendencia>();
@@ -96,7 +100,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             pendeciasSemPlano.Exists(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento).ShouldBeFalse();
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
-            pendencias.Where(pendencia => !pendencia.Excluido).ShouldBeEmpty();
+            pendenciasAula.Count().ShouldBe(1);
+            pendencias.Count(pendencia => pendencia.Excluido && pendencia.Tipo == TipoPendencia.PlanoAula).ShouldBe(1);
+            pendencias.Any(pendencia => !pendencia.Excluido).ShouldBeFalse();
         }
 
         private async Task CriaPlanoDeAula()

@@ -10,6 +10,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -294,6 +295,44 @@ namespace SME.SGP.Api.Controllers
                                                              [FromServices] IRelatorioEncaminhamentoNAAPAUseCase relatorioEncaminhamentoNAAPAUseCase)
         {
             return Ok(await relatorioEncaminhamentoNAAPAUseCase.Executar(filtroRelatorioEncaminhamentoNAAPADto));
+        }
+        [HttpPost("sondagem/analitico")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.RESON_C, Policy = "Bearer")]
+        public async Task<IActionResult> Gerar(FiltroRelatorioAnaliticoSondagemDto filtroRelatorioAnaliticoSondagemDto, [FromServices] IRelatorioAnaliticoSondagemUseCase relatorioAnaliticoSondagemUseCase)
+        {
+            return Ok(await relatorioAnaliticoSondagemUseCase.Executar(filtroRelatorioAnaliticoSondagemDto));
+        }
+
+        [HttpGet("sondagem/analitico/tiposondagem")]
+        [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RESON_C, Policy = "Bearer")]
+        public IActionResult ObterTipoSondagem()
+        {
+            var lista = EnumExtensao.ListarDto<TipoSondagem>().ToList().OrderBy(tipo => tipo.Descricao);
+
+            return Ok(lista);
+        }
+
+        [HttpPost("listagem-itinerancias")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListarItinerancias([FromBody] FiltroRelatorioListagemItineranciasDto filtro, [FromServices] IRelatorioListagemItineranciasUseCase relatorioUseCase)
+        {
+            return Ok(await relatorioUseCase.Executar(filtro));
+        }
+
+        [HttpPost("controle-frequencia-mensal")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RCFM_C, Policy = "Bearer")]
+        public async Task<IActionResult> Gerar([FromBody] FiltroRelatorioControleFrenquenciaMensalDto filtro, [FromServices] IRelatorioControleFrequenciaMensalUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
     }
 }

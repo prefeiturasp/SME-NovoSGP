@@ -6,20 +6,22 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAulasPorDisciplinaETurmaQuery : IRequest<int>
     {
-        public ObterTotalAulasPorDisciplinaETurmaQuery(DateTime dataAula, string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, params string[] turmasId)
+        public ObterTotalAulasPorDisciplinaETurmaQuery(DateTime dataAula, string[] disciplinaIdsConsideradas, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, string professor = null, params string[] turmasId)
         {
             DataAula = dataAula;
-            DisciplinaId = disciplinaId;
+            DisciplinaIdsConsideradas = disciplinaIdsConsideradas;
             TurmasId = turmasId;
             DataMatriculaAluno = dataMatriculaAluno;
             DataSituacaoAluno = dataSituacaoAluno;
+            Professor = professor;
         }
 
         public DateTime DataAula { get; }
-        public string DisciplinaId { get; }
+        public string[] DisciplinaIdsConsideradas { get; }
         public string[] TurmasId { get; }
         public DateTime? DataMatriculaAluno { get; set; }
         public DateTime? DataSituacaoAluno { get; set; }
+        public string Professor { get; set; }
     }
 
     public class ObterTotalAulasPorDisciplinaETurmaQueryValidator : AbstractValidator<ObterTotalAulasPorDisciplinaETurmaQuery>

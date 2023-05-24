@@ -36,22 +36,44 @@ namespace SME.SGP.Aplicacao
             // Busca periodo
             var periodo = await BuscaPeriodo(turma, request.Bimestre);
 
-            var alunosEOL = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
+            var alunosEOL = await mediator
+                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
 
-            var alunosAtivos = alunosEOL.Where(a => !a.Inativo && a.DataMatricula < periodo.PeriodoFim
-                                || (a.Inativo && a.DataSituacao.Date > periodo.PeriodoInicio.Date))
-                                .DistinctBy(a => a.CodigoAluno).ToList();
+            var alunosAtivos = await mediator
+                .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
 
-            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(request.DisciplinaId) });
+            var usuarioLogado = await mediator
+                .Send(new ObterUsuarioLogadoQuery());
+
+            var codigosTerritoriosEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
+
+            var componentesCurricularesId = new List<long>() { long.Parse(request.DisciplinaId) };
+
+            var professor = string.Empty;
+            if (codigosTerritoriosEquivalentes != null && codigosTerritoriosEquivalentes.Any())
+            {
+                componentesCurricularesId.AddRange(codigosTerritoriosEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(componentesCurricularesId));
+                professor = codigosTerritoriosEquivalentes.First().professor;
+            }
+
+            var disciplinasEOL = await repositorioComponenteCurricular
+                .ObterDisciplinasPorIds(componentesCurricularesId.ToArray()); 
+
             if (disciplinasEOL == null || !disciplinasEOL.Any())
-                throw new NegocioException("Componente curricular informado não localizado no EOL.");
+                throw new NegocioException("Componente curricular informado não localizado.");
 
-            var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
-            var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
+            var quantidadeMaximaCompensacoes = int.Parse(await mediator
+                .Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
+
+            var percentualFrequenciaAlerta = int.Parse(await mediator
+                .Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                       
 
             foreach (var alunoEOL in alunosAtivos)
-            {
-                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, request.DisciplinaId, periodo.PeriodoFim, turma.CodigoTurma);
+            {               
+                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo
+                    .ObterPorAlunoDisciplinaPeriodo(alunoEOL.CodigoAluno, componentesCurricularesId.Select(cc => cc.ToString()).ToArray(), periodo.Id, turma.CodigoTurma, professor);
+
                 if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas <= 0 || frequenciaAluno.PercentualFrequencia == 100)
                     continue;
 
@@ -95,6 +117,33 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Período escolar do {bimestre}º Bimestre não localizado para a turma");
 
             return periodoEscolar;
+        }
+
+        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
+        {
+            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (usuarioLogado.EhProfessor())
+            {
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
+            }
+            else if (usuarioLogado.EhProfessorCj())
+            {
+                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
+                if (professor != null)
+                {
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                    if (componenteProfessorRelacionado != null)
+                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
+                }
+            }
+
+            return codigoComponenteTerritorioCorrespondente;
         }
     }
 }

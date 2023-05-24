@@ -278,16 +278,23 @@ namespace SME.SGP.Dados.Repositorios
             if (consideraHistorico && anoLetivo > 0)
                 query.AppendLine(" act.turma_ano_letivo = @anoLetivo and ");
 
-            query.AppendLine(@"  a.perfil_id = @perfil and	  
-	                              act.turma_historica = @consideraHistorico and
-	                              act.modalidade_codigo = @modalidade and
-                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) and
-	                              ((@perfil <> '4ee1e074-37d6-e911-abd6-f81654fe895d') or
-	                               (@consideraHistorico = true and 
-	                                @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and 
-	                                act.dre_id in (select dre_id from v_abrangencia_nivel_dre where login = @login and historico = false) and 
-	   	                            act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = @login and historico = false)) or
-	                               (@consideraHistorico = false and @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false))");
+            query.AppendLine(@"  a.perfil_id = @perfil 
+                                  and act.turma_historica = @consideraHistorico 
+                                  and act.modalidade_codigo = @modalidade 
+                                  and (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) 
+                                  and
+	                              (
+                                    (@perfil <> '4ee1e074-37d6-e911-abd6-f81654fe895d') 
+                                    or
+	                                (@consideraHistorico = true and  @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' 
+                                       and (
+                                            act.dre_id in (select dre_id from v_abrangencia_nivel_dre where login = @login and historico = false) 
+                                            or 
+                                            act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = @login and historico = false)
+                                            )
+                                    ) 
+                                    or 
+                                    (@consideraHistorico = false and @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false))");
 
             query.AppendLine(@" union
                             select distinct act.turma_ano
@@ -637,7 +644,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year });
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)

@@ -1,6 +1,7 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -69,6 +70,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FechamentoReaberturaNotificacaoMap());
                config.AddMap(new CompensacaoAusenciaMap());
                config.AddMap(new CompensacaoAusenciaAlunoMap());
+               config.AddMap(new CompensacaoAusenciaAlunoAulaMap());
                config.AddMap(new CompensacaoAusenciaDisciplinaRegenciaMap());
                config.AddMap(new ProcessoExecutandoMap());
                config.AddMap(new PeriodoFechamentoMap());
@@ -156,6 +158,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ItineranciaAlunoQuestaoMap());
                config.AddMap(new ItineranciaQuestaoMap());
                config.AddMap(new ItineranciaObjetivoMap());
+               config.AddMap(new ItineranciaObjetivoBaseMap());
                config.AddMap(new PendenciaRegistroIndividualMap());
                config.AddMap(new PendenciaRegistroIndividualAlunoMap());
                config.AddMap(new PlanoAEEMap());
@@ -212,11 +215,13 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new SecaoEncaminhamentoNAAPAMap());
                config.AddMap(new EncaminhamentoNAAPAMap());
                config.AddMap(new EncaminhamentoNAAPASecaoMap());
+               config.AddMap(new EncaminhamentoNAAPAObservacaoMap());
                config.AddMap(new QuestaoEncaminhamentoNAAPAMap());
                config.AddMap(new RespostaEncaminhamentoNAAPAMap());
                config.AddMap(new PendenciaFechamentoAulaMap());
                config.AddMap(new PendenciaFechamentoAtividadeAvaliativaMap());
                config.AddMap(new HistoricoEscolarObservacaoMap());
+               config.AddMap(new EncaminhamentoNAAPAHistoricoAlteracoesMap());
 
                config.ForDommel();
            });

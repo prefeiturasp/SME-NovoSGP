@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciasPreDefinidasPorAlunoETurmaQueryHandler : IRequestHandler<ObterFrequenciasPreDefinidasPorAlunoETurmaQuery, IEnumerable<FrequenciaPreDefinidaDto>>
     {
-        private readonly IRepositorioFrequenciaPreDefinida repositorioFrequenciaPreDefinida;
+        private readonly IRepositorioFrequenciaPreDefinidaConsulta repositorioFrequenciaPreDefinida;
 
-        public ObterFrequenciasPreDefinidasPorAlunoETurmaQueryHandler(IRepositorioFrequenciaPreDefinida repositorioFrequenciaPreDefinida)
+        public ObterFrequenciasPreDefinidasPorAlunoETurmaQueryHandler(IRepositorioFrequenciaPreDefinidaConsulta repositorioFrequenciaPreDefinida)
         {
             this.repositorioFrequenciaPreDefinida = repositorioFrequenciaPreDefinida ?? throw new ArgumentNullException(nameof(repositorioFrequenciaPreDefinida));
         }

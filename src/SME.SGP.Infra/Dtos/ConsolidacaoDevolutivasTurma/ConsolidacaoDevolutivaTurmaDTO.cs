@@ -13,22 +13,23 @@
     {
         public string DreId { get; set; }
         public string UeId { get; set; }
-        public string TurmaId { get; set; }
-        public int QuantidadeDiarioBordoRegistrado { get; set; }
+        public string TurmaCodigo { get; set; }
+        public long TurmaId { get; set; }
+        public int QtdeDiarioBordoRegistrados { get; set; }
+        public int QtdeRegistradaDevolutivas { get; set; }
     }
 
     public class DevolutivaTurmaDTO
     {
-        public string TurmaId { get; set; }
-        public int AnoLetivo { get; set; }
+        public long TurmaId { get; set; }
     }
 
     public class FiltroDevolutivaTurmaDTO
     {
-        public string TurmaId { get; set; }
+        public long TurmaId { get; set; }
         public int AnoLetivo { get; set; }
 
-        public FiltroDevolutivaTurmaDTO(string turmaId, int anoLetivo)
+        public FiltroDevolutivaTurmaDTO(long turmaId, int anoLetivo)
         {
             TurmaId = turmaId;
             AnoLetivo = anoLetivo;

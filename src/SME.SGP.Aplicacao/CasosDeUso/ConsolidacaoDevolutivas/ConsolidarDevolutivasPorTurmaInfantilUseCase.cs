@@ -36,9 +36,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var turmasInfantil = await mediator
                 .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual, ueId));
 
-            await mediator
-                .Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
-
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
 
             await AtualizarDataExecucao(anoAtual);
@@ -47,8 +44,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task ConsolidarDevolutivas(int ano, long ueId)
         {
             var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano, ueId));
-
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(ano));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, ano);
 

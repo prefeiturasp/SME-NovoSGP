@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Moq;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -38,12 +39,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             };
             var hoje = DateTime.Today;
             mediator.Setup(a => a.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(new Aula() { DataAula = new DateTime(hoje.Year, hoje.Month, hoje.Day) });
+               .ReturnsAsync(new Aula() { DataAula = new DateTime(hoje.Year, hoje.Month, hoje.Day), TurmaId = "1" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new Usuario());
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorCodigoEolQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterAlunoPorTurmaAlunoCodigoQuery>(), It.IsAny<CancellationToken>()))
               .ReturnsAsync(new AlunoPorTurmaResposta()
               {
                   CodigoAluno = "123",
@@ -56,7 +57,16 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             mediator.Setup(a => a.Send(It.IsAny<SalvarAnotacaoFrequenciaAlunoCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new AuditoriaDto() { Id = 1 });
-
+           
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Turma() {
+                    UeId = 1,
+                    CodigoTurma = "1",
+                    Historica = false,
+                    ModalidadeCodigo = Modalidade.Fundamental,
+                    Nome = "1",
+                    TipoTurma = TipoTurma.Regular
+                });
             // act
             var auditoria = await salvarAnotacaoFrequenciaAlunoUseCase.Executar(dto);
 

@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
             }
             anosLetivos.Add(DateTime.Now.Year);
-            return anosLetivos.Distinct().ToList();
+            return anosLetivos.Distinct().OrderByDescending(a => a).ToList();
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico,int? anoLetivo)

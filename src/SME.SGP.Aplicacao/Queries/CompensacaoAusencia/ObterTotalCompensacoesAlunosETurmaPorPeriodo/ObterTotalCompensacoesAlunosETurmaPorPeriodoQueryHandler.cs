@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> Handle(ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery request, CancellationToken cancellationToken)
-            => repositorio.ObterTotalCompensacoesPorAlunosETurmaAsync(request.Bimestre, request.Alunos, request.TurmaCodigo);
+            => repositorio.ObterTotalCompensacoesPorAlunosETurmaAsync(request.Bimestre, request.Alunos, request.TurmaCodigo, request.Professor);
     }
 }

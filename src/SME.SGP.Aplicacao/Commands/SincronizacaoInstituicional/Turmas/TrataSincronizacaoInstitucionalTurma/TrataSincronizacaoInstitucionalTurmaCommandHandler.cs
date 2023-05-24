@@ -25,13 +25,15 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(TrataSincronizacaoInstitucionalTurmaCommand request, CancellationToken cancellationToken)
         {
             var turmaEOL = request.TurmaEOL;
+            var turmaSGP = request.TurmaSGP;
 
             if (request.TurmaSGP == null)
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
             if (turmaEOL.Situacao == "C")
             {
-                var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString());
+                Modalidade modalidade = turmaEOL.CodigoModalidade != turmaSGP.ModalidadeCodigo ? turmaEOL.CodigoModalidade : 0;
+                var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString(), modalidade);
 
                 if (turmaAtualizadaComSucesso)
                 {
@@ -104,9 +106,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> AtualizarTurmaParaHistoricaAsync(string turmaId)
+        private async Task<bool> AtualizarTurmaParaHistoricaAsync(string turmaId, Modalidade modalidadeEol)
         {
-            var turmaAtualizada = await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
+            var turmaAtualizada = modalidadeEol != 0 ?
+                await repositorioTurma.AtualizarTurmaModalidadeEParaHistorica(turmaId, modalidadeEol) :
+                await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
 
             if (!turmaAtualizada)
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));

@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                     quantidadePareceres - alunosInativosComParecer
                     :
                     0;
-                var quantidade = alunosAtivos.Count() - alunosAtivosComParecer;
+                var quantidade = alunosAtivos.Count() < alunosAtivosComParecer ? 0 : alunosAtivos.Count() - alunosAtivosComParecer;
 
                 parecerConclusivos.Add(new GraficoBaseDto(parecerAgrupado.FirstOrDefault().AnoTurma, quantidade, "Sem parecer"));
             }

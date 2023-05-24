@@ -16,11 +16,13 @@ namespace SME.SGP.Infra
         private MinioClient minioClient;
         private ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
         private readonly IConfiguration configuration;
+        private readonly IServicoMensageriaSGP servicoMensageria;
 
-        public ServicoArmazenamento(IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions, IConfiguration configuration)
+        public ServicoArmazenamento(IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions, IConfiguration configuration, IServicoMensageriaSGP servicoMensageria)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
 
             Inicializar();
         }
@@ -58,10 +60,13 @@ namespace SME.SGP.Infra
 
             await minioClient.PutObjectAsync(args);
 
+            if (bucket.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
+                await OtimizarArquivos(nomeArquivo);
+
             return await ObterUrl(nomeArquivo, bucket);
         }
 
-        public async Task<string> Copiar(string nomeArquivo)
+        private async Task<string> Copiar(string nomeArquivo)
         {
             if (!configuracaoArmazenamentoOptions.BucketTemp.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
             {
@@ -87,9 +92,24 @@ namespace SME.SGP.Infra
                 await Copiar(nomeArquivo);
 
                 await Excluir(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp);
+                
+                await OtimizarArquivos(nomeArquivo);
             }
 
             return $"{configuracaoArmazenamentoOptions.BucketArquivos}/{nomeArquivo}";
+        }
+
+        private async Task OtimizarArquivos(string nomeArquivo)
+        {
+            var ehImagem = nomeArquivo.EhArquivoImagemParaOtimizar();
+            
+            var ehVideo = nomeArquivo.EhArquivoVideoParaOtimizar();
+
+            if (ehImagem || ehVideo)
+            {
+                var nomeFila = ehImagem ? RotasRabbitSgpComprimirArquivos.OtimizarArquivoImagem : RotasRabbitSgpComprimirArquivos.OtimizarArquivoVideo;
+                await servicoMensageria.Publicar(new MensagemRabbit(nomeArquivo), nomeFila, ExchangeSgpRabbit.Sgp, "PublicarFilaSgpComprimirArquivos");
+            }
         }
 
         public async Task<bool> Excluir(string nomeArquivo, string nomeBucket = "")

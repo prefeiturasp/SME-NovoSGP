@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using Elasticsearch.Net.Specification.CrossClusterReplicationApi;
+using MediatR;
+using Minio.DataModel;
 using Polly;
 using Polly.Registry;
 using SME.SGP.Dominio;
@@ -34,7 +36,6 @@ namespace SME.SGP.Aplicacao
             try
             {
                 await CalcularFrequenciaPorTurma(request);
-
             }
             catch (Exception e)
             {
@@ -52,82 +53,91 @@ namespace SME.SGP.Aplicacao
 
         private async Task CalcularFrequenciaPorTurma(CalcularFrequenciaPorTurmaCommand request)
         {
+            var usuarioConsiderado = await ObterUsuarioConsiderado(request);
+            var professor = usuarioConsiderado != null && usuarioConsiderado.EhProfessor() ? usuarioConsiderado.CodigoRf : null;
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaId));
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
             var periodoConsiderado = periodos?.SingleOrDefault(p => p.PeriodoInicio.Date <= request.DataAula.Date && p.PeriodoFim.Date >= request.DataAula.Date);
+            var componentesTerritorioEquivalentes = await mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), turma.CodigoTurma, professor));
+            var componentesRegenciaAulasAutomaticas = await mediator.Send(new ObterCodigosComponentesCurricularesRegenciaAulasAutomaticasQuery(turma.ModalidadeCodigo));
 
             if (periodoConsiderado == null)
                 throw new NegocioException("A data da aula está fora dos períodos escolares da turma");
 
-            var alunosDaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(request.TurmaId)));
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
-                throw new NegocioException($"Não localizados alunos para turma [{request.TurmaId}] no EOL");
-
-            if (request.ConsideraTodosAlunos)
-                request.Alunos = request.Alunos.Union(alunosDaTurma.Select(a => a.CodigoAluno)).ToArray();
-
-            var alunos = (from a in request.Alunos
-                          join at in alunosDaTurma
-                          on a equals at.CodigoAluno
-                          where at.DataMatricula.Date <= periodoConsiderado.PeriodoFim.Date
-                          select at).Select(at => (at.CodigoAluno, at.DataMatricula, (at.EstaAtivo(request.DataAula) ? (DateTime?)null : at.DataSituacao)));
+            var alunos = request.Alunos;
 
             if (alunos.Any())
             {
-                var excluirFrequenciaAlunoIds = new List<long>();
-                var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, request.TurmaId))).ToList();
-                var periodosEscolaresParaFiltro = periodos.Select(p => (long?)p.Id);
-                var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, request.DisciplinaId))).ToList();
-                var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, turmasId: request.TurmaId));
-
-                if (totalAulasDaDisciplina == 0)
-                    excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId)).Select(s => s.Id));
-
-                VerificaFrequenciasDuplicadas(frequenciaDosAlunos, request.DisciplinaId, excluirFrequenciaAlunoIds, periodoConsiderado.Bimestre);
-
-                if (registroFreqAlunos.Any())
+                foreach (var componenteTerritorioEquivalente in componentesTerritorioEquivalentes)
                 {
-                    var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
-                    var registroFrequenciaAgregado = ObterRegistroFrequenciaAgregado(registroFreqAlunos);
-                    var totalCompensacoesDisciplinaAlunos = await mediator.Send(new ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery(periodoConsiderado.Bimestre, alunosComFrequencia, request.TurmaId));
+                    var excluirFrequenciaAlunoIds = new List<long>();
+                    var disciplinasIdsConsideradas = new List<string>() { request.DisciplinaId };
 
-                    foreach (var codigoAluno in alunosComFrequencia)
+                    if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any() && !disciplinasIdsConsideradas.Contains(componenteTerritorioEquivalente.codigoComponente))
+                        disciplinasIdsConsideradas.Add(componenteTerritorioEquivalente.codigoComponente);
+
+                    var professorConsiderado = turma.EhTurmaInfantil || disciplinasIdsConsideradas.Any(d => componentesRegenciaAulasAutomaticas.Contains(d)) ? string.Empty : componenteTerritorioEquivalente.professor;
+
+                    var registroFreqAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, professorConsiderado, request.TurmaId));
+                    var periodosEscolaresParaFiltro = periodos.Select(p => (long?)p.Id);
+                    var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, disciplinasIdsConsideradas.ToArray(), componenteTerritorioEquivalente.professor))).ToList();
+
+                    VerificaFrequenciasReplicadasIndevidamente(frequenciaDosAlunos, disciplinasIdsConsideradas.ToArray(), excluirFrequenciaAlunoIds, periodoConsiderado.Bimestre);
+
+                    if (registroFreqAlunos.Any())
                     {
-                        var dadosMatriculaAluno = alunosDaTurma.OrderBy(a => a.DataMatricula)
-                            .Where(a => a.CodigoAluno.Equals(codigoAluno) && a.DataMatricula.Date <= periodoConsiderado.PeriodoFim);
+                        var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
+                        var registroFrequenciaAgregado = ObterRegistroFrequenciaAgregado(registroFreqAlunos);
+                        var totalCompensacoesDisciplinaAlunos = await mediator.Send(new ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery(periodoConsiderado.Bimestre, alunosComFrequencia, request.TurmaId, professorConsiderado));
 
-                        if (dadosMatriculaAluno == null || !dadosMatriculaAluno.Any())
-                            continue;
-
-                        var totalAulasNaDisciplinaParaAluno = 0;
-                        var totalAulasParaAluno = 0;
-
-                        foreach (var matricula in dadosMatriculaAluno)
+                        foreach (var codigoAluno in alunosComFrequencia)
                         {
-                            totalAulasNaDisciplinaParaAluno += await mediator
-                                .Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, matricula.DataMatricula, matricula.EstaInativo(request.DataAula) ? matricula.DataSituacao : null, request.TurmaId));
+                            var totalAulasNaDisciplinaParaAluno = registroFreqAlunos
+                                .Where(t => t.AlunoCodigo.Equals(codigoAluno) && disciplinasIdsConsideradas.Contains(t.ComponenteCurricularId))?
+                                .Sum(t => t.TotalAulas) ?? 0;
 
-                            totalAulasParaAluno += await mediator
-                                .Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, matricula.DataMatricula, matricula.EstaInativo(request.DataAula) ? matricula.DataSituacao : null, request.TurmaId));
+                            var totalAulasParaAluno = registroFreqAlunos
+                                .Where(t => t.AlunoCodigo.Equals(codigoAluno))
+                                .Sum(s => s.TotalAulas);
+
+                            if (totalAulasNaDisciplinaParaAluno == 0)
+                                excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos
+                                    .Where(w => w.Tipo == TipoFrequenciaAluno.PorDisciplina && disciplinasIdsConsideradas.Contains(w.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno))
+                                    .Select(s => s.Id));
+
+                            if (totalAulasParaAluno == 0)
+                                excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos
+                                    .Where(w => w.Tipo == TipoFrequenciaAluno.Geral && w.CodigoAluno.Equals(codigoAluno))
+                                    .Select(s => s.Id));
+
+                            TrataFrequenciaPorDisciplinaAluno(codigoAluno, totalAulasNaDisciplinaParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, turma, request.DisciplinaId, periodoConsiderado, componenteTerritorioEquivalente.professor, new string[] { componenteTerritorioEquivalente.codigoComponente }, excluirFrequenciaAlunoIds);
+                            TrataFrequenciaGlobalAluno(codigoAluno, totalAulasParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId, componenteTerritorioEquivalente.professor);
                         }
 
-                        if (totalAulasNaDisciplinaParaAluno == 0)
-                            excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno)).Select(s => s.Id));
-
-                        var ausenciasDoAluno = alunosComFrequencia.Where(a => a == codigoAluno).ToList();
-
-                        TrataFrequenciaPorDisciplinaAluno(codigoAluno, totalAulasNaDisciplinaParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, turma, request.DisciplinaId, periodoConsiderado);
-                        TrataFrequenciaGlobalAluno(codigoAluno, totalAulasParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
+                        VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(registroFreqAlunos, frequenciaDosAlunos, excluirFrequenciaAlunoIds);
+                        await TrataPersistencia(frequenciaDosAlunos);
+                    }
+                    else if (frequenciaDosAlunos.Any())
+                    {
+                        excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Select(s => s.Id));
                     }
 
-                    VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(registroFreqAlunos, frequenciaDosAlunos, excluirFrequenciaAlunoIds);
-                    await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
-                    await TrataPersistencia(frequenciaDosAlunos);
+                    if (excluirFrequenciaAlunoIds.Any())
+                        await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
                 }
             }
+        }
 
-            await TratarFrequenciaGeralAlunosForaBimestre(request, periodoConsiderado, alunos);
-        }        
+        private async Task<Usuario> ObterUsuarioConsiderado(CalcularFrequenciaPorTurmaCommand request)
+        {
+            var usuario = request.UsuarioConsiderado != default ?
+                await mediator.Send(new ObterUsuarioPorRfQuery(request.UsuarioConsiderado.rf)) : null;
+
+            if (usuario != null)
+                usuario.PerfilAtual = Guid.Parse(request.UsuarioConsiderado.perfil);
+
+            return usuario;
+        }
 
         public void VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registrosLancados, IEnumerable<FrequenciaAluno> frequenciasConsolidadas, List<long> frequenciasParaExcluir)
         {
@@ -151,17 +161,41 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void VerificaFrequenciasDuplicadas(IEnumerable<FrequenciaAluno> frequenciasAlunos, string disciplinaId, List<long> frequenciaAlunosIdsParaExcluir, int bimestre)
+        private void VerificaFrequenciasReplicadasIndevidamente(IEnumerable<FrequenciaAluno> frequenciasAlunos, string[] disciplinasId, List<long> frequenciaAlunosIdsParaExcluir, int bimestre)
         {
-            var frequenciaAgrupada = frequenciasAlunos.GroupBy(f => f.CodigoAluno);
+            var frequenciaAgrupada = frequenciasAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.PorDisciplina)
+                .GroupBy(f => (f.CodigoAluno, f.Bimestre, f.Tipo, f.Professor));
 
             foreach (var frequencia in frequenciaAgrupada)
             {
-                var frequenciasDuplicadas = frequencia.Where(f => f.DisciplinaId == disciplinaId && f.Bimestre == bimestre).Select(f => f.Id);
-                if (frequenciasDuplicadas.Count() > 1)
+                var frequenciasDuplicadasPorDisciplina = frequencia
+                    .Where(f => disciplinasId.Contains(f.DisciplinaId) && f.Bimestre == bimestre).Select(f => f.Id);
+
+                if (frequenciasDuplicadasPorDisciplina.Count() > 1)
                 {
-                    frequenciaAlunosIdsParaExcluir.AddRange(frequenciasDuplicadas);
-                    frequenciaAlunosIdsParaExcluir.Remove(frequenciasDuplicadas.FirstOrDefault()); // mantém somente uma frequência na lista para fazer a alteração na base com os dados atualizados
+                    frequenciaAlunosIdsParaExcluir
+                        .AddRange(frequenciasDuplicadasPorDisciplina);
+
+                    frequenciaAlunosIdsParaExcluir
+                        .Remove(frequenciasDuplicadasPorDisciplina.OrderBy(f => f).Last()); // mantém somente uma frequência na lista para fazer a alteração na base com os dados atualizados
+                }
+            }
+
+            var frequenciaAgrupadaGeral = frequenciasAlunos.Where(f => f.Tipo == TipoFrequenciaAluno.Geral)
+                .GroupBy(f => (f.CodigoAluno, f.Bimestre, f.Tipo));
+
+            foreach (var frequencia in frequenciaAgrupadaGeral)
+            {
+                var frequenciasDuplicadasGeral = frequencia
+                    .Where(f => string.IsNullOrWhiteSpace(f.DisciplinaId) && f.Bimestre == bimestre).Select(f => f.Id);
+
+                if (frequenciasDuplicadasGeral.Count() > 1)
+                {
+                    frequenciaAlunosIdsParaExcluir
+                        .AddRange(frequenciasDuplicadasGeral);
+
+                    frequenciaAlunosIdsParaExcluir
+                        .Remove(frequenciasDuplicadasGeral.OrderBy(f => f).Last()); // mantém somente uma frequência na lista para fazer a alteração na base com os dados atualizados
                 }
             }
         }
@@ -172,7 +206,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(excluirFrequenciaAlunoIds.ToArray());
         }
 
-        private List<RegistroFrequenciaPorDisciplinaAlunoDto> ObterRegistroFrequenciaAgregado(List<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos)
+        private List<RegistroFrequenciaPorDisciplinaAlunoDto> ObterRegistroFrequenciaAgregado(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos)
         {
             return registroFreqAlunos.GroupBy(g => new { g.PeriodoEscolarId, g.PeriodoInicio, g.PeriodoFim, g.Bimestre, g.AlunoCodigo, g.ComponenteCurricularId }, (key, group) =>
             new
@@ -200,12 +234,12 @@ namespace SME.SGP.Aplicacao
             }).ToList();
         }
 
-        private async Task TrataPersistencia(List<FrequenciaAluno> frequenciasParaPersistir)
+        private async Task TrataPersistencia(IEnumerable<FrequenciaAluno> frequenciasParaPersistir)
         {
             await policy.ExecuteAsync(() => Persistir(frequenciasParaPersistir));
         }
 
-        private async Task Persistir(List<FrequenciaAluno> frequenciasParaPersistir)
+        private async Task Persistir(IEnumerable<FrequenciaAluno> frequenciasParaPersistir)
         {
             if (frequenciasParaPersistir != null && frequenciasParaPersistir.Any())
             {
@@ -218,72 +252,100 @@ namespace SME.SGP.Aplicacao
         }
 
         private void TrataFrequenciaPorDisciplinaAluno(string alunoCodigo, int totalAulasNaDisciplina,
-                                                       List<RegistroFrequenciaPorDisciplinaAlunoDto> registroFrequenciaAlunos,
+                                                       IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFrequenciaAlunos,
                                                        List<FrequenciaAluno> frequenciaDosAlunos,
                                                        IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
-                                                       Turma turma, string componenteCurricularId, PeriodoEscolar periodoEscolar)
+                                                       Turma turma, string componenteCurricularId, PeriodoEscolar periodoEscolar, string professor,
+                                                       string[] codigosTerritorioConsiderados, List<long> excluirFrequenciaAlunoIds)
         {
-            if (registroFrequenciaAlunos.Any(a => a.ComponenteCurricularId == componenteCurricularId) || totalAulasNaDisciplina > 0)
+            var registrosFrequenciaDisciplina = from rf in registroFrequenciaAlunos
+                                                where rf.ComponenteCurricularId == componenteCurricularId ||
+                                                      (codigosTerritorioConsiderados != null && codigosTerritorioConsiderados.Contains(rf.ComponenteCurricularId))
+                                                select rf;
+
+            if (registrosFrequenciaDisciplina.Any() || totalAulasNaDisciplina > 0)
             {
-                var registroFrequenciaAluno = registroFrequenciaAlunos
-                    .FirstOrDefault(a => a.AlunoCodigo == alunoCodigo && a.ComponenteCurricularId == componenteCurricularId);
+                var registrosFrequenciaAluno = registrosFrequenciaDisciplina
+                    .Where(a => a.AlunoCodigo == alunoCodigo);
 
-                var frequenciaParaTratar = frequenciaDosAlunos
-                    .FirstOrDefault(a => a.CodigoAluno == alunoCodigo && a.DisciplinaId == componenteCurricularId && a.Bimestre == periodoEscolar.Bimestre);
+                var frequenciasAluno = from f in frequenciaDosAlunos
+                                       where f.CodigoAluno == alunoCodigo &&
+                                             (f.DisciplinaId == componenteCurricularId ||
+                                             (codigosTerritorioConsiderados != null && codigosTerritorioConsiderados.Contains(f.DisciplinaId))) &&
+                                             f.Tipo == TipoFrequenciaAluno.PorDisciplina
+                                             && f.Bimestre == periodoEscolar.Bimestre
+                                       orderby f.Id
+                                       select f;
 
+                var frequenciaParaTratar = frequenciasAluno.LastOrDefault();
                 var totalCompensacoes = 0;
-                var totalCompensacoesDisciplinaAluno = compensacoesDisciplinasAlunos
-                    .FirstOrDefault(a => a.AlunoCodigo == alunoCodigo && a.ComponenteCurricularId == componenteCurricularId);
+                var totalCompensacoesDisciplinaAluno = (from c in compensacoesDisciplinasAlunos
+                                                        where c.AlunoCodigo == alunoCodigo &&
+                                                              (c.ComponenteCurricularId == componenteCurricularId ||
+                                                               (codigosTerritorioConsiderados != null && codigosTerritorioConsiderados.Contains(c.ComponenteCurricularId)))
+                                                              && c.Bimestre == periodoEscolar.Bimestre
+                                                        select c).FirstOrDefault();
 
                 if (totalCompensacoesDisciplinaAluno != null)
                     totalCompensacoes = totalCompensacoesDisciplinaAluno.Compensacoes;
 
-                var totalAusencias = registroFrequenciaAluno?.TotalAusencias ?? 0;
+                var totalAusencias = registrosFrequenciaAluno?.Sum(rfa => rfa.TotalAusencias) ?? 0;
 
-                if (frequenciaParaTratar == null)
+                if (registrosFrequenciaAluno != null && registrosFrequenciaAluno.Any())
                 {
-                    var frequenciaFinal = new FrequenciaAluno(
-                                 alunoCodigo,
-                                 turma.CodigoTurma,
-                                 componenteCurricularId,
-                                 registroFrequenciaAluno?.PeriodoEscolarId ?? periodoEscolar.Id,
-                                 registroFrequenciaAluno?.PeriodoInicio ?? periodoEscolar.PeriodoInicio,
-                                 registroFrequenciaAluno?.PeriodoFim ?? periodoEscolar.PeriodoFim,
-                                 registroFrequenciaAluno?.Bimestre ?? periodoEscolar.Bimestre,
-                                 totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
-                                 totalAulasNaDisciplina,
-                                 totalAusencias >= totalCompensacoes ? totalCompensacoes : totalAusencias,
-                                 TipoFrequenciaAluno.PorDisciplina,
-                                 registroFrequenciaAluno?.TotalRemotos ?? 0,
-                                 registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
+                    if (frequenciaParaTratar == null)
+                    {
+                        frequenciaParaTratar = new FrequenciaAluno(
+                                     alunoCodigo,
+                                     turma.CodigoTurma,
+                                     componenteCurricularId,
+                                     registrosFrequenciaAluno?.First().PeriodoEscolarId ?? periodoEscolar.Id,
+                                     registrosFrequenciaAluno?.First().PeriodoInicio ?? periodoEscolar.PeriodoInicio,
+                                     registrosFrequenciaAluno?.First().PeriodoFim ?? periodoEscolar.PeriodoFim,
+                                     registrosFrequenciaAluno?.First().Bimestre ?? periodoEscolar.Bimestre,
+                                     totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
+                                     totalAulasNaDisciplina,
+                                     totalAusencias >= totalCompensacoes ? totalCompensacoes : totalAusencias,
+                                     TipoFrequenciaAluno.PorDisciplina,
+                                     registrosFrequenciaAluno?.Sum(rfa => rfa.TotalRemotos) ?? 0,
+                                     registrosFrequenciaAluno?.Sum(rfa => rfa.TotalPresencas) ?? totalAulasNaDisciplina,
+                                     professor);
 
-                    frequenciaDosAlunos.Add(frequenciaFinal);
-                }
-                else
-                {
-                    var totalCompensacoesDisciplinas = totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0;
-                    frequenciaParaTratar
-                        .DefinirFrequencia(totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
-                                           totalAulasNaDisciplina,
-                                           totalAusencias >= totalCompensacoes ? totalCompensacoes : totalAusencias,
-                                           TipoFrequenciaAluno.PorDisciplina,
-                                           registroFrequenciaAluno?.TotalRemotos ?? 0,
-                                           registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
+                        frequenciaDosAlunos.Add(frequenciaParaTratar);
+                    }
+                    else
+                    {
+                        var totalCompensacoesDisciplinas = totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0;
+                        frequenciaParaTratar
+                            .DefinirFrequencia(componenteCurricularId,
+                                               totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
+                                               totalAulasNaDisciplina,
+                                               totalAusencias >= totalCompensacoes ? totalCompensacoes : totalAusencias,
+                                               TipoFrequenciaAluno.PorDisciplina,
+                                               registrosFrequenciaAluno?.Sum(rfa => rfa.TotalRemotos) ?? 0,
+                                               registrosFrequenciaAluno?.Sum(rfa => rfa.TotalPresencas) ?? totalAulasNaDisciplina,
+                                               professor);
+                    }
+
+                    var frequenciasDoAlunoSemProfessor = frequenciasAluno
+                        .Except(new List<FrequenciaAluno>() { frequenciaParaTratar })
+                        .Where(f => string.IsNullOrEmpty(f.Professor));
+
+                    if (frequenciasDoAlunoSemProfessor.Any())
+                        excluirFrequenciaAlunoIds.AddRange(frequenciasDoAlunoSemProfessor.Select(f => f.Id));
                 }
             }
         }
 
         private void TrataFrequenciaGlobalAluno(string alunoCodigo,
                                                 int totalAulasDaTurmaGeral,
-                                                List<RegistroFrequenciaPorDisciplinaAlunoDto> registroFrequenciaAlunos,
+                                                IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFrequenciaAlunos,
                                                 List<FrequenciaAluno> frequenciaDosAlunos,
                                                 IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
-                                                string turmaId)
+                                                string turmaId, string professor)
         {
-            if (registroFrequenciaAlunos.Any())
+            if (registroFrequenciaAlunos.Any() && totalAulasDaTurmaGeral > 0)
             {
-                int totalCompensacoesDoAlunoGeral = 0;
-
                 var registroFrequenciaAluno = registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo)
                     .GroupBy(g => new { g.PeriodoEscolarId, g.PeriodoInicio, g.PeriodoFim, g.Bimestre, g.AlunoCodigo }, (key, group) =>
                 new
@@ -308,20 +370,15 @@ namespace SME.SGP.Aplicacao
                     TotalRemotos = s.TotalRemotos
                 }).FirstOrDefault();
 
-                var totalAusenciasDisciplina = registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo && 
-                    compensacoesDisciplinasAlunos.Any(b => b.ComponenteCurricularId == a.ComponenteCurricularId)).Select(x => (x.ComponenteCurricularId, x.TotalAusencias)).ToList();
+                var totalCompensacoesAluno = compensacoesDisciplinasAlunos
+                    .Where(a => a.AlunoCodigo == alunoCodigo).Sum(c => c.Compensacoes);
 
-                var totalCompensacoesDisciplina = compensacoesDisciplinasAlunos
-                    .Where(a => a.AlunoCodigo == alunoCodigo).Select(x => (x.ComponenteCurricularId, x.Compensacoes)).ToList();
-
-                if (totalCompensacoesDisciplina.Any())
-                {
-                    totalCompensacoesDoAlunoGeral = totalAusenciasDisciplina.Sum(b => b.TotalAusencias >= totalCompensacoesDisciplina.FirstOrDefault(x => x.ComponenteCurricularId == b.ComponenteCurricularId).Compensacoes ?
-                        totalCompensacoesDisciplina.FirstOrDefault(x => x.ComponenteCurricularId == b.ComponenteCurricularId).Compensacoes : b.TotalAusencias);
-                }
-
-                var frequenciaParaTratar = frequenciaDosAlunos.OrderByDescending(a => a.Id)
-                    .FirstOrDefault(a => a.CodigoAluno == alunoCodigo && string.IsNullOrEmpty(a.DisciplinaId) && a.Bimestre == registroFrequenciaAluno.Bimestre);
+                var frequenciaParaTratar = (from f in frequenciaDosAlunos
+                                            where f.CodigoAluno == alunoCodigo &&
+                                                 string.IsNullOrEmpty(f.DisciplinaId) &&
+                                                 f.Bimestre == registroFrequenciaAluno.Bimestre
+                                            orderby f.Id
+                                            select f).LastOrDefault();
 
                 if (frequenciaParaTratar == null)
                 {
@@ -335,36 +392,26 @@ namespace SME.SGP.Aplicacao
                                  registroFrequenciaAluno.Bimestre,
                                  registroFrequenciaAluno.TotalAusencias > totalAulasDaTurmaGeral ? totalAulasDaTurmaGeral : registroFrequenciaAluno.TotalAusencias,
                                  totalAulasDaTurmaGeral,
-                                 registroFrequenciaAluno.TotalAusencias >= totalCompensacoesDoAlunoGeral ? totalCompensacoesDoAlunoGeral : registroFrequenciaAluno.TotalAusencias,
+                                 totalCompensacoesAluno > registroFrequenciaAluno.TotalAusencias ? registroFrequenciaAluno.TotalAusencias : totalCompensacoesAluno,
                                  TipoFrequenciaAluno.Geral,
                                  registroFrequenciaAluno.TotalRemotos,
-                                 registroFrequenciaAluno.TotalPresencas);
+                                 registroFrequenciaAluno.TotalPresencas,
+                                 null);
 
                     frequenciaDosAlunos.Add(frequenciaGlobal);
                 }
                 else
                 {
                     frequenciaParaTratar
-                        .DefinirFrequencia(registroFrequenciaAluno.TotalAusencias > totalAulasDaTurmaGeral ? totalAulasDaTurmaGeral : registroFrequenciaAluno.TotalAusencias,
+                        .DefinirFrequencia(string.Empty,
+                                           registroFrequenciaAluno.TotalAusencias > totalAulasDaTurmaGeral ? totalAulasDaTurmaGeral : registroFrequenciaAluno.TotalAusencias,
                                            totalAulasDaTurmaGeral,
-                                           registroFrequenciaAluno.TotalAusencias >= totalCompensacoesDoAlunoGeral ? totalCompensacoesDoAlunoGeral : registroFrequenciaAluno.TotalAusencias,
+                                           totalCompensacoesAluno > registroFrequenciaAluno.TotalAusencias ? registroFrequenciaAluno.TotalAusencias : totalCompensacoesAluno,
                                            TipoFrequenciaAluno.Geral,
                                            registroFrequenciaAluno.TotalRemotos,
-                                           registroFrequenciaAluno.TotalPresencas);
+                                           registroFrequenciaAluno.TotalPresencas,
+                                           null);
                 }
-            }
-        }
-
-        private async Task TratarFrequenciaGeralAlunosForaBimestre(CalcularFrequenciaPorTurmaCommand request, PeriodoEscolar periodoConsiderado, IEnumerable<(string CodigoAluno, DateTime DataMatricula, DateTime?)> alunos)
-        {
-            var alunosForaBimestre = request.Alunos.Except(alunos.Select(a => a.CodigoAluno));
-            foreach (var aluno in alunosForaBimestre)
-            {
-                var frequenciaGeralAluno = await mediator
-                    .Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno, periodoConsiderado.Bimestre, TipoFrequenciaAluno.Geral, request.TurmaId));
-
-                if (frequenciaGeralAluno != null)
-                    await ExcluirFrequenciaAluno(new long[] { frequenciaGeralAluno.Id }.ToList());
             }
         }
     }

@@ -21,7 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FrequenciaAluno>> Handle(ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaPorListaDeAlunosDisciplinaData(request.CodigosAlunos, request.DisciplinaId, request.DataAtual,request.TurmaCodigo);
+            return await repositorioFrequenciaAlunoDisciplinaPeriodo
+                .ObterFrequenciaPorListaDeAlunosDisciplinaData(request.CodigosAlunos, request.DisciplinaId, request.PeriodoEscolarId, request.TurmaCodigo, request.Professor);
         }
     }
 }

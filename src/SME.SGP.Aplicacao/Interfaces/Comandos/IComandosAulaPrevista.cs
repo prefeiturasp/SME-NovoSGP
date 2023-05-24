@@ -5,7 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosAulaPrevista
     {
-        Task<long> Inserir(AulaPrevistaDto dto);
+        Task<AulasPrevistasDadasAuditoriaDto> Inserir(AulaPrevistaDto dto);
 
         Task<string> Alterar(AulaPrevistaDto dto, long id);
     }

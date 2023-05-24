@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
                 if (!possuiTodasFrequenciasConsolidadas && frequenciasConsolidadas.Any())
                 {
                     var aulasComponentesTurmas = await mediator
-                                .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(frequenciasConsolidadas.Select(f => f.TurmaId).ToArray()
+                                .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(frequenciasConsolidadas.Select(f => f.TurmaId).Distinct().ToArray()
                                 , periodosEscolaresFrequentadosPeloEstudante.FirstOrDefault().TipoCalendarioId, componentesCurriculares, periodosEscolaresFrequentadosPeloEstudante.Select(p => p.Bimestre).ToArray()));
 
                     foreach (var aula in aulasComponentesTurmas)
@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
                                     CodigoAluno = informacoesAluno.First().CodigoAluno,
                                     DisciplinaId = valorAulaRegistrada.ComponenteCurricularCodigo,
                                     TurmaId = valorAulaRegistrada.TurmaCodigo,
-                                    TotalAulas = valorAulaRegistrada.AulasQuantidade,
+                                    TotalAulas = 0,
                                     Bimestre = valorAulaRegistrada.Bimestre,
                                     PeriodoEscolarId = valorAulaRegistrada.PeriodoEscolarId,
                                     PeriodoFim = periodosEscolares.Where(p => valorAulaRegistrada.Bimestre == p.Bimestre).Select(p => p.PeriodoFim).FirstOrDefault(),

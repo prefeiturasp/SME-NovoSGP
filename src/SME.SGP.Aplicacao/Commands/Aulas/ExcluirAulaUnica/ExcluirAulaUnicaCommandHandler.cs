@@ -34,15 +34,15 @@ namespace SME.SGP.Aplicacao
             var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
 
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, request.Usuario.CodigoRf), cancellationToken))
-                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
+                throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");            
 
-            if(!request.Usuario.EhGestorEscolar())
+            if (!request.Usuario.EhGestorEscolar())
                 await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, request.Usuario);
 
             if (aula.WorkflowAprovacaoId.HasValue)
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, request.Usuario);
 
-            var filas = new string[]
+            var filas = new []
             {
                 RotasRabbitSgpAula.NotificacoesDaAulaExcluir,
                 RotasRabbitSgpFrequencia.FrequenciaDaAulaExcluir,
@@ -58,6 +58,8 @@ namespace SME.SGP.Aplicacao
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
 
+            await mediator.Send(new ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdCommand(aula.Id),cancellationToken);
+            
             await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aula.TurmaId, aula.DisciplinaId, aula.Id), cancellationToken);
 
             await ExcluirArquivoAnotacaoFrequencia(request.AulaId);

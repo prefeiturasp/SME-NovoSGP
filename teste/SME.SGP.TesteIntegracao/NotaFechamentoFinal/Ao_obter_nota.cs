@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
     public class Ao_obter_nota : NotaFechamentoTesteBase
     {
         private const int REGISTRO_FREQUENCIA_ID = 1;
-        private const double PERCENTUAL_ALUNO_1 = 88;
+        private const double PERCENTUAL_ALUNO_1 = 87.5;
         private const double PERCENTUAL_ALUNO_2 = 75;
         private const int TOTAL_FALTA = 3;
         private const int TOTAL_AUSENCIA_1 = 2;
@@ -220,7 +220,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             dto.Alunos.ShouldNotBeNull();
             var aluno = dto.Alunos.FirstOrDefault(aluno => aluno.Codigo == codigoAluno);
             aluno.ShouldNotBeNull();
-            aluno.FrequenciaValor.ShouldBe(Math.Round(percentual));
+            aluno.FrequenciaValor.ShouldBe(percentual);
             aluno.TotalFaltas.ShouldBe(totalFalta);
             aluno.TotalAusenciasCompensadas.ShouldBe(totalAusenciasCompensadas);
             aluno.NotasConceitoFinal.ShouldNotBeNull();
@@ -322,9 +322,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoNota(FECHAMENTO_ALUNO_ID_10, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, NOTA_9);
 
             await CriaFrequencia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_1, 2, 1, 4, BIMESTRE_1, DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1);
-            await CriaFrequencia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_2, 1, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2);
+            await CriaFrequencia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_2, 1, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2);
             await CriaFrequencia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_ALUNO_2, PERIODO_ESCOLAR_CODIGO_1, 0, 0, 4, BIMESTRE_1, DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1);
-            await CriaFrequencia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_ALUNO_2, PERIODO_ESCOLAR_CODIGO_2, 3, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2);
+            await CriaFrequencia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_ALUNO_2, PERIODO_ESCOLAR_CODIGO_2, 3, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2);
         }
 
         private async Task CriaFechamentoFinal(long idDiciplina)
@@ -410,9 +410,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoConceito(FECHAMENTO_ALUNO_ID_10, COMPONENTE_CURRICULAR_ARTES_ID_139, (int)ConceitoValores.S);
 
             await CriaFrequencia(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_1, 2, 1, 4, BIMESTRE_1, DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1);
-            await CriaFrequencia(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_2, 1, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2);
+            await CriaFrequencia(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_2, 1, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2);
             await CriaFrequencia(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), CODIGO_ALUNO_2, PERIODO_ESCOLAR_CODIGO_1, 0, 0, 4, BIMESTRE_1, DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1);
-            await CriaFrequencia(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), CODIGO_ALUNO_2, PERIODO_ESCOLAR_CODIGO_2, 3, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2);
+            await CriaFrequencia(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), CODIGO_ALUNO_2, PERIODO_ESCOLAR_CODIGO_2, 3, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2);
         }
 
         private async Task CriaFechamentoNotaConceitoRegencia()
@@ -444,7 +444,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await CriaFechamentoConceito(FECHAMENTO_ALUNO_ID_5, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, (int)ConceitoValores.P);
 
             await CriaFrequencia(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_1, 2, 1, 4, BIMESTRE_1, DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1);
-            await CriaFrequencia(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_2, 1, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2);
+            await CriaFrequencia(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), CODIGO_ALUNO_1, PERIODO_ESCOLAR_CODIGO_2, 1, 1, 4, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2);
         }
 
             private async Task CriaFechamentoNota(

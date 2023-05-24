@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
         {
             var componentesSgp = await mediator
                 .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol
-                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : (a.Regencia && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray(), codigoTurma: codigoTurma));
+                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : (a.Regencia && !ehEducacaoInfatil && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray(), codigoTurma: codigoTurma));
 
             return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol, ehEducacaoInfatil);
         }
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
 
             return MapearParaComponenteNomeDto(disciplinasEol);
         }
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             foreach (var componenteSgp in componentesSgp)
             {
                 var componenteEol = componentesCurricularesEol
-                    .FirstOrDefault(c => componenteSgp.Id == (c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : (c.Regencia && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0 ? c.CodigoComponenteCurricularPai.Value : c.Codigo)));
+                    .FirstOrDefault(c => componenteSgp.Id == (c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : (c.Regencia && !ehEducacaoInfatil && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0 ? c.CodigoComponenteCurricularPai.Value : c.Codigo)));
 
                 if (componenteEol != null)
                 {

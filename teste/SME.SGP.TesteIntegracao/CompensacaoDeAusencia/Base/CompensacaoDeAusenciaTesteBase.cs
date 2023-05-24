@@ -5,11 +5,13 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
@@ -34,7 +36,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria), typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBase(CompensacaoDeAusenciaDBDto dtoDB)
@@ -181,6 +186,28 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             });
         }
 
+        protected async Task CriarCompensacaoAusenciaAlunoAula(List<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos, List<RegistroFrequenciaAluno> registroFrequenciaAlunos)
+        {
+            registroFrequenciaAlunos = registroFrequenciaAlunos.Where(t => t.Valor == (int)TipoFrequencia.F).ToList();
+
+            foreach (var compensacaoAusenciaAluno in compensacaoAusenciaAlunos.Where(t => t.CompensacaoAusenciaId == COMPENSACAO_AUSENCIA_ID_1))
+            {
+                foreach(var registroFrequencia in registroFrequenciaAlunos.Where(t => t.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno).Take(compensacaoAusenciaAluno.QuantidadeFaltasCompensadas))
+                {
+                    await InserirNaBase(new CompensacaoAusenciaAlunoAula
+                    {
+                        CompensacaoAusenciaAlunoId = compensacaoAusenciaAluno.Id,
+                        RegistroFrequenciaAlunoId = registroFrequencia.Id,
+                        NumeroAula = registroFrequencia.NumeroAula,
+                        DataAula = DateTimeExtension.HorarioBrasilia(),
+                        CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                        CriadoPor = SISTEMA_NOME,
+                        CriadoRF = SISTEMA_CODIGO_RF
+                    });
+                }
+            }
+        }
+
         protected class CompensacaoDeAusenciaDBDto
         {
             public CompensacaoDeAusenciaDBDto()
@@ -204,7 +231,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             public int QuantidadeAula { get; set; }
             public bool AulaCj { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
-            
+
             public bool PermiteCompensacaoForaPeriodoAtivo { get; set; }
         }
 
@@ -216,9 +243,9 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
         private async Task CriarPeriodoEscolar(bool considerarAnoAnterior)
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
 
@@ -250,7 +277,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 Ativo = ativo
             });
         }
-        
+
         protected async Task CriarPeriodoReaberturaAnoAnterior(long tipoCalendarioId)
         {
             await InserirNaBase(new FechamentoReabertura()
@@ -299,6 +326,22 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
-        }        
+        }
+
+        protected CompensacaoDeAusenciaDBDto ObterDtoDadoBase(string perfil, string componente)
+        {
+            return new CompensacaoDeAusenciaDBDto()
+            {
+                Perfil = perfil,
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Bimestre = BIMESTRE_3,
+                ComponenteCurricular = componente,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                AnoTurma = ANO_5,
+                DataReferencia = DATA_25_07_INICIO_BIMESTRE_3,
+                QuantidadeAula = QUANTIDADE_AULA_4
+            };
+        }
     }
 }
