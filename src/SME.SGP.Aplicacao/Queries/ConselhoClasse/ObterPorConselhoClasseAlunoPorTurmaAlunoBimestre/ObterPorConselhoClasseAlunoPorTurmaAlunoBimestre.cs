@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 RuleFor(c => c.Bimestre)
                     .ExclusiveBetween(1,4)
                     .When(a=> !a.EhFinal)
-                    .WithMessage("O código do aluno deve ser informado para a busca de conselho de classe do aluno.");
+                    .WithMessage("O bimestre deve ser informado para a busca de conselho de classe do aluno.");
             }
         }
     }
