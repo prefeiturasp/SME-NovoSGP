@@ -1,5 +1,9 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System.Linq;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,8 +24,12 @@ namespace SME.SGP.Aplicacao
         {
             var wfAprovacaoNotas = await repositorioWfAprovacaoNotaFechamento.ObterPorNotaId(request.FechamentoNotaId);
 
-            foreach(var wfAprovacaoNota in wfAprovacaoNotas)
+            foreach (var wfAprovacaoNota in wfAprovacaoNotas)
+            {
                 await repositorioWfAprovacaoNotaFechamento.Excluir(wfAprovacaoNota);
+                if (wfAprovacaoNota.WfAprovacaoId.HasValue)
+                    await mediator.Send(new PublicarExlusaoWfAprovacaoSemWorkflowsVinculadosCommand(wfAprovacaoNota.WfAprovacaoId.Value, "wf_aprovacao_nota_fechamento", wfAprovacaoNota.Id));
+            }
         }
     }
 }
