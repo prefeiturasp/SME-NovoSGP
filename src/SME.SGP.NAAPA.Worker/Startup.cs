@@ -28,10 +28,6 @@ namespace SME.SGP.NAAPA.Worker
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
             registrarDependencias.RegistrarCasoDeUsoNAAPARabbitSgp(services);
-
-            services.AddHostedService<WorkerRabbitNAAPA>();
-            services.AddHealthChecks();
-            services.AddHealthChecksUiSgp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
