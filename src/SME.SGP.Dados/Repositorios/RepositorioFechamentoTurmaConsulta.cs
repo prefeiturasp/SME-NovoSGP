@@ -180,7 +180,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<FechamentoTurma> ObterPorTurma(long turmaId, int? bimestre = 0)
         {
-            var query = new StringBuilder(@"select ft.*  
+            var query = new StringBuilder(@"select ft.*, p.*  
                             from fechamento_turma ft
                             left join periodo_escolar p
                             on p.id = ft.periodo_escolar_id
@@ -191,7 +191,20 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine(@" and ft.periodo_escolar_id is null");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, bimestre });
+            var retornoFechamentoTurma = new FechamentoTurma();
+
+            await database.Conexao.QueryAsync<FechamentoTurma, PeriodoEscolar, FechamentoTurma>(query.ToString(),
+                (fechamentoTurma, periodoEscolar) =>
+                {
+                    if (periodoEscolar != null)
+                        fechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
+                    
+                    retornoFechamentoTurma = fechamentoTurma;
+                    return fechamentoTurma;
+                    
+                }, new { turmaId, bimestre });
+
+            return retornoFechamentoTurma;
         }
     }
 }

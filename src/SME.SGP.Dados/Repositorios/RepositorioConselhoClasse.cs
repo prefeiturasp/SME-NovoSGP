@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ConselhoClasseAlunoNotaDto>> ObterConselhoClasseAlunoNota(string[] turmasCodigos, int bimestre)
         {
             var sql = new StringBuilder(); 
-            sql.AppendLine(@"select");
+            sql.AppendLine(@"select distinct ");
             sql.AppendLine(@"	cccat.aluno_codigo as AlunoCodigo,");
             sql.AppendLine(@"	coalesce(cccatn.nota,cccatn.conceito_id)  as Nota,");
             sql.AppendLine(@"	cccatn.componente_curricular_id as ComponenteCurricularId,");
