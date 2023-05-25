@@ -7,8 +7,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosNAAPAQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>>
     {
-        public ObterEncaminhamentosNAAPAQuery(bool exibirHistorico,int anoLetivo,long dreId,string codigoUe,long turmaId,string nomeAluno,
-            DateTime? dataAberturaQueixaInicio,DateTime? dataAberturaQueixaFim,int situacao,int prioridade )
+        public ObterEncaminhamentosNAAPAQuery(bool exibirHistorico,int anoLetivo, long dreId, string codigoUe, long turmaId, string nomeAluno,
+            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, int prioridade, bool exibirEncerrados)
         {
             ExibirHistorico = exibirHistorico;
             DreId = dreId;
@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
             DataAberturaQueixaInicio = dataAberturaQueixaInicio;
             DataAberturaQueixaFim = dataAberturaQueixaFim;
             Prioridade = prioridade;
+            ExibirEncerrados = exibirEncerrados;
         }
 
         public bool ExibirHistorico { get; set; }
@@ -32,6 +33,7 @@ namespace SME.SGP.Aplicacao
         public DateTime? DataAberturaQueixaFim { get; set; }
         public int Situacao { get; set; }
         public int Prioridade { get; set; }
+        public bool ExibirEncerrados { get; set; }
     }
 
     public class ObterEncaminhamentosNAAPAQueryValidator : AbstractValidator<ObterEncaminhamentosNAAPAQuery>

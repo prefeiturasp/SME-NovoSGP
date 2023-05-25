@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             
             return await mediator.Send(new ObterEncaminhamentosNAAPAQuery(filtro.ExibirHistorico, filtro.AnoLetivo,
                 filtro.DreId, codigoUe, filtro.TurmaId, filtro.NomeAluno, filtro.DataAberturaQueixaInicio, 
-                filtro.DataAberturaQueixaFim, filtro.Situacao, filtro.Prioridade));
+                filtro.DataAberturaQueixaFim, filtro.Situacao, filtro.Prioridade, filtro.ExibirEncerrados));
         }
     }
 }
