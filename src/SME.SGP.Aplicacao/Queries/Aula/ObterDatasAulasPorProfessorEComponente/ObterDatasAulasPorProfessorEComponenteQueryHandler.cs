@@ -60,8 +60,16 @@ namespace SME.SGP.Aplicacao
                             codigosTerritorioEquivalentes = mediator
                                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(ccj.DisciplinaId, turma.CodigoTurma, null)).Result;
 
-                            if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
+                            var componentesConsiderados = codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any() ? 
+                                codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(new string[] { ccj.DisciplinaId.ToString() }) : null;
+
+                            if (componentesConsiderados != null && componentesConsiderados.Any())
                                 codigoComponenteEquivalente = long.Parse(codigosTerritorioEquivalentes.First().codigoComponente);
+                            else
+                            {
+                                codigoComponenteEquivalente = ccj.Modalidade == Modalidade.EducacaoInfantil ?
+                                    (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;
+                            }                                
                         }
 
                         componentesCurricularesEolProfessor.Add(new ComponenteCurricularEol()
@@ -97,7 +105,7 @@ namespace SME.SGP.Aplicacao
 
             if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
             {
-                aulasPermitidas = aulas.Where(a => a.DisciplinaId == request.ComponenteCurricularCodigo)
+                aulasPermitidas = aulas.Where(a => codigosComponentesUsuario.Contains(a.DisciplinaId))
                                        .Select(a => a.Id).ToList();
             }
             else
