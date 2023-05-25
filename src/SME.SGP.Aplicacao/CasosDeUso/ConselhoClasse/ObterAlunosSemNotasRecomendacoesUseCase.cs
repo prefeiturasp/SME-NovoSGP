@@ -67,12 +67,12 @@ namespace SME.SGP.Aplicacao
                 };
                 foreach (var componente in componentesCurricularesPorTurma)
                 {
-                    var componentetemNota = obterConselhoClasseAlunoNota.Where(c => c.ComponenteCurricularId == componente.Id);
+                    var componentetemNota = obterConselhoClasseAlunoNota.Where(c => c.ComponenteCurricularId == componente.Id && c.Nota !=null);
                     if(!componentetemNota.Any())
                         item.Inconsistencias.Add(string.Format(MensagemNegocioConselhoClasse.AUSENCIA_DA_NOTA_NO_COMPONENTE,componente.Nome));
                 }
 
-                var existeRecomendacao = obterRecomendacoes.Where(x => x.AluncoCodigo == aluno.CodigoAluno);
+                var existeRecomendacao = obterRecomendacoes.Where(x => x.AluncoCodigo == aluno.CodigoAluno && x.TemRecomendacao);
                 if(!existeRecomendacao.Any() )
                     item.Inconsistencias.Add(MensagemNegocioConselhoClasse.SEM_RECOMENDACAO_FAMILIA_ESTUDANDE);
                 
