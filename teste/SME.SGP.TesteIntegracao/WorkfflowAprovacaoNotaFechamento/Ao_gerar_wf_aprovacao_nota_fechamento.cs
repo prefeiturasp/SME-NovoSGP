@@ -192,7 +192,9 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
 
             var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
 
-            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
+            var WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault();
+            WfAprovacao.NotaAnterior = 4;
+            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = WfAprovacao, TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, FechamentoTurmaDisciplinaId = 1 });
 
             var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -572,11 +574,9 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                     Bimestre = 1,
                     CodigoAluno = "3333333",
                     ComponenteCurricularDescricao = "MATEMATICA",
-                    ConceitoAnteriorId = null,
                     FechamentoNota = null,
                     FechamentoTurmaDisciplinaId = 1,
-                    LancaNota = false,
-                    NotaAnterior = 8,
+                    LancaNota = false,                   
                     TurmaId = 1,
                     WfAprovacao = new WfAprovacaoNotaFechamento() 
                     {
@@ -585,7 +585,9 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                         CriadoRF = SISTEMA,
                         Id = 2,
                         Nota = 8,
-                        FechamentoNotaId = 2
+                        FechamentoNotaId = 2,
+                        NotaAnterior = 8,
+                        ConceitoIdAnterior = null
                     }
                 },
                 new()
@@ -594,11 +596,9 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                     Bimestre = 1,
                     CodigoAluno = "2222222",
                     ComponenteCurricularDescricao = "MATEMATICA",
-                    ConceitoAnteriorId = null,
                     FechamentoNota = null,
                     FechamentoTurmaDisciplinaId = 1,
                     LancaNota = false,
-                    NotaAnterior = 5,
                     TurmaId = 1,
                     WfAprovacao = new WfAprovacaoNotaFechamento()
                     {
@@ -607,7 +607,9 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                         CriadoRF = SISTEMA,
                         Id = 1,
                         Nota = 5,
-                        FechamentoNotaId = 1
+                        FechamentoNotaId = 1,
+                        NotaAnterior = 5,
+                        ConceitoIdAnterior = null
                     }
                 },
             };
