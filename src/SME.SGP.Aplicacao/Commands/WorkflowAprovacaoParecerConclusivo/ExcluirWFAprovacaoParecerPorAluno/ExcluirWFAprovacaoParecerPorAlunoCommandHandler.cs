@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExcluirWFAprovacaoParecerPorAlunoCommand request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var wfAprovacaoPareceres = await repositorioWFAprovacaoParecerConclusivo.ObterPorConselhoClasseAlunoId(request.ConselhoClasseAlunoId);
             
             foreach (var wfAprovacaoParecer in wfAprovacaoPareceres)
@@ -35,13 +34,7 @@ namespace SME.SGP.Aplicacao
         private async Task PublicarFilaExclusaoWfAprovacao(long? wfAprovacaoId, long wfNotaConselho, Usuario usuario)
         {
             if (wfAprovacaoId.HasValue)
-            {
-                var wfNotasPosConselho = await mediator.Send(new ObterIdsWorkflowPorWfAprovacaoIdQuery(wfAprovacaoId.Value, "wf_aprovacao_parecer_conclusivo"));
-                if (wfNotasPosConselho == null || !wfNotasPosConselho.Except(new long[] { wfNotaConselho }).Any())
-                {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.WorkflowAprovacaoExcluir, new FiltroIdDto(wfAprovacaoId.Value), Guid.NewGuid(), usuario));
-                }
-            }
+                await mediator.Send(new PublicarExlusaoWfAprovacaoSemWorkflowsVinculadosCommand(wfAprovacaoId.Value, "wf_aprovacao_nota_conselho", wfNotaConselho));
         }
     }
 }
