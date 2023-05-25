@@ -465,5 +465,21 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<Pendencia>(query, new { planoId })).SingleOrDefault();
         }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, bool exibirEncerrados)
+        {
+            var sql = new StringBuilder(@"select distinct u.rf_codigo as CodigoRf
+	                                    , u.nome as NomeServidor
+                                      from plano_aee pa 
+                                     inner join turma t on t.id = pa.turma_id
+                                     inner join ue on t.ue_id = ue.id
+                                     inner join usuario u on u.id = pa.responsavel_id ");
+
+            var situacoesEncerrado = new int[] { (int)SituacaoAEE.Encerrado, (int)SituacaoAEE.EncerradoAutomaticamente };
+
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, null, false, false, exibirEncerrados, string.Empty, string.Empty);
+
+            return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, situacoesEncerrado });
+        }
     }
 }
