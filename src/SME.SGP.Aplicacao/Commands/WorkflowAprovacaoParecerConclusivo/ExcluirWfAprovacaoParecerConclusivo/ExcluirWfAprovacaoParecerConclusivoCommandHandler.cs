@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         protected override async Task Handle(ExcluirWfAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
-            => await repositorioWFAprovacaoParecerConclusivo.Excluir(request.Id);
+            => await repositorioWFAprovacaoParecerConclusivo.ExcluirLogico(request.Id);
     }
 }

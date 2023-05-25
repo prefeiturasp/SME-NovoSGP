@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class GerarWFAprovacaoParecerConclusivoCommand : IRequest
     {
-        public GerarWFAprovacaoParecerConclusivoCommand(long conselhoClasseAlunoId, Turma turma, string alunoCodigo, long parecerConclusivoId, string parecerAnterior, string parecerNovo, long usuarioSolicitanteId)
+        public GerarWFAprovacaoParecerConclusivoCommand(long conselhoClasseAlunoId, Turma turma, string alunoCodigo, long parecerConclusivoId, string parecerAnterior, string parecerNovo, long usuarioSolicitanteId, long? parecerConclusivoAnteriorId)
         {
             ConselhoClasseAlunoId = conselhoClasseAlunoId;
             Turma = turma;
@@ -15,12 +15,14 @@ namespace SME.SGP.Aplicacao
             ParecerAnterior = parecerAnterior;
             ParecerNovo = parecerNovo;
             UsuarioSolicitanteId = usuarioSolicitanteId;
+            ParecerConclusivoAnteriorId = parecerConclusivoAnteriorId;
         }
 
         public long ConselhoClasseAlunoId { get; }
         public Turma Turma { get; }
         public string AlunoCodigo { get; }
         public long ParecerConclusivoId { get; }
+        public long? ParecerConclusivoAnteriorId { get; }
         public string ParecerAnterior { get; }
         public string ParecerNovo { get; }
         public long UsuarioSolicitanteId { get; }

@@ -12,6 +12,7 @@ namespace SME.SGP.Dados
             Map(c => c.ConselhoClasseAlunoId).ToColumn("conselho_classe_aluno_id");
             Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
             Map(c => c.ConselhoClasseParecerId).ToColumn("conselho_classe_parecer_id");
+            Map(c => c.ConselhoClasseParecerAnteriorId).ToColumn("conselho_classe_parecer_id_anterior");
         }
     }
 }
