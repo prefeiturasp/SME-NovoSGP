@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio
         public long UsuarioSolicitanteId { get; set; }
 
         public long? ConselhoClasseParecerId { get; set; }
+        public long? ConselhoClasseParecerAnteriorId { get; set; }
         public ConselhoClasseParecerConclusivo ConselhoClasseParecer { get; set; }
     }
 }

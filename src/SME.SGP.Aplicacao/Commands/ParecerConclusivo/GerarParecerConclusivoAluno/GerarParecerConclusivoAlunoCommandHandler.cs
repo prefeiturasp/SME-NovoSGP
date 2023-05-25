@@ -98,7 +98,8 @@ namespace SME.SGP.Aplicacao
                                                                                  parecerConclusivoId,
                                                                                  parecerAnterior,
                                                                                  parecerNovo,
-                                                                                 usuarioSolicitanteId));
+                                                                                 usuarioSolicitanteId,
+                                                                                 conselhoClasseAluno.ConselhoClasseParecerId));
 
             return true;
         }

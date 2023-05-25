@@ -26,9 +26,18 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteScalarAsync(query, new { id });
         }
 
+        public async Task ExcluirLogico(long id)
+        {
+            var query = $@"update wf_aprovacao_parecer_conclusivo
+                            set excluido = true 
+                           where id=@id";
+
+            await database.Conexao.ExecuteAsync(query, new { id });
+        }
+
         public async Task<IEnumerable<WFAprovacaoParecerConclusivo>> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId)
         {
-            var query = @"select * from wf_aprovacao_parecer_conclusivo where conselho_classe_aluno_id = @conselhoClasseAlunoId";
+            var query = @"select * from wf_aprovacao_parecer_conclusivo where not excluido and conselho_classe_aluno_id = @conselhoClasseAlunoId";
 
             return await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo>(query, new { conselhoClasseAlunoId });
         }
@@ -40,7 +49,7 @@ namespace SME.SGP.Dados
                          inner join conselho_classe_aluno ca on ca.id = wa.conselho_classe_aluno_id
                           left join conselho_classe_parecer cpa on cpa.id = ca.conselho_classe_parecer_id
                           left join conselho_classe_parecer cpp on cpp.id = wa.conselho_classe_parecer_id
-                        where wa.wf_aprovacao_id = @workflowId";
+                        where not wa.excluido and wa.wf_aprovacao_id = @workflowId";
 
             return (await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo, ConselhoClasseAluno, ConselhoClasseParecerConclusivo, ConselhoClasseParecerConclusivo, WFAprovacaoParecerConclusivo>(query
                 , (wfAprovacao, conselhoClasseAluno, parecerAnterior, parecerNovo) =>
@@ -65,7 +74,7 @@ namespace SME.SGP.Dados
         public async Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> ObterPareceresAguardandoAprovacaoSemWorkflow()
         {
             var query = ObterQueryPareceresWorkflow();
-            query += " where wa.wf_aprovacao_id is null";
+            query += " where not wa.excluido and wa.wf_aprovacao_id is null";
             return await database.Conexao
                 .QueryAsync<WFAprovacaoParecerConclusivoDto>(query);
         }
@@ -81,6 +90,7 @@ namespace SME.SGP.Dados
 	                cpp.Nome as NomeParecerNovo, 
 	                ca.aluno_codigo as AlunoCodigo,
                     ca.id as ConselhoClasseAlunoId,
+                    wa.conselho_classe_parecer_id_anterior as ConselhoClasseParecerAnteriorId,
                     wa.wf_aprovacao_id as WorkFlowAprovacaoId,
                     t.ano_letivo as AnoLetivo
                 from wf_aprovacao_parecer_conclusivo wa
@@ -89,7 +99,7 @@ namespace SME.SGP.Dados
                     join fechamento_turma ft on ft.id = cc.fechamento_turma_id
                     join turma t on t.id = ft.turma_id
                     left join periodo_escolar pe on ft.periodo_escolar_id = pe.id
-                    left join conselho_classe_parecer cpa on cpa.id = ca.conselho_classe_parecer_id
+                    left join conselho_classe_parecer cpa on cpa.id = wa.conselho_classe_parecer_id_anterior
                     left join conselho_classe_parecer cpp on cpp.id = wa.conselho_classe_parecer_id";
         }
     }
