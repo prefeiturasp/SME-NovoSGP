@@ -616,6 +616,11 @@ namespace SME.SGP.IoC
             services.RegistrarPendenciasUseCaseRabbitSgp();
         }
 
+        public virtual void RegistrarCasoDeUsoNAAPARabbitSgp(IServiceCollection services)
+        {
+            services.RegistrarNAAPAUseCaseRabbitSgp();
+        }
+
         public virtual void RegistrarCasoDeUsoRabbitSgp(IServiceCollection services)
         {
             services.RegistrarUseCaseRabbitSgp();
