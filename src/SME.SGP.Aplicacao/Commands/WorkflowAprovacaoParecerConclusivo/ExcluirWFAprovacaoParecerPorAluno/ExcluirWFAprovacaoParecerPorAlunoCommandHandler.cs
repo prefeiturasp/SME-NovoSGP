@@ -27,11 +27,11 @@ namespace SME.SGP.Aplicacao
             foreach (var wfAprovacaoParecer in wfAprovacaoPareceres)
             {
                 await repositorioWFAprovacaoParecerConclusivo.Excluir(wfAprovacaoParecer.Id);
-                await PublicarFilaExclusaoWfAprovacao(wfAprovacaoParecer.WfAprovacaoId, wfAprovacaoParecer.Id, usuarioLogado);
+                await PublicarFilaExclusaoWfAprovacao(wfAprovacaoParecer.WfAprovacaoId, wfAprovacaoParecer.Id);
             }
         }
 
-        private async Task PublicarFilaExclusaoWfAprovacao(long? wfAprovacaoId, long wfNotaConselho, Usuario usuario)
+        private async Task PublicarFilaExclusaoWfAprovacao(long? wfAprovacaoId, long wfNotaConselho)
         {
             if (wfAprovacaoId.HasValue)
                 await mediator.Send(new PublicarExlusaoWfAprovacaoSemWorkflowsVinculadosCommand(wfAprovacaoId.Value, "wf_aprovacao_nota_conselho", wfNotaConselho));
