@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes;
+using System.Threading;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -244,16 +245,22 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
 
-        private static void ConsolidacaoNotasAlunos(List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        private async Task ConsolidacaoNotasAlunos(List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string alunoCodigo, FechamentoNota fechamentoNota)
         {
+            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, alunoCodigo, consideraInativos: true));
+
+            if (aluno == null)
+                throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
+
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
-                AlunoCodigo = AlunoCodigo,
+                AlunoCodigo = alunoCodigo,
                 TurmaId = turma.Id,
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
-                ComponenteCurricularId = fechamentoNota.DisciplinaId
+                ComponenteCurricularId = fechamentoNota.DisciplinaId,
+                Inativo = aluno.Inativo
             });
         }
 

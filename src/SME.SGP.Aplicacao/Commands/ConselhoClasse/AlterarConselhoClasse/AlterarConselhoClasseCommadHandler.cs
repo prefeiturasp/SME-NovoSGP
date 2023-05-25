@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -8,7 +8,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -108,30 +107,22 @@ namespace SME.SGP.Aplicacao
 
                 unitOfWork.PersistirTransacao();
             }
-            catch (Exception e)
+            catch
             {
                 unitOfWork.Rollback();
             }
             
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.Turma.CodigoTurma), cancellationToken);
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.Turma.CodigoTurma, request.Bimestre), cancellationToken);
-            
-            var alunos = await mediator
-                .Send(new ObterAlunosPorTurmaQuery(request.Turma.CodigoTurma, consideraInativos: true), cancellationToken);
-
-            if (alunos == null || !alunos.Any())
-                throw new NegocioException($"Não foram encontrados alunos para a turma {request.Turma.CodigoTurma} no Eol");
-
-            var alunoFiltrado = alunos.FirstOrDefault(a => a.CodigoAluno == request.CodigoAluno);
-
-            if (alunoFiltrado != null)
-                await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(request.CodigoAluno, request.Turma.Id, request.Bimestre.Value, alunoFiltrado.Inativo), cancellationToken);
-
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(request.Turma.Id, request.Bimestre ?? 0);
-            
+                        
             //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)
             {
+                var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.Turma.CodigoTurma, request.CodigoAluno, consideraInativos: true), cancellationToken);
+
+                if (aluno == null)
+                    throw new NegocioException($"Não foram encontrados alunos para a turma {request.Turma.CodigoTurma} no Eol");
+
                 var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
                 {
                     AlunoCodigo = request.CodigoAluno,
@@ -140,7 +131,8 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = request.Turma.AnoLetivo,
                     Nota = request.ConselhoClasseNotaDto.Nota,
                     ConceitoId = request.ConselhoClasseNotaDto.Conceito,
-                    ComponenteCurricularId = request.ConselhoClasseNotaDto.CodigoComponenteCurricular
+                    ComponenteCurricularId = request.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                    Inativo = aluno.Inativo
                 };
                 
                 await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);

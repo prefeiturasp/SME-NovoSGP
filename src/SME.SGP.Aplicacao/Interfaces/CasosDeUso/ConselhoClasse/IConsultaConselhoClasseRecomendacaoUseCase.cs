@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 
     public interface IConsultaConselhoClasseRecomendacaoUseCase 
     {
-        Task<ConsultasConselhoClasseRecomendacaoConsultaDto> Executar(ObterConselhoClasseRecomendacaoConsultaDto recomendacaoDto);
+        Task<ConsultasConselhoClasseRecomendacaoConsultaDto> Executar(ConselhoClasseRecomendacaoDto recomendacaoDto);
     }
 }

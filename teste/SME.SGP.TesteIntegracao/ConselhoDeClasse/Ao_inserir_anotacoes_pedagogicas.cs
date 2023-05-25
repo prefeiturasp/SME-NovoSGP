@@ -36,8 +36,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task<ConselhoClasseAluno> ExecutarComandoSalvarConselhoClasseAluno(ConselhoClasseAlunoAnotacoesDto dto)
         {
-            var command = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
-            return await command.SalvarAsync(dto);
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoRecomendacaoUseCase>();
+            return await useCase.Executar(dto);
         }
 
         private async Task InserirConselhoDeClasse()

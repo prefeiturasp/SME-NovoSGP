@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class ObterConselhoClasseRecomendacaoConsultaDto
+    public class ConselhoClasseRecomendacaoDto
     {
         public long ConselhoClasseId { get; set; }
         public long FechamentoTurmaId { get; set; }

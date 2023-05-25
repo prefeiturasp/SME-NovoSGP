@@ -40,6 +40,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -139,7 +140,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var fechamentosTurmas = ObterTodos<FechamentoTurma>();
             var fechamentoTurmaId = fechamentosTurmas.Select(c => c.Id).FirstOrDefault();
             
-            var retorno = await consulta.Executar(new ObterConselhoClasseRecomendacaoConsultaDto()
+            var retorno = await consulta.Executar(new ConselhoClasseRecomendacaoDto()
             {
                 ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurmaId,

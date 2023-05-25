@@ -164,7 +164,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPendenciaFechamento, ComandosPendenciaFechamento>();
             services.TryAddScoped<IComandosFechamentoTurma, ComandosFechamentoTurma>();
             services.TryAddScoped<IComandosConselhoClasse, ComandosConselhoClasse>();
-            services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
             services.TryAddScoped<IComandoComunicado, ComandoComunicado>();
             services.TryAddScoped<IComandosRelatorioSemestralTurmaPAP, ComandosRelatorioSemestralTurmaPAP>();
             services.TryAddScoped<IComandosRelatorioSemestralPAPAluno, ComandosRelatorioSemestralPAPAluno>();
@@ -225,7 +224,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasFechamentoAluno, ConsultasFechamentoAluno>();
             services.TryAddScoped<IConsultasFechamentoTurma, ConsultasFechamentoTurma>();
             services.TryAddScoped<IConsultasConselhoClasse, ConsultasConselhoClasse>();
-            services.TryAddScoped<IConsultasConselhoClasseAluno, ConsultasConselhoClasseAluno>();
             services.TryAddScoped<IConsultasConselhoClasseNota, ConsultasConselhoClasseNota>();
             services.TryAddScoped<IConsultaComunicado, ConsultaComunicado>();
             services.TryAddScoped<IConsultasRelatorioSemestralTurmaPAP, ConsultasRelatorioSemestralTurmaPAP>();
@@ -793,6 +791,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarConselhoClasseAlunoNotaUseCase, SalvarConselhoClasseAlunoNotaUseCase>();
             services.TryAddScoped<IConsultaConselhoClasseRecomendacaoUseCase, ConsultaConselhoClasseRecomendacaoUseCase>();
             services.TryAddScoped<IObterAlunosSemNotasRecomendacoesUseCase, ObterAlunosSemNotasRecomendacoesUseCase>();
+            services.TryAddScoped<IObterSinteseConselhoDeClasseUseCase, ObterSinteseConselhoDeClasseUseCase>();
+            services.TryAddScoped<IObterNotasFrequenciaUseCase, ObterNotasFrequenciaUseCase>();
+            services.TryAddScoped<IObterParecerConclusivoUseCase, ObterParecerConclusivoUseCase>();
+            services.TryAddScoped<IObterParecerConclusivoAlunoTurmaUseCase, ObterParecerConclusivoAlunoTurmaUseCase>();
+            services.TryAddScoped<ISalvarConselhoClasseAlunoRecomendacaoUseCase, SalvarConselhoClasseAlunoRecomendacaoUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
