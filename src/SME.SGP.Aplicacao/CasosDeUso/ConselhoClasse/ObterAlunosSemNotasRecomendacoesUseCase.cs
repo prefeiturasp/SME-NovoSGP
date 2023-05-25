@@ -50,11 +50,12 @@ namespace SME.SGP.Aplicacao
             var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(componentesCurricularesPorTurma.Select(x => x.TurmaCodigo).ToArray(), param.Bimestre));
 
             var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(componentesCurricularesPorTurma.Select(x => x.TurmaCodigo).ToArray(), param.Bimestre));
-            MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma);
+            MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma,componentesCurricularesPorTurma);
             return retorno;
         }
 
-        private void MapearRetorno(List<InconsistenciasAlunoFamiliaDto> retorno, IEnumerable<AlunoTemRecomandacaoDto> obterRecomendacoes, IEnumerable<ConselhoClasseAlunoNotaDto> obterConselhoClasseAlunoNota, IEnumerable<AlunoPorTurmaResposta> alunoPorTurmaRespostas)
+        private void MapearRetorno(List<InconsistenciasAlunoFamiliaDto> retorno, IEnumerable<AlunoTemRecomandacaoDto> obterRecomendacoes, IEnumerable<ConselhoClasseAlunoNotaDto> obterConselhoClasseAlunoNota, IEnumerable<AlunoPorTurmaResposta> alunoPorTurmaRespostas, 
+            IEnumerable<DisciplinaDto> componentesCurricularesPorTurma)
         {
             foreach (var aluno in alunoPorTurmaRespostas)
             {
@@ -64,15 +65,17 @@ namespace SME.SGP.Aplicacao
                     AlunoNome = aluno.NomeAluno,
                     AlunoCodigo = aluno.CodigoAluno
                 };
-                foreach (var nota in obterConselhoClasseAlunoNota)
+                foreach (var componente in componentesCurricularesPorTurma)
                 {
-                    item.Inconsistencias.Add("");
+                    var componentetemNota = obterConselhoClasseAlunoNota.Where(c => c.ComponenteCurricularId == componente.Id);
+                    if(!componentetemNota.Any())
+                        item.Inconsistencias.Add(string.Format(MensagemNegocioConselhoClasse.AUSENCIA_DA_NOTA_NO_COMPONENTE,componente.Nome));
                 }
 
-                foreach (var recomendacao in obterRecomendacoes)
-                {
-                    item.Inconsistencias.Add("");
-                }
+                var existeRecomendacao = obterRecomendacoes.Where(x => x.AluncoCodigo == aluno.CodigoAluno);
+                if(!existeRecomendacao.Any() )
+                    item.Inconsistencias.Add(MensagemNegocioConselhoClasse.SEM_RECOMENDACAO_FAMILIA_ESTUDANDE);
+                
                 retorno.Add(item);
             }
         }

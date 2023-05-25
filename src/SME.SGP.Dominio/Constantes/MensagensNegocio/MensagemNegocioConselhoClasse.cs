@@ -11,5 +11,7 @@
         public const string JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA = "Já existe um conselho de classe gerado para a turma {0}!";
         public const string ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE = "Erro ao atualizar situação do conselho de classe";
         public const string PARA_ACESSAR_ESTA_ABA_E_PRECISO_REGISTRAR_O_CONSELHO_DE_CLASSE_DO_X_BIMESTRE = "Para acessar esta aba você precisa registrar o conselho de classe do {0}º bimestre";
+        public const string SEM_RECOMENDACAO_FAMILIA_ESTUDANDE = "Ausência das recomendações a família e ao estudante";
+        public const string AUSENCIA_DA_NOTA_NO_COMPONENTE = "Ausência da nota de {0}";
     }
 }
