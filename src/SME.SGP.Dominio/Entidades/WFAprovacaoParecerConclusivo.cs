@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio
         public long? ConselhoClasseParecerId { get; set; }
         public long? ConselhoClasseParecerAnteriorId { get; set; }
         public ConselhoClasseParecerConclusivo ConselhoClasseParecer { get; set; }
+        public bool Excluido { get; set; }
     }
 }
