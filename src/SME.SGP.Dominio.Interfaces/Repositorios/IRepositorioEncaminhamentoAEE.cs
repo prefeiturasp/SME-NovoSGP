@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<EncaminhamentoAEE> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId);
         Task<EncaminhamentoAEEAlunoTurmaDto> ObterEncaminhamentoPorEstudante(string estudanteCodigo, string ueCodigo);
         Task<bool> VerificaSeExisteEncaminhamentoPorAluno(string codigoEstudante, long ueId);
-        Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao);
+        Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao, bool exibirEncerrados);
         Task<IEnumerable<AEETurmaDto>> ObterQuantidadeDeferidos(int ano, long dreId, long ueId);
         Task<IEnumerable<AEESituacaoEncaminhamentoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId);
         Task<IEnumerable<EncaminhamentoAEECodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoAEEId(long encaminhamentoId);

@@ -208,7 +208,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { estudanteCodigo, ueCodigo });
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao, bool exibirEncerrados)
         {
             var sql = new StringBuilder(@"select distinct u.rf_codigo as CodigoRf
 	                                    , u.nome as NomeServidor
@@ -217,9 +217,11 @@ namespace SME.SGP.Dados.Repositorios
                                      inner join ue on t.ue_id = ue.id
                                      inner join usuario u on u.id = ea.responsavel_id ");
 
-            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, "", null, false);
+            var situacoesEncerrado = new int[] { (int)SituacaoAEE.Encerrado, (int)SituacaoAEE.EncerradoAutomaticamente };
 
-            return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo });
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, "", null, exibirEncerrados);
+
+            return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, situacoesEncerrado });
         }
 
         public async Task<IEnumerable<AEESituacaoEncaminhamentoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
