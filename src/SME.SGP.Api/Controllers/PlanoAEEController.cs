@@ -251,6 +251,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await  usecase.Executar(filtro));
         }
-        
+
+        [HttpGet("responsaveis")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<PlanoAEEResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterResponsaveis([FromQuery] FiltroPlanosAEEDto filtro, [FromServices] IObterResponsaveisPlanosAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
