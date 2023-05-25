@@ -13,9 +13,7 @@ namespace SME.SGP.Aplicacao
     public abstract class NotificacaoNotaFechamentoCommandBase<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> 
         where TRequest : IRequest<TResponse>
     {
-        protected const string TAG_MENSAGEM_DINAMICA_TABELA_POR_ALUNO = "<mensagemDinamicaTabelaPorAluno>";
-        protected const string MENSAGEM_FIXA_TABELA_POR_ALUNO = "mensagemFixaTabelaPorAluno";
-        protected const string TAG_MENSAGEM_FIXA_POR_ALUNO = "<table mensagemFixaTabelaPorAluno ";
+        protected const string MENSAGEM_DINAMICA_TABELA_POR_ALUNO = "<mensagemDinamicaTabelaPorAluno>";
         protected readonly IMediator mediator;
         protected List<TurmasDoAlunoDto> Alunos;
         protected IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> WFAprovacoes;
@@ -35,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
         protected virtual string ObterTabelaNotas(List<WfAprovacaoNotaFechamentoTurmaDto> aprovacoesPorTurma)
         {
-            return aprovacoesPorTurma.FirstOrDefault().ConceitoAnteriorId.HasValue || aprovacoesPorTurma.FirstOrDefault().WfAprovacao.ConceitoId.HasValue
+            return aprovacoesPorTurma.FirstOrDefault().WfAprovacao.ConceitoIdAnterior.HasValue || aprovacoesPorTurma.FirstOrDefault().WfAprovacao.ConceitoId.HasValue
                 ? MontarTabelaNotasRegencia(aprovacoesPorTurma,aprovacoesPorTurma.FirstOrDefault().LancaNota)
                 : MontarTabelaNotas(aprovacoesPorTurma);
         }
@@ -57,7 +55,7 @@ namespace SME.SGP.Aplicacao
         private string MontarTabelaNotasRegencia(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasAprovacao, bool lancaNota)
 		{
 			var mensagem = new StringBuilder();
-			mensagem.AppendLine($"<table {MENSAGEM_FIXA_TABELA_POR_ALUNO} style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+			mensagem.AppendLine($"<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
 			mensagem.AppendLine("<tr>");
 			mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Componente Curricular</b></td>");
 			mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
@@ -82,11 +80,11 @@ namespace SME.SGP.Aplicacao
 
 				mensagem.AppendLine("<tr>");
 
-				if ((notaAprovacao.WfAprovacao.Nota.HasValue || notaAprovacao.NotaAnterior.HasValue) && lancaNota)
+				if ((notaAprovacao.WfAprovacao.Nota.HasValue || notaAprovacao.WfAprovacao.NotaAnterior.HasValue) && lancaNota)
 				{
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.NotaAnterior)}</td>");
 					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
@@ -95,7 +93,7 @@ namespace SME.SGP.Aplicacao
 				{
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoIdAnterior)}</td>");
 					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
@@ -112,7 +110,7 @@ namespace SME.SGP.Aplicacao
 		{
 			var mensagem = new StringBuilder();
 
-			mensagem.AppendLine($"<table {MENSAGEM_FIXA_TABELA_POR_ALUNO} style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
+			mensagem.AppendLine($"<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
 			mensagem.AppendLine("<tr>");
 			mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Componente Curricular</b></td>");
 			mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
@@ -136,11 +134,11 @@ namespace SME.SGP.Aplicacao
 
 				mensagem.AppendLine("<tr>");
 
-				if (notaAprovacao.WfAprovacao.Nota.HasValue || notaAprovacao.NotaAnterior.HasValue)
+				if (notaAprovacao.WfAprovacao.Nota.HasValue || notaAprovacao.WfAprovacao.NotaAnterior.HasValue)
                 {
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.NotaAnterior)}</td>");
 					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
@@ -149,7 +147,7 @@ namespace SME.SGP.Aplicacao
 				{
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
 					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoIdAnterior)}</td>");
 					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
