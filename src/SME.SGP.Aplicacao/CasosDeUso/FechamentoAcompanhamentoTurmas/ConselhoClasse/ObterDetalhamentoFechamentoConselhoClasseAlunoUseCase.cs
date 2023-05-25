@@ -86,6 +86,9 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
+            if (turmasCodigos.Count() == 1 && componentesCurricularesDaTurma != null && componentesCurricularesDaTurma.Any())
+                componentesCurricularesDaTurma.ToList().ForEach(c => c.TurmaCodigo = turma.CodigoTurma);
+
             var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(componentesCurricularesDaTurma, false));
 
             var ordenacaoGrupoArea = await mediator.Send(new ObterOrdenacaoAreasConhecimentoQuery(componentesCurricularesDaTurma, areasDoConhecimento));
