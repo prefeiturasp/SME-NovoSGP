@@ -28,7 +28,8 @@ namespace SME.SGP.Aplicacao
 
             var chaveCache = string.Format(NomeChaveCache.CHAVE_ALUNOS_TURMA, request.CodigoTurma, request.CodigoAluno?.ToString());
             return await repositorioCache.ObterAsync(chaveCache,
-                async () => await BuscarAlunosTurma(request.CodigoTurma, request.CodigoAluno));
+                async () => await BuscarAlunosTurma(request.CodigoTurma, request.CodigoAluno),
+                request.TempoArmazenamentoCache);
         }
 
         private async Task<IEnumerable<AlunoPorTurmaResposta>> BuscarAlunosTurma(int codigoTurma, int? codigoAluno)
