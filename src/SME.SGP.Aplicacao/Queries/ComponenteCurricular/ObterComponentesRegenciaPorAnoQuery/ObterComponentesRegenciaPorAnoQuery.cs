@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public ObterComponentesRegenciaPorAnoQueryValidator()
         {
             RuleFor(c => c.AnoTurma)
-               .NotEmpty()
+               .GreaterThanOrEqualTo(0)
                .WithMessage("O ano da turma deve ser informado para a busca de componentes de regência.");
         }
     }
