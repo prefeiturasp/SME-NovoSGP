@@ -156,7 +156,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and qPrioridade.PrioridadeId = @prioridade ");
 
             if (!exibirEncerrados)
-                sql.AppendLine(" and np.situacao <> @situacoesEncerrado) ");
+                sql.AppendLine(" and np.situacao <> @situacoesEncerrado ");
 
             if (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue)
             {
