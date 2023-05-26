@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.encaminhamentoNAAPAObservacaoSalvarDto.Observacao)
                 .NotEmpty()
-                .WithMessage("A Observacao deve ser informada");
+                .WithMessage("A Observação deve ser informada");
             RuleFor(a => a.encaminhamentoNAAPAObservacaoSalvarDto.EncaminhamentoNAAPAId)
                 .GreaterThan(0)
                 .WithMessage("O Encaminhamento NAAPA deve ser informado");

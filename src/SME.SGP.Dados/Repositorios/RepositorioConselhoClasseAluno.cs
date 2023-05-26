@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN conselho_classe_aluno cca
                                            ON cca.conselho_classe_id = cc.id
                                    INNER JOIN conselho_classe_nota ccn
-                                           ON ccn.conselho_classe_aluno_id = cca.id 
+                                           ON ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                                    inner join componente_curricular ccr on ccn.componente_curricular_codigo  = ccr.id 
                                    LEFT JOIN fechamento_turma_disciplina ftd
                                           ON ftd.fechamento_turma_id = ft.id

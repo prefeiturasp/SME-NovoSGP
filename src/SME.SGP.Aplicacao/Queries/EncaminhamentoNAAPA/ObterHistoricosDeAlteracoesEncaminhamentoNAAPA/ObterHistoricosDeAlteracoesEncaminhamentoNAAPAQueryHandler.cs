@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
         {
             if (EhCampoLista(respostasEncaminhamento))
                 return ((questaoExistente == null && respostasEncaminhamento.Resposta != "[]") ||
-                        (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && questaoExistente?.Respostas?.FirstOrDefault()?.Texto != respostasEncaminhamento.Resposta));
+                        (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && ObterCampoJsonSemId(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) != ObterCampoJsonSemId(respostasEncaminhamento.Resposta)));
 
             if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
                 return questaoExistente == null || questaoExistente.Respostas.Any();

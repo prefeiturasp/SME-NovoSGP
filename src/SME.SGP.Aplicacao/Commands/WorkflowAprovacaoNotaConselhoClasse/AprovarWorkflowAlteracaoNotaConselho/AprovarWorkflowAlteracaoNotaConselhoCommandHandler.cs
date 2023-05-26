@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dto;
 using SME.SGP.Infra.Consts;
 using System;
@@ -40,6 +41,10 @@ namespace SME.SGP.Aplicacao
                                                                           true,
                                                                           ""));
                     unitOfWork.PersistirTransacao();
+
+                    var periodoEscolar = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
+                    var bimestre = periodoEscolar != null ? periodoEscolar.Bimestre : (int)Bimestre.Final;
+                    await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.TurmaCodigo, bimestre), cancellationToken);
                 }
                 catch
                 {
@@ -47,6 +52,11 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
             }
+        }
+
+        private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
+        {
+            await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
         }
 
         private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao, AprovarWorkflowAlteracaoNotaConselhoCommand request)

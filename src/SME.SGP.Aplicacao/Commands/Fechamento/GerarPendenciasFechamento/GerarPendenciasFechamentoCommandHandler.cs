@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
             try
             {
-                await mediator.Send(new ExcluirPendenciasAulaDiarioClasseFechamentoCommand(request.TurmaCodigo, request.ComponenteCurricularId.ToString(), request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.UsuarioId));
+                await mediator.Send(new ExcluirPendenciasAulaDiarioClasseFechamentoCommand(request.TurmaCodigo, request.ComponenteCurricularId.ToString(), request.PeriodoEscolarInicio, request.PeriodoEscolarFim));
 
                 if (!request.ComponenteSemNota)
                 {
@@ -108,18 +108,6 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
         private async Task NotificarUsuarios(string titulo, string mensagem, long usuarioLogadoId, string codigoDre, string codigoUe, string codigoTurma, string perfilUsuario)
         {
-            // Notifica Usuario
-            if (usuarioLogadoId != 0)
-                await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, 
-                    mensagem, 
-                    NotificacaoCategoria.Aviso,
-                    NotificacaoTipo.Fechamento,
-                    new long[] { usuarioLogadoId },
-                        codigoDre,
-                        codigoUe,
-                        codigoTurma));
-
-
             var enviarPara = new List<Cargo>() { Cargo.Diretor, Cargo.CP};
 
             if (Perfis.PERFIL_CP.ToString().Equals(perfilUsuario))

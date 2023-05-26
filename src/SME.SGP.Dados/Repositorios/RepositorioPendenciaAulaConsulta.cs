@@ -158,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
                 commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo, bool exibirRegistroSemPendencia = true)
+        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo, bool exibirRegistroSemPendencia = true, TipoAvaliacaoCodigo tipoAtividadeAvaliativaIgnorada = TipoAvaliacaoCodigo.AtividadeClassroom)
         { 
             var sqlQuery = @"
                     with vw_pendencia as (
@@ -170,6 +170,7 @@ namespace SME.SGP.Dados.Repositorios
                     select distinct a.id, a.turma_id as TurmaId, a.disciplina_id, a.professor_rf, a.aula_cj as AulaCJ,
                                     a.tipo_calendario_id, a.data_aula, t.id Id, t.modalidade_codigo ModalidadeCodigo
 	                from atividade_avaliativa aa
+                    inner join tipo_avaliacao ta on ta.id = aa.tipo_avaliacao_id
 	                inner join dre on dre.dre_id = aa.dre_id
 	                inner join atividade_avaliativa_disciplina aad
 		                on aa.id = aad.atividade_avaliativa_id
@@ -189,7 +190,8 @@ namespace SME.SGP.Dados.Repositorios
                     and dre.id = @dreId
                     and a.data_aula::date < @hoje
                     and t.ano_letivo = @anoLetivo
-                    and nc.id is null ";
+                    and nc.id is null
+                    and ta.codigo <> @tipoAtividadeAvaliativaIgnorada";
             if(exibirRegistroSemPendencia)
                 sqlQuery += "  and p.id is null ";
 
@@ -207,7 +209,8 @@ namespace SME.SGP.Dados.Repositorios
                     hoje = DateTime.Today.Date,
                     tipo = TipoPendencia.Avaliacao,
                     dreId,
-                    ueId
+                    ueId,
+                    tipoAtividadeAvaliativaIgnorada = (int)tipoAtividadeAvaliativaIgnorada
                 }, splitOn: "Id", commandTimeout: 120);
 
         }
@@ -555,20 +558,19 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<long[]> ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim, long usuarioId)
+        public async Task<long[]> ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
         {
-            var tipo = new [] { (int)TipoPendencia.PlanoAula, (int)TipoPendencia.Frequencia, (int)TipoPendencia.Avaliacao };
+            var tipo = new int[] { (int)TipoPendencia.PlanoAula, (int)TipoPendencia.Frequencia, (int)TipoPendencia.Avaliacao };
             var sql = @"select p.id from pendencia p 
                         inner join pendencia_aula pa on pa.pendencia_id = p.id
-                        inner join pendencia_usuario pu on pu.pendencia_id = p.id    
                         inner join aula a on a.id = pa.aula_id 
                         where p.tipo = any(@tipo) and not p.excluido
                            and a.turma_id = @turmaId
                            and a.disciplina_id = @disciplinaId
-                           and a.data_aula between @periodoInicio and @periodoFim
-                           and pu.usuario_id = @usuarioId ";
+                           and a.data_aula between @periodoInicio and @periodoFim"
+            ;
 
-            return (await database.Conexao.QueryAsync<long>(sql, new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim, usuarioId })).ToArray();
+            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim })).ToArray();
         }
     }
 }
