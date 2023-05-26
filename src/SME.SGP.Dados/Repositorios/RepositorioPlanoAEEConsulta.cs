@@ -79,7 +79,8 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("       , usu_paai_responsavel.nome ");
                 sql.AppendLine("       , ue.nome ");
                 sql.AppendLine("       , ue.tipo_escola ");
-                sql.AppendLine("        order by pa.aluno_nome ");
+                sql.AppendLine("       , te.descricao ");
+                sql.AppendLine("        order by ueOrdem, pa.aluno_nome ");
             }
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
@@ -116,12 +117,14 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", max(pav.id) as planoAeeVersaoId ");
                 sql.AppendLine(", ue.nome UeNome ");
                 sql.AppendLine(", ue.tipo_escola TipoEscola ");
+                sql.AppendLine(", te.descricao  || ' ' || ue.nome  ueOrdem");
             }
 
             sql.AppendLine(" from plano_aee pa ");
             sql.AppendLine(" left join encaminhamento_aee ea on ea.aluno_codigo = pa.aluno_codigo and not ea.excluido and ea.situacao not in(4,5,7,8) ");
             sql.AppendLine(" inner join turma t on t.id = pa.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
+            sql.AppendLine(" inner join tipo_escola te on ue.tipo_escola = te.id");
             sql.AppendLine(" inner join plano_aee_versao pav on pa.id = pav.plano_aee_id");
             sql.AppendLine(" left join usuario usu_responsavel on usu_responsavel.id = pa.responsavel_id");
             sql.AppendLine(" left join usuario usu_paai_responsavel on usu_paai_responsavel.id = pa.responsavel_paai_id");

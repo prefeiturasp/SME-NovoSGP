@@ -57,7 +57,7 @@ namespace SME.SGP.Dados.Repositorios
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos, exibirEncerrados);
 
             if (!contador)
-                sql.AppendLine(" order by ea.aluno_nome ");
+                sql.AppendLine(" order by ueOrdem, ea.aluno_nome ");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
@@ -81,11 +81,13 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", u.nome as Responsavel ");
                 sql.AppendLine(", ue.nome UeNome ");
                 sql.AppendLine(", ue.tipo_escola TipoEscola ");
+                sql.AppendLine(", te.descricao  || ' ' || ue.nome  ueOrdem");
             }
 
             sql.AppendLine(" from encaminhamento_aee ea ");
             sql.AppendLine(" inner join turma t on t.id = ea.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
+            sql.AppendLine(" inner join tipo_escola te on ue.tipo_escola = te.id");
             sql.AppendLine("  left join usuario u on u.id = ea.responsavel_id");
         }
 
