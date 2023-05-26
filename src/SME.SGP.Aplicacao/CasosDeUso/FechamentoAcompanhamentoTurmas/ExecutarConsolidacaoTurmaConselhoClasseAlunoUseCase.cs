@@ -39,7 +39,8 @@ namespace SME.SGP.Aplicacao
             };
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
-
+            var turmasCodigos = new string[1] { turma.CodigoTurma };
+            
             if (!filtro.Inativo)
             {
                 var componentesDoAluno = await mediator
@@ -54,8 +55,7 @@ namespace SME.SGP.Aplicacao
                         var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
-
-                    var turmasCodigos = Array.Empty<string>();
+                    
                     var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
                     if (turma.DeveVerificarRegraRegulares() || (turmasItinerarioEnsinoMedio?.Any(a => a.Id == (int)turma.TipoTurma) ?? false))
@@ -68,14 +68,15 @@ namespace SME.SGP.Aplicacao
                         if (turmasItinerarioEnsinoMedio != null)
                             tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
-                        turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, tiposParaConsulta));
+                        var turmasCodigosComplementares = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, tiposParaConsulta));
 
-                        if (!turmasCodigos.Any(t => t == turma.CodigoTurma))
-                            turmasCodigos = turmasCodigos.Append(turma.CodigoTurma).ToArray();
+                        if (turmasCodigosComplementares.Any())
+                        {
+                          var turmasComplementares = turmasCodigosComplementares.Select(s => s).Except(turmasCodigos).ToArray();
+                          if (turmasComplementares.Any())
+                              turmasCodigos.Concat(turmasComplementares);  
+                        }
                     }
-
-                    if (turmasCodigos.Length == 0)
-                        turmasCodigos = new string[1] { turma.CodigoTurma };
 
                     var componentesComNotaFechamentoOuConselho = await mediator
                         .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos, filtro.Bimestre, filtro.AlunoCodigo));
@@ -102,6 +103,8 @@ namespace SME.SGP.Aplicacao
                 if (consolidadoTurmaAluno.ParecerConclusivoId != null)
                     statusNovo = SituacaoConselhoClasse.Concluido;
             }
+            
+            var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos, filtro.Bimestre ?? 0));
 
             consolidadoTurmaAluno.Status = statusNovo;
             consolidadoTurmaAluno.DataAtualizacao = DateTime.Now;
@@ -133,12 +136,12 @@ namespace SME.SGP.Aplicacao
                                 foreach (var regencia in componentesRegencia)
                                 {
                                     await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, regencia.Codigo, long.Parse(componenteCurricular.Codigo),
-                                                                               filtro.AlunoCodigo, nota, conceitoId, consolidadoTurmaAlunoId);
+                                                                               filtro.AlunoCodigo, nota, conceitoId, consolidadoTurmaAlunoId,conselhoClasseNotas);
                                 }
                                 continue;
                             }
                             await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, long.Parse(componenteCurricular.Codigo), 0,
-                                                                       filtro.AlunoCodigo, nota, conceitoId, consolidadoTurmaAlunoId);
+                                                                       filtro.AlunoCodigo, nota, conceitoId, consolidadoTurmaAlunoId,conselhoClasseNotas);
                         }
                     }
                 }
@@ -152,7 +155,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, int? bimestre, long componenteCurricularId, long? componenteCurricularRegencia, string alunoCodigo, double? notaFiltro, long? conceitoFiltro, long consolidadoTurmaAlunoId)
+        private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, int? bimestre, long componenteCurricularId, long? componenteCurricularRegencia, string alunoCodigo, double? notaFiltro, long? conceitoFiltro, long consolidadoTurmaAlunoId,IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto)
         {
             double? nota = null;
             double? conceito = null;
@@ -166,8 +169,11 @@ namespace SME.SGP.Aplicacao
                 {
                     var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
                     if (conselhoClasse != null)
-                        conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasse.Id, alunoCodigo, bimestre ?? 0, componenteCurricularId));
-
+                    {
+                        conselhoClasseNotasAluno = notaConceitoBimestreComponenteDto
+                            .Where(c => c.AlunoCodigo.Equals(alunoCodigo) && c.ConselhoClasseId == conselhoClasse.Id && c.ComponenteCurricularCodigo == componenteCurricularId);
+                    }
+                    
                     //-> busca os lançamentos do fechamento somente se não existir conselho
                     if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
                     {
