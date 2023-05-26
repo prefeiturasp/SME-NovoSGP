@@ -8,5 +8,8 @@
         public const string ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA = "sgp.atualizacao.situacao.aluno.encaminhamento.naapa.notificar";
         public const string ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA = "sgp.transferencia.ue.dre.encaminhamento.naapa.notificar";
         public const string ExecutarAtualizacaoDasTurmasProgramaDoEncaminhamentoNAAPA = "sgp.atualizar.turmas.programa.encaminhamento.naapa";
+        public const string ExecutarCargaConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa";
+        public const string ExecutarBuscarUesConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.buscar.ue";
+        public const string ExecutarInserirConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.inserir";
     }
 }

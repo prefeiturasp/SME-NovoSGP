@@ -1282,6 +1282,7 @@ namespace SME.SGP.IoC
             RegistrarCasoDeUsoFrequenciaRabbitSgp(services);
             RegistrarCasoDeUsoInstitucionalRabbitSgp(services);
             RegistrarCasoDeUsoPendenciasRabbitSgp(services);
+            RegistrarCasoDeUsoNAAPARabbitSgp(services);
             RegistrarCasoDeUsoRabbitSgp(services);
         }
 
