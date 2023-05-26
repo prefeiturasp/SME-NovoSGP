@@ -128,6 +128,17 @@ namespace SME.SGP.Aplicacao
                 codigosComponentesConsiderados.AddRange(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)));
                 codigosComponentesConsiderados.AddRange(componentesCurricularesDoProfessor.Select(c => long.Parse(c.codigo)).Except(codigosComponentesConsiderados));
                 codigosComponentesConsiderados.AddRange(componentesCurricularesDoProfessor.Where(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0").Select(c => long.Parse(c.codigoTerritorioSaber)).Except(codigosComponentesConsiderados));
+
+                if (usuarioLogado.EhProfessorCjInfantil())
+                {
+                    var componentesCurricularesDoProfessorCJInfantil = await mediator
+                        .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                    codigosComponentesConsiderados
+                        .AddRange(componentesCurricularesDoProfessorCJInfantil
+                            .Where(c => c.TurmaId == turma.CodigoTurma)
+                                .Select(c => c.DisciplinaId));
+                }
                 
                 componentesCurriculares = await mediator
                     .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), possuiTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));

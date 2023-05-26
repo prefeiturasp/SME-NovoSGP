@@ -860,6 +860,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return disciplinas.Select(x => new DisciplinaDto
             {                
                 CodigoComponenteCurricular = x.CdComponenteCurricular,
+                CdComponenteCurricularPai = x.CdComponenteCurricularPai,
                 CodigoTerritorioSaber = x.CodigoTerritorioSaber,
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
