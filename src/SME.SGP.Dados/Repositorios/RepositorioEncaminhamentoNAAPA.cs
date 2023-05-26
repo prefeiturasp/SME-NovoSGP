@@ -27,16 +27,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao)
+            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados)
         {
             var query = MontaQueryCompleta(paginacao, dreId, codigoUe, nomeAluno, dataAberturaQueixaInicio, 
-                dataAberturaQueixaFim, situacao,prioridade , turmasIds);
+                dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados);
+            var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado ;
 
             if (!string.IsNullOrWhiteSpace(nomeAluno))
                 nomeAluno = $"%{nomeAluno.ToLower()}%";
             
             var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
-                turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
+                turmasIds, situacao, prioridade, dataAberturaQueixaInicio, 
+                dataAberturaQueixaFim, situacoesEncerrado };
 
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>();
             
@@ -51,28 +53,28 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
         private string MontaQueryCompleta(Paginacao paginacao, long dreId, string codigoUe, string nomeAluno, 
-            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds)
+            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados)
         {
             var sql = new StringBuilder();
 
             MontaQueryConsulta(paginacao, sql, contador: false, nomeAluno,dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe);
+                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
             
             sql.AppendLine(";");
 
             MontaQueryConsulta(paginacao, sql, contador: true, nomeAluno,dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe);
+                dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
 
             return sql.ToString();
         }
 
         private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string nomeAluno, 
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, 
-            long[] turmasIds, string codigoUe)
+            long[] turmasIds, string codigoUe, bool exibirEncerrados)
         {
             ObterCabecalho(sql, contador);
 
-            ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe);
+            ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe, exibirEncerrados);
             
             if (!contador)
                 sql.AppendLine(" order by to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc ");
@@ -132,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private void ObterFiltro(StringBuilder sql, string nomeAluno, DateTime? dataAberturaQueixaInicio, 
-            DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, string codigoUe)
+            DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, string codigoUe, bool exibirEncerrados)
         {
             sql.AppendLine(@" where not np.excluido 
                                     and t.ano_letivo = @anoLetivo
@@ -152,6 +154,9 @@ namespace SME.SGP.Dados.Repositorios
             
             if (prioridade > 0)
                 sql.AppendLine(" and qPrioridade.PrioridadeId = @prioridade ");
+
+            if (!exibirEncerrados)
+                sql.AppendLine(" and np.situacao <> @situacoesEncerrado ");
 
             if (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue)
             {

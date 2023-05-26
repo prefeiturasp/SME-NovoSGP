@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
                                 cca.aluno_codigo AlunoCodigo, ccn.componente_curricular_codigo ComponenteCurricularCodigo
                           from conselho_classe cc
                           join conselho_classe_aluno cca on cc.id = cca.conselho_classe_id
-                          join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                          join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                           where cc.fechamento_turma_id = @fechamentoTurmaId";
 
             return await database.Conexao.QueryAsync<ConselhoClasseAlunosNotaPorFechamentoIdDto>(query, new { fechamentoTurmaId });

@@ -19,11 +19,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, Paginacao paginacao, bool exibirEncerrados)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos);
-
-            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos };
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos, exibirEncerrados);
+            var situacoesEncerrado = new int[] { (int)SituacaoAEE.Encerrado, (int)SituacaoAEE.EncerradoAutomaticamente };
+            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos, situacoesEncerrado };
             var retorno = new PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
@@ -37,27 +37,27 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos)
+        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, bool exibirEncerrados)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos);
+            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos, exibirEncerrados);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos);
+            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos, exibirEncerrados);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos, bool exibirEncerrados)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos);
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos, exibirEncerrados);
 
             if (!contador)
-                sql.AppendLine(" order by ea.aluno_nome ");
+                sql.AppendLine(" order by ueOrdem, ea.aluno_nome ");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
@@ -79,15 +79,19 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", t.ano_letivo as TurmaAno ");
                 sql.AppendLine(", ea.situacao ");
                 sql.AppendLine(", u.nome as Responsavel ");
+                sql.AppendLine(", ue.nome UeNome ");
+                sql.AppendLine(", ue.tipo_escola TipoEscola ");
+                sql.AppendLine(", te.descricao  || ' ' || ue.nome  ueOrdem");
             }
 
             sql.AppendLine(" from encaminhamento_aee ea ");
             sql.AppendLine(" inner join turma t on t.id = ea.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
+            sql.AppendLine(" inner join tipo_escola te on ue.tipo_escola = te.id");
             sql.AppendLine("  left join usuario u on u.id = ea.responsavel_id");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos)
+        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos, bool exibirEncerrados)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not ea.excluido ");
             sql.AppendLine("   and t.ano_letivo = @anoLetivo ");
@@ -104,6 +108,8 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and u.rf_codigo = @responsavelRf ");
             if (turmasCodigos != null && turmaId == 0)
                 sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
+            if (!exibirEncerrados)
+                sql.AppendLine(" and not ea.situacao = ANY(@situacoesEncerrado) ");
 
         }
 
@@ -204,7 +210,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoAEEAlunoTurmaDto>(sql, new { estudanteCodigo, ueCodigo });
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int anoLetivo, int? situacao, bool exibirEncerrados)
         {
             var sql = new StringBuilder(@"select distinct u.rf_codigo as CodigoRf
 	                                    , u.nome as NomeServidor
@@ -213,9 +219,11 @@ namespace SME.SGP.Dados.Repositorios
                                      inner join ue on t.ue_id = ue.id
                                      inner join usuario u on u.id = ea.responsavel_id ");
 
-            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, "", null);
+            var situacoesEncerrado = new int[] { (int)SituacaoAEE.Encerrado, (int)SituacaoAEE.EncerradoAutomaticamente };
 
-            return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo });
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, "", null, exibirEncerrados);
+
+            return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, situacoesEncerrado });
         }
 
         public async Task<IEnumerable<AEESituacaoEncaminhamentoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId)
