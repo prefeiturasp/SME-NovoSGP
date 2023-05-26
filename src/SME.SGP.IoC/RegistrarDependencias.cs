@@ -1264,7 +1264,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase>();
             services.TryAddScoped<IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase>();
             services.TryAddScoped<IRelatorioEncaminhamentoNAAPAUseCase, RelatorioEncaminhamentoNAAPAUseCase>();
-            
+            services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
+
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
 
