@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> Handle(ObterEncaminhamentosNAAPAConsolidadoCargaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioEncaminhamentoNAAPA.ObterQuantidadeSituacaiEncaminhamentosPorUeAnoLetivo(request.UeId,request.AnoLetivo);
+            return await repositorioEncaminhamentoNAAPA.ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(request.UeId,request.AnoLetivo);
         }
     }
 }

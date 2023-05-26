@@ -17,6 +17,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarConsolidadoEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
+            var entidade = await repositorio.ObterPorUeIdAnoLetivoSituacao(request.Consolidado.UeId,request.Consolidado.AnoLetivo,(int)request.Consolidado.Situacao);
+            if (entidade != null)
+            {
+                request.Consolidado.Id = entidade.Id;
+                request.Consolidado.CriadoPor = entidade.CriadoPor;
+                request.Consolidado.CriadoRF = entidade.CriadoRF;
+                request.Consolidado.CriadoEm = entidade.CriadoEm;
+            }
+
             await repositorio.SalvarAsync(request.Consolidado);
             return true;
         }

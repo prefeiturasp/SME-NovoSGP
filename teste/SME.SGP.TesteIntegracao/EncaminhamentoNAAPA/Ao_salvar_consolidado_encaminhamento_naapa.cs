@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Minio;
+using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.PendenciaGeral.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
@@ -32,8 +36,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase>();
-            var mensagem = new MensagemRabbit("");
-            var retorno = await useCase.Executar(mensagem);
+            var retorno = await useCase.Executar(new MensagemRabbit(""));
             retorno.ShouldBeTrue();
         }
         
@@ -51,6 +54,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             var useCase = ServiceProvider.GetService<IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase>();
             await CriarDadosBasicos();
+            var ueId = 1;
+            var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
+            var retornoUseCase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new FiltroBuscarUesConsolidadoEncaminhamentoNAAPADto(ueId, anoLetivo))));
+            retornoUseCase.ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Deve Inserir um novo registo de Consolidação")]
@@ -58,13 +65,40 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             var useCase = ServiceProvider.GetService<IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase>();
             await CriarDadosBasicos();
+
+            var obterTodos = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
+            obterTodos.Count.ShouldBeEquivalentTo(1);
+
+            var ueId = 1;
+            var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
+            var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 10, SituacaoNAAPA.Rascunho))));
+            retorno.ShouldBeTrue();
+
+            var obterTodosAposUseCaseExecutar = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
+            obterTodosAposUseCaseExecutar.Count.ShouldBeEquivalentTo(2);
+            obterTodosAposUseCaseExecutar.Count(x => x.Situacao == SituacaoNAAPA.Rascunho).ShouldBeEquivalentTo(1);
+            obterTodosAposUseCaseExecutar.Count(x => x.Situacao == SituacaoNAAPA.Encerrado).ShouldBeEquivalentTo(1);
         }
 
         [Fact(DisplayName = "Deve atualizar um registo de Consolidação sem inserir umm novo")]
         public async Task Deve_atualizar_um_registro_consolidado_sem_inserir_um_novo()
         {
-            var useCase = ServiceProvider.GetService<IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase>();
             await CriarDadosBasicos();
+            var useCase = ServiceProvider.GetService<IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase>();
+            var obterTodos = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
+            obterTodos.Count.ShouldBeEquivalentTo(1);
+            obterTodos.FirstOrDefault().Quantidade.ShouldBe<long>(10);
+
+            var ueId = 1;
+            var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
+            var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 12, SituacaoNAAPA.Encerrado))));
+            retorno.ShouldBeTrue();
+
+            var obterTodosAposUseCaseExecutar = ObterTodos<ConsolidadoEncaminhamentoNAAPA>();
+            obterTodosAposUseCaseExecutar.Count.ShouldBeEquivalentTo(1);
+            obterTodosAposUseCaseExecutar.Count(x => x.Situacao == SituacaoNAAPA.Encerrado).ShouldBeEquivalentTo(1);
+            obterTodosAposUseCaseExecutar.FirstOrDefault().Quantidade.ShouldBe<long>(12);
+
         }
 
         private async Task CriarDadosBasicos()
@@ -111,7 +145,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Quantidade = 10,
                 Situacao = SituacaoNAAPA.Encerrado,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), 
+                CriadoPor = SISTEMA_NOME, 
+                CriadoRF = SISTEMA_CODIGO_RF,
             });
         }
     }
