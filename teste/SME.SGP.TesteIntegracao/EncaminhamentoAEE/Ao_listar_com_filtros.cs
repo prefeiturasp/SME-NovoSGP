@@ -291,8 +291,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(2);
-            retorno.Items.ToList().Exists(encaminhamento => encaminhamento.Ue == "NA UE 2").ShouldBeTrue();
-            retorno.Items.ToList().Exists(encaminhamento => encaminhamento.Ue == "NA UE 3").ShouldBeTrue();
+            retorno.Items.ToList().Exists(encaminhamento => encaminhamento.Ue == "EMEF UE 2").ShouldBeTrue();
+            retorno.Items.ToList().Exists(encaminhamento => encaminhamento.Ue == "EMEF UE 3").ShouldBeTrue();
         }
 
         [Fact]

@@ -50,6 +50,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 await CriarSecaoEncaminhamentoQuestionario();
 
             await CriarArquivosUpload();
+            await CriarTipoEscola();
         }
 
         private async Task CriarArquivosUpload()
@@ -1147,6 +1148,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoEm = DateTime.Now
             });
         }
+
+        private async Task CriarTipoEscola() 
+        {
+            await InserirNaBase("tipo_escola", new string[] { "cod_tipo_escola_eol", "descricao", "criado_em", "criado_por", "criado_rf" }, new string[] { "1", "'EMEF'", "'" + DateTime.Now.ToString("yyyy-MM-dd") + "'", "'" + SISTEMA_NOME + "'", "'" + SISTEMA_CODIGO_RF + "'" });
+        } 
 
         private async Task CriarQuestoes()
         {

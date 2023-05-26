@@ -1208,6 +1208,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_1,
                 DreId = 1,
                 Nome = UE_NOME_1,
+                TipoEscola = TipoEscola.EMEF
             });
             
             await InserirNaBase(new Dre
@@ -1222,6 +1223,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_2,
                 DreId = 2,
                 Nome = UE_NOME_2,
+                TipoEscola = TipoEscola.EMEF
             });
 
             await InserirNaBase(new Ue
@@ -1229,6 +1231,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_3,
                 DreId = 2,
                 Nome = UE_NOME_3,
+                TipoEscola = TipoEscola.EMEF
             });
 
             await InserirNaBase(new PrioridadePerfil
