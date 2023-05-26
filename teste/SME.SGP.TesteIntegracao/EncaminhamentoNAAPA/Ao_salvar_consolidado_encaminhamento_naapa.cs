@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -14,7 +15,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
-    public class Ao_salvar_consolidado_encaminhamento_naapa :EncaminhamentoNAAPATesteBase
+    public class Ao_salvar_consolidado_encaminhamento_naapa : TesteBaseComuns
     {
         public Ao_salvar_consolidado_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -26,12 +27,23 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodasUesIdsQuery, IEnumerable<long>>), typeof(ObterTodasUesIdsQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Deve Retornar True ao Executar Rotina de Consolidação")]
+        [Fact(DisplayName = "Deve Retornar True ao Executar Rotina de Consolidação sem informar o ano")]
         public async Task Deve_retornar_true_ao_executar_rotina()
+        {
+            await CriarDadosBasicos();
+            var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase>();
+            var mensagem = new MensagemRabbit("");
+            var retorno = await useCase.Executar(mensagem);
+            retorno.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Deve Retornar True ao Executar Rotina de Consolidação informando o ano")]
+        public async Task Deve_retornar_true_ao_executar_rotina_com_ano()
         {
             var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase>();
             await CriarDadosBasicos();
-            var retornoUseCase = useCase.Executar(new MensagemRabbit());
+            var retornoUseCase = await useCase.Executar(new MensagemRabbit("2023"));
+            retornoUseCase.ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Deve Retornar True ao Executar Rotina de Consolidação para Obter as UEs")]
