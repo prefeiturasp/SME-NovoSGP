@@ -284,8 +284,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarNotasTipoEParametros(filtroConselhoClasse.ConsiderarAnoAnterior);
 
-            await CriarComponenteGrupoAreaOrdenacao();
-
             await CriarConselhoClasseRecomendacao();
 
             await CriaConceito();
@@ -2056,7 +2054,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
             public ModalidadeTipoCalendario TipoCalendario { get; set; }
-            public int Bimestre { get; set; }
+            public long? Bimestre { get; set; }
             public string ComponenteCurricular { get; set; }
             public long TipoCalendarioId { get; set; }
             public bool CriarPeriodoEscolar { get; set; }

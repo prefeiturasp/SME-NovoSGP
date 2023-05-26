@@ -49,15 +49,24 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirConselhoClassePadrao(dtoFiltro);
             await CriaFechamento();
 
-            var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
-            var dto = await consulta.ObterRecomendacoesAlunoFamilia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_1, CODIGO_ALUNO_1, TURMA_CODIGO_1, BIMESTRE_1);
+            var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
+            consulta.ShouldNotBeNull();
             
-            dto.ShouldNotBeNull();
-            dto.AnotacoesAluno.ShouldNotBeNull();
-            dto.AnotacoesAluno.Count().ShouldBeGreaterThan(0);
+            var retorno = await consulta.Executar(new ConselhoClasseRecomendacaoDto()
+                {
+                    ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                    FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                    AlunoCodigo = ALUNO_CODIGO_1,
+                    CodigoTurma = TURMA_CODIGO_1,
+                    Bimestre = BIMESTRE_1}
+            );
+            
+            retorno.ShouldNotBeNull();
+            retorno.AnotacoesAluno.ShouldNotBeNull();
+            retorno.AnotacoesAluno.Count().ShouldBeGreaterThan(0);
             foreach (var componenteId in ObterComponentesCurriculares())
             {
-                dto.AnotacoesAluno.ToList().Exists(anotacao => anotacao.DisciplinaId == componenteId.ToString()).ShouldBeTrue();
+                retorno.AnotacoesAluno.ToList().Exists(anotacao => anotacao.DisciplinaId == componenteId.ToString()).ShouldBeTrue();
             }
         }
 

@@ -15,64 +15,6 @@ namespace SME.SGP.Dados
         {
         }
 
-
-        public async Task<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>> ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(long turmaId, int situacaoConselhoClasse, int bimestre)
-        {
-            var query = new StringBuilder(@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,  
-                                   criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido
-                            from consolidado_conselho_classe_aluno_turma 
-                          where not excluido 
-                            and turma_id = @turmaId ");
-
-            if (situacaoConselhoClasse != -99)
-                query.AppendLine(@"and EXISTS(select 1 from consolidado_conselho_classe_aluno_turma
-                                              where not excluido and turma_id = @turmaId 
-                                                and status = @situacaoConselhoClasse)");
-
-            var retorno = await database.Conexao.QueryAsync<ConselhoClasseConsolidadoTurmaAluno>(query.ToString(), new { turmaId, situacaoConselhoClasse });
-            return retorno;
-        }
-
-        public async Task<IEnumerable<AlunoSituacaoConselhoDto>> ObterStatusConsolidacaoConselhoClasseAlunoTurma(long turmaId, int bimestre)
-        {
-
-            var sql = $@"select cccat.aluno_codigo as AlunoCodigo,
-                            case 
-                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) = 0 then 0
-                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) < count(cccatn.id) then 1
-                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) = count(cccatn.id) then 2
-                            else 1
-                            end as StatusConselhoClasseAluno 
-                             from consolidado_conselho_classe_aluno_turma cccat 
-                             inner join consolidado_conselho_classe_aluno_turma_nota cccatn 
-                                on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
-                             where cccat.turma_id = @turmaId and cccatn.bimestre = @bimestre
-                             and not cccat.excluido 
-                             group by cccat.aluno_codigo";
-
-            return await database.Conexao.QueryAsync<AlunoSituacaoConselhoDto>(sql.ToString(), new { turmaId, bimestre });
-        }
-
-        public async Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
-        {
-            var query = $@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,   
-                                   criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido           
-                            from consolidado_conselho_classe_aluno_turma 
-                            where not excluido 
-                            and turma_id = @turmaId
-                            and aluno_codigo = @alunoCodigo";
-
-            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
-            return retorno;
-        }
-
-        public async Task<IEnumerable<long>> ObterConsolidacoesAtivasIdPorAlunoETurmaAsync(string alunoCodigo, long turmaId)
-        {
-            var query = $@"select id from consolidado_conselho_classe_aluno_turma where aluno_codigo = @alunoCodigo and turma_id = @turmaId and not excluido";
-
-            return await database.Conexao.QueryAsync<long>(query, new { alunoCodigo, turmaId });
-        }
-
         public async Task<bool> ExcluirLogicamenteConsolidacaoConselhoClasseAlunoTurmaPorIdConsolidacao(long[] idsConsolidacoes)
         {
             var sqlQuery = @"update consolidado_conselho_classe_aluno_turma
@@ -123,7 +65,7 @@ namespace SME.SGP.Dados
                                                 AND cca.aluno_codigo = fa.aluno_codigo
                                     LEFT JOIN conselho_classe_nota ccn
                                             ON ccn.conselho_classe_aluno_id = cca.id
-                                                AND ccn.componente_curricular_codigo = fn.disciplina_id and not ccn.excluido
+                                                AND ccn.componente_curricular_codigo = fn.disciplina_id
                                 WHERE  ft.turma_id = @turmaId
                             ),FechamentoAlunoNotaBase as
                             (
@@ -156,7 +98,7 @@ namespace SME.SGP.Dados
                                         INNER JOIN conselho_classe_aluno cca
                                                 ON cca.conselho_classe_id = cc.id
                                         INNER JOIN conselho_classe_nota ccn
-                                                ON ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
+                                                ON ccn.conselho_classe_aluno_id = cca.id
                                         INNER JOIN componente_curricular comp
                                                 ON comp.id = ccn.componente_curricular_codigo
                             WHERE  ft.turma_id = @turmaId

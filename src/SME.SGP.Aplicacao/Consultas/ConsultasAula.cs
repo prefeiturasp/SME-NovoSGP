@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
             if (!bimestreForaPeriodo && bimestreAula >= bimestreAtual)
                 return true;
 
-            return await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAula(turma, DateTime.Now, bimestreAtual, bimestreAula);
+            return await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Now, bimestreAtual, bimestreAula));
         }
 
         public async Task<AulaConsultaDto> BuscarPorId(long id)

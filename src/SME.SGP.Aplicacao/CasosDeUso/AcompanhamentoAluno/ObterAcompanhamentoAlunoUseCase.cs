@@ -53,9 +53,9 @@ namespace SME.SGP.Aplicacao
 
                 return (dataReferencia >= periodosFechamento.LastOrDefault().InicioDoFechamento.Date &&
                        dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date)
-                       || await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre);
+                       || await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, dataReferencia, bimestre));
             }
-            return await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre);
+            return await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, dataReferencia, bimestre));
         }
 
         private async Task TratamentoPercursoIndividual(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, long turmaId, string alunoCodigo, long componenteCurricularId)

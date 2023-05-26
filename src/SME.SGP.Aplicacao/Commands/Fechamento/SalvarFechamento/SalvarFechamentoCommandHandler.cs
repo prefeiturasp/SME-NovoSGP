@@ -185,7 +185,8 @@ namespace SME.SGP.Aplicacao
                                 if (!emAprovacao)
                                     await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, usuarioLogado.CodigoRf, usuarioLogado.Nome, notaAnterior, conceitoIdAnterior);
 
-                                ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                var alunoInativo = alunos.FirstOrDefault(t => t.CodigoAluno == fechamentoAluno.AlunoCodigo)?.Inativo ?? false;
+                                ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota, alunoInativo);
                             }
                             
                             if (!emAprovacao)
@@ -324,9 +325,9 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(componenteCurricularId,
                 fechamentoFinalTurmaDisciplina.TurmaId,
                 fechamentosNotasConceitos, emAprovacao, fechamentoFinalTurmaDisciplina.Bimestre));
-        }        
+        }
 
-        private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota, bool inativo)
         {
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
@@ -336,7 +337,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
-                ComponenteCurricularId = fechamentoNota.DisciplinaId
+                ComponenteCurricularId = fechamentoNota.DisciplinaId,
+                Inativo = inativo
             });
         }
 
@@ -462,7 +464,7 @@ namespace SME.SGP.Aplicacao
 
                 if (await mediator.Send(new ExisteEventoNaDataPorTipoDreUEQuery(hoje, tipoCalendarioId, (TipoEvento)tipodeEventoReabertura, ue.CodigoUe, ue.Dre.CodigoDre)))
                 {
-                    var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoQuery(bimestre, hoje, tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
+                    var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoReaberturaQuery(bimestre, hoje, tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
 
                     if (fechamentoReabertura == null)
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {bimestre}º Bimestre");
