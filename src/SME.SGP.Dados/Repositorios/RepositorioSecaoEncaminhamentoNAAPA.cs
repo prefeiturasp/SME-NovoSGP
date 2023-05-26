@@ -251,13 +251,12 @@ namespace SME.SGP.Dados.Repositorios
                         and enr.texto is not null and enr.texto <> ''
                         and EXTRACT('Year' FROM to_date(enr.texto,'yyyy-mm-dd')) = @anoLetivo
                         and EXTRACT('Month' FROM to_date(enr.texto,'yyyy-mm-dd')) = @mes
-                        and t.ano_letivo = @anoLetivo
                         and t.ue_id = @ueId
                         group by ens.criado_por, ens.criado_rf; ";
 
             var retorno = await database.Conexao.QueryAsync<AtendimentosPorProfissionalEncaminhamentoNAAPADto>(query, new { ueId, mes, anoLetivo });
             if (retorno.Any())
-                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, $"{atendimento.Nome} ({atendimento.Rf})", atendimento.Quantidade));
+                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade));
 
             return Enumerable.Empty<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>();
 

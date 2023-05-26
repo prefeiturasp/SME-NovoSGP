@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConsolidadoAtendimentoNAAPA> Handle(ObterAtendimentoProfissionalEncaminhamentosNAAPAConsolidadoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConsolidado.ObterPorUeIdMesAnoLetivoProfissional(request.UeId, request.Mes, request.AnoLetivo, request.Profissional);
+            return await repositorioConsolidado.ObterPorUeIdMesAnoLetivoProfissional(request.UeId, request.Mes, request.AnoLetivo, request.RfProfissional);
         }
     }
 }

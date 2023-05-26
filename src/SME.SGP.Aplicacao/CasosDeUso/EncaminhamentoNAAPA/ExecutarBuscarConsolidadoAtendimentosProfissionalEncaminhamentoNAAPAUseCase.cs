@@ -25,7 +25,8 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = profissional.AnoLetivo,
                     Quantidade = profissional.Quantidade,
                     Mes = profissional.Mes,
-                    Profissional = profissional.Profissional
+                    NomeProfissional = profissional.NomeProfissional,
+                    RfProfissional = profissional.RfProfissional,
                 };
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, entidade, Guid.NewGuid()));
             }
