@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
@@ -19,7 +20,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
-    public class Ao_listar_com_filtros: EncaminhamentoAEETesteBase
+    public class Ao_listar_com_filtros : EncaminhamentoAEETesteBase
     {
         public Ao_listar_com_filtros(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -28,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-        
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmasAlunoPorFiltroQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>), typeof(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandlerFake), ServiceLifetime.Scoped));
         }
@@ -52,9 +53,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             var obterEncaminhamentosAeeUseCase = ObterServicoListagemComFiltros();
 
             var filtroPesquisaEncaminhamentosAeeDto = new FiltroPesquisaEncaminhamentosAEEDto()
@@ -71,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             retorno.Items.Count().ShouldBe(1);
             retorno.Items.FirstOrDefault().Situacao.Equals("Em digitação").ShouldBeTrue();
         }
-        
+
         [Fact]
         public async Task Ao_filtrar_por_turma()
         {
@@ -91,9 +94,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             var obterEncaminhamentosAeeUseCase = ObterServicoListagemComFiltros();
 
             var filtroPesquisaEncaminhamentosAeeDto = new FiltroPesquisaEncaminhamentosAEEDto()
@@ -109,7 +114,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(1);
         }
-        
+
         [Fact]
         public async Task Ao_filtrar_por_estudante()
         {
@@ -129,9 +134,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             var obterEncaminhamentosAeeUseCase = ObterServicoListagemComFiltros();
 
             var filtroPesquisaEncaminhamentosAeeDto = new FiltroPesquisaEncaminhamentosAEEDto()
@@ -148,7 +155,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(1);
         }
-        
+
         [Fact]
         public async Task Ao_filtrar_por_reponsavel()
         {
@@ -168,10 +175,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 ResponsavelId = 1
             });
-            
+
             var obterEncaminhamentosAeeUseCase = ObterServicoListagemComFiltros();
 
             var filtroPesquisaEncaminhamentosAeeDto = new FiltroPesquisaEncaminhamentosAEEDto()
@@ -187,7 +196,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(1);
         }
-        
+
         [Fact]
         public async Task Ao_filtrar_por_turma_estudante_situacao_reponsavel()
         {
@@ -207,10 +216,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 AlunoCodigo = ALUNO_CODIGO_1,
                 Situacao = SituacaoAEE.Rascunho,
                 AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 ResponsavelId = 1
             });
-            
+
             var obterEncaminhamentosAeeUseCase = ObterServicoListagemComFiltros();
 
             var filtroPesquisaEncaminhamentosAeeDto = new FiltroPesquisaEncaminhamentosAEEDto()
@@ -227,6 +238,115 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task Ao_filtrar_encaminhamento_sem_ue()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_Ano_Atual_NUMERO, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_Ano_Atual_NUMERO, false);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_2,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Rascunho,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                ResponsavelId = 1
+            });
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_3,
+                AlunoCodigo = ALUNO_CODIGO_2,
+                Situacao = SituacaoAEE.Rascunho,
+                AlunoNome = "Nome do aluno 2",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                ResponsavelId = 1
+            });
+
+            var filtroPesquisaEncaminhamentosAeeDto = new FiltroPesquisaEncaminhamentosAEEDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DreId = 2,
+                ResponsavelRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
+                Situacao = SituacaoAEE.Rascunho
+            };
+
+            var retorno = await ObterServicoListagemComFiltros().Executar(filtroPesquisaEncaminhamentosAeeDto);
+            retorno.ShouldNotBeNull();
+            retorno.Items.ShouldNotBeNull();
+            retorno.Items.Count().ShouldBe(2);
+            retorno.Items.ToList().Exists(encaminhamento => encaminhamento.Ue == "NA UE 2").ShouldBeTrue();
+            retorno.Items.ToList().Exists(encaminhamento => encaminhamento.Ue == "NA UE 3").ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task Ao_filtrar_encaminhamento_sem_exibir_encerrados()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_Ano_Atual_NUMERO, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_Ano_Atual_NUMERO, false);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_2,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Encaminhado,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                ResponsavelId = 1
+            });
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_3,
+                AlunoCodigo = ALUNO_CODIGO_2,
+                Situacao = SituacaoAEE.Rascunho,
+                AlunoNome = "Nome do aluno 2",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                ResponsavelId = 1
+            });
+
+            var filtroPesquisaEncaminhamentosAeeDto = new FiltroPesquisaEncaminhamentosAEEDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DreId = 2,
+                ResponsavelRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
+                Situacao = SituacaoAEE.Rascunho
+            };
+
+            var retorno = await ObterServicoListagemComFiltros().Executar(filtroPesquisaEncaminhamentosAeeDto);
+            retorno.ShouldNotBeNull();
+            retorno.Items.ShouldNotBeNull();
+            retorno.Items.Count().ShouldBe(1);
+            retorno.Items.FirstOrDefault().Situacao.ShouldBe("Em digitação");
         }
     }
 }

@@ -938,6 +938,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IVerificarExistenciaPlanoAEEPorEstudanteUseCase, VerificarExistenciaPlanoAEEPorEstudanteUseCase>();
             services.TryAddScoped<IImpressaoPlanoAeeUseCase, ImpressaoPlanoAeeUseCase>();
             services.TryAddScoped<IObterSrmPaeeColaborativoUseCase, ObterSrmPaeeColaborativoUseCase>();
+            services.TryAddScoped<IObterResponsaveisPlanosAEEUseCase, ObterResponsaveisPlanosAEEUseCase>();
 
             // Plano Aula
             services.TryAddScoped<IObterPlanoAulaUseCase, ObterPlanoAulaUseCase>();
