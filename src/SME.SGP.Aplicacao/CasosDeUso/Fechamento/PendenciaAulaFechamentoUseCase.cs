@@ -26,6 +26,10 @@ namespace SME.SGP.Aplicacao
                 await PreencherAulasComPendenciaDiarioClasse(filtro, aulasComPendenciaDiarioClasse);
 
                 var agrupamentoTurmaDisciplina = aulasComPendenciaDiarioClasse.GroupBy(aula => new {TurmaCodigo = aula.TurmaId, aula.DisciplinaId, TurmaId = aula.Turma.Id, ModalidadeTipoCalendario = aula.Turma.ModalidadeTipoCalendario});
+                var agrupamentoTurma = agrupamentoTurmaDisciplina.GroupBy(turmaDisciplina => turmaDisciplina.Key.TurmaCodigo);
+                foreach (var turma in agrupamentoTurma)
+                    await mediator.Send(new ExcluirNotificacaoPendenciasFechamentoCommand(turma.Key, DateTimeExtension.HorarioBrasilia().Year));
+
                 foreach (var turmaDisciplina in agrupamentoTurmaDisciplina)
                 {
                     

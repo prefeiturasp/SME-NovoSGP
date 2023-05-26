@@ -57,6 +57,8 @@ namespace SME.SGP.Dominio
         [Display(Name = "67E1E074-37D6-E911-ABD6-F81654FE895D")]
         PSICOPEDAGOGO = 26,
         [Display(Name = "68E1E074-37D6-E911-ABD6-F81654FE895D")]
-        ASSISTENTE_SOCIAL = 27
+        ASSISTENTE_SOCIAL = 27,
+        [Display(Name = "75E1E074-37D6-E911-ABD6-F81654FE895D")]
+        ASSISTENTE_COORDENADOR_NAAPA = 28
     }
 }

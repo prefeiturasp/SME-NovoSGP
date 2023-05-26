@@ -8,18 +8,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAtividadeAvaliativaQuery : IRequest<IEnumerable<Aula>>
     {
-        public ObterPendenciasAtividadeAvaliativaQuery(long dreId, long ueId,bool exibirRegistroSemPendencia = true, int? anoLetivo = null)
+        public ObterPendenciasAtividadeAvaliativaQuery(long dreId, long ueId,bool exibirRegistroSemPendencia = true, int? anoLetivo = null, TipoAvaliacaoCodigo tipoAtividadeAvaliativaIgnorada = TipoAvaliacaoCodigo.AtividadeClassroom)
         {
             DreId = dreId;
             UeId = ueId;
             AnoLetivo = anoLetivo ?? DateTime.Today.Year;
             ExibirRegistroSemPendencia = exibirRegistroSemPendencia;
+            TipoAtividadeAvaliativaIgnorada = tipoAtividadeAvaliativaIgnorada;
         }
 
         public long DreId { get; }
         public long UeId { get; set; }
         public int AnoLetivo { get; set; }
         public bool ExibirRegistroSemPendencia { get; set; }
+
+        public TipoAvaliacaoCodigo TipoAtividadeAvaliativaIgnorada { get; set; }
     }
 
     public class ObterPendenciasAtividadeAvaliativaQueryValidator : AbstractValidator<ObterPendenciasAtividadeAvaliativaQuery>
