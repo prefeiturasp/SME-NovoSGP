@@ -123,7 +123,7 @@ namespace SME.SGP.Dados
                                                 AND cca.aluno_codigo = fa.aluno_codigo
                                     LEFT JOIN conselho_classe_nota ccn
                                             ON ccn.conselho_classe_aluno_id = cca.id
-                                                AND ccn.componente_curricular_codigo = fn.disciplina_id
+                                                AND ccn.componente_curricular_codigo = fn.disciplina_id and not ccn.excluido
                                 WHERE  ft.turma_id = @turmaId
                             ),FechamentoAlunoNotaBase as
                             (
@@ -156,7 +156,7 @@ namespace SME.SGP.Dados
                                         INNER JOIN conselho_classe_aluno cca
                                                 ON cca.conselho_classe_id = cc.id
                                         INNER JOIN conselho_classe_nota ccn
-                                                ON ccn.conselho_classe_aluno_id = cca.id
+                                                ON ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                                         INNER JOIN componente_curricular comp
                                                 ON comp.id = ccn.componente_curricular_codigo
                             WHERE  ft.turma_id = @turmaId

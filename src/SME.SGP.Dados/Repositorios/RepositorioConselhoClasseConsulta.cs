@@ -124,7 +124,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select distinct cca.aluno_codigo
                           from conselho_classe_aluno cca
-                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                          where cca.conselho_classe_id = @conselhoClasseId";
 
             return await database.Conexao.QueryAsync<string>(query, new { conselhoClasseId });
@@ -323,7 +323,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                            inner join conselho_classe_aluno cca on
 		                                            cca.conselho_classe_id = cc.id
 	                                            inner join conselho_classe_nota ccn on
-		                                            ccn.conselho_classe_aluno_id = cca.id
+		                                            ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
 	                                            inner join conceito_valores cv on ccn.conceito_id = cv.id
 	                                            where t.ano_letivo = @anoLetivo ");
 
