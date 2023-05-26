@@ -13,10 +13,10 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task<IEnumerable<ConsolidadoAtendimentoNAAPA>> ObterPorUeIdAnoLetivo(long ueId, int anoLetivo)
+        public async Task<ConsolidadoAtendimentoNAAPA> ObterPorUeIdMesAnoLetivoProfissional(long ueId, int mes, int anoLetivo, string profissional)
         {
-            var query = " select * from consolidado_atendimento_naapa can where can.ue_id = @ueId and can.ano_letivo = @anoLetivo ";
-            return await database.Conexao.QueryAsync<ConsolidadoAtendimentoNAAPA>(query, new {  ueId,anoLetivo }, commandTimeout: 60);
+            var query = " select * from consolidado_atendimento_naapa can where can.ue_id = @ueId and can.ano_letivo = @anoLetivo and can.mes = @mes and can.profissional = @profissional ";
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoAtendimentoNAAPA>(query, new { ueId, mes, anoLetivo, profissional }, commandTimeout: 60);
         }
     }
 }
