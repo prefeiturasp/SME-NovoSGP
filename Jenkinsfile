@@ -16,6 +16,7 @@ pipeline {
       deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
       deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
       deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao-r2' : 'sme-worker-compressao' }"
+      deployment14 = "${env.branchname == 'release-r2' ? 'sme-worker-naapa-r2' : 'sme-worker-naapa' }"
     }
   
     agent {
@@ -182,7 +183,17 @@ pipeline {
                   dockerImage13 = docker.build(imagename, "-f src/SME.SGP.ComprimirArquivos.Worker/Dockerfile .")
                 }
               }
-            }			
+            }
+            stage('sme-worker-naapa') {
+              agent { node { label 'SME-AGENT-SGP' } }
+              steps{
+                checkout scm
+                script {
+                  imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-naapa"
+                  dockerImage14 = docker.build(imagename, "-f src/SME.SGP.NAAPA.Worker/Dockerfile .")
+                }
+              }
+            }   
           }
     }
     stage('Push'){
@@ -204,6 +215,7 @@ pipeline {
                 dockerImage11.push()
                 dockerImage12.push()
                 dockerImage13.push()
+                dockerImage14.push()
               }
         }
       }
@@ -235,6 +247,7 @@ pipeline {
                                 sh "kubectl rollout restart deployment/${deployment11} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment12} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment13} -n sme-novosgp"
+                                sh "kubectl rollout restart deployment/${deployment14} -n sme-novosgp"
                                 sh('rm -f '+"$home"+'/.kube/config')
                         }
                     //}
