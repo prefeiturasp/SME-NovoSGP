@@ -106,14 +106,16 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
-            
+
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-            
+
+            var tipoEscola = ObterTodos<TipoEscolaEol>();
+
             var planoAEEPersistenciaDto = new PlanoAEEPersistenciaDto()
             {
                 AlunoCodigo = CODIGO_ALUNO_1,
@@ -287,8 +289,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(2);
-            retorno.Items.ToList().Exists(plano => plano.Ue == "NA UE 2").ShouldBeTrue();
-            retorno.Items.ToList().Exists(plano => plano.Ue == "NA UE 3").ShouldBeTrue();
+            retorno.Items.ToList().Exists(plano => plano.Ue.Equals("EMEF UE 2")).ShouldBeTrue();
+            retorno.Items.ToList().Exists(plano => plano.Ue.Equals("EMEF UE 2")).ShouldBeTrue();
         }
 
         [Fact]
