@@ -194,7 +194,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Items.Any().ShouldBeTrue();
             retorno.Items.Count().ShouldBeEquivalentTo(4);
             retorno.Items.Select(x => !string.IsNullOrWhiteSpace(x.UeOcorrencia)).Count().ShouldBeGreaterThan(0);
-            retorno.Items.FirstOrDefault().UeOcorrencia.ShouldBeEquivalentTo("NA UE 2");
+            retorno.Items.FirstOrDefault().UeOcorrencia.ShouldBeEquivalentTo("EMEF UE 2");
             retorno.Items.FirstOrDefault().DataOcorrencia.ShouldBeEquivalentTo(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
 
         }
