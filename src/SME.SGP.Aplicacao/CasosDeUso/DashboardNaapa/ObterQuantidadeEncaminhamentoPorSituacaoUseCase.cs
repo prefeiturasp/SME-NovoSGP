@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -8,6 +9,12 @@ namespace SME.SGP.Aplicacao
     public class ObterQuantidadeEncaminhamentoPorSituacaoUseCase : IObterQuantidadeEncaminhamentoPorSituacaoUseCase
     {
         private readonly IRepositorioConsolidadoEncaminhamentoNAAPA repositorio;
+
+        public ObterQuantidadeEncaminhamentoPorSituacaoUseCase(IRepositorioConsolidadoEncaminhamentoNAAPA repositorio)
+        {
+            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+        }
+
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> Executar(FiltroGraficoEncaminhamentoPorSituacaoDto param)
         {
             var graficos = new List<GraficoFrequenciaTurmaEvasaoDto>();
@@ -17,7 +24,7 @@ namespace SME.SGP.Aplicacao
             {
                 var item = new GraficoFrequenciaTurmaEvasaoDto
                 {
-                    Quantidade = int.Parse(grafico.Quantiddade.ToString()),
+                    Quantidade = grafico.Quantidade,
                     DataUltimaConsolidacao = grafico.DataUltimaConsolidacao,
                     Descricao = grafico.Situacao.Name()
                     

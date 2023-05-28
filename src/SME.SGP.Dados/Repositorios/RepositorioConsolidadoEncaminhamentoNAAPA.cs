@@ -32,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder(); 
             sql.AppendLine(@"select ");
             sql.AppendLine(@" situacao,");
-            sql.AppendLine(@" sum(quantidade)quantidade,");
+            sql.AppendLine(@" sum(quantidade)::int4 as quantidade,");
             sql.AppendLine(@" max(criado_em)DataUltimaConsolidacao");
             sql.AppendLine(@"from consolidado_encaminhamento_naapa");
             sql.AppendLine(@"where ano_Letivo = @anoLetivo ");
