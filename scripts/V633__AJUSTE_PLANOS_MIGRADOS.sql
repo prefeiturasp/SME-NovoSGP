@@ -12,8 +12,8 @@ DO $$
 			turma_id = turma_infantil,
 			situacao = 7,
 			alterado_em = current_date,
-			alterado_por = 'Script',
-			alterado_rf = 'Script'
+			alterado_por = 'Sistema',
+			alterado_rf = 'Sistema'
 		FROM (
 			SELECT
 				pa.id as id_plano,
@@ -51,10 +51,7 @@ DO $$
 		UPDATE plano_aee_versao
 		SET 
 			plano_aee_id = novo_plano_aee_id,
-			numero = sequencia,
-			alterado_em = current_date,
-			alterado_por = 'Script',
-			alterado_rf = 'Script'
+			numero = sequencia
 		FROM (
 			SELECT
 				pav.id as id_versao,
@@ -78,11 +75,7 @@ DO $$
 		) pv WHERE pv.id_versao = id;
    
 		UPDATE plano_aee_observacao 
-		SET 
-			plano_aee_id = novo_plano_aee_id,
-			alterado_em = current_date,
-			alterado_por = 'Script',
-			alterado_rf = 'Script'
+		SET plano_aee_id = novo_plano_aee_id
 		WHERE 
 			EXISTS 
 			(
