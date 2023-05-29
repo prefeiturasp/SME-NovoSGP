@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var graficos = new GraficoEncaminhamentoNAAPADto();
             var consultaDados = await repositorio.ObterDadosGraficoSitaucaoPorUeAnoLetivo(param.AnoLetivo,param.UeId,param.DreId);
-            graficos.DataUltimaConsolidacao = consultaDados.Select(x => x.DataUltimaConsolidacao).Max();
+            graficos.DataUltimaConsolidacao = consultaDados.Any() ? consultaDados.Select(x => x.DataUltimaConsolidacao).Max() : null;
             foreach (var grafico in consultaDados)
             {
                 var item = new GraficoBaseDto

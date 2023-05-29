@@ -35,7 +35,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"	 sum(cen.quantidade)::int4 as quantidade,");
             sql.AppendLine(@"	 COALESCE(max(cen.alterado_em), max(cen.criado_em))DataUltimaConsolidacao");
             sql.AppendLine(@"from consolidado_encaminhamento_naapa cen");
-            sql.AppendLine(@"inner join ue u on u.dre_id = cen.ue_id");
+            sql.AppendLine(@"inner join ue u on u.id = cen.ue_id");
             sql.AppendLine(@"where cen.ano_Letivo = @anoLetivo ");
             if(ueId != null)
                sql.AppendLine(@"	and cen.ue_id= @ueId ");
