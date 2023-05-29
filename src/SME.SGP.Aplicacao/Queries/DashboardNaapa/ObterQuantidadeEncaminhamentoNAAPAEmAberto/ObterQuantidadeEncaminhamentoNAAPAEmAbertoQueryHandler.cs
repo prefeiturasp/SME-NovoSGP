@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var graficos = await this.repositorioConsolidado.ObterQuantidadeEncaminhamentoNAAPAEmAberto(request.AnoLetivo, request.DreId);
             var grafico = new GraficoEncaminhamentoNAAPADto()
             {
-                DataUltimaConsolidacao = graficos.Select(x => x.DataUltimaConsolidacao)?.Max()
+                DataUltimaConsolidacao = graficos.Any() ? graficos.Select(x => x.DataUltimaConsolidacao).Max() : null
             };
 
             foreach (var item in graficos)
