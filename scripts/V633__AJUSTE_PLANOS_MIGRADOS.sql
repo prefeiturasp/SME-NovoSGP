@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.temp_planos_migrados (
+CREATE OR REPLACE TABLE public.temp_planos_migrados (
 	cd_aluno int4 NULL,
 	turma_infantil int4 NULL,
 	turma_fundamental int4 NULL
