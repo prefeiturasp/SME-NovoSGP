@@ -27,19 +27,22 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoEncaminhamentoNAAPA>(query, new { ueId, anoLetivo, situacao }, commandTimeout:60);
         }
 
-        public async Task<IEnumerable<DadosGraficoSitaucaoPorUeAnoLetivoDto>> ObterDadosGraficoSitaucaoPorUeAnoLetivo(int anoLetivo, long? ueId)
+        public async Task<IEnumerable<DadosGraficoSitaucaoPorUeAnoLetivoDto>> ObterDadosGraficoSitaucaoPorUeAnoLetivo(int anoLetivo,long? ueId,long? dreId)
         {
             var sql = new StringBuilder(); 
-            sql.AppendLine(@"select ");
-            sql.AppendLine(@" situacao,");
-            sql.AppendLine(@" sum(quantidade)::int4 as quantidade,");
-            sql.AppendLine(@" COALESCE(max(alterado_em), max(criado_em))DataUltimaConsolidacao ");
-            sql.AppendLine(@"from consolidado_encaminhamento_naapa");
-            sql.AppendLine(@"where ano_Letivo = @anoLetivo ");
+            sql.AppendLine(@"select");
+            sql.AppendLine(@"	 cen.situacao,");
+            sql.AppendLine(@"	 sum(cen.quantidade)::int4 as quantidade,");
+            sql.AppendLine(@"	 COALESCE(max(cen.alterado_em), max(cen.criado_em))DataUltimaConsolidacao");
+            sql.AppendLine(@"from consolidado_encaminhamento_naapa cen");
+            sql.AppendLine(@"inner join ue u on u.dre_id = cen.ue_id");
+            sql.AppendLine(@"where cen.ano_Letivo = @anoLetivo ");
             if(ueId != null)
-                sql.AppendLine(@"and ue_id= @ueId ");
-            sql.AppendLine(@"group by situacao;");
-            return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId,anoLetivo }, commandTimeout: 60);
+               sql.AppendLine(@"	and cen.ue_id= @ueId ");
+            if(dreId != null)
+               sql.AppendLine(@"	and u.dre_id = @dreId ");
+            sql.AppendLine(@"group by cen.situacao;");
+            return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId,anoLetivo,dreId }, commandTimeout: 60);
         }
     }
 }

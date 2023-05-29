@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroGraficoEncaminhamentoPorSituacaoDto param)
         {
             var graficos = new GraficoEncaminhamentoNAAPADto();
-            var consultaDados = await repositorio.ObterDadosGraficoSitaucaoPorUeAnoLetivo(param.AnoLetivo,param.UeId);
+            var consultaDados = await repositorio.ObterDadosGraficoSitaucaoPorUeAnoLetivo(param.AnoLetivo,param.UeId,param.DreId);
             graficos.DataUltimaConsolidacao = consultaDados.Select(x => x.DataUltimaConsolidacao).Max();
             foreach (var grafico in consultaDados)
             {
