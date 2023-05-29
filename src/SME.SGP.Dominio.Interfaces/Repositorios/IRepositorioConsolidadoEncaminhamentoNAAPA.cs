@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio
         Task<IEnumerable<ConsolidadoEncaminhamentoNAAPA>> ObterPorUeIdAnoLetivo(long ueId,int anoLetivo);
         Task<ConsolidadoEncaminhamentoNAAPA> ObterPorUeIdAnoLetivoSituacao(long ueId,int anoLetivo, int situacao);
         Task<IEnumerable<DadosGraficoSitaucaoPorUeAnoLetivoDto>> ObterDadosGraficoSitaucaoPorUeAnoLetivo(int anoLetivo,long? ueId,long? dreId);
+        Task<IEnumerable<GraficoQuantitativoNAAPADto>> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId);
     }
 }

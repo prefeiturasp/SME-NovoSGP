@@ -3,6 +3,6 @@
     public class FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto
     {
         public int AnoLetivo {  get; set; }
-        public string CodigoDre { get; set; }
+        public long? DreId { get; set; }
     }
 }

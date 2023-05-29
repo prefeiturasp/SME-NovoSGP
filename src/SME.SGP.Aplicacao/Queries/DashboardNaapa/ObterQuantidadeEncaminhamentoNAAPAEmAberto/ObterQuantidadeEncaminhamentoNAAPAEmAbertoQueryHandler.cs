@@ -2,24 +2,35 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoQueryHandler : IRequestHandler<ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery, IEnumerable<QuantidadeEncaminhamentoNAAPAEmAbertoDto>>
+    public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoQueryHandler : IRequestHandler<ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery, GraficoEncaminhamentoNAAPADto>
     {
-        private IRepositorioConsolidadoAtendimentoNAAPA repositorio;
+        private IRepositorioConsolidadoEncaminhamentoNAAPA repositorioConsolidado;
 
-        public ObterQuantidadeEncaminhamentoNAAPAEmAbertoQueryHandler(IRepositorioConsolidadoAtendimentoNAAPA repositorio)
+        public ObterQuantidadeEncaminhamentoNAAPAEmAbertoQueryHandler(IRepositorioConsolidadoEncaminhamentoNAAPA repositorioConsolidado)
         {
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
+            this.repositorioConsolidado = repositorioConsolidado ?? throw new ArgumentNullException(nameof(repositorioConsolidado));
         }
 
-        public Task<IEnumerable<QuantidadeEncaminhamentoNAAPAEmAbertoDto>> Handle(ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery request, CancellationToken cancellationToken)
+        public async Task<GraficoEncaminhamentoNAAPADto> Handle(ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery request, CancellationToken cancellationToken)
         {
-            return this.repositorio.ObterQuantidadeEncaminhamentoNAAPAEmAberto(request.AnoLetivo, request.CodigoDre);
+            var graficos = await this.repositorioConsolidado.ObterQuantidadeEncaminhamentoNAAPAEmAberto(request.AnoLetivo, request.DreId);
+            var grafico = new GraficoEncaminhamentoNAAPADto()
+            {
+                DataUltimaConsolidacao = graficos.Select(x => x.DataUltimaConsolidacao)?.Max()
+            };
+
+            foreach (var item in graficos)
+            {
+                grafico.Graficos.Add(new GraficoBaseDto() { Quantidade = item.Quantidade, Descricao = item.Descricao });
+            }
+
+            return grafico;
         }
     }
 }
