@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
 {
     public interface IRepositorioConsolidadoAtendimentoNAAPA : IRepositorioBase<ConsolidadoAtendimentoNAAPA>
     {
+        Task<ConsolidadoAtendimentoNAAPA> ObterPorUeIdMesAnoLetivoProfissional(long ueId, int mes, int anoLetivo, string rfProfissional);
         Task<IEnumerable<ConsolidadoAtendimentoNAAPA>> ObterPorUeIdAnoLetivo(long ueId, int anoLetivo);
         Task<IEnumerable<QuantidadeEncaminhamentoNAAPAEmAbertoDto>> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, string codigoDre);
     }
