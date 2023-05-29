@@ -166,6 +166,8 @@ namespace SME.SGP.Dominio
         GerarPendenciaDevolutivaSemDiarioBordo = 102,
 
         //Gerar Fechamento para Turmas Ed.Fisica 2020
-        GerarFechamentoTurmasEdFisica2020 = 103
+        GerarFechamentoTurmasEdFisica2020 = 103,
+        GerarConsolidadoEncaminhamentoNAAPA = 104,
+        GerarConsolidadoAtendimentoNAAPA = 105
     }
 }
