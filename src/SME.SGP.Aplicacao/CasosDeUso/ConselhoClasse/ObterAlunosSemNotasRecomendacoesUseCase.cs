@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
                 .Where(w=> w.LancaNota)
                 .ToArray();
 
-            var turmas = componentesCurricularesPorTurma.Select(x => x.TurmaCodigo).Distinct().ToArray();
+            var turmas = componentesCurricularesPorTurma.Where(w=> !string.IsNullOrEmpty(w.TurmaCodigo)).Select(x => x.TurmaCodigo).Distinct().ToArray();
 
             var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
 
@@ -92,15 +92,11 @@ namespace SME.SGP.Aplicacao
                     AlunoCodigo = aluno.CodigoAluno
                 };
 
-                var componentesSemNota = from componenteCurricular in componentesCurricularesPorTurma
-                    join nota in obterConselhoClasseAlunoNota on componenteCurricular.CodigoComponenteCurricular equals
-                        nota.ComponenteCurricularId
-                    where nota.AlunoCodigo.Equals(aluno.CodigoAluno) && string.IsNullOrEmpty(nota.Nota)
-                    orderby componenteCurricular.GrupoMatrizNome, componenteCurricular.Nome
-                    select new { componenteCurricular.Nome };
-                    
+                var componentesComNotasDoAluno = obterConselhoClasseAlunoNota.Where(x => x.AlunoCodigo.Equals(aluno.CodigoAluno) && !string.IsNullOrEmpty(x.Nota)).Select(s=> s.ComponenteCurricularId);
+                var componentesSemNota = componentesCurricularesPorTurma.Where(x => !componentesComNotasDoAluno.Contains(x.CodigoComponenteCurricular)).Select(s=> s.Nome);
+
                 foreach (var componente in componentesSemNota)
-                    item.Inconsistencias.Add(string.Format(MensagemNegocioConselhoClasse.AUSENCIA_DA_NOTA_NO_COMPONENTE,componente.Nome));
+                    item.Inconsistencias.Add(string.Format(MensagemNegocioConselhoClasse.AUSENCIA_DA_NOTA_NO_COMPONENTE,componente));
 
                 var existeRecomendacao = obterRecomendacoes.Where(x => x.AluncoCodigo == aluno.CodigoAluno && x.TemRecomendacao);
                 if(!existeRecomendacao.Any() )

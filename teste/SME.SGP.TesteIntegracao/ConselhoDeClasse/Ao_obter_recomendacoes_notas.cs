@@ -39,6 +39,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterConselhoClasseAlunoNotaQuery, IEnumerable<ConselhoClasseAlunoNotaDto>>), typeof(ObterConselhoClasseAlunoNotaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
+        [Fact(DisplayName = "Obter Alunos Sem fechamento turma")]
+        public async Task Obter_Alunos_Sem_Fechamento_Turma()
+        {
+            await CriarItensBasicos();
+            var userCase = ServiceProvider.GetService<IObterAlunosSemNotasRecomendacoesUseCase>();
+
+            var filtro = new FiltroInconsistenciasAlunoFamiliaDto(TURMA_ID, PRIMEIRO_BIMESTRE);
+            await userCase.Executar(filtro).ShouldThrowAsync<NegocioException>();
+        }
+
         [Fact(DisplayName = "Obter Alunos Sem recomendações e Notas")]
         public async Task Obter_Alunos_Sem_Notas_Recomendacoes()
         {
@@ -46,6 +56,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var userCase = ServiceProvider.GetService<IObterAlunosSemNotasRecomendacoesUseCase>();
 
             var filtro = new FiltroInconsistenciasAlunoFamiliaDto(TURMA_ID, PRIMEIRO_BIMESTRE);
+
+            await InserirNaBase(new FechamentoTurma()
+            {
+                Id = 1,
+                PeriodoEscolarId = 1,
+                TurmaId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            });
+
             var retornoUseCase = await userCase.Executar(filtro);
             retornoUseCase.Count().ShouldBeGreaterThan(0);
             retornoUseCase.FirstOrDefault().Inconsistencias.Count().ShouldBeGreaterThan(0);
@@ -96,6 +117,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Calendário Teste Ano Atual",
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                Situacao = true,
                 Periodo = Periodo.Anual,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = "Sistema",
