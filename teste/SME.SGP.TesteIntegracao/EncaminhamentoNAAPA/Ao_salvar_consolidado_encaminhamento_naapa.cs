@@ -19,7 +19,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
-    public class Ao_salvar_consolidado_encaminhamento_naapa : TesteBaseComuns
+    public class Ao_salvar_consolidado_encaminhamento_naapa : EncaminhamentoNAAPATesteBase
     {
         public Ao_salvar_consolidado_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
