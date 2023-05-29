@@ -68,5 +68,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(observacaoId));
         }
+
+        [HttpGet("notificacoes/usuarios")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioNotificarCartaIntencoesObservacaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CI_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterUsuariosParaNotificar([FromQuery] ObterUsuarioNotificarCartaIntencoesObservacaoDto dto, [FromServices] IObterUsuarioNotificarCartaIntencoesObservacaoUseCase obterUsuariosNotificarCartaIntencoesObservacaoUseCase)
+        {
+            var retorno = await obterUsuariosNotificarCartaIntencoesObservacaoUseCase.Executar(dto);
+            return Ok(retorno);
+        }
     }
 }

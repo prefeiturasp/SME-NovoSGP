@@ -13,7 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUeAsync(string codigoUe);
         Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorDreAsync(string codigoDre, TipoResponsavelAtribuicao? tipoResponsavelAtribuicao);
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsavelAtribuidoUePorUeTipo(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao);
-        Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo);
+        Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo, string codigoUe = null);
         Task<IEnumerable<UnidadeEscolarSemAtribuicaolDto>> ObterListaUEsParaNovaAtribuicaoPorCodigoDre(string dreCodigo);
         Task<int> VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe(int tipo, string ueCodigo, string dreCodigo, string responsavelCodigo);
         Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo);

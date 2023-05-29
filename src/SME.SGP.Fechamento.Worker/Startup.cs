@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.Infra;
 using SME.SGP.IoC;
+using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.Fechamento.Worker
 {
@@ -43,6 +44,8 @@ namespace SME.SGP.Fechamento.Worker
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            RegistrarConfigsThreads.Registrar(Configuration);
 
             app.Run(async (context) =>
             {

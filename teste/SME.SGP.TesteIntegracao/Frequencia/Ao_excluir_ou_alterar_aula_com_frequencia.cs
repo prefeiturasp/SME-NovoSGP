@@ -1,9 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +19,14 @@ namespace SME.SGP.TesteIntegracao.Frequencia
     {
         public Ao_excluir_ou_alterar_aula_com_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RecalcularFrequenciaPorTurmaCommand, bool>), typeof(RecalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
+            
         }
 
         [Fact(DisplayName = "Frequência - Ao excluir aula com frequencia e calculo")]

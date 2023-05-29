@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,25 +26,23 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = new List<AlunoPorTurmaResposta>();
 
-            var chaveCache = $"todos-alunos-turma:{request.CodigoTurma}/codigo-aluno:{request.CodigoAluno}";
-            var cacheAlunos = repositorioCache.Obter(chaveCache);
-            if (cacheAlunos != null)
-                alunos = JsonConvert.DeserializeObject<IEnumerable<AlunoPorTurmaResposta>>(cacheAlunos).ToList();
-            else
-            {
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var resposta = await httpClient.GetAsync($"turmas/{request.CodigoTurma}/todos-alunos{(request.CodigoAluno.HasValue ? $"?codigoAluno={request.CodigoAluno.Value}" : string.Empty)}");
-                if (resposta.IsSuccessStatusCode)
-                {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    alunos = JsonConvert.DeserializeObject<IEnumerable<AlunoPorTurmaResposta>>(json).ToList();
+            var chaveCache = string.Format(NomeChaveCache.CHAVE_ALUNOS_TURMA, request.CodigoTurma, request.CodigoAluno?.ToString());
+            return await repositorioCache.ObterAsync(chaveCache,
+                async () => await BuscarAlunosTurma(request.CodigoTurma, request.CodigoAluno),
+                request.TempoArmazenamentoCache);
+        }
 
-                    // Salva em cache por 5 min
-                    await repositorioCache.SalvarAsync(chaveCache, json, 5);
-                }
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> BuscarAlunosTurma(int codigoTurma, int? codigoAluno)
+        {
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var resposta = await httpClient.GetAsync($"turmas/{codigoTurma}/todos-alunos{(codigoAluno.HasValue ? $"?codigoAluno={codigoAluno.Value}" : string.Empty)}");
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<AlunoPorTurmaResposta>>(json).ToList();
             }
 
-            return alunos;
+            return Enumerable.Empty<AlunoPorTurmaResposta>();
         }
     }
 }

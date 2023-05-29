@@ -885,7 +885,7 @@ namespace SME.SGP.Dados.Repositorios
                 var dres = retorno.Select(d => d.Id).ToList();
 
                 var dresComplementares = (from da in dadosAbrangenciaSupervisor
-                                          where (Modalidade)da.Modalidade == modalidade &&
+                                          where (modalidade == 0 || (Modalidade)da.Modalidade == modalidade) &&
                                                 (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
                                                 !dres.Contains(da.DreId)
                                           select new
