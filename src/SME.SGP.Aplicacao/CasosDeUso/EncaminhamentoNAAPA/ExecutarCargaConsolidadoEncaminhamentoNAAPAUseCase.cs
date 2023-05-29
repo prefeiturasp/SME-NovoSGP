@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var anoLetivo = !string.IsNullOrEmpty(param.Mensagem?.ToString()) ? int.Parse(param.Mensagem.ToString()!) : DateTime.Now.Year;
+            var anoLetivo = !string.IsNullOrEmpty(param.Mensagem?.ToString()) ? int.Parse(param.Mensagem.ToString()!) : DateTimeExtension.HorarioBrasilia().Year;
             var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
 
             foreach (var ueId in listaUes)
