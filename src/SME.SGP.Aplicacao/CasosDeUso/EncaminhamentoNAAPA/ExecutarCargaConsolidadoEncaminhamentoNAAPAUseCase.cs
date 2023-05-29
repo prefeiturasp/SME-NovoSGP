@@ -20,6 +20,9 @@ namespace SME.SGP.Aplicacao
             var parametroEncaminhamento = await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA));
             var parametroAtendimento = await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA));
 
+            if (!parametroEncaminhamento && !parametroAtendimento)
+                throw new NegocioException("Nenhum parâmetro ativo no banco, os parâmetros de encaminhamento e atendimento precisam estar ativos");
+
             foreach (var ueId in listaUes)
             {
                 if (parametroEncaminhamento)
