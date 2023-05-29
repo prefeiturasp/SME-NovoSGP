@@ -87,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" from encaminhamento_aee ea ");
             sql.AppendLine(" inner join turma t on t.id = ea.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
-            sql.AppendLine(" inner join tipo_escola te on ue.tipo_escola = te.id");
+            sql.AppendLine(" inner join tipo_escola te on ue.tipo_escola = te.cod_tipo_escola_eol");
             sql.AppendLine("  left join usuario u on u.id = ea.responsavel_id");
         }
 
