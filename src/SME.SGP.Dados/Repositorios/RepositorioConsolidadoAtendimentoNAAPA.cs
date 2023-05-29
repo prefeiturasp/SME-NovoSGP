@@ -10,7 +10,6 @@ namespace SME.SGP.Dados
 {
     public class RepositorioConsolidadoAtendimentoNAAPA : RepositorioBase<ConsolidadoAtendimentoNAAPA>,IRepositorioConsolidadoAtendimentoNAAPA
     {
-        private string TODOS = "-99";
         public RepositorioConsolidadoAtendimentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
@@ -21,23 +20,25 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidadoAtendimentoNAAPA>(query, new { ueId, mes, anoLetivo, rfProfissional }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<QuantidadeEncaminhamentoNAAPAEmAbertoDto>> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, string codigoDre)
+        public async Task<IEnumerable<GraficoQuantitativoNAAPADto>> ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(int anoLetivo, long dreId, long? ueId, int? mes)
         {
-            var situacaoEncerrada = (int)SituacaoNAAPA.Encerrado;
-            var query = @"  select dre.dre_id CodigoDre, dre.nome DescricaoDre, sum(quantidade) Quantidade, max(cen.criado_em) DataUltimaConsolidacao
-                            from consolidado_encaminhamento_naapa cen
-                            inner join ue on ue.id = cen.ue_id
-                            inner join dre on dre.id = ue.dre_id
+            var query = @"  select nome_profissional as Descricao, sum(quantidade) as Quantidade,
+                            COALESCE(max(can.alterado_em), max(can.criado_em)) as DataUltimaConsolidacao
+                            from consolidado_atendimento_naapa can
+                            inner join ue on ue.id = can.ue_id
                             where ano_letivo = @anoLetivo 
-                              and situacao <> @situacaoEncerrada";
+                              and ue.dre_id = @dreId";
 
-            if (!string.IsNullOrEmpty(codigoDre) && codigoDre != TODOS)
-                query += " and dre.dre_id = @codigoDre";
+            if (ueId.HasValue)
+                query += " and ue.id = @ueId";
 
-            query += @" group by dre.dre_id, dre.nome
-                        order by dre.dre_id, dre.nome";
+            if (mes.HasValue)
+                query += " and can.mes = @mes";
 
-            return await database.Conexao.QueryAsync<QuantidadeEncaminhamentoNAAPAEmAbertoDto>(query, new { anoLetivo, codigoDre, situacaoEncerrada }, commandTimeout: 60);
+            query += @" group by nome_profissional
+                        order by nome_profissional";
+
+            return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, ueId, mes }, commandTimeout: 60);
         }
     }
 }

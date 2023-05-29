@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.DashboardEncaminhamentoNAAPA
+namespace SME.SGP.TesteIntegracao.DashboardNAAPA
 {
     public class Ao_obter_quantidade_encaminhamento_em_aberto : TesteBaseComuns
     {
@@ -49,17 +49,16 @@ namespace SME.SGP.TesteIntegracao.DashboardEncaminhamentoNAAPA
             });
 
             var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
-            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, CodigoDre = DRE_CODIGO_1 };
+            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = DRE_ID_1 };
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
-            retorno.FirstOrDefault().Quantidade.ShouldBe(8);
+            retorno.Graficos.FirstOrDefault().Quantidade.ShouldBe(8);
         }
 
         [Fact]
         public async Task Ao_obter_quantidade_encaminhamento_todas_dre()
         {
-            const string TODOS = "-99"; 
             await CriarDreUePerfilComponenteCurricular();
 
             CriarClaimUsuario(ObterPerfilProfessor());
@@ -89,13 +88,14 @@ namespace SME.SGP.TesteIntegracao.DashboardEncaminhamentoNAAPA
             });
 
             var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
-            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, CodigoDre = TODOS };
+            var dto = new FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto() { AnoLetivo = DateTimeExtension.HorarioBrasilia().Year, DreId = null };
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
-            retorno.Count().ShouldBe(2);
-            retorno.ToList().Exists(consolidado => consolidado.CodigoDre == DRE_CODIGO_1).ShouldBeTrue();
-            retorno.ToList().Exists(consolidado => consolidado.CodigoDre == DRE_CODIGO_2).ShouldBeTrue();
+            var graficos = retorno.Graficos.ToList();
+            graficos.Count().ShouldBe(2);
+            graficos.Exists(consolidado => consolidado.Descricao == DRE_NOME_1).ShouldBeTrue();
+            graficos.Exists(consolidado => consolidado.Descricao == DRE_NOME_2).ShouldBeTrue();
         }
     }
 }

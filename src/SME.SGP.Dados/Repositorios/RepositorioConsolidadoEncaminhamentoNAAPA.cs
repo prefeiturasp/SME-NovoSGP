@@ -10,6 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConsolidadoEncaminhamentoNAAPA: RepositorioBase<ConsolidadoEncaminhamentoNAAPA>, IRepositorioConsolidadoEncaminhamentoNAAPA
     {
+        private string TODOS = "-99";
         public RepositorioConsolidadoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
@@ -43,6 +44,26 @@ namespace SME.SGP.Dados.Repositorios
                sql.AppendLine(@"	and u.dre_id = @dreId ");
             sql.AppendLine(@"group by cen.situacao;");
             return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId,anoLetivo,dreId }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<GraficoQuantitativoNAAPADto>> ObterQuantidadeEncaminhamentoNAAPAEmAberto(int anoLetivo, long? dreId)
+        {
+            var situacaoEncerrada = (int)SituacaoNAAPA.Encerrado;
+            var query = @"  select dre.dre_id CodigoDre, dre.abreviacao Descricao, sum(quantidade) Quantidade,
+                            COALESCE(max(cen.alterado_em), max(cen.criado_em)) as DataUltimaConsolidacao
+                            from consolidado_encaminhamento_naapa cen
+                            inner join ue on ue.id = cen.ue_id
+                            inner join dre on dre.id = ue.dre_id
+                            where ano_letivo = @anoLetivo 
+                              and situacao <> @situacaoEncerrada";
+
+            if (dreId.HasValue)
+                query += " and dre.id = @dreId";
+
+            query += @" group by dre.dre_id, dre.abreviacao
+                        order by dre.dre_id, dre.abreviacao";
+
+            return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, situacaoEncerrada }, commandTimeout: 60);
         }
     }
 }

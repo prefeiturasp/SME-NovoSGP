@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task<IEnumerable<QuantidadeEncaminhamentoNAAPAEmAbertoDto>> Executar(FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto param)
+        public Task<GraficoEncaminhamentoNAAPADto> Executar(FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto param)
         {
-            return mediator.Send(new ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(param.AnoLetivo, param.CodigoDre));
+            return mediator.Send(new ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(param.AnoLetivo, param.DreId));
         }
     }
 }

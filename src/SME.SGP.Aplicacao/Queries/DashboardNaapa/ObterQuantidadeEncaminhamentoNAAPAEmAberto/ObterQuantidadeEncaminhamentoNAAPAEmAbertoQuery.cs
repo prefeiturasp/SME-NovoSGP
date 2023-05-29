@@ -5,16 +5,16 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery : IRequest<IEnumerable<QuantidadeEncaminhamentoNAAPAEmAbertoDto>>
+    public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery : IRequest<GraficoEncaminhamentoNAAPADto>
     {
-        public ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(int anoLetivo, string codigoDre)
+        public ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery(int anoLetivo, long? dreId)
         {
             AnoLetivo = anoLetivo;
-            CodigoDre = codigoDre;
+            DreId = dreId;
         }
 
         public int AnoLetivo { get; set; }
-        public string CodigoDre { get; set; }
+        public long? DreId { get; set; }
     }
 
     public class ObterQuantidadeEncaminhamentoNAAPAEmAbertoQueryValidator : AbstractValidator<ObterQuantidadeEncaminhamentoNAAPAEmAbertoQuery>
