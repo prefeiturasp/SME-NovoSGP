@@ -1246,6 +1246,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase, SalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase, ExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase, ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuantidadeEncaminhamentoPorSituacaoUseCase, ObterQuantidadeEncaminhamentoPorSituacaoUseCase>();
 
             // Encaminhamento NAAPA
             services.TryAddScoped<IObterSecoesEncaminhamentosSecaoNAAPAUseCase, ObterSecoesEncaminhamentosSecaoNAAPAUseCase>();
