@@ -45,5 +45,17 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpGet("quantidade-em-aberto")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaTurmaEvasaoDto>), 200)]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeEncaminhamentoNAAPAEmAberto(
+                                                [FromQuery] FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto filtro,
+                                                [FromServices] IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
