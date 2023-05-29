@@ -83,6 +83,15 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
+                        if (usuarioLogado.EhProfessorCjInfantil())
+                        {
+                           var componentesCurricularesDoProfessorCJInfantil = await mediator
+                                .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                            if (!componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
+                                continue;
+                        }
+
                         var disciplina = disciplinasAgrupadas.FirstOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
                             .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
 
