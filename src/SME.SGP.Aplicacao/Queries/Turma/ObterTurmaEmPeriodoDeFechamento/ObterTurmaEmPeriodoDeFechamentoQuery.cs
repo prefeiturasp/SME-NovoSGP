@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
         public ObterTurmaEmPeriodoDeFechamentoQueryValidator()
         {
             RuleFor(a => a.Bimestre)
-                .NotEmpty()
-                .WithMessage("O bimestre é necessário deve ser informada para a pesquisa de período de fechamento");
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O bimestre é necessário para a pesquisa de período de fechamento");
 
             RuleFor(a => a.DataReferencia)
                 .NotEmpty()

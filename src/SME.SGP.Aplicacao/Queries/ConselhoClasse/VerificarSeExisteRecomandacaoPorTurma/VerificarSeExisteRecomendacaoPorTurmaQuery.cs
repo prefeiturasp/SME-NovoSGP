@@ -21,8 +21,12 @@ namespace SME.SGP.Aplicacao
     {
         public VerificarSeExisteRecomandacaoPorTurmaQueryValidator()
         {
-            RuleFor(f => f.TurmasCodigo).NotNull().WithMessage("Informe o Id da Turma para verificar se existe recomandação");
-            RuleFor(f => f.Bimestre).GreaterThan(0).WithMessage("Informe o Bimestre  para verificar se existe recomandação");
+            RuleFor(f => f.TurmasCodigo)
+                .NotNull()
+                .WithMessage("Informe o Id da Turma para verificar se existe recomendação");
+            RuleFor(f => f.Bimestre)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Informe o Bimestre  para verificar se existe recomendação");
         }
     }
 }

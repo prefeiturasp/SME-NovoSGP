@@ -50,7 +50,24 @@ namespace SME.SGP.Aplicacao
                 .ToArray();
 
             var turmas = componentesCurricularesPorTurma.Select(x => x.TurmaCodigo).Distinct().ToArray();
-            
+
+            var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
+
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery(param.Bimestre, turmaRegular.CodigoTurma, turmaRegular.AnoLetivo, turmaRegular.Semestre, tipoCalendarioTurma));;
+
+            switch (fechamentoTurma)
+            {
+                case null when !turmaRegular.EhAnoAnterior():
+                    {
+                        if (param.Bimestre > 0)
+                            throw new NegocioException(string.Format(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO_BIMESTRE, param.Bimestre));
+
+                        throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
+                    }
+                case null:
+                    throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
+            }
+
             var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(turmas, param.Bimestre));
 
             var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(turmas, param.Bimestre));
