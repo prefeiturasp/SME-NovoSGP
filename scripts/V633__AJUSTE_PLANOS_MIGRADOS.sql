@@ -1,3 +1,9 @@
+CREATE OR REPLACE TABLE public.temp_planos_migrados (
+	cd_aluno int4 NULL,
+	turma_infantil int4 NULL,
+	turma_fundamental int4 NULL
+);
+
 DO $$
 	DECLARE
 		situacao_plano INTEGER;
