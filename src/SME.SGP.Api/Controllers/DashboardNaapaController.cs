@@ -36,10 +36,10 @@ namespace SME.SGP.Api.Controllers
         }
 
 
-        [HttpGet("frequencia/turma/evasao/encaminhamentosituacao")]
+        [HttpGet("frequencia/turma/encaminhamentosituacao")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [ProducesResponseType(typeof(IEnumerable<GraficoFrequenciaTurmaEvasaoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
         [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuantidadeEncaminhamentoPorSituacao([FromQuery] FiltroGraficoEncaminhamentoPorSituacaoDto filtro,[FromServices] IObterQuantidadeEncaminhamentoPorSituacaoUseCase useCase)
         {

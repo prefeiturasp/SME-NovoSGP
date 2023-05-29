@@ -35,11 +35,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var useCase = ServiceProvider.GetService<IObterQuantidadeEncaminhamentoPorSituacaoUseCase>();
             
             var retorno = await useCase.Executar(new FiltroGraficoEncaminhamentoPorSituacaoDto(){UeId= ueId,AnoLetivo= anoLetivo});
-            retorno.Count().ShouldBeEquivalentTo(4);
-            retorno.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.Encerrado.Name()).Quantidade.ShouldBe<int>(70);
-            retorno.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.EmAtendimento.Name()).Quantidade.ShouldBe<int>(20);
-            retorno.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.AguardandoAtendimento.Name()).Quantidade.ShouldBe<int>(40);
-            retorno.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.Rascunho.Name()).Quantidade.ShouldBe<int>(30);
+            retorno.Graficos.Count().ShouldBeEquivalentTo(4);
+            retorno.Graficos.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.Encerrado.Name()).Quantidade.ShouldBe<int>(70);
+            retorno.Graficos.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.EmAtendimento.Name()).Quantidade.ShouldBe<int>(20);
+            retorno.Graficos.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.AguardandoAtendimento.Name()).Quantidade.ShouldBe<int>(40);
+            retorno.Graficos.FirstOrDefault(x => x.Descricao == SituacaoNAAPA.Rascunho.Name()).Quantidade.ShouldBe<int>(30);
         }
         
         private async Task CriarDadosBasicos()

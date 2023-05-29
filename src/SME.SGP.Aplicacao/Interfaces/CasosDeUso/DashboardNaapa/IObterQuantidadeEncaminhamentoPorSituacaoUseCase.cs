@@ -3,7 +3,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterQuantidadeEncaminhamentoPorSituacaoUseCase: IUseCase<FiltroGraficoEncaminhamentoPorSituacaoDto,IEnumerable<GraficoFrequenciaTurmaEvasaoDto>>
+    public interface IObterQuantidadeEncaminhamentoPorSituacaoUseCase: IUseCase<FiltroGraficoEncaminhamentoPorSituacaoDto,GraficoEncaminhamentoNAAPADto>
     {
     
     }
