@@ -11,6 +11,7 @@ using SME.SGP.IoC;
 using SME.SGP.Worker.RabbitMQ;
 using System;
 using SME.SGP.Infra;
+using SME.SGP.IoC.Extensions;
 
 namespace SME.SGP.Worker.Rabbbit
 {
@@ -46,6 +47,8 @@ namespace SME.SGP.Worker.Rabbbit
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            RegistrarConfigsThreads.Registrar(Configuration);
 
             app.Run(async (context) =>
             {

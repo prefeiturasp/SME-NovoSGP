@@ -24,8 +24,6 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosPorModalidade = await ObterPeriodosPassadosPorModalidade(request.Data);
-                var meses = ObtenhaTodosMesPosteriores(request.Data);
-
                 foreach (var modalidade in periodosPorModalidade)
                 {
                     var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
@@ -40,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
                         if (request.Mensal)
                         {
-                            foreach (var mes in meses)
+                            foreach (var mes in ObterMesesAnteriores(request.Data))
                                 await PublicarFilaConciliacaoMensal(turmasDaModalidade, mes);
                         }
                     }
@@ -82,16 +80,10 @@ namespace SME.SGP.Aplicacao
             return modalidadesPeriodosPassados.GroupBy(a => a.Modalidade);
         }
 
-        private List<int> ObtenhaTodosMesPosteriores(DateTime data)
+        private IEnumerable<int> ObterMesesAnteriores(DateTime data)
         {
-            var lista = new List<int>();
-
             for (var mes = 1; mes <= data.Month; mes++)
-            {
-                lista.Add(mes);
-            }
-
-            return lista;
+                yield return mes;
         }
     }
 }

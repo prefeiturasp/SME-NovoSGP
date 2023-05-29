@@ -1,16 +1,15 @@
-using Elastic.Apm.Api;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Frequencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
-using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -55,8 +54,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunosAnoAnterior), ServiceLifetime.Scoped));
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), 
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFakeAlunoCodigo1), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesRegenciaPorAnoQuery, IEnumerable<DisciplinaResposta>>),
+                typeof(NotaFechamento.ServicosFakes.ObterComponentesRegenciaPorAnoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica em ano anterior como Professor Titular e ir para aprovação de WF")]
@@ -85,16 +87,16 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNotaBimestre.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => b.EmAprovacao)).ShouldBeTrue();
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(0);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(0);
-            
+
             var wfAprovacaoNotaFechamento = ObterTodos<WfAprovacaoNotaFechamento>();
             wfAprovacaoNotaFechamento.Count.ShouldBe(4);
-            
+
             var workflowAprovacao = ObterTodos<WorkflowAprovacao>();
             workflowAprovacao.Count.ShouldBe(0);
         }
@@ -125,10 +127,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
         }
@@ -159,10 +161,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(4);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(4);
         }
@@ -197,10 +199,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
-            
+
             var historicoNotas = ObterTodos<HistoricoNota>();
             historicoNotas.Count.ShouldBe(7);
-            
+
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
             historicoNotasNotaFechamentos.Count.ShouldBe(7);
         }

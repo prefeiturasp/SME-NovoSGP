@@ -82,12 +82,12 @@ namespace SME.SGP.Aplicacao
             }
 
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaid));
-            bool existemProfessoresTitulares = professoresTitulares.Any() && professoresTitulares != null;
+            bool existemProfessoresTitulares = professoresTitulares != null && professoresTitulares.Any(pt => !string.IsNullOrEmpty(pt.ProfessorRf));
 
             return componentesTurmaCorrespondentes
                 .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares
                     ? professoresTitulares?.Where(p => p.DisciplinasId.Contains(ct.Codigo) || p.DisciplinasId.Contains(ct.CodigoComponenteTerritorioSaber))?.FirstOrDefault()?.ProfessorRf
-                    : string.Empty)))
+                    : null)))
                 .ToArray();
         }
 

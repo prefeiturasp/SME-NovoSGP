@@ -154,6 +154,13 @@ namespace SME.SGP.Aplicacao
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, periodoAtual, turma, componenteCurricularCodigo.ToString(), periodoAtual.PeriodoInicio);
             var exigeAprovacao = await mediator.Send(new ExigeAprovacaoDeNotaQuery(turma));
 
+            PeriodoFechamentoVigenteDto periodoFechamentoBimestre = null;
+
+            if (turma.AnoLetivo >= DateTime.Now.Year)
+                periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoVigentePorTurmaDataBimestreQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoAtual.Bimestre));
+            else
+                periodoFechamentoBimestre = await mediator.Send(new ObterPeriodoFechamentoAnoAnteriorPorTurmaBimestreQuery(turma, periodoAtual.Bimestre));
+
             foreach (var aluno in alunos)
             {
                 var fechamentoTurma = (from ft in fechamentosTurma
@@ -170,7 +177,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, turma.EhTurmaInfantil));
-                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(periodoAtual) : false;
+                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? AlunoEstaAtivoLancamentoNotaFechamento(aluno, periodoFechamentoBimestre, periodoAtual) : false;
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
                 if (frequenciaAluno != null)
@@ -286,6 +293,11 @@ namespace SME.SGP.Aplicacao
 
             return alunosFechamentoNotaConceito;
         }
+
+       public bool AlunoEstaAtivoLancamentoNotaFechamento(AlunoPorTurmaResposta aluno, PeriodoFechamentoVigenteDto periodoFechamentoBimestre, PeriodoEscolar periodoAtual)
+        => (aluno.Inativo == false || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date ||
+                       (aluno.DataSituacao >= periodoAtual.PeriodoInicio && periodoAtual.PeriodoFim <= aluno.DataSituacao))));
+       
 
         public async Task<IList<AlunosFechamentoNotaConceitoTurmaDto>> RetornaListagemAlunosFechamentoFinal(IEnumerable<AlunoPorTurmaResposta> alunos, List<DisciplinaDto> disciplinas,
             IEnumerable<FechamentoTurmaDisciplina> fechamentosTurma, Turma turma, long componenteCurricularCodigo, IEnumerable<PeriodoEscolar> periodosEscolares,

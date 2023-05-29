@@ -87,16 +87,20 @@ namespace SME.SGP.Aplicacao
 
             if (listaAtribuicoes.Any())
             {
-                var ultimoRegistroAlterado = listaAtribuicoes
-                    .OrderBy(b => b.AlteradoEm)
-                    .ThenBy(b => b.CriadoEm).FirstOrDefault();
+                var primeiroRegistroCriado = listaAtribuicoes
+                    .OrderBy(b => b.CriadoEm).FirstOrDefault();
 
-                if (ultimoRegistroAlterado != null)
+                var ultimoRegistroAlterado = listaAtribuicoes
+                    .OrderByDescending(u => u.AlteradoEm).FirstOrDefault()?.AlteradoEm > listaAtribuicoes.OrderByDescending(u => u.CriadoEm).FirstOrDefault()?.CriadoEm
+                    ? listaAtribuicoes.OrderByDescending(u => u.AlteradoEm).FirstOrDefault()
+                    : listaAtribuicoes.OrderByDescending(u => u.CriadoEm).FirstOrDefault();
+
+                if (primeiroRegistroCriado != null)
                 {
-                    listaRetorno.CriadoEm = ultimoRegistroAlterado.CriadoEm;
-                    listaRetorno.CriadoPor = ultimoRegistroAlterado.CriadoPor;
-                    listaRetorno.AlteradoEm = ultimoRegistroAlterado.AlteradoEm;
-                    listaRetorno.AlteradoPor = ultimoRegistroAlterado.AlteradoPor;
+                    listaRetorno.CriadoEm = primeiroRegistroCriado.CriadoEm;
+                    listaRetorno.CriadoPor = primeiroRegistroCriado.CriadoPor;
+                    listaRetorno.AlteradoEm = ultimoRegistroAlterado?.AlteradoEm;
+                    listaRetorno.AlteradoPor = ultimoRegistroAlterado?.AlteradoPor;
                 }
             }
 

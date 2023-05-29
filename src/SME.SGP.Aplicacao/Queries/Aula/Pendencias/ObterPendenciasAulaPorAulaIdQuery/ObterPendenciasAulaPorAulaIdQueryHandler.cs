@@ -37,7 +37,8 @@ namespace SME.SGP.Aplicacao
             
 
             var componenteCorrespondente = componentesCurricularesEolProfessor != null
-                ? componentesCurricularesEolProfessor.SingleOrDefault(cc => cc.Codigo.ToString().Equals(aula.DisciplinaId))
+                ? componentesCurricularesEolProfessor.FirstOrDefault(cc => (!cc.TerritorioSaber && cc.Codigo.ToString() == aula.DisciplinaId) || 
+                                                                           (cc.TerritorioSaber && cc.Codigo.ToString() == aula.DisciplinaId && cc.Professor == aula.ProfessorRf))
                 : usuarioLogado.EhSomenteProfessorCj() && componentesCurricularesDoProfessorCJ.Any() ?
                                                         componentesCurricularesDoProfessorCJ.Select(c => new ComponenteCurricularEol()
                                                         {

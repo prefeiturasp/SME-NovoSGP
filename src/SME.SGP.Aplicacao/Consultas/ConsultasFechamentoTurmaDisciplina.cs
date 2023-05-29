@@ -300,11 +300,18 @@ namespace SME.SGP.Aplicacao
                             if (!turmaPossuiFrequenciaRegistrada)
                                 throw new NegocioException("Não é possível registrar fechamento pois não há registros de frequência no bimestre.");
 
-                            var percentualFrequencia = frequenciaAluno == null ? 0 : frequenciaAluno.PercentualFrequencia;
-                            var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, turma.AnoLetivo));
+                            if(frequenciaAluno != null)
+                            {
+                                var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(frequenciaAluno.PercentualFrequencia, disciplina, turma.AnoLetivo));
 
-                            alunoDto.SinteseId = sinteseDto.Id;
-                            alunoDto.Sintese = sinteseDto.Valor;
+                                alunoDto.SinteseId = sinteseDto.Id;
+                                alunoDto.Sintese = sinteseDto.Valor;
+                            }
+                            else
+                            {
+                                alunoDto.Sintese = String.Empty;
+                                alunoDto.SinteseId = null;
+                            }                       
                         }
                         else
                         {
@@ -322,7 +329,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
 
-                                if (notaConceitoBimestre != null && notaConceitoBimestre.SinteseId.HasValue)
+                                if (notaConceitoBimestre != null && (notaConceitoBimestre.SinteseId.HasValue && frequenciaAluno != null))
                                 {
                                     alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
                                     alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
