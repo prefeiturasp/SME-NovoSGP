@@ -5,6 +5,8 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -104,6 +106,21 @@ namespace SME.SGP.Dados.Repositorios
                          WHERE ID = any(@ids)";
 
            await database.Conexao.ExecuteAsync(query, new { ids, mensagem, alteradoPor = "Sistema", alteradoEm = DateTimeExtension.HorarioBrasilia(), alteradoRf = "Sistema" });
+        }
+
+        public async Task<long[]> ObterIdsAsync(string turmaCodigo, NotificacaoCategoria categoria, NotificacaoTipo tipo, int ano)
+        {
+            var sql = @"select
+	                        n.id
+                        from
+	                        notificacao n
+                        where not n.excluida
+                        and n.turma_id = @turmaCodigo
+                        and n.categoria = @categoria
+                        and n.tipo = @tipo
+                        and n.ano = @ano ";
+            var notificacoes = await database.Conexao.QueryAsync<long>(sql, new { turmaCodigo, categoria = (int)categoria, tipo = (int)tipo, ano });
+            return notificacoes.ToArray();
         }
     }
 }

@@ -20,38 +20,43 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<EventoAulaDto>();
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator
+                .Send(new ObterUsuarioLogadoQuery(), cancellationToken);
 
-            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo));
+            var professoresTitulares = await mediator
+                .Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo), cancellationToken);
 
             if (request.Aulas.Any())
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
+                    var discplinaIdAula = long.Parse(aulaParaVisualizar.DisciplinaId);
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
-                        .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||
-                                             a.Id == long.Parse(aulaParaVisualizar.DisciplinaId) ||
-                                             a.CodigoTerritorioSaber == long.Parse(aulaParaVisualizar.DisciplinaId));
+                        .FirstOrDefault(a => a.CodigoComponenteCurricular == discplinaIdAula ||
+                                             a.Id == discplinaIdAula ||
+                                             a.CodigoTerritorioSaber == discplinaIdAula ||
+                                             (a.CdComponenteCurricularPai.HasValue && a.CdComponenteCurricularPai.Value == discplinaIdAula));
 
                     if (componenteCurricular != null && !componenteCurricular.RegistraFrequencia)
                     {
                         var componenteVerificacao = await mediator
-                            .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, long.Parse(aulaParaVisualizar.DisciplinaId), usuarioLogado));
+                            .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, discplinaIdAula, usuarioLogado), cancellationToken);
 
                         if (componenteVerificacao != default && componenteVerificacao.codigoTerritorio.HasValue && componenteVerificacao.codigoTerritorio.Value > 0)
                         {
                             componenteCurricular.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente, componenteVerificacao.codigoTerritorio));
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente, componenteVerificacao.codigoTerritorio), cancellationToken);
                         }
                         else
                         {
                             componenteCurricular.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular));
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular), cancellationToken);
                         }
                     }
 
-                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(aulaParaVisualizar.DisciplinaId)) ||
-                                                                                     (componenteCurricular != null && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoTerritorioSaber))));
+                    var professorTitular = professoresTitulares?
+                        .FirstOrDefault(p => p.DisciplinasId.Contains(discplinaIdAula) ||
+                        (componenteCurricular != null && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoTerritorioSaber))));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -64,7 +69,7 @@ namespace SME.SGP.Aplicacao
                         PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ
                                       || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
-                        ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)
+                        ComponenteCurricularId = componenteCurricular?.CodigoComponenteCurricular ?? discplinaIdAula
                     };
 
                     var atividadesAvaliativasDaAula = (from avaliacao in request.Avaliacoes
@@ -79,7 +84,8 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var atividadeAvaliativa in atividadesAvaliativasDaAula)
                         {
-                            eventoAulaDto.AtividadesAvaliativas.Add(new AtividadeAvaliativaParaEventoAulaDto() { Descricao = atividadeAvaliativa.NomeAvaliacao, Id = atividadeAvaliativa.Id });
+                            eventoAulaDto.AtividadesAvaliativas
+                                .Add(new AtividadeAvaliativaParaEventoAulaDto() { Descricao = atividadeAvaliativa.NomeAvaliacao, Id = atividadeAvaliativa.Id });
                         }
                     }
 
@@ -89,8 +95,11 @@ namespace SME.SGP.Aplicacao
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);
                     }
 
-                    var modalidadeTurma = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(request.TurmaCodigo));
-                    eventoAulaDto.Pendencias = await mediator.Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, usuarioLogado, atividadesAvaliativasDaAula.Any(), modalidadeTurma == Modalidade.EducacaoInfantil));
+                    var modalidadeTurma = await mediator
+                        .Send(new ObterModalidadeTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
+
+                    eventoAulaDto.Pendencias = await mediator
+                        .Send(new ObterPendenciasAulaPorAulaIdQuery(aulaParaVisualizar.Id, usuarioLogado, atividadesAvaliativasDaAula.Any(), modalidadeTurma == Modalidade.EducacaoInfantil), cancellationToken);
 
                     retorno.Add(eventoAulaDto);
                 }
