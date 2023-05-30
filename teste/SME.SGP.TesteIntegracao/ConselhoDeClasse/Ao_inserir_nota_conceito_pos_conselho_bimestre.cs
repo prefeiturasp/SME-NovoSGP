@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             SituacaoConselhoClasse.EmAndamento,
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito, componentesRegencia: 2);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito, componentesRegencia: COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
         }
 
         [Theory]
@@ -79,7 +79,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         //[InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre:BIMESTRE_2);
 
             await CriarDados(ObterPerfilProfessor(),
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,

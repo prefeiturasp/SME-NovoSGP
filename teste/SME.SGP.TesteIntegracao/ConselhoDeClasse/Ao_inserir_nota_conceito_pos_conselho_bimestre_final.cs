@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, TipoNota.Conceito, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito, componentesRegencia: 2);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito, componentesRegencia: COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
         }
         
         [Theory]
