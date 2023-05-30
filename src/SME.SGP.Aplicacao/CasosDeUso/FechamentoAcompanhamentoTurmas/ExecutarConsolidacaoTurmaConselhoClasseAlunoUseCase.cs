@@ -40,6 +40,8 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
             var turmasCodigos = new string[1] { turma.CodigoTurma };
+            var componentesComNotaFechamentoOuConselho = await mediator
+                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos, filtro.Bimestre, filtro.AlunoCodigo));
 
             if (!filtro.Inativo)
             {
@@ -78,9 +80,6 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                    var componentesComNotaFechamentoOuConselho = await mediator
-                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos, filtro.Bimestre, filtro.AlunoCodigo));
-
                     var componentesDaTurmaEol = await mediator
                         .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
 
@@ -114,13 +113,13 @@ namespace SME.SGP.Aplicacao
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
                 if (!filtro.EhParecer)
                 {
-                    var componentes = await mediator.Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos, filtro.Bimestre, filtro.AlunoCodigo));
-                    if (componentes != null && componentes.Any())
+                    
+                    if (componentesComNotaFechamentoOuConselho != null && componentesComNotaFechamentoOuConselho.Any())
                     {
                         var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos, filtro.Bimestre ?? 0));
                         var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos, filtro.Bimestre ?? 0, filtro.AlunoCodigo));
 
-                        foreach (var componenteCurricular in componentes)
+                        foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
                         {
                             if (!componenteCurricular.LancaNota)
                                 continue;

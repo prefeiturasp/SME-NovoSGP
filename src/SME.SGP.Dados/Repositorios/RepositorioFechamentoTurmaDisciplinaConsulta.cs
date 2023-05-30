@@ -762,7 +762,7 @@ namespace SME.SGP.Dados.Repositorios
                         and fa.aluno_codigo = @alunoCodigo";
 
             if (bimestre > 0)
-                query += "and p.bimestre = @bimestre";
+                query += " and p.bimestre = @bimestre";
 
             return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query.ToString(), new { turmasCodigos, bimestre, alunoCodigo });
         }
