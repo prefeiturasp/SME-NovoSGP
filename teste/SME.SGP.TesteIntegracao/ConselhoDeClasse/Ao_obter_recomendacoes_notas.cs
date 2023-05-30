@@ -67,6 +67,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = "0"
             });
 
+            await InserirNaBase(new ConselhoClasse()
+            {
+                FechamentoTurmaId = 1,
+                Situacao = SituacaoConselhoClasse.EmAndamento,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            });
+
             var retornoUseCase = await userCase.Executar(filtro);
             retornoUseCase.Count().ShouldBeGreaterThan(0);
             retornoUseCase.FirstOrDefault().Inconsistencias.Count().ShouldBeGreaterThan(0);
