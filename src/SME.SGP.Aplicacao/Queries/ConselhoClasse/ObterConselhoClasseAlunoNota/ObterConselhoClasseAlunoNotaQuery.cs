@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterConselhoClasseAlunoNotaQueryValidator()
         {
-            RuleFor(x => x.Bimestre).GreaterThan(0).WithMessage("'Informe um bimestre para realizar a consulta'");
+            RuleFor(x => x.Bimestre).GreaterThanOrEqualTo(0).WithMessage("'Informe um bimestre para realizar a consulta'");
             RuleFor(x => x.TurmasCodigo).NotNull().WithMessage("'Informe o Id da turma para  realizar a consulta'");
         }
     }
