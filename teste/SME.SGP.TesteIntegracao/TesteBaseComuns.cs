@@ -244,11 +244,11 @@ namespace SME.SGP.TesteIntegracao
 
         protected const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
-        private const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
+        protected const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
 
         protected const string USUARIO_PROFESSOR_LOGIN_1111111 = "1111111";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_1111111 = "1111111";
-        private const string USUARIO_PROFESSOR_NOME_1111111 = "Nome do usuário 1111111";
+        protected const string USUARIO_PROFESSOR_NOME_1111111 = "Nome do usuário 1111111";
 
         private const string PROFESSOR = "Professor";
         private const int ORDEM_290 = 290;

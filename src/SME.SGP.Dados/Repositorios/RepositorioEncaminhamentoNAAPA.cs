@@ -346,6 +346,23 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME }));           
         }
 
+        public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
+        {
+           var query =@"select 
+	                        t.ue_id UeId,
+	                        t.ano_letivo AnoLetivo, 
+	                        en.situacao,
+	                        count(en.id)quantidade
+                        from encaminhamento_naapa en
+                        inner join turma t on en.turma_id = t.id 
+                        where not en.excluido  
+                        and t.ue_id = @ueId
+                        and t.ano_letivo = @anoLetivo
+                        group by t.ue_id,t.ano_letivo ,en.situacao ";
+           
+           return await database.Conexao.QueryAsync<EncaminhamentosNAAPAConsolidadoDto>(query, new {ueId, anoLetivo});
+        }
+
         public async Task<SituacaoDto> ObterSituacao(long id)
         {
             var query = @" select situacao

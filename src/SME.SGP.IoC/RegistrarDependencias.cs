@@ -550,6 +550,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
             services.TryAddScoped<IRepositorioObservacaoEncaminhamentoNAAPA, RepositorioObservacaoEncaminhamentoNAAPA>();
             services.TryAddScoped<IRepositorioEncaminhamentoNAAPAHistoricoAlteracoes, RepositorioEncaminhamentoNAAPAHistoricoAlteracoes>();
+            services.TryAddScoped<IRepositorioConsolidadoEncaminhamentoNAAPA, RepositorioConsolidadoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioConsolidadoAtendimentoNAAPA, RepositorioConsolidadoAtendimentoNAAPA>();
 
             services.TryAddScoped<IRepositorioHistoricoEscolarObservacao, RepositorioHistoricoEscolarObservacao>();
         }
@@ -611,6 +613,11 @@ namespace SME.SGP.IoC
         public virtual void RegistrarCasoDeUsoPendenciasRabbitSgp(IServiceCollection services)
         {
             services.RegistrarPendenciasUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoNAAPARabbitSgp(IServiceCollection services)
+        {
+            services.RegistrarNAAPAUseCaseRabbitSgp();
         }
 
         public virtual void RegistrarCasoDeUsoRabbitSgp(IServiceCollection services)
@@ -1248,6 +1255,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase, SalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase, ExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase, ObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuantidadeEncaminhamentoPorSituacaoUseCase, ObterQuantidadeEncaminhamentoPorSituacaoUseCase>();
 
             // Encaminhamento NAAPA
             services.TryAddScoped<IObterSecoesEncaminhamentosSecaoNAAPAUseCase, ObterSecoesEncaminhamentosSecaoNAAPAUseCase>();
@@ -1266,7 +1274,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase>();
             services.TryAddScoped<IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase, ObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase>();
             services.TryAddScoped<IRelatorioEncaminhamentoNAAPAUseCase, RelatorioEncaminhamentoNAAPAUseCase>();
-            
+            services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
+            services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
+
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
 
@@ -1284,6 +1294,7 @@ namespace SME.SGP.IoC
             RegistrarCasoDeUsoFrequenciaRabbitSgp(services);
             RegistrarCasoDeUsoInstitucionalRabbitSgp(services);
             RegistrarCasoDeUsoPendenciasRabbitSgp(services);
+            RegistrarCasoDeUsoNAAPARabbitSgp(services);
             RegistrarCasoDeUsoRabbitSgp(services);
         }
 
