@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
             double? nota = null;
             double? conceito = null;
 
-            if (notaFiltro == null || conceitoFiltro == null)
+            if (notaFiltro == null && conceitoFiltro == null)
             {
                 var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, bimestre));
                 IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasDiciplina = null;
