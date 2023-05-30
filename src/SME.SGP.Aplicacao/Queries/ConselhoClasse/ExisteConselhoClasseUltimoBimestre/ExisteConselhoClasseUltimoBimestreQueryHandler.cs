@@ -15,14 +15,16 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
-        public ExisteConselhoClasseUltimoBimestreQueryHandler(IMediator mediator,IConsultasPeriodoEscolar consultasPeriodoEscolar)
+        public ExisteConselhoClasseUltimoBimestreQueryHandler(IMediator mediator,IConsultasPeriodoEscolar consultasPeriodoEscolar,IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
         }
         
         public async Task<bool> Handle(ExisteConselhoClasseUltimoBimestreQuery request, CancellationToken cancellationToken)
         {
+
             var periodoEscolar = await ObterPeriodoUltimoBimestre(request.Turma);
 
             var conselhoClasseUltimoBimestre = await repositorioConselhoClasseAlunoConsulta.ObterPorPeriodoAsync(request.AlunoCodigo, request.Turma.Id, periodoEscolar.Id);

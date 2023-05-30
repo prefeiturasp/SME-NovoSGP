@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoEscolar(Turma turma, int bimestre)
         {
             var fechamentoDaTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, bimestre));
-            if (fechamentoDaTurma != null && fechamentoDaTurma.Id > 0)
+            if (fechamentoDaTurma != null && fechamentoDaTurma.Id > 0 && fechamentoDaTurma?.PeriodoEscolar !=null)
                 return fechamentoDaTurma?.PeriodoEscolar;
             else return await mediator.Send(new ObterPeriodoEscolarAtualQuery(turma.Id, DateTime.Now.Date));
         }
