@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
             if (turmaComplementares.Any())
                 turmasCodigo.AddRange(turmaComplementares.Select(x => x.CodigoTurma));
-
+            
             var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
             var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
@@ -48,8 +48,8 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesPorTurma = (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo.Distinct().ToArray(), perfil, usuarioLogado.CodigoRf, turmaRegular.EnsinoEspecial, turmaRegular.TurnoParaComponentesCurriculares)))
                 .Where(w=> w.LancaNota)
                 .ToArray();
-
-            var turmas = componentesCurricularesPorTurma.Where(w=> !string.IsNullOrEmpty(w.TurmaCodigo)).Select(x => x.TurmaCodigo).Distinct().ToArray();
+            /*
+            var turmas = componentesCurricularesPorTurma.Where(w=> !string.IsNullOrEmpty(w.TurmaCodigo)).Select(x => x.TurmaCodigo).Distinct().ToArray();*/
 
             var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
 
@@ -68,20 +68,20 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
             }
 
-            var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(turmas, param.Bimestre));
+            var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
 
-            var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(turmas, param.Bimestre));
+            var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
 
             if (!obterConselhoClasseAlunoNota.Any())
                 throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
-            
-            MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma,componentesCurricularesPorTurma);
+
+            MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
             
             return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);
         }
 
-        private void MapearRetorno(List<InconsistenciasAlunoFamiliaDto> retorno, IEnumerable<AlunoTemRecomandacaoDto> obterRecomendacoes, IEnumerable<ConselhoClasseAlunoNotaDto> obterConselhoClasseAlunoNota, IEnumerable<AlunoPorTurmaResposta> alunoPorTurmaRespostas, 
-            IEnumerable<DisciplinaDto> componentesCurricularesPorTurma)
+        private async Task MapearRetorno(List<InconsistenciasAlunoFamiliaDto> retorno, IEnumerable<AlunoTemRecomandacaoDto> obterRecomendacoes, IEnumerable<ConselhoClasseAlunoNotaDto> obterConselhoClasseAlunoNota, IEnumerable<AlunoPorTurmaResposta> alunoPorTurmaRespostas,
+            PeriodoEscolar periodoEscolar, IEnumerable<DisciplinaDto> componentesCurricularesPorTurma)
         {
             foreach (var aluno in alunoPorTurmaRespostas)
             {
@@ -93,7 +93,12 @@ namespace SME.SGP.Aplicacao
                 };
 
                 var componentesComNotasDoAluno = obterConselhoClasseAlunoNota.Where(x => x.AlunoCodigo.Equals(aluno.CodigoAluno) && !string.IsNullOrEmpty(x.Nota)).Select(s=> s.ComponenteCurricularId);
-                var componentesSemNota = componentesCurricularesPorTurma.Where(x => !componentesComNotasDoAluno.Contains(x.CodigoComponenteCurricular)).Select(s=> s.Nome).Distinct();
+
+                var turmas = componentesCurricularesPorTurma.Where(w => !string.IsNullOrEmpty(w.TurmaCodigo)).Select(x => x.TurmaCodigo).Distinct().ToArray();
+                var turmasComMatriculaValida = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(aluno.CodigoAluno, turmas, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
+                
+                var componentesSemNota = componentesCurricularesPorTurma.Where(x => turmasComMatriculaValida.Contains(x.TurmaCodigo) 
+                                                                                    && !componentesComNotasDoAluno.Contains(x.CodigoComponenteCurricular)).Select(s=> s.Nome).Distinct();
 
                 foreach (var componente in componentesSemNota)
                     item.Inconsistencias.Add(string.Format(MensagemNegocioConselhoClasse.AUSENCIA_DA_NOTA_NO_COMPONENTE,componente));
