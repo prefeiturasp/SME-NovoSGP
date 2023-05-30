@@ -68,13 +68,15 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
             }
 
+            var existeConselhoParaTurma = await mediator.Send(new ExisteConselhoClasseParaTurmaQuery(turmas, param.Bimestre));
+
+            if (!existeConselhoParaTurma)
+                throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
+
             var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(turmas, param.Bimestre));
 
             var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(turmas, param.Bimestre));
 
-            if (!obterConselhoClasseAlunoNota.Any())
-                throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
-            
             MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma,componentesCurricularesPorTurma);
             
             return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);

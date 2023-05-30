@@ -6,7 +6,9 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -452,6 +454,18 @@ namespace SME.SGP.Dados.Repositorios
                         and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula";
 
             return await database.Conexao.QueryAsync<int>(sql, new { discplinaId, codigoTurma, bismetre });
+        }
+
+        public async Task<bool> ExisteConselhoDeClasseParaTurma(string[] codigosTurmas, int bimestre)
+        {
+            var sql = @"select 1 from conselho_classe cc
+                    inner join fechamento_turma ft on cc.fechamento_turma_id = ft.id
+                    inner join turma t on t.id = ft.turma_id
+                    inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                    where t.turma_id = any(@codigosTurmas)
+                        and pe.bimestre = @bimestre";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigosTurmas, bimestre });
         }
     }
 }
