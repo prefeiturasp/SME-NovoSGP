@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho - EJA")]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_eja()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre:BIMESTRE_2);
 
             await CriarDados(ObterPerfilProfessor(),
                             salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,

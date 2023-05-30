@@ -37,14 +37,14 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select
 	                        distinct cca.aluno_codigo AluncoCodigo,
-	                        ccr.id is not null TemRecomendacao
+	                        ccr.id is not null or coalesce(cca.recomendacoes_aluno, '') <> '' or coalesce(cca.recomendacoes_familia, '') <> '' TemRecomendacao
                         from conselho_classe_aluno cca
                         join conselho_classe cc on cc.id = cca.conselho_classe_id
                         join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                        join conselho_classe_aluno_recomendacao ccar on ccar.conselho_classe_aluno_id = cca.id
-                        join conselho_classe_recomendacao ccr on ccr.id = ccar.conselho_classe_recomendacao_id
                         join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                         join turma t on t.id = ft.turma_id
+                        left join conselho_classe_aluno_recomendacao ccar on ccar.conselho_classe_aluno_id = cca.id
+                        left join conselho_classe_recomendacao ccr on ccr.id = ccar.conselho_classe_recomendacao_id
                         where not cca.excluido
 	                        and t.turma_id = any(@turmasId)
 	                        and pe.bimestre = @bimestre ";

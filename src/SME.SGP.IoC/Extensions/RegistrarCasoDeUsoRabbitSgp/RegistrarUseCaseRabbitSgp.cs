@@ -73,12 +73,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase, RemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase, RemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
             services.TryAddScoped<IExcluirArmazenamentoPorAquivoUseCase, ExcluirArmazenamentoPorAquivoUseCase>();
-            services.TryAddScoped<IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase, AtualizarInformacoesDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IAtualizarTurmaDoEncaminhamentoNAAPAUseCase, AtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase, AtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase, NotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase, NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
-            services.TryAddScoped<IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase, AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IExecutarGravarHistoricoEscolarObservacaoUseCase, ExecutarGravarHistoricoEscolarObservacaoUseCase>();
         }
     }
