@@ -33,8 +33,9 @@ namespace SME.SGP.Aplicacao
             var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))?.Where(s => s.PossuiSituacaoAtiva())?.DistinctBy(x => x.NomeAluno);
 
             var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
-            if (turmaComplementares.Any())
-                turmasCodigo.AddRange(turmaComplementares.Select(x => x.CodigoTurma));
+            var turmasComplementaresFiltradas = turmaComplementares.Where(t => t.TurmaRegularCodigo == turmaRegular.CodigoTurma && t.Semestre == turmaRegular.Semestre);
+            if (turmasComplementaresFiltradas.Any())
+                turmasCodigo.AddRange(turmasComplementaresFiltradas.Select(s=> s.CodigoTurma));
             
             var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
@@ -48,8 +49,6 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesPorTurma = (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo.Distinct().ToArray(), perfil, usuarioLogado.CodigoRf, turmaRegular.EnsinoEspecial, turmaRegular.TurnoParaComponentesCurriculares)))
                 .Where(w=> w.LancaNota)
                 .ToArray();
-            /*
-            var turmas = componentesCurricularesPorTurma.Where(w=> !string.IsNullOrEmpty(w.TurmaCodigo)).Select(x => x.TurmaCodigo).Distinct().ToArray();*/
 
             var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
 
@@ -75,7 +74,7 @@ namespace SME.SGP.Aplicacao
             if (!obterConselhoClasseAlunoNota.Any())
                 throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
 
-            MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
+            await MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
             
             return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);
         }
