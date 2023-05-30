@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -146,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" and p.bimestre = @bimestre ");
 
             return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(query.ToString(),
-                new { turmaCodigo, disciplinaId , bimestre});
+                new { turmaCodigo, disciplinaId, bimestre });
         }
 
 
@@ -691,7 +692,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.Append(" and f.situacao = any(@situacoesFechamento)");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),
-                new { turmaCodigo, disciplinaId, bimestre, situacoesFechamento = (situacoesFechamento != null ? situacoesFechamento.Select(situacao => (int)situacao).ToArray() : null) });                
+                new { turmaCodigo, disciplinaId, bimestre, situacoesFechamento = (situacoesFechamento != null ? situacoesFechamento.Select(situacao => (int)situacao).ToArray() : null) });
         }
 
         public async Task<bool> VerificaExistenciaFechamentoTurmaDisciplinPorTurmaDisciplinaBimestreSituacao(long turmaId, long disciplinaId, long periodoId, SituacaoFechamento[] situacoesFechamento)
@@ -703,8 +704,8 @@ namespace SME.SGP.Dados.Repositorios
                                     and f.disciplina_id = @disciplinaId
                                     and ft.periodo_escolar_id = @periodoId
                                     and f.situacao = any(@situacoesFechamento)");
-                return (await database.Conexao.QueryFirstAsync<int>(query.ToString(),
-                new { turmaId, disciplinaId, periodoId, situacoesFechamento = situacoesFechamento.Select(situacao => (int)situacao).ToArray() })) > 0;            
+            return (await database.Conexao.QueryFirstAsync<int>(query.ToString(),
+            new { turmaId, disciplinaId, periodoId, situacoesFechamento = situacoesFechamento.Select(situacao => (int)situacao).ToArray() })) > 0;
         }
 
         public Task<IEnumerable<FechamentoTurmaDisciplinaPendenciaDto>> ObterFechamentosTurmaDisciplinaDTOPorUeSituacao(long idUe, SituacaoFechamento[] situacoesFechamento, long[] fechamentoTurmaDisciplinaIdsIgnorados = null)
@@ -733,8 +734,37 @@ namespace SME.SGP.Dados.Repositorios
                 query.Append(" and f.id != any(@fechamentoTurmaDisciplinaIdsIgnorados) ");
 
             return database.Conexao.QueryAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),
-                new { situacoesFechamento = situacoesFechamento.Select(situacao => (int)situacao).ToArray(), 
-                      fechamentoTurmaDisciplinaIdsIgnorados, idUe, anoletivo = DateTimeExtension.HorarioBrasilia().Year});
+                new
+                {
+                    situacoesFechamento = situacoesFechamento.Select(situacao => (int)situacao).ToArray(),
+                    fechamentoTurmaDisciplinaIdsIgnorados,
+                    idUe,
+                    anoletivo = DateTimeExtension.HorarioBrasilia().Year
+                });
+        }
+
+        public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterFechamentosTurmasCodigosEBimestreEAlunoCodigoAsync(string[] turmasCodigos, int bimestre, string alunoCodigo)
+        {
+            var query = @"select 
+                            fa.aluno_codigo as AlunoCodigo, 
+	                        fn.disciplina_id as ComponenteCurricularId,
+	                        fn.nota,
+	                        fn.conceito_id as ConceitoId,
+	                        p.bimestre 
+                          from fechamento_aluno fa 
+                          left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
+                          left join fechamento_turma_disciplina f on f.id = fa.fechamento_turma_disciplina_id
+                          left join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                          left join periodo_escolar p on p.id = ft.periodo_escolar_id
+                          left join turma t on t.id = ft.turma_id
+                          where 
+	                        t.turma_id = any(@turmasCodigos)
+                        and fa.aluno_codigo = @alunoCodigo";
+
+            if (bimestre > 0)
+                query += " and p.bimestre = @bimestre";
+
+            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query.ToString(), new { turmasCodigos, bimestre, alunoCodigo });
         }
     }
 }
