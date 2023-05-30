@@ -32,6 +32,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<FechamentoTurmaDisciplinaPendenciaDto> ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(string turmaCodigo, long disciplinaId, int bimestre, SituacaoFechamento[] situacoesFechamento);
         Task<bool> VerificaExistenciaFechamentoTurmaDisciplinPorTurmaDisciplinaBimestreSituacao(long turmaId, long disciplinaId, long periodoId, SituacaoFechamento[] situacoesFechamento);
         Task<IEnumerable<FechamentoTurmaDisciplinaPendenciaDto>> ObterFechamentosTurmaDisciplinaDTOPorUeSituacao(long idUe, SituacaoFechamento[] situacoesFechamento, long[] fechamentoTurmaDisciplinaIdsIgnorados = null);
-
+        Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterFechamentosTurmasCodigosEBimestreEAlunoCodigoAsync(string[] turmasCodigos, int bimestre, string alunoCodigo);
     }
 }
