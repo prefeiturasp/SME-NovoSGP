@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 var componentesComNotasDoAluno = obterConselhoClasseAlunoNota.Where(x => x.AlunoCodigo.Equals(aluno.CodigoAluno) && !string.IsNullOrEmpty(x.Nota)).Select(s=> s.ComponenteCurricularId);
-                var componentesSemNota = componentesCurricularesPorTurma.Where(x => !componentesComNotasDoAluno.Contains(x.CodigoComponenteCurricular)).Select(s=> s.Nome);
+                var componentesSemNota = componentesCurricularesPorTurma.Where(x => !componentesComNotasDoAluno.Contains(x.CodigoComponenteCurricular)).Select(s=> s.Nome).Distinct();
 
                 foreach (var componente in componentesSemNota)
                     item.Inconsistencias.Add(string.Format(MensagemNegocioConselhoClasse.AUSENCIA_DA_NOTA_NO_COMPONENTE,componente));
