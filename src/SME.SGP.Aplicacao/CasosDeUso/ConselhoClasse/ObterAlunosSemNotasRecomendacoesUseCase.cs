@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
 
             var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(turmas, param.Bimestre));
 
-            if (!(obterRecomendacoes.Any() && obterConselhoClasseAlunoNota.Any()))
+            if (!obterConselhoClasseAlunoNota.Any())
                 throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
             
             MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma,componentesCurricularesPorTurma);
