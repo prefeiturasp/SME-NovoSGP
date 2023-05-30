@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = await ObterPeriodoEscolar(turmaRegular, param.Bimestre);
 
             turmasCodigo.Add(turmaRegular.CodigoTurma);
-            var alunosDaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma)));
+            var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))?.Where(s => s.PossuiSituacaoAtiva())?.DistinctBy(x => x.NomeAluno);
 
             var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
             if (turmaComplementares.Any())
