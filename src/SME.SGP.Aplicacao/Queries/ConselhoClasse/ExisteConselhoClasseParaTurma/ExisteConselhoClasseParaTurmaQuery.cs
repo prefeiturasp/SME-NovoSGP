@@ -25,11 +25,6 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty() 
                 .NotNull()
                 .WithMessage("A turma deve ser informado para a busca do conselho de classe.");
-
-            RuleFor(c => c.Bimestre)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("O bimestre deve ser informado para a busca do conselho de classe.");
         }
     }
 }
