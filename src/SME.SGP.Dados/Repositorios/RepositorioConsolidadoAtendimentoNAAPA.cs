@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -12,6 +13,16 @@ namespace SME.SGP.Dados
     {
         public RepositorioConsolidadoAtendimentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
+        }
+
+        public async Task<IEnumerable<long>> ObterIds(long ueId, int mes, int anoLetivo, string[] rfsProfissionaisIgnorados)
+        {
+            var query = @$"  select can.id
+                            from consolidado_atendimento_naapa can
+                            where can.ue_id = @ueId and can.ano_letivo = @anoLetivo and can.mes =@mes
+                            {(rfsProfissionaisIgnorados.Any() ? $"and can.rf_profissional not in ({string.Join(",", rfsProfissionaisIgnorados.Select(rf => $"'{rf}'"))})" : string.Empty)}";
+
+            return await database.Conexao.QueryAsync<long>(query, new { anoLetivo, ueId, mes }, commandTimeout: 60);
         }
 
         public async Task<ConsolidadoAtendimentoNAAPA> ObterPorUeIdMesAnoLetivoProfissional(long ueId, int mes, int anoLetivo, string rfProfissional)
