@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
@@ -25,6 +26,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir lançamento de nota numérica pelo Professor Titular - Fundamental - Ano atual")]

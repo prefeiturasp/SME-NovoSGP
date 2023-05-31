@@ -11,16 +11,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasFechamentoAluno : IConsultasFechamentoAluno
     {
-        private readonly IRepositorioAnotacaoFechamentoAluno repositorio;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta;
         private readonly IMediator mediator;
 
-        public ConsultasFechamentoAluno(IRepositorioAnotacaoFechamentoAluno repositorio,
-                                        IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+        public ConsultasFechamentoAluno(IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta,
                                         IMediator mediator)
         {
-            this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.repositorioAnotacaoFechamentoAlunoConsulta = repositorioAnotacaoFechamentoAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFechamentoAlunoConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -42,28 +39,8 @@ namespace SME.SGP.Aplicacao
             return anotacaoDto;
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string[] turmasCodigos, long periodoId)
-        {
-            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, turmasCodigos, periodoId);
-            if (anotacoesDto == null || !anotacoesDto.Any())
-                return default;
-
-            var disciplinasIds = anotacoesDto.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-
-            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasIds);
-
-            foreach (var anotacao in anotacoesDto)
-            {
-                var disciplina = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(anotacao.DisciplinaId));
-                if (disciplina != null)
-                    anotacao.Disciplina = disciplina.Nome;
-            }
-
-            return anotacoesDto;
-        }
-
         public async Task<AnotacaoFechamentoAluno> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)
-            => await repositorio.ObterPorFechamentoEAluno(fechamentoId, codigoAluno);
+            => await repositorioAnotacaoFechamentoAlunoConsulta.ObterPorFechamentoEAluno(fechamentoId, codigoAluno);
 
         private static FechamentoAlunoCompletoDto MapearParaDto(AnotacaoFechamentoAluno anotacaoAluno, AlunoDadosBasicosDto dadosAluno)
         {

@@ -446,7 +446,8 @@ namespace SME.SGP.Dados.Repositorios
         {
                 var situacoesPendencia = new int[]{(int)SituacaoPendencia.Aprovada,(int)SituacaoPendencia.Pendente};
                 var tiposPendenciaFechamento = new int[] {(int)TipoPendencia.AulasSemFrequenciaNaDataDoFechamento,(int)TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento };
-                var tiposPendenciaDiarioClasse = new int[] {(int)TipoPendencia.Frequencia,(int)TipoPendencia.PlanoAula,(int)TipoPendencia.DiarioBordo };
+                var tiposPendenciaAula = new int[] {(int)TipoPendencia.Frequencia,(int)TipoPendencia.PlanoAula };
+                var tiposPendenciaDiarioBordo = new int[] {(int)TipoPendencia.DiarioBordo };
                 var anoLetivoInformado = anoLetivo ?? DateTime.Now.Year;
                 var sql = new StringBuilder(); 
                 sql.AppendLine(@"     select distinct ");
@@ -476,12 +477,32 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"     where not p.excluido and not a.excluido  ");
                 sql.AppendLine(@"      and t.ano_letivo = @anoLetivoInformado ");
                 sql.AppendLine(@"      and t.ue_id = @ueid ");
-                sql.AppendLine(@"      and p.tipo = any(@tiposPendenciaDiarioClasse)");
+                sql.AppendLine(@"      and p.tipo = any(@tiposPendenciaAula)");
                 sql.AppendLine(@"       and p.situacao = any(@situacoesPendencia)");
                 sql.AppendLine(@"      group by p.id ");
-                return await database.Conexao.QueryAsync<AulasDiasPendenciaDto>(sql.ToString(), new { anoLetivoInformado,ueid,situacoesPendencia,tiposPendenciaFechamento,tiposPendenciaDiarioClasse },commandTimeout:60);
+                sql.AppendLine(" union all	 ");
+                sql.AppendLine(QuantidadeDiasPendenciasDiarioBordo());
+                return await database.Conexao.QueryAsync<AulasDiasPendenciaDto>(sql.ToString(), new { anoLetivoInformado,ueid,situacoesPendencia,tiposPendenciaFechamento,tiposPendenciaDiarioBordo,tiposPendenciaAula },commandTimeout:60);
         }
 
+        private static string QuantidadeDiasPendenciasDiarioBordo()
+        {
+            var sql = new StringBuilder(); 
+            sql.AppendLine(@"select distinct ");
+            sql.AppendLine(@"   	p.id  as PendenciaId,");
+            sql.AppendLine(@"   	count(a.data_aula) as QuantidadeDias,");
+            sql.AppendLine(@"    sum(a.quantidade) as QuantidadeAula");
+            sql.AppendLine(@"from pendencia p");
+            sql.AppendLine(@"inner join pendencia_diario_bordo pdb on pdb.pendencia_id = p.id ");
+            sql.AppendLine(@"join aula a on a.id = pdb.aula_id");
+            sql.AppendLine(@"join turma t on t.turma_id = a.turma_id ");
+            sql.AppendLine(@"where t.ano_letivo = @anoLetivoInformado ");
+            sql.AppendLine(@"	and t.ue_id = @ueid ");
+            sql.AppendLine(@"	and p.tipo = any(@tiposPendenciaDiarioBordo)");
+            sql.AppendLine(@"	and p.situacao = any(@situacoesPendencia)");
+            sql.AppendLine(@"group by p.id  ");
+            return sql.ToString();
+        }
         private static string RetornaQueryParaUnicoTipoPendenciaGrupo(TipoPendenciaGrupo tipoPendenciaGrupo, string turmaCodigo)
         {
             var query = tipoPendenciaGrupo switch

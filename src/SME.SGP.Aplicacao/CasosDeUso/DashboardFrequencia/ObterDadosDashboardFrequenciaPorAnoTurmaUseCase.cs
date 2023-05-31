@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
 
             var dataAula = dataInicio;
-            var dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaPorAnoTurmaQuery(anoLetivo,
+            var dadosFrequenciaAlunos = (await mediator.Send(new ObterDadosDashboardFrequenciaPorAnoTurmaQuery(anoLetivo,
                                                                                                               dreId,
                                                                                                               ueId,
                                                                                                               modalidade,
@@ -30,11 +30,9 @@ namespace SME.SGP.Aplicacao
                                                                                                               datafim,
                                                                                                               mes,
                                                                                                               tipoPeriodoDashboard,
-                                                                                                              visaoDre));
-
-            if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any() || dadosFrequenciaAlunos.Any(f => f.Ausentes == 0 && f.Presentes == 0 && f.Remotos == 0))
+                                                                                                              visaoDre))).Where(consolidado => (consolidado.Ausentes + consolidado.Presentes + consolidado.Remotos) > 0);
+            if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 return null;
-
 
             var dadosTotais = await mediator.Send(new ObterTotalFrequenciaEAulasPorPeriodoQuery(anoLetivo,
                                                                                                 dreId,

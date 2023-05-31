@@ -1,9 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -30,39 +26,48 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<PlanoAEEResumoDto>> Handle(ObterPlanosAEEQuery request, CancellationToken cancellationToken)
         {
-            int periodo = 0;
-            int[] tipos = new int[0];
-            List<string> turmasCodigos = new List<string>();
-
-            var ueCodigo = await mediator.Send(new ObterUePorIdQuery(request.UeId));
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
             bool ehAdmin = usuario.EhAdmGestao();
             bool ehPAEE = usuario.EhProfessorPaee();
-
+            var turmasCodigos = await ObterCodigosTurmas(request.UeId, ehAdmin);
             
-            if (!ehAdmin){
+            return MapearParaDto(await repositorioPlanoAEE.ListarPaginado(request.DreId,
+                                                                          request.UeId,
+                                                                          request.TurmaId,
+                                                                          request.AlunoCodigo,
+                                                                          (int?)request.Situacao,
+                                                                          turmasCodigos,
+                                                                          ehAdmin,
+                                                                          ehPAEE,
+                                                                          Paginacao,
+                                                                          request.ExibirEncerrados,
+                                                                          request.ResponsavelRf,
+                                                                          request.PaaiReponsavelRf));
+        }
+
+        private async Task<string[]> ObterCodigosTurmas(long ueId, bool ehAdmin)
+        {
+            if (ueId > 0 && !ehAdmin)
+            {
+                int[] tipos = new int[0];
+                List<string> turmasCodigos = new List<string>();
+
+                var ueCodigo = await mediator.Send(new ObterUePorIdQuery(ueId));
                 var turmas =
                     await mediator.Send(
                         new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
-                            periodo, false, DateTime.Now.Year, tipos, true));
+                            0, false, DateTime.Now.Year, tipos, true));
 
                 if (turmas != null || turmas.Any())
                 {
                     foreach (var item in turmas)
                         turmasCodigos.Add(item.Codigo);
                 }
+
+                return turmasCodigos.ToArray();
             }
 
-            return MapearParaDto(await repositorioPlanoAEE.ListarPaginado(request.DreId,
-                                                                          request.UeId,
-                                                                          request.TurmaId,
-                                                                          request.AlunoCodigo,
-                                                                          (int?)request.Situacao,
-                                                                          turmasCodigos.ToArray(),
-                                                                          ehAdmin,
-                                                                          ehPAEE,
-                                                                          Paginacao));
+            return null;
         }
 
         private PaginacaoResultadoDto<PlanoAEEResumoDto> MapearParaDto(PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto> resultadoDto)
@@ -94,7 +99,8 @@ namespace SME.SGP.Aplicacao
                     NomeReponsavel = planoAEE.NomeReponsavel,
                     RfPaaiReponsavel = planoAEE.RfPaaiReponsavel,
                     NomePaaiReponsavel = planoAEE.NomePaaiReponsavel,
-                    PlanoAeeVersaoId = planoAEE.PlanoAeeVersaoId
+                    PlanoAeeVersaoId = planoAEE.PlanoAeeVersaoId,
+                    Ue = $"{planoAEE.TipoEscola.ShortName()} {planoAEE.UeNome}",
                 };
             }
         }

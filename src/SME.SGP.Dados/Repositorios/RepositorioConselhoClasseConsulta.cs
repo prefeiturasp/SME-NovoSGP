@@ -6,7 +6,9 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -161,18 +163,22 @@ namespace SME.SGP.Dados.Repositorios
 
             var sqlQuery = new StringBuilder($@"select Situacao, 
                                                        sum(x.Quantidade) as Quantidade,
-                                                       x.AnoTurma
+                                                       x.AnoTurma,
+                                                       x.CodigoTurma
                                                   from (
                                                         select  cccat.status as Situacao,
                                                                 count(distinct cccat.aluno_codigo) as Quantidade, ");
             if (ueId > 0)
-                sqlQuery.AppendLine(" t.nome as AnoTurma ");
+                sqlQuery.AppendLine(" t.nome as AnoTurma, t.turma_id as CodigoTurma ");
             else
                 sqlQuery.AppendLine(" t.ano as AnoTurma ");
             sqlQuery.AppendLine(@" 
                                   from consolidado_conselho_classe_aluno_turma cccat
                                  inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
-                                 inner join turma t on t.id = cccat.turma_id 
+                                 inner join conselho_classe_aluno cca on cca.aluno_codigo = cccat.aluno_codigo
+                                 inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
+                                 inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                                 inner join turma t on t.id = ft.turma_id and cccat.turma_id = t.id 
                                  inner join ue on ue.id = t.ue_id where t.tipo_turma = 1 ");
 
             var queryWhere = new StringBuilder("");
@@ -207,14 +213,16 @@ namespace SME.SGP.Dados.Repositorios
                 queryWhere.AppendLine(" and cccatn.bimestre = @bimestre ");
             }
 
+            queryWhere.AppendLine(" and not cccat.excluido");
+
             sqlQuery.AppendLine(queryWhere.ToString());
             sqlQuery.AppendLine($@" group by cccat.status, ");
             if (ueId > 0)
-                sqlQuery.AppendLine(" t.nome  ");
+                sqlQuery.AppendLine(" t.nome, t.turma_id ");
             else
                 sqlQuery.AppendLine(" t.ano ");
 
-            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma
+            sqlQuery.AppendLine(@") x group by x.Situacao, x.AnoTurma, x.CodigoTurma
                                    order by x.AnoTurma;");
 
 
@@ -418,7 +426,7 @@ namespace SME.SGP.Dados.Repositorios
                         and fa.tipo  = @tipo
                         group by fa.disciplina_id, total_compensacoes, codigo_aluno ";
 
-            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoFrequenciaAluno.PorDisciplina }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma)
@@ -446,6 +454,21 @@ namespace SME.SGP.Dados.Repositorios
                         and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula";
 
             return await database.Conexao.QueryAsync<int>(sql, new { discplinaId, codigoTurma, bismetre });
+        }
+
+        public async Task<bool> ExisteConselhoDeClasseParaTurma(string[] codigosTurmas, int bimestre)
+        {
+            var sql = new StringBuilder(@"select 1 from conselho_classe cc
+                    left join fechamento_turma ft on cc.fechamento_turma_id = ft.id
+                    left join turma t on t.id = ft.turma_id
+                    left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                    where t.turma_id = any(@codigosTurmas)");
+            if (bimestre > 0)
+                sql.AppendLine("and pe.bimestre = @bimestre");
+            else
+                sql.AppendLine("and ft.periodo_escolar_id is null");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql.ToString(), new { codigosTurmas, bimestre });
         }
     }
 }
