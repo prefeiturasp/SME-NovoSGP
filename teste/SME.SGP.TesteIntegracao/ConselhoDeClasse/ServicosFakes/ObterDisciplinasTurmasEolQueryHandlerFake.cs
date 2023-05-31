@@ -19,7 +19,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 {
                     CodigoComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                     Nome = "Português",
-                    LancaNota = true
+                    LancaNota = true,
+                    GrupoMatriz = new GrupoMatriz()
+                    {
+                        Id = 1,
+                        Nome = "Base Nacional Comum"
+                    }
                 }
             };
         }

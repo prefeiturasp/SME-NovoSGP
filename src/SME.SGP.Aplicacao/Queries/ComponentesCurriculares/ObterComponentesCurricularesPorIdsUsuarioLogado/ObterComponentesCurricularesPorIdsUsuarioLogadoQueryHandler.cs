@@ -67,6 +67,7 @@ namespace SME.SGP.Aplicacao
                             Id = disciplinaCorrespondente.TerritorioSaber ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo,
                             CodigoComponenteCurricular = disciplinaCorrespondente.Codigo,
                             CdComponenteCurricularPai = disciplinaCorrespondente.CodigoComponenteCurricularPai,
+                            CodigoTerritorioSaber = disciplinaCorrespondente.CodigoComponenteTerritorioSaber,
                             Compartilhada = disciplinaCorrespondente.Compartilhada,
                             Nome = disciplinaCorrespondente.Descricao,
                             NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(id)) : disciplinaCorrespondente.Descricao,
@@ -82,6 +83,15 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
+                        if (usuarioLogado.EhProfessorCjInfantil())
+                        {
+                           var componentesCurricularesDoProfessorCJInfantil = await mediator
+                                .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                            if (!componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
+                                continue;
+                        }
+
                         var disciplina = disciplinasAgrupadas.FirstOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
                             .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
 

@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterResponsaveisDosEncaminhamentosAEEQuery : IRequest<IEnumerable<UsuarioEolRetornoDto>>
     {
-        public ObterResponsaveisDosEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao, int anoLetivo)
+        public ObterResponsaveisDosEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao, int anoLetivo, bool exibirEncerrados)
         {
             DreId = dreId;
             UeId = ueId;
@@ -18,6 +18,7 @@ namespace SME.SGP.Aplicacao
             AlunoCodigo = alunoCodigo;
             Situacao = situacao;
             AnoLetivo = anoLetivo;
+            ExibirEncerrados = exibirEncerrados;
         }
 
         public long DreId { get; }
@@ -26,6 +27,7 @@ namespace SME.SGP.Aplicacao
         public string AlunoCodigo { get; }
         public SituacaoAEE? Situacao { get; }
         public int AnoLetivo { get; }
+        public bool ExibirEncerrados { get;  }
     }
 
     public class ObterResponsaveisDosEncaminhamentosAEEQueryValidator : AbstractValidator<ObterResponsaveisDosEncaminhamentosAEEQuery>

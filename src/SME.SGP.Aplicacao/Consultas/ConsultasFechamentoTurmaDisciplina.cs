@@ -97,8 +97,7 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
-            var periodosEscolares = await consultasPeriodoEscolar
-                .ObterPeriodosEscolares(tipoCalendario.Id);
+            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
             if (periodosEscolares == null)
                 throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
@@ -117,10 +116,10 @@ namespace SME.SGP.Aplicacao
                 // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
 
                 periodoEscolar = consultasPeriodoEscolar
-                    .ObterPeriodoPorData(periodosEscolares, DateTime.Today);
+                    .ObterPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
 
                 if (periodoEscolar == null)
-                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
             }
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
@@ -301,11 +300,18 @@ namespace SME.SGP.Aplicacao
                             if (!turmaPossuiFrequenciaRegistrada)
                                 throw new NegocioException("Não é possível registrar fechamento pois não há registros de frequência no bimestre.");
 
-                            var percentualFrequencia = frequenciaAluno == null ? 0 : frequenciaAluno.PercentualFrequencia;
-                            var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, turma.AnoLetivo));
+                            if(frequenciaAluno != null)
+                            {
+                                var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(frequenciaAluno.PercentualFrequencia, disciplina, turma.AnoLetivo));
 
-                            alunoDto.SinteseId = sinteseDto.Id;
-                            alunoDto.Sintese = sinteseDto.Valor;
+                                alunoDto.SinteseId = sinteseDto.Id;
+                                alunoDto.Sintese = sinteseDto.Valor;
+                            }
+                            else
+                            {
+                                alunoDto.Sintese = String.Empty;
+                                alunoDto.SinteseId = null;
+                            }                       
                         }
                         else
                         {
@@ -323,7 +329,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
 
-                                if (notaConceitoBimestre != null && notaConceitoBimestre.SinteseId.HasValue)
+                                if (notaConceitoBimestre != null && (notaConceitoBimestre.SinteseId.HasValue && frequenciaAluno != null))
                                 {
                                     alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
                                     alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
@@ -362,11 +368,13 @@ namespace SME.SGP.Aplicacao
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, codigosDisciplinasArray, tipoCalendario.Id, bimestre, usuarioRF);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, codigosDisciplinasArray, tipoCalendario.Id, periodoAtual.Id, usuarioRF));
 
+            var periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreAtual.Value));
+            
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulasDadas;
             fechamentoBimestre.TotalAulasPrevistas = aulasPrevistas;
-            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
-            fechamentoBimestre.PeriodoAberto = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && periodoAberto;
+            fechamentoBimestre.PeriodoAberto = periodoAberto;
 
             return fechamentoBimestre;
         }

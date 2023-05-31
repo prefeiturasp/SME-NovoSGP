@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
-    public class ConsolidadoEncaminhamentoNAAPAMap : DommelEntityMap<ConsolidadoEncaminhamentoNAAPA>
+    public class ConsolidadoEncaminhamentoNAAPAMap : BaseMap<ConsolidadoEncaminhamentoNAAPA>
     {
         public ConsolidadoEncaminhamentoNAAPAMap()
         {

@@ -3,6 +3,7 @@ using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -58,7 +59,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(ObterTurma()));
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
-            consultasPeriodoEscolar.Setup(p => p.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(ObterPeriodoEscolar()));
+            mediator.Setup(a => a.Send(It.IsAny<ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(ObterPeriodoEscolar());
             servicoDeNotasConceitos.Setup(tn => tn.ObterNotaTipo(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<bool>())).Returns(Task.FromResult(new NotaTipoValor()));
             repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(),null)).Returns(Task.FromResult("10"));
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
@@ -94,7 +95,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         {
             consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(ObterTurma()));
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
-            consultasPeriodoEscolar.Setup(p => p.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(ObterPeriodoEscolar()));
+            mediator.Setup(a => a.Send(It.IsAny<ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(ObterPeriodoEscolar());
             await Assert.ThrowsAsync<NegocioException>(() => consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
         }
 
@@ -128,7 +129,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
             repositorioTipoCalendario.Setup(t => t.BuscarPorAnoLetivoEModalidade(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(new TipoCalendario()));
             repositorioPeriodoEscolar.Setup(p => p.ObterPorTipoCalendarioEBimestreAsync(It.IsAny<long>(), It.IsAny<int>())).Returns(Task.FromResult(new PeriodoEscolar()));
-            consultasPeriodoEscolar.Setup(p => p.ObterUltimoPeriodoAsync(It.IsAny<int>(), It.IsAny<ModalidadeTipoCalendario>(), It.IsAny<int>())).Returns(Task.FromResult(ObterPeriodoEscolar()));
+            mediator.Setup(a => a.Send(It.IsAny<ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(ObterPeriodoEscolar());
             servicoDeNotasConceitos.Setup(tn => tn.ObterNotaTipo(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<bool>())).Returns(Task.FromResult(new NotaTipoValor()));
             repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(), null)).Returns(Task.FromResult("10"));
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));

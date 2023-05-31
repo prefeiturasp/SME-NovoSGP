@@ -246,7 +246,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
         }
 
-        public async Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo)
+        public async Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo, string codigoUe = null)
         {
             var sqlQuery = new StringBuilder();
 
@@ -284,6 +284,9 @@ namespace SME.SGP.Dados.Repositorios
 
             sqlQuery.AppendLine("    sed.Tipo = @tipoResponsavelAtribuicao");
 
+            if (codigoUe != null)
+                sqlQuery.AppendLine(" and vact.ue_codigo = @codigoUe");
+
             var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
 
             return await database.Conexao
@@ -293,7 +296,8 @@ namespace SME.SGP.Dados.Repositorios
                     rfSupervisor,
                     consideraHistorico,
                     anoLetivo,
-                    tipoResponsavelAtribuicao
+                    tipoResponsavelAtribuicao,
+                    codigoUe
                 });
         }
 

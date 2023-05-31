@@ -144,7 +144,7 @@ namespace SME.SGP.Aplicacao
 
                 registroFrequenciaAluno.IndicativoFrequencia = ObterIndicativoFrequencia(frequenciaAluno, percentualAlerta, percentualCritico, turmaPossuiFrequenciaRegistrada);
 
-                if (!componenteCurricularAula.FirstOrDefault().RegistraFrequencia || !aula.PermiteRegistroFrequencia(turma))
+                if (!componenteCurricularAula.Any(c => c.RegistraFrequencia) || !aula.PermiteRegistroFrequencia(turma))
                 {
                     registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
                     continue;

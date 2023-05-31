@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public SituacaoAEE SituacaoTipo { get; set; }
         public string Responsavel { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public string Ue { get; set; }
     }
 }

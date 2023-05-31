@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,12 +17,14 @@ namespace SME.SGP.Aplicacao
     public class ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryHandler :  IRequestHandler<ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery, IEnumerable<OpcaoDropdownDto>>
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
+        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IMediator mediator;
 
         public string CodigoUe { get; }
-        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IMediator mediator)
+        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IMediator mediator)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
+            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<OpcaoDropdownDto>> Handle(ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery request, CancellationToken cancellationToken)
@@ -40,7 +44,27 @@ namespace SME.SGP.Aplicacao
             var modalidades = await repositorioAbrangencia
                 .ObterModalidadesPorUeAbrangencia(request.CodigoUe, request.Login, request.Perfil, request.ModalidadesQueSeraoIgnoradas, request.ConsideraHistorico, request.AnoLetivo);
 
+            if (request.Perfil == Perfis.PERFIL_SUPERVISOR)
+                modalidades = await AcrescentarModalidadesSupervisor(request, modalidades);
+
             return modalidades?.Select(c => new OpcaoDropdownDto(((int)c).ToString(), c.Name()));
+        }
+        private async Task<IEnumerable<Modalidade>> AcrescentarModalidadesSupervisor(ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery request, IEnumerable<Modalidade> lista)
+        {
+            var dadosAbrangenciaSupervisor = await repositorioSupervisorEscolaDre
+                .ObterDadosAbrangenciaSupervisor(request.Login, request.ConsideraHistorico, request.AnoLetivo, request.CodigoUe);
+
+            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            {
+                lista = lista.Select(m => (int)m)
+                .Union(dadosAbrangenciaSupervisor
+                    .Where(d => !request.ModalidadesQueSeraoIgnoradas.Contains((Modalidade)d.Modalidade))
+                    .Select(d => d.Modalidade)
+                    .Distinct())
+                .Select(m => (Modalidade)m);
+            }
+
+            return lista;
         }
     }
   

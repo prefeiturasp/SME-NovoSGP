@@ -29,6 +29,11 @@ namespace SME.SGP.NAAPA.Worker
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA, new ComandoRabbit("Notifica responsáveis sobre inativação de aluno na turma do encaminhamento NAAPA", typeof(INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA, new ComandoRabbit("Notifica responsáveis sobre transferencia do aluno entre ues e dres do encaminhamento NAAPA", typeof(INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarAtualizacaoDasTurmasProgramaDoEncaminhamentoNAAPA, new ComandoRabbit("Atualiza Turmas de Programa do encaminhamento NAAPA", typeof(IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarCargaConsolidadoEncaminhamentoNAAPA,new ComandoRabbit("Executar Carga Consolidado Encaminhamento NAAPA",typeof(IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase),true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarBuscarUesConsolidadoEncaminhamentoNAAPA,new ComandoRabbit("Executar Carga Consolidado Encaminhamento NAAPA Por UE",typeof(IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase),true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoEncaminhamentoNAAPA,new ComandoRabbit("Executar Inserir Consolidado Encaminhamento NAAPA",typeof(IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase),true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA, new ComandoRabbit("Executar Carga Consolidado Encaminhamento NAAPA Por Profissionais", typeof(IExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, new ComandoRabbit("Executar Inserir Consolidado Encaminhamento NAAPA Profissional", typeof(IExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), true));
         }
     }
 }

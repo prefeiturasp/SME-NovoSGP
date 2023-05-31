@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(int anoLetivo, long dreId, 
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao);
+            int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados);
 
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id);
         Task<EncaminhamentoNAAPA> ObterCabecalhoEncaminhamentoPorId(long id);
@@ -23,5 +23,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> VerificaSituacaoEncaminhamentoNAAPASeEstaAguardandoAtendimentoIndevidamente(long encaminhamentoId);
         Task<bool> EncaminhamentoContemAtendimentosItinerancia(long encaminhamentoId);
+        Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo);
     }
 }

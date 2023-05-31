@@ -20,5 +20,6 @@ namespace SME.SGP.Infra
         public string Versao { get; set; }
         public string CodigoAluno { get; set; }
         public long PlanoAeeVersaoId { get; set; }
+        public string Ue { get; set; }
     }
 }

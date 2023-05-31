@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
             var planosAulaRetorno = new List<PlanoAulaRetornoDto>();
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;           
+            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;
 
             var disciplinaId = (planoAulas != null && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
             var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,
@@ -143,43 +143,6 @@ namespace SME.SGP.Aplicacao
             return planosAulaRetorno;
         }
 
-        private PlanoAulaRetornoDto MapearParaDto(PlanoAulaObjetivosAprendizagemDto plano) =>
-            plano == null ? null :
-            new PlanoAulaRetornoDto()
-            {
-                Id = plano.Id,
-                Descricao = plano.Descricao,
-                RecuperacaoAula = plano.RecuperacaoAula,
-                LicaoCasa = plano.LicaoCasa,
-                AulaId = plano.AulaId,
-                QtdAulas = plano.Quantidade,
-
-                Migrado = plano.Migrado,
-                CriadoEm = plano.CriadoEm,
-                CriadoPor = plano.CriadoPor,
-                CriadoRf = plano.CriadoRf,
-                AlteradoEm = plano.AlteradoEm,
-                AlteradoPor = plano.AlteradoPor,
-                AlteradoRf = plano.AlteradoRf,
-
-                ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente
-            };
-
-        private IEnumerable<Aula> ObterAulas(ObterPlanoAulasPorTurmaEComponentePeriodoQuery request, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, Usuario usuarioLogado, string codigoRf, bool aulaCj)
-        {
-            var datasAulas = ObterAulasNosPeriodos(periodosEscolaresAulasInicioFim, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, codigoRf, request.AulaInicio, request.AulaFim, aulaCj);
-
-            var aulasPermitidas = usuarioLogado
-                .ObterAulasQuePodeVisualizar(datasAulas, new List<(string, string)>() { (request.ComponenteCurricularCodigo, null) }).Select(a => a.Id);
-
-            return ObterAulasSelecionadas(usuarioLogado, datasAulas, aulasPermitidas);
-        }
-
-        private IEnumerable<Aula> ObterAulasSelecionadas(Usuario usuarioLogado, IEnumerable<Aula> datasAulas, IEnumerable<long> aulasPermitidas)
-        {
-            return datasAulas.Where(da => aulasPermitidas.Contains(da.Id)).Select(s => s);
-        }
-
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
         {
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
@@ -206,15 +169,5 @@ namespace SME.SGP.Aplicacao
 
             return turma;
         }
-
-        private IEnumerable<Aula> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string usuarioRf, DateTime aulaInicio, DateTime aulaFim, bool aulaCj)
-        {
-            var lstPeriodosEscolaresIds = periodosEscolares.Select(s => s.Id).Distinct();
-
-            var lstAulas = repositorioAula.ObterDatasDeAulasPorAnoTurmaEDisciplina(lstPeriodosEscolaresIds, anoLetivo, turmaCodigo, componenteCurricularCodigo, usuarioRf, aulaInicio, aulaFim, aulaCj);
-
-            return lstAulas;
-        }
-
     }
 }
