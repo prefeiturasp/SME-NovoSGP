@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesDoAluno = null;
 
             if (periodoEscolar != null && periodoEscolar.Id != 0)
-                anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turmasCodigos, periodoEscolar.Id);
+                anotacoesDoAluno = await consultasFechamentoAluno.ObterAnotacaoAlunoParaConselhoAsync(alunoCodigo, turma.CodigoTurma, periodoEscolar.Id);
 
             var consultasConselhoClasseRecomendacaoConsultaDto = new ConsultasConselhoClasseRecomendacaoConsultaDto();
             var recomendacaoAluno = new StringBuilder();
