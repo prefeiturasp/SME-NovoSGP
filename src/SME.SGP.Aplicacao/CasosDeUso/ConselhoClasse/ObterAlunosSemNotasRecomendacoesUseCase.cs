@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
 
             turmasCodigo.Add(turmaRegular.CodigoTurma);
             var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))
-                                                            ?.Where(x =>x.EstaAtivo(periodoEscolar.PeriodoInicio,periodoEscolar.PeriodoFim))?.DistinctBy(x => x.NomeAluno);
+                                                             ?.Where(x =>x.EstaAtivo(periodoEscolar.PeriodoInicio,periodoEscolar.PeriodoFim))
+                                                             ?.DistinctBy(x => x.NomeAluno);
 
             var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
             var turmasComplementaresFiltradas = turmaComplementares.Where(t => t.TurmaRegularCodigo == turmaRegular.CodigoTurma && t.Semestre == turmaRegular.Semestre);
@@ -77,7 +78,6 @@ namespace SME.SGP.Aplicacao
             var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
 
             await MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
-            
             return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);
         }
 
