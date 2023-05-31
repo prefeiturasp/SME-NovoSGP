@@ -22,8 +22,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<InconsistenciasAlunoFamiliaDto>> Executar(FiltroInconsistenciasAlunoFamiliaDto param)
         {
-            try
-            {
                 var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
                 if (turmaRegular == null)
                     throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
@@ -82,20 +80,7 @@ namespace SME.SGP.Aplicacao
 
                 await MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
                 return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);
-            }
-            catch (Exception e)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand(
-                    $" Erro no ObterAlunosSemNotasRecomendacoesUseCase  :{e.Message}", 
-                    LogNivel.Negocio, 
-                    LogContexto.ConselhoClasse, 
-                    e.Message,
-                    innerException: e.InnerException?.ToString(),
-                    rastreamento:e.StackTrace,
-                    excecaoInterna:e.Source
-                ));
-                throw e;
-            }
+            
         }
 
         private async Task MapearRetorno(List<InconsistenciasAlunoFamiliaDto> retorno, IEnumerable<AlunoTemRecomandacaoDto> obterRecomendacoes, IEnumerable<ConselhoClasseAlunoNotaDto> obterConselhoClasseAlunoNota, IEnumerable<AlunoPorTurmaResposta> alunoPorTurmaRespostas,
