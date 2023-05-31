@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -228,6 +229,8 @@ namespace SME.SGP.Aplicacao
 
                 await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
                 unitOfWork.PersistirTransacao();
+
+                await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, bimestre), cancellationToken);
 
                 var alunosDaTurma = (await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma), cancellationToken)).ToList();
 
@@ -686,5 +689,10 @@ namespace SME.SGP.Aplicacao
                     ConceitoId = fechamentoNotaDto.ConceitoId,
                     SinteseId = fechamentoNotaDto.SinteseId
                 };
+
+        private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
+        {
+            await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
+        }
     }
 }
