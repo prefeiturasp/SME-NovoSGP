@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
                     var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoComponentesCurricularesMatriz, areaConhecimento));
                     foreach (var componenteCurricular in componentes.OrderBy(g => g.Nome))
                     {
-                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == componenteCurricular.Id.ToString());
+                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString());
                         FrequenciaAluno frequenciaAluno;
 
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
