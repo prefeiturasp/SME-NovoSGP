@@ -22,8 +22,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<InconsistenciasAlunoFamiliaDto>> Executar(FiltroInconsistenciasAlunoFamiliaDto param)
         {
-            try
-            {
                 var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
                 if (turmaRegular == null)
                     throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
@@ -31,6 +29,7 @@ namespace SME.SGP.Aplicacao
                 var retorno = new List<InconsistenciasAlunoFamiliaDto>();
                 var turmasCodigo = new List<string>();
                 var periodoEscolar = await ObterPeriodoEscolar(turmaRegular, param.Bimestre);
+                await mediator.Send(new SalvarLogViaRabbitCommand("ObterPeriodoEscolar", LogNivel.Informacao, LogContexto.ConselhoClasse));
 
                 turmasCodigo.Add(turmaRegular.CodigoTurma);
                 var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))
@@ -45,6 +44,7 @@ namespace SME.SGP.Aplicacao
                 var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
                 var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
+                await mediator.Send(new SalvarLogViaRabbitCommand("ObterTurmasCodigosItinerarioEnsinoMedio", LogNivel.Informacao, LogContexto.ConselhoClasse));
                 if (codigosItinerarioEnsinoMedio != null)
                     turmasCodigo.AddRange(codigosItinerarioEnsinoMedio);
 
@@ -54,11 +54,12 @@ namespace SME.SGP.Aplicacao
                 var componentesCurricularesPorTurma = (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo.Distinct().ToArray(), perfil, usuarioLogado.CodigoRf, turmaRegular.EnsinoEspecial, turmaRegular.TurnoParaComponentesCurriculares)))
                     .Where(w=> w.LancaNota)
                     .ToArray();
+                await mediator.Send(new SalvarLogViaRabbitCommand("ObterComponentesCurricularesPorTurmasCodigoQuery", LogNivel.Informacao, LogContexto.ConselhoClasse));
 
                 var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
 
                 var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery(param.Bimestre, turmaRegular.CodigoTurma, turmaRegular.AnoLetivo, turmaRegular.Semestre, tipoCalendarioTurma));;
-
+                await mediator.Send(new SalvarLogViaRabbitCommand("ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery", LogNivel.Informacao, LogContexto.ConselhoClasse));
                 switch (fechamentoTurma)
                 {
                     case null when !turmaRegular.EhAnoAnterior():
@@ -73,29 +74,21 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var existeConselhoParaTurma = await mediator.Send(new ExisteConselhoClasseParaTurmaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
-
+                await mediator.Send(new SalvarLogViaRabbitCommand("ExisteConselhoClasseParaTurmaQuery", LogNivel.Informacao, LogContexto.ConselhoClasse));
                 if (!existeConselhoParaTurma)
                     throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
 
                 var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
+                await mediator.Send(new SalvarLogViaRabbitCommand("VerificarSeExisteRecomendacaoPorTurmaQuery", LogNivel.Informacao, LogContexto.ConselhoClasse));
+                
                 var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
-
+                await mediator.Send(new SalvarLogViaRabbitCommand("ObterConselhoClasseAlunoNotaQuery", LogNivel.Informacao, LogContexto.ConselhoClasse));
+                
                 await MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
+                await mediator.Send(new SalvarLogViaRabbitCommand("MapearRetorno", LogNivel.Informacao, LogContexto.ConselhoClasse));
+                
                 return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);
-            }
-            catch (Exception e)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand(
-                    $" Erro no ObterAlunosSemNotasRecomendacoesUseCase  :{e.Message}", 
-                    LogNivel.Negocio, 
-                    LogContexto.ConselhoClasse, 
-                    e.Message,
-                    innerException: e.InnerException?.ToString(),
-                    rastreamento:e.StackTrace,
-                    excecaoInterna:e.Source
-                ));
-                throw e;
-            }
+            
         }
 
         private async Task MapearRetorno(List<InconsistenciasAlunoFamiliaDto> retorno, IEnumerable<AlunoTemRecomandacaoDto> obterRecomendacoes, IEnumerable<ConselhoClasseAlunoNotaDto> obterConselhoClasseAlunoNota, IEnumerable<AlunoPorTurmaResposta> alunoPorTurmaRespostas,
