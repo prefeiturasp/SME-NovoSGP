@@ -2,6 +2,10 @@
 {
     public class FiltroInconsistenciasAlunoFamiliaDto
     {
+        public FiltroInconsistenciasAlunoFamiliaDto()
+        {
+            
+        }
         public FiltroInconsistenciasAlunoFamiliaDto(long turmaId, int bimestre)
         {
             TurmaId = turmaId;

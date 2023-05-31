@@ -458,14 +458,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> ExisteConselhoDeClasseParaTurma(string[] codigosTurmas, int bimestre)
         {
-            var sql = @"select 1 from conselho_classe cc
-                    inner join fechamento_turma ft on cc.fechamento_turma_id = ft.id
-                    inner join turma t on t.id = ft.turma_id
-                    inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-                    where t.turma_id = any(@codigosTurmas)
-                        and pe.bimestre = @bimestre";
+            var sql = new StringBuilder(@"select 1 from conselho_classe cc
+                    left join fechamento_turma ft on cc.fechamento_turma_id = ft.id
+                    left join turma t on t.id = ft.turma_id
+                    left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                    where t.turma_id = any(@codigosTurmas)");
+            if (bimestre > 0)
+                sql.AppendLine("and pe.bimestre = @bimestre");
+            else
+                sql.AppendLine("and ft.periodo_escolar_id is null");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigosTurmas, bimestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql.ToString(), new { codigosTurmas, bimestre });
         }
     }
 }
