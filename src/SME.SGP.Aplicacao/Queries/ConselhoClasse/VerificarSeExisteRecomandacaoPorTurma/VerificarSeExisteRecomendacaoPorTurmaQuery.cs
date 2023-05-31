@@ -24,9 +24,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(f => f.TurmasCodigo)
                 .NotNull()
                 .WithMessage("Informe o Id da Turma para verificar se existe recomendação");
-            RuleFor(f => f.Bimestre)
-                .GreaterThanOrEqualTo(0)
-                .WithMessage("Informe o Bimestre  para verificar se existe recomendação");
         }
     }
 }
