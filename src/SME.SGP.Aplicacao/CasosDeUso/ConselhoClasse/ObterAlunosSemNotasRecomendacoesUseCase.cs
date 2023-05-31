@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<InconsistenciasAlunoFamiliaDto>> Executar(FiltroInconsistenciasAlunoFamiliaDto param)
         {
+                await mediator.Send(new SalvarLogViaRabbitCommand("Entrou no use Case ObterAlunosSemNotasRecomendacoesUseCase ", LogNivel.Informacao, LogContexto.ConselhoClasse));
                 var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
                 if (turmaRegular == null)
                     throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
