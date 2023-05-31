@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
@@ -31,7 +32,24 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA, new FiltroBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPADto(ueId, DateTimeExtension.HorarioBrasilia().Month, DateTimeExtension.HorarioBrasilia().Year), Guid.NewGuid()));
             }
 
+            await AtualizarDataExecucao(parametroEncaminhamento, TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA);
+            await AtualizarDataExecucao(parametroAtendimento, TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA);
+            
             return true;
+        }
+
+        private async Task AtualizarDataExecucao(bool executar, TipoParametroSistema tipo)
+        {
+            if (executar)
+            {
+                var tipos = new long[] { (long)tipo };
+                var parametroSistema = (await mediator.Send(new ObterParametrosSistemaPorTiposQuery() { Tipos = tipos })).FirstOrDefault();
+                if (parametroSistema != null)
+                {
+                    parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
+                    await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
+                }
+            }
         }
     }
 }
