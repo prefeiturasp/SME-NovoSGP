@@ -11,8 +11,6 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -21,12 +19,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ConselhoClasseController : ControllerBase
     {
-        private readonly IMediator mediator;
-
-        public ConselhoClasseController(IMediator mediator)
-        {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/recomendacoes")]
         [ProducesResponseType(401)]
@@ -270,7 +262,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(204)]
         public async Task<IActionResult> ObterAlunosSemNotasRecomendacoes(long turmaId,int bimestre,[FromServices] IObterAlunosSemNotasRecomendacoesUseCase useCase)
         {
-            await mediator.Send(new SalvarLogViaRabbitCommand("Entrou no ConselhoClasseController ", LogNivel.Informacao, LogContexto.ConselhoClasse));
             return Ok(await useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId,bimestre)));
         }
     }
