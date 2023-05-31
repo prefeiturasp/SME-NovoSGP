@@ -184,7 +184,7 @@ namespace SME.SGP.Dados.Repositorios
                             from fechamento_turma ft
                             left join periodo_escolar p
                             on p.id = ft.periodo_escolar_id
-                           where ft.turma_id = @turmaId");
+                           where ft.turma_id = @turmaId and not ft.excluido ");
 
             if (bimestre > 0)
                 query.AppendLine(@" and p.bimestre = @bimestre");
