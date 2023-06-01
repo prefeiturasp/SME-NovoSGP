@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,38 +16,37 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var anoLetivo = !string.IsNullOrEmpty(param.Mensagem?.ToString()) ? int.Parse(param.Mensagem.ToString()!) : DateTimeExtension.HorarioBrasilia().Year;
-            var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
-            var parametroEncaminhamento = await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA));
-            var parametroAtendimento = await mediator.Send(new VerificaSeExisteParametroSistemaPorTipoQuery(TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA));
+            var ConsolidarEncaminhamento = await ObterParametro(TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA, anoLetivo);
+            var ConsolidarAtendimento = await ObterParametro(TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA, anoLetivo);
 
-            if (!parametroEncaminhamento && !parametroAtendimento)
+            if ((ConsolidarEncaminhamento?.Ativo != true)
+                && (ConsolidarAtendimento?.Ativo != true))
                 throw new NegocioException("Nenhum parâmetro ativo no banco, os parâmetros de encaminhamento e atendimento precisam estar ativos");
 
+            var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
             foreach (var ueId in listaUes)
             {
-                if (parametroEncaminhamento)
+                if (ConsolidarEncaminhamento?.Ativo == true)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarBuscarUesConsolidadoEncaminhamentoNAAPA, new FiltroBuscarUesConsolidadoEncaminhamentoNAAPADto(ueId, anoLetivo), Guid.NewGuid()));
-                if (parametroAtendimento)
+                if (ConsolidarAtendimento?.Ativo == true)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA, new FiltroBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPADto(ueId, DateTimeExtension.HorarioBrasilia().Month, DateTimeExtension.HorarioBrasilia().Year), Guid.NewGuid()));
             }
 
-            await AtualizarDataExecucao(parametroEncaminhamento, TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA);
-            await AtualizarDataExecucao(parametroAtendimento, TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA);
+            await AtualizarDataExecucao(ConsolidarEncaminhamento);
+            await AtualizarDataExecucao(ConsolidarAtendimento);
             
             return true;
         }
 
-        private async Task AtualizarDataExecucao(bool executar, TipoParametroSistema tipo)
+        private Task<ParametrosSistema> ObterParametro(TipoParametroSistema tipoParametro, int anoLetivo)
+            => mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(tipoParametro, anoLetivo));
+
+        private async Task AtualizarDataExecucao(ParametrosSistema parametro)
         {
-            if (executar)
+            if (parametro?.Ativo == true)
             {
-                var tipos = new long[] { (long)tipo };
-                var parametroSistema = (await mediator.Send(new ObterParametrosSistemaPorTiposQuery() { Tipos = tipos })).FirstOrDefault();
-                if (parametroSistema != null)
-                {
-                    parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
-                    await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));
-                }
+                parametro.Valor = DateTimeExtension.HorarioBrasilia().ToString("yyyy-MM-dd HH:mm:ss.fff tt");
+                await mediator.Send(new AtualizarParametroSistemaCommand(parametro));
             }
         }
     }
