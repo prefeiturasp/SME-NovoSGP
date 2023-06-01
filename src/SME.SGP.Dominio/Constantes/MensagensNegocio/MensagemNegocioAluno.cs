@@ -17,5 +17,7 @@
         public const string CRIANCA_REMANEJADA = "Criança Remanejada";
         public const string ESTUDANTE_REMANEJADO = "Estudante Remanejado";
         public const string ESTUDANTE_NAO_ENCONTRADO = "O aluno informado não foi encontrado";
+        public const string ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR = "Existe(m) aluno(s) inativados fora do periodo escolar.";
+        public const string ALUNO_INATIVO_ANTES_PERIODO_REABERTURA = "Existe(m) aluno(s) inativados fora do periodo de reabertura.";
     }
 }

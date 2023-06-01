@@ -29,8 +29,9 @@ namespace SME.SGP.Aplicacao
             if (atividadeAvaliativas == null)
                 return null;
 
-            foreach (var excluir in request.EntidadesExcluir)
-                atividadeAvaliativas.Remove(excluir);
+            if (request.EntidadesExcluir.Count() > 0)
+                foreach (var excluir in request.EntidadesExcluir)
+                    atividadeAvaliativas.Remove(excluir);
 
             foreach (var inserir in request.EntidadesSalvar)
             {
@@ -41,14 +42,14 @@ namespace SME.SGP.Aplicacao
             {
                 var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id);
 
-                if (atividade != null)
-                {
-                    atividade.Nota = alterar.Nota;
-                    atividade.ConceitoId = alterar.ConceitoId;
-                    atividade.AlteradoEm = alterar.AlteradoEm;
-                    atividade.AlteradoPor = alterar.AlteradoPor;
+                    if (atividade != null)
+                    {
+                        atividade.Nota = alterar.Nota;
+                        atividade.ConceitoId = alterar.ConceitoId;
+                        atividade.AlteradoEm = alterar.AlteradoEm;
+                        atividade.AlteradoPor = alterar.AlteradoPor;
+                    }
                 }
-            }
 
             await repositorioCache.SalvarAsync(nomeChave, atividadeAvaliativas);
 
