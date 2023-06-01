@@ -71,7 +71,12 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"	not cccat.excluido");
             sql.AppendLine(@"	and not cccat.excluido");
             sql.AppendLine(@"	and t.turma_id = any(@turmasCodigos) ");
-            sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
+            
+            if (bimestre > 0)
+                sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
+            else
+                sql.AppendLine(@"	and cccatn.bimestre is null ");
+
             return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasCodigos,bimestre });
         }
     }
