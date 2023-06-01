@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
     public class ObterAlunosSemNotasRecomendacoesUseCase : IObterAlunosSemNotasRecomendacoesUseCase
     {
         private readonly IMediator mediator;
+        private const int BIMESTRE_2 = 2;
+        private const int BIMESTRE_4 = 4;
 
         public ObterAlunosSemNotasRecomendacoesUseCase(IMediator mediator)
         {
@@ -28,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
                 var retorno = new List<InconsistenciasAlunoFamiliaDto>();
                 var turmasCodigo = new List<string>();
-                var periodoEscolar = await ObterPeriodoEscolar(turmaRegular, param.Bimestre);
+                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turmaRegular, param.Bimestre == 0 ? turmaRegular.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : param.Bimestre));
 
                 turmasCodigo.Add(turmaRegular.CodigoTurma);
                 var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))
@@ -112,14 +114,6 @@ namespace SME.SGP.Aplicacao
                 
                 retorno.Add(item);
             }
-        }
-
-        private async Task<PeriodoEscolar> ObterPeriodoEscolar(Turma turma, int bimestre)
-        {
-            var fechamentoDaTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, bimestre));
-            if (fechamentoDaTurma != null && fechamentoDaTurma.Id > 0 && fechamentoDaTurma?.PeriodoEscolar !=null)
-                return fechamentoDaTurma?.PeriodoEscolar;
-            else return await mediator.Send(new ObterPeriodoEscolarAtualQuery(turma.Id, DateTime.Now.Date));
         }
 
         private async Task<string[]> ObterTurmasCodigosItinerarioEnsinoMedio(Turma turma, IEnumerable<TurmaItinerarioEnsinoMedioDto> turmasItinerarioEnsinoMedio, PeriodoEscolar periodoEscolar, int bimestre)
