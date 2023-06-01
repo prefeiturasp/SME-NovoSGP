@@ -253,7 +253,7 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre
             };
-            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), parametros);
+            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), parametros, commandTimeout: 120);
         }
 
         private string MontarQueryNotasFinasFechamentoQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
