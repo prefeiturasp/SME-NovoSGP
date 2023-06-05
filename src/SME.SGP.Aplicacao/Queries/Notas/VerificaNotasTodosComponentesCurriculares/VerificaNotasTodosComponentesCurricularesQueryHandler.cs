@@ -28,12 +28,13 @@ namespace SME.SGP.Aplicacao.Queries
 
             if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
             {
-                var tiposTurmas = new List<int>();
-
+                var tiposTurmas = new List<int> { (int) request.Turma.TipoTurma };
+                
                 tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
-                tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
-
-                var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas, request.Historico), cancellationToken);
+                tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c=> tiposTurmas.All(x=> x != c)));
+                
+                var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas
+                                                            , request.Historico), cancellationToken);
 
                 if (request.Historico.HasValue && request.Historico.Value)
                 {
