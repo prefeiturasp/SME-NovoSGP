@@ -46,7 +46,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                              repositorioTipoCalendario.Object,
                                              consultasPeriodoEscolar.Object,
                                              servicoEOL.Object,
-                                             servicoUsuario.Object,
                                              repositorioFrequenciaAlunoDisciplinaPeriodo.Object,
                                              consultasPeriodoFechamento.Object,
                                              mediator.Object);

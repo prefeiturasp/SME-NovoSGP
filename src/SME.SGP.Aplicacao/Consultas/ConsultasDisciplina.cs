@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
 
                     componentesCurriculares ??= (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();                    
 
                     componentesCurriculares.ForEach(c =>
                     {
@@ -173,7 +173,7 @@ namespace SME.SGP.Aplicacao
 
                     if (!componentesCurriculares.Any())
                     {
-                        var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+                       var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
 
                         if (componentesCurricularesDaTurma.Any() && componentesCurricularesDaTurma != null)
                         {
@@ -184,7 +184,8 @@ namespace SME.SGP.Aplicacao
                                 CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteCurricular : 0,
                                 Descricao = c.Nome,
                                 GrupoMatriz = new Dominio.GrupoMatriz() { Id = c.GrupoMatriz.Id, Nome = c.GrupoMatriz.Nome },
-                                TurmaCodigo = c.TurmaCodigo
+                                TurmaCodigo = c.TurmaCodigo,
+                                Regencia = c.Regencia
                             }).ToList();
                         }
                     }

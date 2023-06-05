@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (periodos.Any())
                 periodosEscolares = FiltrarPeriodosCorretos(periodos.ToList());
-           
+            
             return periodosEscolares?.Select(c => new PeriodoEscolarPorTurmaDto
             {
                 Bimestre = c.Bimestre,

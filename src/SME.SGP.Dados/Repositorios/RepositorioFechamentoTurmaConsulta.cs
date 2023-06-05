@@ -106,6 +106,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
 
+        public async Task<FechamentoTurma> ObterPorTurma(long turmaId, int? bimestre = 0)
+        {
+            var query = new StringBuilder(@"select ft.*  
+                            from fechamento_turma ft
+                            left join periodo_escolar p
+                            on p.id = ft.periodo_escolar_id
+                           where ft.turma_id = @turmaId");
+
+            if (bimestre > 0)
+                query.AppendLine(@" and p.bimestre = @bimestre");
+            else
+                query.AppendLine(@" and ft.periodo_escolar_id is null");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, bimestre });
+        }
+
+
         public async Task<FechamentoTurma> ObterPorFechamentoTurmaIdAsync(long fechamentoTurmaId)
         {
             var query = new StringBuilder(@"select * 
@@ -143,7 +160,7 @@ namespace SME.SGP.Dados.Repositorios
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
                         fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
                     }
-                    
+
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
 
                     fechamentoTurmaDisciplinaLista.AdicionarNota(fechamentoNota);
@@ -162,7 +179,7 @@ namespace SME.SGP.Dados.Repositorios
                     where ft.turma_id = @turmaId and 
                         ftd.disciplina_id = @componenteCurricularId and 
                         ft.periodo_escolar_id = @periodoEscolarId  ");
-            
+
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { turmaId, componenteCurricularId, periodoEscolarId });
         }
 
@@ -176,22 +193,6 @@ namespace SME.SGP.Dados.Repositorios
                           and pe.bimestre = @bimestre ";
 
             return database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaPeriodoEscolarDto>(query, new { turmaId, bimestre });
-        }
-
-        public async Task<FechamentoTurma> ObterPorTurma(long turmaId, int? bimestre = 0)
-        {
-            var query = new StringBuilder(@"select ft.*  
-                            from fechamento_turma ft
-                            left join periodo_escolar p
-                            on p.id = ft.periodo_escolar_id
-                           where ft.turma_id = @turmaId");
-
-            if (bimestre > 0)
-                query.AppendLine(@" and p.bimestre = @bimestre");
-            else
-                query.AppendLine(@" and ft.periodo_escolar_id is null");
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, bimestre });
-        }
+        }        
     }
 }
