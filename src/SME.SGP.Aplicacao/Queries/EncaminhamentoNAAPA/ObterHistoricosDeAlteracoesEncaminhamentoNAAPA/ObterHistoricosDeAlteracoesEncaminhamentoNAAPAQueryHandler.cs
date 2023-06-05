@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Org.BouncyCastle.Ocsp;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -169,29 +170,63 @@ namespace SME.SGP.Aplicacao
                 return ((questaoExistente == null && respostasEncaminhamento.Resposta != "[]") ||
                         (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && ObterCampoJsonSemId(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) != ObterCampoJsonSemId(respostasEncaminhamento.Resposta)));
 
-            if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
+            if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha, TipoQuestao.Upload }))
                 return questaoExistente == null || questaoExistente.Respostas.Any();
 
             return false;
         }
 
         private async Task AdicionarCamposAlterados(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
-        { 
-            var respostasExistentes = questaoExistente?.Respostas?.Where(s => respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
-
-            if (respostasExistentes != null)
+        {
+            if (EnumExtension.EhUmDosValores(questaoExistente?.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha, TipoQuestao.Upload }))
             {
-                foreach (var respostaExistente in respostasExistentes)
-                {
-                    var respostaAlterada = respostasEncaminhamento.ToList().Find(resposta => resposta.RespostaEncaminhamentoId == respostaExistente.Id);
+                if (await RespostaFoiRemovida(questaoExistente, respostasEncaminhamento))
+                    camposAlterados.Add(await ObterNomeQuestao(questaoExistente.Questao));
+            }
+            else
+            {
+                var respostasExistentes = questaoExistente?.Respostas?.Where(s => respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
 
-                    if (await CampoFoiAlterado(respostaExistente, respostaAlterada))
-                        camposAlterados.Add(await ObterNomeQuestao(questaoExistente.Questao));
+                if (respostasExistentes != null)
+                {
+                    foreach (var respostaExistente in respostasExistentes)
+                    {
+                        var respostaAlterada = respostasEncaminhamento.ToList().Find(resposta => resposta.RespostaEncaminhamentoId == respostaExistente.Id);
+
+                        if (CampoFoiAlterado(respostaExistente, respostaAlterada))
+                            camposAlterados.Add(await ObterNomeQuestao(questaoExistente.Questao));
+                    }
                 }
             }
         }
 
-        private async Task<bool> CampoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
+        private async Task<long[]> ObterArquivosIdRespostas(IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
+        {
+            var arquivosId = new List<long>();
+            foreach (var item in respostasEncaminhamento.Where(resposta => !string.IsNullOrEmpty(resposta.Resposta)))
+            {
+                var id = await mediator.Send(new ObterArquivoIdPorCodigoQuery(Guid.Parse(item.Resposta)));
+                arquivosId.Add(id);
+            }
+            return arquivosId.ToArray();
+        }
+
+        private async Task<bool> RespostaFoiRemovida(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento)
+        {
+            if (EnumExtension.EhUmDosValores(questaoExistente.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha }))
+                return questaoExistente.Respostas.Any(resposta => !respostasEncaminhamento.Any(respostaEncaminhamento => respostaEncaminhamento.Resposta.Equals(resposta.RespostaId.ToString())));
+            else
+            if (EnumExtension.EhUmDosValores(questaoExistente.Questao.Tipo, new Enum[] { TipoQuestao.Upload }))
+            {
+                var arquivosId = await ObterArquivosIdRespostas(respostasEncaminhamento);
+                return questaoExistente.Respostas.Any(resposta => !arquivosId.Any(id => id == (resposta.ArquivoId.Value)));
+            }
+            else
+                return false;
+
+        }
+
+        private bool CampoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             var funcoes = new List<Func<RespostaEncaminhamentoNAAPA, EncaminhamentoNAAPASecaoQuestaoDto, bool?>> { CampoPorTextoFoiAlterado, CampoPorRespostaIdFoiAlterado, CampoPorJsonFoiAlterado };
 
@@ -202,15 +237,6 @@ namespace SME.SGP.Aplicacao
                 if (foiAlterado.HasValue)
                     return foiAlterado.Value;
             }
-
-            return await CampoPorArquivoFoiAlterado(RespostaAtual, respostaAlteracao);
-        }
-
-        private async Task<bool> CampoPorArquivoFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
-        {
-            if (!string.IsNullOrEmpty(respostaAlteracao.Resposta) && respostaAlteracao.TipoQuestao == TipoQuestao.Upload)
-                return RespostaAtual.ArquivoId != await mediator.Send(new ObterArquivoIdPorCodigoQuery(Guid.Parse(respostaAlteracao.Resposta)));
-
             return false;
         }
 
