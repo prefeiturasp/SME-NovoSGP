@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using Elastic.Apm.Api;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,5 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int modalidade, long? encaminhamentoNAAPAId = null);
         Task<SecaoQuestionarioDto> ObterSecaoQuestionarioDtoPorId(long secaoId);
         Task<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDtoPaginado(long encaminhamentoNAAPAId, Paginacao paginacao);
+        Task<EncaminhamentoNAAPAItineranciaAtendimentoDto> ObterAtendimentoSecaoItinerancia(long secaoId);
+        Task<IEnumerable<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>> ObterQuantidadeAtendimentosProfissionalPorUeAnoLetivoMes(long ueId, int mes, int anoLetivo);
     }
 }

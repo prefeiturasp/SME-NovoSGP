@@ -57,6 +57,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             encaminhamento.ShouldNotBeNull();
             encaminhamento.Situacao.ShouldBe(SituacaoNAAPA.Encerrado);
             encaminhamento.MotivoEncerramento.ShouldBe(MOTIVO_ENCERRAMENTO);
+
+            var historico = ObterTodos<Dominio.EncaminhamentoNAAPAHistoricoAlteracoes>().FirstOrDefault();
+            historico.ShouldNotBeNull();
+            historico.CamposAlterados.ShouldBe("Situação");
         } 
         
         [Fact(DisplayName = "Encaminhamento NAAPA - Não deve permitir o encerramento de um encaminhamento NAAPA que não existe pelo Coordenador NAAPA")]

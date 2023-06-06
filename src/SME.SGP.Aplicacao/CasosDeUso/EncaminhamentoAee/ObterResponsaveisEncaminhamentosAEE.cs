@@ -15,6 +15,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Executar(FiltroPesquisaEncaminhamentosAEEDto filtros)
-            => await mediator.Send(new ObterResponsaveisDosEncaminhamentosAEEQuery(filtros.DreId, filtros.UeId, filtros.TurmaId, filtros.AlunoCodigo, filtros.Situacao, filtros.AnoLetivo));
+            => await mediator.Send(new ObterResponsaveisDosEncaminhamentosAEEQuery(filtros.DreId, filtros.UeId, filtros.TurmaId, filtros.AlunoCodigo, filtros.Situacao, filtros.AnoLetivo, filtros.ExibirEncerrados));
     }
 }

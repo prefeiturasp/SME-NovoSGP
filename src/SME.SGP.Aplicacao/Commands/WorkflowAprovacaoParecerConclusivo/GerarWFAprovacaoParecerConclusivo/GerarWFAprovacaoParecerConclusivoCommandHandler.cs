@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +26,8 @@ namespace SME.SGP.Aplicacao
             {
                 ConselhoClasseAlunoId = request.ConselhoClasseAlunoId,
                 ConselhoClasseParecerId = request.ParecerConclusivoId,
-                UsuarioSolicitanteId = request.UsuarioSolicitanteId
+                UsuarioSolicitanteId = request.UsuarioSolicitanteId,
+                ConselhoClasseParecerAnteriorId = request.ParecerConclusivoAnteriorId
             });
         }
 
@@ -36,6 +35,5 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new ExcluirWFAprovacaoParecerPorAlunoCommand(conselhoClasseAlunoId));
         }
-
     }
 }

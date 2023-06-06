@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPendenciasAulaDiarioClasseFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var pendencias = await repositorioPendencia.ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(request.TurmaCodigo, request.DisciplinaId, request.PeriodoInicio, request.PeriodoFim, request.UsuarioId);
+            var pendencias = await repositorioPendencia.ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(request.TurmaCodigo, request.DisciplinaId, request.PeriodoInicio, request.PeriodoFim);
             if (pendencias == null || !pendencias.Any())
                 return false;
             return (await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendencias.ToArray() }));

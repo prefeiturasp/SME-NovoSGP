@@ -19,5 +19,11 @@ namespace SME.SGP.Dominio
         public List<EncaminhamentoNAAPASecao> Secoes { get; set; }
         public SituacaoMatriculaAluno? SituacaoMatriculaAluno { get; set; }
         public string MotivoEncerramento { get; set; }
+
+        public EncaminhamentoNAAPA Clone()
+        {
+            return (EncaminhamentoNAAPA)this.MemberwiseClone();
+        }
+
     }
 }

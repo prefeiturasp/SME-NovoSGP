@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Aplicacao.Integracoes;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace SME.SGP.Aplicacao
 {
@@ -21,17 +23,29 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
+        private struct TurmaDisciplina { public string TurmaId; public string DisciplinaId; }
+
+        private async Task<List<DisciplinaDto>> ObterTurmasDisciplinas(IEnumerable<TurmaDisciplina> aulasAgrupadasTurmaDisciplina)
+        {
+            var componentesCurriculares = new List<DisciplinaDto>();
+            foreach (var turmaDisciplina in aulasAgrupadasTurmaDisciplina.GroupBy(x => x.TurmaId))
+            {
+                var contemDisciplinaCodigoTerritorioSaber = turmaDisciplina.Any(x => x.DisciplinaId.ToString().Length >= 7);
+                var disciplinasTurma = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(turmaDisciplina.Select(s => long.Parse(s.DisciplinaId)).Distinct().ToArray(), contemDisciplinaCodigoTerritorioSaber, turmaDisciplina.Key))).ToList();
+                disciplinasTurma.ForEach(disciplina => disciplina.TurmaCodigo = turmaDisciplina.Key);
+                componentesCurriculares.AddRange(disciplinasTurma);
+            }
+            return componentesCurriculares;
+        }
+
         protected override async Task Handle(SalvarPendenciaAulasPorTipoCommand request, CancellationToken cancellationToken)
         {
             try
             {
-
                 var aulasAgrupadas = request.Aulas.GroupBy(x => new { x.TurmaId, x.DisciplinaId });
-
-                var componentesCurriculares = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(request.Aulas.Select(s => long.Parse(s.DisciplinaId)).Distinct().ToArray()));
-
                 var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(request.Aulas.Select(s => s.TurmaId).Distinct().ToArray()));
 
+                var componentesCurriculares = await ObterTurmasDisciplinas(aulasAgrupadas.Select(x => new TurmaDisciplina { TurmaId = x.Key.TurmaId, DisciplinaId = x.Key.DisciplinaId } ));
                 foreach (var item in aulasAgrupadas)
                 {
                     var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(item.First().TipoCalendarioId, item.First().DataAula));
@@ -40,9 +54,12 @@ namespace SME.SGP.Aplicacao
                     {
                         var turmaComDreUe = turmasDreUe.FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
 
-                        var componente = componentesCurriculares.FirstOrDefault(f => f.Id == long.Parse(item.Key.DisciplinaId));
+                        var componente = componentesCurriculares.FirstOrDefault(f => (f.Id == long.Parse(item.Key.DisciplinaId)
+                                                                                     || f.CodigoComponenteCurricular == long.Parse(item.Key.DisciplinaId)
+                                                                                     || f.CodigoTerritorioSaber == long.Parse(item.Key.DisciplinaId)
+                                                                                && f.TurmaCodigo == item.Key.TurmaId));
 
-                        var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.DescricaoInfantil) ? componente.DescricaoInfantil : componente.Descricao;
+                        var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.NomeComponenteInfantil) ? componente.NomeComponenteInfantil : componente.Nome;
 
                         var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
 

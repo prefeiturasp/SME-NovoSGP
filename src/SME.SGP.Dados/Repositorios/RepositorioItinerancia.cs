@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase(long[] tiposQuestionario)
         {
-            var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio, q.tipo as tipoquestao 
+            var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio, q.tipo as tipoquestao, q.nome_componente as nomeComponente 
                             from questao q
                            inner join questionario q1 on q1.id = q.questionario_id 
                            where q1.tipo = ANY(@tiposQuestionario)

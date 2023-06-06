@@ -2,7 +2,6 @@
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
@@ -14,17 +13,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
     public class ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCaseTeste
     {
         private readonly ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase consolidacaoTurmaConselhoClasseAlunoUseCase;
-        private readonly Mock<IRepositorioConselhoClasseConsolidado> repositorioConselhoClasseConsolidado;
-        private readonly Mock<IRepositorioConselhoClasseConsolidadoNota> repositorioConselhoClasseConsolidadoNota;
         private readonly Mock<IMediator> mediator;
 
         public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCaseTeste()
         {
-
             mediator = new Mock<IMediator>();
-            repositorioConselhoClasseConsolidado = new Mock<IRepositorioConselhoClasseConsolidado>();
-            repositorioConselhoClasseConsolidadoNota = new Mock<IRepositorioConselhoClasseConsolidadoNota>();
-            consolidacaoTurmaConselhoClasseAlunoUseCase = new ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(mediator.Object, repositorioConselhoClasseConsolidado.Object, repositorioConselhoClasseConsolidadoNota.Object);
+            consolidacaoTurmaConselhoClasseAlunoUseCase = new ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(mediator.Object);
         }
 
         [Fact]
@@ -49,20 +43,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
-            var consolidadoTurmaAluno = ObterConselhoClasseConsolidadoTurmaAluno(alunoCodigo, turmaId, nota, null);
-
             MediatorRepositorioSetup(alunoCodigo, turmaId);
-
-            repositorioConselhoClasseConsolidado.Setup(a => a.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turmaId, alunoCodigo)).ReturnsAsync(new ConselhoClasseConsolidadoTurmaAluno() { Id = 2 });
-
-            repositorioConselhoClasseConsolidado.Setup(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>())).ReturnsAsync(1);
 
             //Act
             var retorno = await consolidacaoTurmaConselhoClasseAlunoUseCase.Executar(new MensagemRabbit(jsonMensagem));
 
             //Asert
-            repositorioConselhoClasseConsolidado.Verify(a => a.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turmaId, alunoCodigo), Times.Once);
-            repositorioConselhoClasseConsolidado.Verify(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>()), Times.Once);
             Assert.True(retorno);
         }
 
@@ -82,20 +68,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
-            var consolidadoTurmaAluno = ObterConselhoClasseConsolidadoTurmaAluno(alunoCodigo, turmaId, nota, null);
-
             MediatorRepositorioSetup(alunoCodigo, turmaId);
-
-            repositorioConselhoClasseConsolidado.Setup(a => a.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turmaId, alunoCodigo)).ReturnsAsync(new ConselhoClasseConsolidadoTurmaAluno());
-
-            repositorioConselhoClasseConsolidado.Setup(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>())).ReturnsAsync(1);
 
             //Act
             var retorno = await consolidacaoTurmaConselhoClasseAlunoUseCase.Executar(new MensagemRabbit(jsonMensagem));
 
             //Asert
-            repositorioConselhoClasseConsolidado.Verify(a => a.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turmaId, alunoCodigo), Times.Once);
-            repositorioConselhoClasseConsolidado.Verify(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>()), Times.Once);
             Assert.True(retorno);
         }
 
@@ -113,17 +91,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
-            var consolidadoTurmaAluno = ObterConselhoClasseConsolidadoTurmaAluno(alunoCodigo, turmaId, nota, null);
-
             MediatorRepositorioSetup(alunoCodigo, turmaId);
-
-            repositorioConselhoClasseConsolidado.Setup(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>())).ReturnsAsync(1);
 
             //Act
             var retorno = await consolidacaoTurmaConselhoClasseAlunoUseCase.Executar(new MensagemRabbit(jsonMensagem));
 
             //Asert
-            repositorioConselhoClasseConsolidado.Verify(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>()), Times.Once);
             Assert.True(retorno);
         }
 
@@ -145,14 +118,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             MediatorRepositorioSetup(alunoCodigo, turmaId);
 
-            repositorioConselhoClasseConsolidado.Setup(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>())).ReturnsAsync(1);
-
             //Act
             var retorno = await consolidacaoTurmaConselhoClasseAlunoUseCase.Executar(new MensagemRabbit(jsonMensagem));
 
             //Asert
-            repositorioConselhoClasseConsolidado.Verify(a => a.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turmaId, alunoCodigo), Times.Once);
-            repositorioConselhoClasseConsolidado.Verify(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>()), Times.Once);
             Assert.True(retorno);
         }
 
@@ -174,14 +143,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             MediatorRepositorioSetup(alunoCodigo, turmaId);
 
-            repositorioConselhoClasseConsolidado.Setup(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>())).ReturnsAsync(1);
-
             //Act
             var retorno = await consolidacaoTurmaConselhoClasseAlunoUseCase.Executar(new MensagemRabbit(jsonMensagem));
 
             //Asert
-            repositorioConselhoClasseConsolidado.Verify(a => a.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turmaId, alunoCodigo), Times.Once);
-            repositorioConselhoClasseConsolidado.Verify(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>()), Times.Once);
             Assert.True(retorno);
         }
 
@@ -203,13 +168,10 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             MediatorRepositorioSetup(alunoCodigo, turmaId);
 
-            repositorioConselhoClasseConsolidado.Setup(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>())).ReturnsAsync(1);
-
             //Act
             var retorno = await consolidacaoTurmaConselhoClasseAlunoUseCase.Executar(new MensagemRabbit(jsonMensagem));
 
             //Asert
-            repositorioConselhoClasseConsolidado.Verify(a => a.SalvarAsync(It.IsAny<ConselhoClasseConsolidadoTurmaAluno>()), Times.Once);
             Assert.True(retorno);
         }
         
@@ -232,8 +194,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(a => a.Send(It.IsAny<ObterComponentesComNotaDeFechamentoOuConselhoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<ComponenteCurricularDto>());
 
             mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesEOLPorTurmasCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<ComponenteCurricularDto>());
-
-            repositorioConselhoClasseConsolidado.Setup(a => a.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turmaId, alunoCodigo)).ReturnsAsync(new ConselhoClasseConsolidadoTurmaAluno());
         }
 
         private static ConselhoClasseConsolidadoTurmaAluno ObterConselhoClasseConsolidadoTurmaAluno(string alunoCodigo, int turmaId, double? nota, long? conceito)

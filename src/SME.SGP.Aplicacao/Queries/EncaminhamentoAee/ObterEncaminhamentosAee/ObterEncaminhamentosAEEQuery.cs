@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosAEEQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>>
     {
-        public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao, string responsavelRf, int anoLetivo)
+        public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao, string responsavelRf, int anoLetivo, bool exibirEncerrados)
         {
             DreId = dreId;
             UeId = ueId;
@@ -19,6 +19,7 @@ namespace SME.SGP.Aplicacao
             Situacao = situacao;
             ResponsavelRf = responsavelRf;
             AnoLetivo = anoLetivo;
+            ExibirEncerrados = exibirEncerrados;
         }
 
         public long DreId { get; }
@@ -28,6 +29,7 @@ namespace SME.SGP.Aplicacao
         public SituacaoAEE? Situacao { get; }
         public string ResponsavelRf { get; }
         public int AnoLetivo { get; }
+        public bool ExibirEncerrados { get; set; }
     }
 
     public class ObterEncaminhamentosAEEQueryValidator : AbstractValidator<ObterEncaminhamentosAEEQuery>

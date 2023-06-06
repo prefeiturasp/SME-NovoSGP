@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
-    class ObterComponentesRegenciaPorAnoQueryHandlerFake : IRequestHandler<ObterComponentesRegenciaPorAnoQuery, IEnumerable<ComponenteCurricularEol>>
+    class ObterComponentesRegenciaPorAnoQueryHandlerFake : IRequestHandler<ObterComponentesRegenciaPorAnoEolQuery, IEnumerable<ComponenteCurricularEol>>
     {
-        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoEolQuery request, CancellationToken cancellationToken)
         {
             return new List<ComponenteCurricularEol>()
             {

@@ -6,6 +6,7 @@ using SME.SGP.Infra.Interface;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +14,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioSecaoEncaminhamentoNAAPA : RepositorioBase<SecaoEncaminhamentoNAAPA>, IRepositorioSecaoEncaminhamentoNAAPA
     {
+
+        private const int SECAO_ITINERANCIA_NAAPA = 3;
+        private const int PRIMEIRA_ETAPA_NAAPA = 1;
         public RepositorioSecaoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
             
@@ -215,5 +219,48 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
+
+        public async Task<EncaminhamentoNAAPAItineranciaAtendimentoDto> ObterAtendimentoSecaoItinerancia(long secaoId)
+        {
+            var query = @"select ens.encaminhamento_naapa_id EncaminhamentoId, 
+                        		ens.secao_encaminhamento_id SecaoEncaminhamentoNAAPAId, 
+                                to_date(enr.texto,'yyyy-mm-dd') DataAtendimento    
+                        from encaminhamento_naapa_secao ens   
+                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join questao q on enq.questao_id = q.id 
+                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        where q.nome_componente = 'DATA_DO_ATENDIMENTO' and ens.id = @secaoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoNAAPAItineranciaAtendimentoDto>(query, new { secaoId });
+        }
+
+        public async Task<IEnumerable<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>> ObterQuantidadeAtendimentosProfissionalPorUeAnoLetivoMes(long ueId, int mes, int anoLetivo)
+        {
+            var query = @$"select ens.criado_por as Nome, ens.criado_rf as Rf, count(ens.id) as Quantidade from encaminhamento_naapa_secao ens 
+                        inner join encaminhamento_naapa_questao enq on enq.encaminhamento_naapa_secao_id = ens.id
+                        inner join questao q on q.id = enq.questao_id 
+                        inner join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id 
+                        inner join encaminhamento_naapa en on en.id = ens.encaminhamento_naapa_id 
+                        inner join turma t on t.id = en.turma_id 
+                        where q.nome_componente = 'DATA_DO_ATENDIMENTO' and sen.etapa = {PRIMEIRA_ETAPA_NAAPA} and sen.ordem = {SECAO_ITINERANCIA_NAAPA} 
+                        and not ens.excluido 
+                        and not en.excluido 
+                        and not enr.excluido 
+                        and not enq.excluido 
+                        and enr.texto is not null and enr.texto <> ''
+                        and EXTRACT('Year' FROM to_date(enr.texto,'yyyy-mm-dd')) = @anoLetivo
+                        and EXTRACT('Month' FROM to_date(enr.texto,'yyyy-mm-dd')) = @mes
+                        and t.ue_id = @ueId
+                        group by ens.criado_por, ens.criado_rf; ";
+
+            var retorno = await database.Conexao.QueryAsync<AtendimentosPorProfissionalEncaminhamentoNAAPADto>(query, new { ueId, mes, anoLetivo });
+            if (retorno.Any())
+                return retorno.Select(atendimento => new AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto(ueId, anoLetivo, mes, atendimento.Nome, atendimento.Rf, atendimento.Quantidade));
+
+            return Enumerable.Empty<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>();
+
+        }
+       
     }
 }
