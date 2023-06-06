@@ -54,8 +54,9 @@ namespace SME.SGP.Aplicacao
                     {
                         var turmaComDreUe = turmasDreUe.FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
 
-                        var componente = componentesCurriculares.FirstOrDefault(f => (f.Id == long.Parse(item.Key.DisciplinaId) 
+                        var componente = componentesCurriculares.FirstOrDefault(f => (f.Id == long.Parse(item.Key.DisciplinaId)
                                                                                      || f.CodigoComponenteCurricular == long.Parse(item.Key.DisciplinaId)
+                                                                                     || f.CodigoTerritorioSaber == long.Parse(item.Key.DisciplinaId)
                                                                                 && f.TurmaCodigo == item.Key.TurmaId));
 
                         var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.NomeComponenteInfantil) ? componente.NomeComponenteInfantil : componente.Nome;
