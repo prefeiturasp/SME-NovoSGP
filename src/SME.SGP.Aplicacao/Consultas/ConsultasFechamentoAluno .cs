@@ -42,19 +42,23 @@ namespace SME.SGP.Aplicacao
             return anotacaoDto;
         }
 
-        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string[] turmasCodigos, long periodoId)
+        public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacaoAlunoParaConselhoAsync(string alunoCodigo, string turmaCodigo, long periodoId)
         {
-            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, turmasCodigos, periodoId);
+            var anotacoesDto = await repositorio.ObterAnotacoesTurmaAlunoBimestreAsync(alunoCodigo, new string[] {turmaCodigo}, periodoId);
             if (anotacoesDto == null || !anotacoesDto.Any())
                 return default;
 
             var disciplinasIds = anotacoesDto.Select(a => long.Parse(a.DisciplinaId)).ToArray();
 
-            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasIds);
+            var disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turmaCodigo));
+            if(disciplinas == null || !disciplinas.Any())
+                return default;
 
             foreach (var anotacao in anotacoesDto)
             {
-                var disciplina = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(anotacao.DisciplinaId));
+                var disciplina = disciplinas.FirstOrDefault(a => a.TerritorioSaber 
+                                                                ? a.CodigoComponenteTerritorioSaber == long.Parse(anotacao.DisciplinaId) 
+                                                                : a.CodigoComponenteCurricular == long.Parse(anotacao.DisciplinaId));
                 if (disciplina != null)
                     anotacao.Disciplina = disciplina.Nome;
             }
