@@ -32,7 +32,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, historicoEscolarObservacoes, Guid.NewGuid()));
 
-            var tipoRelatorio = filtroHistoricoEscolarDto.Modalidade == Modalidade.Fundamental ? TipoRelatorio.HistoricoEscolarFundamentalRazor : TipoRelatorio.HistoricoEscolarFundamental;
+            var tipoRelatorio = filtroHistoricoEscolarDto.Modalidade == Modalidade.Fundamental ? TipoRelatorio.HistoricoEscolarFundamentalRazor :
+                                filtroHistoricoEscolarDto.Modalidade == Modalidade.EJA ? TipoRelatorio.HistoricoEscolarEJARazor : TipoRelatorio.HistoricoEscolarFundamental;
 
             return await mediator.Send(new GerarRelatorioCommand(tipoRelatorio, filtroHistoricoEscolarDto, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosHistoricoEscolar));
         }
