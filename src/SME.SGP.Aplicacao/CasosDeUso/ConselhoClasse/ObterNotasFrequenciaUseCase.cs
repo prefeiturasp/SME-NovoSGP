@@ -346,19 +346,8 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<bool> ObterSeATurmaEhTipoNovaConceito(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto, Turma turma)
+        private async Task<bool> ObterSeATurmaEhTipoNovaConceito(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto, Turma turmaAluno)
         {
-            var turmaAluno = turma;
-            var turmasitinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery())).ToList();
-            if (turmaAluno.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turmaAluno.TipoTurma))
-            {
-                var turmasCodigosParaConsulta = new List<int>();
-                turmasCodigosParaConsulta.AddRange(turmaAluno.ObterTiposRegularesDiferentes());
-
-                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, notasFrequenciaDto.AlunoCodigo, turmasCodigosParaConsulta));
-
-                turmaAluno = await mediator.Send(new ObterTurmaPorCodigoQuery(codigosTurmasRelacionadas.FirstOrDefault()));
-            }
             var ultimoBimestre = await ObterPeriodoUltimoBimestrePorTurma(turmaAluno);
             var periodoFechamentoBimestre = await consultasPeriodoFechamento
                 .TurmaEmPeriodoDeFechamentoVigente(turmaAluno, DateTimeExtension.HorarioBrasilia().Date, ultimoBimestre.Bimestre);
