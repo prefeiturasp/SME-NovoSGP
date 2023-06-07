@@ -40,6 +40,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -48,9 +49,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio, true, false);
             
-            var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
+            var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
             consulta.ShouldNotBeNull();
-
+            
             var conselhosClasses = ObterTodos<ConselhoClasse>();
             var situacaoConselhoClasse = conselhosClasses.Select(c => c.Situacao).FirstOrDefault();
             
@@ -70,9 +71,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
-            var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
+            var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
             consulta.ShouldNotBeNull();
-
+            
             var conselhosClasses = ObterTodos<ConselhoClasse>();
             var situacaoConselhoClasse = conselhosClasses.Select(c => c.Situacao).FirstOrDefault();
             
@@ -104,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                     TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
             }
             
-            var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
+            var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
             consulta.ShouldNotBeNull();
 
             var conselhosClasses = ObterTodos<ConselhoClasse>();
@@ -133,14 +134,20 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
-            var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
+            var consulta = ServiceProvider.GetService<IConsultaConselhoClasseRecomendacaoUseCase>();
             consulta.ShouldNotBeNull();
 
             var fechamentosTurmas = ObterTodos<FechamentoTurma>();
             var fechamentoTurmaId = fechamentosTurmas.Select(c => c.Id).FirstOrDefault();
             
-            var retorno = await consulta.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, ALUNO_CODIGO_1,
-                TURMA_CODIGO_1, BIMESTRE_1);
+            var retorno = await consulta.Executar(new ConselhoClasseRecomendacaoDto()
+            {
+                ConselhoClasseId = conselhoClasseId,
+                FechamentoTurmaId = fechamentoTurmaId,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = BIMESTRE_1}
+            );
             
             (retorno.SituacaoConselho == SituacaoConselhoClasse.Concluido.GetAttribute<DisplayAttribute>().Name).ShouldBeTrue();
         }        

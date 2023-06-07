@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,13 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQueryHandler : IRequestHandler<ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQuery, IEnumerable<long>>
     {
-        private readonly IRepositorioConselhoClasseConsolidado repositorioConsolidacaoConselhoClasse;
+        private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConsolidacaoConselhoClasseConsulta;
 
-        public ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQueryHandler(IRepositorioConselhoClasseConsolidado repositorioConsolidacaoConselhoClasse)
+        public ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQueryHandler(IRepositorioConselhoClasseConsolidadoConsulta repositorioConsolidacaoConselhoClasseConsulta)
         {
-            this.repositorioConsolidacaoConselhoClasse = repositorioConsolidacaoConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoConselhoClasse));
+            this.repositorioConsolidacaoConselhoClasseConsulta = repositorioConsolidacaoConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoConselhoClasseConsulta));
         }
+
         public async Task<IEnumerable<long>> Handle(ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQuery request, CancellationToken cancellationToken)
-          => await repositorioConsolidacaoConselhoClasse.ObterConsolidacoesAtivasIdPorAlunoETurmaAsync(request.CodigoAluno, request.TurmaId);
+          => await repositorioConsolidacaoConselhoClasseConsulta.ObterConsolidacoesAtivasIdPorAlunoETurmaAsync(request.CodigoAluno, request.TurmaId);
     }
 }

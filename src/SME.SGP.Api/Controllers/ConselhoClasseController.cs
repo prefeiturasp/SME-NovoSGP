@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -10,6 +11,7 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
@@ -17,15 +19,25 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class ConselhoClasseController : ControllerBase
     {
+
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/recomendacoes")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ConsultasConselhoClasseRecomendacaoConsultaDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultasConselhoClasseRecomendacao consultasConselhoClasseRecomendacao,
-            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromQuery] bool consideraHistorico = false)
+        public async Task<IActionResult> ObterRecomendacoesAlunoFamilia([FromServices] IConsultaConselhoClasseRecomendacaoUseCase consultaConselhoClasseRecomendacaoUseCase,
+            long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, bool consideraHistorico = false)
         {
-            var retorno = await consultasConselhoClasseRecomendacao.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico);
+            var retorno = await consultaConselhoClasseRecomendacaoUseCase.Executar(
+                new ConselhoClasseRecomendacaoDto()
+                {
+                    ConselhoClasseId = conselhoClasseId,
+                    FechamentoTurmaId = fechamentoTurmaId,
+                    AlunoCodigo = alunoCodigo,
+                    CodigoTurma = codigoTurma,
+                    Bimestre = bimestre,
+                    ConsideraHistorico = consideraHistorico
+                });
             return Ok(retorno);
         }
 
@@ -35,9 +47,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(AuditoriaConselhoClasseAlunoDto), 200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
+        public async Task<IActionResult> SalvarRecomendacoesAlunoFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, [FromServices] ISalvarConselhoClasseAlunoRecomendacaoUseCase salvarConselhoClasseAlunoRecomendacaoUseCase)
         {
-            return Ok(await comandosConselhoClasseAluno.SalvarAsync(conselhoClasseAlunoDto));
+            return Ok(await salvarConselhoClasseAlunoRecomendacaoUseCase.Executar(conselhoClasseAlunoDto));
         }
 
         [HttpPost("{conselhoClasseId}/notas/alunos/{codigoAluno}/turmas/{codigoTurma}/bimestres/{bimestre}/fechamento-turma/{fechamentoTurmaId}")]
@@ -98,16 +110,16 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
-            => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivo(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, consideraHistorico));
+        public async Task<IActionResult> ObterParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico, [FromServices] IObterParecerConclusivoUseCase obterParecerConclusivoUseCase)
+            => Ok(await obterParecerConclusivoUseCase.Executar(new ConselhoClasseParecerConclusivoConsultaDto(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, consideraHistorico)));
 
         [HttpGet("turmas/{codigoTurma}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterParecerConclusivoPorTurmaAluno(string codigoTurma, string alunoCodigo, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
-            => Ok(await consultasConselhoClasseAluno.ObterParecerConclusivoAlunoTurma(codigoTurma, alunoCodigo));
+        public async Task<IActionResult> ObterParecerConclusivoPorTurmaAluno(string codigoTurma, string alunoCodigo, [FromServices] IObterParecerConclusivoAlunoTurmaUseCase obterParecerConclusivoAlunoTurmaUseCase)
+            => Ok(await obterParecerConclusivoAlunoTurmaUseCase.Executar(codigoTurma, alunoCodigo)); 
 
         [HttpPost("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/parecer")]
         [ProducesResponseType(401)]
@@ -123,9 +135,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSintesesConselhoDeClasse(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno)
+        public async Task<IActionResult> ObterSintesesConselhoDeClasse(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromServices] IObterSinteseConselhoDeClasseUseCase obterSintesesConselhoDeClasseUseCase)
         {
-            return Ok(await consultasConselhoClasseAluno.ObterListagemDeSinteses(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre));
+            return Ok(await obterSintesesConselhoDeClasseUseCase.Executar(new ConselhoClasseSinteseDto(conselhoClasseId,fechamentoTurmaId,alunoCodigo,codigoTurma,bimestre)));
         }
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/notas")]
@@ -134,9 +146,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, 
-            [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno, 
+            [FromServices] IObterNotasFrequenciaUseCase obterNotasFrequenciaUseCase, 
             [FromQuery] bool consideraHistorico = false)
-            => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico));
+            => Ok(await obterNotasFrequenciaUseCase.Executar(new ConselhoClasseNotasFrequenciaDto(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico)));
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/imprimir")]
         [ProducesResponseType(401)]
@@ -242,6 +254,15 @@ namespace SME.SGP.Api.Controllers
                 return Ok(recomendacoes);
             else
                 return StatusCode(204);
+        }
+
+        [HttpGet("validar-inconsistencias/turma/{turmaId}/bimestre/{bimestre}")]
+        [ProducesResponseType(typeof(IEnumerable<InconsistenciasAlunoFamiliaDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> ObterAlunosSemNotasRecomendacoes(long turmaId,int bimestre,[FromServices] IObterAlunosSemNotasRecomendacoesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroInconsistenciasAlunoFamiliaDto(turmaId,bimestre)));
         }
     }
 

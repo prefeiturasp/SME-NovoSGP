@@ -133,6 +133,7 @@ namespace SME.SGP.Aplicacao
                     Descricao = questaoBase?.Descricao,
                     ItineranciaId = questao.ItineranciaId,
                     Resposta = questao.Resposta,
+                    NomeComponente = questaoBase?.NomeComponente,
                     Obrigatorio = questaoBase?.Obrigatorio,
                     TipoQuestao = (questaoBase?.TipoQuestao ?? TipoQuestao.Texto),
                     ArquivoId = arquivo?.ArquivoId,
@@ -199,7 +200,8 @@ namespace SME.SGP.Aplicacao
                     Descricao = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).Descricao,
                     ItineranciaAlunoId = questao.ItineranciaAlunoId,
                     Resposta = questao.Resposta,
-                    Obrigatorio = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).Obrigatorio
+                    Obrigatorio = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).Obrigatorio,
+                    NomeComponente = questoesBase.ItineranciaAlunoQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId).NomeComponente
                 };
             });
         }

@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
 
         public string Descricao { get; set; }
         public string Resposta { get; set; }
+        public string NomeComponente { get; set; }
         public long ItineranciaId { get; set; }
 
         public long? ArquivoId { get; set; }

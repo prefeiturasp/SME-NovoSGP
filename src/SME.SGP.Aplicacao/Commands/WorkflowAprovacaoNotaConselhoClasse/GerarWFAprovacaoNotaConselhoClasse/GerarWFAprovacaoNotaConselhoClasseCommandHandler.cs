@@ -32,7 +32,9 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseNotaId = request.ConselhoClasseNotaId,
                 Nota = request.Nota,
                 ConceitoId = request.ConceitoId,
-                UsuarioSolicitanteId = request.UsuarioLogado.Id
+                UsuarioSolicitanteId = request.UsuarioLogado.Id,
+                ConceitoIdAnterior = request.ConceitoIdAnterior,
+                NotaAnterior = request.NotaAnterior
             });
         }
 

@@ -11,12 +11,10 @@ namespace SME.SGP.Aplicacao
     public class ConsolidacaoNotaAlunoCommandHandler : IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
 
         public ConsolidacaoNotaAlunoCommandHandler(IMediator mediator, IRepositorioConselhoClasseNota repositorioConselhoClasseNota)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
         }
 
         public async Task<bool> Handle(ConsolidacaoNotaAlunoCommand request, CancellationToken cancellationToken)

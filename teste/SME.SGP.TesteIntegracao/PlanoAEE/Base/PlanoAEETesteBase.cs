@@ -45,6 +45,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return ServiceProvider.GetService<IObterAlunosPorCodigoEolNomeUseCase>();
         }
+        protected IObterResponsaveisPlanosAEEUseCase ObterServicoObterResponsaveisPlanosAEEUseCase()
+        {
+            return ServiceProvider.GetService<IObterResponsaveisPlanosAEEUseCase>();
+        }
+
         protected IObterPlanosAEEUseCase ObterServicoObterPlanosAEEUseCase()
         {
             return ServiceProvider.GetService<IObterPlanosAEEUseCase>();

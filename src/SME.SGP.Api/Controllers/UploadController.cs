@@ -1,15 +1,14 @@
 ﻿using System;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Api.Controllers
@@ -23,12 +22,10 @@ namespace SME.SGP.Api.Controllers
     public class UploadController : ControllerBase
     {
         private readonly IMediator mediator;
-        private readonly IServicoArmazenamento servicoArmazenamento;
         private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
-        public UploadController(IMediator mediator, IServicoArmazenamento servicoArmazenamento,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+        public UploadController(IMediator mediator, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator;
-            this.servicoArmazenamento = servicoArmazenamento;
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
         
@@ -52,7 +49,7 @@ namespace SME.SGP.Api.Controllers
                 
             return BadRequest();
         }
-        
+
         [HttpPost("/servico-armazenamento/obter-buckets")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
@@ -90,36 +87,36 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> CopiarServicoArmazenamento(string nomeArquivo)
+        public async Task<IActionResult> CopiarServicoArmazenamento(string nomeArquivo,[FromServices] ICopiarServicoArmazenamentoUseCase useCase)
         {
-            return Ok(await servicoArmazenamento.Copiar(nomeArquivo));
+            return Ok(await useCase.Executar(nomeArquivo));
         }
         
         [HttpPost("/servico-armazenamento/excluir")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ExcluirServicoArmazenamento(string nomeArquivo)
+        public async Task<IActionResult> ExcluirServicoArmazenamento(string nomeArquivo,[FromServices] IExcluirTemporarioServicoArmazenamentoUseCase useCase)
         {
-            return Ok(await servicoArmazenamento.Excluir(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp));
+            return Ok(await useCase.Executar(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp));
         }
         
         [HttpPost("/servico-armazenamento/mover")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> MoverServicoArmazenamento(string nomeArquivo)
+        public async Task<IActionResult> MoverServicoArmazenamento(string nomeArquivo,[FromServices] IMoverServicoArmazenamentoUseCase useCase)
         {
-            return Ok(await servicoArmazenamento.Mover(nomeArquivo));
+            return Ok(await useCase.Executar(nomeArquivo));
         }
         
         [HttpPost("/servico-armazenamento/obter-url")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria)
+        public async Task<IActionResult> ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria,[FromServices] IObterServicoArmazenamentoUseCase useCase)
         {
-            return Ok(await servicoArmazenamento.Obter(nomeArquivo,ehPastaTemporaria));
+            return Ok(await useCase.Executar(nomeArquivo,ehPastaTemporaria));
         }
     }
 }

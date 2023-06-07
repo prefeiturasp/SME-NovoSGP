@@ -184,7 +184,8 @@ namespace SME.SGP.Aplicacao
                                 CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteCurricular : 0,
                                 Descricao = c.Nome,
                                 GrupoMatriz = new Dominio.GrupoMatriz() { Id = c.GrupoMatriz.Id, Nome = c.GrupoMatriz.Nome },
-                                TurmaCodigo = c.TurmaCodigo
+                                TurmaCodigo = c.TurmaCodigo,
+                                Regencia = c.Regencia
                             }).ToList();
                         }
                     }
@@ -389,14 +390,6 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<ComponenteCurricularEol> RemoverEdFisicaEJA(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
             => componentesCurriculares.Where(c => c.Codigo != 6);
-
-        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma)
-        {
-            var componentesCurriculares = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
-                                                                    turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
-
-            return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));
-        }
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {

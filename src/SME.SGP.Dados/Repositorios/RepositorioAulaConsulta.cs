@@ -976,10 +976,12 @@ namespace SME.SGP.Dados.Repositorios
                                a.turma_id as TurmaId,
                                a.disciplina_id as DisciplinaId,
                                ue.ue_id as CodigoUe,
+                               dre.dre_id as CodigoDre,
                                t.id as IdTurma
                           from aula a 
                         inner join turma t on t.turma_id = a.turma_id
                         inner join ue on ue.id = t.ue_id
+                        inner join dre on dre.id = ue.dre_id
                         where not excluido and tipo_calendario_id = @tipoCalendarioId ";
 
             int[] tiposEscolaFiltro = null;

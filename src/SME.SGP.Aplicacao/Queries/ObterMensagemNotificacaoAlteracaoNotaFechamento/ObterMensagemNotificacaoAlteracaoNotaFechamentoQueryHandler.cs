@@ -30,43 +30,15 @@ namespace SME.SGP.Aplicacao
             if (!fechamentosNota.Any())
                 return mensagem;
             
-            if (notificacao.Status == NotificacaoStatus.Aceita || notificacao.Status == NotificacaoStatus.Reprovada || !TemTagDinamicaOuFixa(mensagem))
+            var ehMensagemDinamica = mensagem.Contains(MENSAGEM_DINAMICA_TABELA_POR_ALUNO);
+
+            if (!ehMensagemDinamica)
                 return mensagem;
-            
-            var contemTagMensagemDinamica = mensagem.Contains(TAG_MENSAGEM_DINAMICA_TABELA_POR_ALUNO);
-            
+
             await CarregarInformacoesParaNotificacao(fechamentosNota);
-
-            var complementoMensagem = ObterTabelaNotas(fechamentosNota);
-            
-            var mensagemAlterada = contemTagMensagemDinamica 
-                ? mensagem.Replace(TAG_MENSAGEM_DINAMICA_TABELA_POR_ALUNO, complementoMensagem) 
-                : AtualizarMensagem(complementoMensagem, mensagem);
-
-            if (!mensagemAlterada.Equals(mensagem))
-            {
-                var workflowAprovacao = await mediator.Send(new ObterWorkflowPorIdQuery(request.WorkflowAprovacaoId));
-                workflowAprovacao.NotifacaoMensagem = mensagemAlterada;
-                await mediator.Send(new SalvarWorkflowAprovacaoCommand(workflowAprovacao));
-            
-                var notificacoes = await mediator.Send(new ObterNotificacoesPorWorkFlowAprovacaoIdQuery(request.WorkflowAprovacaoId));
-                await mediator.Send(new AtualizarNotificacaoMensagemPorIdsCommand(notificacoes.Select(s=> s.Id).ToList().ToArray(), mensagemAlterada));
-                
-                return mensagemAlterada;
-            }
+            mensagem = mensagem.Replace(MENSAGEM_DINAMICA_TABELA_POR_ALUNO, ObterTabelaNotas(fechamentosNota));
             return mensagem;
         }
 
-        private bool TemTagDinamicaOuFixa(string mensagem)
-        {
-            return mensagem.Contains(TAG_MENSAGEM_DINAMICA_TABELA_POR_ALUNO) || mensagem.Contains(MENSAGEM_FIXA_TABELA_POR_ALUNO);
-        }
-
-        private string AtualizarMensagem(string complementoMensagem, string mensagem)
-        {
-            var mensagemPadrao = mensagem.Substring(0,mensagem.LastIndexOf(TAG_MENSAGEM_FIXA_POR_ALUNO));
-            
-            return $"{mensagemPadrao} {complementoMensagem}";
-        }
     }
 }

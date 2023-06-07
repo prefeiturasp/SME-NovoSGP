@@ -26,6 +26,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<int>> ObterTotalAulasSemFrequenciaPorTurmaBismetre(string discplinaId, string codigoTurma, int bismetre);
         Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNotaPorBimestre(string codigoTurma, int bimestre);
         Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma);
+        Task<bool> ExisteConselhoDeClasseParaTurma(string[] codigosTurmas, int bimestre);
     }
 
     public struct objConsolidacaoConselhoAluno

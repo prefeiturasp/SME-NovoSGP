@@ -8,16 +8,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseConsolidadoPorTurmaBimestreQueryHandler : IRequestHandler<ObterConselhoClasseConsolidadoPorTurmaBimestreQuery, IEnumerable<ConselhoClasseConsolidadoTurmaAluno>>
     {
-        private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
 
-        public ObterConselhoClasseConsolidadoPorTurmaBimestreQueryHandler(IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado)
+        public ObterConselhoClasseConsolidadoPorTurmaBimestreQueryHandler(IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidado)
         {
-            this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
+            this.repositorioConselhoClasseConsolidadoConsulta = repositorioConselhoClasseConsolidado ?? throw new System.ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
         }
 
         public async Task<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>> Handle(ObterConselhoClasseConsolidadoPorTurmaBimestreQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseConsolidado.ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(request.TurmaId, request.SituacaoConselhoClasse, request.Bimestre);
+            return await repositorioConselhoClasseConsolidadoConsulta.ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(request.TurmaId, request.SituacaoConselhoClasse, request.Bimestre);
         }
     }
 }
