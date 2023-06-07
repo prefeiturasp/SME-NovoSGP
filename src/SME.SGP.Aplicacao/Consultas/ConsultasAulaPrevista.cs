@@ -57,7 +57,8 @@ namespace SME.SGP.Aplicacao
             var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var codigoTerritorioCorrespondente = (long?)null;
-            var rf = usuarioLogado.CodigoRf;
+
+            var rf = usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME() ? string.Empty : usuarioLogado.CodigoRf;
 
             if (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())
             {
