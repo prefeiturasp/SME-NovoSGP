@@ -284,7 +284,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterNomeQuestaoObservacao(Questao questaoFilha)
         {
-            if (questaoFilha != null && questaoFilha.NomeComponente.StartsWith("OBS_"))
+            if ((questaoFilha != null) && (questaoFilha.NomeComponente?.StartsWith("OBS_") == true))
             {
                 var nomeComponentePai = questaoFilha.NomeComponente.Substring(4);
                 var questaoPai = await repositorioQuestao.ObterPorNomeComponente(nomeComponentePai);
