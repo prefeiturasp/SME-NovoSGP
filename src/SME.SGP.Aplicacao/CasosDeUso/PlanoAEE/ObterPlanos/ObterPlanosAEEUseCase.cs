@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<PaginacaoResultadoDto<PlanoAEEResumoDto>> Executar(FiltroPlanosAEEDto filtro)
         {
-            return await mediator.Send(new ObterPlanosAEEQuery(filtro.DreId, filtro.UeId, filtro.TurmaId, filtro.AlunoCodigo, filtro.Situacao));
+            return await mediator.Send(new ObterPlanosAEEQuery(filtro));
         }
     }
 }

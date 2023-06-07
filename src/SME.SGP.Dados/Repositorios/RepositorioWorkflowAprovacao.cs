@@ -121,6 +121,14 @@ namespace SME.SGP.Dados.Repositorios
             return lookup.Values.FirstOrDefault();
         }
 
+        public async Task<IEnumerable<long>> ObterIdsWorkflowPorWfAprovacaoId(long id, string tabelaVinculada)
+        {
+            var sql = @$"select wa2.id from wf_aprovacao wa 
+                        inner join {tabelaVinculada} wa2 on wa2.wf_aprovacao_id = wa.id
+                        where wa.id = @id ";
+            return await database.Conexao.QueryAsync<long>(sql, new { id });            
+        }
+
         public IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo)
         {
             return database.Conexao.Query<WorkflowAprovacao>("select * from WorkflowAprovaNivel w where w.codigo = @codigo ", new { codigo })

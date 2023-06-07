@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioPlanoAEEConsulta : IRepositorioBase<PlanoAEE>
     {
-        Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, Paginacao paginacao);
+        Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, Paginacao paginacao, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai);
 
         Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante);
 
@@ -25,5 +25,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PlanoAEE> ObterPlanoComTurmaUeDrePorId(long planoId);
         Task<IEnumerable<PlanoAEE>> ObterPlanosEncerradosAutomaticamente(int pagina, int quantidadeRegistrosPagina);
         Task<Pendencia> ObterUltimaPendenciaPlano(long planoId);
+        Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, bool exibirEncerrados);
     }
 }

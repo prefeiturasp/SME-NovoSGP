@@ -105,8 +105,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task AlterarEncaminhamento(EncaminhamentoNAAPADto encaminhamentoNAAPADto, EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
-            encaminhamentoNAAPA.Situacao = encaminhamentoNAAPADto.Situacao;
-            await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+            await mediator.Send(new AlterarSituacaoNAAPACommand(encaminhamentoNAAPA, encaminhamentoNAAPADto.Situacao));
 
             foreach (var secao in encaminhamentoNAAPADto.Secoes)
             {
@@ -114,9 +113,13 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(string.Format(MensagemNegocioComuns.NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X,secao.SecaoId));
 
                 var secaoExistente = encaminhamentoNAAPA.Secoes.FirstOrDefault(s => s.SecaoEncaminhamentoNAAPAId == secao.SecaoId);
+                var tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao;
 
                 if (secaoExistente == null)
+                {
                     secaoExistente = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(encaminhamentoNAAPA.Id, secao.SecaoId, secao.Concluido));
+                    tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido;
+                }
                 else
                 {
                     secaoExistente.Concluido = secao.Concluido;
@@ -124,6 +127,8 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var resultadoEncaminhamentoSecao = secaoExistente.Id;
+
+                await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secao, secaoExistente, tipoHistorico));
 
                 foreach (var questoes in secao.Questoes.GroupBy(q => q.QuestaoId))
                 {
@@ -207,6 +212,8 @@ namespace SME.SGP.Aplicacao
                     var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(secaoEncaminhamento.Id, questoes.FirstOrDefault().QuestaoId));
                     await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
+
+                await mediator.Send(new RegistrarHistoricoDeAlteracaoEncaminhamentoNAAPACommand(secao, secaoEncaminhamento, TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido));
             }
         }
 

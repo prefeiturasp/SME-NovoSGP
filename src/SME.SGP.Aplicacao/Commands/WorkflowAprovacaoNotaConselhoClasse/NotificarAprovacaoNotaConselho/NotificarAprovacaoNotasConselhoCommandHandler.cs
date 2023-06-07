@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoNotasConselhoCommandHandler : AprovacaoNotaConselhoCommandBase<NotificarAprovacaoNotasConselhoCommand>
+    public class NotificarAprovacaoNotasConselhoCommandHandler : AprovacaoNotaConselhoCommandBase<NotificarAprovacaoNotasConselhoCommand, bool>
     {
 
         private NotificarAprovacaoNotasConselhoCommand notificarAprovacaoNotasConselhoCommand;
@@ -16,16 +16,16 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        protected override async Task Handle(NotificarAprovacaoNotasConselhoCommand request, CancellationToken cancellationToken)
+        public override async Task<bool> Handle(NotificarAprovacaoNotasConselhoCommand request, CancellationToken cancellationToken)
         {
             notificarAprovacaoNotasConselhoCommand = request;
 
-            await IniciarAprovacao(notificarAprovacaoNotasConselhoCommand.NotasEmAprovacao);
+            await CarregarInformacoesParaNotificacao(notificarAprovacaoNotasConselhoCommand.NotasEmAprovacao);
 
             var turma = WFAprovacoes.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);
-            var mensagem = await ObterMensagem(ue, turma, WFAprovacoes);
+            var mensagem = ObterMensagem(ue, turma, WFAprovacoes);
 
             foreach (var usuario in Usuarios)
             {
@@ -42,6 +42,7 @@ namespace SME.SGP.Aplicacao
                                                                 request.CodigoDaNotificacao ?? 0,
                                                                 usuarioId: usuario.Id));
             }
+            return true;
         }
 
         protected override string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar)
@@ -53,9 +54,5 @@ namespace SME.SGP.Aplicacao
                       abaixo foi { descricaoAprovadoRecusado }. Motivo: { notificarAprovacaoNotasConselhoCommand.Justificativa }.";
         }
 
-        protected override string ObterTitulo(Ue ue, Turma turma)
-        {
-            return $@"Alteração em nota/conceito final pós-conselho - { ue.Nome } ({ ue.Dre.Abreviacao }) - { turma.NomeFiltro } (ano anterior)";
-        }
     }
 }

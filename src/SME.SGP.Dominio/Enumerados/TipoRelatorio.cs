@@ -145,6 +145,12 @@ namespace SME.SGP.Dominio
         RelatorioEncaminhamentoNaapaDetalhado = 47,
 
         [Display(Name = "relatorios/analitico-sondagem", ShortName = "AnaliticoSondagem", Description = "Relatório analítico da Sondagem")]
-        RelatorioAnaliticoSondagem = 48
+        RelatorioAnaliticoSondagem = 48,
+
+        [Display(Name = "relatorios/listagem-itinerancias", ShortName = "Itinerâncias", Description = "Relatório de Registro de Itinerância")]
+        ListagemItinerancias = 49,
+
+        [Display(Name = "relatorios/controle-frequencia-mensal", ShortName = "Frequência", Description = "Relatório de Controle de frequência mensal")]
+        RelatorioControleFrequenciaMensal = 50
     }
 }

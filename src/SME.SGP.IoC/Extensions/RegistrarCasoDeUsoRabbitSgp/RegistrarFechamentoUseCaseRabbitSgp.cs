@@ -25,6 +25,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoInicioPeriodoFechamentoUEUseCase, NotificacaoInicioPeriodoFechamentoUEUseCase>();
             services.TryAddScoped<INotificacaoFimPeriodoFechamentoUEUseCase, NotificacaoFimPeriodoFechamentoUEUseCase>();
+            services.TryAddScoped<IExecutarConsolidacaoDreConselhoClasseUseCase, ExecutarConsolidacaoDreConselhoClasseUseCase>();
+            services.TryAddScoped<IExecutarConsolidacaoUeConselhoClasseUseCase, ExecutarConsolidacaoUeConselhoClasseUseCase>();
             services.TryAddScoped<IExecutarConsolidacaoTurmaConselhoClasseUseCase, ExecutarConsolidacaoTurmaConselhoClasseUseCase>();
             services.TryAddScoped<IExecutarConsolidacaoTurmaFechamentoUseCase, ExecutarConsolidacaoTurmaFechamentoUseCase>();
             services.TryAddScoped<INotificarFechamentoReaberturaUseCase, NotificarFechamentoReaberturaUseCase>();

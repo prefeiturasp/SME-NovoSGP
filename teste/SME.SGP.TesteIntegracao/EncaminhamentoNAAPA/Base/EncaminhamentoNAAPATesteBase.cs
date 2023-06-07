@@ -143,6 +143,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();    
         }
 
+        protected IObterObservacoesDeEncaminhamentoNAAPAUseCase ObterObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IObterObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected IExcluirObservacoesDeEncaminhamentoNAAPAUseCase ExcluirObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IExcluirObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+        protected ISalvarObservacoesDeEncaminhamentoNAAPAUseCase SalvarObservacoesDeEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<ISalvarObservacoesDeEncaminhamentoNAAPAUseCase>();
+        }
+
         protected INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
@@ -177,7 +190,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IEncerrarEncaminhamentoNAAPAUseCase>();
         }
-        
+
+        protected IReabrirEncaminhamentoNAAPAUseCase ObterServicoReaberturaEncaminhamento()
+        {
+            return ServiceProvider.GetService<IReabrirEncaminhamentoNAAPAUseCase>();
+        }
+
         protected IObterEncaminhamentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAPorIdUseCase>();    
@@ -440,6 +458,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 SomenteLeitura = true,
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Data,
+                NomeComponente = "DATA_ENTRADA_QUEIXA",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -451,6 +470,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Nome = "Prioridade",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
+                NomeComponente = "PRIORIDADE",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
 
@@ -612,6 +632,48 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 NomeComponente = "TURMAS_PROGRAMA"
+            });
+
+            //id 14
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 2,
+                Nome = "NIS (Número de Identificação Social)",
+                NomeComponente = "NIS",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Numerico,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 15
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 3,
+                Nome = "UBS de referência",
+                NomeComponente = "UBS",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 16
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 4,
+                Nome = "Descrição do encaminhamento",
+                NomeComponente = "DESCRICAO_ENCAMINHAMENTO",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.EditorTexto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
 

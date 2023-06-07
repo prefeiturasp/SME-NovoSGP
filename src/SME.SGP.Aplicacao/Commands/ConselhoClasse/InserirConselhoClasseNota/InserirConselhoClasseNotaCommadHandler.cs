@@ -83,6 +83,11 @@ namespace SME.SGP.Aplicacao
             //Tratar após o fechamento da transação
             if (!enviarAprovacao)
             {
+                var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.FechamentoTurma.Turma.CodigoTurma, request.CodigoAluno, consideraInativos: true), cancellationToken);
+
+                if (aluno == null)
+                    throw new NegocioException($"Não foram encontrados alunos para a turma {request.FechamentoTurma.Turma.CodigoTurma} no Eol");
+
                 var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
                 {
                     AlunoCodigo = request.CodigoAluno,
@@ -91,8 +96,10 @@ namespace SME.SGP.Aplicacao
                     AnoLetivo = request.FechamentoTurma.Turma.AnoLetivo,
                     Nota = request.ConselhoClasseNotaDto.Nota,
                     ConceitoId = request.ConselhoClasseNotaDto.Conceito,
-                    ComponenteCurricularId = conselhoClasseNota.ComponenteCurricularCodigo
+                    ComponenteCurricularId = conselhoClasseNota.ComponenteCurricularCodigo,
+                    Inativo = aluno.Inativo
                 };
+
                 await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
             }
 

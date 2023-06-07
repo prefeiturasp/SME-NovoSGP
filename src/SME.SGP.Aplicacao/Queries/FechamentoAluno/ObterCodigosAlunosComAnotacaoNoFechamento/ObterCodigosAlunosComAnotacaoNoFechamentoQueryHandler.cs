@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCodigosAlunosComAnotacaoNoFechamentoQueryHandler : IRequestHandler<ObterCodigosAlunosComAnotacaoNoFechamentoQuery, IEnumerable<string>>
     {
-        private readonly IRepositorioAnotacaoFechamentoAluno repositorioAnotacaoFechamentoAluno;
+        private readonly IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta;
 
-        public ObterCodigosAlunosComAnotacaoNoFechamentoQueryHandler(IRepositorioAnotacaoFechamentoAluno repositorioAnotacaoFechamentoAluno)
+        public ObterCodigosAlunosComAnotacaoNoFechamentoQueryHandler(IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta)
         {
-            this.repositorioAnotacaoFechamentoAluno = repositorioAnotacaoFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFechamentoAluno));
+            this.repositorioAnotacaoFechamentoAlunoConsulta = repositorioAnotacaoFechamentoAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFechamentoAlunoConsulta));
         }
 
         public Task<IEnumerable<string>> Handle(ObterCodigosAlunosComAnotacaoNoFechamentoQuery request, CancellationToken cancellationToken)
-            => repositorioAnotacaoFechamentoAluno.ObterAlunosComAnotacaoNoFechamento(request.FechamentoTurmaDisciplinaId);
+            => repositorioAnotacaoFechamentoAlunoConsulta.ObterAlunosComAnotacaoNoFechamento(request.FechamentoTurmaDisciplinaId);
     }
 }
