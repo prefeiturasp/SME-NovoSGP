@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
-            var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma));
             var alunosEol =
                 await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
@@ -51,10 +51,10 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = parecerConclusivo?.Id ?? 0,
                     Nome = parecerConclusivo?.Nome,
-                    EmAprovacao = emAprovacao
+                    EmAprovacao = false
                 };
 
-            if (await EnviarParaAprovacao(turma))
+            if (emAprovacao)
                 emAprovacao = await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
@@ -91,14 +91,15 @@ namespace SME.SGP.Aplicacao
             var parecerNovo = pareceresDaTurma.FirstOrDefault(a => a.Id == parecerConclusivoId).Nome;
 
             var pareceresEmAprovacaoAtual = await mediator.Send(new ObterParecerConclusivoEmAprovacaoPorConselhoClasseAlunoQuery(conselhoClasseAluno.Id));
-            if (!pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId)) 
+            if (!pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId))
                 await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
-                                                                                 turma,
-                                                                                 conselhoClasseAluno.AlunoCodigo,
-                                                                                 parecerConclusivoId,
-                                                                                 parecerAnterior,
-                                                                                 parecerNovo,
-                                                                                 usuarioSolicitanteId));
+                                                                 turma,
+                                                                 conselhoClasseAluno.AlunoCodigo,
+                                                                 parecerConclusivoId,
+                                                                 parecerAnterior,
+                                                                 parecerNovo,
+                                                                 usuarioSolicitanteId,
+                                                                 conselhoClasseAluno.ConselhoClasseParecerId));
 
             return true;
         }

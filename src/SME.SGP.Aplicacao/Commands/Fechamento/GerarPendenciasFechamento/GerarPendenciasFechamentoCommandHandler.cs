@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
             try
             {
-                await mediator.Send(new ExcluirPendenciasAulaDiarioClasseFechamentoCommand(request.TurmaCodigo, request.ComponenteCurricularId.ToString(), request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.UsuarioId));
+                await mediator.Send(new ExcluirPendenciasAulaDiarioClasseFechamentoCommand(request.TurmaCodigo, request.ComponenteCurricularId.ToString(), request.PeriodoEscolarInicio, request.PeriodoEscolarFim));
 
                 if (!request.ComponenteSemNota)
                 {

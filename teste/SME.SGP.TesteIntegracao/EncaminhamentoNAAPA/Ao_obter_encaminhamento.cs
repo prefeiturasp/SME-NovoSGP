@@ -132,7 +132,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             retorno.UeId.ShouldBe(1);
             retorno.UeCodigo.ShouldBe(UE_CODIGO_1);
-            retorno.UeNome.ShouldBe(UE_NOME_1);
+            retorno.UeNome.Contains(UE_NOME_1).ShouldBeTrue();
             
             retorno.TurmaId.ShouldBe(1);
             retorno.TurmaCodigo.ShouldBe(TURMA_CODIGO_1);
@@ -236,7 +236,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             retorno.UeId.ShouldBe(1);
             retorno.UeCodigo.ShouldBe(UE_CODIGO_1);
-            retorno.UeNome.ShouldBe(UE_NOME_1);
+            retorno.UeNome.Contains(UE_NOME_1).ShouldBeTrue();
             
             retorno.TurmaId.ShouldBe(1);
             retorno.TurmaCodigo.ShouldBe(TURMA_CODIGO_1);

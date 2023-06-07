@@ -34,5 +34,42 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+
+        [HttpGet("frequencia/turma/encaminhamentosituacao")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeEncaminhamentoPorSituacao([FromQuery] FiltroGraficoEncaminhamentoPorSituacaoDto filtro,[FromServices] IObterQuantidadeEncaminhamentoPorSituacaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("quantidade-em-aberto")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeEncaminhamentoNAAPAEmAberto(
+                                                [FromQuery] FiltroQuantidadeEncaminhamentoNAAPAEmAbertoDto filtro,
+                                                [FromServices] IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("quantidade-por-profissional-mes")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(IEnumerable<GraficoEncaminhamentoNAAPADto>), 200)]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuantidadeAtendimentoNAAPAPorProfissionalMes(
+                                        [FromQuery] FiltroQuantidadeAtendimentoNAAPAPorProfissionalMesDto filtro,
+                                        [FromServices] IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        
     }
 }

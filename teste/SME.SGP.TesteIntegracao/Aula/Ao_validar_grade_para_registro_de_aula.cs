@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnicaGrade
             {
                 GradeId = 1,
                 Modalidade = Modalidade.Fundamental,
-                TipoEscola = TipoEscola.Nenhum,
+                TipoEscola = TipoEscola.EMEF,
                 DuracaoTurno = 0,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",

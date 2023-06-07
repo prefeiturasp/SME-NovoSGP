@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <UserSecretsId>c8244de1-52d8-4649-9aaa-120028661527</UserSecretsId>
+        <RootNamespace>SME.SGP.OtimizarArquivos.Worker</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FFMpegCore" Version="5.1.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
+      <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="2.1.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
+      <ProjectReference Include="..\SME.SGP.Auditoria.Worker\SME.SGP.Auditoria.Worker.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -97,8 +97,7 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
-            var periodosEscolares = await consultasPeriodoEscolar
-                .ObterPeriodosEscolares(tipoCalendario.Id);
+            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
             if (periodosEscolares == null)
                 throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
@@ -117,10 +116,10 @@ namespace SME.SGP.Aplicacao
                 // Caso não esteja em periodo de fechamento ou escolar busca o ultimo existente
 
                 periodoEscolar = consultasPeriodoEscolar
-                    .ObterPeriodoPorData(periodosEscolares, DateTime.Today);
+                    .ObterPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
 
                 if (periodoEscolar == null)
-                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTime.Today);
+                    periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
             }
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
@@ -369,11 +368,13 @@ namespace SME.SGP.Aplicacao
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, codigosDisciplinasArray, tipoCalendario.Id, bimestre, usuarioRF);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, codigosDisciplinasArray, tipoCalendario.Id, periodoAtual.Id, usuarioRF));
 
+            var periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreAtual.Value));
+            
             fechamentoBimestre.Bimestre = bimestreAtual.Value;
             fechamentoBimestre.TotalAulasDadas = aulasDadas;
             fechamentoBimestre.TotalAulasPrevistas = aulasPrevistas;
-            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
-            fechamentoBimestre.PeriodoAberto = await consultasFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestreAtual.Value);
+            fechamentoBimestre.PodeProcessarReprocessar = UsuarioPossuiPermissaoNaTelaParaReprocessar() && periodoAberto;
+            fechamentoBimestre.PeriodoAberto = periodoAberto;
 
             return fechamentoBimestre;
         }

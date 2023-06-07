@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio
 {
     public interface IRepositorioOcorrencia : IRepositorioBase<Ocorrencia>
     {
-        Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao);
+        Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao, long[] idUes = null);
 
         Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(long turmaId, long codigoAluno, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao);
     }

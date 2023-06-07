@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
 {
-    public class ObterComponentesRegenciaPorAnoQueryHandlerFake : IRequestHandler<ObterComponentesRegenciaPorAnoQuery, IEnumerable<ComponenteCurricularEol>>
+    public class ObterComponentesRegenciaPorAnoQueryHandlerFake : IRequestHandler<ObterComponentesRegenciaPorAnoEolQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private const int COMPONENTE_CIENCIAS_ID_89 = 89;
         private const int COMPONENTE_GEOGRAFIA_ID_8 = 8;
@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
         private const int COMPONENTE_HISTORIA_ID_7 = 7;
         private const int COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105 = 1105;
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoEolQuery request, CancellationToken cancellationToken)
         {
             return new List<ComponenteCurricularEol>()
             {

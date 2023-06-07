@@ -176,6 +176,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
 
+        [HttpPost("reabrir/{encaminhamentoNAAPAId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
+        public async Task<IActionResult> ReabrirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IReabrirEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
+        }
+
         [HttpGet("fluxos-alerta")]
         [ProducesResponseType(typeof(IEnumerable<OpcaoRespostaSimplesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -195,6 +204,42 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ImprimirDetalhado([FromBody] FiltroRelatorioEncaminhamentoNaapaDetalhadoDto filtro, [FromServices] IRelatorioEncaminhamentoNaapaDetalhadoUseCase detalhadoUseCase)
         {
             return Ok(await detalhadoUseCase.Executar(filtro));
+        }
+
+        [HttpGet("{encaminhamentoNAAPAId}/observacoes")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObservacoes(long encaminhamentoNAAPAId,
+            [FromServices] IObterObservacoesDeEncaminhamentoNAAPAUseCase obterObservacoesDeEncaminhamentoNAAPAUseCase)
+        {
+            return Ok(await obterObservacoesDeEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
+        }
+
+        [HttpPost("salvar-observacao")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> SalvarObservacao([FromBody]EncaminhamentoNAAPAObservacaoSalvarDto filtro,[FromServices]ISalvarObservacoesDeEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpDelete("excluir-observacao/{observacaoId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirObservacao(long observacaoId, [FromServices] IExcluirObservacoesDeEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(observacaoId));
+        }
+
+        [HttpGet("{encaminhamentoNAAPAId}/historico-alteracoes")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterHistoricoDeAlteracoes(long encaminhamentoNAAPAId,
+            [FromServices] IObterHistoricosDeAlteracoesApresentacaoEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
     }
 }

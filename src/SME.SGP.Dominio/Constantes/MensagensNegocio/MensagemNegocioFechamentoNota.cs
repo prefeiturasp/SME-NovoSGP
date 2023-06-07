@@ -8,6 +8,9 @@
         public const string EXISTEM_ALUNOS_INATIVOS_FECHAMENTO_NOTA_BIMESTRE =
             "Existe(m) aluno(s) inativo(s) no fechamento das notas do bimestre.";
 
+        public const string ALUNO_INATIVO_ANTES_PERIODO_REABERTURA = "Existe(m) aluno(s) inativados fora do periodo de reabertura.";
+        public const string ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR = "Existe(m) aluno(s) inativados fora do periodo escolar.";
+
         public const string EXISTE_COMPONENTES_SEM_NOTA_INFORMADA =
             "Existe(m) componente(s) curriculares sem a nota informada.";
 
