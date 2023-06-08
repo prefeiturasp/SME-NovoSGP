@@ -46,7 +46,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return ServiceProvider.GetService<IAtualizarTurmaDoPlanoAEEUseCase>();
         }
-        
+
+        protected IAtualizarInformacoesDoPlanoAEEUseCase ObterServicoAtualizarInformacoesDoPlanoAEE()
+        {
+            return ServiceProvider.GetService<IAtualizarInformacoesDoPlanoAEEUseCase>();
+        }     
+
         protected IObterAlunosPorCodigoEolNomeUseCase ObterAlunosPorCodigoEolNomeUseCase()
         {
             return ServiceProvider.GetService<IObterAlunosPorCodigoEolNomeUseCase>();
