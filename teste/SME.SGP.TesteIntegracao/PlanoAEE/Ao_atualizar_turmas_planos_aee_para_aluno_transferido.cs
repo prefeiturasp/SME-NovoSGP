@@ -38,6 +38,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilCoordenadorCefai(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = true
             });
             await CriarPlanoAEE(ALUNO_CODIGO_1, SituacaoPlanoAEE.ParecerCP);
             await CriarPlanoAEE(ALUNO_CODIGO_1, SituacaoPlanoAEE.Validado);
@@ -58,6 +59,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilCoordenadorCefai(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = true
             });
             await CriarPlanoAEE(ALUNO_CODIGO_1, SituacaoPlanoAEE.EncerradoAutomaticamente);
             await CriarPlanoAEE(ALUNO_CODIGO_1, SituacaoPlanoAEE.Encerrado);
@@ -70,6 +72,26 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planoAEE.All(plano => plano.TurmaId == TURMA_ID_1).ShouldBe(true, $"Todos os planos devem se manter com Turma Id [{TURMA_ID_1}] pois suas situações são Encerrado/Encerrado Automaticamente");
         }
 
+        [Fact(DisplayName = "Plano AEE - Não deve alterar turmas dos Planos AEE para aluno transferido para Ue diferente")]
+        public async Task Nao_atualizar_turma_plano_aee_aluno_transferido_para_outra_ue()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCoordenadorCefai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = false
+            });
+            await CriarPlanoAEE(ALUNO_CODIGO_1, SituacaoPlanoAEE.ParecerCP);
+            await CriarPlanoAEE(ALUNO_CODIGO_1, SituacaoPlanoAEE.Validado);
+            var useCase = ObterServicoAtualizarInformacoesDoPlanoAEE();
+            var mensagem = new MensagemRabbit("{}");
+
+            await useCase.Executar(mensagem);
+
+            var planoAEE = ObterTodos<Dominio.PlanoAEE>();
+            planoAEE.All(plano => plano.TurmaId == TURMA_ID_1).ShouldBe(true, $"Os planos não devem alterar a turma pois a transferência ocorreu para outra Ue");
+        }
 
         private async Task CriarPlanoAEE(string alunoCodigo = ALUNO_CODIGO_1, SituacaoPlanoAEE situacao = SituacaoPlanoAEE.ParecerCP)
         {

@@ -36,6 +36,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilCoordenadorCefai(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = true
             });
             await CriarPlanoAEE(ALUNO_CODIGO_1);
 
@@ -58,6 +59,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilCoordenadorCefai(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = true
             });
             await CriarPlanoAEE(ALUNO_CODIGO_2, SituacaoPlanoAEE.Encerrado);
             await CriarPlanoAEE(ALUNO_CODIGO_2, SituacaoPlanoAEE.EncerradoAutomaticamente);
@@ -81,6 +83,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilCoordenadorCefai(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TurmasMesmaUe = true
             });
             await CriarPlanoAEE(ALUNO_CODIGO_2);
 

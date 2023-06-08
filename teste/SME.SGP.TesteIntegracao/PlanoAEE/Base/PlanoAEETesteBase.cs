@@ -177,7 +177,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             await CriarUsuarios();
 
-            await CriarTurma(filtroPlanoAee.Modalidade);
+            await CriarTurma(filtroPlanoAee.Modalidade, filtroPlanoAee.TurmaHistorica, filtroPlanoAee.TurmasMesmaUe);
 
             await CriarQuestionario();
             
