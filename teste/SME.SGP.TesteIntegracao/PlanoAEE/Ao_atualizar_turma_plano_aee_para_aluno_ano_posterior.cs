@@ -50,6 +50,28 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             encaminhamentoNAAPA.TurmaId.ShouldBe(TURMA_ID_1);
         }
 
+        [Fact(DisplayName = "Plano AEE - Não deve atualizar Plano AEE com situacao Encerrado/Encerrado Automaticamente para aluno com situação ativa para ano atual")]
+        public async Task Nao_deve_atualizar_plano_aee_com_situacao_encerrada()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCoordenadorCefai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+            await CriarPlanoAEE(ALUNO_CODIGO_2, SituacaoPlanoAEE.Encerrado);
+            await CriarPlanoAEE(ALUNO_CODIGO_2, SituacaoPlanoAEE.EncerradoAutomaticamente);
+
+            var useCase = ObterServicoAtualizarTurmaDoPlanoAEE();
+
+            var mensagem = new MensagemRabbit(JsonSerializer.Serialize(ObterPlanoDto(ALUNO_CODIGO_2)));
+
+            await useCase.Executar(mensagem);
+
+            var planosAEE = ObterTodos<Dominio.PlanoAEE>();
+            planosAEE.All(plano => plano.TurmaId == TURMA_ID_1).ShouldBe(true, "Planos AEE com situação encerrada e encerrada automaticamente não podem sofrer alteração de turmas");
+        }
+
 
         [Fact(DisplayName = "Plano AEE - Deve atualizar Plano AEE para aluno com situação ativa para ano atual")]
         public async Task Deve_atualizar_plano_aee_para_aluno_situacao_turma_ano_atual()
@@ -83,13 +105,13 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             };
         }
 
-        private async Task CriarPlanoAEE(string alunoCodigo)
+        private async Task CriarPlanoAEE(string alunoCodigo, SituacaoPlanoAEE situacao = SituacaoPlanoAEE.ParecerCP)
         {
             await InserirNaBase(new Dominio.PlanoAEE()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = alunoCodigo,
-                Situacao = SituacaoPlanoAEE.ParecerCP,
+                Situacao = situacao,
                 AlunoNome = "Nome do aluno 1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
