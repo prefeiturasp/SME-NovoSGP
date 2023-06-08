@@ -107,6 +107,8 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, new ComandoRabbit("Executar a gravação das observações complementares histórico escolar", typeof(IExecutarGravarHistoricoEscolarObservacaoUseCase)));
             Comandos.Add(RotasRabbitSgp.ExclusaoCompensacaoAusenciaAlunoEAula, new ComandoRabbit("Executa exclusão lógica de compensações de ausências aluno e aula por aula", typeof(IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase)));
             Comandos.Add(RotasRabbitSgp.ExclusaoCompensacaoAusenciaPorIds, new ComandoRabbit("Executa exclusão lógica de compensações de ausências que não tem compensação ausência aluno e aula por ids", typeof(IExcluirCompensacaoAusenciaPorIdsUseCase)));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDasInformacoesPlanoAEE, new ComandoRabbit("Atualiza informações do plano AEE", typeof(IAtualizarInformacoesDoPlanoAEEUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoPlanoAEE, new ComandoRabbit("Atualiza turma do planoAEE", typeof(IAtualizarTurmaDoPlanoAEEUseCase), true));
         }
     }
 }

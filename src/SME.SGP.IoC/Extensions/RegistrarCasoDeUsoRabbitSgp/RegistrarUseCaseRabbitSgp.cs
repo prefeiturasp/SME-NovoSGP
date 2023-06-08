@@ -74,6 +74,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase, RemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
             services.TryAddScoped<IExcluirArmazenamentoPorAquivoUseCase, ExcluirArmazenamentoPorAquivoUseCase>();
             services.TryAddScoped<IExecutarGravarHistoricoEscolarObservacaoUseCase, ExecutarGravarHistoricoEscolarObservacaoUseCase>();
+            services.TryAddScoped<IAtualizarInformacoesDoPlanoAEEUseCase, AtualizarInformacoesDoPlanoAEEUseCase>();
+            services.TryAddScoped<IAtualizarTurmaDoPlanoAEEUseCase, AtualizarTurmaDoPlanoAEEUseCase>();
         }
     }
 }
