@@ -33,10 +33,10 @@ namespace SME.SGP.Aplicacao
         
         private async Task<bool> AtualizarTurmaDoEncaminhamento(PlanoAEETurmaDto plano, TurmasDoAlunoDto alunoTurma)
         {
-            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
-            if (turmaId != 0)
-                if (turmaId != plano.TurmaId)
-                    return await AtualizarPlano(plano.Id, turmaId);
+            var turmaNova = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
+            var turmaAnterior = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(plano.TurmaId));
+            if (turmaNova != null && turmaAnterior.Id != turmaNova.Id && turmaAnterior.Ue.CodigoUe == turmaNova.Ue.CodigoUe)
+                return await AtualizarPlano(plano.Id, turmaNova.Id);
             return false;
 
         }

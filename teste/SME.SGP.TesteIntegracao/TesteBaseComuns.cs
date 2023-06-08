@@ -868,7 +868,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTurma(Modalidade modalidade, bool turmaHistorica = false)
+        protected async Task CriarTurma(Modalidade modalidade, bool turmaHistorica = false, bool turmasMesmaUe = false)
         {
             await InserirNaBase(new Turma
             {
@@ -885,7 +885,7 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Turma
             {
-                UeId = 2,
+                UeId = turmasMesmaUe ? 1 : 2,
                 Ano = TURMA_ANO_2,
                 CodigoTurma = TURMA_CODIGO_2,
                 Historica = turmaHistorica,
@@ -898,7 +898,7 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Turma
             {
-                UeId = 3,
+                UeId = turmasMesmaUe ? 1 : 3,
                 Ano = TURMA_ANO_3,
                 CodigoTurma = TURMA_CODIGO_3,
                 Historica = turmaHistorica,
