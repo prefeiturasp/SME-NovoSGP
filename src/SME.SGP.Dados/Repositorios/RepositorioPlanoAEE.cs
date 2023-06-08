@@ -35,16 +35,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado()
         {
-            var query = @"select 
+            var query = $@"select 
                            id,
                            turma_id as TurmaId,
                            aluno_codigo as AlunoCodigo,
                            aluno_nome as AlunoNome,
                            situacao
                           from plano_aee 
-                          where situacao <> any(@situacoes) and not excluido;";
+                          where situacao <> {(int)SituacaoPlanoAEE.Encerrado} and situacao <> { (int)SituacaoPlanoAEE.EncerradoAutomaticamente }
+                                and not excluido;";
 
-            return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { situacoes = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente } });
+            return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { });
         }
     }
 }

@@ -26,25 +26,29 @@ namespace SME.SGP.Aplicacao
                                       .FirstOrDefault(); 
 
             if (alunoTurma != null) 
-               await AtualizarTurmaDoEncaminhamento(plano, alunoTurma);
+               return await AtualizarTurmaDoEncaminhamento(plano, alunoTurma);
             
-            return true;
+            return false;
         }
         
-        private async Task AtualizarTurmaDoEncaminhamento(PlanoAEETurmaDto plano, TurmasDoAlunoDto alunoTurma)
+        private async Task<bool> AtualizarTurmaDoEncaminhamento(PlanoAEETurmaDto plano, TurmasDoAlunoDto alunoTurma)
         {
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
             if (turmaId != 0)
                 if (turmaId != plano.TurmaId)
-                    await AtualizarPlano(plano.Id, turmaId);
+                    return await AtualizarPlano(plano.Id, turmaId);
+            return false;
 
         }
 
-        private async Task AtualizarPlano(long planoAEEId, long turmaId)
+        private async Task<bool> AtualizarPlano(long planoAEEId, long turmaId)
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(planoAEEId));
+            if (planoAEE.Situacao == SituacaoPlanoAEE.Encerrado || planoAEE.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
+                return false;
+
             planoAEE.TurmaId = turmaId;
-            await mediator.Send(new SalvarPlanoAeeSimplificadoCommand(planoAEE));
+            return await mediator.Send(new SalvarPlanoAeeSimplificadoCommand(planoAEE));
         }
     }
 }

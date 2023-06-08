@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var planos = await mediator.Send(new ObterPlanosComSituacaoDiferenteDeEncerradoQuery());
-            foreach (var plano in planos.Where(a=> (new List<long> { 17616, 17620 }).Contains(a.Id))) 
+            foreach (var plano in planos) 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoPlanoAEE, plano, Guid.NewGuid(), null));
             return true;
         }
