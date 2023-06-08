@@ -1,8 +1,10 @@
 using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -29,6 +31,20 @@ namespace SME.SGP.Dados.Repositorios
                             where id = @planoAEEId";
 
             return await database.Conexao.ExecuteAsync(query, new { planoAEEId, turmaId });                  
+        }
+
+        public async Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado()
+        {
+            var query = @"select 
+                           id,
+                           turma_id as TurmaId,
+                           aluno_codigo as AlunoCodigo,
+                           aluno_nome as AlunoNome,
+                           situacao
+                          from plano_aee 
+                          where situacao <> any(@situacoes) and not excluido;";
+
+            return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { situacoes = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente } });
         }
     }
 }

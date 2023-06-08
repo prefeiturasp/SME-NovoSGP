@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,5 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<int> AtualizarSituacaoPlanoPorVersao(long versaoId, int situacao);
         Task<int> AtualizarTurmaParaRegularPlanoAEE(long planoAEEId, long turmaId);
+        Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado();
+
     }
 }
