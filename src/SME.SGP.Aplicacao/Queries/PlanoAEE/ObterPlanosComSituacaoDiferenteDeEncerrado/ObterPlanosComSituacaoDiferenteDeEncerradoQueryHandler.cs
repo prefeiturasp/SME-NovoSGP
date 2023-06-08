@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanosComSituacaoDiferenteDeEncerradoQueryHandler : IRequestHandler<ObterPlanosComSituacaoDiferenteDeEncerradoQuery, IEnumerable<PlanoAEETurmaDto>>
     {
-        private readonly IRepositorioPlanoAEE repositorioPlano;
+        private readonly IRepositorioPlanoAEEConsulta repositorioPlano;
 
-        public ObterPlanosComSituacaoDiferenteDeEncerradoQueryHandler(IRepositorioPlanoAEE repositorioPlano)
+        public ObterPlanosComSituacaoDiferenteDeEncerradoQueryHandler(IRepositorioPlanoAEEConsulta repositorioPlano)
         {
             this.repositorioPlano = repositorioPlano ?? throw new ArgumentNullException(nameof(repositorioPlano));
         }
