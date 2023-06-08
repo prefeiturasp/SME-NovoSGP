@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var codigoTerritorioCorrespondente = (long?)null;
 
-            var rf = usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME() ? string.Empty : usuarioLogado.CodigoRf;
+            var rf = usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME() || usuarioLogado.EhProfessor() ? string.Empty : usuarioLogado.CodigoRf;
 
             if (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())
             {
