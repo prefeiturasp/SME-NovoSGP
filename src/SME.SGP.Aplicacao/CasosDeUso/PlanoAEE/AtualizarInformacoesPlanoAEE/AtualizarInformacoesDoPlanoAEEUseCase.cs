@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,8 +15,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var planos = await mediator.Send(new ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQuery());
-            foreach (var plano in planos) 
+            var planos = await mediator.Send(new ObterPlanosComSituacaoDiferenteDeEncerradoQuery());
+            foreach (var plano in planos.Where(a=> (new List<long> { 17616, 17620 }).Contains(a.Id))) 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoPlanoAEE, plano, Guid.NewGuid(), null));
             return true;
         }
