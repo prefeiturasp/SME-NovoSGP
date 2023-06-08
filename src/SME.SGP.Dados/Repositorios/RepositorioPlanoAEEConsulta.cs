@@ -484,5 +484,20 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, situacoesEncerrado });
         }
+
+        public async Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado()
+        {
+            var query = $@"select 
+                           id,
+                           turma_id as TurmaId,
+                           aluno_codigo as AlunoCodigo,
+                           aluno_nome as AlunoNome,
+                           situacao
+                          from plano_aee 
+                          where situacao <> {(int)SituacaoPlanoAEE.Encerrado} and situacao <> {(int)SituacaoPlanoAEE.EncerradoAutomaticamente}
+                                and not excluido;";
+
+            return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { });
+        }
     }
 }

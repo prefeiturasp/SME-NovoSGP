@@ -26,5 +26,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PlanoAEE>> ObterPlanosEncerradosAutomaticamente(int pagina, int quantidadeRegistrosPagina);
         Task<Pendencia> ObterUltimaPendenciaPlano(long planoId);
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, bool exibirEncerrados);
+        Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado();
     }
 }
