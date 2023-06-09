@@ -92,6 +92,14 @@ namespace SME.SGP.Dados.Repositorios
                              and ativo ";
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ano });
         }
+        public async Task<bool> VerificaSeExisteParametroSistemaPorTipo(TipoParametroSistema tipo)
+        {
+            var query = @"select 1
+                            from parametros_sistema ps
+                           where tipo = @tipo
+                             and ativo ";
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { tipo });
+        }
 
         public async Task<ParametrosSistema> ObterParametroPorTipoEAno(TipoParametroSistema tipo, int ano = 0)
         {

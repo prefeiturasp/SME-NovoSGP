@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
             if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
                 throw new NegocioException("Componente curricular informado não encontrado no EOL");
 
-            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo);
+            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo || a.CodigoTerritorioSaber == filtro.DisciplinaCodigo);
 
             IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
             if (componenteReferencia.Regencia)

@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dto;
-using SME.SGP.Infra.Consts;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -32,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var notaEmAprovacao in notasEmAprovacao)
                         await AtualizarNotaConselho(notaEmAprovacao, request);
-                    
+
                     await mediator.Send(new NotificarAprovacaoNotasConselhoCommand(notasEmAprovacao,
                                                                           request.CodigoDaNotificacao,
                                                                           request.TurmaCodigo,
@@ -40,6 +39,10 @@ namespace SME.SGP.Aplicacao
                                                                           true,
                                                                           ""));
                     unitOfWork.PersistirTransacao();
+
+                    var periodoEscolar = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
+                    var bimestre = periodoEscolar != null ? periodoEscolar.Bimestre : (int)Bimestre.Final;
+                    await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.TurmaCodigo, bimestre), cancellationToken);
                 }
                 catch
                 {
@@ -47,6 +50,11 @@ namespace SME.SGP.Aplicacao
                     throw;
                 }
             }
+        }
+
+        private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
+        {
+            await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
         }
 
         private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao, AprovarWorkflowAlteracaoNotaConselhoCommand request)
@@ -73,6 +81,11 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
 
+            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma, notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo, consideraInativos: true));
+
+            if (aluno == null)
+                throw new NegocioException($"Não foram encontrados alunos para a turma {notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma} no Eol");
+
             var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo,
@@ -81,7 +94,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.AnoLetivo,
                 Nota = notaConselhoClasse.Nota,
                 ConceitoId = notaConselhoClasse.ConceitoId,
-                ComponenteCurricularId = notaConselhoClasse.ComponenteCurricularCodigo
+                ComponenteCurricularId = notaConselhoClasse.ComponenteCurricularCodigo,
+                Inativo = aluno.Inativo
             };
             await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
         }

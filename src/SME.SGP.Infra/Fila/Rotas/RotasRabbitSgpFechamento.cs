@@ -3,7 +3,9 @@
     public static class RotasRabbitSgpFechamento
     {
         public const string ConsolidarTurmaFechamentoSync = "sgp.consolidacao.turma.fechamento.sync";
-        public const string ConsolidarTurmaFechamentoComponenteTratar = "sgp.consolidacao.turma.fechamento.componente.tratar";        
+        public const string ConsolidarTurmaFechamentoComponenteTratar = "sgp.consolidacao.turma.fechamento.componente.tratar";
+        public const string ConsolidarDreConselhoClasseSync = "sgp.consolidacao.dre.conselhoclasse.sync";
+        public const string ConsolidarUeConselhoClasseSync = "sgp.consolidacao.ue.conselhoclasse.sync";
         public const string ConsolidarTurmaConselhoClasseSync = "sgp.consolidacao.turma.conselhoclasse.sync";
         public const string ConsolidarTurmaConselhoClasseAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.tratar";
         public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.tratar"; 

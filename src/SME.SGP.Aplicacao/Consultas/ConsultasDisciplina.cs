@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var registraFrequencia = await mediator
-                        .Send(new ObterComponenteRegistraFrequenciaQuery(componenteAtual.Codigo, componenteAtual.CodigoComponenteTerritorioSaber));
+                        .Send(new ObterComponenteRegistraFrequenciaQuery(componenteAtual.Codigo, componenteAtual.TerritorioSaber ? componenteAtual.CodigoComponenteTerritorioSaber : componenteAtual.Codigo));
 
                     disciplinasAtribuicaoCj = disciplinasAtribuicaoCj.Append(new DisciplinaResposta()
                     {
@@ -141,7 +141,9 @@ namespace SME.SGP.Aplicacao
                     });
                 }
 
-                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinasAtribuicaoCj?.DistinctBy(s => (s.Nome, s.Professor)).OrderBy(s => s.Nome) : disciplinasAtribuicaoCj.OrderBy(s => s.Nome);
+                var disciplinasEolTratadas = realizarAgrupamentoComponente ?
+                    disciplinasAtribuicaoCj?.DistinctBy(s => (s.Nome.ToUpper(), s.TerritorioSaber ? s.Professor : null)).OrderBy(s => s.Nome) :
+                    disciplinasAtribuicaoCj.OrderBy(s => s.Nome);
 
                 disciplinasDto = MapearParaDto(disciplinasEolTratadas, ehEnsinoMedio, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
@@ -230,7 +232,9 @@ namespace SME.SGP.Aplicacao
                         .SelectMany(c => c.CodigosTerritoriosAgrupamento);
 
                     disciplinasDto.AddRange(MapearParaDto(disciplinasAtribuicaoCj?.Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular)), turmaPrograma, turma.EnsinoEspecial));
-                    disciplinasDto = disciplinasDto.DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))?.OrderBy(c => c.Nome)?.ToList();
+                    disciplinasDto = disciplinasDto != null && disciplinasDto.Any() ? disciplinasDto.Where(d => d.TerritorioSaber).DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))
+                        .Concat(disciplinasDto.Where(d => !d.TerritorioSaber).DistinctBy(d => d.CodigoComponenteCurricular))
+                        .OrderBy(c => c.Nome).ToList() : null;
                 }
             }
 
@@ -263,6 +267,9 @@ namespace SME.SGP.Aplicacao
 
             if (disciplinasDto.Any(x => x.TerritorioSaber))
                 await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);
+
+            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
+               disciplinasDto = disciplinasDto.DistinctBy(x => x.CodigoComponenteCurricular).ToList();
 
             return disciplinasDto;
         }
@@ -383,14 +390,6 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<ComponenteCurricularEol> RemoverEdFisicaEJA(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
             => componentesCurriculares.Where(c => c.Codigo != 6);
-
-        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma)
-        {
-            var componentesCurriculares = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
-                                                                    turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
-
-            return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));
-        }
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {

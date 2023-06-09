@@ -38,8 +38,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var conselho in conselhoClasse.GroupBy(c => c.CodigoTurma))
                 {
-                    int quantidadeEmAndamentoEConcluido = (conselho.FirstOrDefault(c => c.Situacao == SituacaoConselhoClasse.EmAndamento)?.Quantidade 
-                                                          + conselho.FirstOrDefault(c => c.Situacao == SituacaoConselhoClasse.Concluido)?.Quantidade) ?? 0;
+                    int quantidadeEmAndamentoEConcluido = 0;
 
                     foreach(var informacoesTurma in conselho.ToList())
                     {
@@ -47,15 +46,20 @@ namespace SME.SGP.Aplicacao
                         {
                             case SituacaoConselhoClasse.EmAndamento:
                                 conselhos.Add(new GraficoBaseDto(informacoesTurma.AnoTurma, informacoesTurma.Quantidade > 0 ? informacoesTurma.Quantidade : 0, SituacaoConselhoClasse.EmAndamento.Name()));
+                                quantidadeEmAndamentoEConcluido += informacoesTurma.Quantidade;
                                 break;
 
                             case SituacaoConselhoClasse.Concluido:
                                 conselhos.Add(new GraficoBaseDto(informacoesTurma.AnoTurma, informacoesTurma.Quantidade > 0 ? informacoesTurma.Quantidade : 0, SituacaoConselhoClasse.Concluido.Name()));
+                                quantidadeEmAndamentoEConcluido += informacoesTurma.Quantidade;
                                 break;
                         }
+
+                        
                     }
 
-                    conselhos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, param.Bimestre, quantidadeEmAndamentoEConcluido), SituacaoConselhoClasse.NaoIniciado.Name()));
+                    if(quantidadeEmAndamentoEConcluido > 0)
+                        conselhos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, param.Bimestre, quantidadeEmAndamentoEConcluido), SituacaoConselhoClasse.NaoIniciado.Name()));
                 }
             }
 

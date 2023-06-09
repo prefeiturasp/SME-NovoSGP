@@ -6,7 +6,9 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -125,7 +127,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select distinct cca.aluno_codigo
                           from conselho_classe_aluno cca
-                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                          where cca.conselho_classe_id = @conselhoClasseId";
 
             return await database.Conexao.QueryAsync<string>(query, new { conselhoClasseId });
@@ -174,7 +176,10 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine(@" 
                                   from consolidado_conselho_classe_aluno_turma cccat
                                  inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
-                                 inner join turma t on t.id = cccat.turma_id 
+                                 inner join conselho_classe_aluno cca on cca.aluno_codigo = cccat.aluno_codigo
+                                 inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
+                                 inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                                 inner join turma t on t.id = ft.turma_id and cccat.turma_id = t.id 
                                  inner join ue on ue.id = t.ue_id where t.tipo_turma = 1 ");
 
             var queryWhere = new StringBuilder("");
@@ -208,6 +213,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 queryWhere.AppendLine(" and cccatn.bimestre = @bimestre ");
             }
+
+            queryWhere.AppendLine(" and not cccat.excluido");
 
             sqlQuery.AppendLine(queryWhere.ToString());
             sqlQuery.AppendLine($@" group by cccat.status, ");
@@ -248,7 +255,7 @@ namespace SME.SGP.Dados.Repositorios
                 semestre,
                 bimestre
             };
-            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), parametros);
+            return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), parametros, commandTimeout: 120);
         }
 
         private string MontarQueryNotasFinasFechamentoQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
@@ -325,7 +332,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                            inner join conselho_classe_aluno cca on
 		                                            cca.conselho_classe_id = cc.id
 	                                            inner join conselho_classe_nota ccn on
-		                                            ccn.conselho_classe_aluno_id = cca.id
+		                                            ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
 	                                            inner join conceito_valores cv on ccn.conceito_id = cv.id
 	                                            where t.ano_letivo = @anoLetivo ");
 
@@ -420,7 +427,7 @@ namespace SME.SGP.Dados.Repositorios
                         and fa.tipo  = @tipo
                         group by fa.disciplina_id, total_compensacoes, codigo_aluno ";
 
-            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, bimestre, tipo = (int)TipoFrequenciaAluno.PorDisciplina }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma)
@@ -448,6 +455,21 @@ namespace SME.SGP.Dados.Repositorios
                         and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula";
 
             return await database.Conexao.QueryAsync<int>(sql, new { discplinaId, codigoTurma, bismetre });
+        }
+
+        public async Task<bool> ExisteConselhoDeClasseParaTurma(string[] codigosTurmas, int bimestre)
+        {
+            var sql = new StringBuilder(@"select 1 from conselho_classe cc
+                    left join fechamento_turma ft on cc.fechamento_turma_id = ft.id
+                    left join turma t on t.id = ft.turma_id
+                    left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                    where t.turma_id = any(@codigosTurmas)");
+            if (bimestre > 0)
+                sql.AppendLine("and pe.bimestre = @bimestre");
+            else
+                sql.AppendLine("and ft.periodo_escolar_id is null");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql.ToString(), new { codigosTurmas, bimestre });
         }
     }
 }

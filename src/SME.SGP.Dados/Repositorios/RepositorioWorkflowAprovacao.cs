@@ -23,10 +23,16 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { workflowId });
         }
 
+        private string CamposEntidadeBase(string alias)
+            => $"{alias}.id, {alias}.criado_em, {alias}.criado_por, {alias}.alterado_em, {alias}.alterado_por, {alias}.alterado_rf, {alias}.criado_rf";
+
         public async Task<WorkflowAprovacao> ObterEntidadeCompleta(long workflowId = 0, long notificacaoId = 0)
         {
             var query = new StringBuilder();
-            query.AppendLine("select wf.*, wfn.*, n.*, u.*");
+            query.AppendLine($"select {CamposEntidadeBase("wf")}, wf.ano, wf.excluido, wf.dre_id, wf.notificacao_mensagem, wf.notificacao_titulo, wf.notificacao_categoria, wf.notificacao_tipo, wf.tipo, wf.turma_id, wf.ue_id");
+            query.AppendLine($"  , {CamposEntidadeBase("wfn")}, wfn.cargo, wfn.nivel, wfn.observacao, wfn.status, wfn.wf_aprovacao_id");
+            query.AppendLine($"  , {CamposEntidadeBase("n")}, n.ano, n.categoria, n.codigo, n.dre_id, n.excluida, n.mensagem, n.status, n.tipo, n.titulo, n.turma_id, n.ue_id, n.usuario_id");
+            query.AppendLine($"  , {CamposEntidadeBase("u")}, u.rf_codigo, u.expiracao_recuperacao_senha, u.login, u.nome, u.token_recuperacao_senha, u.ultimo_login");
             query.AppendLine("from wf_aprovacao wf");
             query.AppendLine("inner join wf_aprovacao_nivel wfn");
             query.AppendLine("on wfn.wf_aprovacao_id = wf.id");
@@ -113,6 +119,14 @@ namespace SME.SGP.Dados.Repositorios
                  }, param: new { workflowId });
 
             return lookup.Values.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<long>> ObterIdsWorkflowPorWfAprovacaoId(long id, string tabelaVinculada)
+        {
+            var sql = @$"select wa2.id from wf_aprovacao wa 
+                        inner join {tabelaVinculada} wa2 on wa2.wf_aprovacao_id = wa.id
+                        where wa.id = @id ";
+            return await database.Conexao.QueryAsync<long>(sql, new { id });            
         }
 
         public IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo)

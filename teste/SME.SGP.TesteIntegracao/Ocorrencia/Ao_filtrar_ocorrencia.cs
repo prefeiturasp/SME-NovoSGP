@@ -12,8 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dto;
 using Xunit;
 using OcorrenciaObj = SME.SGP.Dominio.Ocorrencia;
+using Nest;
 
 namespace SME.SGP.TesteIntegracao.Ocorrencia
 {
@@ -28,6 +30,8 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorUeQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorUeQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorCodigosQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterAlunosEolPorCodigosQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPerfilAtualQuery, Guid>), typeof(ObterPerfilAtualQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUEsPorDREQuery, IEnumerable<AbrangenciaUeRetorno>>), typeof(ObterUEsPorDREQueryHandlerFiltroTodasUesFake), ServiceLifetime.Scoped));
         }
 
         [Theory(DisplayName = "Ocorrência - Ao filtrar ocorrência por titulo")]
@@ -172,6 +176,30 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Items.Any().ShouldBeTrue();
         }
 
+        [Fact(DisplayName = "Ocorrência - Ao filtrar por Todas Ues")]
+        public async Task Ao_filtra_ocorrencia_por_todas_ues()
+        {
+            await CriarDadosBasicos();
+            await CriarOcorrencia();
+            long idTodasUes = -99;
+            var dtoFiltro = new FiltroOcorrenciaListagemDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                UeId = idTodasUes,
+                DreId = 2
+            };
+            var useCase = ListarOcorrenciasUseCase();
+            var retorno = await useCase.Executar(dtoFiltro);
+            retorno.ShouldNotBeNull();
+            retorno.Items.Any().ShouldBeTrue();
+            retorno.Items.Count().ShouldBeEquivalentTo(4);
+            retorno.Items.Select(x => !string.IsNullOrWhiteSpace(x.UeOcorrencia)).Count().ShouldBeGreaterThan(0);
+            retorno.Items.FirstOrDefault().UeOcorrencia.ShouldBeEquivalentTo("EMEF UE 2");
+            retorno.Items.FirstOrDefault().DataOcorrencia.ShouldBeEquivalentTo(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
+
+        }
+        
+        
         private async Task CriarOcorrencia()
         {
             await InserirNaBase(new OcorrenciaObj
@@ -180,6 +208,58 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Titulo = "Ocorrência",
                 Descricao = "Ocorrência de incidente",
                 UeId = UE_ID_1,
+                TurmaId = TURMA_ID_1,
+                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
+                HoraOcorrencia = DateTimeExtension.HorarioBrasilia().TimeOfDay,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            await InserirNaBase(new OcorrenciaObj
+            {
+                OcorrenciaTipoId = 1,
+                Titulo = "Ocorrência 2",
+                Descricao = "Ocorrência de incidente 2",
+                UeId = UE_ID_2,
+                TurmaId = TURMA_ID_1,
+                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
+                HoraOcorrencia = DateTimeExtension.HorarioBrasilia().TimeOfDay,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            await InserirNaBase(new OcorrenciaObj
+            {
+                OcorrenciaTipoId = 1,
+                Titulo = "Ocorrência 22",
+                Descricao = "Ocorrência de incidente 2",
+                UeId = UE_ID_2,
+                TurmaId = TURMA_ID_1,
+                DataOcorrencia = DateTimeExtension.HorarioBrasilia().AddDays(-2),
+                HoraOcorrencia = DateTimeExtension.HorarioBrasilia().TimeOfDay,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            await InserirNaBase(new OcorrenciaObj
+            {
+                OcorrenciaTipoId = 1,
+                Titulo = "Ocorrência 32",
+                Descricao = "Ocorrência de incidente 33",
+                UeId = UE_ID_3,
+                TurmaId = TURMA_ID_1,
+                DataOcorrencia = DateTimeExtension.HorarioBrasilia().AddDays(-2),
+                HoraOcorrencia = DateTimeExtension.HorarioBrasilia().TimeOfDay,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            await InserirNaBase(new OcorrenciaObj
+            {
+                OcorrenciaTipoId = 1,
+                Titulo = "Ocorrência 3",
+                Descricao = "Ocorrência de incidente 3",
+                UeId = UE_ID_3,
                 TurmaId = TURMA_ID_1,
                 DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
                 HoraOcorrencia = DateTimeExtension.HorarioBrasilia().TimeOfDay,

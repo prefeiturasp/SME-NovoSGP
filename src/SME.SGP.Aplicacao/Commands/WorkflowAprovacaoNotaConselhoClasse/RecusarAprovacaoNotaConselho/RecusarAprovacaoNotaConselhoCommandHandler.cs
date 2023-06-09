@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
                 if (notaEmProvacao.ConselhoClasseNota.Nota == null && notaEmProvacao.ConselhoClasseNota.Conceito == null) //Conselho de classe nota gerado automaticamente pelo WF Conselho Nota
                 {
-                    await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId));
+                    await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId??0));
                 }
             }
 
@@ -41,6 +43,15 @@ namespace SME.SGP.Aplicacao
                                                                           request.WorkflowId,
                                                                           false,
                                                                           request.Justificativa));
+
+            var periodoEscolar = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
+            var bimestre = periodoEscolar != null ? periodoEscolar.Bimestre : (int)Bimestre.Final;
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.TurmaCodigo, bimestre), cancellationToken);
+        }
+
+        private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
+        {
+            await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
         }
 
         private async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotaEmAprovacaoPosConselho(long workflowId)

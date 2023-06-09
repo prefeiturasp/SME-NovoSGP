@@ -2,9 +2,11 @@
 using SME.SGP.Aplicacao.Commands.HistoricoEscolar;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Queries.HistoricoEscolarObservacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -17,28 +19,53 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var historicoEscolarObservacaoDto = mensagemRabbit.ObterObjetoMensagem<HistoricoEscolarObservacaoDto>();
+            var historicoEscolarObservacoes = mensagemRabbit.ObterObjetoMensagem<List<HistoricoEscolarObservacaoDto>>();
 
-            var historicoEscolarObservacao = await mediator.Send(new ObterHistoricoEscolarObservacaoPorAlunoQuery(historicoEscolarObservacaoDto.CodigoAluno));
+            if (historicoEscolarObservacoes != null && historicoEscolarObservacoes.Any())
+            {
+                foreach (var historicoEscolarObservacaoDto in historicoEscolarObservacoes)
+                {
+                    var historicoEscolarObservacao = await mediator.Send(new ObterHistoricoEscolarObservacaoPorAlunoQuery(historicoEscolarObservacaoDto.CodigoAluno));
 
-            var salvar = false;
-            if (historicoEscolarObservacao == null)
-            {
-                historicoEscolarObservacao = new Dominio.HistoricoEscolarObservacao(historicoEscolarObservacaoDto.CodigoAluno, historicoEscolarObservacaoDto.Observacao);
-                salvar = true;
-            }
-            else if (historicoEscolarObservacao.Observacao != historicoEscolarObservacaoDto.Observacao)
-            {
-                historicoEscolarObservacao.Alterar(historicoEscolarObservacaoDto.Observacao);
-                salvar = true;
-            }
+                    if (historicoEscolarObservacao == null)
+                    {
+                        historicoEscolarObservacao = ObterNovoHistoricoObsevacao(historicoEscolarObservacaoDto);
+                    }
+                    else
+                    {
+                        historicoEscolarObservacao = await ObterAlteracaoHistoricoObservacao(historicoEscolarObservacao, historicoEscolarObservacaoDto);
+                    }
 
-            if (salvar)
-            {
-                await mediator.Send(new SalvarHistoricoEscolarObservacaoCommand(historicoEscolarObservacao));
+                    if (historicoEscolarObservacao != null)
+                    {
+                        await mediator.Send(new SalvarHistoricoEscolarObservacaoCommand(historicoEscolarObservacao));
+                    }
+                }
             }
 
             return true;
+        }
+
+        private HistoricoEscolarObservacao ObterNovoHistoricoObsevacao(HistoricoEscolarObservacaoDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.Observacao))
+                return new HistoricoEscolarObservacao(dto.CodigoAluno, dto.Observacao);
+
+            return null;
+        }
+
+        private async Task<HistoricoEscolarObservacao> ObterAlteracaoHistoricoObservacao(HistoricoEscolarObservacao objeto, HistoricoEscolarObservacaoDto dto)
+        {
+            if (string.IsNullOrEmpty(dto.Observacao))
+            {
+                await mediator.Send(new RemoverHistoricoEscolarObservacaoCommad(objeto));
+
+                return null;
+            }
+
+            objeto.Alterar(dto.Observacao);
+
+            return objeto;
         }
     }
 }

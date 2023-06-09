@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
                                                                     request.TurmaId,
                                                                     request.AlunoCodigo,
                                                                     request.AnoLetivo,
-                                                                    (int?)request.Situacao);
+                                                                    (int?)request.Situacao,
+                                                                    request.ExibirEncerrados);
     }
 }

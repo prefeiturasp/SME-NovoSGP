@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public string Resposta { get; set; }
         public long ItineranciaAlunoId { get; set; }
         public bool Obrigatorio { get; set; }
+        public string NomeComponente { get; set; }
     }
 }

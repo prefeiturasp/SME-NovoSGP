@@ -116,6 +116,8 @@ namespace SME.SGP.Aplicacao
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
+            GrupoMatrizId = disciplina.GrupoMatriz.Id,
+            GrupoMatrizNome = disciplina.GrupoMatriz.Nome,
             Nome = disciplina.Nome,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,

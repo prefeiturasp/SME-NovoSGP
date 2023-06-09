@@ -14,5 +14,6 @@ namespace SME.SGP.Infra
         public DateTime? DataAberturaQueixaFim { get; set; }
         public int Situacao { get; set; }
         public int Prioridade { get; set; }
+        public bool ExibirEncerrados { get; set; }
     }
 }
