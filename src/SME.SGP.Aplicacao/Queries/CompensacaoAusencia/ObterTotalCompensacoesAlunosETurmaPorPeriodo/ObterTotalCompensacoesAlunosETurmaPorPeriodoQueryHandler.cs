@@ -29,7 +29,16 @@ namespace SME.SGP.Aplicacao
 
             var compensacoesTurma = await repositorioCache
                 .ObterAsync(valorNomeChave,
-                    async () => await repositorio.ObterTotalCompensacoesPorAlunosETurmaAsync(request.Bimestre, null, request.TurmaCodigo, null), MINUTOS_EXPIRACAO_CACHE);
+                    async () => await repositorio.ObterTotalCompensacoesPorAlunosETurmaAsync(request.Bimestre, request.Alunos, request.TurmaCodigo, request.Professor), MINUTOS_EXPIRACAO_CACHE);
+
+            var alunosNaoConstamListaCompensacoes = request.Alunos
+                .Except(compensacoesTurma.Select(ct => ct.AlunoCodigo));
+
+            if (alunosNaoConstamListaCompensacoes.Any())
+            {
+                compensacoesTurma = compensacoesTurma
+                    .Concat(await repositorio.ObterTotalCompensacoesPorAlunosETurmaAsync(request.Bimestre, alunosNaoConstamListaCompensacoes.ToList(), request.TurmaCodigo, request.Professor));
+            }
 
             if (request.Alunos != null && request.Alunos.Any())
             {

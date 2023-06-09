@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<CompensacaoDataAlunoDto>> Handle(ObterAusenciaParaCompensacaoPorAlunosQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacaoPorAlunos(request.CodigosAlunos, request.DisciplinasId, request.Bimestre, request.Turmacodigo, request.Professor);
+            return await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacaoPorAlunos(request.CompensacaoAusenciaId, request.CodigosAlunos, request.DisciplinasId, request.Bimestre, request.Turmacodigo, request.Professor);
         }
     }
 }
