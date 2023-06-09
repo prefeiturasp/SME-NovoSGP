@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -95,21 +94,23 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarCompensacaoAusenciaCommand(compensacao));
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
+                IEnumerable<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos = null;
                 IEnumerable<string> codigosAlunosCompensacao = new List<string>();
                 var ehAlteracao = id > 0;
+
                 if (compensacaoDto.Alunos.Any() || ehAlteracao)
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, professorConsiderado);
+                    compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, professorConsiderado);
                     codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
-                unitOfWork.PersistirTransacao();                
+                unitOfWork.PersistirTransacao();
 
                 await MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
 
                 if (codigosAlunosCompensacao.Any())
                 {
-                    await mediator.Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand(turma.CodigoTurma, periodo.Bimestre));
+                    await GravarDadosCacheParaCalculoFrequencia(turma.CodigoTurma, periodo.Bimestre, codigosComponentesConsiderados.ToArray(), codigosAlunosCompensacao.ToArray(), compensacao.Id, compensacaoAusenciaAlunos.Where(c => !c.Excluido), professorConsiderado);
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                 }
 
@@ -391,16 +392,15 @@ namespace SME.SGP.Aplicacao
         private static void AdicionarCompensacaoAlunoAula(IEnumerable<CompensacaoAusenciaAlunoAula> compensacaoAusenciaAlunoAulas, List<CompensacaoAusenciaAlunoAula> listaPersistencia, CompensacaoAusenciaAluno compensacaoAusenciaAluno, RegistroFaltasNaoCompensadaDto falta)
         {
             var compensacaoAusenciaAlunoAula = compensacaoAusenciaAlunoAulas
-                                        .FirstOrDefault(t => t.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id && t.RegistroFrequenciaAlunoId == falta.RegistroFrequenciaAlunoId);
+                                        .FirstOrDefault(t => t.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id && t.RegistroFrequenciaAlunoId == falta?.RegistroFrequenciaAlunoId);
 
-            if (compensacaoAusenciaAlunoAula == null)
-                compensacaoAusenciaAlunoAula = new CompensacaoAusenciaAlunoAula()
-                {
-                    CompensacaoAusenciaAlunoId = compensacaoAusenciaAluno.Id,
-                    RegistroFrequenciaAlunoId = falta.RegistroFrequenciaAlunoId,
-                    NumeroAula = falta.NumeroAula,
-                    DataAula = falta.DataAula
-                };
+            compensacaoAusenciaAlunoAula ??= new CompensacaoAusenciaAlunoAula()
+            {
+                CompensacaoAusenciaAlunoId = compensacaoAusenciaAluno.Id,
+                RegistroFrequenciaAlunoId = falta.RegistroFrequenciaAlunoId,
+                NumeroAula = falta.NumeroAula,
+                DataAula = falta.DataAula
+            };
 
             compensacaoAusenciaAlunoAula.Restaurar();
 
@@ -467,6 +467,38 @@ namespace SME.SGP.Aplicacao
         {
             var componentes = await mediator.Send(new ObterDisciplinasPerfilCJQuery(turmaId, codigoRf));
             return componentes != null && componentes.Any();
-        }       
+        }
+
+        private async Task GravarDadosCacheParaCalculoFrequencia(string codigoTurma, int bimestre, string[] codigoComponentesConsiderados, string[] codigosAlunos, long idCompensacaoDesconsiderado, IEnumerable<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos, string professorConsiderado = null)
+        {
+            var totaisCompensacoesExistentes = (await mediator
+                .Send(new ObterTotalCompensacoesAusenciaPorBimestreTurmaAlunosDesconsiderandoIdQuery(codigoTurma, bimestre, codigosAlunos, idCompensacaoDesconsiderado))).ToList();
+
+            foreach (var compensacaoAtual in compensacaoAusenciaAlunos)
+            {
+                var totaisCompensacoesExistenteParaAluno = totaisCompensacoesExistentes
+                    .FirstOrDefault(t => t.AlunoCodigo == compensacaoAtual.CodigoAluno &&
+                                         codigoComponentesConsiderados.Contains(t.ComponenteCurricularId) &&
+                                         t.Professor == professorConsiderado);
+
+                if (totaisCompensacoesExistenteParaAluno != null)
+                {
+                    totaisCompensacoesExistenteParaAluno.Compensacoes += compensacaoAtual.QuantidadeFaltasCompensadas;
+                    continue;
+                }
+
+                totaisCompensacoesExistentes.Add(new CompensacaoAusenciaAlunoCalculoFrequenciaDto()
+                {
+                    AlunoCodigo = compensacaoAtual.CodigoAluno,
+                    Bimestre = bimestre,
+                    Compensacoes = compensacaoAtual.QuantidadeFaltasCompensadas,
+                    ComponenteCurricularId = codigoComponentesConsiderados.OrderBy(c => c.Length).Last(),
+                    Professor = professorConsiderado
+                });
+            };
+
+            await mediator
+                .Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand(codigoTurma, bimestre, totaisCompensacoesExistentes));
+        }
     }
 }

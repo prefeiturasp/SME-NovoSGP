@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
@@ -13,23 +9,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using SME.SGP.ComprimirArquivos.Worker;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using System.IO;
+using System.Reflection;
 using ConfiguracaoRabbitOptions = SME.SGP.Auditoria.Worker.ConfiguracaoRabbitOptions;
 using TelemetriaOptions = SME.SGP.Auditoria.Worker.TelemetriaOptions;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {
-     public class Startup
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -46,6 +41,10 @@ namespace SME.SGP.ComprimirArquivos.Worker
             RegistrarRabbitMQ(services);
             RegistrarRabbitMQLog(services);
             RegistrarTelemetria(services);
+
+            var caminhoArmazenamentoOptions = new CaminhoArmazenamentoOptions();
+            Configuration.GetSection(CaminhoArmazenamentoOptions.Secao).Bind(caminhoArmazenamentoOptions, c => c.BindNonPublicProperties = true);
+            services.AddSingleton(caminhoArmazenamentoOptions);
 
             services.AddHealthChecks();
             

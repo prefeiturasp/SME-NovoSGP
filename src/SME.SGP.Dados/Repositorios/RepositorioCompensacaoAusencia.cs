@@ -64,7 +64,7 @@ namespace SME.SGP.Dados
             return await database.Conexao.QueryAsync<RegistroFaltasNaoCompensadaDto>(query, parametros);
         }
 
-        public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo, string professor = null)
+        public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(long compensacaoAusenciaId, string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo, string professor = null)
         {
             var query = @$"select
 							    caaa.id  as CompensacaoAusenciaAlunoAulaId,
@@ -74,6 +74,7 @@ namespace SME.SGP.Dados
 								caaa.registro_frequencia_aluno_id as RegistroFrequenciaAlunoId,
 								rfa.codigo_aluno as CodigoAluno
 							from compensacao_ausencia_aluno_aula caaa
+							join compensacao_ausencia_aluno caa on caaa.compensacao_ausencia_aluno_id = caa.id
 							join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id
 							join aula a on a.id = rfa.aula_id
 							inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
@@ -83,10 +84,11 @@ namespace SME.SGP.Dados
 								and p.bimestre = @bimestre
 								and a.turma_id = @turmacodigo
 								and rfa.valor = 2
+								and caa.compensacao_ausencia_id = @compensacaoAusenciaId
 								{(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor " : string.Empty)}
 								order by caaa.data_aula ";
 
-            var parametros = new { codigosAlunos, disciplinasId, bimestre, turmacodigo, professor };
+            var parametros = new { compensacaoAusenciaId, codigosAlunos, disciplinasId, bimestre, turmacodigo, professor };
             return await database.Conexao.QueryAsync<CompensacaoDataAlunoDto>(query, parametros);
         }
 
@@ -102,35 +104,6 @@ namespace SME.SGP.Dados
                                             having coalesce(sum(caa.qtd_faltas_compensadas) filter (where not caa.excluido),0)  = 0 ");
 
             return await database.Conexao.QueryAsync<long>(query.ToString(), new { ids });
-        }
-
-        public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(int bimestre, string turmaCodigo)
-        {
-            var query = @$"
-                select
-	                coalesce(sum(caa.qtd_faltas_compensadas), 0) as compensacoes,
-	                caa.codigo_aluno as alunoCodigo,
-	                c.disciplina_id as componenteCurricularId,
-	                c.bimestre, 
-                    c.professor_rf professor
-                from
-	                compensacao_ausencia_aluno caa
-                inner join compensacao_ausencia c on
-	                c.id = caa.compensacao_ausencia_id
-                inner join turma t on
-	                t.id = c.turma_id
-                where
-	                not caa.excluido
-                    and not c.excluido 
-	                and c.bimestre = @bimestre
-	                and t.turma_id = @turmaCodigo
-                group by
-	                caa.codigo_aluno,
-	                c.disciplina_id,
-	                c.bimestre,
-                    c.professor_rf";
-
-            return await database.Conexao.QueryAsync<CompensacaoAusenciaAlunoCalculoFrequenciaDto>(query, new { bimestre, turmaCodigo });
-        }
+        }       
     }
 }
