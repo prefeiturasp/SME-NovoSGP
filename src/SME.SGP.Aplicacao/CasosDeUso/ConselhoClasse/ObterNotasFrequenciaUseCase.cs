@@ -464,7 +464,7 @@ namespace SME.SGP.Aplicacao
             var notaPosConselho = new NotaPosConselhoDto()
             {
                 Id = visualizaNota ? notaComponenteId : null,
-                Nota = MontarNota(visualizaNota ? notaComponente?.NotaConceito : null,turmaTipoNotaConceito,notaComponente?.ComponenteCurricularCodigo),
+                Nota = visualizaNota ? notaComponente?.NotaConceito : null,
                 PodeEditar = componenteLancaNota && visualizaNota
             };
 
@@ -527,7 +527,7 @@ namespace SME.SGP.Aplicacao
                 notasPeriodos.Add(new NotaBimestreDto()
                 {
                     Bimestre = notaFechamento.Bimestre.Value,
-                    NotaConceito = MontarNota(notaFechamento.NotaConceito, turmaTipoNotaConceito, codigoComponenteCurricular)
+                    NotaConceito = notaFechamento.NotaConceito
                 });
             }
             return notasPeriodos;
@@ -544,7 +544,7 @@ namespace SME.SGP.Aplicacao
             return new NotaBimestreDto()
             {
                 Bimestre = bimestre,
-                NotaConceito = MontarNota(notaConceito, turmaTipoNotaConceito, codigoComponenteCurricular),
+                NotaConceito = notaConceito,
             };
         }
         
