@@ -36,8 +36,6 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
-            bool turmaTipoNotaConceito = await ObterSeATurmaEhTipoNotaConceito(notasFrequenciaDto, turma);
-
             var anoLetivo = turma.AnoLetivo;
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(notasFrequenciaDto.FechamentoTurmaId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.ConsideraHistorico));
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
@@ -47,6 +45,7 @@ namespace SME.SGP.Aplicacao
             else if (notasFrequenciaDto.Bimestre > 0)
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, notasFrequenciaDto.Bimestre));
 
+            bool turmaTipoNotaConceito = await ObterSeATurmaEhTipoNotaConceito(notasFrequenciaDto.AlunoCodigo, turma);
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
 
             if (tipoCalendario == null)
@@ -206,8 +205,8 @@ namespace SME.SGP.Aplicacao
 
             if (turmasComplementaresFiltradas != null && turmasComplementaresFiltradas.TurmaRegularCodigo != null)
             {
-                if (notasFechamentoAluno.Any(x => x.Nota != null && turma.EhTurmaEdFisica()))
-                    ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
+                if (notasFechamentoAluno.Any(x => x.Nota != null && turmasComplementaresFiltradas.CodigoTurma == x.TurmaCodigo))
+                    ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno,turmaTipoNotaConceito);
 
                 var disciplinasDaTurmaTipo =
                 (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigosEOL, usuarioAtual.PerfilAtual,
@@ -346,7 +345,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<bool> ObterSeATurmaEhTipoNotaConceito(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto, Turma turma)
+        private async Task<bool> ObterSeATurmaEhTipoNotaConceito(string alunoCodigo, Turma turma)
         {
             var turmaAluno = turma;
             var turmasitinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery())).ToList();
@@ -355,7 +354,7 @@ namespace SME.SGP.Aplicacao
                 var turmasCodigosParaConsulta = new List<int>();
                 turmasCodigosParaConsulta.AddRange(turmaAluno.ObterTiposRegularesDiferentes());
 
-                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaAluno.AnoLetivo, notasFrequenciaDto.AlunoCodigo, turmasCodigosParaConsulta));
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaAluno.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
 
                 turmaAluno = await mediator.Send(new ObterTurmaPorCodigoQuery(codigosTurmasRelacionadas.FirstOrDefault()));
             }
@@ -643,21 +642,24 @@ namespace SME.SGP.Aplicacao
             return 0;
         }
         
-        private void ConverterNotaFechamentoAlunoNumerica(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        private void ConverterNotaFechamentoAlunoNumerica(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno,bool turmaTipoNotaConceito)
         {
             foreach (var notaFechamento in notasFechamentoAluno)
             {
-                if (notaFechamento.Nota != null)
-                    if (notaFechamento.Nota >= 7)
-                    {
-                        notaFechamento.ConceitoId = 1;
-                    }
-                    else if (notaFechamento.Nota >= 5 && notaFechamento.Nota <= 7)
-                    {
-                        notaFechamento.ConceitoId = 2;
-                    }
-                    else
-                        notaFechamento.ConceitoId = 3;
+                if (turmaTipoNotaConceito && COMPONENTECURRICULARCODIGOEDFISICA.Equals(notaFechamento.ComponenteCurricularCodigo))
+                {
+                    if (notaFechamento.Nota != null)
+                        if (notaFechamento.Nota >= 7)
+                        {
+                            notaFechamento.ConceitoId = 1;
+                        }
+                        else if (notaFechamento.Nota >= 5 && notaFechamento.Nota <= 7)
+                        {
+                            notaFechamento.ConceitoId = 2;
+                        }
+                        else
+                            notaFechamento.ConceitoId = 3;
+                }
             }
         }
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
