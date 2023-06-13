@@ -182,7 +182,7 @@ namespace SME.SGP.Aplicacao
 
             bool validaMatricula = false;
 
-            if (turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma))
+            if (turmasComMatriculasValidas.Contains(turma.CodigoTurma))
             {
                 if (alunoNaTurma != null)
                     validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
@@ -476,22 +476,6 @@ namespace SME.SGP.Aplicacao
                 await VerificaNotaEmAprovacao(notaComponenteId.Value, notaPosConselho);
 
             return notaPosConselho;
-        }
-
-        private double? MontarNota(double? notaComponenteNotaConceito, bool turmaTipoNotaConceito,long? componenteCurricularCodigo)
-        {
-            if (turmaTipoNotaConceito && COMPONENTECURRICULARCODIGOEDFISICA.Equals(componenteCurricularCodigo))
-            {
-                if (notaComponenteNotaConceito < NOTA_CONCEITO_CINCO)
-                    return (double) ConceitoValores.NS;
-                else if(notaComponenteNotaConceito is >= NOTA_CONCEITO_CINCO and < NOTA_CONCEITO_SETE)
-                    return (double) ConceitoValores.S;
-                else if (notaComponenteNotaConceito is >= NOTA_CONCEITO_SETE)
-                    return (double) ConceitoValores.P;
-                else return notaComponenteNotaConceito;
-            }
-            else
-                return notaComponenteNotaConceito;
         }
 
         private async Task VerificaNotaEmAprovacao(long conselhoClasseNotaId, NotaPosConselhoDto nota)
