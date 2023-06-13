@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
-            bool turmaTipoNotaConceito = await ObterSeATurmaEhTipoNovaConceito(notasFrequenciaDto, turma);
+            bool turmaTipoNotaConceito = await ObterSeATurmaEhTipoNotaConceito(notasFrequenciaDto, turma);
 
             var anoLetivo = turma.AnoLetivo;
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(notasFrequenciaDto.FechamentoTurmaId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.ConsideraHistorico));
@@ -346,8 +346,19 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<bool> ObterSeATurmaEhTipoNovaConceito(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto, Turma turmaAluno)
+        private async Task<bool> ObterSeATurmaEhTipoNotaConceito(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto, Turma turma)
         {
+            var turmaAluno = turma;
+            var turmasitinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery())).ToList();
+            if (turmaAluno.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turmaAluno.TipoTurma))
+            {
+                var turmasCodigosParaConsulta = new List<int>();
+                turmasCodigosParaConsulta.AddRange(turmaAluno.ObterTiposRegularesDiferentes());
+
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaAluno.AnoLetivo, notasFrequenciaDto.AlunoCodigo, turmasCodigosParaConsulta));
+
+                turmaAluno = await mediator.Send(new ObterTurmaPorCodigoQuery(codigosTurmasRelacionadas.FirstOrDefault()));
+            }
             var ultimoBimestre = await ObterPeriodoUltimoBimestrePorTurma(turmaAluno);
             var periodoFechamentoBimestre = await consultasPeriodoFechamento
                 .TurmaEmPeriodoDeFechamentoVigente(turmaAluno, DateTimeExtension.HorarioBrasilia().Date, ultimoBimestre.Bimestre);
