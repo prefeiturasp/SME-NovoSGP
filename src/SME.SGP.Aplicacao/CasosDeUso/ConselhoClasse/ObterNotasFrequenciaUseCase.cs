@@ -51,7 +51,6 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null)
                 throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
-            string[] turmasCodigosEOL = new string[1];
             string[] turmasCodigos;
             long[] conselhosClassesIds;
 
@@ -86,7 +85,7 @@ namespace SME.SGP.Aplicacao
                     turmasCodigos = turmasCodigos.Concat(new[] { turma.CodigoTurma }).ToArray();
 
                 conselhosClassesIds = await mediator
-                    .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos.Concat(turmasCodigosEOL).Distinct().ToArray(), periodoEscolar?.Id));
+                    .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos.Distinct().ToArray(), periodoEscolar?.Id));
 
                 if (conselhosClassesIds != null && !conselhosClassesIds.Any())
                     conselhosClassesIds = new long[1] { notasFrequenciaDto.ConselhoClasseId };
@@ -96,7 +95,7 @@ namespace SME.SGP.Aplicacao
                 turmasCodigos = new string[] { turma.CodigoTurma };
 
                 var conselhosComplementares = await mediator
-                    .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigosEOL.ToArray(), periodoEscolar?.Id));
+                    .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
 
                 if (notasFrequenciaDto.ConselhoClasseId > 0 && conselhosComplementares != null)
                 {
