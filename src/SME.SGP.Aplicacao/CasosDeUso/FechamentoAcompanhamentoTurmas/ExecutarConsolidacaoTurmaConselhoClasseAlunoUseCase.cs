@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             bool turmaEdFisicaNecessitaConversaoNotaConceito = false;
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
             var turmasCodigos = new List<string> { turma.CodigoTurma };
-            if (turma.EhEJA() && COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(filtro.ComponenteCurricularId ?? 0))
+            if (turma.EhEJA())
             {
                 var codigosComplementares = await ObterTurmasComplementares(turma, filtro.AlunoCodigo);
                 if (turma.EhTurmaRegular())
@@ -129,26 +129,17 @@ namespace SME.SGP.Aplicacao
                     {
                         var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0));
                         var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
-                        if (turma.EhEJA() && turmaEdFisicaNecessitaConversaoNotaConceito && fechamentoNotas.Any(fn => fn.ComponenteCurricularId.Equals(COMPONENTE_CURRICULAR_CODIGO_ED_FISICA)))
-                        {
-                            var fechamentoDisciplinaEdFisica = fechamentoNotas.Where(fn => fn.ComponenteCurricularId.Equals(COMPONENTE_CURRICULAR_CODIGO_ED_FISICA)).FirstOrDefault();
-                            fechamentoDisciplinaEdFisica.ConceitoId = ConverterNotaConceito(fechamentoDisciplinaEdFisica.Nota ?? 0);
-                            fechamentoDisciplinaEdFisica.Nota = null;
-                        }
-
-                            foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
+                        if (turma.EhEJA() && turmaEdFisicaNecessitaConversaoNotaConceito)
+                            TratarConversaoNotaEdFisicaEJA(fechamentoNotas, filtro);
+                       
+                        foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
                         {
                             if (!componenteCurricular.LancaNota)
                                 continue;
 
                             var nota = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.Nota : null;
                             var conceitoId = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.ConceitoId : null;
-                            if (turma.EhEJA() && turmaEdFisicaNecessitaConversaoNotaConceito && COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(long.Parse(componenteCurricular.Codigo)))
-                            {
-                                conceitoId = ConverterNotaConceito(nota ?? 0);
-                                nota = null;
-                            }
-
+                            
                             if (componenteCurricular.Regencia)
                             {
                                 var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoEolQuery(
@@ -176,6 +167,26 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private void TratarConversaoNotaEdFisicaEJA(IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas, MensagemConsolidacaoConselhoClasseAlunoDto filtro)
+        {
+            if (fechamentoNotas != null)
+            {
+                var fechamentosNotaDisciplinaEdFisica = fechamentoNotas.Where(fn => fn.ComponenteCurricularId.Equals(COMPONENTE_CURRICULAR_CODIGO_ED_FISICA));
+                foreach (var fechamentoDisciplinaEdFisica in fechamentosNotaDisciplinaEdFisica)
+                {
+                    fechamentoDisciplinaEdFisica.ConceitoId = ConverterNotaConceito(fechamentoDisciplinaEdFisica.Nota);
+                    fechamentoDisciplinaEdFisica.Nota = null;
+                }
+            }
+
+            if (COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(filtro.ComponenteCurricularId ?? 0))
+            {
+                filtro.ConceitoId = ConverterNotaConceito(filtro.Nota);
+                filtro.Nota = null;
+            }
+        }
+            
+
         private async Task<Turma> ObterTurmaEJARegular(string[] codigosTurmasComplementares, int semestre)
         {
             return (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosTurmasComplementares))).Where(t => t.EhTurmaRegular() && t.EhEJA() && t.Semestre == semestre).FirstOrDefault();
@@ -194,8 +205,11 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
             return tipoNota.TipoNota == TipoNota.Conceito;
         }
-        private long ConverterNotaConceito(double nota)
+        private long? ConverterNotaConceito(double? nota)
         {
+            if (!nota.HasValue)
+                return null;
+            else
             if (nota < NOTA_CONCEITO_CINCO)
                 return (long)ConceitoValores.NS;
             else if (nota is >= NOTA_CONCEITO_CINCO and < NOTA_CONCEITO_SETE)
