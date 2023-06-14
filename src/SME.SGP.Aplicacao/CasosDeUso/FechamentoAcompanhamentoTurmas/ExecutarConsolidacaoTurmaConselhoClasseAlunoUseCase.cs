@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase
     {
-        private readonly long COMPONENTECURRICULARCODIGOEDFISICA = 6;
+        private readonly long COMPONENTE_CURRICULAR_CODIGO_ED_FISICA = 6;
         private const int BIMESTRE_2 = 2;
         private const int BIMESTRE_4 = 4;
         private const double NOTA_CONCEITO_CINCO = 5.0;
@@ -39,24 +39,29 @@ namespace SME.SGP.Aplicacao
 
             bool turmaEdFisicaNecessitaConversaoNotaConceito = false;
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
-            if (turma.EhEJA() && COMPONENTECURRICULARCODIGOEDFISICA.Equals(filtro.ComponenteCurricularId ?? 0))
+            var turmasCodigos = new List<string> { turma.CodigoTurma };
+            if (turma.EhEJA() && COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(filtro.ComponenteCurricularId ?? 0))
             {
-                var codigosComplementares = await ConcatenarTurmasComplementares(turma, filtro.AlunoCodigo);
+                var codigosComplementares = await ObterTurmasComplementares(turma, filtro.AlunoCodigo);
                 if (turma.EhTurmaRegular())
                 {
                     var turmaEdFisica = await ObterTurmaEJAEdFisica(codigosComplementares, turma.Semestre);
                     if (turmaEdFisica != null)
                     {
                         turmaEdFisicaNecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
-                        turma = turmaEdFisica;
-                        filtro.TurmaId = turma.Id;
+                        turmasCodigos.Add(turmaEdFisica.CodigoTurma);
                     }
                 } else
                 if (turma.EhTurmaEdFisica())
                 {
                     var turmaRegular = await ObterTurmaEJARegular(codigosComplementares, turma.Semestre);
                     if (turmaRegular != null)
+                    {
                         turmaEdFisicaNecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
+                        turma = turmaRegular;
+                        filtro.TurmaId = turma.Id;
+                        turmasCodigos.Add(turmaRegular.CodigoTurma);
+                    }
                 }
             }
 
@@ -70,9 +75,8 @@ namespace SME.SGP.Aplicacao
                 Status = statusNovo
             };
 
-            var turmasCodigos = new string[1] { turma.CodigoTurma };
             var componentesComNotaFechamentoOuConselho = await mediator
-                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos, filtro.Bimestre, filtro.AlunoCodigo));
+                                .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo));
 
             if (!filtro.Inativo)
             {
@@ -89,10 +93,10 @@ namespace SME.SGP.Aplicacao
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
 
-                    var codigosComplementares = await ConcatenarTurmasComplementares(turma, filtro.AlunoCodigo);
+                    var codigosComplementares = await ObterTurmasComplementares(turma, filtro.AlunoCodigo);
                     turmasCodigos.Concat(codigosComplementares);
                     var componentesDaTurmaEol = await mediator
-                        .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
+                        .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
                     //Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
@@ -126,8 +130,8 @@ namespace SME.SGP.Aplicacao
                 {
                     if (componentesComNotaFechamentoOuConselho != null && componentesComNotaFechamentoOuConselho.Any())
                     {
-                        var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos, filtro.Bimestre ?? 0));
-                        var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos, filtro.Bimestre ?? 0, filtro.AlunoCodigo));
+                        var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0));
+                        var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
 
                         foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
                         {
@@ -136,7 +140,7 @@ namespace SME.SGP.Aplicacao
 
                             var nota = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.Nota : null;
                             var conceitoId = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.ConceitoId : null;
-                            if (turma.EhEJA() && turma.EhTurmaEdFisica() && turmaEdFisicaNecessitaConversaoNotaConceito)
+                            if (turma.EhEJA() && turmaEdFisicaNecessitaConversaoNotaConceito)
                             {
                                 conceitoId = ConverterNotaConceito(nota ?? 0);
                                 nota = null;
@@ -198,7 +202,7 @@ namespace SME.SGP.Aplicacao
             else return (long)nota;
         }
 
-        private async Task<string[]> ConcatenarTurmasComplementares(Turma turma, string codigoAluno)
+        private async Task<string[]> ObterTurmasComplementares(Turma turma, string codigoAluno)
         {
             var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
