@@ -59,15 +59,6 @@ namespace SME.SGP.Aplicacao
             var alunoNaTurma = periodoEscolar != null ? alunosEol.FirstOrDefault(a => a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) : alunosEol.Last();
             var codigosAlunos = alunosEol.Select(a => a.CodigoAluno).ToArray();
 
-            var turmasComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(codigosAlunos));
-            var turmasComplementaresFiltradas = new TurmaComplementarDto();
-
-            if (turmasComplementares != null && turmasComplementares.Any())
-            {
-                turmasComplementaresFiltradas = turmasComplementares.FirstOrDefault(t => t.TurmaRegularCodigo == turma.CodigoTurma && t.Semestre == turma.Semestre);
-                turmasCodigos.Add(turmasComplementaresFiltradas?.CodigoTurma ?? turma.CodigoTurma);
-            }
-
             if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
                 && !(notasFrequenciaDto.Bimestre == 0 && turma.EhEJA() && !turma.EhTurmaRegular()))
             {
@@ -81,7 +72,7 @@ namespace SME.SGP.Aplicacao
                     notasFrequenciaDto.ConsideraHistorico = alunoNaTurma.Inativo;
 
                 var turmasCodigoAtivos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, notasFrequenciaDto.AlunoCodigo,
-                    tiposParaConsulta, notasFrequenciaDto.ConsideraHistorico, periodoEscolar?.PeriodoFim));
+                    tiposParaConsulta, notasFrequenciaDto.ConsideraHistorico));
 
                 turmasCodigos.AddRange(turmasCodigoAtivos.ToList());
 
@@ -200,7 +191,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasDaTurmaEol =
                 (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos.ToArray(), usuarioAtual.PerfilAtual,
-                    usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false))).ToList();
+                    usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, true))).ToList();
 
             if (notasFechamentoAluno.Any(x => x.Nota != null && turma.EhEJA()))
                 ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno, turmaTipoNotaConceito);
