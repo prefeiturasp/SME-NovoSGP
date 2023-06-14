@@ -174,14 +174,14 @@ namespace SME.SGP.Aplicacao
                 var fechamentosNotaDisciplinaEdFisica = fechamentoNotas.Where(fn => fn.ComponenteCurricularId.Equals(COMPONENTE_CURRICULAR_CODIGO_ED_FISICA));
                 foreach (var fechamentoDisciplinaEdFisica in fechamentosNotaDisciplinaEdFisica)
                 {
-                    fechamentoDisciplinaEdFisica.ConceitoId = ConverterNotaConceito(fechamentoDisciplinaEdFisica.Nota);
+                    fechamentoDisciplinaEdFisica.ConceitoId = ConverterNotaConceito(fechamentoDisciplinaEdFisica.Nota, (long?)fechamentoDisciplinaEdFisica.ConceitoId);
                     fechamentoDisciplinaEdFisica.Nota = null;
                 }
             }
 
             if (COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(filtro.ComponenteCurricularId ?? 0))
             {
-                filtro.ConceitoId = ConverterNotaConceito(filtro.Nota);
+                filtro.ConceitoId = ConverterNotaConceito(filtro.Nota, filtro.ConceitoId);
                 filtro.Nota = null;
             }
         }
@@ -205,10 +205,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
             return tipoNota.TipoNota == TipoNota.Conceito;
         }
-        private long? ConverterNotaConceito(double? nota)
+        private long? ConverterNotaConceito(double? nota, long? conceitoId)
         {
             if (!nota.HasValue)
-                return null;
+                return conceitoId;
             else
             if (nota < NOTA_CONCEITO_CINCO)
                 return (long)ConceitoValores.NS;
@@ -216,7 +216,7 @@ namespace SME.SGP.Aplicacao
                 return (long)ConceitoValores.S;
             else if (nota is >= NOTA_CONCEITO_SETE)
                 return (long)ConceitoValores.P;
-            else return (long)nota;
+            else return conceitoId;
         }
 
         private async Task<string[]> ObterTurmasComplementares(Turma turma, string codigoAluno)
