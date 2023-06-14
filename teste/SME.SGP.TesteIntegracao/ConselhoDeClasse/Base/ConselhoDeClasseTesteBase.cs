@@ -105,8 +105,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TURMA_ID_1,
                 filtroConselhoClasseDto.BimestreConselhoClasse == 0 ? null : filtroConselhoClasseDto.BimestreConselhoClasse,
                 false,
-                filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota,
-                filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
                 filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
 
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
@@ -125,8 +123,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TURMA_ID_1,
                 salvarConselhoClasseAlunoNotaDto.Bimestre == 0 ? null : salvarConselhoClasseAlunoNotaDto.Bimestre,
                 false,
-                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota,
-                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
 
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
@@ -213,8 +209,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TURMA_ID_1,
                 salvarConselhoClasseAlunoNotaDto.Bimestre,
                 false,
-                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota,
-                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
 
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
