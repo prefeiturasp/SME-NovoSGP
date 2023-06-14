@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Diagnostics.Tracing.Session;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
@@ -9,7 +7,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
