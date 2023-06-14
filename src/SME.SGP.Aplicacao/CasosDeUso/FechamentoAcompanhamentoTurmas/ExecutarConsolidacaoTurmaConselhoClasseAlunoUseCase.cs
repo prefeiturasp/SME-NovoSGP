@@ -132,15 +132,21 @@ namespace SME.SGP.Aplicacao
                     {
                         var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0));
                         var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
+                        if (turma.EhEJA() && turmaEdFisicaNecessitaConversaoNotaConceito && fechamentoNotas.Any(fn => fn.ComponenteCurricularId.Equals(COMPONENTE_CURRICULAR_CODIGO_ED_FISICA)))
+                        {
+                            var fechamentoDisciplinaEdFisica = fechamentoNotas.Where(fn => fn.ComponenteCurricularId.Equals(COMPONENTE_CURRICULAR_CODIGO_ED_FISICA)).FirstOrDefault();
+                            fechamentoDisciplinaEdFisica.ConceitoId = ConverterNotaConceito(fechamentoDisciplinaEdFisica.Nota ?? 0);
+                            fechamentoDisciplinaEdFisica.Nota = null;
+                        }
 
-                        foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
+                            foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
                         {
                             if (!componenteCurricular.LancaNota)
                                 continue;
 
                             var nota = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.Nota : null;
                             var conceitoId = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.ConceitoId : null;
-                            if (turma.EhEJA() && turmaEdFisicaNecessitaConversaoNotaConceito)
+                            if (turma.EhEJA() && turmaEdFisicaNecessitaConversaoNotaConceito && COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(long.Parse(componenteCurricular.Codigo)))
                             {
                                 conceitoId = ConverterNotaConceito(nota ?? 0);
                                 nota = null;
