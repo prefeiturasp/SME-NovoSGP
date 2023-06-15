@@ -34,6 +34,7 @@ using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
@@ -438,7 +439,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioQuestaoEncaminhamentoAEE, RepositorioQuestaoEncaminhamentoAEE>();
             services.TryAddScoped<IRepositorioRespostaEncaminhamentoAEE, RepositorioRespostaEncaminhamentoAEE>();
             services.TryAddScoped<IRepositorioEncaminhamentoAEETurmaAluno, RepositorioEncaminhamentoAEETurmaAluno>();
-            
+            services.TryAddScoped<IRepositorioEncaminhamentoAEETurmaAlunoConsulta, RepositorioEncaminhamentoAEETurmaAlunoConsulta>();
+
             // EventoTipo
             services.TryAddScoped<IRepositorioEventoTipo, RepositorioEventoTipo>();
             services.TryAddScoped<IRepositorioPerfilEventoTipo, RepositorioPerfilEventoTipo>();
@@ -499,6 +501,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPlanoAEEObservacao, RepositorioPlanoAEEObservacao>();
             services.TryAddScoped<IRepositorioNotificacaoPlanoAEEObservacao, RepositorioNotificacaoPlanoAEEObservacao>();
             services.TryAddScoped<IRepositorioPlanoAEETurmaAluno, RepositorioPlanoAEETurmaAluno>();
+            services.TryAddScoped<IRepositorioPlanoAEETurmaAlunoConsulta, RepositorioPlanoAEETurmaAlunoConsulta>();
 
             // Notificações Plano AEE
             services.TryAddScoped<IRepositorioNotificacaoPlanoAEE, RepositorioNotificacaoPlanoAEE>();
