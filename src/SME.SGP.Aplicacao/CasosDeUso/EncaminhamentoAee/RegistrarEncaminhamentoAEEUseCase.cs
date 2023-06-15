@@ -1,6 +1,4 @@
-﻿using Dapper;
-using MediatR;
-using Org.BouncyCastle.Ocsp;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
@@ -71,6 +69,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.Situacao));
+
+            await mediator.Send(new SalvarEncaminhamentoAEETurmaAlunoCommand(resultadoEncaminhamento.Id, encaminhamentoAEEDto.AlunoCodigo));
 
             return resultadoEncaminhamento;
         }
@@ -245,11 +245,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             {
                 var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString());
 
-                if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
+                if (EhQuestaoObrigatoriaNaoRespondida(questao))
+                {
                     questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
                 }
                 else
-                if (NaoNuloEContemRegistros(questao.OpcaoResposta) 
+                if (NaoNuloEContemRegistros(questao.OpcaoResposta)
                     && NaoNuloEContemRegistros(questao.Resposta))
                 {
                     foreach (var resposta in questao.Resposta)
@@ -266,14 +267,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasEncaminhamentoAEE(long? encaminhamentoAEEId)
         {
-           return encaminhamentoAEEId.HasValue ? (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
-                .Select(resposta => new RespostaQuestaoObrigatoriaDto
-                {
-                    QuestaoId = resposta.QuestaoId,
-                    Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId?.ToString() : resposta.Texto,
-                    Persistida = true
-                })
-                : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
+            return encaminhamentoAEEId.HasValue ? (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
+                 .Select(resposta => new RespostaQuestaoObrigatoriaDto
+                 {
+                     QuestaoId = resposta.QuestaoId,
+                     Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId?.ToString() : resposta.Texto,
+                     Persistida = true
+                 })
+                 : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
 
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoAeeDto encaminhamentoAEEDto)

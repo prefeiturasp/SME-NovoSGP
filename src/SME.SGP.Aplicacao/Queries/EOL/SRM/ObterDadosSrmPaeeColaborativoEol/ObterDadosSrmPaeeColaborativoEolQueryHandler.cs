@@ -11,7 +11,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosSrmPaeeColaborativoEolQueryHandler : IRequestHandler<ObterDadosSrmPaeeColaborativoEolQuery,IEnumerable<SrmPaeeColaborativoSgpDto>>
+    public class ObterDadosSrmPaeeColaborativoEolQueryHandler : IRequestHandler<ObterDadosSrmPaeeColaborativoEolQuery, IEnumerable<SrmPaeeColaborativoSgpDto>>
     {
         public ObterDadosSrmPaeeColaborativoEolQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
@@ -26,19 +26,19 @@ namespace SME.SGP.Aplicacao
             var dados = new List<SrmPaeeColaborativoSgpDto>();
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var url = $"alunos/srm-paee/aluno/{request.CodigoAluno}";
-            
+
             var resposta = await httpClient.GetAsync(url);
-            if(resposta.IsSuccessStatusCode)
+            if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                var dtoEol =  (JsonConvert.DeserializeObject<IEnumerable<DadosSrmPaeeColaborativoEolDto>>(json)).ToList();
-                
-                
-                if(dtoEol.Any())
-                    await MontarDados(dtoEol,dados);
+                var dtoEol = JsonConvert.DeserializeObject<IEnumerable<DadosSrmPaeeColaborativoEolDto>>(json).ToList();
+
+
+                if (dtoEol.Any())
+                    await MontarDados(dtoEol, dados);
                 return dados;
             }
-            else 
+            else
             {
                 var erro = $"Não foi possível obter os dados do SRM/PAEE no EOL - HttpCode {(int)resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
                 await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
@@ -60,13 +60,13 @@ namespace SME.SGP.Aplicacao
                 {
                     TurmaTurno = turmas.FirstOrDefault(x => x.CodigoTurma == dadoEol.CodigoTurma.ToString())?.NomeFiltro + " - " + dadoEol.Turno,
                     ComponenteCurricular = dadoEol.Componente,
-                    DreUe = ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)!.Dre.Abreviacao + " - "+ ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)?.TipoEscola.ShortName() + " "
+                    DreUe = ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)!.Dre.Abreviacao + " - " + ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)?.TipoEscola.ShortName() + " "
                             + ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)?.Nome
                 };
-                
+
                 srmPaeeColaborativoSgpDtos.Add(dados);
             }
         }
-        
+
     }
 }
