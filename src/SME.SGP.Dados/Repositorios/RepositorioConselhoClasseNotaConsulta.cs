@@ -136,25 +136,26 @@ namespace SME.SGP.Dados.Repositorios
             var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var condicaoTipoCalendario = tipoCalendario.HasValue ? $"and (pe.tipo_calendario_id =@tipoCalendario or pe.tipo_calendario_id is null)" : string.Empty;
-            var query = $@"select distinct * from (
+            var query = $@"select * from (
                 select pe.bimestre, 
                        fn.disciplina_id as ComponenteCurricularCodigo, 
                        fn.conceito_id as ConceitoId, 
                        fn.nota as Nota,
                        fa.aluno_codigo as AlunoCodigo,
-                       t.turma_id TurmaCodigo
+                       t.turma_id TurmaCodigo,
+	                   row_number() over (partition by t.id, fa.aluno_codigo, pe.id, fn.disciplina_id order by fn.id desc) sequencia
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                  inner join turma t on t.id = ft.turma_id 
                  inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                  inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                  inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
-                 where not ftd.excluido and t.turma_id = @turmaCodigo
+                 where t.turma_id = @turmaCodigo
                    {condicaoTipoCalendario}
                    {condicaoBimestre}
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}
-            ) x";
+            ) x where sequencia = 1";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao, tipoCalendario });
         }
