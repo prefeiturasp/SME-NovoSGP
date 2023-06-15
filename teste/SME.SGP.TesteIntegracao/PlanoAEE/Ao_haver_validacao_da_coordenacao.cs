@@ -27,6 +27,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterTurmaRegularESrmPorAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Plano AEE - Deve criar uma pendência para o cp apos cadastrar o plano")]
