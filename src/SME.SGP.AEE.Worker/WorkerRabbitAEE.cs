@@ -40,6 +40,12 @@ namespace SME.SGP.AEE.Worker
             Comandos.Add(RotasRabbitSgpAEE.NotificarPlanoAEEEncerrado, new ComandoRabbit("Enviar Notificação de Encerramento de PlanoAEE", typeof(IEnviarNotificacaoEncerramentoPlanoAEEUseCase)));
             Comandos.Add(RotasRabbitSgpAEE.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
             Comandos.Add(RotasRabbitSgpAEE.RotaTransferirPendenciaPlanoAEEParaNovoResponsavel, new ComandoRabbit("Transferir pendência plano aee para novo responsável", typeof(ITransferirPendenciaParaNovoResponsavelUseCase)));
+
+            Comandos.Add(RotasRabbitSgpAEE.AtualizarTabelaPlanoAEETurmaAlunoSync, new ComandoRabbit("Atualiza planos AEE em andamento", typeof(IAtualizaPlanoAEETurmaAlunoSyncUseCase)));
+            Comandos.Add(RotasRabbitSgpAEE.AtualizarTabelaPlanoAEETurmaAlunoTratar, new ComandoRabbit("Atualiza tabela plano AEE turma aluno com a turma regular e SRM", typeof(IAtualizaPlanoAEETurmaAlunoTratarUseCase)));
+
+            Comandos.Add(RotasRabbitSgpAEE.AtualizarTabelaEncaminhamentoAEETurmaAlunoSync, new ComandoRabbit("Atualiza encaminhamento AEE em andamento", typeof(IAtualizaEncaminhamentoAEETurmaAlunoSyncUseCase)));
+            Comandos.Add(RotasRabbitSgpAEE.AtualizarTabelaEncaminhamentoAEETurmaAlunoTratar, new ComandoRabbit("Atualiza tabela encaminhamento AEE turma aluno com a turma regular e SRM", typeof(IAtualizaEncaminhamentoAEETurmaAlunoTratarUseCase)));
         }
     }
 }

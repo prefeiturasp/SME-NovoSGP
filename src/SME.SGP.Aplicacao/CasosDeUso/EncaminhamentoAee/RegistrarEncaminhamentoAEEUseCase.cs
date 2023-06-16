@@ -57,6 +57,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     if (await ParametroGeracaoPendenciaAtivo())
                         await mediator.Send(new GerarPendenciaCPEncaminhamentoAEECommand(encaminhamentoAEE.Id, encaminhamentoAEEDto.Situacao));
 
+                    await mediator.Send(new SalvarEncaminhamentoAEETurmaAlunoCommand(encaminhamentoAEE.Id, encaminhamentoAEE.AlunoCodigo));
+
                     return new ResultadoEncaminhamentoAEEDto() { Id = encaminhamentoAEE.Id };
                 }
             }
