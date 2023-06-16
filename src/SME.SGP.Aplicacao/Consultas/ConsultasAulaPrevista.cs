@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
                     var componenteProfessorAtrelado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
                     codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
-                    
+
                     componenteEhTerritorio = componenteProfessorAtrelado?.TerritorioSaber ?? false;
                 }
             }
@@ -91,7 +91,6 @@ namespace SME.SGP.Aplicacao
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
             rf = componenteEhTerritorio && usuarioLogado.EhProfessor() ? rf : string.Empty;
-            
             if (aulaPrevista == null)
                 aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) ? CODIGO_ALTERNATIVO_DISCIPLINA_INGLES : disciplinaId);
 
