@@ -160,7 +160,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("        or exists(select 1 ");
             sql.AppendLine("                  from plano_aee_turma_aluno pta ");
             sql.AppendLine("                  inner join turma t2 on t2.id = pta.turma_id ");
-            sql.AppendLine("                  inner join ue u2 on t.ue_id = u2.id");
+            sql.AppendLine("                  inner join ue u2 on t2.ue_id = u2.id");
             sql.AppendLine("                  where pta.plano_aee_id = pa.id ");
             sql.AppendLine("                    and u2.dre_id = @dreId ");
 

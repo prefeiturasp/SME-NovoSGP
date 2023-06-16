@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using SME.SGP.Dados;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -28,7 +30,6 @@ namespace SME.SGP.Aplicacao
             var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmaCodigos), cancellationToken);
 
             foreach (var turma in turmas)
-            {
                 if (!planoAEETurmasAluno.Any(t => t.TurmaId == turma.Id))
                     repositorioPlanoAEETurmaAluno.Salvar(new Dominio.PlanoAEETurmaAluno()
                     {
@@ -36,7 +37,11 @@ namespace SME.SGP.Aplicacao
                         AlunoCodigo = request.AlunoCodigo,
                         TurmaId = turma.Id
                     });
-            }
+
+            var planoAEETurmasAlunoRemover = planoAEETurmasAluno.Where(t => !turmas.Any(x => x.Id == t.TurmaId));
+            if (planoAEETurmasAlunoRemover.Any())
+                foreach (var remover in planoAEETurmasAlunoRemover)
+                    repositorioPlanoAEETurmaAluno.Remover(remover);
 
             return true;
         }
