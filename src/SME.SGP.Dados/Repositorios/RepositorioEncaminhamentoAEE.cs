@@ -352,7 +352,7 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join turma t on (t.id = ea.turma_id)
                                     inner join ue u on (u.id = t.ue_id)
                                 where not ea.excluido
-                                and ea.situacao not in (5, 7, 8, 10) ";
+                                and ea.situacao not in (5, 8, 10) ";
 
             if (anoLetivo.HasValue)
                 sql += " and t.ano_letivo = @anoLetivo";

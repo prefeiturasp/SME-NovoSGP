@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var encaminhamentos = await mediator.Send(new ObterEncaminhamentoAEEVigenteQuery(DateTime.Now.Year));
+            var encaminhamentos = await mediator.Send(new ObterEncaminhamentoAEEVigenteQuery());
 
             if (encaminhamentos != null && encaminhamentos.Any())
                 foreach (var encaminhamento in encaminhamentos)
