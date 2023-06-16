@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var planos = await mediator.Send(new ObterPlanosComSituacaoDiferenteDeEncerradoQuery());
+            var planos = await mediator.Send(new ObterPlanosComSituacaoDiferenteDeEncerradoQuery(DateTime.Now.Year));
 
             if (planos != null && planos.Any())
                 foreach (var plano in planos)
