@@ -6,8 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioCompensacaoAusencia : IRepositorioBase<CompensacaoAusencia>
     {
-        Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> ObterAusenciaParaCompensacao(long compensacaoId, string turmaId, string[] disciplinasId, string[] codigoAlunos, int bimestre, string professor = null);
-        Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(long compensacaoAusenciaId, string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo, string professor = null);
-        Task<IEnumerable<long>> ObterSemAlunoPorIds(long[] ids);        
+        Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> ObterAusenciaParaCompensacao(long compensacaoId, string turmaId, string[] disciplinasId, string[] codigoAlunos, int bimestre, string professor = null);        
+        Task<IEnumerable<long>> ObterSemAlunoPorIds(long[] ids);
     }
 }
