@@ -260,16 +260,16 @@ namespace SME.SGP.Aplicacao
                         conselhoClasseNotasAluno = notaConceitoBimestreComponenteDto
                             .Where(c => c.AlunoCodigo.Equals(alunoCodigo) && c.ConselhoClasseId == conselhoClasse.Id && c.ComponenteCurricularCodigo == componenteCurricularId);
                     }
-
-                    //-> busca os lançamentos do fechamento somente se não existir conselho
-                    if (conselhoClasseNotasAluno == null || !conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
-                    {
-                        if (componenteCurricularRegencia > 0)
-                            fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularRegencia.Value);
-                        else
-                            fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId);
-                    }
                 }
+                //-> busca os lançamentos do fechamento somente se não existir conselho
+                if (conselhoClasseNotasAluno == null || !conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
+                {
+                    if (componenteCurricularRegencia > 0)
+                        fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularRegencia.Value);
+                    else
+                        fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId);
+                }
+                
 
                 if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
                 {
