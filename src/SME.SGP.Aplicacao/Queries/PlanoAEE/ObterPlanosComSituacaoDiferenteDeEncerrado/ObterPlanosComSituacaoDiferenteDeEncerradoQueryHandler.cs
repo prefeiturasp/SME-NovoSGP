@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<PlanoAEETurmaDto>> Handle(ObterPlanosComSituacaoDiferenteDeEncerradoQuery request, CancellationToken cancellationToken)
         {
-            return this.repositorioPlano.ObterPlanosComSituacaoDiferenteDeEncerrado();
+            return this.repositorioPlano.ObterPlanosComSituacaoDiferenteDeEncerrado(request.AnoLetivo);
         }
     }
 }

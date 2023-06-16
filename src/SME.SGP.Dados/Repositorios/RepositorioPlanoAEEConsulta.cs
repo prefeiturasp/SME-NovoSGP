@@ -507,19 +507,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, situacoesEncerrado });
         }
 
-        public async Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado()
+        public async Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado(long? anoLetivo)
         {
             var query = $@"select 
-                           id,
-                           turma_id as TurmaId,
-                           aluno_codigo as AlunoCodigo,
-                           aluno_nome as AlunoNome,
-                           situacao
-                          from plano_aee 
-                          where situacao <> {(int)SituacaoPlanoAEE.Encerrado} and situacao <> {(int)SituacaoPlanoAEE.EncerradoAutomaticamente}
-                                and not excluido;";
+                           pa.id,
+                           pa.turma_id as TurmaId,
+                           pa.aluno_codigo as AlunoCodigo,
+                           pa.aluno_nome as AlunoNome,
+                           pa.situacao
+                           from plano_aee pa
+                           left join turma t on t.id = pa.turma_id
+                          where pa.situacao <> {(int)SituacaoPlanoAEE.Encerrado} and pa.situacao <> {(int)SituacaoPlanoAEE.EncerradoAutomaticamente}
+                                and not pa.excluido ";
 
-            return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { });
+            if (anoLetivo.HasValue)
+                query += " and t.ano_letivo = @anoLetivo";
+
+            return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { anoLetivo });
         }
     }
 }

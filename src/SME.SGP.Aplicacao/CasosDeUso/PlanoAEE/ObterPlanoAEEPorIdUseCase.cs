@@ -191,7 +191,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
-            plano.RegistroCadastradoEmOutraUE = await EhGestorDaEscolaDaTurma(usuarioLogado, turma) || await EhProfessorDaTurma(usuarioLogado, turma);
+            plano.RegistroCadastradoEmOutraUE = !(await EhGestorDaEscolaDaTurma(usuarioLogado, turma)) && !(await EhProfessorDaTurma(usuarioLogado, turma));
 
             await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
 
