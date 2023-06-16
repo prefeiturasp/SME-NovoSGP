@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoAee;
 using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.IoC
@@ -25,6 +26,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IEnviarNotificacaoEncerramentoPlanoAEEUseCase, EnviarNotificacaoEncerramentoPlanoAEEUseCase>();
             services.TryAddScoped<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
             services.TryAddScoped<ITransferirPendenciaParaNovoResponsavelUseCase, TransferirPendenciaParaNovoResponsavelUseCase>();
+
+            services.TryAddScoped<IAtualizaPlanoAEETurmaAlunoSyncUseCase, AtualizaPlanoAEETurmaAlunoSyncUseCase>();
+            services.TryAddScoped<IAtualizaPlanoAEETurmaAlunoTratarUseCase, AtualizaPlanoAEETurmaAlunoTratarUseCase>();
+
+            services.TryAddScoped<IAtualizaEncaminhamentoAEETurmaAlunoSyncUseCase, AtualizaEncaminhamentoAEETurmaAlunoSyncUseCase>();
+            services.TryAddScoped<IAtualizaEncaminhamentoAEETurmaAlunoTratarUseCase, AtualizaEncaminhamentoAEETurmaAlunoTratarUseCase>();
         }
     }
 }
