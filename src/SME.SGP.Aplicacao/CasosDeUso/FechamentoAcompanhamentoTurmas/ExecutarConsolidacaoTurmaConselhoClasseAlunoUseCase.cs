@@ -259,18 +259,18 @@ namespace SME.SGP.Aplicacao
                 if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
                 {
                     nota = conselhoClasseNotasAluno
-                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && ((bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue))?.Nota;
+                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre??0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.Nota;
 
                     conceito = conselhoClasseNotasAluno
-                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && ((bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue))?.ConceitoId;
+                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.ConceitoId;
                 }
                 else if (fechamentoNotasDiciplina != null && fechamentoNotasDiciplina.Any())
                 {
                     nota = fechamentoNotasDiciplina
-                        .FirstOrDefault(x => (bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue)?.Nota;
+                        .FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue))?.Nota;
 
                     conceito = fechamentoNotasDiciplina
-                        .FirstOrDefault(x => (bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue)?.ConceitoId;
+                        .FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue))?.ConceitoId;
                 }
             }
 
@@ -279,7 +279,7 @@ namespace SME.SGP.Aplicacao
             consolidadoNota ??= new ConselhoClasseConsolidadoTurmaAlunoNota()
             {
                 ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
-                Bimestre = bimestre,
+                Bimestre = bimestre.HasValue && bimestre == 0 ? null : bimestre,
             };
 
             consolidadoNota.ComponenteCurricularId = componenteCurricularId;
