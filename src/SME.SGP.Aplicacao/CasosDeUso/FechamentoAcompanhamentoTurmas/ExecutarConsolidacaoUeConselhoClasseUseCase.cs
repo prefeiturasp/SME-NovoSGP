@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 var turmasBimestre = await repositorioTurmaConsulta.ObterTurmasComFechamentoConselhoClassePorUeId(filtro.UeId, filtro.AnoLetivo);
                 foreach (var turma in turmasBimestre)
                 {
-                    var mensagemPorTurma = new ConsolidacaoTurmaDto(turma.TurmaId, turma.Bimestre);
+                    var mensagemPorTurma = new ConsolidacaoTurmaDto(turma.TurmaId, turma.Bimestre == 0 ? null : turma.Bimestre);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, JsonConvert.SerializeObject(mensagemPorTurma), mensagemRabbit.CodigoCorrelacao, null));
                 }
                 return true;
