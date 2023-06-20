@@ -57,6 +57,7 @@ namespace SME.SGP.Aplicacao
             var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var codigoTerritorioCorrespondente = (long?)null;
+            bool componenteEhTerritorio = false;
 
             var rf = usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME() ? string.Empty : usuarioLogado.CodigoRf;
 
@@ -67,6 +68,8 @@ namespace SME.SGP.Aplicacao
                 codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
                 if (usuarioLogado.EhGestorEscolar())
                     rf = componenteCorrespondente.Professor;
+
+                componenteEhTerritorio = componenteCorrespondente?.TerritorioSaber ?? false;
             }
             else if (usuarioLogado.EhProfessorCj())
             {
@@ -78,6 +81,8 @@ namespace SME.SGP.Aplicacao
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
                     var componenteProfessorAtrelado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
                     codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
+
+                    componenteEhTerritorio = componenteProfessorAtrelado?.TerritorioSaber ?? false;
                 }
             }
             
@@ -85,6 +90,7 @@ namespace SME.SGP.Aplicacao
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.CriadoRF.Equals(rf) && (x.DisciplinaId == disciplinaId || x.DisciplinaId == codigoTerritorioCorrespondente.Value.ToString())) :
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
+            rf = componenteEhTerritorio && usuarioLogado.EhProfessor() ? rf : string.Empty;
             if (aulaPrevista == null)
                 aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) ? CODIGO_ALTERNATIVO_DISCIPLINA_INGLES : disciplinaId);
 
