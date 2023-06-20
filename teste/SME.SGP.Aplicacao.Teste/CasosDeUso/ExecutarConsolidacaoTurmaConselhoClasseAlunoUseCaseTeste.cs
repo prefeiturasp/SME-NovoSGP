@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = false;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, nota, null, inativo,bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo,bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = false;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, nota,null, inativo,bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo,bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = true;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, nota, null, inativo, bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo, bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = false;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, null, conceito, inativo, bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo, bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = false;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, null, conceito, inativo, bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo, bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -160,7 +160,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var inativo = true;
             var componenteCurricularId = 2;
 
-            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, null, conceito, inativo, bimestre, componenteCurricularId);
+            var mensagemConsolidacaoConselhoClasseAlunoDto = ObterMensagemConsolidacaoConselhoClasseAlunoDto(alunoCodigo, turmaId, inativo, bimestre, componenteCurricularId);
 
             var jsonMensagem = JsonSerializer.Serialize(mensagemConsolidacaoConselhoClasseAlunoDto);
 
@@ -209,14 +209,12 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             };
         }
 
-        private static MensagemConsolidacaoConselhoClasseAlunoDto ObterMensagemConsolidacaoConselhoClasseAlunoDto(string alunoCodigo, int turmaId, double? nota, long? conceito, bool inativo, int? bimestre =0, long? componenteCurricularId = null)
+        private static MensagemConsolidacaoConselhoClasseAlunoDto ObterMensagemConsolidacaoConselhoClasseAlunoDto(string alunoCodigo, int turmaId, bool inativo, int? bimestre =0, long? componenteCurricularId = null)
         {
             return new MensagemConsolidacaoConselhoClasseAlunoDto()
             {
                 AlunoCodigo = alunoCodigo,
                 TurmaId = turmaId,
-                Nota = nota,
-                ConceitoId = conceito,
                 Inativo = inativo,
                 ComponenteCurricularId = componenteCurricularId,
                 Bimestre = bimestre,
