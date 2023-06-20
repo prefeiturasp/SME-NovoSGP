@@ -80,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre > 0)
                 sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
             else
-                sql.AppendLine(@"	and cccatn.bimestre is null ");
+                sql.AppendLine(@"	and coalesce(cccatn.bimestre, 0) = 0 ");
 
             return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasCodigos,bimestre });
         }
