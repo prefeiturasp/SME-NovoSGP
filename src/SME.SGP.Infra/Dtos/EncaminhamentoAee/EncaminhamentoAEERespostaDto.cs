@@ -12,5 +12,6 @@ namespace SME.SGP.Infra.Dtos
         public AlunoReduzidoDto Aluno { get; set; }
         public TurmaAnoDto Turma { get; set; }
         public ResponsavelEncaminhamentoAEEDto responsavelEncaminhamentoAEE { get; set; }
+        public bool RegistroCadastradoEmOutraUE { get; set; }
     }
 }

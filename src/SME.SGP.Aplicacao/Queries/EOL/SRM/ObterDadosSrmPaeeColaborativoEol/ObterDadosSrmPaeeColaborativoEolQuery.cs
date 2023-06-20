@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
             CodigoAluno = codigoAluno;
         }
 
-       public long CodigoAluno { get; set; }
+        public long CodigoAluno { get; set; }
     }
 
     public class ObterDadosSrmPaeeColaborativoEolQueryValidator : AbstractValidator<ObterDadosSrmPaeeColaborativoEolQuery>

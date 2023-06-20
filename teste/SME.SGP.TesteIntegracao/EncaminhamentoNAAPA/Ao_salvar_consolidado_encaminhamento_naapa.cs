@@ -152,10 +152,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = "GerarConsolidadoAtendimentoNAAPA",
-                Tipo = TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA,
+                Tipo = TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA,
                 Descricao = "Controle de geração do consolidado Atendimento Encaminhamento NAAPA",
                 Valor = string.Empty,
-                Ano = null,
+                Ano = DateTime.Now.Year,
                 Ativo = true,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
@@ -164,16 +164,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = "GerarConsolidadoEncaminhamentoNAAPA",
-                Tipo = TipoParametroSistema.GerarConsolidadoAtendimentoNAAPA,
+                Tipo = TipoParametroSistema.GerarConsolidadoEncaminhamentoNAAPA,
                 Descricao = "Controle de geração do consolidado Encaminhamento NAAPA",
                 Valor = string.Empty,
-                Ano = null,
+                Ano = DateTime.Now.Year,
                 Ativo = true,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
-           
+
+
+            var parametros = ObterTodos<ParametrosSistema>();
+
+
         }
     }
 }

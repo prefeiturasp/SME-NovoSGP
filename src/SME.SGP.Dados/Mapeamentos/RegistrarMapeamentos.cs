@@ -224,6 +224,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new EncaminhamentoNAAPAHistoricoAlteracoesMap());
                config.AddMap(new ConsolidadoEncaminhamentoNAAPAMap());
                config.AddMap(new ConsolidadoAtendimentoNAAPAMap());
+               config.AddMap(new PlanoAEETurmaAlunoMap());
+               config.AddMap(new EncaminhamentoAEETurmaAlunoMap());
 
                config.ForDommel();
            });

@@ -12,6 +12,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
 using SME.SGP.TesteIntegracao.PendenciaGeral.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
@@ -28,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodasUesIdsQuery, IEnumerable<long>>), typeof(ObterTodasUesIdsQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandExecutarConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Deve Retornar True e gerar os registros consolidados ao Executar Rotina de Consolidação")]
