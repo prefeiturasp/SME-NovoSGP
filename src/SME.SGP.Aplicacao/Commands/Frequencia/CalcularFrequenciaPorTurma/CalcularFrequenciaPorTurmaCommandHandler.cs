@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
                     var registroFreqAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, professorConsiderado, request.TurmaId));
                     var periodosEscolaresParaFiltro = periodos.Select(p => (long?)p.Id);
-                    var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, disciplinasIdsConsideradas.ToArray(), componenteTerritorioEquivalente.professor))).ToList();
+                    var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodoConsiderado.Id, request.TurmaId, disciplinasIdsConsideradas.ToArray(), componenteTerritorioEquivalente.professor))).ToList();
 
                     VerificaFrequenciasReplicadasIndevidamente(frequenciaDosAlunos, disciplinasIdsConsideradas.ToArray(), excluirFrequenciaAlunoIds, periodoConsiderado.Bimestre);
 
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
                         VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(registroFreqAlunos, frequenciaDosAlunos, excluirFrequenciaAlunoIds);
                         await TrataPersistencia(frequenciaDosAlunos);
                     }
-                    else if (frequenciaDosAlunos.Any())
+                    else if (frequenciaDosAlunos.Any(f=> f.PeriodoEscolarId == periodoConsiderado.Id))
                     {
                         excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Select(s => s.Id));
                     }
