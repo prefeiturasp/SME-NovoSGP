@@ -27,6 +27,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>),
+                typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>),
+                    typeof(SME.SGP.TesteIntegracao.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
         [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir excluir nota numérica com professor titular no ensino fundamental")]
@@ -353,7 +359,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 {
                     AlunoRf = fechamentoAluno.AlunoCodigo,
                     ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
-                    Nota = null
+                    Nota = null,
+                    ConceitoId = (int)ConceitoValores.P
                 });
             }
 

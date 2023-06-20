@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
         {
             string[] turmasCodigos;
-            
+
             var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken)).ToList();
 
             if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao.Queries
                 else
                     turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
             }
-            else 
+            else
                 turmasCodigos = new[] { request.Turma.CodigoTurma };
 
             var conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);
