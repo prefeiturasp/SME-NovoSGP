@@ -7,14 +7,10 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using Xunit;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
@@ -30,12 +26,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>),
                 typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-            
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito lançada pelo Professor Titular em ano atual")]
