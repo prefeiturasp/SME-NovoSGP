@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
 
-        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidadoConsultaFechamentoNotaConsulta) : base(mediator)
+        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta) : base(mediator)
         {
             this.repositorioConselhoClasseConsolidadoConsulta = repositorioConselhoClasseConsolidadoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoConsulta));
         }
