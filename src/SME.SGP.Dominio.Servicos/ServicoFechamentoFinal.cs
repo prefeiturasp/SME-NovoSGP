@@ -214,7 +214,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var fechamentoAluno in fechamentosNotasCache.Keys)
             {
                 var notaAlterada = notasDto.FirstOrDefault(n => n.AlunoRf == fechamentoAluno.AlunoCodigo);
-                foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
+                foreach (var fechamentoNota in fechamentosNotasCache[fechamentoAluno])
                 {
                     fechamentoNota.Nota = notaAlterada.Nota;
                     var nomeChaveCache = ObterChaveFechamentoNotaFinalComponenteTurma(fechamentoFinal.DisciplinaId.ToString(), turma.CodigoTurma);
