@@ -14,10 +14,14 @@ namespace SME.SGP.Aplicacao
     public class ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase : AbstractUseCase, IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase
     {
         private readonly IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta;
+        private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
 
-        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta) : base(mediator)
+        public ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase(IMediator mediator, 
+                                                                              IRepositorioConselhoClasseConsolidadoConsulta repositorioConselhoClasseConsolidadoConsulta,
+                                                                              IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado) : base(mediator)
         {
             this.repositorioConselhoClasseConsolidadoConsulta = repositorioConselhoClasseConsolidadoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidadoConsulta));
+            this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -43,7 +47,7 @@ namespace SME.SGP.Aplicacao
                             Status = 0,
                             TurmaId = filtro.TurmaId
                         };
-                        alunoConsolidacoesPorAluno = await repositorioConselhoClasseConsolidadoConsulta.SalvarAsync(conselhoClasseAlunoTurma);
+                        alunoConsolidacoesPorAluno = await repositorioConselhoClasseConsolidado.SalvarAsync(conselhoClasseAlunoTurma);
                     }
 
                     var migracaoConsolidacaoTurmaCommand = new ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresCommand()
