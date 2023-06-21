@@ -56,7 +56,6 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null)
                 throw new NegocioException("Não foi possivel obter o período escolar.");
 
-            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
             foreach (var aluno in alunos)
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
@@ -92,22 +91,8 @@ namespace SME.SGP.Aplicacao
                     continue;
                 }
 
-                if (componentes != null && componentes.Any())
-                {
-                    foreach (var componenteCurricular in componentes)
-                    {
-                        if (await mediator.Send(new VerificarComponenteCurriculareSeERegenciaPorIdQuery(long.Parse(componenteCurricular.Codigo))))
-                        {
-                            var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesRegenciaPorAnoETurnoQuery(turma.AnoTurmaInteiro, turma.TurnoParaComponentesCurriculares));
-
-                            foreach (var componenteRegencia in componentesRegencia)
-                                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, componenteRegencia.CodigoComponenteCurricular, mensagemRabbit.CodigoCorrelacao);
-
-                            continue;
-                        }
-                        await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, long.Parse(componenteCurricular.Codigo), mensagemRabbit.CodigoCorrelacao);
-                    }
-                }
+                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);
+                 
             }
 
             return true;
