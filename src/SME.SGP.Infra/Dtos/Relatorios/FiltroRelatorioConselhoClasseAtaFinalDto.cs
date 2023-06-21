@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public AtaFinalTipoVisualizacao? Visualizacao { get; set; }
         public int AnoLetivo { get;set; }
         public int Semestre { get; set; }
+        public bool ImprimirComponentesQueNaoLancamNota { get; set; }
     }
 
 
