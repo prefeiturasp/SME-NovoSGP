@@ -860,7 +860,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.ano,
                             t.tipo_turma as TurmaTipo,
                             " + (modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome") + @" as TurmaNome,
-                            t.modalidade_codigo as TurmaModalidade, cccatn.bimestre as Bimestre, cccat.aluno_codigo as AlunoCodigo,
+                            t.modalidade_codigo as TurmaModalidade, coalesce(cccatn.bimestre, 0) as Bimestre, cccat.aluno_codigo as AlunoCodigo,
                             count(distinct cccatn.componente_curricular_id) filter (where cccatn.nota is not null or cccatn.conceito_id is not null) AS QuantidadeDisciplinaFechadas
                        from consolidado_conselho_classe_aluno_turma cccat
                       inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
@@ -890,10 +890,10 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
             {
-                query.Append(" and cccatn.bimestre = @bimestre ");
+                query.Append(" and coalesce(cccatn.bimestre, 0) = @bimestre ");
             }
 
-            query.Append(" group by t.id, cccatn.bimestre, cccat.aluno_codigo order by t.id");
+            query.Append(" group by t.id, coalesce(cccatn.bimestre, 0), cccat.aluno_codigo order by t.id");
 
             return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
