@@ -21,12 +21,12 @@ namespace SME.SGP.Dados
                             from consolidado_conselho_classe_aluno_turma_nota
                             where consolidado_conselho_classe_aluno_turma_id = @consolidadoTurmaAlunoId ";
 
-            query += (bimestre.HasValue && bimestre.Value > 0) ? " and bimestre = @bimestre " : " and bimestre is null ";
+            query += " and coalesce(bimestre, 0) = @bimestre ";
 
             if (componenteCurricularId.HasValue)
                 query += " and componente_curricular_id = @componenteCurricularId";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAlunoNota>(query, new { consolidadoTurmaAlunoId, bimestre, componenteCurricularId });
+            return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAlunoNota>(query, new { consolidadoTurmaAlunoId, bimestre = bimestre ?? 0, componenteCurricularId });
         }
 
         public Task<ConselhoClasseConsolidadoTurmaAlunoNota> ObterConselhoClasseConsolidadoAlunoNotaPorConsolidadoBimestreDisciplinaAsync(long consolidacaoId, int bimestre, long disciplinaId)
@@ -34,7 +34,7 @@ namespace SME.SGP.Dados
             var query = $@" select id,consolidado_conselho_classe_aluno_turma_id,bimestre,nota,conceito_id,componente_curricular_id    
                             from consolidado_conselho_classe_aluno_turma_nota
                             where consolidado_conselho_classe_aluno_turma_id = @consolidacaoId 
-                                  {(bimestre == 0 ? " and bimestre is null " : " and bimestre = @bimestre")} 
+                                  and coalesce(bimestre, 0) = @bimestre
                                   and componente_curricular_id = @disciplinaId";
 
             return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAlunoNota>(query, new { consolidacaoId, bimestre, disciplinaId });
@@ -70,7 +70,7 @@ namespace SME.SGP.Dados
             var query = $@"select id from consolidado_conselho_classe_aluno_turma_nota where consolidado_conselho_classe_aluno_turma_id = ANY(@consolidacoesAlunoTurmaIds)";
 
             if (bimestre > 0)
-                query += $@" and bimestre = @bimestre";
+                query += $@" and coalesce(bimestre, 0) = @bimestre";
 
             return await database.Conexao.QueryAsync<long>(query, new { consolidacoesAlunoTurmaIds, bimestre });
         }

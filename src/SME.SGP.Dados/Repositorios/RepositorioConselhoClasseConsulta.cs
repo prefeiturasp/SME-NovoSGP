@@ -210,7 +210,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre >= 0)
             {
-                queryWhere.AppendLine(" and cccatn.bimestre = @bimestre ");
+                queryWhere.AppendLine(" and coalesce(cccatn.bimestre, 0) = @bimestre ");
             }
 
             queryWhere.AppendLine(" and not cccat.excluido");
