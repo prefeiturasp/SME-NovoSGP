@@ -11,9 +11,9 @@ namespace SME.SGP.TesteIntegracao
 {
     public class ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandlerFakeNota : IRequestHandler<ObterNotaTipoPorAnoModalidadeDataReferenciaQuery, NotaTipoValor>
     {
-        public async Task<NotaTipoValor> Handle(ObterNotaTipoPorAnoModalidadeDataReferenciaQuery request, CancellationToken cancellationToken)
+        public Task<NotaTipoValor> Handle(ObterNotaTipoPorAnoModalidadeDataReferenciaQuery request, CancellationToken cancellationToken)
         {
-            return await Task.Run(() => new NotaTipoValor() { TipoNota = TipoNota.Nota });
+            return Task.FromResult(new NotaTipoValor() { TipoNota = TipoNota.Nota });
         }
     }
 }
