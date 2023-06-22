@@ -87,6 +87,8 @@ namespace SME.SGP.Aplicacao
                 
                 if (fechamentoDaTurmaRegular != null)
                     fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoDaTurmaRegular.Id);
+
+                turma = await ObterTurma(turmaRegularCodigo);
             }
 
             if (bimestre == 0 && !ehFinal)
