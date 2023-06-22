@@ -11,9 +11,9 @@ namespace SME.SGP.TesteIntegracao
 {
     public class ObterTipoNotaPorTurmaQueryHandlerFakeNota : IRequestHandler<ObterTipoNotaPorTurmaQuery, TipoNota>
     {
-        public async Task<TipoNota> Handle(ObterTipoNotaPorTurmaQuery request, CancellationToken cancellationToken)
+        public Task<TipoNota> Handle(ObterTipoNotaPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            return await Task.Run(() => TipoNota.Nota);
+            return Task.FromResult(TipoNota.Nota);
         }
     }
 }
