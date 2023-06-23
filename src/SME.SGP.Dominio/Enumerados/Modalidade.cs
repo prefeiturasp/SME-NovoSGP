@@ -7,6 +7,9 @@ namespace SME.SGP.Dominio
         [Display(Name = "Educação Infantil", ShortName = "EI")]
         EducacaoInfantil = 1,
 
+        [Display(Name = "EJA CIEJA", ShortName = "EJA CIEJA")]
+        EJACIEJA = 2,
+
         [Display(Name = "Educação de Jovens e Adultos", ShortName = "EJA")]
         EJA = 3,
 
