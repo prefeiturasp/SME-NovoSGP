@@ -19,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous]
         [Route("sga/frequencia")]
-        public async Task<IActionResult> Autenticar(SolicitacaoGuidAutenticacaoFrequenciaSGADto input, [FromServices] IObterGuidAutenticacaoFrequenciaSGA obterGuidAutenticacaoFrequenciaSGA)
+        public async Task<IActionResult> ObterGuidAutenticacaoFrequencia(SolicitacaoGuidAutenticacaoFrequenciaSGADto input, [FromServices] IObterGuidAutenticacaoFrequenciaSGA obterGuidAutenticacaoFrequenciaSGA)
         {
             var guidAutenticacaoFrequencia = await obterGuidAutenticacaoFrequenciaSGA.Executar(input);
             return Ok(guidAutenticacaoFrequencia);
