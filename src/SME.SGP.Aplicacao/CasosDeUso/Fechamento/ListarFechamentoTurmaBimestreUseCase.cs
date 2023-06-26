@@ -190,9 +190,6 @@ namespace SME.SGP.Aplicacao
                     if (notasConceitoBimestre.Any())
                         alunoDto.NotasConceitoBimestre = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
 
-                    if (turma.EhEJA() && notasConceitoBimestre != null)
-                        notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != 6);
-
                     if (notasConceitoBimestre.Any())
                     {
                         foreach (var notaConceitoBimestre in notasConceitoBimestre)
