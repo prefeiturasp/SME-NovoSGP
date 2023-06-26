@@ -16,5 +16,6 @@
         public const string CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE = "nota-conceito-conselho-classe-turmacodigo-bimestre:{0}-{1}";
         public const string CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE = "fechamento-nota-turmacodigo-bimestre:{0}-{1}";
         public const string CHAVE_ALUNOS_TURMA = "todos-alunos-turma:{0}/codigo-aluno:{1}";
+        public const string CHAVE_AUTENTICACAO_FREQUENCIA_SGA = "autenticacao-frequencia-sga:{0}";
     }
 }
