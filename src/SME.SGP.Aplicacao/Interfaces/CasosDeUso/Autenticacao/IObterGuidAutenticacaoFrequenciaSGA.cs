@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterGuidAutenticacaoFrequenciaSGA
     {
-        Task<Guid> Executar(SolicitacaoGuidAutenticacaoFrequenciaSGADto input);
+        Task<Guid> Executar(SolicitacaoGuidAutenticacaoFrequenciaSGADto filtroSolicitacaoGuidAutenticacao);
     }
 }
