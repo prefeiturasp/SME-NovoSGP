@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -20,9 +21,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [AllowAnonymous]
-        [Route("sga/frequencia")]
+        [Route("frequencia")]
         [ChaveIntegracaoSgpApi]
-        public async Task<IActionResult> ObterGuidAutenticacaoFrequencia(SolicitacaoGuidAutenticacaoFrequenciaSGADto filtroSolicitacaoGuidAutenticacao, [FromServices] IObterGuidAutenticacaoFrequenciaSGA obterGuidAutenticacaoFrequenciaSGA)
+        public async Task<IActionResult> ObterGuidAutenticacaoFrequencia(SolicitacaoGuidAutenticacaoFrequenciaDto filtroSolicitacaoGuidAutenticacao, [FromServices] IObterGuidAutenticacaoFrequencia obterGuidAutenticacaoFrequenciaSGA)
         {
             var guidAutenticacaoFrequencia = await obterGuidAutenticacaoFrequenciaSGA.Executar(filtroSolicitacaoGuidAutenticacao);
             return Ok(guidAutenticacaoFrequencia);
@@ -32,17 +33,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(UsuarioAutenticacaoFrequenciaSGARetornoDto), 200)]
+        [ProducesResponseType(typeof(UsuarioAutenticacaoFrequenciaRetornoDto), 200)]
         [AllowAnonymous]
-        [Route("sga/frequencia/{guid}")]
-        public async Task<IActionResult> ObterAutenticacaoFrequencia(Guid guid, [FromServices] IObterAutenticacaoFrequenciaSGA obterAutenticacaoFrequenciaSGA)
+        [Route("frequencia/{guid}")]
+        public async Task<IActionResult> ObterAutenticacaoFrequencia(Guid guid, [FromServices] IObterAutenticacaoFrequencia obterAutenticacaoFrequenciaSGA)
         {
             if (guid == Guid.Empty)
                 throw new NegocioException("Informe um Guid de autenticação frequência.");
 
             var retornoAutenticacao = await obterAutenticacaoFrequenciaSGA.Executar(guid);
             if (!retornoAutenticacao.UsuarioAutenticacao.Autenticado)
-                return StatusCode(401);
+                return StatusCode((int)HttpStatusCode.Unauthorized);
 
             return Ok(retornoAutenticacao);
         }

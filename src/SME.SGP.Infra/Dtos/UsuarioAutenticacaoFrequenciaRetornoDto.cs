@@ -1,19 +1,20 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra.Dtos;
 using System;
 
 namespace SME.SGP.Infra
 {
-    public class UsuarioAutenticacaoFrequenciaSGARetornoDto
+    public class UsuarioAutenticacaoFrequenciaRetornoDto
     {
 
-        public UsuarioAutenticacaoFrequenciaSGARetornoDto(UsuarioAutenticacaoRetornoDto usuarioAutenticacao, Turma turma, string componenteCurricularCodigo)
+        public UsuarioAutenticacaoFrequenciaRetornoDto(UsuarioAutenticacaoRetornoDto usuarioAutenticacao, TurmaUeDreDto turma, string componenteCurricularCodigo)
         {
             UsuarioAutenticacao = usuarioAutenticacao;
             Turma = turma;
             ComponenteCurricularCodigo = componenteCurricularCodigo;
         }
         public UsuarioAutenticacaoRetornoDto UsuarioAutenticacao { get; set; }
-        public Turma Turma { get; set; }
+        public TurmaUeDreDto Turma { get; set; }
         public string ComponenteCurricularCodigo { get; set; }
     }
 }
