@@ -66,7 +66,7 @@ namespace SME.SGP.Dominio.Servicos
                     if (objetivosAIncluir != null && objetivosAIncluir.Any())
                     {
                         foreach (var objetivo in objetivosAIncluir)
-                            await repositorioObjetivoAprendizagem.SalvarAsync(MapearObjetivoRespostaParaDominio(objetivo));
+                            await repositorioObjetivoAprendizagem.InserirAsync(MapearObjetivoRespostaParaDominio(objetivo));
 
                         houveAlteracaoNosDados = true;
                     }
