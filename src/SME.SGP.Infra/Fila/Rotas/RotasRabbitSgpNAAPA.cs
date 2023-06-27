@@ -11,7 +11,9 @@
         public const string ExecutarCargaConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa";
         public const string ExecutarBuscarUesConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.buscar.ue";
         public const string ExecutarInserirConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.inserir";
+        public const string ExecutarExcluirConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.excluir";
         public const string ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.atendimentos.profissional.buscar";
         public const string ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.atendimento.profissional.inserir";
+        public const string ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA = "sgp.carga.consolidado.encaminhamento.naapa.atendimento.profissional.excluir";
     }
 }

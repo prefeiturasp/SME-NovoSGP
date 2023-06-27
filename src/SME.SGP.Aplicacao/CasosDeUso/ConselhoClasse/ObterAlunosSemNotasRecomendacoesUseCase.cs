@@ -6,6 +6,7 @@ using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -13,6 +14,8 @@ namespace SME.SGP.Aplicacao
     public class ObterAlunosSemNotasRecomendacoesUseCase : IObterAlunosSemNotasRecomendacoesUseCase
     {
         private readonly IMediator mediator;
+        private const int BIMESTRE_2 = 2;
+        private const int BIMESTRE_4 = 4;
 
         public ObterAlunosSemNotasRecomendacoesUseCase(IMediator mediator)
         {
@@ -21,64 +24,65 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<InconsistenciasAlunoFamiliaDto>> Executar(FiltroInconsistenciasAlunoFamiliaDto param)
         {
-            var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
-            if (turmaRegular == null)
-                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
+                var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
+                if (turmaRegular == null)
+                    throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
-            var retorno = new List<InconsistenciasAlunoFamiliaDto>();
-            var turmasCodigo = new List<string>();
-            var periodoEscolar = await ObterPeriodoEscolar(turmaRegular, param.Bimestre);
+                var retorno = new List<InconsistenciasAlunoFamiliaDto>();
+                var turmasCodigo = new List<string>();
+                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turmaRegular, param.Bimestre == 0 ? turmaRegular.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : param.Bimestre));
 
-            turmasCodigo.Add(turmaRegular.CodigoTurma);
-            var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))
-                                                             ?.Where(x =>x.EstaAtivo(periodoEscolar.PeriodoInicio,periodoEscolar.PeriodoFim))
-                                                             ?.DistinctBy(x => x.NomeAluno);
+                turmasCodigo.Add(turmaRegular.CodigoTurma);
+                var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))
+                    ?.Where(x =>x.EstaAtivo(periodoEscolar.PeriodoInicio,periodoEscolar.PeriodoFim))
+                    ?.DistinctBy(x => x.NomeAluno);
 
-            var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
-            var turmasComplementaresFiltradas = turmaComplementares.Where(t => t.TurmaRegularCodigo == turmaRegular.CodigoTurma && t.Semestre == turmaRegular.Semestre);
-            if (turmasComplementaresFiltradas.Any())
-                turmasCodigo.AddRange(turmasComplementaresFiltradas.Select(s=> s.CodigoTurma));
+                var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
+                var turmasComplementaresFiltradas = turmaComplementares.Where(t => t.TurmaRegularCodigo == turmaRegular.CodigoTurma && t.Semestre == turmaRegular.Semestre);
+                if (turmasComplementaresFiltradas.Any())
+                    turmasCodigo.AddRange(turmasComplementaresFiltradas.Select(s=> s.CodigoTurma));
             
-            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+                var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
-            if (codigosItinerarioEnsinoMedio != null)
-                turmasCodigo.AddRange(codigosItinerarioEnsinoMedio);
+                var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
+                if (codigosItinerarioEnsinoMedio != null)
+                    turmasCodigo.AddRange(codigosItinerarioEnsinoMedio);
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var perfil = await mediator.Send(new ObterPerfilAtualQuery());
 
-            var componentesCurricularesPorTurma = (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo.Distinct().ToArray(), perfil, usuarioLogado.CodigoRf, turmaRegular.EnsinoEspecial, turmaRegular.TurnoParaComponentesCurriculares)))
-                .Where(w=> w.LancaNota)
-                .ToArray();
+                var componentesCurricularesPorTurma = (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo.Distinct().ToArray(), perfil, usuarioLogado.CodigoRf, turmaRegular.EnsinoEspecial, turmaRegular.TurnoParaComponentesCurriculares)))
+                    .Where(w=> w.LancaNota)
+                    .ToArray();
 
-            var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
+                var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turmaRegular));
 
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery(param.Bimestre, turmaRegular.CodigoTurma, turmaRegular.AnoLetivo, turmaRegular.Semestre, tipoCalendarioTurma));;
-
-            switch (fechamentoTurma)
-            {
-                case null when !turmaRegular.EhAnoAnterior():
+                var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery(param.Bimestre, turmaRegular.CodigoTurma, turmaRegular.AnoLetivo, turmaRegular.Semestre, tipoCalendarioTurma));;
+                switch (fechamentoTurma)
+                {
+                    case null when !turmaRegular.EhAnoAnterior():
                     {
                         if (param.Bimestre > 0)
                             throw new NegocioException(string.Format(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO_BIMESTRE, param.Bimestre));
 
                         throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
                     }
-                case null:
-                    throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
-            }
+                    case null:
+                        throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
+                }
 
-            var existeConselhoParaTurma = await mediator.Send(new ExisteConselhoClasseParaTurmaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
+                var existeConselhoParaTurma = await mediator.Send(new ExisteConselhoClasseParaTurmaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
+                if (!existeConselhoParaTurma)
+                    throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
 
-            if (!existeConselhoParaTurma)
-                throw new NegocioException(MensagemNegocioConselhoClasse.NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE);
-
-            var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
-            var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
-
-            await MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
-            return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);
+                var obterRecomendacoes = await mediator.Send(new VerificarSeExisteRecomendacaoPorTurmaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
+                
+                var obterConselhoClasseAlunoNota = await mediator.Send(new ObterConselhoClasseAlunoNotaQuery(new string[] { turmaRegular.CodigoTurma }, param.Bimestre));
+                
+                await MapearRetorno(retorno,obterRecomendacoes,obterConselhoClasseAlunoNota,alunosDaTurma, periodoEscolar, componentesCurricularesPorTurma);
+                
+                return retorno.Where(w=> w.Inconsistencias.Any()).OrderBy(o=> o.AlunoNome);
+            
         }
 
         private async Task MapearRetorno(List<InconsistenciasAlunoFamiliaDto> retorno, IEnumerable<AlunoTemRecomandacaoDto> obterRecomendacoes, IEnumerable<ConselhoClasseAlunoNotaDto> obterConselhoClasseAlunoNota, IEnumerable<AlunoPorTurmaResposta> alunoPorTurmaRespostas,
@@ -110,14 +114,6 @@ namespace SME.SGP.Aplicacao
                 
                 retorno.Add(item);
             }
-        }
-
-        private async Task<PeriodoEscolar> ObterPeriodoEscolar(Turma turma, int bimestre)
-        {
-            var fechamentoDaTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, bimestre));
-            if (fechamentoDaTurma != null && fechamentoDaTurma.Id > 0 && fechamentoDaTurma?.PeriodoEscolar !=null)
-                return fechamentoDaTurma?.PeriodoEscolar;
-            else return await mediator.Send(new ObterPeriodoEscolarAtualQuery(turma.Id, DateTime.Now.Date));
         }
 
         private async Task<string[]> ObterTurmasCodigosItinerarioEnsinoMedio(Turma turma, IEnumerable<TurmaItinerarioEnsinoMedioDto> turmasItinerarioEnsinoMedio, PeriodoEscolar periodoEscolar, int bimestre)

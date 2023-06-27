@@ -22,15 +22,22 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
-            string nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}-${request.ChecaMotivoDisponibilizacao}";
-            var resultado = await repositorioCache.ObterAsync(nomeChaveCache, async () =>
-            {
-                return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
-                                                                                               request.Login,
-                                                                                               request.PerfilUsuario,
-                                                                                               request.RealizarAgrupamentoComponente,
-                                                                                               request.ChecaMotivoDisponibilizacao);
-            });
+            //TODO: RaphaelDias. Isso não deve ficar assim. é só para resolver temporariamente o desalinhamento de cache.
+            // string nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}-${request.ChecaMotivoDisponibilizacao}";
+            // var resultado = await repositorioCache.ObterAsync(nomeChaveCache, async () =>
+            // {
+            //     return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
+            //                                                                                    request.Login,
+            //                                                                                    request.PerfilUsuario,
+            //                                                                                    request.RealizarAgrupamentoComponente,
+            //                                                                                    request.ChecaMotivoDisponibilizacao);
+            // });
+            
+            var resultado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
+                request.Login,
+                request.PerfilUsuario,
+                request.RealizarAgrupamentoComponente,
+                request.ChecaMotivoDisponibilizacao);
 
             if (resultado == null)
                 return Enumerable.Empty<ComponenteCurricularEol>();

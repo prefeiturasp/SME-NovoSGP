@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
@@ -64,6 +65,16 @@ namespace SME.SGP.Dados.Repositorios
                         order by dre.dre_id, dre.abreviacao";
 
             return await database.Conexao.QueryAsync<GraficoQuantitativoNAAPADto>(query, new { anoLetivo, dreId, situacaoEncerrada }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<long>> ObterIds(long ueId, int anoLetivo, int[] situacoesIgnoradas)
+        {
+            var query = @$"  select cen.id
+                            from consolidado_encaminhamento_naapa cen
+                            where cen.ue_id = @ueId and ano_letivo = @anoLetivo 
+                            {(situacoesIgnoradas.Any() ? $"and situacao not in ({string.Join(",", situacoesIgnoradas)})" : string.Empty)}";
+
+            return await database.Conexao.QueryAsync<long>(query, new { anoLetivo, ueId }, commandTimeout: 60);
         }
     }
 }

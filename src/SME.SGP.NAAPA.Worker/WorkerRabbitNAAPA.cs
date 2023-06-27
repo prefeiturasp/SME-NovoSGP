@@ -32,8 +32,10 @@ namespace SME.SGP.NAAPA.Worker
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarCargaConsolidadoEncaminhamentoNAAPA,new ComandoRabbit("Executar Carga Consolidado Encaminhamento NAAPA",typeof(IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase),true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarBuscarUesConsolidadoEncaminhamentoNAAPA,new ComandoRabbit("Executar Carga Consolidado Encaminhamento NAAPA Por UE",typeof(IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase),true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoEncaminhamentoNAAPA,new ComandoRabbit("Executar Inserir Consolidado Encaminhamento NAAPA",typeof(IExecutarInserirConsolidadoEncaminhamentoNAAPAUseCase),true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarExcluirConsolidadoEncaminhamentoNAAPA, new ComandoRabbit("Executar Excluir Consolidado Encaminhamento NAAPA", typeof(IExecutarExcluirConsolidadoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA, new ComandoRabbit("Executar Carga Consolidado Encaminhamento NAAPA Por Profissionais", typeof(IExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, new ComandoRabbit("Executar Inserir Consolidado Encaminhamento NAAPA Profissional", typeof(IExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, new ComandoRabbit("Executar Excluir Consolidado Encaminhamento NAAPA Profissional", typeof(IExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), true));
         }
     }
 }

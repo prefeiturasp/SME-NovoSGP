@@ -41,13 +41,18 @@ namespace SME.SGP.Dados.Repositorios
                         from conselho_classe_aluno cca
                         join conselho_classe cc on cc.id = cca.conselho_classe_id
                         join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                        join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                         join turma t on t.id = ft.turma_id
+                        left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                         left join conselho_classe_aluno_recomendacao ccar on ccar.conselho_classe_aluno_id = cca.id
                         left join conselho_classe_recomendacao ccr on ccr.id = ccar.conselho_classe_recomendacao_id
                         where not cca.excluido
-	                        and t.turma_id = any(@turmasId)
-	                        and pe.bimestre = @bimestre ";
+	                        and t.turma_id = any(@turmasId)";
+
+            if (bimestre > 0)
+                query += " and pe.bimestre = @bimestre ";
+            else
+                query += " and pe.bimestre is null ";
+     
             return await database.Conexao.QueryAsync<AlunoTemRecomandacaoDto>(query, new { turmasId,bimestre });
         }
 
@@ -71,7 +76,12 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"	not cccat.excluido");
             sql.AppendLine(@"	and not cccat.excluido");
             sql.AppendLine(@"	and t.turma_id = any(@turmasCodigos) ");
-            sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
+            
+            if (bimestre > 0)
+                sql.AppendLine(@"	and cccatn.bimestre = @bimestre ");
+            else
+                sql.AppendLine(@"	and coalesce(cccatn.bimestre, 0) = 0 ");
+
             return await database.Conexao.QueryAsync<ConselhoClasseAlunoNotaDto>(sql.ToString(), new { turmasCodigos,bimestre });
         }
     }
