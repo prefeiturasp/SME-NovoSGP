@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class SolicitacaoGuidAutenticacaoFrequenciaSGADto
+    public class SolicitacaoGuidAutenticacaoFrequenciaDto
     {
         [Required(ErrorMessage = "É necessário informar o código Rf do usuário.")]
         public string Rf { get; set; }

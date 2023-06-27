@@ -1001,8 +1001,9 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
             services.TryAddScoped<IDeslogarSuporteUsuarioUseCase, DeslogarSuporteUsuarioUseCase>();
-            services.TryAddScoped<IObterGuidAutenticacaoFrequenciaSGA, ObterGuidAutenticacaoFrequenciaSGA>();
-            
+            services.TryAddScoped<IObterGuidAutenticacaoFrequencia, ObterGuidAutenticacaoFrequencia>();
+            services.TryAddScoped<IObterAutenticacaoFrequencia, ObterAutenticacaoFrequencia>();            
+
             // EncaminhamentoAEE
             services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase, ObterSecoesPorEtapaDeEncaminhamentoAEEUseCase>();
             services.TryAddScoped<IObterQuestionarioEncaminhamentoAeeUseCase, ObterQuestionarioEncaminhamentoAeeUseCase>();
