@@ -19,8 +19,7 @@ namespace SME.SGP.Aplicacao
         private const string PRIMEIRO_ANO_EM = "1";
         private const double NOTA_CONCEITO_CINCO = 5.0;
         private const double NOTA_CONCEITO_SETE = 7.0;
-        private readonly long? COMPONENTECURRICULARCODIGOEDFISICA = 6;
-
+        
 
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
@@ -380,7 +379,7 @@ namespace SME.SGP.Aplicacao
 
             // Excessão de disciplina ED. Fisica para modalidade EJA
             if (turma.EhEJA())
-                componentesRegencia = componentesRegencia.Where(a => a.CodigoComponenteCurricular != 6);
+                componentesRegencia = componentesRegencia.Where(a => a.CodigoComponenteCurricular != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
             var percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 0 : 0);
 
@@ -603,7 +602,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var notaFechamento in notasFechamentoAluno)
             {
-                if (turmaTipoNotaConceito && COMPONENTECURRICULARCODIGOEDFISICA.Equals(notaFechamento.ComponenteCurricularCodigo))
+                if (turmaTipoNotaConceito && MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(notaFechamento.ComponenteCurricularCodigo))
                 {
                     if (notaFechamento.Nota != null)
                         if (notaFechamento.Nota >= 7)
