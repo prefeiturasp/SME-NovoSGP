@@ -23,5 +23,7 @@ namespace SME.SGP.Infra.Dtos
         public string DreNome { get; set; }
         public string DreAbreviacao { get; set; }
         public string NomeTipoUeDre { get; set; }
+        public int Semestre { get; set; }
+
     }
 }

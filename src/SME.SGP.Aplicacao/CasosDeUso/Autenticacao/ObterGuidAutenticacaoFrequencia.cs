@@ -40,6 +40,7 @@ namespace SME.SGP.Aplicacao
                                                                                                         Id = turma.Id,
                                                                                                         ModalidadeCodigo = turma.ModalidadeCodigo,
                                                                                                         Nome = turma.Nome,
+                                                                                                        Semestre = turma.Semestre,
                                                                                                         Tipo = turma.TipoTurma,
                                                                                                         TipoTurno = turma.TipoTurno,
                                                                                                         UeId = turma.UeId,
