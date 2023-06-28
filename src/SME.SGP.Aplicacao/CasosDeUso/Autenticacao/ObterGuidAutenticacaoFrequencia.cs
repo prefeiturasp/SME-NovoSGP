@@ -43,6 +43,7 @@ namespace SME.SGP.Aplicacao
                                                                                                         Semestre = turma.Semestre,
                                                                                                         Tipo = turma.TipoTurma,
                                                                                                         TipoTurno = turma.TipoTurno,
+                                                                                                        Historica = turma.Historica,
                                                                                                         UeId = turma.UeId,
                                                                                                         UeCodigo = turma.Ue.CodigoUe,
                                                                                                         UeNome = turma.Ue.Nome,
