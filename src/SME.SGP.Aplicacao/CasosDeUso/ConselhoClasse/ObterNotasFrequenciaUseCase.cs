@@ -297,7 +297,7 @@ namespace SME.SGP.Aplicacao
                         {
                             conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina.CodigoComponenteCurricular,
                                 frequenciaAluno, periodoEscolar, turma, notasConselhoClasseAluno, notasFechamentoAluno, disciplina.LancaNota,
-                                permiteEdicao, turmasCodigos.Distinct().ToArray(), turmas);
+                                permiteEdicao, turmasCodigos.Distinct().ToArray());
                         }
                         else
                         {
@@ -307,7 +307,7 @@ namespace SME.SGP.Aplicacao
                             conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterNotasFrequenciaComponente(disciplina.Nome,
                                 disciplina.CodigoComponenteCurricular, frequenciaAluno, periodoEscolar, turma, notasConselhoClasseAluno,
                                 notasFechamentoAluno, turmaPossuiRegistroFrequencia, disciplina.LancaNota, percentualFrequenciaPadrao,
-                                permiteEdicao, turmasCodigos.Distinct().ToArray(), turmas));
+                                permiteEdicao, turmasCodigos.Distinct().ToArray()));
                         }
                     }
                 }
@@ -373,7 +373,7 @@ namespace SME.SGP.Aplicacao
         
         private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterNotasFrequenciaRegencia(long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar, 
             Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,
-            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota, bool visualizaNotas, string[] codigosTurma, IEnumerable<Turma> turmas)
+            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota, bool visualizaNotas, string[] codigosTurma)
         {
             var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
@@ -399,26 +399,26 @@ namespace SME.SGP.Aplicacao
             };
 
             foreach (var componenteRegencia in componentesRegencia)
-                conselhoClasseComponente.ComponentesCurriculares.Add(await ObterNotasRegencia(componenteRegencia.Nome, componenteRegencia.CodigoComponenteCurricular, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, turma.CodigoTurma, visualizaNotas,turma, codigosTurma, turmas));
+                conselhoClasseComponente.ComponentesCurriculares.Add(await ObterNotasRegencia(componenteRegencia.Nome, componenteRegencia.CodigoComponenteCurricular, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, turma.CodigoTurma, visualizaNotas,turma, codigosTurma));
 
             return conselhoClasseComponente;
         }
         
         private async Task<ConselhoClasseNotasComponenteRegenciaDto> ObterNotasRegencia(string componenteCurricularNome, long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, 
             IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, 
-            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota, string codigoTurma, bool visualizaNotas,Turma turma, string[] codigosTurma, IEnumerable<Turma> turmas)
+            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota, string codigoTurma, bool visualizaNotas,Turma turma, string[] codigosTurma)
         {
             return new ConselhoClasseNotasComponenteRegenciaDto()
             {
                 Nome = componenteCurricularNome,
                 CodigoComponenteCurricular = componenteCurricularCodigo,
-                NotasFechamentos = ObterNotasFechamentoOuConselho(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno, turma, turmas),
-                NotaPosConselho = await ObterNotasPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, visualizaNotas, codigoTurma, turma, codigosTurma, turmas)
+                NotasFechamentos = ObterNotasFechamentoOuConselho(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
+                NotaPosConselho = await ObterNotasPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, visualizaNotas, codigoTurma, turma, codigosTurma)
             };
         }
 
         private async Task<NotaPosConselhoDto> ObterNotasPosConselho(long componenteCurricularCodigo, int? bimestre, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno,
-            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota, bool visualizaNota, string codigoTurma, Turma turma, string [] codigosTurma, IEnumerable<Turma> turmas)
+            IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota, bool visualizaNota, string codigoTurma, Turma turma, string [] codigosTurma)
         {
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.OrderByDescending(x => x.ConselhoClasseNotaId).FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo
@@ -434,15 +434,6 @@ namespace SME.SGP.Aplicacao
                     notaComponenteFechamento =
                         notasFechamentoAluno.FirstOrDefault(t => codigosTurma.Contains(t.TurmaCodigo) && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == bimestre && t.ConselhoClasseNotaId > 0)
                         ?? notasFechamentoAluno.FirstOrDefault(t => codigosTurma.Contains(t.TurmaCodigo) && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == bimestre);
-
-                    if (EhTurmaEjaEdFisica(componenteCurricularCodigo, turma))
-                    {
-                        var codigoEdFisica = ObterCodigoTurmaEjaEdFisica(componenteCurricularCodigo, notasFechamentoAluno, turmas);
-
-                        if (!string.IsNullOrEmpty(codigoEdFisica))
-                            notaComponenteFechamento = notasFechamentoAluno.FirstOrDefault(t => t.TurmaCodigo == codigoEdFisica && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == bimestre && t.ConselhoClasseNotaId > 0)
-                                ?? notasFechamentoAluno.FirstOrDefault(t => t.TurmaCodigo == codigoEdFisica && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == bimestre);
-                    }
                 }
                 else
                 {
@@ -483,17 +474,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private List<NotaBimestreDto> ObterNotasFechamentoOuConselho(long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, Turma turma, IEnumerable<Turma> turmas)
+        private List<NotaBimestreDto> ObterNotasFechamentoOuConselho(long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
             var notasFinais = new List<NotaBimestreDto>();
             IEnumerable<NotaConceitoBimestreComponenteDto> notaFechamento = notasFechamentoAluno;
-
-            if (EhTurmaEjaEdFisica(componenteCurricularCodigo, turma))
-            {
-                var codigoTurmaEdFisica = ObterCodigoTurmaEjaEdFisica(componenteCurricularCodigo, notasFechamentoAluno, turmas);
-                if (!string.IsNullOrEmpty(codigoTurmaEdFisica))
-                    notaFechamento = notaFechamento.Where(c => c.TurmaCodigo == codigoTurmaEdFisica);
-            }
 
             if (periodoEscolar != null)
                 notasFinais.Add(ObterNotasFinaisFechamento(componenteCurricularCodigo, periodoEscolar.Bimestre, notaFechamento));
@@ -532,16 +516,6 @@ namespace SME.SGP.Aplicacao
                 Bimestre = bimestre,
                 NotaConceito = notaConceito,
             };
-        }
-
-        private bool EhTurmaEjaEdFisica(long codigoComponenteCurricular, Turma turma)
-        {
-            return codigoComponenteCurricular == COMPONENTECURRICULARCODIGOEDFISICA && turma.EhEJA();
-        }
-
-        private string ObterCodigoTurmaEjaEdFisica(long codigoComponenteCurricular, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, IEnumerable<Turma> turmas)
-        {
-            return turmas?.Where(turma => turma.EhTurmaEdFisica())?.FirstOrDefault()?.CodigoTurma;
         }
 
         private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunoRefatorada(IEnumerable<DisciplinaDto> disciplinasDaTurma, PeriodoEscolar periodoEscolar, AlunoPorTurmaResposta alunoTurma,
@@ -663,7 +637,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ConselhoClasseComponenteFrequenciaDto> ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar,
             Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota, 
-            bool percentualFrequenciaPadrao, bool visualizaNota, string[] codigosTurma, IEnumerable<Turma> turmas)
+            bool percentualFrequenciaPadrao, bool visualizaNota, string[] codigosTurma)
         {
             var totalAulas = Enumerable.Empty<TotalAulasPorAlunoTurmaDto>();
             var componentePermiteFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricularCodigo));
@@ -692,8 +666,8 @@ namespace SME.SGP.Aplicacao
                 Faltas = frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : FrequenciaAluno.FormatarPercentual(percentualFrequencia),
-                NotasFechamentos = ObterNotasFechamentoOuConselho(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno, turma, turmas),
-                NotaPosConselho = await ObterNotasPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, visualizaNota, turma.CodigoTurma, turma, codigosTurma, turmas),
+                NotasFechamentos = ObterNotasFechamentoOuConselho(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
+                NotaPosConselho = await ObterNotasPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, visualizaNota, turma.CodigoTurma, turma, codigosTurma),
                 Aulas = frequenciaAluno?.TotalAulas.ToString() ?? "0",
             };
 
