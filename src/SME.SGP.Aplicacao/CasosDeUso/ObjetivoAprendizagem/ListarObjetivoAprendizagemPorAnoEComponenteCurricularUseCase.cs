@@ -36,6 +36,9 @@ namespace SME.SGP.Aplicacao
             else
                 ids = await mediator.Send(new ObterJuremaIdsPorComponentesCurricularIdQuery(componenteCurricularId));
 
+            if (ids.Contains(14) && ano == "0")
+                ano = "14";
+
             IEnumerable<int> anosFundamental = Enumerable.Range(1, 9);
 
             var objetivos = await mediator.Send(
