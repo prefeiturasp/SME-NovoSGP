@@ -31,8 +31,8 @@ namespace SME.SGP.Aplicacao
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina;
 
-            var idFechamentoTurmaDisciplina = (await mediator
-                .Send(new ObterFechamentoTurmaDisciplinaDTOQuery(turma.CodigoTurma, dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, dto.Bimestre, null)))?.Id ?? 0;
+            var idFechamentoTurmaDisciplina = dto.Bimestre > 0 ? (await mediator
+                .Send(new ObterFechamentoTurmaDisciplinaDTOQuery(turma.CodigoTurma, dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, dto.Bimestre, null)))?.Id ?? 0 : 0;
 
             var periodoEscolar = new PeriodoEscolar();
 
