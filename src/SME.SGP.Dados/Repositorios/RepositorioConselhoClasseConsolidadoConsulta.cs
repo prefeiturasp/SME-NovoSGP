@@ -47,7 +47,7 @@ namespace SME.SGP.Dados
                              from consolidado_conselho_classe_aluno_turma cccat 
                              inner join consolidado_conselho_classe_aluno_turma_nota cccatn 
                                 on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
-                             where cccat.turma_id = @turmaId and cccatn.bimestre = @bimestre
+                             where cccat.turma_id = @turmaId and coalesce(cccatn.bimestre, 0) = @bimestre
                              and not cccat.excluido 
                              group by cccat.aluno_codigo";
 
