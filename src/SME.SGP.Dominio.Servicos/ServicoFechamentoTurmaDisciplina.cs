@@ -293,11 +293,15 @@ namespace SME.SGP.Dominio.Servicos
                     fechamentoTurmaDisciplina.FechamentoTurma.Id :
                     await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
 
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
+
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
+
+                if (turma.TipoTurma == TipoTurma.Programa)
+                    fechamentoTurmaDisciplina.AtualizarSituacao(SituacaoFechamento.ProcessadoComSucesso);
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
 
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
                 var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
 
                 foreach (var fechamentoAluno in fechamentoAlunos)
