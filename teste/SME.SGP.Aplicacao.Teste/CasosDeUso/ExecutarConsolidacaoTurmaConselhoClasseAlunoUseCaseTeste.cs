@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             mediator.Setup(a => a.Send(It.IsAny<ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new List<long>() { 1000 });
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Turma());
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaComUeEDrePorIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new Turma());
 
             mediator.Setup(a => a.Send(It.IsAny<ObterFechamentoPorTurmaPeriodoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new FechamentoTurma());
 
