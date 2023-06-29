@@ -22,10 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseNotaRetornoDto> Executar(SalvarConselhoClasseAlunoNotaDto dto)
         {
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(dto.CodigoTurma));
-
-            if (turma == null)
-                throw new NegocioException("Turma não encontrada");
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(dto.CodigoTurma)) ?? throw new NegocioException("Turma não encontrada");
 
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Now.Year;
 
@@ -33,6 +30,10 @@ namespace SME.SGP.Aplicacao
                 dto.CodigoAluno, ehAnoAnterior));
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina;
+
+            var idFechamentoTurmaDisciplina = (await mediator
+                .Send(new ObterFechamentoTurmaDisciplinaDTOQuery(turma.CodigoTurma, dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, dto.Bimestre, null)))?.Id ?? 0;
+
             var periodoEscolar = new PeriodoEscolar();
 
             if (fechamentoTurma == null)
@@ -53,11 +54,6 @@ namespace SME.SGP.Aplicacao
                     Turma = turma,
                     PeriodoEscolar = periodoEscolar
                 };
-
-                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
-                {
-                    DisciplinaId = dto.ConselhoClasseNotaDto.CodigoComponenteCurricular
-                };
             }
             else
             {
@@ -66,12 +62,13 @@ namespace SME.SGP.Aplicacao
                     periodoEscolar =
                         await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
                 }
+            }
 
-                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
+            fechamentoTurmaDisciplina = idFechamentoTurmaDisciplina > 0 ?
+                await mediator.Send(new ObterFechamentoTurmaDisciplinaPorIdQuery(idFechamentoTurmaDisciplina)) : new FechamentoTurmaDisciplina()
                 {
                     DisciplinaId = dto.ConselhoClasseNotaDto.CodigoComponenteCurricular
                 };
-            }
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -80,7 +77,7 @@ namespace SME.SGP.Aplicacao
             await ValidaProfessorPodePersistirTurma(turma, periodoEscolarValidacao, usuario);
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
-            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);            
+            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);
 
             await VerificaSePodeEditarNota(periodoEscolarValidacao, turma, alunoConselho, dto.Bimestre);
             await ValidarConceitoOuNota(dto, fechamentoTurma, alunoConselho, periodoEscolarValidacao);
@@ -174,23 +171,23 @@ namespace SME.SGP.Aplicacao
         {
             if (fechamentoTurma.Turma == null)
                 return;
-            
+
             var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId,
                 fechamentoTurma.Turma.TipoTurma));
 
             if (notaTipoValor == null)
                 return;
-            
-            var turmasCodigos = new[] { dto.CodigoTurma };            
-            
+
+            var turmasCodigos = new[] { dto.CodigoTurma };
+
             var notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?
                 await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, dto.CodigoAluno,
-                    dto.Bimestre, alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva() 
+                    dto.Bimestre, alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva()
                         ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
-                await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, dto.CodigoAluno, 
-                    alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva() 
-                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();            
-            
+                await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, dto.CodigoAluno,
+                    alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva()
+                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();
+
             var notaFechamentoAluno = notasFechamentoAluno.FirstOrDefault(c =>
                 c.ComponenteCurricularCodigo == dto.ConselhoClasseNotaDto.CodigoComponenteCurricular &&
                 c.AlunoCodigo == dto.CodigoAluno &&
@@ -199,19 +196,19 @@ namespace SME.SGP.Aplicacao
             switch (notaTipoValor.TipoNota)
             {
                 case TipoNota.Conceito when dto.ConselhoClasseNotaDto.Conceito == null:
-                {
-                    if (notaFechamentoAluno?.ConceitoId == null)
-                        return;
+                    {
+                        if (notaFechamentoAluno?.ConceitoId == null)
+                            return;
 
-                    throw new NegocioException(MensagemNegocioConselhoClasse.CONCEITO_POS_CONSELHO_DEVE_SER_INFORMADO);
-                }
+                        throw new NegocioException(MensagemNegocioConselhoClasse.CONCEITO_POS_CONSELHO_DEVE_SER_INFORMADO);
+                    }
                 case TipoNota.Nota when dto.ConselhoClasseNotaDto.Nota == null:
-                {
-                    if (notaFechamentoAluno?.Nota == null)
-                        return;
+                    {
+                        if (notaFechamentoAluno?.Nota == null)
+                            return;
 
-                    throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_POS_CONSELHO_DEVE_SER_INFORMADA);
-                }
+                        throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_POS_CONSELHO_DEVE_SER_INFORMADA);
+                    }
             }
         }
     }
