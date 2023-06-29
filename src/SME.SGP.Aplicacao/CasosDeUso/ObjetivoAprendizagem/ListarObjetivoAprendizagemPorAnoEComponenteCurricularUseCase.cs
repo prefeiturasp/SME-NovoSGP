@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurricularesPorAnosEModalidade;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -17,42 +16,40 @@ namespace SME.SGP.Aplicacao
 
         public ListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase(IMediator mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial, long turmaId = 0)
+        public async Task<IEnumerable<ObjetivoAprendizagemDto>> Executar(string ano, long componenteCurricularId, bool ensinoEspecial, long turmaId)
         {
-            if (turmaId != 0)
-            {
-                var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-                if (turma.ModalidadeCodigo == Modalidade.Medio)
-                    return null;
-            }
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            
+            if (new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turma.ModalidadeCodigo))
+                return null;
 
-            long[] ids;
+            long[] ids = componenteCurricularId == 138 ?
+                new long[] { (ensinoEspecial ? 11 : 6) } :
+                await mediator.Send(new ObterJuremaIdsPorComponentesCurricularIdQuery(componenteCurricularId));
 
-            if (componenteCurricularId == 138)
-                ids = new long[] { (ensinoEspecial ? 11 : 6) };
-            else
-                ids = await mediator.Send(new ObterJuremaIdsPorComponentesCurricularIdQuery(componenteCurricularId));
-
-            if (ids.Contains(14) && ano == "0")
-                ano = "14";
-
-            IEnumerable<int> anosFundamental = Enumerable.Range(1, 9);
+            var anos = new string[] { ano };
+            if (ensinoEspecial)
+                anos = Enumerable.Range(1, 9).Select(a => a.ToString()).ToArray();
+            else if (turma.EhTurmaPrograma())
+                anos = Array.Empty<string>();
 
             var objetivos = await mediator.Send(
-                new ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(ensinoEspecial ? anosFundamental.Select(a => a.ToString()).ToArray() : new string[] { ano }, ids));
+                new ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery(
+                    anos,
+                    ids));
 
             foreach (var item in objetivos)
                 item.ComponenteCurricularEolId = componenteCurricularId;
 
-            if (ensinoEspecial && !anosFundamental.Select(a => a.ToString()).Contains(ano.ToString()))
+            if ((ensinoEspecial || turma.EhTurmaPrograma()) && !anos.Contains(ano))
                 return objetivos.OrderBy(o => Enum.Parse(typeof(AnoTurma), o.Ano)).ThenBy(x => x.Codigo);
 
-            var anoTurma = Convert.ToInt32(ano);
+            if (int.TryParse(ano, out int anoTurma))
+                objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)anoTurma).Name()).ToList();
 
-            objetivos = objetivos.Where(x => x.Ano == ((AnoTurma)anoTurma).Name()).ToList();
             return objetivos.OrderBy(o => o.Codigo);
         }
     }
