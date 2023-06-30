@@ -32,10 +32,10 @@ namespace SME.SGP.Aplicacao
             {
                 var notasConceitosConselhoClasse = (await repositorioCache.ObterAsync(
                         string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, turmaCodigo,
-                            request.Bimestre),
+                            request.Bimestre, request.AlunoCodigo),
                         async () => await repositorioConselhoClasseNota
                             .ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(turmaCodigo,
-                                request.Bimestre == 0 ? null : request.Bimestre, tipoCalendario: request.TipoCalendario),
+                                request.Bimestre == 0 ? null : request.Bimestre, tipoCalendario: request.TipoCalendario, alunoCodigo: request.AlunoCodigo),
                         "Obter notas ou conceitos do conselho de classe"))
                     .ToList();
 
