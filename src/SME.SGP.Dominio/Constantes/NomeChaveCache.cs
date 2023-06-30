@@ -12,8 +12,8 @@
         public const string CHAVE_LISTA_DE_RECOMENDACOES_ALUNO_FAMILIA = "lista-recomendacao-aluno-familia";
         public const string CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE = "fechamento-nota-turmaid-peridoid-componenteid:{0}-{1}-{2}";
         public const string CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA = "fechamento-nota-final-componentecodigo-turmacodigo:{0}-{1}";
-        public const string CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL = "nota-conceito-fechamento-turmacodigo-todos-bimestres-e-final:{0}-{1}";
-        public const string CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO = "nota-conceito-conselho-classe-turmacodigo-bimestre:{0}-{1}-{2}";
+        public const string CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL = "nota-conceito-fechamento-turmacodigo-aluno-bimestres-e-final:{0}-{1}";
+        public const string CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO = "nota-conceito-conselho-classe-turmacodigo-bimestre-aluno:{0}-{1}-{2}";
         public const string CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE = "fechamento-nota-turmacodigo-bimestre:{0}-{1}";
         public const string CHAVE_ALUNOS_TURMA = "todos-alunos-turma:{0}/codigo-aluno:{1}";
     }
