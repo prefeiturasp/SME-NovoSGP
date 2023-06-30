@@ -118,6 +118,6 @@ namespace SME.SGP.Aplicacao
             => string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma, alunoCodigo);
 
         private string ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(string codigoTurma, string alunoCodigo)
-            => string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, codigoTurma, alunoCodigo);
+            => string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, codigoTurma, alunoCodigo);
     }
 }

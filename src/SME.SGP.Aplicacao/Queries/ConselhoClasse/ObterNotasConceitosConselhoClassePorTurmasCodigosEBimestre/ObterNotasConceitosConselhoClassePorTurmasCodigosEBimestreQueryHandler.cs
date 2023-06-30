@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in request.TurmasCodigos)
             {
                 var notasConceitosConselhoClasse = (await repositorioCache.ObterAsync(
-                        string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, turmaCodigo,
+                        string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, turmaCodigo,
                             request.Bimestre, request.AlunoCodigo),
                         async () => await repositorioConselhoClasseNota
                             .ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(turmaCodigo,
