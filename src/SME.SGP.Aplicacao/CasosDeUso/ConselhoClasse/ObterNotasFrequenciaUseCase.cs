@@ -208,7 +208,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAlunoRegenciaPai = new FrequenciaAluno();
             if (disciplinasDaTurmaEol.Any(x => x.Regencia))
-                frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == disciplinasDaTurmaEol.FirstOrDefault(d => d.Regencia).CdComponenteCurricularPai.ToString());
+                frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == disciplinasDaTurmaEol.FirstOrDefault(d => d.Regencia)?.CdComponenteCurricularPai.ToString());
 
             var registrosFrequencia = (turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma != null ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(notasFrequenciaDto.AlunoCodigo, turmasCodigos.ToArray(),
@@ -493,7 +493,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciasAlunoRetorno = new List<FrequenciaAluno>();
             var disciplinasId = disciplinasDaTurma.Select(a => a.CodigoComponenteCurricular.ToString()).Distinct().ToList();
-            var disciplinaIdRegenciaPai = disciplinasDaTurma.FirstOrDefault(d => d.Regencia && d.CdComponenteCurricularPai != 0).CdComponenteCurricularPai;
+            var disciplinaIdRegenciaPai = disciplinasDaTurma.FirstOrDefault(d => d.Regencia && d.CdComponenteCurricularPai != 0)?.CdComponenteCurricularPai;
             if (disciplinaIdRegenciaPai.HasValue)
                 disciplinasId.Add(disciplinaIdRegenciaPai.ToString());
             var disciplinas = disciplinasId.ToArray();
