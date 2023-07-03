@@ -202,20 +202,13 @@ namespace SME.SGP.Aplicacao
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
             
-            var componenteRegenciaTurmaPai = new DisciplinaResposta();
-            if (disciplinasDaTurmaEol.Any(x=>x.Regencia == true))
-            {
-                componenteRegenciaTurmaPai = (await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(turma.CodigoTurma))).FirstOrDefault(x => x.Regencia == true);
-                disciplinasDaTurmaEol.Add(new DisciplinaDto() { CodigoComponenteCurricular = componenteRegenciaTurmaPai.CodigoComponenteCurricular, Regencia = componenteRegenciaTurmaPai.Regencia });
-            }
-
             var frequenciasAluno = turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma != null ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoNaTurma, tipoCalendario.Id, notasFrequenciaDto.Bimestre, tipoCalendario.AnoLetivo) :
                 Enumerable.Empty<FrequenciaAluno>();
 
             var frequenciaAlunoRegenciaPai = new FrequenciaAluno();
-            if (disciplinasDaTurmaEol.Any(x => x.Regencia == true))
-                frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(x => x.DisciplinaId == componenteRegenciaTurmaPai.CodigoComponenteCurricular.ToString());
+            if (disciplinasDaTurmaEol.Any(x => x.Regencia))
+                frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == disciplinasDaTurmaEol.FirstOrDefault(d => d.Regencia).CdComponenteCurricularPai.ToString());
 
             var registrosFrequencia = (turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma != null ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(notasFrequenciaDto.AlunoCodigo, turmasCodigos.ToArray(),
@@ -359,7 +352,7 @@ namespace SME.SGP.Aplicacao
 
             double percentualFrequencia;
 
-            if(componentesRegencia != null && componentesRegencia.Any())
+            if(componentesRegencia != null && componentesRegencia.Any() && frequenciaAlunoRegenciaPai != null)
                 percentualFrequencia = (frequenciaAlunoRegenciaPai.TotalAulas > 0 ? frequenciaAlunoRegenciaPai?.PercentualFrequencia ?? 0 : 0);
             else 
                 percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 0 : 0);
@@ -499,7 +492,12 @@ namespace SME.SGP.Aplicacao
             long tipoCalendarioId, int bimestre, int anoLetivo = 0)
         {
             var frequenciasAlunoRetorno = new List<FrequenciaAluno>();
-            var disciplinasId = disciplinasDaTurma.Select(a => a.CodigoComponenteCurricular.ToString()).Distinct().ToArray();
+            var disciplinasId = disciplinasDaTurma.Select(a => a.CodigoComponenteCurricular.ToString()).Distinct().ToList();
+            var disciplinaIdRegenciaPai = disciplinasDaTurma.FirstOrDefault(d => d.Regencia && d.CdComponenteCurricularPai != 0).CdComponenteCurricularPai;
+            if (disciplinaIdRegenciaPai.HasValue)
+                disciplinasId.Add(disciplinaIdRegenciaPai.ToString());
+            var disciplinas = disciplinasId.ToArray();
+
             var turmasCodigo = disciplinasDaTurma.Select(a => a.TurmaCodigo).Distinct().ToArray();
 
             int[] bimestres;
@@ -515,11 +513,11 @@ namespace SME.SGP.Aplicacao
 
             var frequenciasAluno = await mediator.Send(new ObterFrequenciaAlunoPorAlunoTipoTurmasDisciplinasTurmasBimestresPeriodoEscolarQuery(alunoTurma.CodigoAluno,
                                                          TipoFrequenciaAluno.PorDisciplina,
-                                                         disciplinasId,
+                                                         disciplinas,
                                                          turmasCodigo, bimestres));
 
             var aulasComponentesTurmas = await mediator
-                .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinasId, bimestres, alunoTurma.DataMatricula, alunoTurma.Inativo ? alunoTurma.DataSituacao : null));
+                .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinas, bimestres, alunoTurma.DataMatricula, alunoTurma.Inativo ? alunoTurma.DataSituacao : null));
 
             if (frequenciasAluno != null && frequenciasAluno.Any())
                 frequenciasAlunoRetorno.AddRange(frequenciasAluno);
