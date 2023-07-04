@@ -54,6 +54,7 @@ namespace SME.SGP.Aplicacao
                 var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.TurmaAno, request.TurnoParaComponentesCurriculares);
                 var novasDisciplinasSemRegencia = disciplinas.Where(a => !a.Regencia).ToList();
                 var novasDisciplinasRegencia = disciplinas.Where(a => a.Regencia && regencias.Any(b => b.CodigoComponenteCurricular == a.CodigoComponenteCurricular)).ToList();
+                await adicionarComponenteRegenciaPaiAsync(request.TurmasCodigo, novasDisciplinasRegencia);
                 disciplinas = novasDisciplinasSemRegencia.Union(novasDisciplinasRegencia).OrderBy(a => a.Nome).ToList();
             }
 
@@ -61,6 +62,22 @@ namespace SME.SGP.Aplicacao
                 disciplinasDto = await ChecarSeComponenteLancaFrequenciaSgp(await MapearParaDto(disciplinas, disciplinasCJ, request.TemEnsinoEspecial));
 
             return disciplinasDto;
+        }
+
+        private async Task adicionarComponenteRegenciaPaiAsync(string[] turmasCodigo, List<DisciplinaResposta> novasDisciplinasRegencia)
+        {
+            foreach (var turma in turmasCodigo)
+            {
+                var componenteRegenciaTurmaPai = (await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(turma))).FirstOrDefault(x => x.Regencia == true);
+                if (componenteRegenciaTurmaPai != null)
+                    novasDisciplinasRegencia.ForEach(d =>
+                    {
+                        if (d.Regencia && (d.CodigoComponenteCurricularPai == 0 || d.CodigoComponenteCurricularPai == null))
+                        {
+                            d.CodigoComponenteCurricularPai = componenteRegenciaTurmaPai.CodigoComponenteCurricular;
+                        }
+                    });
+            }
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasCJRegencia(IEnumerable<DisciplinaResposta> disciplinas)
