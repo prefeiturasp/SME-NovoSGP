@@ -9,6 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<DiarioBordo> ObterPorAulaId(long aulaId, long componenteCurricularId);
         Task<IEnumerable<DiarioBordo>> ObterPorAulaId(long aulaId);
+        Task<IEnumerable<DiarioBordo>> ObterDiariosDaMesmaAulaPorId(long id);
         Task<bool> ExisteDiarioParaAula(long aulaId);
 
         Task ExcluirDiarioBordoDaAula(long aulaId);
