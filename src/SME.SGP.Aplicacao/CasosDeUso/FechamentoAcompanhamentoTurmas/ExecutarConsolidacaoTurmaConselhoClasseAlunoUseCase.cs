@@ -250,7 +250,7 @@ namespace SME.SGP.Aplicacao
                 if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
                 {
                     nota = conselhoClasseNotasAluno
-                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre??0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.Nota;
+                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.Nota;
 
                     conceito = conselhoClasseNotasAluno
                         .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.ConceitoId;
