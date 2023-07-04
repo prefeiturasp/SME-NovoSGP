@@ -574,5 +574,14 @@ namespace SME.SGP.Dados.Repositorios
            
             return await database.Conexao.QueryFirstOrDefaultAsync<DiarioBordoDetalhesParaPendenciaDto>(sql, new { diariobordo = diarioBordoId });
         }
+
+        public async Task<IEnumerable<DiarioBordo>> ObterDiariosDaMesmaAulaPorId(long id)
+        {
+            var sql = @"select db.*
+                        from diario_bordo db 
+                        where aula_id in(select aula_id from diario_bordo where id = @id)";
+
+            return await database.Conexao.QueryAsync<DiarioBordo>(sql, new { id });
+        }
     }
 }

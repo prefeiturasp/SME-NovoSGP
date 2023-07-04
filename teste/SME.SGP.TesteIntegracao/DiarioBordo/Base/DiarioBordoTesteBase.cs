@@ -47,6 +47,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
         protected async Task CriarDadosBasicos(FiltroDiarioBordoDto filtroDiarioBordoDto, bool criarDiario = true)
         {
             await CriarDreUePerfil();
+            CriarClaimUsuario(PerfilUsuario.PROFESSOR.Name());
             await CriarUsuarios();
             await CriarPeriodoEscolar(DateTimeExtension.HorarioBrasilia().AddDays(-7), DateTimeExtension.HorarioBrasilia().AddDays(60), 3);
             await CriarComponenteCurricular();
