@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var ues = await ObterUes(filtro.DreId);
-                foreach (var ue in ues)
+                foreach (var ue in ues.Where(x=>x.Equals(386)))
                 {
                     var mensagemPorUe = new MensagemConsolidarTurmaConselhoClasseAlunoPorUeAnoDto(ue, filtro.AnoLetivo);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarUeConselhoClasseSync, JsonConvert.SerializeObject(mensagemPorUe), mensagemRabbit.CodigoCorrelacao, null));
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             catch (System.Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível executar a consolidacao turma conselho classe aluno por Dre/ano.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                return false;
+                throw;
             }
         }
 

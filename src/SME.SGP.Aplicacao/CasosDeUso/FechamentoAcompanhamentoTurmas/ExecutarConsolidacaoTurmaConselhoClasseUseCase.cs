@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null)
                 throw new NegocioException("Não foi possivel obter o período escolar.");
 
-            foreach (var aluno in alunos)
+            foreach (var aluno in alunos.Where(x=>x.CodigoAluno == "7151311"))
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
@@ -129,14 +129,14 @@ namespace SME.SGP.Aplicacao
                 {
                     var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
                     await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));
-                    return false;
+                    throw new NegocioException(mensagem);
                 }
                 return true;
             }
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                return false;
+                throw;
             }
         }
     }
