@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var ues = await ObterUes(filtro.DreId);
-                foreach (var ue in ues.Where(x=>x.Equals(386)))
+                foreach (var ue in ues)
                 {
                     var mensagemPorUe = new MensagemConsolidarTurmaConselhoClasseAlunoPorUeAnoDto(ue, filtro.AnoLetivo);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarUeConselhoClasseSync, JsonConvert.SerializeObject(mensagemPorUe), mensagemRabbit.CodigoCorrelacao, null));

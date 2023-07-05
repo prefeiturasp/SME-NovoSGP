@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null)
                 throw new NegocioException("Não foi possivel obter o período escolar.");
 
-            foreach (var aluno in alunos.Where(x=>x.CodigoAluno == "7151311"))
+            foreach (var aluno in alunos)
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
