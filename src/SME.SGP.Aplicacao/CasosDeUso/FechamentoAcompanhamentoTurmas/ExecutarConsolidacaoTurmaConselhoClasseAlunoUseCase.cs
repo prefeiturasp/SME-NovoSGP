@@ -142,7 +142,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na persistência da consolidação do conselho de classe da turma aluno/nota", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message, "SGP", ex.StackTrace, ex.InnerException?.ToString()));
-                return false;
+                throw;
             }
         }
 
@@ -250,17 +250,18 @@ namespace SME.SGP.Aplicacao
                 if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
                 {
                     nota = conselhoClasseNotasAluno
-                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre??0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.Nota;
+                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.Nota;
 
                     conceito = conselhoClasseNotasAluno
                         .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.ConceitoId;
 
-                    if (nota == null && conceito == null) {
+                    if (nota == null && conceito == null)
+                    {
                         nota = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, true);
                         conceito = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, false);
                     }
                 }
-                else 
+                else
                 {
                     nota = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, true);
                     conceito = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, false);
