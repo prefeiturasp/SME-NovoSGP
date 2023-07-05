@@ -8,6 +8,6 @@
         public const string CICLO_TURMA_NAO_ENCONTRADO = "Não foi encontrado o ciclo da turma informada";
         public const string TURMA_DEVE_SER_TIPO_REGULAR = "A turma informada deve ser turma do tipo regular";
         public const string NAO_FOI_POSSIVEL_OBTER_TURMA = "Não foi possível obter a turma.";
-        public const string NAO_FOI_ENCONTRADA_NOTA_FECHAMENTO_CONSELHO_DISCIPLINA_TURMA = "Não foi possível obter disciplina com nota fechamento ou conselgo para a turma.";
+        public const string NAO_FOI_ENCONTRADA_NOTA_FECHAMENTO_CONSELHO_DISCIPLINA_TURMA = "Não foi possível obter disciplina com nota fechamento ou conselho para a turma.";
     }
 }
