@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             await ExecutarTesteSemValidacao(salvarConselhoClasseAlunoNotaDto);
             
-            salvarConselhoClasseAlunoNotaDto.ConselhoClasseId = 5;
+            salvarConselhoClasseAlunoNotaDto.ConselhoClasseId = 3;
             salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito = new Random().Next(1, 3);
             
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior,TipoNota.Conceito, ehEja: true);
