@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidarTurmaConselhoClasseAlunoPorUeAnoDto>();
             try
             {
-                var turmasBimestre = await repositorioTurmaConsulta.ObterTurmasComFechamentoConselhoClassePorUeId(filtro.UeId, filtro.AnoLetivo);
+                var turmasBimestre = await repositorioTurmaConsulta.ObterTurmasComFechamentoTurmaPorUeId(filtro.UeId, filtro.AnoLetivo);
                 foreach (var turma in turmasBimestre)
                 {
                     var mensagemPorTurma = new ConsolidacaoTurmaDto(turma.TurmaId, turma.Bimestre == 0 ? null : turma.Bimestre);
