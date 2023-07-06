@@ -57,6 +57,6 @@ namespace SME.SGP.Dominio.Interfaces
         public Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(int anoLetivo, int pagina, int quantidadeRegistrosPorPagina, params TipoEscola[] tiposEscola);
         Task<IEnumerable<TurmaComplementarDto>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos);
         Task<Turma> ObterSomenteTurmaPorId(long turmaId);
-        Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoConselhoClassePorUeId(long ueId, int anoLetivo);
+        Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoTurmaPorUeId(long ueId, int anoLetivo);
     }
 }
