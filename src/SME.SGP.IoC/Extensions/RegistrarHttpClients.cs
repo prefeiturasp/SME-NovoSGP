@@ -22,16 +22,16 @@ namespace SME.SGP.IoC
 
             services.AddHttpClient<IServicoEol, ServicoEOL>(c =>
             {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.BaseAddress = new Uri("https://localhost:5003/api/");
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
-                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+                c.DefaultRequestHeaders.Add("x-api-eol-key", "fe8c65abfac596a39c40b8d88302cb7341c8ec99");
             });
 
             services.AddHttpClient(name: "servicoEOL", c =>
             {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
+                c.BaseAddress = new Uri("https://localhost:5003/api/");
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
-                c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+                c.DefaultRequestHeaders.Add("x-api-eol-key", "fe8c65abfac596a39c40b8d88302cb7341c8ec99");
 
             }).AddPolicyHandler(GetRetryPolicy());
 
