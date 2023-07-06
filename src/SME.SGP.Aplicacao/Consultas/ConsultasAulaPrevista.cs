@@ -64,12 +64,19 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())
             {
                 var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
-                codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
-                if (usuarioLogado.EhGestorEscolar())
-                    rf = componenteCorrespondente.Professor;
 
-                componenteEhTerritorio = componenteCorrespondente?.TerritorioSaber ?? false;
+                if(componentesProfessor != null && componentesProfessor.Any())
+                {
+                    var componenteCorrespondente = componentesProfessor.OrderBy(c => string.IsNullOrEmpty(c.Professor)).ToList()
+                                                                       .FirstOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId)
+                                                                                       || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
+
+                    codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
+                    if (usuarioLogado.EhGestorEscolar())
+                        rf = componenteCorrespondente.Professor;
+
+                    componenteEhTerritorio = componenteCorrespondente?.TerritorioSaber ?? false;
+                }  
             }
             else if (usuarioLogado.EhProfessorCj())
             {
