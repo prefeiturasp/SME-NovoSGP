@@ -407,7 +407,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task AtualizarStatusPendenciasPorIds(long[] ids, SituacaoPendencia situacaoPendencia)
         {
-            const string query = @"update pendencia set situacao = @situacaoPendencia where id =ANY(@ids)";
+            const string query = @"update pendencia set situacao = @situacaoPendencia, alterado_em = now(), alterado_por = 'Sistema', alterado_Rf = 'Sistema' where id =ANY(@ids)";
             await database.Conexao.ExecuteAsync(query, new { ids, situacaoPendencia });
         }
 
