@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(16350));
+                var planoAEE = mensagemRabbit.ObterObjetoMensagem<PlanoAEE>();
                 var anoLetivoAtual = DateTimeExtension.HorarioBrasilia().Year;
 
                 if (planoAEE != null)
