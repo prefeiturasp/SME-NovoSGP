@@ -213,6 +213,9 @@ namespace SME.SGP.Dominio.Servicos
 
             var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
 
+            if (id == 0)
+                id = (await mediator.Send(new ObterFechamentoTurmaDisciplinaDTOQuery(entidadeDto.TurmaId, entidadeDto.DisciplinaId, entidadeDto.Bimestre, null)))?.Id ?? 0;
+
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var ueEmFechamento = await UeEmFechamento(tipoCalendario, request.Turma.EhTurmaInfantil, request.Bimestre, request.DataReferencia);
 
-            return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, request.Turma.Ue.CodigoUe, request.Turma.Ue.Dre.CodigoDre, request.BimestreAlteracao, request.DataReferencia);
+            return ueEmFechamento || await UeEmReaberturaDeFechamento(tipoCalendario, request.Turma.Ue.CodigoUe, request.Turma.Ue.Dre.CodigoDre, request.Bimestre, request.DataReferencia);
         }
         
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
