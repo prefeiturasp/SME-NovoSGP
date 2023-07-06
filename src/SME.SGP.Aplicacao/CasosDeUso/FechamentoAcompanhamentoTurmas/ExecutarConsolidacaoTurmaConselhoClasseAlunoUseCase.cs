@@ -65,6 +65,11 @@ namespace SME.SGP.Aplicacao
             var componentesComNotaFechamentoOuConselho = await mediator
                                 .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo));
 
+            if ((filtro.ComponenteCurricularId??0) != 0)
+                if (componentesComNotaFechamentoOuConselho == null ||
+                    !componentesComNotaFechamentoOuConselho.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString())))
+                    throw new Exception(MensagemNegocioTurma.NAO_FOI_ENCONTRADA_NOTA_FECHAMENTO_CONSELHO_DISCIPLINA_TURMA);
+
             if (!filtro.Inativo)
             {
                 var componentesDoAluno = await mediator
@@ -147,7 +152,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na persistência da consolidação do conselho de classe da turma aluno/nota", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message, "SGP", ex.StackTrace, ex.InnerException?.ToString()));
-                return false;
+                throw;
             }
         }
 
@@ -246,31 +251,30 @@ namespace SME.SGP.Aplicacao
                             .Where(c => c.AlunoCodigo.Equals(alunoCodigo) && c.ConselhoClasseId == conselhoClasse.Id && c.ComponenteCurricularCodigo == componenteCurricularId);
                     }
                 }
-                //-> busca os lançamentos do fechamento somente se não existir conselho
-                if (conselhoClasseNotasAluno == null || !conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
-                {
-                    if (componenteCurricularRegencia > 0)
-                        fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularRegencia.Value);
-                    else
-                        fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId);
-                }
 
+                if (componenteCurricularRegencia > 0)
+                    fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularRegencia.Value);
+                else
+                    fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId);
 
                 if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
                 {
                     nota = conselhoClasseNotasAluno
-                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre??0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.Nota;
+                        .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.Nota;
 
                     conceito = conselhoClasseNotasAluno
                         .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.ConceitoId;
-                }
-                else if (fechamentoNotasDiciplina != null && fechamentoNotasDiciplina.Any())
-                {
-                    nota = fechamentoNotasDiciplina
-                        .FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue))?.Nota;
 
-                    conceito = fechamentoNotasDiciplina
-                        .FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue))?.ConceitoId;
+                    if (nota == null && conceito == null)
+                    {
+                        nota = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, true);
+                        conceito = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, false);
+                    }
+                }
+                else
+                {
+                    nota = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, true);
+                    conceito = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, false);
                 }
             }
 
@@ -289,6 +293,13 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new SalvarConselhoClasseConsolidadoTurmaAlunoNotaCommand(consolidadoNota));
 
             return true;
+        }
+
+        private double? ObterNotaConceitoFechamento(IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas, int? bimestre, bool ehNota)
+        {
+            var notaFechamento = fechamentoNotas.FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue));
+
+            return ehNota ? notaFechamento?.Nota : notaFechamento?.ConceitoId;
         }
     }
 }

@@ -267,7 +267,7 @@ namespace SME.SGP.Dominio.Servicos
             if (componenteSemNota && id > 0)
                 fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL, turmaFechamento.AnoLetivo);
             else
-                fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento,tipoNotaOuConceito.TipoNota);
+                fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento,tipoNotaOuConceito?.TipoNota);
 
             var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
 
@@ -296,11 +296,15 @@ namespace SME.SGP.Dominio.Servicos
                     fechamentoTurmaDisciplina.FechamentoTurma.Id :
                     await repositorioFechamentoTurma.SalvarAsync(fechamentoTurmaDisciplina.FechamentoTurma);
 
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
+
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
+
+                if (turma.TipoTurma == TipoTurma.Programa)
+                    fechamentoTurmaDisciplina.AtualizarSituacao(SituacaoFechamento.ProcessadoComSucesso);
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
 
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
                 var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
 
                 foreach (var fechamentoAluno in fechamentoAlunos)
@@ -333,7 +337,7 @@ namespace SME.SGP.Dominio.Servicos
                                 notasEnvioWfAprovacao.Add(MapearParaEntidade(fechamentoNotaClone));
                             }
 
-                            if (!emAprovacao && semFechamentoNota)
+                            if (!emAprovacao && semFechamentoNota && tipoNotaOuConceito != null)
                             {
                                 await SalvarHistoricoNotaFechamento(fechamentoNota.Id, tipoNotaOuConceito.TipoNota,null,fechamentoNota.Nota, null,fechamentoNota.ConceitoId,usuarioLogado.CodigoRf, usuarioLogado.Nome);
                             }
@@ -554,7 +558,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento, TipoNota tipoNotaOuConceito)
+        private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento, TipoNota? tipoNotaOuConceito)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
             int indiceFechamentoAntigo = -1;
@@ -591,10 +595,11 @@ namespace SME.SGP.Dominio.Servicos
                         }
                         else
                         {
-                            await SalvarHistoricoNotaFechamento(notaFechamento.Id, tipoNotaOuConceito,
-                                notaFechamento.Nota,
-                                fechamentoNotaDto.Nota, notaFechamento.ConceitoId,
-                                fechamentoNotaDto.ConceitoId, usuarioLogado.CodigoRf, usuarioLogado.Nome);
+                            if(tipoNotaOuConceito.HasValue)
+                                await SalvarHistoricoNotaFechamento(notaFechamento.Id, tipoNotaOuConceito.Value,
+                                    notaFechamento.Nota,
+                                    fechamentoNotaDto.Nota, notaFechamento.ConceitoId,
+                                    fechamentoNotaDto.ConceitoId, usuarioLogado.CodigoRf, usuarioLogado.Nome);
                             
                             notaFechamento.Nota = fechamentoNotaDto.Nota;
                             notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
