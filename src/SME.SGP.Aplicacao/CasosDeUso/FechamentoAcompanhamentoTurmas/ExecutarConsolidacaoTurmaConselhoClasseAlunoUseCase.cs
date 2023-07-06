@@ -65,6 +65,11 @@ namespace SME.SGP.Aplicacao
             var componentesComNotaFechamentoOuConselho = await mediator
                                 .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos.ToArray(), filtro.Bimestre, filtro.AlunoCodigo));
 
+            if ((filtro.ComponenteCurricularId??0) != 0)
+                if (componentesComNotaFechamentoOuConselho == null ||
+                    !componentesComNotaFechamentoOuConselho.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString())))
+                    throw new Exception(MensagemNegocioTurma.NAO_FOI_ENCONTRADA_NOTA_FECHAMENTO_CONSELHO_DISCIPLINA_TURMA);
+
             if (!filtro.Inativo)
             {
                 var componentesDoAluno = await mediator
@@ -147,7 +152,7 @@ namespace SME.SGP.Aplicacao
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na persistência da consolidação do conselho de classe da turma aluno/nota", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message, "SGP", ex.StackTrace, ex.InnerException?.ToString()));
-                return false;
+                throw;
             }
         }
 

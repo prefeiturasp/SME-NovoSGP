@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemConsolidarTurmaConselhoClasseAlunoPorUeAnoDto>();
             try
             {
-                var turmasBimestre = await repositorioTurmaConsulta.ObterTurmasComFechamentoConselhoClassePorUeId(filtro.UeId, filtro.AnoLetivo);
+                var turmasBimestre = await repositorioTurmaConsulta.ObterTurmasComFechamentoTurmaPorUeId(filtro.UeId, filtro.AnoLetivo);
                 foreach (var turma in turmasBimestre)
                 {
                     var mensagemPorTurma = new ConsolidacaoTurmaDto(turma.TurmaId, turma.Bimestre == 0 ? null : turma.Bimestre);
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             catch (System.Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível executar a consolidacao turma conselho classe aluno por Ue/ano.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                return false;
+                throw;
             }
         }
     }
