@@ -579,7 +579,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"select db.*
                         from diario_bordo db 
-                        where aula_id in(select aula_id from diario_bordo where id = @id)";
+                        where aula_id in(select aula_id from diario_bordo where id = @id) 
+                          and not excluido";
 
             return await database.Conexao.QueryAsync<DiarioBordo>(sql, new { id });
         }
