@@ -28,6 +28,13 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
+        public async Task<IEnumerable<long>> ObterIdsPorCodigos(string[] codigosTurma)
+        {
+            var query = @"select t.id from turma t where t.turma_id =any(@codigosTurma);";
+
+            return await contexto.Conexao.QueryAsync<long>(query, new { codigosTurma });
+        }
+
         public async Task<string> ObterTurmaCodigoPorConselhoClasseId(long conselhoClasseId)
         {
             var query = @"select t.turma_id
