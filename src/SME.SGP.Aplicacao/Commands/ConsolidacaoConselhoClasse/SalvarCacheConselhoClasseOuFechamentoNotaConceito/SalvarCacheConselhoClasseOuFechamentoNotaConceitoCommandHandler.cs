@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 retornoCacheMapeado.ConceitoIdConselhoClasse = request.ConceitoId;
             }
 
-            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado);
+            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado, 5);
             return true;
         }
     }
