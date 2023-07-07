@@ -129,14 +129,14 @@ namespace SME.SGP.Aplicacao
                 {
                     var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
                     await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));
-                    return false;
+                    throw new NegocioException(mensagem);
                 }
                 return true;
             }
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                return false;
+                throw;
             }
         }
     }
