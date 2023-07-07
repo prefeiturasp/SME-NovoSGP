@@ -44,6 +44,11 @@ namespace SME.SGP.Aplicacao
                                                                           request.ResponsavelRf,
                                                                           request.PaaiReponsavelRf));
         }
+        
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
 
         private async Task<string[]> ObterCodigosTurmas(long ueId, bool ehAdmin)
         {
@@ -82,6 +87,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<PlanoAEEResumoDto> MapearParaDto(IEnumerable<PlanoAEEAlunoTurmaDto> planosAEE)
         {
+            //var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), planosAEE);
             foreach (var planoAEE in planosAEE)
             {
                 yield return new PlanoAEEResumoDto()
@@ -93,6 +99,7 @@ namespace SME.SGP.Aplicacao
                     Nome = planoAEE.AlunoNome,
                     PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
                     EhAtendidoAEE = planoAEE.EhAtendidoAEE(),
+                    EhMatriculadoTurmaPAP = true,//matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno),
                     CriadoEm = planoAEE.CriadoEm,
                     Versao = planoAEE.ObterVersaoPlano(),
                     RfReponsavel = planoAEE.RfReponsavel,
