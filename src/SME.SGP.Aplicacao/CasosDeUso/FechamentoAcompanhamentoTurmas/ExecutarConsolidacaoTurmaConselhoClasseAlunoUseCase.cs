@@ -20,12 +20,9 @@ namespace SME.SGP.Aplicacao
         private const int BIMESTRE_4 = 4;
         private const double NOTA_CONCEITO_CINCO = 5.0;
         private const double NOTA_CONCEITO_SETE = 7.0;
-        private readonly IRepositorioCache repositorioCache;
 
-        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator, IRepositorioCache repositorioCache) : base(mediator)
-        {
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
-        }
+        public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator) : base(mediator)
+        {}
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
@@ -155,12 +152,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new List<ConsolidadoConselhoClasseAlunoNotaCacheDto>();
             foreach (var turma in turmasId)
             {
-                var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_NOTA_CONSOLIDACAO_CONSELHO_CLASSE_TURMA_COMPONENTE_BIMESTRE_ALUNO,
-               turma, componenteCurricularId, bimestre, alunoCodigo);
-
-                var retornoCacheMapeado =
-                    await repositorioCache.ObterObjetoAsync<ConsolidadoConselhoClasseAlunoNotaCacheDto>(nomeChaveCache,
-                        "Obter nota/conceito cache consolidação conselho classe turma/componente/bimestre/aluno");
+                var retornoCacheMapeado = (await mediator.Send(new ObterCacheNotaConceitoConsolidacaoConselhoClasseAlunoQuery(turma, componenteCurricularId, bimestre, alunoCodigo)));
                 if (retornoCacheMapeado != null)
                     retorno.Add(retornoCacheMapeado);
             }
