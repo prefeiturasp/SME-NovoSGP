@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public long ComponenteCurricularId { get; set; }
         public bool Inativo { get; set; }
+        public bool ConselhoClasse { get; set; }
 
 
         public ConsolidacaoNotaAlunoCommand(ConsolidacaoNotaAlunoDto consolidacaoNotaAlunoDto)
@@ -26,6 +27,7 @@ namespace SME.SGP.Aplicacao
             Nota = consolidacaoNotaAlunoDto.Nota;
             ConceitoId = consolidacaoNotaAlunoDto.ConceitoId;
             ComponenteCurricularId = consolidacaoNotaAlunoDto.ComponenteCurricularId;
+            ConselhoClasse = consolidacaoNotaAlunoDto.ConselhoClasse;
         }
     }
 

@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             catch (System.Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível executar a consolidacao turma conselho classe aluno por Dre/ano.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                return false;
+                throw;
             }
         }
 

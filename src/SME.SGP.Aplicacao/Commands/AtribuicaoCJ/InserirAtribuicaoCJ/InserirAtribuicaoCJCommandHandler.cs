@@ -53,7 +53,10 @@ namespace SME.SGP.Aplicacao
             else
             {
                 if (atribuicaoCJ.Substituir == atribuicaoJaCadastrada.Substituir)
+                {
+                    await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico);
                     return Unit.Value;
+                }
 
                 atribuicaoJaCadastrada.Substituir = atribuicaoCJ.Substituir;
                 atribuicaoCJ = atribuicaoJaCadastrada;

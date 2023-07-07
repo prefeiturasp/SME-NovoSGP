@@ -28,6 +28,13 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
+        public async Task<IEnumerable<long>> ObterIdsPorCodigos(string[] codigosTurma)
+        {
+            var query = @"select t.id from turma t where t.turma_id =any(@codigosTurma);";
+
+            return await contexto.Conexao.QueryAsync<long>(query, new { codigosTurma });
+        }
+
         public async Task<string> ObterTurmaCodigoPorConselhoClasseId(long conselhoClasseId)
         {
             var query = @"select t.turma_id
@@ -1025,16 +1032,14 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { turmaId });
         }
 
-        public async Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoConselhoClassePorUeId(long ueId, int anoLetivo)
+        public async Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoTurmaPorUeId(long ueId, int anoLetivo)
         {
             var query = @"select distinct t.id as TurmaId, coalesce(pe.bimestre, 0) as Bimestre  from turma t
                         join fechamento_turma ft on t.id = ft.turma_id
-                        join conselho_classe cc on cc.fechamento_turma_id = ft.id
                         left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                         where t.ue_id = @ueId
                                 and ano_letivo = @anoLetivo
-                                and not ft.excluido 
-                                and not cc.excluido";
+                                and not ft.excluido";
 
             return await contexto.QueryAsync<TurmaBimestreDto>(query, new { ueId, anoLetivo });
         }
