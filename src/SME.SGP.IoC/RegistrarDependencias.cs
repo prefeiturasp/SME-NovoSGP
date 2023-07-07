@@ -559,6 +559,16 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioConsolidadoAtendimentoNAAPA, RepositorioConsolidadoAtendimentoNAAPA>();
 
             services.TryAddScoped<IRepositorioHistoricoEscolarObservacao, RepositorioHistoricoEscolarObservacao>();
+
+            //Relatório PAP
+            services.TryAddScoped<IRepositorioConfiguracaoRelatorioPAP, RepositorioConfiguracaoRelatorioPAP>();
+            services.TryAddScoped<IRepositorioPeriodoRelatorioPAP, RepositorioPeriodoRelatorioPAP>();
+            services.TryAddScoped<IRepositorioSecaoRelatorioPeriodicoPAP, RepositorioSecaoRelatorioPeriodicoPAP>();
+            services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPTurma, RepositorioRelatorioPeriodicoPAPTurma>();
+            services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPAluno, RepositorioRelatorioPeriodicoPAPAluno>();
+            services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPSecao, RepositorioRelatorioPeriodicoPAPSecao>();
+            services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPQuestao, RepositorioRelatorioPeriodicoPAPQuestao>();
+            services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPResposta, RepositorioRelatorioPeriodicoPAPResposta>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)

@@ -226,6 +226,15 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConsolidadoAtendimentoNAAPAMap());
                config.AddMap(new PlanoAEETurmaAlunoMap());
                config.AddMap(new EncaminhamentoAEETurmaAlunoMap());
+               config.AddMap(new ConfiguracaoRelatorioPAPMap());
+               config.AddMap(new PeriodoRelatorioPAPMap());
+               config.AddMap(new PeriodoEscolarRelatorioPAPMap());
+               config.AddMap(new SecaoRelatorioPeriodicoPAPMAp());
+               config.AddMap(new RelatorioPeriodicoPAPTurmaMap());
+               config.AddMap(new RelatorioPeriodicoPAPAlunoMap());
+               config.AddMap(new RelatorioPeriodicoPAPSecaoMap());
+               config.AddMap(new RelatorioPeriodicoPAPQuestaoMap());
+               config.AddMap(new RelatorioPeriodicoPAPRespostaMap());
 
                config.ForDommel();
            });
