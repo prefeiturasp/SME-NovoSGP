@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
@@ -129,7 +130,8 @@ namespace SME.SGP.Aplicacao
                         var turmasIds = await mediator.Send(new ObterTurmaIdsPorCodigosQuery(turmasCodigos.ToArray()));
                         var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0));
                         var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
-                        if (turma.EhEJA() && componenteEdFisicaEJANecessitaConversaoNotaConceito)
+                        var converterNotaEmConceitoTurmaEdFisicaEJA = (turma.EhEJA() && componenteEdFisicaEJANecessitaConversaoNotaConceito);
+                        if (converterNotaEmConceitoTurmaEdFisicaEJA)
                             TratarConversaoNotaEdFisicaEJA(fechamentoNotas);
                             
                         foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
@@ -137,7 +139,7 @@ namespace SME.SGP.Aplicacao
                             if (!componenteCurricular.LancaNota)
                                 continue;
 
-                            var notaConceitoCache = await ObterNotaConceitoCache(turmasIds.ToArray(), long.Parse(componenteCurricular.Codigo), filtro.Bimestre ?? 0, filtro.AlunoCodigo);
+                            var notaConceitoCache = await ObterNotaConceitoCache(turmasIds.ToArray(), long.Parse(componenteCurricular.Codigo), filtro.Bimestre ?? 0, filtro.AlunoCodigo, converterNotaEmConceitoTurmaEdFisicaEJA);
                             await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, long.Parse(componenteCurricular.Codigo),
                                                                        filtro.AlunoCodigo, consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas,
                                                                        notaConceitoCache.Item1, notaConceitoCache.Item2, notaConceitoCache.Item3);
@@ -154,7 +156,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<(double?, long?, bool)> ObterNotaConceitoCache(long[] turmasId, long componenteCurricularId, int bimestre, string alunoCodigo)
+        private async Task<(double?, long?, bool)> ObterNotaConceitoCache(long[] turmasId, long componenteCurricularId, int bimestre, string alunoCodigo, bool converterNotaEmConceitoTurmaEdFisicaEJA = false)
         {
             var retorno = new List<ConsolidadoConselhoClasseAlunoNotaCacheDto>();
             foreach (var turma in turmasId)
@@ -170,7 +172,16 @@ namespace SME.SGP.Aplicacao
 
             var notaFechamento = retorno.Where(x => x.NotaFechamento.HasValue || x.ConceitoIdFechamento.HasValue).FirstOrDefault();
             if (notaFechamento != null)
-                return (notaFechamento.NotaFechamento, notaFechamento.ConceitoIdFechamento, false);
+            {
+                var nota = notaFechamento.NotaFechamento;
+                var conceitoId = notaFechamento.ConceitoIdFechamento;
+                if (converterNotaEmConceitoTurmaEdFisicaEJA && componenteCurricularId.Equals(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA)) 
+                {
+                    conceitoId = ConverterNotaConceito(nota, conceitoId);
+                    nota = null;
+                }
+                return (nota, conceitoId, false);
+            }
 
             return (null, null, false);
         }
