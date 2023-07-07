@@ -252,7 +252,7 @@ namespace SME.SGP.Aplicacao
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(codigosAlunos, fechamentosIds));
 
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
-
+                var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = fechamentosTurmasAlunos.Where(c => c.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
@@ -263,7 +263,8 @@ namespace SME.SGP.Aplicacao
                         NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
-                        EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
+                        EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno),
+                        EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                     };
 
                     var anotacaoAluno = anotacoesAlunos.Where(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
@@ -379,7 +380,12 @@ namespace SME.SGP.Aplicacao
 
             return fechamentoBimestre;
         }
-        
+
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
+
         private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
         {
             double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
