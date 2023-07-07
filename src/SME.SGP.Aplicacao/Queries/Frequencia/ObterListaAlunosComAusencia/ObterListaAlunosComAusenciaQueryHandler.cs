@@ -41,6 +41,11 @@ namespace SME.SGP.Aplicacao
 
             var alunosAtivos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
+            
+            if (alunosAtivos != null && alunosAtivos.Any())
+                alunosAtivos = alunosAtivos.OrderByDescending(a => a.DataSituacao).ToList().DistinctBy(a => a.CodigoAluno);
+            else
+                throw new NegocioException("Não foram localizados alunos com matrícula ativa na turma, no período escolar selecionado.");
 
             var usuarioLogado = await mediator
                 .Send(new ObterUsuarioLogadoQuery());
