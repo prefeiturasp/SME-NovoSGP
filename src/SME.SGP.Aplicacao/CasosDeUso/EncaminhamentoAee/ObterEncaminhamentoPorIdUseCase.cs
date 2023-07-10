@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
             var registroCadastradoEmOutraUE = !(await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma)) && !(await EhProfessorDaTurma(usuarioLogado, encaminhamentoAee.Turma));
             podeEditar = registroCadastradoEmOutraUE ? false : podeEditar;
-
+            aluno.EhMatriculadoTurmaPAP = await BuscarAlunosTurmaPAP(aluno.CodigoAluno, encaminhamentoAee.Turma.AnoLetivo);
             return new EncaminhamentoAEERespostaDto()
             {
                 Aluno = aluno,
@@ -61,7 +61,11 @@ namespace SME.SGP.Aplicacao
                 RegistroCadastradoEmOutraUE = registroCadastradoEmOutraUE
             };
         }
-
+        private async Task<bool> BuscarAlunosTurmaPAP(string alunoCodigo, int anoLetivo)
+        {
+            var consulta =  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, new []{alunoCodigo}));
+            return consulta.Any(x => x.CodigoAluno.ToString() == alunoCodigo);
+        }
         private async Task<bool> VerificaPodeAtribuirResponsavel(EncaminhamentoAEE encaminhamentoAee, Usuario usuarioLogado)
         {
             switch (encaminhamentoAee.Situacao)
