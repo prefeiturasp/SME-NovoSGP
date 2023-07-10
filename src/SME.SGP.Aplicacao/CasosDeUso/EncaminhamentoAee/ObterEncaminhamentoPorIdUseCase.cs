@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
+            var registroCadastradoEmOutraUE = !(await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma)) && !(await EhProfessorDaTurma(usuarioLogado, encaminhamentoAee.Turma));
+            podeEditar = registroCadastradoEmOutraUE ? false : podeEditar;
 
             return new EncaminhamentoAEERespostaDto()
             {
@@ -55,7 +57,8 @@ namespace SME.SGP.Aplicacao
                     Id = encaminhamentoAee.Responsavel.Id,
                     Nome = encaminhamentoAee.Responsavel.Nome,
                     Rf = encaminhamentoAee.Responsavel.CodigoRf
-                }
+                },
+                RegistroCadastradoEmOutraUE = registroCadastradoEmOutraUE
             };
         }
 

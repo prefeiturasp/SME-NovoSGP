@@ -31,8 +31,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterVersoesPlanoAEEQuery, IEnumerable<PlanoAEEVersaoDto>>), typeof(ObterVersoesPlanoAEEQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterVersaoPlanoAEEPorIdQuery, PlanoAEEVersaoDto>), typeof(ObterVersaoPlanoAEEPorIdQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterTurmaRegularESrmPorAlunoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<EhGestorDaEscolaQuery, bool>), typeof(EhGestorDaEscolaQueryHandlerFake), ServiceLifetime.Scoped));
         }
-        
+
         [Fact(DisplayName = "Plano AEE - Alterar o responsável pelo plano")]
         public async Task Alterar_responsável_pelo_plano()
         {

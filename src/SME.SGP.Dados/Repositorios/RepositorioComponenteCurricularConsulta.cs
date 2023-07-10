@@ -168,7 +168,7 @@ namespace SME.SGP.Dados.Repositorios
                            select
 		                        fn.disciplina_id as Codigo,
 		                        comp.descricao as Descricao,
-		                        comp.permite_lancamento_nota as LancaNota	
+		                        comp.permite_lancamento_nota as LancaNota
 	                        from fechamento_turma ft
 	                            left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
 	                            inner join turma t on t.id = ft.turma_id

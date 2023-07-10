@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Infra.Utilitarios;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -68,7 +69,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
                 if (turma.EhEJA() && disciplinasRegencia != null)
-                    disciplinasRegencia = disciplinasRegencia.Where(n => n.CodigoComponenteCurricular != 6);
+                    disciplinasRegencia = disciplinasRegencia.Where(n => n.CodigoComponenteCurricular != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
                 disciplinas.AddRange(disciplinasRegencia);
             }
@@ -189,9 +190,6 @@ namespace SME.SGP.Aplicacao
 
                     if (notasConceitoBimestre.Any())
                         alunoDto.NotasConceitoBimestre = new List<FechamentoConsultaNotaConceitoTurmaListaoDto>();
-
-                    if (turma.EhEJA() && notasConceitoBimestre != null)
-                        notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != 6);
 
                     if (notasConceitoBimestre.Any())
                     {

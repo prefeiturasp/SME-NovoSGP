@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             
             foreach(var componente in componentes)
             {
-                var descricao = componentesCurricularesEOL.SingleOrDefault(c => c.Codigo == componente.Id || c.CodigoComponenteTerritorioSaber == componente.Id)?.Descricao;
+                var descricao = componentesCurricularesEOL.FirstOrDefault(c => c.Codigo == componente.Id || c.CodigoComponenteTerritorioSaber == componente.Id)?.Descricao;
 
                 componentesCurricularesPorTurma.Add(new ComponenteCurricularPorTurma
                 {

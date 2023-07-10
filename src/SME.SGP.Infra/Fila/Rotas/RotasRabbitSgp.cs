@@ -39,6 +39,8 @@
         public const string ConsolidarRegistrosPedagogicos = "sgp.consolidacao.registros.pedagogicos";
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
         public const string RemoverArquivoArmazenamento = "sgp.armazenamento.remover.arquivo";
+        public const string ExecutarAtualizacaoDasInformacoesPlanoAEE = "sgp.atualizar.informacoes.plano.aee";
+        public const string ExecutarAtualizacaoDaTurmaDoPlanoAEE = "sgp.atualizar.turma.plano.aee";
 
         #region Relatórios
 

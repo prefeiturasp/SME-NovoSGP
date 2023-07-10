@@ -18,5 +18,9 @@
         public const string NotificarPlanoAEEEncerrado = "plano.aee.notificar.encerramento";
         public const string RotaNotificacaoRegistroItineranciaInseridoUseCase = "notificacao.registro.itinerancia.inserido";
         public const string RotaTransferirPendenciaPlanoAEEParaNovoResponsavel = "plano.aee.transferir.pendencia.novo.responsavel";
+        public const string AtualizarTabelaPlanoAEETurmaAlunoSync = "plano.aee.turma.aluno.sync";
+        public const string AtualizarTabelaPlanoAEETurmaAlunoTratar = "plano.aee.turma.aluno.tratar";
+        public const string AtualizarTabelaEncaminhamentoAEETurmaAlunoSync = "encaminhamento.aee.turma.aluno.sync";
+        public const string AtualizarTabelaEncaminhamentoAEETurmaAlunoTratar = "encaminhamento.aee.turma.aluno.tratar";
     }
 }

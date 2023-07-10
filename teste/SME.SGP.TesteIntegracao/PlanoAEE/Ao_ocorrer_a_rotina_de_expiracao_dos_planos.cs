@@ -25,6 +25,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterTurmaRegularESrmPorAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
         [Fact(DisplayName = "Plano AEE -  Todos os planos que estiverem Validado deverão ser alterados para Expirado e deverá ser gerada pendência para os responsáveis pelo plano.")]

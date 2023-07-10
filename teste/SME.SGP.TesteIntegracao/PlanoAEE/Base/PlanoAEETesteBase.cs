@@ -41,6 +41,17 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return ServiceProvider.GetService<ISalvarPlanoAEEUseCase>();
         }
+
+        protected IAtualizarTurmaDoPlanoAEEUseCase ObterServicoAtualizarTurmaDoPlanoAEE()
+        {
+            return ServiceProvider.GetService<IAtualizarTurmaDoPlanoAEEUseCase>();
+        }
+
+        protected IAtualizarInformacoesDoPlanoAEEUseCase ObterServicoAtualizarInformacoesDoPlanoAEE()
+        {
+            return ServiceProvider.GetService<IAtualizarInformacoesDoPlanoAEEUseCase>();
+        }     
+
         protected IObterAlunosPorCodigoEolNomeUseCase ObterAlunosPorCodigoEolNomeUseCase()
         {
             return ServiceProvider.GetService<IObterAlunosPorCodigoEolNomeUseCase>();
@@ -166,7 +177,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             await CriarUsuarios();
 
-            await CriarTurma(filtroPlanoAee.Modalidade);
+            await CriarTurma(filtroPlanoAee.Modalidade, filtroPlanoAee.TurmaHistorica, filtroPlanoAee.TurmasMesmaUe);
 
             await CriarQuestionario();
             

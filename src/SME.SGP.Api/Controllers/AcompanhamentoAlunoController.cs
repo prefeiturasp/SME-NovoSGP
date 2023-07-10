@@ -67,5 +67,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(acompanhamentoAlunoSemestreId));
         }
+
+        [HttpGet("validar-percurso/turma/{turmaId}/semestre/{semestre}")]
+        [ProducesResponseType(typeof(InconsistenciaPercursoRAADto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 400)]
+        public async Task<IActionResult> ObterValidacaoPercurso(long turmaId, int semestre, [FromServices] IObterValidacaoPercusoRAAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroInconsistenciaPercursoRAADto(turmaId, semestre)));
+        }
     }
 }

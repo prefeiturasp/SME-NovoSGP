@@ -23,12 +23,12 @@ namespace SME.SGP.Dominio
         public string Professor { get; set; }
         public long[] CodigosTerritoriosAgrupamento { get; set; }
 
-        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool turmaPrograma, Modalidade turmaModalidade, string turmaAno)
+        public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, Modalidade turmaModalidade)
         {
-            var posuiObjetivos = componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo) && !turmaPrograma &&
-                    !new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade) && turmaAno != "0";
+            if(new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade))
+                return false;
 
-            return posuiObjetivos;
+            return componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo);
         }
 
         public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool ensinoEspecial)

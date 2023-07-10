@@ -13,7 +13,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase
     {
-        private readonly long COMPONENTE_CURRICULAR_CODIGO_ED_FISICA = 6;
         private const int BIMESTRE_2 = 2;
         private const int BIMESTRE_4 = 4;
         private const double NOTA_CONCEITO_CINCO = 5.0;
@@ -34,6 +33,7 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
+            bool componenteEdFisicaEJANecessitaConversaoNotaConceito = false;
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(filtro.TurmaId));
             var ue = turma.Ue;
             var turmasCodigos = new List<string> { turma.CodigoTurma };
@@ -46,10 +46,15 @@ namespace SME.SGP.Aplicacao
                     var turmaRegular = await ObterTurmaRegular(codigosComplementares, turma.Semestre, turma.EhEJA(), turma.EhTurmaEnsinoMedio);
                     if (turmaRegular != null)
                     {
+                        if (turma.EhTurmaEdFisica())
+                            componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
+
                         turma = turmaRegular;
                         filtro.TurmaId = turma.Id;
                     }
-                }
+                } else
+                if (turma.EhTurmaRegular() && turma.EhEJA())
+                    componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
             }
 
             var statusNovo = SituacaoConselhoClasse.NaoIniciado;
@@ -119,23 +124,13 @@ namespace SME.SGP.Aplicacao
                     {
                         var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0));
                         var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
+                        if (turma.EhEJA() && componenteEdFisicaEJANecessitaConversaoNotaConceito)
+                            TratarConversaoNotaEdFisicaEJA(fechamentoNotas);
+                       
                         foreach (var componenteCurricular in componentesComNotaFechamentoOuConselho)
                         {
                             if (!componenteCurricular.LancaNota)
                                 continue;
-
-                            if (componenteCurricular.Regencia)
-                            {
-                                var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoEolQuery(
-                                                                    turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
-
-                                foreach (var regencia in componentesRegencia)
-                                {
-                                    await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, regencia.Codigo, long.Parse(componenteCurricular.Codigo),
-                                                                               filtro.AlunoCodigo, consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas);
-                                }
-                                continue;
-                            }
                             await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, long.Parse(componenteCurricular.Codigo), 0,
                                                                        filtro.AlunoCodigo, consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas);
                         }
@@ -155,7 +150,7 @@ namespace SME.SGP.Aplicacao
         {
             if (fechamentoNotas != null)
             {
-                var fechamentosNotaDisciplinaEdFisica = fechamentoNotas.Where(fn => fn.ComponenteCurricularId.Equals(COMPONENTE_CURRICULAR_CODIGO_ED_FISICA));
+                var fechamentosNotaDisciplinaEdFisica = fechamentoNotas.Where(fn => fn.ComponenteCurricularId.Equals(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA));
                 foreach (var fechamentoDisciplinaEdFisica in fechamentosNotaDisciplinaEdFisica)
                 {
                     fechamentoDisciplinaEdFisica.ConceitoId = ConverterNotaConceito(fechamentoDisciplinaEdFisica.Nota, (long?)fechamentoDisciplinaEdFisica.ConceitoId);
@@ -172,7 +167,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurmaRegular(string[] codigosTurmasComplementares, int semestre, bool ehTurmaEJA, bool ehTurmaEM)
         {
-            return (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosTurmasComplementares))).Where(t => t.EhTurmaRegular()
+            return (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosTurmasComplementares))).Where(t => t.EhTurmaRegular() 
                                                                                                             && t.Semestre == semestre
                                                                                                             && t.EhEJA() == ehTurmaEJA
                                                                                                             && t.EhTurmaEnsinoMedio == ehTurmaEM
@@ -182,7 +177,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> TipoNotaEhConceito(Turma turma, int bimestre)
         {
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
-            var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, periodoEscolar.PeriodoFim));
+            var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, periodoEscolar != null ? periodoEscolar.PeriodoFim : DateTimeExtension.HorarioBrasilia().Date));
             if (tipoNota == null)
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
             return tipoNota.TipoNota == TipoNota.Conceito;
@@ -246,15 +241,11 @@ namespace SME.SGP.Aplicacao
                             .Where(c => c.AlunoCodigo.Equals(alunoCodigo) && c.ConselhoClasseId == conselhoClasse.Id && c.ComponenteCurricularCodigo == componenteCurricularId);
                     }
                 }
-                //-> busca os lançamentos do fechamento somente se não existir conselho
-                if (conselhoClasseNotasAluno == null || !conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
-                {
-                    if (componenteCurricularRegencia > 0)
-                        fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularRegencia.Value);
-                    else
-                        fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId);
-                }
 
+                if (componenteCurricularRegencia > 0)
+                    fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularRegencia.Value);
+                else
+                    fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId);
 
                 if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
                 {
@@ -263,14 +254,16 @@ namespace SME.SGP.Aplicacao
 
                     conceito = conselhoClasseNotasAluno
                         .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && (((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue)))?.ConceitoId;
-                }
-                else if (fechamentoNotasDiciplina != null && fechamentoNotasDiciplina.Any())
-                {
-                    nota = fechamentoNotasDiciplina
-                        .FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue))?.Nota;
 
-                    conceito = fechamentoNotasDiciplina
-                        .FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue))?.ConceitoId;
+                    if (nota == null && conceito == null) {
+                        nota = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, true);
+                        conceito = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, false);
+                    }
+                }
+                else 
+                {
+                    nota = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, true);
+                    conceito = ObterNotaConceitoFechamento(fechamentoNotasDiciplina, bimestre, false);
                 }
             }
 
@@ -284,11 +277,18 @@ namespace SME.SGP.Aplicacao
 
             consolidadoNota.ComponenteCurricularId = componenteCurricularId;
             consolidadoNota.Nota = nota;
-            consolidadoNota.ConceitoId = (long?)conceito;
+            consolidadoNota.ConceitoId = (long?) conceito;
 
             await mediator.Send(new SalvarConselhoClasseConsolidadoTurmaAlunoNotaCommand(consolidadoNota));
 
             return true;
+        }
+
+        private double? ObterNotaConceitoFechamento(IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas, int? bimestre, bool ehNota)
+        {
+            var notaFechamento = fechamentoNotas.FirstOrDefault(x => ((bimestre ?? 0) != 0 && x.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !x.Bimestre.HasValue));
+
+            return ehNota ? notaFechamento?.Nota : notaFechamento?.ConceitoId;
         }
     }
 }

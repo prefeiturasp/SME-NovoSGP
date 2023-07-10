@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -323,7 +324,7 @@ namespace SME.SGP.Aplicacao
 
                             // Excessão de disciplina ED. Fisica para modalidade EJA
                             if (turma.EhEJA() && notasConceitoBimestre != null && !turma.EhTurmaEdFisica())
-                                notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != 6);
+                                notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
                             if (fechamentoBimestre.EhSintese)
                             {
