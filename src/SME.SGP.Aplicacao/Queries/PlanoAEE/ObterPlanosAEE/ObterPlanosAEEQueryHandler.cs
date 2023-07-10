@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,8 +31,10 @@ namespace SME.SGP.Aplicacao
             bool ehAdmin = usuario.EhAdmGestao();
             bool ehPAEE = usuario.EhProfessorPaee();
             var turmasCodigos = await ObterCodigosTurmas(request.UeId, ehAdmin);
+
+            var anoLetivoConsultaPap = request.TurmaId > 0 ? (await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId))).AnoLetivo : DateTimeExtension.HorarioBrasilia().Year;
             
-            return MapearParaDto(await repositorioPlanoAEE.ListarPaginado(request.DreId,
+            return await MapearParaDto(await repositorioPlanoAEE.ListarPaginado(request.DreId,
                                                                           request.UeId,
                                                                           request.TurmaId,
                                                                           request.AlunoCodigo,
@@ -42,7 +45,7 @@ namespace SME.SGP.Aplicacao
                                                                           Paginacao,
                                                                           request.ExibirEncerrados,
                                                                           request.ResponsavelRf,
-                                                                          request.PaaiReponsavelRf));
+                                                                          request.PaaiReponsavelRf),anoLetivoConsultaPap);
         }
         
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
@@ -75,22 +78,26 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private PaginacaoResultadoDto<PlanoAEEResumoDto> MapearParaDto(PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto> resultadoDto)
+        private async Task<PaginacaoResultadoDto<PlanoAEEResumoDto>> MapearParaDto(PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto> resultadoDto, int anoLetivoConsultaPap)
         {
             return new PaginacaoResultadoDto<PlanoAEEResumoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = MapearParaDto(resultadoDto.Items)
+                Items = await MapearParaDto(resultadoDto.Items,anoLetivoConsultaPap)
             };
         }
 
-        private IEnumerable<PlanoAEEResumoDto> MapearParaDto(IEnumerable<PlanoAEEAlunoTurmaDto> planosAEE)
+        private async Task<IEnumerable<PlanoAEEResumoDto>> MapearParaDto(IEnumerable<PlanoAEEAlunoTurmaDto> planosAEE, int anoLetivoConsultaPap)
         {
-            //var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), planosAEE);
+            var retorno = new List<PlanoAEEResumoDto>();
+            IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = new List<AlunosTurmaProgramaPapDto>();
+            if(planosAEE != null && planosAEE.Any())
+                matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(planosAEE.Select(x => x.AlunoCodigo).ToArray(), anoLetivoConsultaPap);
+            
             foreach (var planoAEE in planosAEE)
             {
-                yield return new PlanoAEEResumoDto()
+                retorno.Add(new PlanoAEEResumoDto()
                 {
                     Id = planoAEE.Id,
                     Situacao = planoAEE.SituacaoPlano(),
@@ -99,7 +106,7 @@ namespace SME.SGP.Aplicacao
                     Nome = planoAEE.AlunoNome,
                     PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
                     EhAtendidoAEE = planoAEE.EhAtendidoAEE(),
-                    EhMatriculadoTurmaPAP = true,//matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno),
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == planoAEE.AlunoCodigo),
                     CriadoEm = planoAEE.CriadoEm,
                     Versao = planoAEE.ObterVersaoPlano(),
                     RfReponsavel = planoAEE.RfReponsavel,
@@ -108,8 +115,10 @@ namespace SME.SGP.Aplicacao
                     NomePaaiReponsavel = planoAEE.NomePaaiReponsavel,
                     PlanoAeeVersaoId = planoAEE.PlanoAeeVersaoId,
                     Ue = $"{planoAEE.TipoEscola.ShortName()} {planoAEE.UeNome}",
-                };
+                });
             }
+
+            return retorno;
         }
     }
 }
