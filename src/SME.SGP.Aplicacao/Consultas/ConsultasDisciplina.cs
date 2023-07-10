@@ -111,8 +111,12 @@ namespace SME.SGP.Aplicacao
                 var componentesCurricularesAtribuicaoEol = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
+                var disciplinasAtribuicaoEol = await repositorioComponenteCurricular
+                         .ObterDisciplinasPorIds(componentesCurricularesAtribuicaoEol.Select(a => a.Codigo).Distinct().ToArray());
+
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
+     
                     if (componenteAtual.TerritorioSaber)
                     {
                         // remove territórios replicados definidos pela atribuição cj com base nos códigos de agrupamento
@@ -138,7 +142,8 @@ namespace SME.SGP.Aplicacao
                         TerritorioSaber = componenteAtual.TerritorioSaber,
                         LancaNota = componenteAtual.LancaNota,
                         TurmaCodigo = componenteAtual.TurmaCodigo,
-                        Professor = componenteAtual.Professor
+                        Professor = componenteAtual.Professor,
+                        NomeComponenteInfantil = disciplinasAtribuicaoEol.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteAtual.Codigo)?.NomeComponenteInfantil
                     });
                 }
 

@@ -21,5 +21,8 @@ namespace SME.SGP.Infra
         public AuditoriaDto Auditoria { get; set; }
 
         public IEnumerable<ObservacaoNotificacoesDiarioBordoDto> Observacoes { get; set; }
+        public string NomeComponente { get; set; }
+        public string NomeComponenteIrmao { get; set; }
+        public string PlanejamentoIrmao { get; set; }
     }
 }
