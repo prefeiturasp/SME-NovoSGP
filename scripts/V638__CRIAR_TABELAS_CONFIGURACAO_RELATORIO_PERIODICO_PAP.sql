@@ -51,11 +51,9 @@ CREATE INDEX periodo_escolar_relatorio_pap_periodo_escolar_idx ON public.periodo
 ALTER TABLE public.periodo_escolar_relatorio_pap ADD CONSTRAINT periodo_escolar_relatorio_pap_periodo_escolar_fk 
 FOREIGN KEY (periodo_escolar_id) REFERENCES public.periodo_escolar(id);
 
-
-CREATE table public.secao_relatorio_periodico_pap (
+CREATE table IF NOT EXISTS public.secao_relatorio_periodico_pap (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	questionario_id int8 not null,
-    configuracao_relatorio_pap_id int8 NOT NULL, 
 	nome_componente varchar(50),
 	nome varchar,
 	ordem int4,
@@ -73,6 +71,23 @@ CREATE table public.secao_relatorio_periodico_pap (
 CREATE INDEX secao_relatorio_periodico_pap_questionario_idx ON public.secao_relatorio_periodico_pap USING btree (questionario_id);
 ALTER TABLE public.secao_relatorio_periodico_pap ADD CONSTRAINT secao_relatorio_periodico_pap_questionario_fk FOREIGN KEY (questionario_id) REFERENCES questionario(id);
 
-CREATE INDEX secao_relatorio_periodico_pap_config_idx ON public.secao_relatorio_periodico_pap USING btree (configuracao_relatorio_pap_id);
-ALTER TABLE public.secao_relatorio_periodico_pap ADD CONSTRAINT secao_relatorio_periodico_pap_config_fk 
+
+CREATE table IF NOT EXISTS public.secao_config_relatorio_periodico_pap (
+	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	secao_relatorio_periodico_pap_id int8 NOT NULL,
+    configuracao_relatorio_pap_id int8 NOT NULL, 
+	criado_em timestamp NOT NULL,
+	criado_por varchar(200) NOT NULL,
+	alterado_em timestamp NULL,
+	alterado_por varchar(200) NULL,
+	criado_rf varchar(200) NOT NULL,
+	alterado_rf varchar(200) NULL,
+	CONSTRAINT secao_config_relatorio_periodico_pap_pk PRIMARY KEY (id)
+);
+
+CREATE INDEX secao_config_secao_relatorio_periodico_pap_idx ON public.secao_config_relatorio_periodico_pap USING btree (secao_relatorio_periodico_pap_id);
+ALTER TABLE public.secao_config_relatorio_periodico_pap ADD CONSTRAINT secao_config_secao_relatorio_periodico_pap_fk FOREIGN KEY (secao_relatorio_periodico_pap_id) REFERENCES secao_relatorio_periodico_pap(id);
+
+CREATE INDEX secao_config_pap_config_idx ON public.secao_config_relatorio_periodico_pap USING btree (configuracao_relatorio_pap_id);
+ALTER TABLE public.secao_config_relatorio_periodico_pap ADD CONSTRAINT secao_relatorio_periodico_pap_config_fk 
 FOREIGN KEY (configuracao_relatorio_pap_id) REFERENCES public.configuracao_relatorio_pap(id);
