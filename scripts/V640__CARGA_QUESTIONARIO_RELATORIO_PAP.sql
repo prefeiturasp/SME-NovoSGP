@@ -15,7 +15,7 @@ begin
 	RETURNING id INTO configuracaoId;
 	
 	insert into periodo_relatorio_pap (configuracao_relatorio_pap_id, periodo, criado_em, criado_por, criado_rf)
-	values (configuracaoId, 1, NOW(), 'SISTEMA', '0')
+	values (configuracaoId, 2, NOW(), 'SISTEMA', '0')
 	RETURNING id INTO periodoRelatorioId;
 	
 	for periodoDB in
