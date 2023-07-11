@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
 
                 if (turma.TipoTurma == TipoTurma.Programa && entidadePlano.Turma.AnoLetivo == anoLetivo)
                     turma = entidadePlano.Turma;
-
+                var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new string[]{alunoPorTurmaResposta.CodigoAluno}, turma.AnoLetivo);
                 var aluno = new AlunoReduzidoDto()
                 {
                     Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
@@ -122,6 +122,7 @@ namespace SME.SGP.Aplicacao
                     CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
                     DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
                     EhAtendidoAEE = entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == alunoPorTurmaResposta.CodigoAluno),
                 };
 
                 plano.Id = filtro.PlanoAEEId.Value;
@@ -197,7 +198,10 @@ namespace SME.SGP.Aplicacao
 
             return plano;
         }
-
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private async Task<bool> EhGestorDaEscolaDaTurma(Usuario usuarioLogado, Turma turma)
         {
             if (!usuarioLogado.EhGestorEscolar())

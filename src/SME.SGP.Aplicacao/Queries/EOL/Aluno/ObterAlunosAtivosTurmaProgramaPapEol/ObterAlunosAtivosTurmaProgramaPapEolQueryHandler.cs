@@ -21,16 +21,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunosTurmaProgramaPapDto>> Handle(ObterAlunosAtivosTurmaProgramaPapEolQuery request, CancellationToken cancellationToken)
         {
-            var alunos = string.Join("&codigosAlunos=", request.AlunosCodigos);
-            var url = $"alunos/alunos-pap/{request.AnoLetivo}?codigosAlunos={alunos}";
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync(url, cancellationToken);
-            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+            if (request.AlunosCodigos.Length > 0 )
             {
-                var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
-                return JsonConvert.DeserializeObject<IEnumerable<AlunosTurmaProgramaPapDto>>(json);
+                var alunos = string.Join("&codigosAlunos=", request.AlunosCodigos);
+                var url = $"alunos/alunos-pap/{request.AnoLetivo}?codigosAlunos={alunos}";
+                var httpClient = httpClientFactory.CreateClient("servicoEOL");
+                var resposta = await httpClient.GetAsync(url, cancellationToken);
+                if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
+                {
+                    var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
+                    return JsonConvert.DeserializeObject<IEnumerable<AlunosTurmaProgramaPapDto>>(json);
+                }
             }
-
             return new List<AlunosTurmaProgramaPapDto>();
         }
     }

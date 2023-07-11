@@ -54,11 +54,18 @@ namespace SME.SGP.Aplicacao
                 Items = await MapearParaDto(resultadoDto.Items, anoLetivo)
             };
         }
-
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private async Task<IEnumerable<EncaminhamentoNAAPAResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoNAAPAResumoDto> encaminhamentos, int anoLetivo)
         {
             var listaEncaminhamentos = new List<EncaminhamentoNAAPAResumoDto>();
-
+            IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = new List<AlunosTurmaProgramaPapDto>();
+            
+            if(encaminhamentos.Any())
+                matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(encaminhamentos.Select(x => x.CodigoAluno).ToArray(), anoLetivo);
+            
             foreach (var encaminhamento in encaminhamentos)
             {
                 listaEncaminhamentos.Add(new EncaminhamentoNAAPAResumoDto()
@@ -71,7 +78,8 @@ namespace SME.SGP.Aplicacao
                     NomeAluno = encaminhamento.NomeAluno,
                     Prioridade = encaminhamento.Prioridade,
                     Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).Name(),
-                    DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio
+                    DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == encaminhamento.CodigoAluno)
                 });
             }
 
