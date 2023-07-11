@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
                 turmasCodigo.Add(turmaRegular.CodigoTurma);
                 var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))
-                    ?.Where(x =>x.EstaAtivo(periodoEscolar.PeriodoInicio,periodoEscolar.PeriodoFim))
+                    ?.Where(x =>x.EstaAtivo(periodoEscolar.PeriodoInicio,periodoEscolar.PeriodoFim) && !x.Inativo)
                     ?.DistinctBy(x => x.NomeAluno);
 
                 var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
