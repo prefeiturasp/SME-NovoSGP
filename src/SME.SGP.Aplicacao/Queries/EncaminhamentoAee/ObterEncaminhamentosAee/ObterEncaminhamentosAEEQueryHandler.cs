@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>> Handle(ObterEncaminhamentosAEEQuery request, CancellationToken cancellationToken)
         {
             var turmasCodigos = await ObterTurmasCodigos(request.UeId, request.AnoLetivo);
-            
+            var anoLetivoConsultaPap = request.TurmaId > 0 ? (await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId))).AnoLetivo : DateTimeExtension.HorarioBrasilia().Year;
             return await MapearParaDto(await repositorioEncaminhamentoAEE.ListarPaginado(request.DreId,
                                                                      request.UeId,
                                                                      request.TurmaId,
@@ -35,7 +36,7 @@ namespace SME.SGP.Aplicacao
                                                                      request.AnoLetivo,
                                                                      turmasCodigos,
                                                                      Paginacao,
-                                                                     request.ExibirEncerrados));
+                                                                     request.ExibirEncerrados),anoLetivoConsultaPap);
         }
 
         private async Task<string[]> ObterTurmasCodigos(long ueId, int anoLetivo)
@@ -60,20 +61,27 @@ namespace SME.SGP.Aplicacao
             return null;
         }
 
-        private async Task<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto> resultadoDto)
+        private async Task<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto> resultadoDto, int anoLetivoConsultaPap)
         {
             return new PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = await MapearParaDto(resultadoDto.Items)
+                Items = await MapearParaDto(resultadoDto.Items,anoLetivoConsultaPap)
             };
         }
-
-        private async Task<IEnumerable<EncaminhamentoAEEResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoAEEAlunoTurmaDto> encaminhamentos)
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
+        private async Task<IEnumerable<EncaminhamentoAEEResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoAEEAlunoTurmaDto> encaminhamentos,int anoLetivoConsultaPap)
         {
             var listaEncaminhamentos = new List<EncaminhamentoAEEResumoDto>();
-
+            IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = new List<AlunosTurmaProgramaPapDto>();
+            
+            if(encaminhamentos.Any())
+                matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(encaminhamentos.Select(x => x.AlunoCodigo).ToArray(), anoLetivoConsultaPap);
+            
             foreach (var encaminhamento in encaminhamentos)
             {
                 var retorno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(encaminhamento.AlunoCodigo, encaminhamento.TurmaAno, false));
@@ -89,6 +97,7 @@ namespace SME.SGP.Aplicacao
                     Nome = aluno?.NomeAluno,
                     Responsavel = encaminhamento.Responsavel,
                     EhAtendidoAEE = ehAtendidoAEE,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno?.CodigoAluno),
                     Ue = $"{encaminhamento.TipoEscola.ShortName()} {encaminhamento.UeNome}",
                 });
             }

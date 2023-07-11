@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<AlunoFrequenciaDto>> ObterListagemFrequenciaAluno(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosComTotalizadores, PeriodoEscolar periodoEscolar, bool turmaPossuiFrequenciaRegistrada = false)
         {
             var novaListaAlunos = new List<AlunoFrequenciaDto>();
-
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), turma.AnoLetivo);
             foreach (var aluno in alunos)
             {
                 var frequenciaAlunoRegistrada = frequenciaAlunosComTotalizadores.FirstOrDefault(y => y.CodigoAluno == aluno.CodigoAluno);
@@ -171,6 +171,7 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     PossuiJustificativas = totalAusencias > 0,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno),
                     Remotos = totalRemotos,
                     Presencas = totalPresencas,
                     TotalAulas = totalAulas
@@ -180,7 +181,10 @@ namespace SME.SGP.Aplicacao
             return novaListaAlunos;
         }
 
-
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, bool? possuiTerritorio = false, string codigoTurma = null)
         {
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new[] { componenteCurricularId }, possuiTerritorio, codigoTurma));

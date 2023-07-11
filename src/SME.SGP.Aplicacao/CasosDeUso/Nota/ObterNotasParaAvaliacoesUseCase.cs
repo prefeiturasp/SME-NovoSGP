@@ -177,7 +177,7 @@ namespace SME.SGP.Aplicacao
                 periodoFechamentoBimestre = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAnoAnterior(turmaCompleta, filtro.Bimestre);
 
             var dadosAlunosQuePossuemPlanoAEEAtivo = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosAtivosCodigos, turmaCompleta.AnoLetivo));
-
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turmaCompleta);
             foreach (var aluno in alunosAtivos)
             {
                 var notaConceitoAluno = new NotasConceitosAlunoRetornoDto()
@@ -185,7 +185,8 @@ namespace SME.SGP.Aplicacao
                     Id = aluno.CodigoAluno,
                     Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.ObterNumeroAlunoChamada(),
-                    EhAtendidoAEE = dadosAlunosQuePossuemPlanoAEEAtivo.Any(d=> d.CodigoAluno == aluno.CodigoAluno)
+                    EhAtendidoAEE = dadosAlunosQuePossuemPlanoAEEAtivo.Any(d=> d.CodigoAluno == aluno.CodigoAluno),
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                 };
 
                 var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();
@@ -476,6 +477,10 @@ namespace SME.SGP.Aplicacao
             retorno.Bimestres.Add(bimestreParaAdicionar);
 
             return retorno;
+        }
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, Turma turma)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
         private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
         {

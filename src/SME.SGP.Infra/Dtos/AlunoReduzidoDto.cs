@@ -21,5 +21,6 @@ namespace SME.SGP.Infra.Dtos
         public string CelularResponsavel { get; set; }
         public DateTime? DataAtualizacaoContato { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
     }
 }
