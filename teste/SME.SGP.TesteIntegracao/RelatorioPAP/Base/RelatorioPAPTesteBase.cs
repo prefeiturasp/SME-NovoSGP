@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
         {
         }
 
-        protected async Task CriarDadosBase(bool criarPeriodoEscolar = true)
+        protected async Task CriarDadosBase(bool criarPeriodoEscolar = true, bool criarConfiguracoesPAP = false)
         {
             await CriarDreUePerfilComponenteCurricular();
 
@@ -24,22 +24,25 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
 
             if (criarPeriodoEscolar)
                 await CriarPeriodoEscolar(criarPeriodoEscolar);
-            
-            await CriarConfiguracaoRelatorio();
 
-            await CriarPeriodoRelatorio();
-            
-            await CriarPeriodoEscolarRelatorio();
+            if (criarConfiguracoesPAP)
+            {
+                await CriarConfiguracaoRelatorio();
 
-            await CriarQuestionario();
-            
-            await CriarSecaoRelatorioPeriodico();
+                await CriarPeriodoRelatorio();
 
-            await CriarSecaoConfRelatorioPeriodico();
+                await CriarPeriodoEscolarRelatorio();
 
-            await CriarQuestoes();
+                await CriarQuestionario();
 
-            await CriarOpcaoResposta();
+                await CriarSecaoRelatorioPeriodico();
+
+                await CriarSecaoConfRelatorioPeriodico();
+
+                await CriarQuestoes();
+
+                await CriarOpcaoResposta();
+            }
         }
 
         private async Task CriarOpcaoResposta()

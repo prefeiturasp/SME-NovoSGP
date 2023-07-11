@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 Id = 1,
                 InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_01_05_FIM_BIMESTRE_1,
-                TipoPeriocidade = char.Parse("B")
+                TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL
             };
 
             var periodoRelatorioPap = new PeriodoRelatorioPAP()
@@ -164,7 +164,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 Id = 1,
                 InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_22_12_FIM_BIMESTRE_4,
-                TipoPeriocidade = char.Parse("B")
+                TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL
             };
 
             var periodoRelatorioPap = new PeriodoRelatorioPAP()

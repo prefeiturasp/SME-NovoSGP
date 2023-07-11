@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 Id = 1,
                 InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_01_05_FIM_BIMESTRE_1,
-                TipoPeriocidade = char.Parse("S"),
+                TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_SEMANAL,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -68,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             periodos.Count().ShouldBe(1);
             var periodo = periodos.FirstOrDefault();
             periodo.PeridoRelatorioId.ShouldBe(1);
-            periodo.TipoPeriodicidade.ShouldBe("S");
+            periodo.TipoPeriodicidade.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_SEMANAL.ToString());
             periodo.Periodo.ShouldBe(1);
         }
 
@@ -82,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 Id = 1,
                 InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_01_05_FIM_BIMESTRE_1,
-                TipoPeriocidade = char.Parse("B"),
+                TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -132,11 +132,11 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             periodos.Count().ShouldBe(2);
             var periodo1 = periodos.FirstOrDefault();
             periodo1.PeridoRelatorioId.ShouldBe(1);
-            periodo1.TipoPeriodicidade.ShouldBe("B");
+            periodo1.TipoPeriodicidade.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL.ToString());
             periodo1.Periodo.ShouldBe(1);
             var periodo2 = periodos.LastOrDefault();
             periodo2.PeridoRelatorioId.ShouldBe(2);
-            periodo2.TipoPeriodicidade.ShouldBe("B");
+            periodo2.TipoPeriodicidade.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL.ToString());
             periodo2.Periodo.ShouldBe(2);
         }
     }
