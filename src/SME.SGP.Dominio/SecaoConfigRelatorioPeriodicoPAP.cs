@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Dominio
 {
-    public class SecaoConfigRelatorioPeriodicoPap : EntidadeBase
+    public class SecaoConfigRelatorioPeriodicoPAP : EntidadeBase
     {
         public int ConfiguracaoRelatorioId { get; set; }
         public ConfiguracaoRelatorioPAP ConfiguracaoRelatorio { get; set; }
