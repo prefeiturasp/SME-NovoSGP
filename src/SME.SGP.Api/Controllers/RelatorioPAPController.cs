@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     public class RelatorioPAPController : ControllerBase
     {
         
-        [HttpPost("periodos/{codigoTurma}")]
+        [HttpGet("periodos/{codigoTurma}")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosPAPDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -24,7 +24,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoTurma));
         }
 
-        [HttpPost("turma/{codigoTurma}/aluno/{codigoAluno}/periodo/{periodoIdPAP}/secoes")]
+        [HttpGet("turma/{codigoTurma}/aluno/{codigoAluno}/periodo/{periodoIdPAP}/secoes")]
         [ProducesResponseType(typeof(SecaoTurmaAlunoPAPDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
