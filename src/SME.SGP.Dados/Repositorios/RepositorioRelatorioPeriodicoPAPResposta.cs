@@ -15,7 +15,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RelatorioPeriodicoPAPResposta>> ObterRespostas(long papSecaoId)
         {
-            var query = @"select rppr.*, rppq.*, a.* 
+            var query = @"select rppr.id, rppr.relatorio_periodico_pap_questao_id, rppr.resposta_id, rppr.arquivo_id, rppr.texto, rppr.excluido,
+                        rppq.id, rppq.relatorio_periodico_pap_secao_id, rppq.questao_id, rppq.excluido,
+                        a.id, a.nome, a.codigo, a.tipo, a.tipo_conteudo
                         from relatorio_periodico_pap_questao rppq
                         inner join relatorio_periodico_pap_resposta rppr on rppr.relatorio_periodico_pap_questao_id = rppq.id
                         left join arquivo a on a.id = rppr.arquivo_id 
