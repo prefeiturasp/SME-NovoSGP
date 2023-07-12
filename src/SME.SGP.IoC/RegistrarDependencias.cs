@@ -1294,6 +1294,8 @@ namespace SME.SGP.IoC
 
             // Relatório PAP
             services.TryAddScoped<IObterPeriodosPAPUseCase, ObterPeriodosPAPUseCase>();
+            services.TryAddScoped<IObterSecoesPAPUseCase, ObterSecoesPAPUseCase>();
+            services.TryAddScoped<IObterQuestionarioPAPUseCase, ObterQuestionarioPAPUseCase>();
 
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();

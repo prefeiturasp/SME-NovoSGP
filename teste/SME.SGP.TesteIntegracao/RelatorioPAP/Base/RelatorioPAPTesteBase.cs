@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new Questao()
             {
                 Id = ConstantesTestePAP.QUESTAO_ID_1,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_FREQUENCIA_ID,
                 Nome = string.Empty,
                 Ordem = ConstantesTestePAP.ORDEM_1,
                 Obrigatorio = false,
@@ -98,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new Questao()
             {
                 Id = ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_DIFIC_APRES_ID,
                 Ordem = ConstantesTestePAP.ORDEM_1,
                 Nome = ConstantesTestePAP.DIFICULDADES_APRESENTADAS,
                 Obrigatorio = true,
@@ -111,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new Questao()
             {
                 Id = ConstantesTestePAP.QUESTAO_OBSERVACAO_ID_3,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_DIFIC_APRES_ID,
                 Ordem = ConstantesTestePAP.ORDEM_2,
                 Nome = ConstantesTestePAP.DIFICULDADES_APRESENTADAS,
                 Obrigatorio = false,
@@ -124,7 +124,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new Questao()
             {
                 Id = ConstantesTestePAP.QUESTAO_AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE_ID_4,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_AVANC_APREND_BIMES_ID,
                 Ordem = ConstantesTestePAP.ORDEM_1,
                 Nome = ConstantesTestePAP.AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE,
                 Obrigatorio = true,
@@ -137,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new Questao()
             {
                 Id = ConstantesTestePAP.QUESTAO_OBSERVACOES_ID_5,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_OBS_ID,
                 Ordem = ConstantesTestePAP.ORDEM_1,
                 Nome = ConstantesTestePAP.OBSERVACOES,
                 Obrigatorio = false,
@@ -202,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new SecaoRelatorioPeriodicoPAP()
             {
                 Id = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_FREQUENCIA_NA_TURMA_PAP_ID_1,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_FREQUENCIA_ID,
                 NomeComponente = ConstantesTestePAP.NOME_COMPONENTE_SECAO_FREQUENCIA,
                 Nome = ConstantesTestePAP.FREQUENCIA_NA_TURMA_PAP,
                 Ordem = ConstantesTestePAP.ORDEM_1,
@@ -213,7 +213,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new SecaoRelatorioPeriodicoPAP()
             {
                 Id = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_DIFIC_APRES_ID,
                 NomeComponente = ConstantesTestePAP.NOME_COMPONENTE_SECAO_DIFIC_APRES,
                 Nome = ConstantesTestePAP.DIFICULDADES_APRESENTADAS,
                 Ordem = ConstantesTestePAP.ORDEM_2,
@@ -224,7 +224,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new SecaoRelatorioPeriodicoPAP()
             {
                 Id = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_AVANC_APREND_BIMES_ID,
                 NomeComponente = ConstantesTestePAP.NOME_COMPONENTE_SECAO_AVANC_APREND_BIMES,
                 Nome = ConstantesTestePAP.AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE,
                 Ordem = ConstantesTestePAP.ORDEM_3,
@@ -235,7 +235,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             await InserirNaBase(new SecaoRelatorioPeriodicoPAP()
             {
                 Id = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_OBS_ID_4,
-                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_ID_1,
+                QuestionarioId = ConstantesTestePAP.QUESTIONARIO_OBS_ID,
                 NomeComponente = ConstantesTestePAP.NOME_COMPONENTE_SECAO_OBS,
                 Nome = ConstantesTestePAP.OBSERVACOES,
                 Ordem = ConstantesTestePAP.ORDEM_4,
@@ -248,10 +248,40 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
         {
             await InserirNaBase(new Questionario()
             {
-                Id = ConstantesTestePAP.QUESTIONARIO_ID_1,
-                Nome = ConstantesTestePAP.QUESTIONARIO_NOME_1,
+                Id = ConstantesTestePAP.QUESTIONARIO_FREQUENCIA_ID,
+                Nome = "Questionário frequência",
                 Tipo = TipoQuestionario.RelatorioPAP,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Questionario()
+            {
+                Id = ConstantesTestePAP.QUESTIONARIO_DIFIC_APRES_ID,
+                Nome = "Questionário dificuldade apresentada",
+                Tipo = TipoQuestionario.RelatorioPAP,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Questionario()
+            {
+                Id = ConstantesTestePAP.QUESTIONARIO_AVANC_APREND_BIMES_ID,
+                Nome = "Questionário avanço aprendizagem",
+                Tipo = TipoQuestionario.RelatorioPAP,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Questionario()
+            {
+                Id = ConstantesTestePAP.QUESTIONARIO_OBS_ID,
+                Nome = "Questionário observação",
+                Tipo = TipoQuestionario.RelatorioPAP,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
