@@ -8,9 +8,13 @@
         public const int PERIODO_SEGUNDO_SEMESTRE = 2;
         public const long PERIODO_RELATORIO_PAP_ID_1 = 1;
         public const int QUESTIONARIO_FREQUENCIA_ID = 1;
+        public const string QUESTIONARIO_FREQUENCIA_NOME = "Questionário frequência";
         public const int QUESTIONARIO_DIFIC_APRES_ID = 2;
+        public const string QUESTIONARIO_DIFIC_APRES_NOME = "Questionário dificuldade apresentada";
         public const int QUESTIONARIO_AVANC_APREND_BIMES_ID = 3;
+        public const string QUESTIONARIO_AVANC_APREND_BIMES_NOME = "Questionário avanço aprendizagem";
         public const int QUESTIONARIO_OBS_ID = 4;
+        public const string QUESTIONARIO_OBS_NOME = "Questionário observação";
 
         public const string FREQUENCIA_NA_TURMA_PAP = "Frequência na turma de PAP";
         
