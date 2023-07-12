@@ -33,7 +33,7 @@ begin
 	/* SEÇÃO Frequência */
 	/********************************/
 	insert into questionario (nome, excluido, criado_em, criado_por, criado_rf, tipo)
-	values ('Questionário 1', false, NOW(), 'SISTEMA', '0', 6)
+	values ('Questionário frequência', false, NOW(), 'SISTEMA', '0', 6)
 	RETURNING id INTO questionarioId;
 	
 	insert into secao_relatorio_periodico_pap (questionario_id, nome_componente, nome, ordem, etapa, excluido, criado_em, criado_por, criado_rf)
@@ -49,6 +49,9 @@ begin
 	/********************************/
 	/* SEÇÃO Dificuldades apresentadas */
 	/********************************/
+	insert into questionario (nome, excluido, criado_em, criado_por, criado_rf, tipo)
+	values ('Questionário dificuldades apresentadas', false, NOW(), 'SISTEMA', '0', 6)
+	RETURNING id INTO questionarioId;
 	
 	insert into secao_relatorio_periodico_pap (questionario_id, nome_componente, nome, ordem, etapa, excluido, criado_em, criado_por, criado_rf)
 	values (questionarioId, 'SECAO_DIFIC_APRES', 'Dificuldades apresentadas', 2, 1, false, NOW(), 'SISTEMA', '0')
@@ -76,6 +79,10 @@ begin
 	/********************************/
 	/* SEÇÃO Avanços na aprendizagem */
 	/********************************/
+	insert into questionario (nome, excluido, criado_em, criado_por, criado_rf, tipo)
+	values ('Questionário avanços na aprendizagem', false, NOW(), 'SISTEMA', '0', 6)
+	RETURNING id INTO questionarioId;
+	
 	insert into secao_relatorio_periodico_pap (questionario_id, nome_componente, nome, ordem, etapa, excluido, criado_em, criado_por, criado_rf)
 	values (questionarioId, 'SECAO_AVANC_APREND_BIMES', 'Avanços na aprendizagem durante o bimestre', 3, 1, false, NOW(), 'SISTEMA', '0')
 	RETURNING id INTO secaoId;
@@ -89,6 +96,10 @@ begin
 	/********************************/
 	/* SEÇÃO Observações */
 	/********************************/
+	insert into questionario (nome, excluido, criado_em, criado_por, criado_rf, tipo)
+	values ('Questionário observações', false, NOW(), 'SISTEMA', '0', 6)
+	RETURNING id INTO questionarioId;
+	
 	Insert into secao_relatorio_periodico_pap (questionario_id, nome_componente, nome, ordem, etapa, excluido, criado_em, criado_por, criado_rf)
 	values (questionarioId, 'SECAO_OBS', 'Observações', 4, 1, false, NOW(), 'SISTEMA', '0')
 	RETURNING id INTO secaoId;

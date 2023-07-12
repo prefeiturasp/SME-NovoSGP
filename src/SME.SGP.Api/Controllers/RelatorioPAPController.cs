@@ -23,5 +23,24 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoTurma));
         }
+
+        [HttpPost("turma/{codigoTurma}/aluno/{codigoAluno}/periodo/{periodoIdPAP}/secoes")]
+        [ProducesResponseType(typeof(SecaoTurmaAlunoPAPDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.RAA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSecoes(string codigoTurma, string codigoAluno, long periodoIdPAP, [FromServices] IObterSecoesPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new FiltroObterSecoesDto(codigoTurma, codigoAluno, periodoIdPAP)));
+        }
+
+        [HttpGet("questionario/{questionarioId}")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RAA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] long? papSecaoId, [FromServices] IObterQuestionarioPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(questionarioId, papSecaoId));
+        }
     }
 }
