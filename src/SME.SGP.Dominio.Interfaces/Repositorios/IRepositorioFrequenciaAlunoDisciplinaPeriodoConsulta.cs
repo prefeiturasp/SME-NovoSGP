@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta
     {
-        Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null);
+        Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, long periodoEscolarId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null);
         FrequenciaAluno Obter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId);
         Task<FrequenciaAluno> ObterAsync(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId);
         IEnumerable<FrequenciaAluno> ObterAlunosComAusenciaPorDisciplinaNoPeriodo(long periodoId, bool eja);

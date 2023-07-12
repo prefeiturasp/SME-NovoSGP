@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
             var atribuiuCj = false;
 
             await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
+            await RemoverAtribuicaoAtivaCache(atribuicaoCJPersistenciaDto.UsuarioRf);
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJPersistenciaDto.TurmaId));
 
@@ -61,6 +62,12 @@ namespace SME.SGP.Aplicacao
         private async Task RemoverDisciplinasCache(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
             var chaveCache = $"Disciplinas-{atribuicaoCJPersistenciaDto.TurmaId}-{atribuicaoCJPersistenciaDto.UsuarioRf}--{Perfis.PERFIL_CJ}";
+            await mediator.Send(new RemoverChaveCacheCommand(chaveCache));
+        }
+
+        private async Task RemoverAtribuicaoAtivaCache(string codigoRf)
+        {
+            var chaveCache = $"AtribuicaoAtiva-{codigoRf}";
             await mediator.Send(new RemoverChaveCacheCommand(chaveCache));
         }
 

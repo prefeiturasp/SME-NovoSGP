@@ -56,7 +56,6 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null)
                 throw new NegocioException("Não foi possivel obter o período escolar.");
 
-            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
             foreach (var aluno in alunos)
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
@@ -92,22 +91,8 @@ namespace SME.SGP.Aplicacao
                     continue;
                 }
 
-                if (componentes != null && componentes.Any())
-                {
-                    foreach (var componenteCurricular in componentes)
-                    {
-                        if (await mediator.Send(new VerificarComponenteCurriculareSeERegenciaPorIdQuery(long.Parse(componenteCurricular.Codigo))))
-                        {
-                            var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesRegenciaPorAnoETurnoQuery(turma.AnoTurmaInteiro, turma.TurnoParaComponentesCurriculares));
-
-                            foreach (var componenteRegencia in componentesRegencia)
-                                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, componenteRegencia.CodigoComponenteCurricular, mensagemRabbit.CodigoCorrelacao);
-
-                            continue;
-                        }
-                        await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, long.Parse(componenteCurricular.Codigo), mensagemRabbit.CodigoCorrelacao);
-                    }
-                }
+                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);
+                 
             }
 
             return true;
@@ -144,14 +129,14 @@ namespace SME.SGP.Aplicacao
                 {
                     var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
                     await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));
-                    return false;
+                    throw new NegocioException(mensagem);
                 }
                 return true;
             }
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                return false;
+                throw;
             }
         }
     }

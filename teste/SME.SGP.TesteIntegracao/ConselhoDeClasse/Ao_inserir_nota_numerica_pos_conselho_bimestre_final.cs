@@ -131,11 +131,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse.EmAndamento,
                 true);
             
-            await CriarConselhoClasseTodosBimestres();
+            await CriarConselhoClasseTodosBimestres(ehEja: true);
             
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota, ehEja: true);
                 
         }
 

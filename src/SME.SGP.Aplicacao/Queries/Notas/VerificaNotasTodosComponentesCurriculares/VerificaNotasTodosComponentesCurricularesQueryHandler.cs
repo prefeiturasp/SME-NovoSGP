@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao.Queries
     public class VerificaNotasTodosComponentesCurricularesQueryHandler : IRequestHandler<VerificaNotasTodosComponentesCurricularesQuery, bool>
     {
         private readonly IMediator mediator;
+        private const string PRIMEIRO_ANO_EM = "1";
 
         public VerificaNotasTodosComponentesCurricularesQueryHandler(IMediator mediator)
         {
@@ -50,6 +51,16 @@ namespace SME.SGP.Aplicacao.Queries
                 }
                 else
                     turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
+
+                if (turmasCodigos.Length > 0)
+                {
+                    var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
+
+                    if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 && request.Turma.ModalidadeCodigo != Modalidade.Medio)
+                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
+                    else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, request.Turma))
+                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
+                }
             }
             else
                 turmasCodigos = new[] { request.Turma.CodigoTurma };
@@ -121,6 +132,8 @@ namespace SME.SGP.Aplicacao.Queries
             return componentesTurma;
         }
 
+        private bool ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(IEnumerable<Turma> turmasAluno, Turma turmaFiltro)
+             => turmasAluno.Select(t => t.TipoTurma).Distinct().Count() == 1 && turmaFiltro.ModalidadeCodigo == Modalidade.Medio && (turmaFiltro.AnoLetivo < 2021 || turmaFiltro.Ano == PRIMEIRO_ANO_EM);
 
     }
 }

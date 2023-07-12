@@ -10,5 +10,7 @@ namespace SME.SGP.Dto
         public long? ConceitoId { get; set; }
         public long ComponenteCurricularId { get; set; }
         public bool Inativo { get; set; }
+        public bool ConselhoClasse { get; set; }
+
     }
 }

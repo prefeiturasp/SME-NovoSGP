@@ -28,6 +28,13 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
+        public async Task<IEnumerable<long>> ObterIdsPorCodigos(string[] codigosTurma)
+        {
+            var query = @"select t.id from turma t where t.turma_id =any(@codigosTurma);";
+
+            return await contexto.Conexao.QueryAsync<long>(query, new { codigosTurma });
+        }
+
         public async Task<string> ObterTurmaCodigoPorConselhoClasseId(long conselhoClasseId)
         {
             var query = @"select t.turma_id
@@ -860,7 +867,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.ano,
                             t.tipo_turma as TurmaTipo,
                             " + (modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome") + @" as TurmaNome,
-                            t.modalidade_codigo as TurmaModalidade, cccatn.bimestre as Bimestre, cccat.aluno_codigo as AlunoCodigo,
+                            t.modalidade_codigo as TurmaModalidade, coalesce(cccatn.bimestre, 0) as Bimestre, cccat.aluno_codigo as AlunoCodigo,
                             count(distinct cccatn.componente_curricular_id) filter (where cccatn.nota is not null or cccatn.conceito_id is not null) AS QuantidadeDisciplinaFechadas
                        from consolidado_conselho_classe_aluno_turma cccat
                       inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
@@ -890,10 +897,10 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
             {
-                query.Append(" and cccatn.bimestre = @bimestre ");
+                query.Append(" and coalesce(cccatn.bimestre, 0) = @bimestre ");
             }
 
-            query.Append(" group by t.id, cccatn.bimestre, cccat.aluno_codigo order by t.id");
+            query.Append(" group by t.id, coalesce(cccatn.bimestre, 0), cccat.aluno_codigo order by t.id");
 
             return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
@@ -1025,16 +1032,14 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { turmaId });
         }
 
-        public async Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoConselhoClassePorUeId(long ueId, int anoLetivo)
+        public async Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoTurmaPorUeId(long ueId, int anoLetivo)
         {
             var query = @"select distinct t.id as TurmaId, coalesce(pe.bimestre, 0) as Bimestre  from turma t
                         join fechamento_turma ft on t.id = ft.turma_id
-                        join conselho_classe cc on cc.fechamento_turma_id = ft.id
                         left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                         where t.ue_id = @ueId
                                 and ano_letivo = @anoLetivo
-                                and not ft.excluido 
-                                and not cc.excluido";
+                                and not ft.excluido";
 
             return await contexto.QueryAsync<TurmaBimestreDto>(query, new { ueId, anoLetivo });
         }
