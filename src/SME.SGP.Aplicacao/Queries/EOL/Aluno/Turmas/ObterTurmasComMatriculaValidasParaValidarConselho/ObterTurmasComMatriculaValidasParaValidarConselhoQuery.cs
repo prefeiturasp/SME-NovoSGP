@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.TurmasCodigos)
                 .NotEmpty()
-                .WithMessage("As turmas devem ser informados para busca de matrículas/turma no EOL.");
+                .WithMessage("Os códigos das turmas devem ser informados para busca de matrículas/turma no EOL.");
 
             RuleFor(c => c.PeriodoInicio)
                 .NotEmpty()
