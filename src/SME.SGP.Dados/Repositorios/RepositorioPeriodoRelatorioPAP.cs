@@ -15,7 +15,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PeriodosPAPDto>> ObterPeriodos(int anoLetivo)
         {
-            var sql = @"select distinct crp.id ConfiguracaoId, prp.id PeridoRelatorioId, crp.tipo_periodicidade TipoPeriodicidade, prp.periodo   
+            var sql = @"select distinct crp.id ConfiguracaoPeriodicaRelatorioPAPId, prp.id PeriodoRelatorioPAPId, 
+                        crp.tipo_periodicidade TipoConfiguracaoPeriodicaRelatorioPAP, prp.periodo PeriodoRelatorioPAP 
                         from configuracao_relatorio_pap crp
                         inner join periodo_relatorio_pap prp on prp.configuracao_relatorio_pap_id = crp.id 
                         inner join periodo_escolar_relatorio_pap perp on perp.periodo_relatorio_pap_id = prp.id
