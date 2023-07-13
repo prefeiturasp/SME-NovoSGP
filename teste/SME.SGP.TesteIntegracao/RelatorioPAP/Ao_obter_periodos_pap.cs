@@ -67,9 +67,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
 
             periodos.Count().ShouldBe(1);
             var periodo = periodos.FirstOrDefault();
-            periodo.PeridoRelatorioId.ShouldBe(1);
-            periodo.TipoPeriodicidade.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_SEMANAL.ToString());
-            periodo.Periodo.ShouldBe(1);
+            periodo.PeriodoRelatorioPAPId.ShouldBe(1);
+            periodo.TipoConfiguracaoPeriodicaRelatorioPAP.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_SEMANAL.ToString());
+            periodo.PeriodoRelatorioPAP.ShouldBe(1);
         }
 
         [Fact]
@@ -131,13 +131,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
 
             periodos.Count().ShouldBe(2);
             var periodo1 = periodos.FirstOrDefault();
-            periodo1.PeridoRelatorioId.ShouldBe(1);
-            periodo1.TipoPeriodicidade.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL.ToString());
-            periodo1.Periodo.ShouldBe(1);
+            periodo1.PeriodoRelatorioPAPId.ShouldBe(1);
+            periodo1.TipoConfiguracaoPeriodicaRelatorioPAP.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL.ToString());
+            periodo1.PeriodoRelatorioPAP.ShouldBe(1);
             var periodo2 = periodos.LastOrDefault();
-            periodo2.PeridoRelatorioId.ShouldBe(2);
-            periodo2.TipoPeriodicidade.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL.ToString());
-            periodo2.Periodo.ShouldBe(2);
+            periodo2.PeriodoRelatorioPAPId.ShouldBe(2);
+            periodo2.TipoConfiguracaoPeriodicaRelatorioPAP.ShouldBe(ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL.ToString());
+            periodo2.PeriodoRelatorioPAP.ShouldBe(2);
         }
     }
 }
