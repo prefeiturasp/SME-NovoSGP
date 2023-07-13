@@ -44,11 +44,12 @@ namespace SME.SGP.Aplicacao
                 if (!turma.EhTurmaRegular())
                 {
                     var turmaRegular = await ObterTurmaRegular(codigosComplementares, turma.Semestre, turma.EhEJA(), turma.EhTurmaEnsinoMedio);
-                    if (turmaRegular != null)
-                    {
-                        turma = turmaRegular;
-                        filtro.TurmaId = turma.Id;
-                    }
+                    if (turmaRegular == null)
+                        throw new NegocioException(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
+
+                    turma = turmaRegular;
+                    filtro.TurmaId = turma.Id;
+                    
                 }
             }
 
