@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio
         public long ConfiguracaoId { get; set; }
         public ConfiguracaoRelatorioPAP Configuracao { get; set; }
         public int Periodo { get; set; }
-        public IEnumerable<PeriodoEscolarRelatorioPAP> PeriodosEscolaresRelatorio { get; set; }
+        public List<PeriodoEscolarRelatorioPAP> PeriodosEscolaresRelatorio { get; set; }
     }
 }

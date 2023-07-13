@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,6 +12,40 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioPeriodoRelatorioPAP(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
+        }
+
+        public async Task<PeriodoRelatorioPAP> ObterComPeriodosEscolares(long id)
+        {
+            PeriodoRelatorioPAP retorno = null;
+            var sql = @"SELECT prp.id, prp.configuracao_relatorio_pap_id, prp.periodo, 
+                        crp.id, crp.inicio_vigencia, crp.fim_vigencia, crp.tipo_periodicidade, 
+                        perp.id, perp.periodo_relatorio_pap_id, perp.periodo_escolar_id,
+                        pe.id, pe.tipo_calendario_id, pe.bimestre, pe.periodo_inicio, pe.periodo_fim  
+                        from periodo_relatorio_pap prp
+                        inner join configuracao_relatorio_pap crp on prp.configuracao_relatorio_pap_id = crp.id 
+                        inner join periodo_escolar_relatorio_pap perp on perp.periodo_relatorio_pap_id = prp.id 
+                        inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
+                        where prp.id = @id"
+            ;
+
+            await database.Conexao.QueryAsync<PeriodoRelatorioPAP, ConfiguracaoRelatorioPAP, PeriodoEscolarRelatorioPAP, PeriodoEscolar, PeriodoRelatorioPAP>(sql,
+                (periodoPAP, configuracaoPAP, periodoEscolarPAP, periodoEscolar) =>
+                {
+                    if (retorno == null)
+                    {
+                        retorno = periodoPAP;
+                        retorno.Configuracao = configuracaoPAP;
+                        retorno.PeriodosEscolaresRelatorio = new List<PeriodoEscolarRelatorioPAP>();
+                    }
+
+                    periodoEscolarPAP.PeriodoEscolar = periodoEscolar;
+
+                    retorno.PeriodosEscolaresRelatorio.Add(periodoEscolarPAP);
+
+                    return retorno;
+                }, new { id });
+
+            return retorno;
         }
 
         public async Task<IEnumerable<PeriodosPAPDto>> ObterPeriodos(int anoLetivo)

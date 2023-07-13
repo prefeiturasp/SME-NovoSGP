@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             await CriarDadosBase(true, true);
 
             var useCase = ServiceProvider.GetService<IObterQuestionarioPAPUseCase>();
-            var questoes = await useCase.Executar(ConstantesTestePAP.QUESTIONARIO_AVANC_APREND_BIMES_ID, null);
+            var questoes = await useCase.Executar(TURMA_CODIGO_1, CODIGO_ALUNO_1, ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1, ConstantesTestePAP.QUESTIONARIO_AVANC_APREND_BIMES_ID, null);
 
             questoes.ShouldNotBeNull();
             questoes.Count().ShouldBe(1);
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             });
 
             var useCase = ServiceProvider.GetService<IObterQuestionarioPAPUseCase>();
-            var questoes = await useCase.Executar(ConstantesTestePAP.QUESTIONARIO_AVANC_APREND_BIMES_ID, 1);
+            var questoes = await useCase.Executar(TURMA_CODIGO_1, CODIGO_ALUNO_1, ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1, ConstantesTestePAP.QUESTIONARIO_AVANC_APREND_BIMES_ID, 1);
 
             questoes.ShouldNotBeNull();
             questoes.Count().ShouldBe(1);

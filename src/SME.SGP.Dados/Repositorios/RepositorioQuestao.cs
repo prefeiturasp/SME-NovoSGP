@@ -34,5 +34,12 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<Questao>(query, new { nomeComponente });
         }
+
+        public async Task<long?> ObterIdQuestaoPorTipoQuestaoParaQuestionario(long idQuestionario, TipoQuestao tipo)
+        {
+            var query = @"select id from questao where questionario_id = @idQuestionario and tipo = @tipoQuestao";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long?>(query.ToString(), new { idQuestionario, tipoQuestao = (int)tipo });
+        }
     }
 }
