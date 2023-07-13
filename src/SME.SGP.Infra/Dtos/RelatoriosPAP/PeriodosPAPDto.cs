@@ -14,7 +14,9 @@
             if (PeriodoRelatorioPAP == 0 || string.IsNullOrEmpty(TipoConfiguracaoPeriodicaRelatorioPAP))
                 return string.Empty;
 
-            return PeriodoRelatorioPAP + "º " + TipoConfiguracaoPeriodicaRelatorioPAP == SEMESTRE ? "Semestre" : "Bimestre";
+            var periodo = TipoConfiguracaoPeriodicaRelatorioPAP == SEMESTRE ? "Semestre" : "Bimestre";
+
+            return PeriodoRelatorioPAP + "º " + periodo;
         }
     }
 }
