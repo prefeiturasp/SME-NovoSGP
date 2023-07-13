@@ -363,7 +363,7 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseComponente = new ConselhoClasseComponenteRegenciaFrequenciaDto()
             {
-                QuantidadeAulas = componentesRegencia != null && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai.TotalAulas : frequenciaAluno.TotalAulas,
+                QuantidadeAulas = componentesRegencia != null && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalAulas ?? 0 : frequenciaAluno.TotalAulas,
                 Faltas = componentesRegencia != null && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalAusencias ?? 0 : frequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = componentesRegencia != null && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalCompensacoes ?? 0  : frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = percentualFrequencia <= 0 ? "" : FrequenciaAluno.FormatarPercentual(percentualFrequencia)
