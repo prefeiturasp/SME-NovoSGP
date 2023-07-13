@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterQuestionarioPAPUseCase 
+    public interface IObterQuestionarioPAPUseCase
     {
-        Task<IEnumerable<QuestaoDto>> Executar(long questionarioId, long? papSecaoId);
+        Task<IEnumerable<QuestaoDto>> Executar(string codigoTurma, string codigoAluno, long periodoIdPAP, long questionarioId, long? papSecaoId);
     }
 }
