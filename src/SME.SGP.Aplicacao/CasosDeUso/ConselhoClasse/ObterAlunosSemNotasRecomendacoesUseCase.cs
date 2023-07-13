@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
                 var componentesComNotasDoAluno = obterConselhoClasseAlunoNota.Where(x => x.AlunoCodigo.Equals(aluno.CodigoAluno) && !string.IsNullOrEmpty(x.Nota)).Select(s=> s.ComponenteCurricularId);
 
                 var turmas = componentesCurricularesPorTurma.Where(w => !string.IsNullOrEmpty(w.TurmaCodigo)).Select(x => x.TurmaCodigo).Distinct().ToArray();
-                var turmasComMatriculaValida = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(aluno.CodigoAluno, turmas, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
+                var turmasComMatriculaValida = await mediator.Send(new ObterTurmasComMatriculaValidasParaValidarConselhoQuery(aluno.CodigoAluno, turmas, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
                 
                 var componentesSemNota = componentesCurricularesPorTurma.Where(x => turmasComMatriculaValida.Contains(x.TurmaCodigo) 
                                                                                     && !componentesComNotasDoAluno.Contains(x.CodigoComponenteCurricular)).Select(s=> s.Nome).Distinct();
