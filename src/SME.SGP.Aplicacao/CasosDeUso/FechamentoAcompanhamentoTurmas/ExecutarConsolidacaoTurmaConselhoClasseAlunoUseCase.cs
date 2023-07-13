@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var turmaRegular = await ObterTurmaRegular(codigosComplementares, turma.Semestre, turma.EhEJA(), turma.EhTurmaEnsinoMedio);
                     if (turmaRegular == null)
-                        throw new NegocioException(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
+                        throw new Exception(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
 
                     turma = turmaRegular;
                     filtro.TurmaId = turma.Id;
