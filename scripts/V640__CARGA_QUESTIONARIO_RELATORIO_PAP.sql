@@ -74,7 +74,7 @@ begin
 	values(questaoId, 1, 'Interpretação de texto', NOW(), 'SISTEMA', '0');
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-	values(questionarioId, 2, 'Observações', '', false, 18, '', NOW(), 'SISTEMA', '0', 6, 'OBS_DIFIC_APRESENTADAS');
+	values(questionarioId, 2, 'Observações', '', false, 18, '', NOW(), 'SISTEMA', '0', 12, 'OBS_DIFIC_APRESENTADAS');
 
 	/********************************/
 	/* SEÇÃO Avanços na aprendizagem */
@@ -91,7 +91,7 @@ begin
 	values (secaoId, configuracaoId, NOW(), 'SISTEMA', '0');
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-	values(questionarioId, 1, 'Avanços na aprendizagem durante o bimestre', '', true, 18, '', NOW(), 'SISTEMA', '0', 6, 'AVANC_APREND_BIMES');
+	values(questionarioId, 1, 'Avanços na aprendizagem durante o bimestre', '', true, 18, '', NOW(), 'SISTEMA', '0', 12, 'AVANC_APREND_BIMES');
 	
 	/********************************/
 	/* SEÇÃO Observações */
@@ -108,5 +108,5 @@ begin
 	values (secaoId, configuracaoId, NOW(), 'SISTEMA', '0');
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-	values(questionarioId, 1, 'Observações', '', false, 18, '', NOW(), 'SISTEMA', '0', 6, 'OBS_OBS');
+	values(questionarioId, 1, 'Observações', '', false, 18, '', NOW(), 'SISTEMA', '0', 12, 'OBS_OBS');
 end $$;

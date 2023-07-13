@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
             if (idQuestao.HasValue)
             {
-                var frequencia = mediator.Send(new ObterFrequenciaTurmaPAPQuery(request.CodigoTurma, request.CodigoAluno, request.PeriodoRelatorio));
+                var frequencia = await mediator.Send(new ObterFrequenciaTurmaPAPQuery(request.CodigoTurma, request.CodigoAluno, request.PeriodoRelatorio));
 
                 return new RelatorioPeriodicoPAPResposta()
                 {
