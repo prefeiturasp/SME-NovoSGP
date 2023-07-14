@@ -1045,7 +1045,7 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.QueryAsync<TurmaBimestreDto>(query, new { ueId, anoLetivo });
         }
 
-        public async Task<IEnumerable<TurmaAlunoDto>> ObterPorAlunos(long[] codigoAlunos, int anoLetivo)
+        public Task<IEnumerable<TurmaAlunoDto>> ObterPorAlunos(long[] codigoAlunos, int anoLetivo)
         {
             var query = $@";with tempTurmaRegularConselhoAluno as
                             (select distinct 
@@ -1136,7 +1136,7 @@ namespace SME.SGP.Dados.Repositorios
                             union
                                 (select * from tempTurmaComplementarConselhoAluno)";
 
-            return await contexto.QueryAsync<TurmaAlunoDto>(query, new { codigoAlunos = codigoAlunos.Select(a => a.ToString()).ToArray(), anoLetivo });
+            return contexto.QueryAsync<TurmaAlunoDto>(query, new { codigoAlunos = codigoAlunos.Select(a => a.ToString()).ToArray(), anoLetivo });
         }
     }
 }
