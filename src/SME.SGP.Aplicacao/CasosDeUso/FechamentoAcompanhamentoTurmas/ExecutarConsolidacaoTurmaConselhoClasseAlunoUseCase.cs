@@ -197,6 +197,11 @@ namespace SME.SGP.Aplicacao
                                                                                                             ).FirstOrDefault();
         }
 
+       /* private async Task<Turma> Obter(string aluno, int anoLetivo)
+        {
+            var turmasAluno = await mediator.Send(new ObterTurmasFechamentoConselhoPorAlunosQuery(new long[] {long.Parse(aluno)}, anoLetivo));
+        }*/
+
         private async Task<bool> TipoNotaEhConceito(Turma turma, int bimestre)
         {
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
