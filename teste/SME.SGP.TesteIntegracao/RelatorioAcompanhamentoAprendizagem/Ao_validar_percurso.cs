@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var inconsistencia = await useCase.Executar(new FiltroInconsistenciaPercursoRAADto(TURMA_ID_1, 1));
 
             inconsistencia.ShouldNotBeNull();
-            inconsistencia.MensagemInsconsistenciaPercursoColetivo.ShouldBe(string.Empty); 
+            inconsistencia.MensagemInconsistenciaPercursoColetivo.ShouldBe(string.Empty); 
         }
 
         [Fact(DisplayName = "Validar RAA sem percurso coletivo")]
@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var inconsistencia = await useCase.Executar(new FiltroInconsistenciaPercursoRAADto(TURMA_ID_1, 1));
 
             inconsistencia.ShouldNotBeNull();
-            inconsistencia.MensagemInsconsistenciaPercursoColetivo.ShouldBe(MensagemNegocioAcomponhamentoAluno.AUSENCIA_PREENCHIMENTO_PERCUSO_COLETIVO);
+            inconsistencia.MensagemInconsistenciaPercursoColetivo.ShouldBe(MensagemNegocioAcomponhamentoAluno.AUSENCIA_PREENCHIMENTO_PERCUSO_COLETIVO);
         }
 
         [Fact(DisplayName = "Validar RAA sem percurso individual")]
