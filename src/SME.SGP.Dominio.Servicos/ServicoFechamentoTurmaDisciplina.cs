@@ -430,16 +430,19 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma,fechamentoAluno.AlunoCodigo);
                 notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
-                
-                foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
+
+                if (notasFechamentoFinaisNoCache != null)
                 {
-                    AtualizarNotasFinaisParaCache(notasFechamentoFinaisNoCache,
-                                                  fechamentoNota,
-                                                  bimestre,
-                                                  fechamentoAluno.AlunoCodigo,
-                                                  turma.CodigoTurma);
+                    foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
+                    {
+                        AtualizarNotasFinaisParaCache(notasFechamentoFinaisNoCache,
+                            fechamentoNota,
+                            bimestre,
+                            fechamentoAluno.AlunoCodigo,
+                            turma.CodigoTurma);
+                    }
+                    await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma,fechamentoAluno.AlunoCodigo), notasFechamentoFinaisNoCache));
                 }
-                await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma,fechamentoAluno.AlunoCodigo), notasFechamentoFinaisNoCache));
             }
         }
 
