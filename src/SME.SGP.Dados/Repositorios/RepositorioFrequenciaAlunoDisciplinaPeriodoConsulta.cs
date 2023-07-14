@@ -892,6 +892,28 @@ namespace SME.SGP.Dados
                 dataAtual,
                 turmaCodigo
             });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorPeriodosEscolares(string codigoAluno, string codigoTurma, long[] idsPeriodosEscolares)
+        {
+            var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
+                            from frequencia_aluno fa");
+
+            query.AppendLine(@" where fa.tipo = @tipoFrequencia
+                and fa.codigo_aluno = @codigoAluno 
+                and fa.turma_id = @codigoTurma
+                and fa.periodo_escolar_id = any(@idsPeriodosEscolares)");
+
+            query.AppendLine(") select * from lista where sequencia = 1;");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    codigoAluno,
+                    codigoTurma,
+                    idsPeriodosEscolares,
+                    tipoFrequencia = (int)TipoFrequenciaAluno.Geral
+                });
+        }
     }
-}
 }
