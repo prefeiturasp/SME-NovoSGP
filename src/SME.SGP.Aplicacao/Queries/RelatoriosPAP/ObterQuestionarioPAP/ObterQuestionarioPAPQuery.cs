@@ -30,19 +30,19 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.CodigoTurma)
                 .NotEmpty()
-                .WithMessage("O código da turma deve ser informado.");
+                .WithMessage("O código da turma deve ser informado para questionário pap.");
 
             RuleFor(x => x.CodigoAluno)
                 .NotEmpty()
-                .WithMessage("O código do aluno deve ser informado.");
+                .WithMessage("O código do aluno deve ser informado para questionário pap.");
 
             RuleFor(x => x.PeriodoRelatorio)
                 .NotNull()
-                .WithMessage("O período do relatório pap deve ser informado.");
+                .WithMessage("O período do relatório pap deve ser informado para questionário pap.");
 
             RuleFor(x => x.QuestionarioId)
                 .NotEmpty()
-                .WithMessage("O id do questionário do aluno deve ser informado.");
+                .WithMessage("O id do questionário do aluno deve ser informado para questionário pap.");
         }
     }
 }

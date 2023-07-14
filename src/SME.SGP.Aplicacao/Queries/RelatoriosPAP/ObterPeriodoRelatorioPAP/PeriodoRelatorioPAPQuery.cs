@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.PeriodoIdPAP)
                 .NotEmpty()
-                .WithMessage("O id do período pap deve ser informado.");
+                .WithMessage("O id do período pap deve ser informado para período relatório pap.");
         }
     }
 }

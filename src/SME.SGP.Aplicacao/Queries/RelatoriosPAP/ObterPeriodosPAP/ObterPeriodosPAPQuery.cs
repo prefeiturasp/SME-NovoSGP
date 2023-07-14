@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.CodigoTurma)
                 .NotEmpty()
-                .WithMessage("O código da turma deve ser informado.");
+                .WithMessage("O código da turma deve ser informado para periodos pap.");
         }
     }
 }

@@ -25,15 +25,15 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.CodigoTurma)
                 .NotEmpty()
-                .WithMessage("O código da turma deve ser informado.");
+                .WithMessage("O código da turma deve ser informado para frequência geral por períodos.");
 
             RuleFor(x => x.CodigoAluno)
                 .NotEmpty()
-                .WithMessage("O código do aluno deve ser informado.");
+                .WithMessage("O código do aluno deve ser informado para frequência geral por períodos.");
 
             RuleFor(x => x.IdsPeriodosEscolares)
                 .NotNull()
-                .WithMessage("Os ids dos períodos escolares não foram informados.");
+                .WithMessage("Os ids dos períodos escolares não foram informados para frequência geral por períodos.");
         }
     }
 }
