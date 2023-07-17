@@ -35,7 +35,16 @@ namespace SME.SGP.Aplicacao
             var temPeriodoAberto = false;
 
             if (request.PeriodoEscolar != null)
+            {
                 temPeriodoAberto = await this.consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(request.Turma, DateTime.Now.Date, request.PeriodoEscolar.Bimestre);
+
+                var periodoFechamentoOriginal = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(request.PeriodoEscolar.TipoCalendarioId, request.Turma.EhTurmaInfantil, request.PeriodoEscolar.Bimestre));
+
+                if(periodoFechamentoOriginal != null)
+                {
+                    temPeriodoAberto = aluno.PodeEditarNotaConceito() ? temPeriodoAberto : (aluno.DataSituacao >= periodoFechamentoOriginal.InicioDoFechamento && temPeriodoAberto);
+                }
+            }
 
             return aluno.PodeEditarNotaConceitoNoPeriodo(request.PeriodoEscolar, temPeriodoAberto);
         }

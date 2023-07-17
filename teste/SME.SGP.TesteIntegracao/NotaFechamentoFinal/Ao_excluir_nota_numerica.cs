@@ -359,7 +359,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 {
                     AlunoRf = fechamentoAluno.AlunoCodigo,
                     ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
-                    Nota = null
+                    Nota = null,
+                    ConceitoId = (int)ConceitoValores.P
                 });
             }
 
