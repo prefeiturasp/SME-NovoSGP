@@ -63,7 +63,14 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
             await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
 
-            repositorioAula.Salvar(aula);
+            try
+            {
+                repositorioAula.Salvar(aula);
+            }
+            catch(Exception ex)
+            {
+                var a = ex;
+            }
 
             await TrataAlteracaoDeFrequencia(request.Usuario, aula, aulaAnteriorQnt);
 
@@ -103,7 +110,9 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             aula.AulaPaiId = null;
             aula.DisciplinaId = codigoComponenteTerritorioEquivalente.HasValue && codigoComponenteTerritorioEquivalente > request.ComponenteCurricularCodigo ?
                                 codigoComponenteTerritorioEquivalente.Value.ToString() : request.ComponenteCurricularCodigo.ToString();
-            aula.ProfessorRf = professor;
+            
+            if(!String.IsNullOrEmpty(professor))
+                aula.ProfessorRf = professor;
         }
 
         private async Task AplicarValidacoes(AlterarAulaUnicaCommand request, Aula aula, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)
