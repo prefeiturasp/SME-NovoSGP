@@ -41,7 +41,7 @@ pipeline {
           parallel {
             stage('Sonar') {
             agent { node { label 'SME-AGENT-SGP-SONAR' } }
-            when { anyOf { branch '_master'; branch 'main'; branch "story/*"; branch '_development'; branch 'release'; branch '_release-r2'; branch 'infra/*'; } } 
+            when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
                 steps {
                   checkout scm
                   script{
