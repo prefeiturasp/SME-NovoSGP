@@ -61,7 +61,8 @@ namespace SME.SGP.Dados
                             from consolidado_conselho_classe_aluno_turma 
                             where not excluido 
                             and turma_id = @turmaId
-                            and aluno_codigo = @alunoCodigo";
+                            and aluno_codigo = @alunoCodigo
+                            order by id desc ";
 
             var retorno = await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
             return retorno;

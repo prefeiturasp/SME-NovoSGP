@@ -22,10 +22,9 @@ namespace SME.SGP.Dados
                             where consolidado_conselho_classe_aluno_turma_id = @consolidadoTurmaAlunoId ";
 
             query += " and coalesce(bimestre, 0) = @bimestre ";
-
             if (componenteCurricularId.HasValue)
                 query += " and componente_curricular_id = @componenteCurricularId";
-
+            query += " order by id desc ";
             return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAlunoNota>(query, new { consolidadoTurmaAlunoId, bimestre = bimestre ?? 0, componenteCurricularId });
         }
 
