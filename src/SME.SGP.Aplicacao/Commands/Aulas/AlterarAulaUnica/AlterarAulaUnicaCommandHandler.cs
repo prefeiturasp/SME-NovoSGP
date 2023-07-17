@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
         public async Task<RetornoBaseDto> Handle(AlterarAulaUnicaCommand request, CancellationToken cancellationToken)
         {
             var retorno = new RetornoBaseDto();
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));           
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
 
             var componentesTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularCodigo, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
@@ -63,14 +63,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
             await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
 
-            try
-            {
-                repositorioAula.Salvar(aula);
-            }
-            catch(Exception ex)
-            {
-                var a = ex;
-            }
+            repositorioAula.Salvar(aula);
 
             await TrataAlteracaoDeFrequencia(request.Usuario, aula, aulaAnteriorQnt);
 
@@ -110,8 +103,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             aula.AulaPaiId = null;
             aula.DisciplinaId = codigoComponenteTerritorioEquivalente.HasValue && codigoComponenteTerritorioEquivalente > request.ComponenteCurricularCodigo ?
                                 codigoComponenteTerritorioEquivalente.Value.ToString() : request.ComponenteCurricularCodigo.ToString();
-            
-            if(!String.IsNullOrEmpty(professor))
+
+            if (!String.IsNullOrEmpty(professor))
                 aula.ProfessorRf = professor;
         }
 
