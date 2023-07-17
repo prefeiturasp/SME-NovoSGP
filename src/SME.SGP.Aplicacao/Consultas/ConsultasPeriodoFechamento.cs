@@ -107,5 +107,26 @@ namespace SME.SGP.Aplicacao
             var reaberturaPeriodo = await UeEmReaberturaDeFechamentoVigente(tipoCalendario, ueCodigo, dreCodigo, bimestre, dataReferencia);
             return reaberturaPeriodo != null;
         }
+
+        public async Task<bool> TurmaEmPeriodoDeFechamentoAluno(Turma turma, DateTime dataReferencia, AlunoPorTurmaResposta aluno, int bimestre = 0)
+        {
+            var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
+
+            return await AlunoEmPeriodoDeFechamento(turma, tipoCalendario, dataReferencia, aluno, bimestre);
+        }
+        public async Task<bool> AlunoEmPeriodoDeFechamento(Turma turma, TipoCalendario tipoCalendario, DateTime dataReferencia, AlunoPorTurmaResposta aluno, int bimestre = 0)
+        {
+            var ueEmFechamento = await UeEmFechamentoVigente(tipoCalendario, turma.EhTurmaInfantil, bimestre, dataReferencia);
+            var retorno = false;
+            if (ueEmFechamento != null)
+                retorno = aluno.EstaAtivo(dataReferencia) || AlunoDentroPeriodoFechamento(aluno, ueEmFechamento.InicioDoFechamento,ueEmFechamento.FinalDoFechamento);
+
+            return retorno || await UeEmReaberturaDeFechamento(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
+        }
+
+        private static bool AlunoDentroPeriodoFechamento(AlunoPorTurmaResposta aluno, DateTime inicioDoFechamento, DateTime finalDoFechamento)
+        {
+            return (aluno.DataSituacao.Date >= inicioDoFechamento.Date && aluno.DataSituacao.Date <= finalDoFechamento.Date);
+        }
     }
 }

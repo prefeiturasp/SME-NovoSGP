@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var temPeriodoAberto = false;
 
             if (request.PeriodoEscolar != null)
-                temPeriodoAberto = await this.consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(request.Turma, DateTime.Now.Date, request.PeriodoEscolar.Bimestre);
+                temPeriodoAberto = await this.consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoAluno(request.Turma, DateTime.Now.Date, aluno, request.PeriodoEscolar.Bimestre);
 
             return aluno.PodeEditarNotaConceitoNoPeriodo(request.PeriodoEscolar, temPeriodoAberto);
         }

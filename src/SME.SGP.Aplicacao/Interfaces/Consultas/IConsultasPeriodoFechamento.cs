@@ -14,5 +14,7 @@ namespace SME.SGP.Aplicacao
         Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, DateTime dataReferencia, int bimestre = 0);
         Task<PeriodoFechamentoVigenteDto> TurmaEmPeriodoDeFechamentoAnoAnterior(Turma turma, int bimestre = 0);
         Task<PeriodoFechamentoVigenteDto> TurmaEmPeriodoDeFechamentoVigente(Turma turma, DateTime dataReferencia, int bimestre = 0);
+        Task<bool> TurmaEmPeriodoDeFechamentoAluno(Turma turma, DateTime dataReferencia, AlunoPorTurmaResposta aluno, int bimestre = 0);
+
     }
 }
