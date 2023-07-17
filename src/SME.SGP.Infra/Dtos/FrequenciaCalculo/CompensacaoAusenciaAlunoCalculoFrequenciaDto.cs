@@ -6,5 +6,6 @@
         public int Bimestre { get; set; }
         public int Compensacoes { get; set; }
         public string ComponenteCurricularId { get; set; }
+        public string Professor { get; set; }
     }
 }

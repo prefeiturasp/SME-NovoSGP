@@ -1151,9 +1151,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             };
         }
 
-        public Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesPorTurmas(IEnumerable<string> codigosTurmas)
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesPorTurmas(IEnumerable<string> codigosTurmas)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(Enumerable.Empty<ProfessorTitularDisciplinaEol>());
         }
 
         public Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesPorUe(string ueCodigo, DateTime dataReferencia)

@@ -56,6 +56,7 @@ namespace SME.SGP.Aplicacao
                 case SituacaoMatriculaAluno.Deslocamento:
                 case SituacaoMatriculaAluno.Cessado:
                 case SituacaoMatriculaAluno.ReclassificadoSaida:
+                case SituacaoMatriculaAluno.DispensadoEdFisica:
                     marcador = new MarcadorFrequenciaDto()
                     {
                         Tipo = TipoMarcadorFrequencia.Inativo,

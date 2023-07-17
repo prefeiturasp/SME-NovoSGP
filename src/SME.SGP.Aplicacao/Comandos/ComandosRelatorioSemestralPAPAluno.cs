@@ -113,6 +113,8 @@ namespace SME.SGP.Aplicacao
         }
         private async Task MoverRemoverExcluidos(string secaoNovo, string secaoAtual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(secaoNovo))
             {
                 var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RelatorioSemestralPAP, secaoAtual, secaoNovo));
