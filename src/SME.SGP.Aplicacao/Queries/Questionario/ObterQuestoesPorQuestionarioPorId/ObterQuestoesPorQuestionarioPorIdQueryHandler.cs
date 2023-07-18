@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,15 +17,19 @@ namespace SME.SGP.Aplicacao
     public class ObterQuestoesPorQuestionarioPorIdQueryHandler : IRequestHandler<ObterQuestoesPorQuestionarioPorIdQuery, IEnumerable<QuestaoDto>>
     {
         private readonly IRepositorioQuestionario repositorioQuestionario;
+        private readonly IRepositorioCache repositorioCache;
 
-        public ObterQuestoesPorQuestionarioPorIdQueryHandler(IRepositorioQuestionario repositorioQuestionario)
+        public ObterQuestoesPorQuestionarioPorIdQueryHandler(IRepositorioQuestionario repositorioQuestionario, IRepositorioCache repositorioCache)
         {
             this.repositorioQuestionario = repositorioQuestionario ?? throw new ArgumentNullException(nameof(repositorioQuestionario));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestoesPorQuestionarioPorIdQuery request, CancellationToken cancellationToken)
         {
-            var dadosQuestionario = await repositorioQuestionario.ObterQuestoesPorQuestionarioId(request.QuestionarioId);
+            var dadosQuestionario = await repositorioCache.ObterAsync(string.Format(NomeChaveCache.CHAVE_QUESTIONARIO, request.QuestionarioId),
+                async () => await repositorioQuestionario.ObterQuestoesPorQuestionarioId(request.QuestionarioId),
+                "Obter questionário");
 
             var questoesComplementares = dadosQuestionario
                 .Where(dq => dq.OpcoesRespostas.Any(a => a.QuestoesComplementares.Any()))

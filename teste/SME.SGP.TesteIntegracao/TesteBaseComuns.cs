@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
+using Sentry.Protocol;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -122,6 +123,9 @@ namespace SME.SGP.TesteIntegracao
 
         protected const long COMPONENTE_CURRICULAR_AEE_COLABORATIVO = 1103;
         protected const string COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME = "'AEE COLABORATIVO'";
+
+        protected const long COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO = 1770;
+        protected const string COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME = "'PAP PROJETO COLABORATIVO'";
 
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
@@ -236,6 +240,7 @@ namespace SME.SGP.TesteIntegracao
         public const string USUARIO_LOGIN_COOD_NAAPA = "NAAP11111";
         public const string USUARIO_LOGIN_ADM_DRE = "DRE111111";
         public const string USUARIO_LOGIN_ADM_SME = "SME111111";
+        public const string USUARIO_LOGIN_PAP = "PAP111111";
 
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
@@ -553,6 +558,9 @@ namespace SME.SGP.TesteIntegracao
             if (perfil.Equals(ObterPerfilAdmSme()))
                 return USUARIO_LOGIN_ADM_SME;
 
+            if (perfil.Equals(ObterPerfilPAP()))
+                return USUARIO_LOGIN_PAP;
+
             return USUARIO_PROFESSOR_LOGIN_2222222;
         }
 
@@ -633,6 +641,10 @@ namespace SME.SGP.TesteIntegracao
         protected string ObterPerfilDiretor()
         {
             return Guid.Parse(PerfilUsuario.DIRETOR.Name()).ToString();
+        }
+        protected string ObterPerfilPAP()
+        {
+            return Guid.Parse(PerfilUsuario.PAP.Name()).ToString();
         }
 
         protected async Task CriarPeriodoEscolarEncerrado()
@@ -867,6 +879,15 @@ namespace SME.SGP.TesteIntegracao
                 CodigoRf = USUARIO_PAEE_LOGIN_5555555,
                 PerfilAtual = Guid.Parse(PerfilUsuario.PAEE.ObterNome()),
                 Nome = USUARIO_PAEE_LOGIN_5555555,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Usuario
+            {
+                Login = USUARIO_LOGIN_PAP,
+                CodigoRf = USUARIO_LOGIN_PAP,
+                PerfilAtual = Guid.Parse(PerfilUsuario.PAP.ObterNome()),
+                Nome = USUARIO_LOGIN_PAP,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
@@ -1346,6 +1367,8 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(), NULO, CODIGO_4, NULO, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, NULO);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_512.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_4HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_513.ToString(), COMPONENTE_CURRICULAR_513.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_2HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME);
         }
         
