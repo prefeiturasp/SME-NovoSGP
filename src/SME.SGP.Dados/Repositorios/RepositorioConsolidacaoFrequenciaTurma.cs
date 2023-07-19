@@ -37,38 +37,6 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public async Task ExcluirConsolidacaoDashBoard(int anoLetivo, long turmaId, DateTime dataAula, DateTime? dataInicioSemanda, DateTime? dataFinalSemena, int? mes, TipoPeriodoDashboardFrequencia tipoPeriodo)
-        {
-            var query = new StringBuilder(@"delete 
-                                              from consolidado_dashboard_frequencia
-                                             where turma_id = @turmaId
-                                               and tipo = @tipoPeriodo
-                                               and ano_letivo = @anoLetivo ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and data_aula::date = @dataAula ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine(@"and data_inicio_semana::date = @dataInicioSemanda
-                                   and data_fim_semana::date = @dataFinalSemena ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine("and mes = @mes ");
-
-            var parametros = new
-            {
-                anoLetivo,
-                turmaId,
-                dataAula,
-                dataInicioSemanda,
-                dataFinalSemena,
-                mes,
-                tipoPeriodo
-            };
-
-            await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
-        }
-
         public async Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, DateTime dataAula, int? mes, DateTime? dataInicioSemana, DateTime? dataFimSemana)
         {
             var query = new StringBuilder(@"select cdf.id as Id, 

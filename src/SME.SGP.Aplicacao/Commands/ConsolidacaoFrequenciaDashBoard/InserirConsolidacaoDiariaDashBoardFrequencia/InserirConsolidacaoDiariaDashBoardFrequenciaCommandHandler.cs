@@ -49,14 +49,6 @@ namespace SME.SGP.Aplicacao
                 if (consolidacao.Presentes == 0 && consolidacao.Ausentes == 0 && consolidacao.Remotos == 0)
                     continue;
 
-                await mediator.Send(new ExcluirConsolidacaoDashBoardFrequenciaPorDataETipoCommand(anoLetivo,
-                                                                                              turma.Id,
-                                                                                              data,
-                                                                                              TipoPeriodoDashboardFrequencia.Diario,
-                                                                                              null,
-                                                                                              null,
-                                                                                              mes));
-
                 await repositorioConsolidacaoFrequenciaTurma.InserirConsolidacaoDashBoard(MapearParaEntidade(turma,
                                                                                                              consolidacao,
                                                                                                              data,
