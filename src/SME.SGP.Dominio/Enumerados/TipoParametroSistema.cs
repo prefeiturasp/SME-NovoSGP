@@ -169,7 +169,7 @@ namespace SME.SGP.Dominio
         GerarFechamentoTurmasEdFisica2020 = 103,
         GerarConsolidadoEncaminhamentoNAAPA = 104,
         GerarConsolidadoAtendimentoNAAPA = 105,
-        DiasAposInicioPeriodoLetivoComponenteSemAula = 106
-        
+        DiasAposInicioPeriodoLetivoComponenteSemAula = 106,
+        ExecutaPendenciaComponenteSemAula = 107
     }
 }
