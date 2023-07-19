@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao.Queries
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> Handle(ObterFrequenciasPorAlunosTurmaQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunos(request.AlunosCodigo, request.PeriodosEscolaresId, request.TurmaId, request.DisciplinaIdsConsideradas, request.Professor);
+            => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunos(request.AlunosCodigo, request.PeriodoEscolarId, request.TurmaId, request.DisciplinaIdsConsideradas, request.Professor);
     }
 }

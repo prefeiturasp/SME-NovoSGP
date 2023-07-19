@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -19,6 +20,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ConsolidacaoNotaAlunoCommand request, CancellationToken cancellationToken)
         {
+            await mediator.Send(new SalvarCacheConselhoClasseOuFechamentoNotaConceitoCommand(request.AlunoCodigo, request.Bimestre ?? 0, request.TurmaId, request.ComponenteCurricularId,
+                                                                                             request.Nota, request.ConceitoId,
+                                                                                             request.ConselhoClasse ? TipoAlteracao.ConselhoClasseNota : TipoAlteracao.FechamentoNota));
+
             var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(request.AlunoCodigo, 
                                                                                                          request.TurmaId, 
                                                                                                          request.Bimestre, 

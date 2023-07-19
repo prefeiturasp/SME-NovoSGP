@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -26,6 +27,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<Turma> ObterPorCodigo(string turmaCodigo)
         {
             return await contexto.Conexao.QueryFirstOrDefaultAsync<Turma>("select * from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+        }
+
+        public async Task<IEnumerable<long>> ObterIdsPorCodigos(string[] codigosTurma)
+        {
+            var query = @"select t.id from turma t where t.turma_id =any(@codigosTurma);";
+
+            return await contexto.Conexao.QueryAsync<long>(query, new { codigosTurma });
         }
 
         public async Task<string> ObterTurmaCodigoPorConselhoClasseId(long conselhoClasseId)
@@ -860,7 +868,7 @@ namespace SME.SGP.Dados.Repositorios
                             t.ano,
                             t.tipo_turma as TurmaTipo,
                             " + (modalidade == (int)Modalidade.EJA ? "t.nome_filtro" : "t.nome") + @" as TurmaNome,
-                            t.modalidade_codigo as TurmaModalidade, cccatn.bimestre as Bimestre, cccat.aluno_codigo as AlunoCodigo,
+                            t.modalidade_codigo as TurmaModalidade, coalesce(cccatn.bimestre, 0) as Bimestre, cccat.aluno_codigo as AlunoCodigo,
                             count(distinct cccatn.componente_curricular_id) filter (where cccatn.nota is not null or cccatn.conceito_id is not null) AS QuantidadeDisciplinaFechadas
                        from consolidado_conselho_classe_aluno_turma cccat
                       inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
@@ -890,10 +898,10 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
             {
-                query.Append(" and cccatn.bimestre = @bimestre ");
+                query.Append(" and coalesce(cccatn.bimestre, 0) = @bimestre ");
             }
 
-            query.Append(" group by t.id, cccatn.bimestre, cccat.aluno_codigo order by t.id");
+            query.Append(" group by t.id, coalesce(cccatn.bimestre, 0), cccat.aluno_codigo order by t.id");
 
             return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
         }
@@ -1025,18 +1033,110 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { turmaId });
         }
 
-        public async Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoConselhoClassePorUeId(long ueId, int anoLetivo)
+        public async Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoTurmaPorUeId(long ueId, int anoLetivo)
         {
             var query = @"select distinct t.id as TurmaId, coalesce(pe.bimestre, 0) as Bimestre  from turma t
                         join fechamento_turma ft on t.id = ft.turma_id
-                        join conselho_classe cc on cc.fechamento_turma_id = ft.id
                         left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                         where t.ue_id = @ueId
                                 and ano_letivo = @anoLetivo
-                                and not ft.excluido 
-                                and not cc.excluido";
+                                and not ft.excluido";
 
             return await contexto.QueryAsync<TurmaBimestreDto>(query, new { ueId, anoLetivo });
+        }
+
+        public Task<IEnumerable<TurmaAlunoDto>> ObterPorAlunos(long[] codigoAlunos, int anoLetivo)
+        {
+            var query = $@";with tempTurmaRegularConselhoAluno as
+                            (select distinct 
+                                t.turma_id as TurmaCodigo,
+                                null as RegularCodigo,
+                                t.modalidade_codigo Modalidade,
+                                cca.aluno_codigo as AlunoCodigo,
+                                t.ano,
+                                t.etapa_eja as EtapaEJA,
+                                tc.descricao as Ciclo,
+                                t.tipo_turma as TipoTurma,
+                                cca.id as ConselhoClasseAlunoId
+                            from
+                                fechamento_turma ft
+                            inner join conselho_classe cc on
+                                cc.fechamento_turma_id = ft.id
+                            inner join conselho_classe_aluno cca on
+                                cca.conselho_classe_id = cc.id
+                            inner join turma t 
+                                on ft.turma_id = t.id
+                            left join tipo_ciclo_ano tca on t.modalidade_codigo = tca.modalidade and t.ano = tca.ano
+                            left join tipo_ciclo tc on tca.tipo_ciclo_id = tc.id
+                            where not ft.excluido 
+                                and not cc.excluido 
+                                and cca.aluno_codigo = any(@codigoAlunos) 
+                                and t.ano_letivo = @anoLetivo
+                                and not exists (select 1
+                                from
+                                    fechamento_turma ft2
+                                inner join conselho_classe cc2 on
+                                    cc2.fechamento_turma_id = ft2.id
+                                inner join conselho_classe_aluno cca2 on
+                                    cca2.conselho_classe_id = cc2.id
+                                 where not ft2.excluido 
+                                    and not cc2.excluido 
+                                    and ft2.turma_id = ft.turma_id 
+                                    and	cca2.aluno_codigo = cca.aluno_codigo 
+                                    and ft2.periodo_escolar_id is null)
+                            ), tempConselhoAlunos as 
+                            -- Obter turmas complementares
+                            (select 
+                                distinct 
+                                ConselhoClasseAlunoId
+                            from 
+                                tempTurmaRegularConselhoAluno
+                            ), tempTurmaComplementarConselhoAluno as
+                            (select distinct 
+                                t.turma_id as TurmaCodigo,
+                                tr.turma_id as RegularCodigo,
+                                t.modalidade_codigo Modalidade,
+                                cca.aluno_codigo as AlunoCodigo,
+                                t.ano,
+                                t.etapa_eja as EtapaEJA,
+                                tc.descricao as Ciclo,
+                                t.tipo_turma as TipoTurma
+                            from 
+                                tempConselhoAlunos t1
+                            inner join
+                                conselho_classe_aluno cca 
+                                on t1.ConselhoClasseAlunoId = cca.id 
+                            inner join 
+                                conselho_classe_aluno_turma_complementar ccatc 
+                                on cca.id = ccatc.conselho_classe_aluno_id 
+                             inner join 
+                                conselho_classe cc
+                                on cc.id = cca.conselho_classe_id
+                            inner join
+                                fechamento_turma ft
+                                on cc.fechamento_turma_id = ft.id
+                            inner join 
+                                turma tr
+                                on tr.id = ft.turma_id
+                            inner join 
+                                turma t
+                                on ccatc.turma_id = t.id
+                            left join 
+                                tipo_ciclo_ano tca 
+                                on t.modalidade_codigo = tca.modalidade and t.ano = tca.ano
+                            left join 
+                                tipo_ciclo tc 
+                                on tca.tipo_ciclo_id = tc.id)
+
+                            -- Resultado
+                            select 
+                                *
+                            from 
+                                (select TurmaCodigo,RegularCodigo,Modalidade,AlunoCodigo,ano,EtapaEJA,Ciclo,TipoTurma from tempTurmaRegularConselhoAluno) as Regulares
+                            union
+                                (select * from tempTurmaComplementarConselhoAluno)";
+
+            return contexto.QueryAsync<TurmaAlunoDto>(query, new { codigoAlunos = codigoAlunos.Select(a => a.ToString()).ToArray(), anoLetivo });
         }
     }
 }
