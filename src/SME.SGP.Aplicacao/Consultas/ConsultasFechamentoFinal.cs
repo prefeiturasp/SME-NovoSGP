@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
@@ -31,7 +32,8 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
-        
+        private const long ID_COMPONENTE_ED_FISICA = 6;
+
         public ConsultasFechamentoFinal(IRepositorioTurmaConsulta repositorioTurma, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
                             IServicoEol servicoEOL, IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
@@ -119,6 +121,9 @@ namespace SME.SGP.Aplicacao
             }
             else
                 disciplinas.Add(new DisciplinaResposta() { Nome = disciplinaEOL.Nome, CodigoComponenteCurricular = disciplinaEOL.CodigoComponenteCurricular });
+
+            if (turma.TipoTurma != TipoTurma.EdFisica && turma.ModalidadeCodigo == Modalidade.EJA && disciplinas.Any(d => d.CodigoComponenteCurricular == ID_COMPONENTE_ED_FISICA))
+                disciplinas.Remove(disciplinas.FirstOrDefault(d => d.CodigoComponenteCurricular == ID_COMPONENTE_ED_FISICA));
 
             retorno.EhSintese = !disciplinaEOL.LancaNota;
 

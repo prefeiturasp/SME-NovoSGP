@@ -25,31 +25,30 @@ namespace SME.SGP.Aplicacao
             var professoresEComponentes = new List<ProfessorEComponenteInfantilDto>();
             Guid perfilProfessorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.ObterNome());
 
-            var listaProfessoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId));
-            var professoresDaTurma = listaProfessoresDaTurma?.Select(x => x.ProfessorRf);
+            var listaProfessoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId, realizaAgrupamento: false));
             var componentesSgp = await mediator.Send(new ObterComponentesCurricularesQuery());
 
-            if (professoresDaTurma != null && professoresDaTurma.Any(a => !string.IsNullOrEmpty(a)))
+            if (listaProfessoresDaTurma?.Any(a => !string.IsNullOrEmpty(a.ProfessorRf)) == true)
             {
-                string[] professoresSeparados = professoresDaTurma.FirstOrDefault().Split(',');
-
-                var componentesDaTurma = new List<long>();
-
-                foreach (var professor in professoresSeparados)
+                foreach (var professorDaTurma in listaProfessoresDaTurma)
                 {
-                    var codigoRfProfessor = professor.Trim();
-                    if (!string.IsNullOrEmpty(codigoRfProfessor))
+                    string[] professoresSeparados = professorDaTurma.ProfessorRf.Split(',');
+                    foreach (var professor in professoresSeparados)
                     {
-                        var componentesCurricularesEolProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaId, codigoRfProfessor, perfilProfessorInfantil));
-
-                        professoresEComponentes.AddRange(componentesCurricularesEolProfessor.Select(s => new ProfessorEComponenteInfantilDto()
+                        var codigoRfProfessor = professor.Trim();
+                        if (!string.IsNullOrEmpty(codigoRfProfessor))
                         {
-                            CodigoRf = codigoRfProfessor,
-                            DisciplinaId = s.Codigo,
-                            DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f=> f.Codigo.Equals(s.Codigo.ToString())).Descricao,
-                        }));
+                            professoresEComponentes.AddRange(professorDaTurma.DisciplinasId
+                                .Select(disciplinaId => new ProfessorEComponenteInfantilDto()
+                            {
+                                CodigoRf = codigoRfProfessor,
+                                DisciplinaId = disciplinaId,
+                                DescricaoComponenteCurricular = componentesSgp.FirstOrDefault(f => f.Codigo.Equals(disciplinaId.ToString())).Descricao,
+                            }));
+                        }
                     }
                 }
+
                 await BuscaPendenciaESalva(turmasDreUe.FirstOrDefault(), professoresEComponentes);
             }
 

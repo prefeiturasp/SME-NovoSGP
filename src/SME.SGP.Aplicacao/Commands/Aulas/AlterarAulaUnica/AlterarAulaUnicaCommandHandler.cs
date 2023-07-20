@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
         public async Task<RetornoBaseDto> Handle(AlterarAulaUnicaCommand request, CancellationToken cancellationToken)
         {
             var retorno = new RetornoBaseDto();
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));           
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
 
             var componentesTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularCodigo, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
@@ -103,7 +103,9 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             aula.AulaPaiId = null;
             aula.DisciplinaId = codigoComponenteTerritorioEquivalente.HasValue && codigoComponenteTerritorioEquivalente > request.ComponenteCurricularCodigo ?
                                 codigoComponenteTerritorioEquivalente.Value.ToString() : request.ComponenteCurricularCodigo.ToString();
-            aula.ProfessorRf = professor;
+
+            if (!String.IsNullOrEmpty(professor))
+                aula.ProfessorRf = professor;
         }
 
         private async Task AplicarValidacoes(AlterarAulaUnicaCommand request, Aula aula, Turma turma, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes)

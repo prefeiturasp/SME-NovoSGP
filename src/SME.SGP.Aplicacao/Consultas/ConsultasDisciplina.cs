@@ -237,7 +237,16 @@ namespace SME.SGP.Aplicacao
                         .Where(c => c.TerritorioSaber && c.CodigosTerritoriosAgrupamento != null && c.CodigosTerritoriosAgrupamento.Any())
                         .SelectMany(c => c.CodigosTerritoriosAgrupamento);
 
-                    disciplinasDto.AddRange(MapearParaDto(disciplinasAtribuicaoCj?.Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular)), turmaPrograma, turma.EnsinoEspecial));
+                    var codigosComponentesPai = disciplinasDto
+                        .Where(d => d.CdComponenteCurricularPai.HasValue && d.CdComponenteCurricularPai.Value > 0)
+                        .Select(d => d.CdComponenteCurricularPai.Value);
+
+                    var disciplinasAdicionar = disciplinasAtribuicaoCj?
+                        .Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular) && (d.CodigoComponenteCurricularPai.HasValue && d.CodigoComponenteCurricularPai.Value > 0 && !codigosComponentesPai.Contains(d.CodigoComponenteCurricularPai.Value)));
+
+                    if (disciplinasAdicionar != null && disciplinasAdicionar.Any())
+                        disciplinasDto.AddRange(MapearParaDto(disciplinasAdicionar, turmaPrograma, turma.EnsinoEspecial));
+
                     disciplinasDto = disciplinasDto != null && disciplinasDto.Any() ? disciplinasDto.Where(d => d.TerritorioSaber).DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))
                         .Concat(disciplinasDto.Where(d => !d.TerritorioSaber).DistinctBy(d => d.CodigoComponenteCurricular))
                         .OrderBy(c => c.Nome).ToList() : null;
