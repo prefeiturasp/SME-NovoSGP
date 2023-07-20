@@ -37,11 +37,11 @@ pipeline {
         }
    
         stage('Sonar & Build') {
-          when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+          when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; branch 'pre-prod'; } } 
           parallel {
             stage('Sonar') {
             agent { node { label 'SME-AGENT-SGP-SONAR' } }
-            when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch '_development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+            when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch '_development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; branch 'pre-prod'; } } 
                 steps {
                   checkout scm
                   script{
@@ -198,7 +198,7 @@ pipeline {
     }
     stage('Push'){
       agent { node { label 'SME-AGENT-SGP' } }
-      when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2';; } }       
+      when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }       
       steps {
         script{
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
@@ -221,7 +221,7 @@ pipeline {
       }
     }
         stage('Deploy'){
-            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }        
+            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }        
             steps {
                 script{
                   //if(testPassed){
@@ -257,7 +257,7 @@ pipeline {
              
       stage('Flyway') {
         agent { label 'master' }
-        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
