@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/conselhos-classe/recomendacoes/integracoes")]
-    [Authorize("Bearer")]
+    [ChaveIntegracaoSgpApi]
     public class RecomendacaoConselhoClasseIntegracaoController : ControllerBase
     {
 

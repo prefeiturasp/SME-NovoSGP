@@ -417,6 +417,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComponenteCurricularGrupoAreaOrdenacao, RepositorioComponenteCurricularGrupoAreaOrdenacao>();
             services.TryAddScoped<IRepositorioPendenciaDevolutiva, RepositorioPendenciaDevolutiva>();
             services.TryAddScoped<IRepositorioFrequenciaDiariaAluno, RepositorioFrequenciaDiariaAluno>();
+            services.TryAddScoped<IRepositorioConselhoClasseAlunoRecomendacaoConsulta, RepositorioConselhoClasseAlunoRecomendacaoConsulta>();
 
 
             // Acompanhamento Aluno
@@ -1287,6 +1288,9 @@ namespace SME.SGP.IoC
 
             // Log.
             services.TryAddScoped<ISalvarLogUseCase, SalvarLogUseCase>();
+
+            //Conselho Classe Recomendação integração
+            services.TryAddScoped<IObterRecomendacoesPorAlunoTurmaUseCase, ObterRecomendacoesPorAlunoTurmaUseCase>(); 
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
