@@ -12,11 +12,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IServicoMensageriaSGP servicoMensageria;
+        private readonly IServicoMensageriaMetricas servicoMensageriaMetricas;
 
-        public PublicarFilaSgpCommandHandler(IMediator mediator, IServicoMensageriaSGP servicoMensageria)
+        public PublicarFilaSgpCommandHandler(IMediator mediator, IServicoMensageriaSGP servicoMensageria, IServicoMensageriaMetricas servicoMensageriaMetricas)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
+            this.servicoMensageriaMetricas = servicoMensageriaMetricas ?? throw new ArgumentNullException(nameof(servicoMensageriaMetricas));
         }
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
@@ -34,7 +36,7 @@ namespace SME.SGP.Aplicacao
                                              administrador.Login);
 
             await servicoMensageria.Publicar(mensagem, command.Rota, command.Exchange ?? ExchangeSgpRabbit.Sgp, "PublicarFilaSgp");
-
+            await servicoMensageriaMetricas.Publicado(command.Rota);
             return true;
         }
 
