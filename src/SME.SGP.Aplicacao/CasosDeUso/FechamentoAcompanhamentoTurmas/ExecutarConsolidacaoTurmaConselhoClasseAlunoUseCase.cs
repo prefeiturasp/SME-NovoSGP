@@ -51,11 +51,11 @@ namespace SME.SGP.Aplicacao
                         turmasCodigos.Add(turmaRegular.CodigoTurma);
                     }
 
-                    if (turma.EhTurmaEdFisica())
-                        componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
-
                     if (turmaRegular == null)
                         throw new Exception(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
+
+                    if (turma.EhTurmaEdFisica())
+                        componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
 
                     turma = turmaRegular;
                     filtro.TurmaId = turma.Id;
