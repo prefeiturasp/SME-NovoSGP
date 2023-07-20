@@ -22,15 +22,14 @@ namespace SME.SGP.Api.Controllers
     public class RecomendacaoConselhoClasseIntegracaoController : ControllerBase
     {
 
-        [HttpGet("aluno/{codigoAluno}/turma/{codigoTurma}")]
+        [HttpGet("alunos")]
         [ChaveIntegracaoSgpApi]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterRecomendascoesAlunoTurma(string codigoAluno, string codigoTurma, 
-                                                                        [FromQuery] int anoLetivo, [FromQuery] int? modalidade, [FromQuery] int semestre, 
+        public async Task<IActionResult> ObterRecomendascoesAlunoTurma([FromQuery] FiltroRecomendacaoConselhoClasseAlunoTurmaDto filtro, 
                                                                         [FromServices] IObterRecomendacoesPorAlunoTurmaUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroRecomendacaoConselhoClasseAlunoTurmaDto(codigoAluno, codigoTurma, anoLetivo, modalidade, semestre)));
+            return Ok(await useCase.Executar(filtro));
         }
     }
 
