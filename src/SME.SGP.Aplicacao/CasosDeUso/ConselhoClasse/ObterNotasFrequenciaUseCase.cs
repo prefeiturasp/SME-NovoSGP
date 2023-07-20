@@ -32,6 +32,7 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> Executar(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(notasFrequenciaDto.CodigoTurma));
+            bool turmaInicialEhEdFisica = turma.EhTurmaEdFisica();
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
@@ -192,7 +193,7 @@ namespace SME.SGP.Aplicacao
                 (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos.ToArray(), usuarioAtual.PerfilAtual,
                     usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, true))).ToList();
 
-            if (notasFechamentoAluno.Any(x => x.Nota != null && turma.EhEJA()))
+            if (notasFechamentoAluno.Any(x => x.Nota != null && turma.EhEJA() && turmaInicialEhEdFisica))
                 ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno, turmaTipoNotaConceito);
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
