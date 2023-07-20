@@ -6,11 +6,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterProfessoresTitularesDaTurmaCompletosQuery : IRequest<IEnumerable<ProfessorTitularDisciplinaEol>>
     {
-        public ObterProfessoresTitularesDaTurmaCompletosQuery(string codigoTurma)
+        public ObterProfessoresTitularesDaTurmaCompletosQuery(string codigoTurma, bool realizarAgrupamento = false)
         {
             CodigoTurma = codigoTurma;
+            RealizarAgrupamento = realizarAgrupamento;
         }
 
         public string CodigoTurma { get; set; }
+        public bool RealizarAgrupamento { get; set; }
     }
 }
