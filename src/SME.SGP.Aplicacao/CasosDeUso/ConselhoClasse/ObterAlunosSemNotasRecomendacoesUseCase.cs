@@ -33,9 +33,10 @@ namespace SME.SGP.Aplicacao
                 var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turmaRegular, param.Bimestre == 0 ? turmaRegular.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : param.Bimestre));
 
                 turmasCodigo.Add(turmaRegular.CodigoTurma);
-                var alunosDaTurma = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaRegular.CodigoTurma))))
-                    ?.Where(x =>x.EstaAtivo(periodoEscolar.PeriodoInicio,periodoEscolar.PeriodoFim))
-                    ?.DistinctBy(x => x.NomeAluno);
+            
+                var alunosDaTurma = (await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turmaRegular.CodigoTurma, periodoEscolar.PeriodoFim)))
+                                ?.Where(x => !x.Inativo)
+                                ?.DistinctBy(x => x.NomeAluno);
 
                 var turmaComplementares = await mediator.Send(new ObterTurmasComplementaresPorAlunoQuery(alunosDaTurma.Select(x => x.CodigoAluno).ToArray()));
                 var turmasComplementaresFiltradas = turmaComplementares.Where(t => t.TurmaRegularCodigo == turmaRegular.CodigoTurma && t.Semestre == turmaRegular.Semestre);
@@ -100,7 +101,7 @@ namespace SME.SGP.Aplicacao
                 var componentesComNotasDoAluno = obterConselhoClasseAlunoNota.Where(x => x.AlunoCodigo.Equals(aluno.CodigoAluno) && !string.IsNullOrEmpty(x.Nota)).Select(s=> s.ComponenteCurricularId);
 
                 var turmas = componentesCurricularesPorTurma.Where(w => !string.IsNullOrEmpty(w.TurmaCodigo)).Select(x => x.TurmaCodigo).Distinct().ToArray();
-                var turmasComMatriculaValida = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(aluno.CodigoAluno, turmas, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
+                var turmasComMatriculaValida = await mediator.Send(new ObterTurmasComMatriculaValidasParaValidarConselhoQuery(aluno.CodigoAluno, turmas, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim));
                 
                 var componentesSemNota = componentesCurricularesPorTurma.Where(x => turmasComMatriculaValida.Contains(x.TurmaCodigo) 
                                                                                     && !componentesComNotasDoAluno.Contains(x.CodigoComponenteCurricular)).Select(s=> s.Nome).Distinct();
