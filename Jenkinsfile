@@ -20,7 +20,7 @@ pipeline {
     }
   
     agent {
-      node { label 'dotnet-5-rc' }
+      node { label 'SME-AGENT-SGP' }
     }
 
     options {
