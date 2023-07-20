@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Polly\SME.SGP.Infra.Polly.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Telemetria\SME.SGP.Infra.Telemetria.csproj" />
   </ItemGroup>

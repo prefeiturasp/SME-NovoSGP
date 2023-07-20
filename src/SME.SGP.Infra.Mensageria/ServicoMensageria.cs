@@ -96,4 +96,29 @@ namespace SME.SGP.Infra
             .Contains(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
     }
 
+    public class ServicoMensageriaMetricas : ServicoMensageria<MetricaMensageria>, IServicoMensageriaMetricas
+    {
+        public ServicoMensageriaMetricas(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) : base(conexaoRabbit, servicoTelemetria, registry)
+        {
+        }
+
+        public Task Concluido(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Ack, rota);
+
+        public Task Erro(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Rej, rota);
+
+        public Task Obtido(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Get, rota);
+
+        public Task Publicado(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Pub, rota);
+
+        private Task PublicarMetrica(TipoAcaoMensageria tipoAcao, string rota)
+            => Publicar(new MetricaMensageria(tipoAcao.ToString(), rota),
+                        RotasRabbitLogs.RotaMetricas,
+                        ExchangeSgpRabbit.QueueLogs,
+                        "Publicar Metrica Mensageria");
+
+    }
 }

@@ -18,9 +18,10 @@ namespace SME.SGP.Worker.RabbitMQ
         public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitMQ",
                 typeof(RotasRabbitSgp))
         {
