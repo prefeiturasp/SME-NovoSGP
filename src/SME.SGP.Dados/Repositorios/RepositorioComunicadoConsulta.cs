@@ -36,21 +36,18 @@ namespace SME.SGP.Dados.Repositorios
 	                c.modalidade modalidade,
 	                c.series_resumidas SeriesResumidas,
 	                c.tipo_comunicado TipoComunicado,
-	                gc.tipo_escola_id TipoEscolaId,
-	                gc.etapa_ensino_id EtapaEnsinoId,
-	                gc.tipo_ciclo_id TipoCicloId
+                    u.tipo_escola TipoEscolaId
                 from 
 	                comunicado c
                 left join comunicado_aluno ca on ca.comunicado_id = c.id 
                 left join comunicado_turma ct on ct.comunicado_id = c.id
-                left join comunidado_grupo cg on cg.comunicado_id = c.id
-                left join grupo_comunicado gc on cg.grupo_comunicado_id = gc.id 
+                left join turma t on t.turma_id = ct.turma_codigo 
+                left join ue u on u.id = t.ue_id or u.ue_id = c.codigo_ue 
                 where 
 	                c.ano_letivo >= extract(year from current_date)
                     and not c.excluido  and c.tipo_comunicado <> @tipocomunicado
                     and not coalesce(ca.excluido, false)
-                    and not coalesce(ct.excluido, false)
-                    and not coalesce(cg.excluido, false)";
+                    and not coalesce(ct.excluido, false)";
 
             return await database.Conexao.QueryAsync<ComunicadoTurmaAlunoDto>(sql, new { tipocomunicado = TipoComunicado.MENSAGEM_AUTOMATICA });
         }

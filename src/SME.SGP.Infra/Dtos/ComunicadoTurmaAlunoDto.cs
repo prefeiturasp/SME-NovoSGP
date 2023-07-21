@@ -11,8 +11,6 @@
         public short? Modalidade { get; set; }
         public string SeriesResumidas { get; set; }
         public short TipoComunicado { get; set; }
-        public string TipoEscolaId { get; set; }
-        public string EtapaEnsinoId { get; set; }
-        public string TipoCicloId { get; set; }
+        public string TipoEscola { get; set; }
     }
 }
