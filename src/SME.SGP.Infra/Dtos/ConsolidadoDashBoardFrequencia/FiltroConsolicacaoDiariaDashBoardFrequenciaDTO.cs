@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class FiltroConsolicacaoDiariaDashBoardFrequenciaDto
+    public class FiltroConsolicacaoDiariaDashBoardFrequenciaDTO
     {
         [Required]
         public int AnoLetivo { get; set; }

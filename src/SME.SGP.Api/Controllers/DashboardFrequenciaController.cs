@@ -108,7 +108,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ConsolidarFrequenciasParaDashBorad([FromQuery] FiltroConsolicacaoDiariaDashBoardFrequenciaDto filtro, [FromServices] IExecutaConsolidacaoDiariaDashBoardFrequenciaControllerUseCase useCase)
+        public async Task<IActionResult> ConsolidarFrequenciasParaDashBorad([FromQuery] FiltroConsolicacaoDiariaDashBoardFrequenciaDTO filtro, [FromServices] IExecutaConsolidacaoDiariaDashBoardFrequenciaDTOUseCase useCase)
         {
             await useCase.Executar(filtro);
             return Ok();

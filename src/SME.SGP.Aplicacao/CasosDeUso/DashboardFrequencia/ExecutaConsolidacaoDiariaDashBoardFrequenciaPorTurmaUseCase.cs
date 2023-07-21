@@ -13,21 +13,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase : AbstractUseCase, IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase
     {
-        private readonly IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma;
-        
         public ExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase(IMediator mediator,IRepositorioConsolidacaoFrequenciaTurma repositorioConsolidacaoFrequenciaTurma) : base(mediator)
-        {
-            this.repositorioConsolidacaoFrequenciaTurma = repositorioConsolidacaoFrequenciaTurma ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoFrequenciaTurma));
-        }
+        {}
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<ConsolidacaoPorTurmaDashBoardFrequencia>();
             
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(filtro.TurmaId));
-
-            if (turma == null)
-                return false;
 
             var anoLetivo = filtro.AnoLetivo;
             var ehAnosAnterior = anoLetivo < DateTimeExtension.HorarioBrasilia().Year;
@@ -66,12 +59,10 @@ namespace SME.SGP.Aplicacao
                 if (frequencia.Presentes == 0 && frequencia.Ausentes == 0 && frequencia.Remotos == 0)
                     continue;
 
-                var consolidacaoDashBoardFrequencia = await repositorioConsolidacaoFrequenciaTurma
-                        .ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(filtro.TurmaId,
-                            frequencia.DataAula, turma.ModalidadeCodigo, filtro.AnoLetivo, turma.Ue.DreId,
-                            turma.Ue.Id, TipoPeriodoDashboardFrequencia.Diario) ?? new ConsolidacaoDashBoardFrequencia();
+                var consolidacaoDashBoardFrequencia = await mediator.Send(new ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipoQuery(filtro.TurmaId,
+                            frequencia.DataAula, turma.ModalidadeCodigo, filtro.AnoLetivo, turma.Ue.DreId, turma.Ue.Id, TipoPeriodoDashboardFrequencia.Diario)) ?? new ConsolidacaoDashBoardFrequencia();
 
-                await repositorioConsolidacaoFrequenciaTurma.SalvarAsync(MapearParaEntidade(consolidacaoDashBoardFrequencia,turma, frequencia, (int)TipoPeriodoDashboardFrequencia.Diario,mes:mes));
+                await mediator.Send(new SalvarConsolidacaoDashBoardFrequenciaCommand(MapearParaEntidade(consolidacaoDashBoardFrequencia,turma, frequencia, (int)TipoPeriodoDashboardFrequencia.Diario,mes:mes)));
                 
             }
 

@@ -18,11 +18,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var filtroConsolicacao = mensagem.ObterObjetoMensagem<FiltroConsolicacaoDiariaDashBoardFrequenciaDto>();
-            
-            if (filtroConsolicacao == null)
-                throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_INICIAR_A_CONSOLIDACAO_DIARIA);
-            
+            var filtroConsolicacao = mensagem.ObterObjetoMensagem<FiltroConsolicacaoDiariaDashBoardFrequenciaDTO>();
+
             var uesCodigos = await mediator.Send(new ObterCodigosUEsQuery());
 
             if (uesCodigos == null || !uesCodigos.Any())

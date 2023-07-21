@@ -26,14 +26,7 @@ namespace SME.SGP.Aplicacao
                 DataAula = request.DataAula,
             };            
 
-            var publicar = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDiariaDashBoardFrequenciaPorTurma, filtro, Guid.NewGuid(), null));
-            if (!publicar)
-            {
-                var mensagem = string.Format(MensagemNegocioComuns.NAO_FOI_POSSIVEL_INSERIR_TURMA_X_NA_FILA_DE_CONSOLIDACAO_DIARIA_DE_FREQUENCIA, request.TurmaId);
-                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, Dominio.Enumerados.LogNivel.Critico, Dominio.Enumerados.LogContexto.Frequencia));
-            }
-
-            return true;
+            return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDiariaDashBoardFrequenciaPorTurma, filtro, Guid.NewGuid(), null));
         }
     }
 }

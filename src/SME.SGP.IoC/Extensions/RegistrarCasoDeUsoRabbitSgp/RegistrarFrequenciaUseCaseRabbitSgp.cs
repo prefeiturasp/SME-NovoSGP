@@ -31,7 +31,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarSincronizacaoRegistroFrequenciaAlunosUseCase, ExecutarSincronizacaoRegistroFrequenciaAlunosUseCase>();
             services.TryAddScoped<IExcluirFrequenciaPorAulaIdUseCase, ExcluirFrequenciaPorAulaIdUseCase>();
             services.TryAddScoped<IExcluirAnotacoesFrequenciaPorAulaIdUseCase, ExcluirAnotacoesFrequenciaPorAulaIdUseCase>();
-            services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaControllerUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaControllerUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaDTOUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaDTOUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorUeUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaPorUeUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase>();

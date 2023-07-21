@@ -1214,7 +1214,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDadosDashboardTotalAusenciasCompensadasUseCase, ObterDadosDashboardTotalAusenciasCompensadasUseCase>();
             
             // Consolidação Dashboard
-            services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaControllerUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaControllerUseCase>();
+            services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaDTOUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaDTOUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorUeUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaPorUeUseCase>();
             services.TryAddScoped<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase, ExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase>();

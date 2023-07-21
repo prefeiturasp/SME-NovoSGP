@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma.ServicosF
                 {
                     NomeAluno = ConstantesTeste.ALUNO_NOME_1,
                     Ano = DateTime.Now.Year,
-                    DataSituacao = DateTime.Now.AddYears(-14).Date,
+                    DataSituacao = DateTime.Now.AddDays(-14).Date,
                     CodigoAluno = ConstantesTeste.ALUNO_CODIGO_1,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = ConstantesTeste.SITUACAO_MATRICULA_ATIVO
@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma.ServicosF
                 {
                     NomeAluno = ConstantesTeste.ALUNO_NOME_2,
                     Ano = DateTime.Now.Year,
-                    DataSituacao = DateTime.Now.AddYears(-14).Date,
+                    DataSituacao = DateTime.Now.AddDays(-14).Date,
                     CodigoAluno = ConstantesTeste.ALUNO_CODIGO_2,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = ConstantesTeste.SITUACAO_MATRICULA_ATIVO
@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma.ServicosF
                 {
                     NomeAluno = ConstantesTeste.ALUNO_NOME_3,
                     Ano = DateTime.Now.Year,
-                    DataSituacao = DateTime.Now.AddYears(-14).Date,
+                    DataSituacao = DateTime.Now.AddDays(-14).Date,
                     CodigoAluno = ConstantesTeste.ALUNO_CODIGO_3,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = ConstantesTeste.SITUACAO_MATRICULA_ATIVO
@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma.ServicosF
                 {
                     NomeAluno = ConstantesTeste.ALUNO_NOME_4,
                     Ano = DateTime.Now.Year,
-                    DataSituacao = DateTime.Now.AddYears(-14).Date,
+                    DataSituacao = DateTime.Now.AddDays(-14).Date,
                     CodigoAluno = ConstantesTeste.ALUNO_CODIGO_4,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = ConstantesTeste.SITUACAO_MATRICULA_ATIVO
