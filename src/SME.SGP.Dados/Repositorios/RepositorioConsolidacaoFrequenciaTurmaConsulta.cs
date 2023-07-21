@@ -1,8 +1,13 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -135,6 +140,64 @@ namespace SME.SGP.Dados.Repositorios
             return await database
                 .Conexao
                 .QueryAsync<GraficoAusenciasComJustificativaDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre });
-        } 
+        }
+
+        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade, string codigoTurma, DateTime dataInicioSemana, DateTime datafimSemana, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        {
+            var query = new StringBuilder();
+
+            query.AppendLine(@$"select t.nome NomeTurma,  
+                                t.ano AnoTurma, 
+                                t.modalidade_codigo ModalidadeTurma, 
+                                dre.abreviacao AbreviacaoDre,
+                                dre.dre_id CodigoDre,
+                                cft.quantidade_acima_minimo_frequencia QuantidadeAcimaMinimoFrequencia, 
+                                cft.quantidade_abaixo_minimo_frequencia QuantidadeAbaixoMinimoFrequencia,
+                                {visaoDre.ToString().ToLower()} as VisaoDre::boolean, 
+                                {ueId.ToString()} as ueId::bigint 
+                                from consolidacao_frequencia_turma cft
+                                inner join turma t on cft.turma_id = t.id
+                                inner join ue on t.ue_id = ue.ue_id
+                                inner join dre on dre.id = ue.ue_id
+                         where ano_letivo = @anoLetivo
+                           and modalidade_codigo = @modalidade
+                           and tipo = @tipoPeriodo ");
+
+            if (!string.IsNullOrEmpty(codigoTurma) && !codigoTurma.Contains("-99"))
+                query.AppendLine("and t.turma_id = @codigoTurma ");
+
+            if (dreId != -99)
+                query.AppendLine("and dre.id = @dreId ");
+
+            if (ueId != -99)
+                query.AppendLine("and ue.id = @ueId ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
+                query.AppendLine(@"and periodo_inicio = @dataInicioSemana and periodo_fim = @datafimSemana  ");
+
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
+                query.AppendLine(@"and Extract('Month' From periodo_inicio) = @mes ");
+
+            if (visaoDre)
+                query.AppendLine("group by dre_abreviacao, tipo, dre_codigo ");
+            else if (ueId == -99)
+                query.AppendLine("group by turma_ano, tipo, dre_codigo");
+            else if (ueId != -99 && !visaoDre)
+                query.AppendLine("group by turma_nome, tipo, dre_codigo");
+
+            var frequencias = await database.Conexao.QueryAsync<FrequenciaGlobalMensalSemanalDto>(query.ToString(), new
+            {
+                dreId,
+                ueId,
+                anoLetivo,
+                modalidade,
+                dataInicioSemana,
+                datafimSemana,
+                mes,
+                tipoPeriodo = tipoPeriodoDashboard
+            });
+
+            return frequencias.OrderBy(f => f.Descricao).ThenBy(f => f.CodigoDre).ToList();
+        }
     }
 }
