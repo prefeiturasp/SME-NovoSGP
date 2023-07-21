@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
         {
         }
         
-        [Fact(DisplayName = "Cosolidação Dashboard - Deve gerar a consolidação diaria com data")]
+        [Fact(DisplayName = "Consolidação Dashboard - Deve gerar a consolidação diaria com data")]
         public async Task Deve_gerar_consolidacao_diaria_com_data()
         {
             await CriarItensBasicos();
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
         }
         
-        [Fact(DisplayName = "Cosolidação Dashboard - Deve gerar a consolidação diaria com período")]
+        [Fact(DisplayName = "Consolidação Dashboard - Deve gerar a consolidação diaria com período")]
         public async Task Deve_gerar_consolidacao_diaria_com_periodo()
         {
             await CriarItensBasicos();
@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
         }
         
-        [Fact(DisplayName = "Cosolidação Dashboard - Deve atualizar a consolidação diaria com data")]
+        [Fact(DisplayName = "Consolidação Dashboard - Deve atualizar a consolidação diaria com data")]
         public async Task Deve_atualizar_consolidacao_diaria_com_data()
         {
             await CriarItensBasicos();
@@ -159,7 +159,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
         }
         
-        [Fact(DisplayName = "Cosolidação Dashboard - Deve atualizar a consolidação diaria com período")]
+        [Fact(DisplayName = "Consolidação Dashboard - Deve atualizar a consolidação diaria com período")]
         public async Task Deve_atualizar_consolidacao_diaria_com_periodo()
         {
             await CriarItensBasicos();
