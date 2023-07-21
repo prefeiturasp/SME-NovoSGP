@@ -39,8 +39,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarNotificacaoRegistroFrequenciaUseCase, ExecutarNotificacaoRegistroFrequenciaUseCase>();
             services.TryAddScoped<IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase, ConsolidacaoDashBoardFrequenciaPorDataETipoUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaTurmasPorUEUseCase, ConsolidarFrequenciaTurmasPorUEUseCase>();
-            services.TryAddScoped<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaPorTurmaAnualUseCase, ConsolidarFrequenciaPorTurmaAnualUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaPorTurmaMensalUseCase, ConsolidarFrequenciaPorTurmaMensalUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaPorTurmaSemanalUseCase, ConsolidarFrequenciaPorTurmaSemanalUseCase>();
+            
             services.TryAddScoped<IVerificaFrequenciaRegistradaAlunosInativosUseCase, VerificaFrequenciaRegistradaAlunosInativosUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaTurmasMensalUseCase, ConsolidarFrequenciaTurmasMensalUseCase>();
+            services.TryAddScoped<IConsolidarFrequenciaTurmasSemanalUseCase, ConsolidarFrequenciaTurmasSemanalUseCase>();
 
             //Tratar a carga referência Aula no registro frequencia aluno
             services.TryAddScoped<ITratarRegistroFrequenciaAlunoUseCase, TratarRegistroFrequenciaAlunoUseCase>();
