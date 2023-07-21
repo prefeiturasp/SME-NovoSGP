@@ -14,7 +14,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Frequencia
+namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
 {
     public class Ao_consolidar_frequencia_turma_mensal : TesteBaseComuns
     {

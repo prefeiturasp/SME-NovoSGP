@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
         }
-
+        protected abstract (DateTime?, DateTime?) Periodos { get; }
         protected abstract TipoConsolidadoFrequencia TipoConsolidado { get; }
         protected abstract Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaConsideradas(string codigoTurma);
 
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados)
         {
-            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado));
+            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.Item1, Periodos.Item2));
         }
     }
 }

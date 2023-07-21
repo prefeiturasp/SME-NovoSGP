@@ -27,7 +27,12 @@ namespace SME.SGP.Aplicacao
 
                 await repositorio.Excluir(request.TurmaId);
                 var id = await repositorio
-                    .Inserir(new ConsolidacaoFrequenciaTurma(request.TurmaId, request.QuantidadeAcimaMinimoFrequencia, request.QuantidadeAbaixoMinimoFrequencia, request.TipoConsolidado));
+                    .Inserir(new ConsolidacaoFrequenciaTurma(request.TurmaId, 
+                                                             request.QuantidadeAcimaMinimoFrequencia, 
+                                                             request.QuantidadeAbaixoMinimoFrequencia, 
+                                                             request.TipoConsolidado,
+                                                             request.PeriodoInicio,
+                                                             request.PeriodoFim));
 
                 unitOfWork.PersistirTransacao();
 

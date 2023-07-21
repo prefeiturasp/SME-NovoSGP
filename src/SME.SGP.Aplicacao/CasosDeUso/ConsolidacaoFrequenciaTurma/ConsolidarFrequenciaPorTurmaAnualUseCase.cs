@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ namespace SME.SGP
         }
 
         protected override TipoConsolidadoFrequencia TipoConsolidado => TipoConsolidadoFrequencia.Anual;
+
+        protected override (DateTime?, DateTime?) Periodos => (null, null);
 
         protected override async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaConsideradas(string codigoTurma)
         {
