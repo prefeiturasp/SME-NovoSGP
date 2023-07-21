@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -58,9 +59,13 @@ namespace SME.SGP.Aplicacao
             }
 
             var alunos = (await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo, true), cancellationToken)).Select(c => c.CodigoAluno).Distinct();
+            
             await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, request.TurmaCodigo, request.ComponenteCurricularId, request.Meses), cancellationToken);
+            
             await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula));
-            //Fazer chamada para atualização semanal e mensal - D2
+            
+            await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula));
+
             return await mediator.Send(new IncluirFilaConciliacaoFrequenciaTurmaCommand(request.TurmaCodigo, periodo.Bimestre, request.ComponenteCurricularId, periodo.DataInicio, periodo.DataFim), cancellationToken);
         }
     }
