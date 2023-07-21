@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<Dre> ObterPorIdAsync(long id);
 
-        IEnumerable<Dre> ObterTodas();
+        Task<IEnumerable<Dre>> ObterTodas();
 
         Task<string> ObterCodigoDREPorTurmaId(long turmaId);
         Task<string> ObterCodigoDREPorUEId(long ueId);

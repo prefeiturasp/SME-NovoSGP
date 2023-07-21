@@ -730,7 +730,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAbrangenciaDresUseCase, ObterAbrangenciaDresUseCase>();
             services.TryAddScoped<IObterTurmasNaoHistoricasUseCase, ObterTurmasNaoHistoricasUseCase>();
             services.TryAddScoped<ICarregarAbrangenciaUsusarioUseCase, CarregarAbrangenciaUsusarioUseCase>();
-
+            
             services.TryAddScoped<IRabbitDeadletterSerapSyncUseCase, RabbitDeadletterSerapSyncUseCase>();
 
             // Acompanhamento Aluno
@@ -1290,9 +1290,10 @@ namespace SME.SGP.IoC
             // Log.
             services.TryAddScoped<ISalvarLogUseCase, SalvarLogUseCase>();
 
-            //Eventos Escola Aqui/Conselho Classe Recomendação integração
+            //Eventos Escola Aqui/Conselho Classe Recomendação/Dre integração
             services.TryAddScoped<IObterRecomendacoesPorAlunoTurmaUseCase, ObterRecomendacoesPorAlunoTurmaUseCase>();
             services.TryAddScoped<IObterEventosEscolaAquiPorDreUeTurmaMesUseCase, ObterEventosEscolaAquiPorDreUeTurmaMesUseCase>();
+            services.TryAddScoped<IObterDresUseCase, ObterDresUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
