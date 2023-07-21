@@ -1,10 +1,12 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
+using Newtonsoft.Json;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,15 +16,12 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
-        {            
-            var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroConsolicacaoGeralDashBoardFrequenciaDto>();
-
-            if (filtro == null)
-            {
-                var mensagem = $"Não foi possível iniciar a consolidação diária";
-                throw new NegocioException(mensagem);
-            }
+        public async Task<bool> Executar(MensagemRabbit mensagem)
+        {
+            var filtroConsolicacao = mensagem.ObterObjetoMensagem<FiltroConsolicacaoDiariaDashBoardFrequenciaDto>();
+            
+            if (filtroConsolicacao == null)
+                throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_INICIAR_A_CONSOLIDACAO_DIARIA);
             
             var uesCodigos = await mediator.Send(new ObterCodigosUEsQuery());
 
@@ -33,15 +32,13 @@ namespace SME.SGP.Aplicacao
             {
                 var dados = new ConsolidacaoPorUeDashBoardFrequencia()
                 {
-                    AnoLetivo = filtro.AnoLetivo,
-                    Mes = filtro.Mes,
-                    UeCodigo = ueCodigo,
-                    TipoPeriodo = TipoPeriodoDashboardFrequencia.Diario
+                    AnoLetivo = filtroConsolicacao.AnoLetivo,
+                    Mes = filtroConsolicacao.Mes,
+                    UeCodigo = ueCodigo
                 };
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDashBoardFrequenciaPorUe, dados, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDiariaDashBoardFrequenciaPorUe, dados, Guid.NewGuid(), null));
             }
-
             return true;
         }
     }

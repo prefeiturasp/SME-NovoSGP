@@ -14,7 +14,6 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Authorize("Bearer")]
     [Route("api/v1/dashboard/frequencias")]
-    [Authorize("Bearer")]
     public class DashboardFrequenciaController : Controller
     {
         [HttpGet("consolidacao")]
@@ -108,8 +107,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(bool), 200)]
-        [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ConsolidarFrequenciasParaDashBorad([FromQuery] FiltroConsolicacaoGeralDashBoardFrequenciaDto filtro, [FromServices] IExecutaConsolidacaoDashBoardFrequenciaUseCase useCase)
+        // [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ConsolidarFrequenciasParaDashBorad([FromQuery] FiltroConsolicacaoDiariaDashBoardFrequenciaDto filtro, [FromServices] IExecutaConsolidacaoDiariaDashBoardFrequenciaControllerUseCase useCase)
         {
             await useCase.Executar(filtro);
             return Ok();

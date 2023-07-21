@@ -26,5 +26,7 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string NENHUM_ARQUIVO_ENCONTRADO = "Nenhum Arquivo foi Encontrado para Exclusão";
         public const string NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO = "Não foi possível localizar o usuário.";
         public const string ACESSO_SUPORTE_INDISPONIVEL = "Acesso de suporte indisponível para este usuário por conta de informações sigilosas";
+        public const string NAO_FOI_POSSIVEL_INICIAR_A_CONSOLIDACAO_DIARIA =  "Não foi possível iniciar a consolidação diária";
+        public const string NAO_FOI_POSSIVEL_INSERIR_TURMA_X_NA_FILA_DE_CONSOLIDACAO_DIARIA_DE_FREQUENCIA = "Não foi possível inserir a turma: {0} na fila de consolidação de frequência.";
     }
 }

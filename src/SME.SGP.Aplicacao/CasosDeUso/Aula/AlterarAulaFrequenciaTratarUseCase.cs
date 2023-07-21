@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new AlterarAulaFrequenciaTratarCommand(aulaParaTratar, filtro.QuantidadeAnterior));
                 await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(aulaParaTratar.TurmaId, aulaParaTratar.DisciplinaId, aulaParaTratar.Id));
                 var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(aulaParaTratar.TurmaId));
-                foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
-                    await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turmaId, aulaParaTratar.DataAula, (TipoPeriodoDashboardFrequencia)tipo));
+                await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turmaId, aulaParaTratar.DataAula));
+                //Fazer chamada para atualização semanal e mensal - D2
             }
 
             return true;
