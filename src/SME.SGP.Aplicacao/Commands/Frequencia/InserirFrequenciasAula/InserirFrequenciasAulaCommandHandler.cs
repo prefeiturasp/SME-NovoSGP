@@ -93,8 +93,9 @@ namespace SME.SGP.Aplicacao
                 
                 await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia), cancellationToken);
 
-                foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
-                    await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo), cancellationToken);
+                await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula), cancellationToken);
+                
+                await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula));
 
                 return new FrequenciaAuditoriaAulaDto() { Auditoria = (AuditoriaDto)registroFrequencia, DataAula = aula.DataAula, TurmaId = aula.TurmaId, DisciplinaId = aula.DisciplinaId };
             }

@@ -55,19 +55,6 @@ namespace SME.SGP.Aplicacao
             };
             var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
 
-            var dreCodigo = "";
-            var ueCodigo = "";
-
-
-            if (ueId != -99)
-            {
-                var ue = await mediator.Send(new ObterUeComDrePorIdQuery(ueId));
-                ueCodigo = ue.CodigoUe;
-                dreCodigo = ue.Dre.CodigoDre;
-            }
-            else if (dreId != -99)
-                dreCodigo = await mediator.Send(new ObterCodigoDREPorUeIdQuery(dreId));
-
             return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia, modalidade);
         }
 
