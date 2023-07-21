@@ -419,7 +419,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioFrequenciaDiariaAluno, RepositorioFrequenciaDiariaAluno>();
             services.TryAddScoped<IRepositorioConselhoClasseAlunoRecomendacaoConsulta, RepositorioConselhoClasseAlunoRecomendacaoConsulta>();
             services.TryAddScoped<IRepositorioEventoConsulta, RepositorioEventoConsulta>();
-            services.TryAddScoped<IRepositorioComunicadoConsulta, RepositorioComunicadoConsulta>();
+
 
             // Acompanhamento Aluno
             services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
@@ -1294,7 +1294,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterRecomendacoesPorAlunoTurmaUseCase, ObterRecomendacoesPorAlunoTurmaUseCase>();
             services.TryAddScoped<IObterEventosEscolaAquiPorDreUeTurmaMesUseCase, ObterEventosEscolaAquiPorDreUeTurmaMesUseCase>();
             services.TryAddScoped<IObterDresUseCase, ObterDresUseCase>();
-            services.TryAddScoped<IObterComunicadosAnoAtualUseCase, ObterComunicadosAnoAtualUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
