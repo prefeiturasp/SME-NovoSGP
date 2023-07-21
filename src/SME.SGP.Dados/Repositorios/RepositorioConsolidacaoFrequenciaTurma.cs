@@ -79,7 +79,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new { turmaId });
         }
         
-        public async Task<ConsolidacaoDashBoardFrequencia> ObterConsolidacaoDashboardPorTurmaAulaModalidadeMesAnoLetivoDreUeTipo(long turmaId, DateTime dataAula, Modalidade modalidadeCodigo, int mes, int anoLetivo, long dreId, long ueId, TipoPeriodoDashboardFrequencia tipo)
+        public async Task<ConsolidacaoDashBoardFrequencia> ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(long turmaId, DateTime dataAula, Modalidade modalidadeCodigo, int anoLetivo, long dreId, long ueId, TipoPeriodoDashboardFrequencia tipo)
         {
             var query = new StringBuilder(@"SELECT id, 
 			                                     turma_nome, 
@@ -105,13 +105,12 @@ namespace SME.SGP.Dados.Repositorios
                                     where turma_id = @turmaId 
                                        and data_aula = @dataAula 
                                        and modalidade_codigo = @modalidadeCodigo 
-                                       and mes = @mes 
                                        and ano_letivo = @anoLetivo 
                                        and dre_id = @dreId 
                                        and ue_id = @ueId
                                        and tipo = @tipo ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDashBoardFrequencia>(query.ToString(), new { turmaId, dataAula, modalidadeCodigo = (int)modalidadeCodigo, mes, anoLetivo, dreId, ueId, tipo = (int)tipo});
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDashBoardFrequencia>(query.ToString(), new { turmaId, dataAula, modalidadeCodigo = (int)modalidadeCodigo, anoLetivo, dreId, ueId, tipo = (int)tipo});
         }
         
         public virtual async Task<long> SalvarAsync(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia)

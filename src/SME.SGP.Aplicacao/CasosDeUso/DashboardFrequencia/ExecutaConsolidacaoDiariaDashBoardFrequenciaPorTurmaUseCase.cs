@@ -50,10 +50,12 @@ namespace SME.SGP.Aplicacao
                  where (ehAnosAnterior && !a.Inativo && a.DataMatricula.Date <= ultimoDiaDoMes.Date) ||
                       (!ehAnosAnterior && a.DataMatricula.Date <= ultimoDiaDoMes.Date)
                  select ft)
-                .GroupBy(g=> g.DataAula)
+                .GroupBy(g=> new {g.DataAula, g.TotalAulas, g.TotalFrequencias})
                 .Select(f => new DadosParaConsolidacaoDashBoardFrequenciaDto()
                 {
-                    DataAula = f.Key,
+                    DataAula = f.Key.DataAula,
+                    TotalAulas = f.Key.TotalAulas,
+                    TotalFrequencias = f.Key.TotalFrequencias,
                     Presentes = f.Sum(s => s.Presentes),
                     Ausentes = f.Sum(s => s.Ausentes),
                     Remotos = f.Sum(s => s.Remotos)
@@ -65,8 +67,8 @@ namespace SME.SGP.Aplicacao
                     continue;
 
                 var consolidacaoDashBoardFrequencia = await repositorioConsolidacaoFrequenciaTurma
-                        .ObterConsolidacaoDashboardPorTurmaAulaModalidadeMesAnoLetivoDreUeTipo(filtro.TurmaId,
-                            frequencia.DataAula, turma.ModalidadeCodigo, filtro.Mes, filtro.AnoLetivo, turma.Ue.DreId,
+                        .ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(filtro.TurmaId,
+                            frequencia.DataAula, turma.ModalidadeCodigo, filtro.AnoLetivo, turma.Ue.DreId,
                             turma.Ue.Id, TipoPeriodoDashboardFrequencia.Diario) ?? new ConsolidacaoDashBoardFrequencia();
 
                 await repositorioConsolidacaoFrequenciaTurma.SalvarAsync(MapearParaEntidade(consolidacaoDashBoardFrequencia,turma, frequencia, (int)TipoPeriodoDashboardFrequencia.Diario,mes:mes));
@@ -97,6 +99,8 @@ namespace SME.SGP.Aplicacao
             consolidacaoDashBoardFrequencia.QuantidadeRemotos = dados.Remotos;
             consolidacaoDashBoardFrequencia.QuantidadeAusentes = dados.Ausentes;
             consolidacaoDashBoardFrequencia.CriadoEm = DateTimeExtension.HorarioBrasilia();
+            consolidacaoDashBoardFrequencia.TotalAulas = dados.TotalAulas;
+            consolidacaoDashBoardFrequencia.TotalFrequencias = dados.TotalFrequencias;
             return consolidacaoDashBoardFrequencia;
         }
         private static string AbreviacaoDreFormatado(string abreviacaoDre)
