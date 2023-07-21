@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -10,9 +9,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConsolidarFrequenciaPorTurmaUseCase : AbstractUseCase, IConsolidarFrequenciaPorTurmaUseCase
+    public abstract class ConsolidarFrequenciaPorTurmaAbstractUseCase : AbstractUseCase
     {
-        public ConsolidarFrequenciaPorTurmaUseCase(IMediator mediator) : base(mediator)
+        protected FiltroConsolidacaoFrequenciaTurma Filtro { get; set; }
+        protected bool AnoAnterior { get; set; }
+
+        public ConsolidarFrequenciaPorTurmaAbstractUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -20,28 +22,25 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
-                var turma = !string.IsNullOrWhiteSpace(filtro.TurmaCodigo) ?
-                    await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo)) :
-                    await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+                Filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
+                var turma = !string.IsNullOrWhiteSpace(Filtro.TurmaCodigo) ?
+                    await mediator.Send(new ObterTurmaPorCodigoQuery(Filtro.TurmaCodigo)) :
+                    await mediator.Send(new ObterTurmaPorIdQuery(Filtro.TurmaId));
 
                 if (turma != null)
                 {
                     var dataAtual = DateTimeExtension.HorarioBrasilia();
-                    var anoAnterior = turma.AnoLetivo < dataAtual.Year;
+                    AnoAnterior = turma.AnoLetivo < dataAtual.Year;
 
-                    var alunos = await mediator
-                        .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (dataAtual, dataAtual)));
-
-                    if (filtro.PercentualFrequenciaMinimo == 0)
+                    if (Filtro.PercentualFrequenciaMinimo == 0)
                     {
                         var parametro = await mediator
                             .Send(new ObterParametroSistemaPorTipoEAnoQuery(turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? TipoParametroSistema.PercentualFrequenciaMinimaInfantil : TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo));
 
-                        filtro.PercentualFrequenciaMinimo = double.Parse(parametro.Valor);
+                        Filtro.PercentualFrequenciaMinimo = double.Parse(parametro.Valor);
                     }
 
-                    await ConsolidarFrequenciaAlunos(turma.Id, turma.CodigoTurma, filtro.PercentualFrequenciaMinimo, alunos, anoAnterior);
+                    await ConsolidarFrequenciaAlunos(turma.Id, turma.CodigoTurma, Filtro.PercentualFrequenciaMinimo);
                 }
 
                 return true;
@@ -53,16 +52,12 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo, IEnumerable<AlunoPorTurmaResposta> alunos, bool anoAnterior)
-        {
-            var frequenciaTurma = await mediator.Send(new ObterFrequenciaGeralPorTurmaQuery(turmaCodigo));
+        protected abstract TipoConsolidadoFrequencia TipoConsolidado { get; }
+        protected abstract Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaConsideradas(string codigoTurma);
 
-            var frequenciasConsideradas = from ft in frequenciaTurma
-                                          join a in alunos
-                                          on ft.AlunoCodigo equals a.CodigoAluno
-                                          where (anoAnterior && !a.Inativo && a.DataMatricula.Date <= ft.PeriodoFim.Date) ||
-                                                (!anoAnterior && a.DataMatricula.Date <= ft.PeriodoFim.Date)
-                                          select ft;
+        private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo)
+        {
+            var frequenciasConsideradas = await ObterFrequenciaConsideradas(turmaCodigo);
 
             var quantidadeReprovados = 0;
             var quantidadeAprovados = 0;
@@ -90,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados)
         {
-            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados));
+            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado));
         }
     }
 }
