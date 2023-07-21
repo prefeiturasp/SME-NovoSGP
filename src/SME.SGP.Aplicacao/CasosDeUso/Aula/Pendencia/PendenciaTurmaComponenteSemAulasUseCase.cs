@@ -21,8 +21,10 @@ namespace SME.SGP.Aplicacao
             var filtro = param.ObterObjetoMensagem<TurmaDTO>();
 
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(filtro.TurmaId, DateTime.Now));
-            var diasAposInicioPeriodo = await mediator.Send(new DiasAposInicioPeriodoLetivoComponenteSemAulaQuery());
+            if (periodoEscolar == null)
+                return false;
 
+            var diasAposInicioPeriodo = await mediator.Send(new DiasAposInicioPeriodoLetivoComponenteSemAulaQuery());
             var periodoInicio = periodoEscolar.PeriodoInicio.AddDays(diasAposInicioPeriodo);
             if (periodoInicio.Date >= DateTimeExtension.HorarioBrasilia().Date)
                 return false;
@@ -31,9 +33,9 @@ namespace SME.SGP.Aplicacao
             var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(turmasCodigo));
             var turmaDreUe = turmasDreUe.FirstOrDefault();
 
-            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigo));
-
             var transacaoIniciada = false;
+
+            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigo));
             foreach (var componente in componentes)
             {
                 if (componente.Regencia)
@@ -43,9 +45,12 @@ namespace SME.SGP.Aplicacao
                 if (!possuiAulaNoPeriodo)
                 {
                     var componenteCurricularId = long.Parse(componente.Codigo);
-                    var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmaDreUe.CodigoTurma, componente.Codigo));
-                    var possuiPendencia = await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaDreUe.Id, componenteCurricularId, periodoEscolar.Id, professorTitular.ProfessorRf, TipoPendencia.ComponenteSemAula));
 
+                    var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmaDreUe.CodigoTurma, componente.Codigo));
+                    if (professorTitular == null)
+                        continue;
+
+                    var possuiPendencia = await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaDreUe.Id, componenteCurricularId, periodoEscolar.Id, professorTitular.ProfessorRf, TipoPendencia.ComponenteSemAula));
                     if (!possuiPendencia)
                     {
                         if (!transacaoIniciada)

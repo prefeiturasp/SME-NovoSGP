@@ -14,10 +14,10 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula.ServicosFakes
         {
             var retorno = new List<ComponenteCurricularDto>();
 
-            if (request.CodigosDeTurmas.Contains("1"))
-                retorno.Add(new ComponenteCurricularDto { Codigo = "138", Descricao = "Lingua Portuguesa", Regencia = false });
-            else
+            if (request.CodigosDeTurmas.Contains("2"))
                 retorno.Add(new ComponenteCurricularDto { Codigo = "1114", Descricao = "REGENCIA_CLASSE_EJA_BASICA", Regencia = true });
+            else
+                retorno.Add(new ComponenteCurricularDto { Codigo = "138", Descricao = "Lingua Portuguesa", Regencia = false });
 
             return await Task.FromResult(retorno);
         }

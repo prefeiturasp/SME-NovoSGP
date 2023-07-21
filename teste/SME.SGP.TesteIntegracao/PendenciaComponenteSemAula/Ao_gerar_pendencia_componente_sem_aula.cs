@@ -71,11 +71,22 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
         }
 
         [Fact]
+        public async Task Nao_deve_gerar_pendencia_quando_data_atual_estiver_fora_do_periodo_escolar()
+        {
+            var pendenciaTurmaComponenteSemAulasUseCase = ServiceProvider.GetService<IPendenciaTurmaComponenteSemAulasUseCase>();
+
+            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO, -30, -30);
+
+            var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_1, TurmaId = TURMA_ID_1 })));
+            retorno.ShouldBeFalse();
+        }
+
+        [Fact]
         public async Task Nao_deve_gerar_pendencia_antes_do_parametro_dias_apos_inicio_periodo()
         {
             var pendenciaTurmaComponenteSemAulasUseCase = ServiceProvider.GetService<IPendenciaTurmaComponenteSemAulasUseCase>();
 
-            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO_DENTRO_INTERVALO);
+            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO_DENTRO_INTERVALO, PERIODO_INICIO, PERIODO_FIM);
 
             var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_1, TurmaId = TURMA_ID_1 })));
             retorno.ShouldBeFalse();
@@ -86,9 +97,42 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
         {
             var pendenciaTurmaComponenteSemAulasUseCase = ServiceProvider.GetService<IPendenciaTurmaComponenteSemAulasUseCase>();
 
-            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO);
+            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO, PERIODO_INICIO, PERIODO_FIM);
+
+            await InserirNaBase(new Turma
+            {
+                Nome = TURMA_ANO_3,
+                CodigoTurma = TURMA_CODIGO_2,
+                Ano = TURMA_ANO_3,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                TipoTurma = TipoTurma.Regular,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                UeId = DRE_ID_1
+            });
 
             var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_2, TurmaId = TURMA_ID_2 })));
+            retorno.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task Nao_deve_gerar_pendencia_para_turmas_e_componente_sem_professor_titular()
+        {
+            var pendenciaTurmaComponenteSemAulasUseCase = ServiceProvider.GetService<IPendenciaTurmaComponenteSemAulasUseCase>();
+
+            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO, PERIODO_INICIO, PERIODO_FIM);
+
+            await InserirNaBase(new Turma
+            {
+                Nome = TURMA_ANO_4,
+                CodigoTurma = TURMA_CODIGO_3,
+                Ano = TURMA_ANO_4,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                TipoTurma = TipoTurma.Regular,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                UeId = DRE_ID_1
+            });
+
+            var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_3, TurmaId = TURMA_ID_2 })));
             retorno.ShouldBeFalse();
         }
 
@@ -97,7 +141,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
         {
             var pendenciaTurmaComponenteSemAulasUseCase = ServiceProvider.GetService<IPendenciaTurmaComponenteSemAulasUseCase>();
 
-            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO);
+            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO_DENTRO_INTERVALO, PERIODO_INICIO, PERIODO_FIM);
             await CriarAula(DateTimeExtension.HorarioBrasilia(), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_LINGUA_PORTUGUESA_ID_138, TIPO_CALENDARIO_1);
 
             var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_1, TurmaId = TURMA_ID_1 })));
@@ -109,7 +153,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
         {
             var pendenciaTurmaComponenteSemAulasUseCase = ServiceProvider.GetService<IPendenciaTurmaComponenteSemAulasUseCase>();
 
-            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO);
+            await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO, PERIODO_INICIO, PERIODO_FIM);
 
             var retorno = await pendenciaTurmaComponenteSemAulasUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new TurmaDTO { TurmaCodigo = TURMA_CODIGO_1, TurmaId = TURMA_ID_1 })));
             retorno.ShouldBeTrue();
@@ -123,7 +167,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             pendenciaProfessor.ComponenteCurricularId.ShouldBe(long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
         }
 
-        private async Task CriarDadosBasicos(int diasAposInicioPeriodo)
+        private async Task CriarDadosBasicos(int diasAposInicioPeriodo, int diasPeriodoInicial, int diasPeriodoFinal)
         {
             await CriarDreUe(DRE_CODIGO_1, UE_CODIGO_1);
 
@@ -132,17 +176,6 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
                 Nome = TURMA_ANO_2,
                 CodigoTurma = TURMA_CODIGO_1,
                 Ano = TURMA_ANO_2,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                TipoTurma = TipoTurma.Regular,
-                ModalidadeCodigo = Modalidade.Fundamental,
-                UeId = DRE_ID_1
-            });
-
-            await InserirNaBase(new Turma
-            {
-                Nome = TURMA_ANO_3,
-                CodigoTurma = TURMA_CODIGO_2,
-                Ano = TURMA_ANO_3,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
@@ -167,7 +200,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             });
 
             var dataReferencia = DateTime.Now;
-            await CriarPeriodoEscolar(dataReferencia.AddDays(PERIODO_INICIO), dataReferencia.AddDays(PERIODO_FIM), BIMESTRE_1, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(diasPeriodoInicial), dataReferencia.AddDays(diasPeriodoFinal), BIMESTRE_1, TIPO_CALENDARIO_1);
         }
     }
 }
