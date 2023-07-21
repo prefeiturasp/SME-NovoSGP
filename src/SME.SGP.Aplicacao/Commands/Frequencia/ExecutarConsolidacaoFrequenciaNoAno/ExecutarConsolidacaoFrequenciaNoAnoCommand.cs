@@ -1,14 +1,15 @@
 ﻿using MediatR;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExecutarConsolidacaoFrequenciaNoAnoCommand : IRequest
     {
-        public ExecutarConsolidacaoFrequenciaNoAnoCommand(int ano)
+        public ExecutarConsolidacaoFrequenciaNoAnoCommand(DateTime data)
         {
-            Ano = ano;
+            Data = data;
         }
 
-        public int Ano { get; }
+        public DateTime Data { get; }
     }
 }

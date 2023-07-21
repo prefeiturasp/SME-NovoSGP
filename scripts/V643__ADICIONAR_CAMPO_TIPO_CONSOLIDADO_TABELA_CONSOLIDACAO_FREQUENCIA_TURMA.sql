@@ -1,0 +1,1 @@
+ALTER TABLE public.consolidacao_frequencia_turma ADD column IF NOT exists tipo_consolidacao int4 NULL default 3;
