@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<IEnumerable<RecomendacaoConselhoClasseAlunoDTO>> ObterRecomendacoesPorAlunoTurma(string codigoAluno, string codigoTurma, int anoLetivo, int? modalidade, int semestre)
         {
-            var query = new StringBuilder(@"select distinct t.turma_id TurmaCodigo, cca.aluno_codigo AlunoCodigo,
+            var query = new StringBuilder(@$"select distinct t.turma_id TurmaCodigo, cca.aluno_codigo AlunoCodigo,
                                  cca.recomendacoes_aluno RecomendacoesAluno, 
                                  cca.recomendacoes_familia RecomendacoesFamilia,
                                  cca.anotacoes_pedagogicas AnotacoesPedagogicas
@@ -30,8 +30,8 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join fechamento_turma ft on cc.fechamento_turma_id = ft.id 
                                 inner join turma t on ft.turma_id = t.id 
                                 inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id
-                                inner join tipo_calendario tc on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidadeTipoCalendario
-                                inner join periodo_escolar p on p.tipo_calendario_id = tc.id
+                                {(modalidade.HasValue ? @" inner join tipo_calendario tc on t.ano_letivo = tc.ano_letivo and tc.modalidade = @modalidadeTipoCalendario
+                                                           inner join periodo_escolar p on p.tipo_calendario_id = tc.id " : string.Empty)}
                                 where 1 = 1");
 
             if (!string.IsNullOrEmpty(codigoAluno))
@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
                 codigoAluno,
                 codigoTurma,
                 anoLetivo,
-                modalidade = (int)modalidade,
+                modalidade = modalidade.HasValue ? (int)modalidade : (int)default,
                 modalidadeTipoCalendario = modalidade.HasValue ? ((Modalidade)modalidade).ObterModalidadeTipoCalendario() : (int)default,
                 dataReferencia
             };
