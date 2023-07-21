@@ -605,7 +605,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<AulaPossuiFrequenciaAulaRegistradaDto>> ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, 
+        public async Task<IEnumerable<AulaPossuiFrequenciaAulaRegistradaDto>> ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo,
             string[] disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
         {
             var query = new StringBuilder(@"SELECT DISTINCT a.id,
@@ -888,7 +888,7 @@ namespace SME.SGP.Dados.Repositorios
                 aulaCJ
             });
         }
-        
+
         public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo)
         {
             var query = @"select id, ue_id Ueid, disciplina_id DisciplinaId, turma_id TurmaId,tipo_calendario_id TipoCalendarioId, professor_rf ProfessorRf, quantidade, 
@@ -1258,6 +1258,29 @@ namespace SME.SGP.Dados.Repositorios
                              where t.turma_id = @codigoTurma";
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaAulaParcialDto>(sql, new { codigoTurma });
+        }
+
+        public async Task<bool> ExisteAulaNoPeriodoTurmaDisciplinaAsync(DateTime periodoInicio, DateTime periodoFim, string turmaCodigo, string disciplinaId)
+        {
+            var tipoAula = TipoAula.Normal;
+
+            var query = @"SELECT 1
+                          FROM aula
+                          WHERE NOT excluido
+                            AND data_aula::date BETWEEN @periodoInicio AND @periodoFim
+                            AND turma_id = @turmaCodigo
+                            AND disciplina_id = @disciplinaId
+                            AND tipo_aula = @tipoAula
+                          LIMIT 1";
+
+            return (await database.Conexao.QueryAsync<int>(query, new
+            {
+                periodoInicio = periodoInicio.Date,
+                periodoFim = periodoFim.Date,
+                turmaCodigo,
+                disciplinaId,
+                tipoAula
+            })).Any();
         }
     }
 }

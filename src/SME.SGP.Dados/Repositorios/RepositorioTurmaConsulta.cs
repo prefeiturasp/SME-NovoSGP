@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
                         from turma t
                         inner join ue u on t.ue_id = u.id
                         where t.turma_id = @turmaCodigo";
-            
+
             return await contexto.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaCodigo });
         }
 
@@ -206,11 +206,11 @@ namespace SME.SGP.Dados.Repositorios
                 return turma;
             }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
-        
+
         public async Task<Turma> ObterSomenteTurmaPorId(long turmaId)
         {
             var query = @"select t.*  from turma t where t.id = @turmaId";
-            
+
             return (await contexto.Conexao.QueryAsync<Turma>(query.ToString(), new { turmaId })).FirstOrDefault();
         }
 
@@ -630,7 +630,6 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<ModalidadesPorAnoDto>(query.ToString(), new { anoLetivo, dreId, ueId, modalidade, semestre });
         }
 
-
         public async Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, AnoItinerarioPrograma[] anos, Modalidade modalidade, int? semestre)
         {
             var tiposTurma = new List<int>();
@@ -760,9 +759,9 @@ namespace SME.SGP.Dados.Repositorios
                              and t.ano_letivo = @anoLetivo
                              and ue.tipo_escola = any(@tiposEscola)
                          limit @quantidadeRegistrosPorPagina
-                         offset (@pagina - 1) * @quantidadeRegistrosPorPagina";            
+                         offset (@pagina - 1) * @quantidadeRegistrosPorPagina";
 
-            return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query, 
+            return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query,
                 new { anoLetivo, pagina, quantidadeRegistrosPorPagina, tiposEscola = tiposEscola.Select(tp => (int)tp).ToArray() });
         }
 
@@ -778,6 +777,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<string>(query, new { anoLetivo, modalidades, turmaCodigo });
         }
+
         public async Task<IEnumerable<long>> ObterIdsTurmasPorAnoModalidadeUeTipoRegular(int anoLetivo, int modalidade, long ueId)
         {
             var query = @"select id 
@@ -786,7 +786,7 @@ namespace SME.SGP.Dados.Repositorios
                              AND ue_id  = @ueId
                              and modalidade_codigo = @modalidade ";
 
-            return await contexto.QueryAsync<long>(query, new { anoLetivo, modalidade, ueId});
+            return await contexto.QueryAsync<long>(query, new { anoLetivo, modalidade, ueId });
         }
 
         public async Task<IEnumerable<TurmaComponenteDto>> ObterTurmasComponentesPorAnoLetivo(DateTime dataReferencia)
@@ -803,6 +803,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<TurmaComponenteDto>(query, new { anoLetivo = dataReferencia.Year, dataReferencia });
         }
+
         public async Task<Turma> ObterTurmaCompletaPorCodigo(string turmaCodigo)
         {
             var query = @"select turma.*, ue.*, dre.* 
@@ -982,7 +983,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select t.turma_id as TurmaCodigo,serie_ensino as SerieEnsino,nome_filtro as NomeFiltro from turma t 
                        where t.turma_id =any(@turmasCodigos);";
 
-            return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos },queryName: "ObterTurmasNomeFiltro");
+            return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos }, queryName: "ObterTurmasNomeFiltro");
         }
 
         public async Task<IEnumerable<TurmaComplementarDto>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos)
@@ -1042,6 +1043,17 @@ namespace SME.SGP.Dados.Repositorios
                                 and not ft.excluido";
 
             return await contexto.QueryAsync<TurmaBimestreDto>(query, new { ueId, anoLetivo });
+        }
+
+        public async Task<IEnumerable<TurmaDTO>> ObterTurmasPorUeAnoTiposTurma(long ueId, int anoLetivo, int[] tiposTurma)
+        {
+            var query = @"SELECT t.id as turmaId, t.turma_id as TurmaCodigo
+                          FROM turma t
+                          WHERE t.ue_id = @ueId
+                            AND t.ano_letivo = @anoLetivo
+                            AND t.tipo_turma = any(@tiposTurma)";
+
+            return await contexto.QueryAsync<TurmaDTO>(query, new { ueId, anoLetivo, tiposTurma });
         }
     }
 }

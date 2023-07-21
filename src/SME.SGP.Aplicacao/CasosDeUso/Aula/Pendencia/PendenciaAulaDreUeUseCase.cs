@@ -24,11 +24,11 @@ namespace SME.SGP.Aplicacao
                     await VerificaPendenciasDiarioDeBordo(filtro);
                     await VerificaPendenciasFrequencia(filtro);
                 }
+
                 await VerificaPendenciasAvaliacao(filtro);
                 await VerificaPendenciasPlanoAula(filtro);
-                await VerificaPendenciasTurmasComponentesSemAulas(filtro);
-
                 await VerificaPendenciasDiarioClasseFechamento(filtro);
+                await VerificaPendenciasTurmasComponentesSemAulas(filtro);
 
                 return true;
             }
