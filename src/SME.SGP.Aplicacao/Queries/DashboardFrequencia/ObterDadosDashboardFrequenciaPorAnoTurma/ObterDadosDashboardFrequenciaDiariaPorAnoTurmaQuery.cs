@@ -2,6 +2,8 @@
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using FluentValidation;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,5 +29,23 @@ namespace SME.SGP.Aplicacao
         public long[] TurmaIds { get; set; }
         public DateTime DataAula { get; set; }
         public bool VisaoDre { get; set; }
+    }
+    
+    public class ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQueryValidator : AbstractValidator<ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery>
+    {
+        public ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQueryValidator()
+        {
+            RuleFor(x => x.AnoLetivo)
+                .NotEmpty()
+                .WithMessage("O ano letivo deve ser informado para a busca de frequência diária para dashboard.");
+
+            RuleFor(x => x.Modalidade)
+                .NotEmpty()
+                .WithMessage("A modalidade deve ser informada para a busca de frequência diária para dashboard.");
+
+            RuleFor(x => x.DataAula)
+                .NotEmpty()
+                .WithMessage("A data da aula deve ser informada para a busca de frequência diária para dashboard.");
+        }
     }
 }
