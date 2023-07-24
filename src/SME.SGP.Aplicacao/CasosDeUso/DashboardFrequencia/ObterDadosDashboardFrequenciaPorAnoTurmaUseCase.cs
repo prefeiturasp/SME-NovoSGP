@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,50 +16,20 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, long[] turmaIds, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
         {
-
-            var dataAula = dataInicio;
-            var dadosFrequenciaAlunos = (await mediator.Send(new ObterDadosDashboardFrequenciaPorAnoTurmaQuery(anoLetivo,
-                                                                                                              dreId,
-                                                                                                              ueId,
-                                                                                                              modalidade,
-                                                                                                              semestre,
-                                                                                                              anoTurma,
-                                                                                                              dataAula,
-                                                                                                              dataInicio,
-                                                                                                              datafim,
-                                                                                                              mes,
-                                                                                                              tipoPeriodoDashboard,
-                                                                                                              visaoDre))).Where(consolidado => (consolidado.Ausentes + consolidado.Presentes + consolidado.Remotos) > 0);
+            var dadosFrequenciaAlunos = Enumerable.Empty<FrequenciaAlunoDashboardDto>();
+            
+            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
+                dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(anoLetivo, dreId, ueId, modalidade, semestre, turmaIds, dataInicio, visaoDre));
+            
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 return null;
-
-            var dadosTotais = await mediator.Send(new ObterTotalFrequenciaEAulasPorPeriodoQuery(anoLetivo,
-                                                                                                dreId,
-                                                                                                ueId,
-                                                                                                modalidade,
-                                                                                                semestre,
-                                                                                                anoTurma,
-                                                                                                dataInicio,
-                                                                                                datafim,
-                                                                                                mes,
-                                                                                                tipoPeriodoDashboard));
-
-            if ((!string.IsNullOrEmpty(anoTurma) && anoTurma != "-99") && dadosTotais != null)
-                dadosTotais = dadosTotais.Where(a => a.DescricaoAnoTurma == anoTurma).ToList();
-
-            var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
-            {
-                TotalAulas = dadosTotais.Select(a => a.TotalAulas).Sum(),
-                TotalFrequencias = dadosTotais.Select(a => a.TotalFrequencias).Sum(),
-            };
-            var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
-
-            return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia, modalidade);
+            
+            return MapearParaDto(dadosFrequenciaAlunos, modalidade);
         }
 
-        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, string tagTotalFrequencia, int modalidade)
+        private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, int modalidade)
         {
             var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
 
@@ -97,11 +68,18 @@ namespace SME.SGP.Aplicacao
                     Quantidade = totalPresentes + totalAusentes + totalRemotos
                 });
             }
+            
+            var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
+            {
+                TotalAulas = frequenciasAlunos.Select(a => a.TotalAulas).Sum(),
+                TotalFrequencias = frequenciasAlunos.Select(a => a.TotalFrequencias).Sum(),
+            };
+            var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
 
             return new GraficoFrequenciaAlunoDto()
             {
-                TagTotalFrequencia = tagTotalFrequencia,
-                TotalFrequenciaFormatado = tagTotalFrequencia,
+                TagTotalFrequencia = totalFrequencia,
+                TotalFrequenciaFormatado = totalFrequencia,
                 DadosFrequenciaDashboard = dadosFrequenciaDashboard
             };
         }

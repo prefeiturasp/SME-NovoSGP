@@ -2,6 +2,7 @@
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,12 +20,13 @@ namespace SME.SGP.Aplicacao
         {
             var modalidadesPorAnoRetornoDto = new List<RetornoModalidadesPorAnoDto>();
             var modalidades = await mediator.Send(new ObterModalidadesPorAnosQuery(anoLetivo, dreId, ueId, modalidade, semestre));
-            foreach (var item in modalidades)
+            foreach (var item in modalidades.GroupBy(s=> new {s.Modalidade, s.Ano}))
             {
                 modalidadesPorAnoRetornoDto.Add(new RetornoModalidadesPorAnoDto()
                 {
-                    ModalidadeAno = $"{item.Modalidade.ShortName()}-{item.Ano}",
-                    Ano = item.Ano
+                    ModalidadeAno = $"{item.Key.Modalidade.ShortName()}-{item.Key.Ano}",
+                    Ano = item.Key.Ano,
+                    TurmaId = item.Select(s=> s.TurmaId).ToArray()
                 });
             }
             return modalidadesPorAnoRetornoDto;

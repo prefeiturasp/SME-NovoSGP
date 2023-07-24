@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using System;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Infra
@@ -11,5 +12,7 @@ namespace SME.SGP.Infra
         public int Presentes { get; set; } 
         public int Remotos { get; set; } 
         public int Ausentes { get; set; } 
+        public long TotalAulas { get; set; }
+        public long TotalFrequencias { get; set; }
     }
 }

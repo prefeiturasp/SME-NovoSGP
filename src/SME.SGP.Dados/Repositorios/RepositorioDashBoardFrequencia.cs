@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,74 +20,66 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataAula, DateTime dataInicioSemana, DateTime datafimSemana, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasDiariaConsolidadas(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, long[] turmaIds, DateTime dataAula, bool visaoDre)
         {
-            var query = new StringBuilder();            
-            var anoTurmaModalidade = "";
+            var selectSQL = string.Empty;
+            var groupBySQL = string.Empty;
 
             if (visaoDre)
-                query.AppendLine("select dre_abreviacao as Descricao, ");
+            {
+                selectSQL = "select dre_abreviacao as Descricao, ";
+                groupBySQL = "group by dre_abreviacao, tipo, dre_codigo ";
+            }
             else if (ueId == -99)
-                query.AppendLine("select turma_ano as Descricao, ");
+            {
+                selectSQL = "select turma_ano as Descricao, ";
+                groupBySQL = "group by turma_ano, tipo, dre_codigo ";
+            }
             else if (ueId != -99 && !visaoDre)
-                query.AppendLine("select turma_nome as Descricao, ");
+            {
+                selectSQL = "select turma_nome as Descricao, ";
+                groupBySQL = "group by turma_nome, tipo, dre_codigo ";
+            }
+                
+            groupBySQL += ", total_aulas, total_frequencias ";
 
-
-            query.AppendLine(@"tipo as TipoFrequenciaAluno,
+            selectSQL += @"tipo as TipoFrequenciaAluno,
                                dre_codigo as DreCodigo,
+                               total_aulas as TotalAulas,
+                               total_frequencias as TotalFrequencias, 
                                sum(quantidade_presencas) as Presentes,
                                sum(quantidade_remotos) as Remotos,
                                sum(quantidade_ausencias) as Ausentes
                           from consolidado_dashboard_frequencia cdf
                          where ano_letivo = @anoLetivo
                            and modalidade_codigo = @modalidade
-                           and tipo = @tipoPeriodo ");
+                           and tipo = @tipoPeriodo 
+                           and data_aula = @dataAula ";
 
             if (dreId != -99)
-                query.AppendLine("and dre_id = @dreId ");
+                selectSQL += "and dre_id = @dreId ";
 
             if (ueId != -99)
-                query.AppendLine("and ue_id = @ueId ");
+                selectSQL += "and ue_id = @ueId ";
 
             if (semestre > 0)
-                query.AppendLine("and semestre = @semestre ");
+                selectSQL += "and semestre = @semestre ";
 
-            if (!string.IsNullOrEmpty(anoTurma) && !anoTurma.Contains("-99"))
-            {
-                var modalidadeEnum = ((Modalidade)modalidade);
-                anoTurmaModalidade = $"{modalidadeEnum.ShortName()}-{anoTurma}";
-                query.AppendLine("and turma_ano = @anoTurma ");
-            }
+            if (turmaIds != null && turmaIds.Any())
+                selectSQL += "and turma_Id = any(@turmaIds) ";
 
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and data_aula = @dataAula ");
+            selectSQL += groupBySQL;
 
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine(@"and data_inicio_semana::date = @dataInicioSemana::date ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine(@"and mes = @mes ");
-
-            if (visaoDre)
-                query.AppendLine("group by dre_abreviacao, tipo, dre_codigo ");
-            else if (ueId == -99)
-                query.AppendLine("group by turma_ano, tipo, dre_codigo");
-            else if (ueId != -99 && !visaoDre)
-                query.AppendLine("group by turma_nome, tipo, dre_codigo");
-
-            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), new
+            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(selectSQL, new
             {
                 dreId,
                 ueId,
                 anoLetivo,
                 modalidade,
                 semestre,
-                anoTurma = anoTurmaModalidade,
+                turmaIds,
                 dataAula,
-                dataInicioSemana,
-                datafimSemana,
-                mes,
-                tipoPeriodo = tipoPeriodoDashboard
+                tipoPeriodo = (int)TipoPeriodoDashboardFrequencia.Diario
             });
         }
 
