@@ -24,5 +24,7 @@ namespace SME.SGP.Dominio
         public int QuantidadeRemotos { get; set; }
         public int QuantidadeAusentes { get; set; }
         public DateTime CriadoEm { get; set; }
+        public int TotalAulas { get; set; }
+        public int TotalFrequencias { get; set; }
     }
 }

@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 TotalFrequencias = dadosTotais.Select(a => a.TotalFrequencias).Sum(),
             };
             var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
-            
+
             return MapearParaDto(dadosFrequenciaAlunos, totalFrequencia, modalidade);
         }
 

@@ -1,0 +1,2 @@
+ALTER TABLE public.consolidado_dashboard_frequencia ADD column IF NOT exists total_aulas int4 NULL;
+ALTER TABLE public.consolidado_dashboard_frequencia ADD column IF NOT exists total_frequencias int4 NULL;

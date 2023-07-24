@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public class IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake : IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>
+    public class IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake : IRequestHandler<IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase consolidacaoDashBoardFrequenciaPorDataETipoUseCase;
@@ -21,14 +21,13 @@ namespace SME.SGP.TesteIntegracao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Handle(IncluirFilaConsolidarDashBoardFrequenciaCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand request, CancellationToken cancellationToken)
         {
             var filtro = new FiltroConsolidadoDashBoardFrequenciaDto()
             {
 
                 TurmaId = request.TurmaId,
-                DataAula = request.DataAula,
-                TipoPeriodo = request.TipoPeriodo
+                DataAula = request.DataAula
             };
 
             await consolidacaoDashBoardFrequenciaPorDataETipoUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(filtro)));

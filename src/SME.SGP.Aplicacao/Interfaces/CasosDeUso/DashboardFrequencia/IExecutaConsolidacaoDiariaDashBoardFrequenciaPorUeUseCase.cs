@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IExecutaConsolidacaoDashBoardFrequenciaPorUeUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IExecutaConsolidacaoDiariaDashBoardFrequenciaPorUeUseCase : IUseCase<MensagemRabbit, bool>
     {
     }
 }

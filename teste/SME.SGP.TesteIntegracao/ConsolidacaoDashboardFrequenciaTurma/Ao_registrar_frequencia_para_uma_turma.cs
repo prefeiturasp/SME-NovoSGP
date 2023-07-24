@@ -111,8 +111,8 @@ namespace SME.SGP.TesteIntegracao
                 AulaId = 1
             });
 
-            var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDashBoardFrequenciaPorUeUseCase>();
-            var mensagem = new ConsolidacaoPorUeDashBoardFrequencia() { AnoLetivo = 2022, Mes = 2, TipoPeriodo = Dominio.Enumerados.TipoPeriodoDashboardFrequencia.Mensal, UeCodigo = "1" };
+            var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorUeUseCase>();
+            var mensagem = new ConsolidacaoPorUeDashBoardFrequencia() { AnoLetivo = 2022, Mes = 2, UeCodigo = "1" };
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
