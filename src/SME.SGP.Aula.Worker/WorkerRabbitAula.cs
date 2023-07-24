@@ -15,9 +15,10 @@ namespace SME.SGP.Aula.Worker
         public WorkerRabbitAula(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAula",
                 typeof(RotasRabbitSgpAula))
         {

@@ -16,6 +16,7 @@
         public const string CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO = "nota-conceito-conselho-classe-turmacodigo-bimestre-aluno:{0}-{1}-{2}";
         public const string CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE = "fechamento-nota-turmacodigo-bimestre:{0}-{1}";
         public const string CHAVE_ALUNOS_TURMA = "todos-alunos-turma:{0}/codigo-aluno:{1}";
+        public const string CHAVE_COMPONENTES_PROFESSOR_TURMA = "componentes-professor-turma-agrupado:{0}-{1}-{2}-{3}";
         public const string CHAVE_NOTA_CONSOLIDACAO_CONSELHO_CLASSE_TURMA_COMPONENTE_BIMESTRE_ALUNO = "nota-consolidacao-conselho-classe-turma-componente-bimestre-aluno:{0}-{1}-{2}-{3}";
         public const string CHAVE_QUESTIONARIO = "questionario:{0}";
     }

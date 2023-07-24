@@ -64,7 +64,7 @@ namespace SME.SGP.Dados
             return query;
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, long periodoEscolarId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null)
         {
             var query = new StringBuilder(@$"
                         select *,
@@ -76,13 +76,13 @@ namespace SME.SGP.Dados
                             and turma_id = @turmaId
                             and ((disciplina_id = any(@disciplinaIdsConsideradas) {(!string.IsNullOrWhiteSpace(professor) ? "and (professor_rf = @professor or professor_rf is null)" : string.Empty)}) or tipo = @tipo)");
 
-            if (periodosEscolaresId != null && periodosEscolaresId.Any())
-                query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");            
+            if (periodoEscolarId > 0)
+                query.AppendLine("and periodo_escolar_id = @periodoEscolarId");            
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
                 alunosCodigo,
-                periodosEscolaresId = periodosEscolaresId.ToArray(),
+                periodoEscolarId,
                 turmaId,
                 disciplinaIdsConsideradas,
                 tipo = TipoFrequenciaAluno.Geral,

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Interfaces;
 using System.Linq;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,22 +23,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
-            //TODO: RaphaelDias. Isso não deve ficar assim. é só para resolver temporariamente o desalinhamento de cache.
-            // string nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}-${request.ChecaMotivoDisponibilizacao}";
-            // var resultado = await repositorioCache.ObterAsync(nomeChaveCache, async () =>
-            // {
-            //     return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
-            //                                                                                    request.Login,
-            //                                                                                    request.PerfilUsuario,
-            //                                                                                    request.RealizarAgrupamentoComponente,
-            //                                                                                    request.ChecaMotivoDisponibilizacao);
-            // });
-            
-            var resultado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
-                request.Login,
-                request.PerfilUsuario,
-                request.RealizarAgrupamentoComponente,
-                request.ChecaMotivoDisponibilizacao);
+            string nomechavecache = string.Format(NomeChaveCache.CHAVE_COMPONENTES_PROFESSOR_TURMA,
+                                                  request.Login,
+                                                  request.CodigoTurma,
+                                                  request.ChecaMotivoDisponibilizacao,
+                                                  request.RealizarAgrupamentoComponente);
+
+            var resultado = await repositorioCache.ObterAsync(nomechavecache, 
+                async () => await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
+                                                                                                    request.Login,
+                                                                                                    request.PerfilUsuario,
+                                                                                                    request.RealizarAgrupamentoComponente,
+                                                                                                    request.ChecaMotivoDisponibilizacao) );
 
             if (resultado == null)
                 return Enumerable.Empty<ComponenteCurricularEol>();
