@@ -605,7 +605,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var query = new StringBuilder(@"select 
                             distinct modalidade_codigo as modalidade, 
-                            ano
+                            ano, 
+                            t.id as turmaId
                          from turma t
                          inner join ue u on t.ue_id = u.id
                          inner join dre d on d.id = u.dre_id

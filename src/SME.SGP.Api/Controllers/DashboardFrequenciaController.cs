@@ -88,9 +88,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoPeriodoDashboard, [FromQuery] int semestre, string anoTurma, DateTime dataInicio, DateTime datafim, int mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaPorAnoTurmaUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoPeriodoDashboard, [FromQuery] long[] turmaIds, int semestre, DateTime dataInicio, DateTime datafim, int mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaPorAnoTurmaUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre, anoTurma, dataInicio, datafim, mes, tipoPeriodoDashboard, visaoDre));
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre, turmaIds, dataInicio, datafim, mes, tipoPeriodoDashboard, visaoDre));
         }        
 
         [HttpGet("filtro/anos/{anoLetivo}/semanas")]
