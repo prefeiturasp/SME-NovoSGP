@@ -1,20 +1,19 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoEscolarIdPorTurmaIdQuery : IRequest<long>
     {
-        public ObterPeriodoEscolarIdPorTurmaIdQuery(long turmaId, DateTime dataReferencia)
+        public ObterPeriodoEscolarIdPorTurmaIdQuery(Turma turma, DateTime dataReferencia)
         {
-            TurmaId = turmaId;
+            Turma = turma;
             DataReferencia = dataReferencia;
         }
 
-        public long TurmaId { get; set; }
+        public Turma Turma { get; set; }
         public DateTime DataReferencia { get; set; }
     }
 
@@ -22,9 +21,9 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPeriodoEscolarIdPorTurmaIdQueryValidator()
         {
-            RuleFor(a => a.TurmaId)
+            RuleFor(a => a.Turma)
                .NotEmpty()
-               .WithMessage("O id da turma deve ser informado para consulta do periodo escolar.");
+               .WithMessage("A turma deve ser informado para consulta do periodo escolar.");
         }
     }
 }
