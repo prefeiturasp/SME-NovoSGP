@@ -1045,15 +1045,18 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.QueryAsync<TurmaBimestreDto>(query, new { ueId, anoLetivo });
         }
 
-        public async Task<IEnumerable<TurmaDTO>> ObterTurmasPorUeAnoTiposTurma(long ueId, int anoLetivo, int[] tiposTurma)
+        public async Task<IEnumerable<TurmaDTO>> ObterTurmasAulasNormais(long ueId, int anoLetivo, int[] tiposTurma, int[] modalidades, int[] ignorarTiposCiclos)
         {
-            var query = @"SELECT t.id as turmaId, t.turma_id as TurmaCodigo
+            var query = @"SELECT t.id AS turmaId, t.turma_id AS TurmaCodigo
                           FROM turma t
+                          LEFT JOIN tipo_ciclo_ano tca ON tca.ano = t.ano AND tca.modalidade = t.modalidade_codigo
                           WHERE t.ue_id = @ueId
                             AND t.ano_letivo = @anoLetivo
-                            AND t.tipo_turma = any(@tiposTurma)";
+                            AND t.tipo_turma = ANY(@tiposTurma)
+                            AND t.modalidade_codigo = ANY(@modalidades)
+                            AND NOT (tca.tipo_ciclo_id = ANY(@ignorarTiposCiclos)) ";
 
-            return await contexto.QueryAsync<TurmaDTO>(query, new { ueId, anoLetivo, tiposTurma });
+            return await contexto.QueryAsync<TurmaDTO>(query, new { ueId, anoLetivo, tiposTurma, modalidades, ignorarTiposCiclos });
         }
     }
 }

@@ -27,9 +27,9 @@
             return $"O professor {professor} ({professorRf}) ainda não cadastrou nenhuma aula no bimestre {bimestre} para o componente {componenteCurricular} na turma {turma} na {descricaoUe}";
         }
 
-        public static string ObterTituloPendenciaComponenteSemAula(int bimestre, string componenteCurricular)
+        public static string ObterTituloPendenciaComponenteSemAula(string componenteCurricular)
         {
-            return $"Nenhuma aula cadastrada no bimestre {bimestre} - {componenteCurricular}";
+            return $"Nenhuma aula cadastrada no bimestre - {componenteCurricular}";
         }
     }
 }

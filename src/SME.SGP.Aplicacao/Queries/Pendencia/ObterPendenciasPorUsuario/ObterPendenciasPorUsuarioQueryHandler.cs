@@ -134,6 +134,8 @@ namespace SME.SGP.Aplicacao
                     await ObterPendenciasProfessorFormatadas(pendencia) :
                 pendencia.EhPendenciaDevolutiva() ?
                     await ObterPendenciasDevolutivaFormatadas(pendencia) :
+                pendencia.EhPendenciaProfessor() ?
+                    await ObterPendenciasProfessorFormatadas(pendencia) :
                     new List<PendenciaDto>();
         }
         

@@ -541,7 +541,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE pu.pendencia_id = any(@pendencias) and p.turma_id is null
                             and situacao = 1
                             {(!string.IsNullOrEmpty(turmaCodigo) ? " and t.turma_id = @turmaCodigo" : string.Empty)}
-                            and p.tipo in (7,8,9,10,17,19)
+                            and p.tipo in (7,8,9,10,17,19,20)
                             and not p.excluido
                             UNION ALL
                             select distinct p.id
@@ -551,7 +551,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE pu.pendencia_id = any(@pendencias) and p.turma_id is not null
                             and situacao = 1
                             {(!string.IsNullOrEmpty(turmaCodigo) ? " and t.turma_id = @turmaCodigo" : string.Empty)}
-                            and p.tipo in (7,8,9,10,17,19)
+                            and p.tipo in (7,8,9,10,17,19,20)
                             and not p.excluido ",
                 TipoPendenciaGrupo.AEE => $@"
                             select distinct p.id
@@ -582,7 +582,7 @@ namespace SME.SGP.Dados.Repositorios
                                     union all 
                                     select distinct ppf.pendencia_id
                                     from pendencia_professor ppf
-                                    inner join pendencia_aula pa ON pa.pendencia_id = ppf.pendencia_id
+                                    left join pendencia_aula pa ON pa.pendencia_id = ppf.pendencia_id
 	                                inner join turma t ON t.id = ppf.turma_id 
 	                                where ppf.pendencia_id = any(@pendencias) 
                                     AND t.turma_id = @turmaCodigo

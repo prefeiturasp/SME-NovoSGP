@@ -39,18 +39,25 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
         [Fact]
         public async Task Nao_deve_chamar_fila_para_gerar_pendencia_turma_programa()
         {
-            bool retorno = await PendenciaTurmaComponenteSemAulaPorUeUseCase(TipoTurma.Programa);
+            bool retorno = await PendenciaTurmaComponenteSemAulaPorUeUseCase(TipoTurma.Programa, ANO_6);
+            retorno.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task Nao_deve_chamar_fila_para_gerar_pendencia_turma_ciclo_alfabetizacao()
+        {
+            bool retorno = await PendenciaTurmaComponenteSemAulaPorUeUseCase(TipoTurma.Regular, ANO_1);
             retorno.ShouldBeFalse();
         }
 
         [Fact]
         public async Task Deve_chamar_fila_para_gerar_pendencia_turma_regular()
         {
-            bool retorno = await PendenciaTurmaComponenteSemAulaPorUeUseCase(TipoTurma.Regular);
+            bool retorno = await PendenciaTurmaComponenteSemAulaPorUeUseCase(TipoTurma.Regular, ANO_6);
             retorno.ShouldBeTrue();
         }
 
-        private async Task<bool> PendenciaTurmaComponenteSemAulaPorUeUseCase(TipoTurma tipoTurma)
+        private async Task<bool> PendenciaTurmaComponenteSemAulaPorUeUseCase(TipoTurma tipoTurma, string anoTurma)
         {
             var pendenciaTurmaComponenteSemAulasPorUeUseCase = ServiceProvider.GetService<IPendenciaTurmaComponenteSemAulasPorUeUseCase>();
 
@@ -60,12 +67,17 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             {
                 Nome = "Turma teste",
                 CodigoTurma = TURMA_CODIGO_1,
-                Ano = "1",
+                Ano = anoTurma,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = tipoTurma,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = DRE_ID_1
             });
+
+            await InserirNaBase("tipo_ciclo", new string[4] { "descricao", "criado_em", "criado_por", "criado_rf" }, new string[4] { "'Alfabetização'", "'2022-06-07'", "'1'", "'1'" });
+            await InserirNaBase("tipo_ciclo", new string[4] { "descricao", "criado_em", "criado_por", "criado_rf" }, new string[4] { "'Interdiciplinar'", "'2022-06-07'", "'1'", "'1'" });
+            await InserirNaBase("tipo_ciclo_ano", new string[3] { "tipo_ciclo_id", "modalidade", "ano" }, new string[3] { "1", "5", "'1'" });
+            await InserirNaBase("tipo_ciclo_ano", new string[3] { "tipo_ciclo_id", "modalidade", "ano" }, new string[3] { "2", "5", "'6'" });
 
             return await pendenciaTurmaComponenteSemAulasPorUeUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new DreUeDto(DRE_ID_1, UE_ID_1))));
         }
@@ -103,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             {
                 Nome = TURMA_ANO_3,
                 CodigoTurma = TURMA_CODIGO_2,
-                Ano = TURMA_ANO_3,
+                Ano = ANO_6,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
@@ -125,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             {
                 Nome = TURMA_ANO_4,
                 CodigoTurma = TURMA_CODIGO_3,
-                Ano = TURMA_ANO_4,
+                Ano = ANO_6,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
@@ -175,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
             {
                 Nome = TURMA_ANO_2,
                 CodigoTurma = TURMA_CODIGO_1,
-                Ano = TURMA_ANO_2,
+                Ano = ANO_6,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,

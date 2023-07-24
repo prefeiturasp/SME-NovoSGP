@@ -19,17 +19,26 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
 
+            var modalidades = new int[]
+            {
+                (int)Modalidade.Fundamental,
+                (int)Modalidade.Medio
+            };
+
+            var ignorarTiposCiclos = new int[]
+            {
+                (int)TipoCiclo.Alfabetizacao
+            };
+
             var tiposTurma = new List<int>()
             {
                 (int)TipoTurma.Regular,
                 (int)TipoTurma.EdFisica
             };
+            var tiposTurmaItinerarioEM = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            tiposTurma.AddRange(tiposTurmaItinerarioEM.Select(t => t.Id));
 
-            var tiposItinerarioEM = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
-            tiposTurma.AddRange(tiposItinerarioEM.Select(t => t.Id));
-
-            var turmasUe = await mediator.Send(new ObterTurmasPorUeAnoTiposTurmaQuery(filtro.UeId, DateTimeExtension.HorarioBrasilia().Year, tiposTurma.ToArray()));
-
+            var turmasUe = await mediator.Send(new ObterTurmasAulasNormaisQuery(filtro.UeId, DateTimeExtension.HorarioBrasilia().Year, tiposTurma.ToArray(), modalidades, ignorarTiposCiclos));
             if (!turmasUe.Any())
                 return false;
 

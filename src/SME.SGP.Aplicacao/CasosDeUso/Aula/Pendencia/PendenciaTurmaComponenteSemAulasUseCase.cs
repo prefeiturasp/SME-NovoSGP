@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<TurmaDTO>();
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(filtro.TurmaId, DateTime.Now));
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(filtro.TurmaId, DateTimeExtension.HorarioBrasilia()));
             if (periodoEscolar == null)
                 return false;
 
@@ -32,8 +32,6 @@ namespace SME.SGP.Aplicacao
             var turmasCodigo = new string[1] { filtro.TurmaCodigo };
             var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(turmasCodigo));
             var turmaDreUe = turmasDreUe.FirstOrDefault();
-
-            var transacaoIniciada = false;
 
             var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigo));
             foreach (var componente in componentes)
@@ -50,37 +48,41 @@ namespace SME.SGP.Aplicacao
                     if (professorTitular == null)
                         continue;
 
+                    //-> TODO caso não tenha o professor titular gerar a pendencia para o CP? 
+
                     var possuiPendencia = await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaDreUe.Id, componenteCurricularId, periodoEscolar.Id, professorTitular.ProfessorRf, TipoPendencia.ComponenteSemAula));
                     if (!possuiPendencia)
                     {
-                        if (!transacaoIniciada)
+                        try
                         {
                             unitOfWork.IniciarTransacao();
-                            transacaoIniciada = true;
+
+                            var pendenciaId = await mediator.Send(new SalvarPendenciaCommand
+                            {
+                                TipoPendencia = TipoPendencia.ComponenteSemAula,
+                                DescricaoComponenteCurricular = componente.Descricao,
+                                TurmaAnoComModalidade = turmaDreUe.AnoComModalidade(),
+                                DescricaoUeDre = turmaDreUe.ObterEscola(),
+                                TurmaId = turmaDreUe.Id,
+                                Titulo = PendenciaConstants.ObterTituloPendenciaComponenteSemAula(componente.Descricao),
+                                Descricao = PendenciaConstants.ObterDescricaoPendenciaComponenteSemAula(professorTitular.ProfessorNome, professorTitular.ProfessorRf, periodoEscolar.Bimestre, componente.Descricao, turmaDreUe.NomeComModalidade(), turmaDreUe.ObterEscola())
+                            });
+
+                            await mediator.Send(new SalvarPendenciaProfessorCommand(pendenciaId, turmaDreUe.Id, componenteCurricularId, professorTitular.ProfessorRf, periodoEscolar.Id));
+
+                            await SalvarPendenciaUsuario(pendenciaId, professorTitular.ProfessorRf);
+
+                            unitOfWork.PersistirTransacao();
+
+                            return true;
                         }
-
-                        var pendenciaId = await mediator.Send(new SalvarPendenciaCommand
+                        catch
                         {
-                            TipoPendencia = TipoPendencia.ComponenteSemAula,
-                            DescricaoComponenteCurricular = componente.Descricao,
-                            TurmaAnoComModalidade = turmaDreUe.AnoComModalidade(),
-                            DescricaoUeDre = turmaDreUe.ObterEscola(),
-                            TurmaId = turmaDreUe.Id,
-                            Titulo = PendenciaConstants.ObterTituloPendenciaComponenteSemAula(periodoEscolar.Bimestre, componente.Descricao),
-                            Descricao = PendenciaConstants.ObterDescricaoPendenciaComponenteSemAula(professorTitular.ProfessorNome, professorTitular.ProfessorRf, periodoEscolar.Bimestre, componente.Descricao, turmaDreUe.AnoComModalidade(), turmaDreUe.ObterEscola())
-                        });
-
-                        await mediator.Send(new SalvarPendenciaProfessorCommand(pendenciaId, turmaDreUe.Id, componenteCurricularId, professorTitular.ProfessorRf, periodoEscolar.Id));
-
-                        await SalvarPendenciaUsuario(pendenciaId, professorTitular.ProfessorRf);
+                            unitOfWork.Rollback();
+                            throw;
+                        }
                     }
                 }
-            }
-
-            if (transacaoIniciada)
-            {
-                unitOfWork.PersistirTransacao();
-                return true;
             }
 
             return false;
