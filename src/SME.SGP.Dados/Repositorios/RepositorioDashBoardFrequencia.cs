@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,126 +20,139 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataAula, DateTime dataInicioSemana, DateTime datafimSemana, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasDiariaConsolidadas(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, long[] turmaIds, DateTime dataAula, bool visaoDre)
         {
-            var query = new StringBuilder();            
-            var anoTurmaModalidade = "";
+            var selectSQL = string.Empty;
+            var groupBySQL = string.Empty;
 
             if (visaoDre)
-                query.AppendLine("select dre_abreviacao as Descricao, ");
+            {
+                selectSQL = "select dre_abreviacao as Descricao, ";
+                groupBySQL = "group by dre_abreviacao, tipo, dre_codigo ";
+            }
             else if (ueId == -99)
-                query.AppendLine("select turma_ano as Descricao, ");
+            {
+                selectSQL = "select turma_ano as Descricao, ";
+                groupBySQL = "group by turma_ano, tipo, dre_codigo ";
+            }
             else if (ueId != -99 && !visaoDre)
-                query.AppendLine("select turma_nome as Descricao, ");
+            {
+                selectSQL = "select turma_nome as Descricao, ";
+                groupBySQL = "group by turma_nome, tipo, dre_codigo ";
+            }
+                
+            groupBySQL += ", total_aulas, total_frequencias ";
 
-
-            query.AppendLine(@"tipo as TipoFrequenciaAluno,
+            selectSQL += @"tipo as TipoFrequenciaAluno,
                                dre_codigo as DreCodigo,
+                               total_aulas as TotalAulas,
+                               total_frequencias as TotalFrequencias, 
                                sum(quantidade_presencas) as Presentes,
                                sum(quantidade_remotos) as Remotos,
                                sum(quantidade_ausencias) as Ausentes
                           from consolidado_dashboard_frequencia cdf
                          where ano_letivo = @anoLetivo
                            and modalidade_codigo = @modalidade
-                           and tipo = @tipoPeriodo ");
+                           and tipo = @tipoPeriodo 
+                           and data_aula = @dataAula ";
 
             if (dreId != -99)
-                query.AppendLine("and dre_id = @dreId ");
+                selectSQL += "and dre_id = @dreId ";
 
             if (ueId != -99)
-                query.AppendLine("and ue_id = @ueId ");
+                selectSQL += "and ue_id = @ueId ";
 
             if (semestre > 0)
-                query.AppendLine("and semestre = @semestre ");
+                selectSQL += "and semestre = @semestre ";
 
-            if (!string.IsNullOrEmpty(anoTurma) && !anoTurma.Contains("-99"))
-            {
-                var modalidadeEnum = ((Modalidade)modalidade);
-                anoTurmaModalidade = $"{modalidadeEnum.ShortName()}-{anoTurma}";
-                query.AppendLine("and turma_ano = @anoTurma ");
-            }
+            if (turmaIds != null && turmaIds.Any())
+                selectSQL += "and turma_Id = any(@turmaIds) ";
 
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and data_aula = @dataAula ");
+            selectSQL += groupBySQL;
 
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine(@"and data_inicio_semana::date = @dataInicioSemana::date ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine(@"and mes = @mes ");
-
-            if (visaoDre)
-                query.AppendLine("group by dre_abreviacao, tipo, dre_codigo ");
-            else if (ueId == -99)
-                query.AppendLine("group by turma_ano, tipo, dre_codigo");
-            else if (ueId != -99 && !visaoDre)
-                query.AppendLine("group by turma_nome, tipo, dre_codigo");
-
-            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(query.ToString(), new
+            return await database.Conexao.QueryAsync<FrequenciaAlunoDashboardDto>(selectSQL, new
             {
                 dreId,
                 ueId,
                 anoLetivo,
                 modalidade,
                 semestre,
-                anoTurma = anoTurmaModalidade,
+                turmaIds,
                 dataAula,
-                dataInicioSemana,
-                datafimSemana,
-                mes,
-                tipoPeriodo = tipoPeriodoDashboard
+                tipoPeriodo = (int)TipoPeriodoDashboardFrequencia.Diario
             });
         }
 
-        public async Task<DadosParaConsolidacaoDashBoardFrequenciaDto> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, int tipoPeriodo, DateTime dataAula, DateTime? dataInicioSemana, DateTime? datafimSemana, int? mes)
+        public async Task<IEnumerable<DadosParaConsolidacaoDashBoardFrequenciaDto>> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, DateTime dataInicioSemana, DateTime datafimSemana, DateTime? dataAula = null)
         {
-            var query = new StringBuilder(@"select 
- 	                                           count(*) filter(where x.QuantidadePresencas > 0) as Presentes
- 	                                         , count(*) filter(where x.QuantidadeRemotos > 0) as Remotos
- 	                                         , count(*) filter(where x.QuantidadeAusencias > 0) as Ausentes 	                            
-                                         from
-                                             ( 
-		                                        select rfa.codigo_aluno, a.criado_em,			   
-                                                       count(rfa.id) filter(where rfa.valor = 1) as QuantidadePresencas,
-			                                           count(rfa.id) filter(where rfa.valor = 2) as QuantidadeAusencias,
-                                                       count(rfa.id) filter(where rfa.valor = 3) as QuantidadeRemotos,
-                                                       ROW_NUMBER() OVER (PARTITION BY rfa.codigo_aluno ORDER BY a.criado_em DESC) AS sequencia
-                                                  from registro_frequencia_aluno rfa
-                                                 inner join aula a on a.id = rfa.aula_id
-                                                 inner join turma t on t.turma_id = a.turma_id
-                                                 inner join ue on ue.id = t.ue_id
-                                                 inner join dre on dre.id = ue.dre_id
-                                                 where t.ano_letivo = @anoLetivo
-                                                   and not rfa.excluido
-                                                   and t.modalidade_codigo = @modalidade 
-                                                   and t.id = @turmaId ");
-
-            if (tipoPeriodo == (int)TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and a.data_aula = @dataAula ");
-
-            if (tipoPeriodo == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine("and a.data_aula between @dataInicioSemana and @datafimSemana ");
-
-            if (tipoPeriodo == (int)TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine(@"and extract(month from a.data_aula) = @mes 
-                                   and extract(year from a.data_aula) = @anoLetivo ");
-
-            query.AppendLine(@"group by rfa.codigo_aluno, a.criado_em
-                               ) as x where x.sequencia = 1");
+            var filtroData = dataAula.HasValue
+                ? " and a.data_aula = @dataAula "
+                : " and a.data_aula between @dataInicioSemana and @datafimSemana ";
+            
+            var query = new StringBuilder($@"select 
+                                                 agrupamento_final.codigo_aluno CodigoAluno,                                              
+                                                 agrupamento_final.data_aula DataAula,  
+                                                 agrupamento_final.totalAulas,
+                                                 agrupamento_final.totalFrequencias,  
+                                                 count(*) filter(where agrupamento_final.QuantidadePresencas > 0) as Presentes,
+                                                 count(*) filter(where agrupamento_final.QuantidadeRemotos > 0) as Remotos,
+                                                 count(*) filter(where agrupamento_final.QuantidadeAusencias > 0) as Ausentes   
+                                            from (
+                                            select 
+                                                 agrupamento_por_aluno_data.codigo_aluno, agrupamento_por_aluno_data.data_aula,
+                                                 case when agrupamento_por_aluno_data.QuantidadeAusencias > 0 then 
+     		                                            case when agrupamento_por_aluno_data.QuantidadeRemotos > 0 then 	0 
+     			                                            else 
+				                                                 case when agrupamento_por_aluno_data.QuantidadePresencas > 0 then 0
+				                                                    else agrupamento_por_aluno_data.QuantidadeAusencias
+		     		                                             end
+     		                                            end
+                                                 else 0 end QuantidadeAusencias,
+                                                 case when agrupamento_por_aluno_data.QuantidadeRemotos > 0 then 
+     		                                            case when agrupamento_por_aluno_data.QuantidadePresencas > 0 then 0
+				                                            else agrupamento_por_aluno_data.QuantidadeRemotos
+		                                                end     		
+                                                 else 0 end   QuantidadeRemotos,
+                                                 agrupamento_por_aluno_data.QuantidadePresencas,
+                                                 agrupamento_por_aluno_data.totalAulas,
+                                                 agrupamento_por_aluno_data.totalFrequencias
+                                             from
+                                                 (
+                                                    select rfa.codigo_aluno, a.data_aula,			   
+                                                           count(rfa.id) filter(where rfa.valor = 1) as QuantidadePresencas,
+                                                           count(rfa.id) filter(where rfa.valor = 2) as QuantidadeAusencias,
+                                                           count(rfa.id) filter(where rfa.valor = 3) as QuantidadeRemotos,
+                                                           count(a.id)  as totalAulas,
+                                                           count(rfa.id)  as totalFrequencias
+                                                      from registro_frequencia_aluno rfa
+         	                                            join aula a on a.id = rfa.aula_id
+	                                                    join turma t on t.turma_id = a.turma_id
+    	                                                join ue on ue.id = t.ue_id
+        	                                            join dre on dre.id = ue.dre_id 
+                                                     where t.ano_letivo = @anoLetivo
+                                                       and not rfa.excluido
+                                                       and t.modalidade_codigo = @modalidade 
+                                                       and t.id = @turmaId 
+                                                       {filtroData}                                                        
+                                            group by rfa.codigo_aluno, a.data_aula
+                                            ) as agrupamento_por_aluno_data
+                                            ) as agrupamento_final
+                                            group by agrupamento_final.codigo_aluno, 
+                                                     agrupamento_final.data_aula,
+                                                     agrupamento_final.totalAulas,
+                                                     agrupamento_final.totalFrequencias");
 
             var parametros = new
             {
                 anoLetivo,
                 turmaId,
                 modalidade,
-                tipoPeriodo,
                 dataAula,
                 dataInicioSemana,
-                datafimSemana,
-                mes
+                datafimSemana
             };
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
+            return await database.Conexao.QueryAsync<DadosParaConsolidacaoDashBoardFrequenciaDto>(query.ToString(), parametros);
         }
     }
 }

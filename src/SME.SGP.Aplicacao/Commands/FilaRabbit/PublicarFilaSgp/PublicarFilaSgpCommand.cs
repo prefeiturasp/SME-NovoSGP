@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
+using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,4 +24,20 @@ namespace SME.SGP.Aplicacao
         public bool NotificarErroUsuario { get; set; }
         public string Exchange { get; set; }
     }
+    
+    public class PublicarFilaSgpCommandValidator : AbstractValidator<PublicarFilaSgpCommand>
+    {
+        public PublicarFilaSgpCommandValidator()
+        {
+            RuleFor(a => a.Filtros)
+                .NotEmpty()
+                .WithMessage("O payload da mensagem deve ser informado para a execução da fila");
+            
+            RuleFor(a => a.Rota)
+                .NotEmpty()
+                .WithMessage("A rota deve ser informado para a execução da fila");
+        }
+    }
+    
+    
 }

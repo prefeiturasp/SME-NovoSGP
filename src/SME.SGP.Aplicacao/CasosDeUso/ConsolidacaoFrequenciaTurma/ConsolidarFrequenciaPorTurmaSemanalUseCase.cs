@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 dataSemanaPassada = dataSemanaPassada.AddDays(-1);
             }
 
-            return (dataSemanaPassada, dataSemanaPassada.AddDays(6));
+            return (dataSemanaPassada, dataSemanaPassada.AddDays(4));
         }
     }
 }

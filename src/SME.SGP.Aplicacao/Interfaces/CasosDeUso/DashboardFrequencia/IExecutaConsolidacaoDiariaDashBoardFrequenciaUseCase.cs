@@ -1,8 +1,8 @@
 ﻿using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IExecutaConsolidacaoDiariaDashBoardFrequenciaUseCase : IRabbitUseCase
     {
     }
 }
