@@ -139,6 +139,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                                     TipoNota tipoNota,
                                     SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
                                     bool ehPerfilGestor = false,
+                                    bool ehEja = false,
                                     params long[] componentesRegencia)
         {
             var ehBimestreFinal = salvarConselhoClasseAlunoNotaDto.Bimestre == 0;
@@ -162,7 +163,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             conselhosDeClasseAlunos.ShouldNotBeNull();
 
             if (ehBimestreFinal)
-                conselhosDeClasseAlunos.Count(a => a.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBe(5);
+                conselhosDeClasseAlunos.Count(a => a.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBe(ehEja ? 3 : 5);
             else
                 conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
 
@@ -1296,17 +1297,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
+            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
+                    tipoNota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
+
             if (!ehEja)
             {
                 await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
-                    tipoNota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
+                tipoNota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
 
                 await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                     tipoNota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
             }
-
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
-                tipoNota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
 
             if (gerarConselhoBimestreFinal)
             {

@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -33,6 +34,13 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from questao where nome_componente = @nomeComponente";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<Questao>(query, new { nomeComponente });
+        }
+
+        public async Task<long?> ObterIdQuestaoPorTipoQuestaoParaQuestionario(long idQuestionario, TipoQuestao tipo)
+        {
+            var query = @"select id from questao where questionario_id = @idQuestionario and tipo = @tipoQuestao";
+
+            return (await database.Conexao.QueryAsync<long?>(query.ToString(), new { idQuestionario, tipoQuestao = (int)tipo })).FirstOrDefault();
         }
     }
 }

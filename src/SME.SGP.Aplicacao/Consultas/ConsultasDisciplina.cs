@@ -111,8 +111,12 @@ namespace SME.SGP.Aplicacao
                 var componentesCurricularesAtribuicaoEol = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
+                var disciplinasAtribuicaoEol = await repositorioComponenteCurricular
+                         .ObterDisciplinasPorIds(componentesCurricularesAtribuicaoEol.Select(a => a.Codigo).Distinct().ToArray());
+
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
+     
                     if (componenteAtual.TerritorioSaber)
                     {
                         // remove territórios replicados definidos pela atribuição cj com base nos códigos de agrupamento
@@ -138,7 +142,8 @@ namespace SME.SGP.Aplicacao
                         TerritorioSaber = componenteAtual.TerritorioSaber,
                         LancaNota = componenteAtual.LancaNota,
                         TurmaCodigo = componenteAtual.TurmaCodigo,
-                        Professor = componenteAtual.Professor
+                        Professor = componenteAtual.Professor,
+                        NomeComponenteInfantil = disciplinasAtribuicaoEol.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteAtual.Codigo)?.NomeComponenteInfantil
                     });
                 }
 
@@ -232,7 +237,16 @@ namespace SME.SGP.Aplicacao
                         .Where(c => c.TerritorioSaber && c.CodigosTerritoriosAgrupamento != null && c.CodigosTerritoriosAgrupamento.Any())
                         .SelectMany(c => c.CodigosTerritoriosAgrupamento);
 
-                    disciplinasDto.AddRange(MapearParaDto(disciplinasAtribuicaoCj?.Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular)), turmaPrograma, turma.EnsinoEspecial));
+                    var codigosComponentesPai = disciplinasDto
+                        .Where(d => d.CdComponenteCurricularPai.HasValue && d.CdComponenteCurricularPai.Value > 0)
+                        .Select(d => d.CdComponenteCurricularPai.Value);
+
+                    var disciplinasAdicionar = disciplinasAtribuicaoCj?
+                        .Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular) && (d.CodigoComponenteCurricularPai.HasValue && d.CodigoComponenteCurricularPai.Value > 0 && !codigosComponentesPai.Contains(d.CodigoComponenteCurricularPai.Value)));
+
+                    if (disciplinasAdicionar != null && disciplinasAdicionar.Any())
+                        disciplinasDto.AddRange(MapearParaDto(disciplinasAdicionar, turmaPrograma, turma.EnsinoEspecial));
+
                     disciplinasDto = disciplinasDto != null && disciplinasDto.Any() ? disciplinasDto.Where(d => d.TerritorioSaber).DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))
                         .Concat(disciplinasDto.Where(d => !d.TerritorioSaber).DistinctBy(d => d.CodigoComponenteCurricular))
                         .OrderBy(c => c.Nome).ToList() : null;

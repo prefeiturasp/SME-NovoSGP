@@ -20,7 +20,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Turma>> ObterTurmasComUeEDrePorCodigo(string turmaCodigo);
         Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
-
         Task<IEnumerable<string>> ObterCodigosTurmasPorUeAno(int anoLetivo, string ueCodigo);
         Task<DreUeDaTurmaDto> ObterCodigosDreUe(string turmaCodigo);
         Task<IEnumerable<TurmaModalidadeCodigoDto>> ObterModalidadePorCodigos(string[] turmasCodigo);
@@ -45,18 +44,19 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<GraficoBaseDto>> ObterInformacoesEscolaresTurmasAsync(int anoLetivo, long dreId, long ueId, AnoItinerarioPrograma[] anos, Modalidade modalidade, int? semestre);
         Task<Turma> ObterTurmaCompletaPorCodigo(string turmaCodigo);
         Task<IEnumerable<TurmaDTO>> ObterTurmasInfantilPorAno(int anoLetivo, string ueCodigo);
-
         Task<IEnumerable<long>> ObterTurmasIdsPorUeEAnoLetivo(int anoLetivo, string ueCodigo);
-
         Task<IEnumerable<TurmaNaoHistoricaDto>> ObterTurmasPorUsuarioEAnoLetivo(long usuarioId, int anoLetivo);
         Task<IEnumerable<int>> BuscarAnosLetivosComTurmasVigentes(string codigoUe);
         Task<bool> VerificaSeVirouHistorica(long turmaId);
         Task<IEnumerable<RetornoConsultaTurmaNomeFiltroDto>> ObterTurmasNomeFiltro(string[] turmasCodigos);
         Task<IEnumerable<Turma>> ObterTurmasDreUeCompletaPorCodigos(string[] turmasCodigo);
         Task<IEnumerable<long>> ObterIdsTurmasPorAnoModalidadeUeTipoRegular(int anoLetivo, int modalidade, long ueId);
-        public Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(int anoLetivo, int pagina, int quantidadeRegistrosPorPagina, params TipoEscola[] tiposEscola);
+        Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(int anoLetivo, int pagina, int quantidadeRegistrosPorPagina, params TipoEscola[] tiposEscola);
         Task<IEnumerable<TurmaComplementarDto>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos);
         Task<Turma> ObterSomenteTurmaPorId(long turmaId);
-        Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoConselhoClassePorUeId(long ueId, int anoLetivo);
+        Task<IEnumerable<TurmaBimestreDto>> ObterTurmasComFechamentoTurmaPorUeId(long ueId, int anoLetivo);
+        Task<IEnumerable<long>> ObterIdsPorCodigos(string[] codigosTurma);
+        Task<IEnumerable<TurmaAlunoDto>> ObterPorAlunos(long[] codigoAlunos, int anoLetivo);
+        Task<IEnumerable<TurmaDTO>> ObterTurmasAulasNormais(long ueId, int anoLetivo, int[] tiposTurma, int[] modalidades, int[] ignorarTiposCiclos);
     }
 }

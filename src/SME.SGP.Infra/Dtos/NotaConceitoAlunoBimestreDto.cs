@@ -18,5 +18,6 @@ namespace SME.SGP.Infra
         public string Sintese { get; set; }
         public bool TemAnotacao { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
     }
 }

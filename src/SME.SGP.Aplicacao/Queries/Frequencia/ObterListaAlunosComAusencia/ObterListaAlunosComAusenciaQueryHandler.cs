@@ -41,6 +41,11 @@ namespace SME.SGP.Aplicacao
 
             var alunosAtivos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
+            
+            if (alunosAtivos != null && alunosAtivos.Any())
+                alunosAtivos = alunosAtivos.OrderByDescending(a => a.DataSituacao).ToList().DistinctBy(a => a.CodigoAluno);
+            else
+                throw new NegocioException("Não foram localizados alunos com matrícula ativa na turma, no período escolar selecionado.");
 
             var usuarioLogado = await mediator
                 .Send(new ObterUsuarioLogadoQuery());
@@ -68,7 +73,8 @@ namespace SME.SGP.Aplicacao
 
             var percentualFrequenciaAlerta = int.Parse(await mediator
                 .Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                       
-
+            
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turma);
             foreach (var alunoEOL in alunosAtivos)
             {               
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo
@@ -86,13 +92,18 @@ namespace SME.SGP.Aplicacao
                     QuantidadeFaltasTotais = faltasNaoCompensadas,
                     MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > faltasNaoCompensadas ? faltasNaoCompensadas : quantidadeMaximaCompensacoes,
                     PercentualFrequencia = frequenciaAluno.PercentualFrequencia,
-                    Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta
+                    Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == alunoEOL.CodigoAluno)
                 });
             }
 
             return alunosAusentesDto;
         }
 
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, Turma turma)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
+        }
         private async Task<Turma> BuscaTurma(string turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));

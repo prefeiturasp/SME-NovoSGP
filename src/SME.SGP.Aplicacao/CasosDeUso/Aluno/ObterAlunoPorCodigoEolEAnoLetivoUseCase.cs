@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,8 @@ namespace SME.SGP.Aplicacao
 
             if (alunoPorTurmaResposta == null)
                 throw new NegocioException("Aluno não localizado");
+            
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new[]{codigoAluno}, anoLetivo);
 
             var alunoReduzido = new AlunoReduzidoDto()
             {
@@ -37,12 +40,17 @@ namespace SME.SGP.Aplicacao
                 TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
                 CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
                 DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
-                EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(alunoPorTurmaResposta.CodigoAluno, anoLetivo))
+                EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(alunoPorTurmaResposta.CodigoAluno, anoLetivo)),
+                EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == alunoPorTurmaResposta.CodigoAluno)
             };
 
             return alunoReduzido;
         }
 
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private async Task<string> OberterNomeTurmaFormatado(string turmaId)
         {
             var turmaNome = "";

@@ -21,6 +21,7 @@
         AtividadesContraturno = 17,
         EditorTexto = 18,
         TurmasPrograma = 19,
-        InformacoesSrm = 20
+        InformacoesSrm = 20,
+        InformacoesFrequenciaTurmaPAP = 21
     }
 }
