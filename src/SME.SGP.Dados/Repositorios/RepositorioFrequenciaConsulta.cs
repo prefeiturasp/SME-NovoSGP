@@ -657,5 +657,33 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultado;
         }
+
+        public async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaPorTurmaPeriodo(string codigoTurma, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"select sum(tb1.TotalPresencas) as TotalPresencas,
+ 		                        sum(tb1.TotalAusencias) as TotalAusencias,
+ 		                        sum(tb1.TotalRemotos) as TotalRemotos,
+ 		                        sum(tb1.TotalAula) as TotalAulas,
+ 		                        tb1.AlunoCodigo
+                          from (
+                                select (count(distinct(a.id)) filter (where rfa.valor = 1)*a.quantidade) as TotalPresencas,
+                                       (count(distinct(a.id)) filter (where rfa.valor = 2)*a.quantidade) as TotalAusencias,
+                                       (count(distinct(a.id)) filter (where rfa.valor = 3)*a.quantidade) as TotalRemotos,
+                                       rfa.codigo_aluno as AlunoCodigo,
+                                       count(a.quantidade) TotalAula
+                                from registro_frequencia rf 
+                                inner join registro_frequencia_aluno rfa  on rf.id = rfa.registro_frequencia_id
+                                inner join aula a on a.id = rf.aula_id 
+                                where not rfa.excluido
+                                  and not a.excluido      
+                                  and a.turma_id = @codigoTurma  
+                                  and a.data_aula >= @dataInicio
+                                  and a.data_aula <= @dataFim                 
+                                  and rfa.numero_aula <= a.quantidade 
+                                group by rfa.codigo_aluno, a.quantidade)tb1
+                         group by tb1.AlunoCodigo";
+
+            return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { codigoTurma, dataInicio, dataFim });
+        }
     }
 }
