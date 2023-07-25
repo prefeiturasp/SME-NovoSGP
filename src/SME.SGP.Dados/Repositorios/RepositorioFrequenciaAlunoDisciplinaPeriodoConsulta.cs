@@ -64,7 +64,7 @@ namespace SME.SGP.Dados
             return query;
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, long periodoEscolarId, string turmaId, string[] disciplinaIdsConsideradas, string professor = null)
         {
             var query = new StringBuilder(@$"
                         select *,
@@ -76,13 +76,13 @@ namespace SME.SGP.Dados
                             and turma_id = @turmaId
                             and ((disciplina_id = any(@disciplinaIdsConsideradas) {(!string.IsNullOrWhiteSpace(professor) ? "and (professor_rf = @professor or professor_rf is null)" : string.Empty)}) or tipo = @tipo)");
 
-            if (periodosEscolaresId != null && periodosEscolaresId.Any())
-                query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");            
+            if (periodoEscolarId > 0)
+                query.AppendLine("and periodo_escolar_id = @periodoEscolarId");            
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
                 alunosCodigo,
-                periodosEscolaresId = periodosEscolaresId.ToArray(),
+                periodoEscolarId,
                 turmaId,
                 disciplinaIdsConsideradas,
                 tipo = TipoFrequenciaAluno.Geral,
@@ -892,6 +892,28 @@ namespace SME.SGP.Dados
                 dataAtual,
                 turmaCodigo
             });
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorPeriodosEscolares(string codigoAluno, string codigoTurma, long[] idsPeriodosEscolares)
+        {
+            var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
+                            from frequencia_aluno fa");
+
+            query.AppendLine(@" where fa.tipo = @tipoFrequencia
+                and fa.codigo_aluno = @codigoAluno 
+                and fa.turma_id = @codigoTurma
+                and fa.periodo_escolar_id = any(@idsPeriodosEscolares)");
+
+            query.AppendLine(") select * from lista where sequencia = 1;");
+
+            return await database.Conexao
+                .QueryAsync<FrequenciaAluno>(query.ToString(), new
+                {
+                    codigoAluno,
+                    codigoTurma,
+                    idsPeriodosEscolares,
+                    tipoFrequencia = (int)TipoFrequenciaAluno.Geral
+                });
+        }
     }
-}
 }

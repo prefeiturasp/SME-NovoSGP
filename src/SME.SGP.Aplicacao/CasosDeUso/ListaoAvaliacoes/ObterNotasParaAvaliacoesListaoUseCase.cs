@@ -140,12 +140,8 @@ namespace SME.SGP.Aplicacao
             }
 
             var alunosAtivosCodigos = alunosAtivos.Select(a => a.CodigoAluno).Distinct().ToArray();
-
-            var frequenciasDosAlunos = await mediator
-                .Send(new ObterFrequenciasPorAlunosTurmaCCDataQuery(alunosAtivosCodigos, periodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.TurmaCodigo, filtro.DisciplinaCodigo.ToString()));
-
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(filtro.TurmaCodigo, new string[] { filtro.DisciplinaCodigo.ToString() }, filtro.PeriodoEscolarId));
-
+            
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turmaCompleta.AnoLetivo);
             foreach (var aluno in alunosAtivos)
             {
                 var notaConceitoAluno = new NotasConceitosAlunoListaoRetornoDto()
@@ -210,6 +206,8 @@ namespace SME.SGP.Aplicacao
                 notaConceitoAluno.EhAtendidoAEE = await mediator
                                 .Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, filtro.AnoLetivo));
 
+                notaConceitoAluno.EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno);
+
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
 
@@ -272,6 +270,10 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private IEnumerable<DisciplinaResposta> MapearParaDto(IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol)
         {
             foreach (var disciplina in disciplinasRegenciaEol)

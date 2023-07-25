@@ -2,7 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<Ue>();
 
-            if(filtro != null)
+            if (filtro != null)
             {
                 var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
                 if (!ignorarGeracaoPendencia)
@@ -25,15 +24,23 @@ namespace SME.SGP.Aplicacao
                     await VerificaPendenciasDiarioDeBordo(filtro);
                     await VerificaPendenciasFrequencia(filtro);
                 }
+
                 await VerificaPendenciasAvaliacao(filtro);
                 await VerificaPendenciasPlanoAula(filtro);
-
                 await VerificaPendenciasDiarioClasseFechamento(filtro);
+                await VerificaPendenciasTurmasComponentesSemAulas(filtro);
 
                 return true;
             }
 
             return false;
+        }
+
+        private async Task VerificaPendenciasTurmasComponentesSemAulas(Ue ue)
+        {
+            var executar = await mediator.Send(new PodeExecutarPendenciaComponenteSemAulaQuery());
+            if (executar)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAulaUe, new DreUeDto(ue.DreId, ue.Id, ue.CodigoUe)));
         }
 
         private async Task VerificaPendenciasDiarioClasseFechamento(Ue ue)
@@ -44,8 +51,8 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaPendenciasDiarioDeBordo(Ue ue)
         {
             var dadosParametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecutaPendenciaAulaDiarioBordo, DateTimeExtension.HorarioBrasilia().Year));
-            
-            if(dadosParametro?.Ativo == true)
+
+            if (dadosParametro?.Ativo == true)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordo, new DreUeDto(ue.DreId, ue.CodigoUe)));
         }
 

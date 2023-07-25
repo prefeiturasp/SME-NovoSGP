@@ -1,7 +1,6 @@
 ﻿
 
 using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -23,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<ProfessorTitularDisciplinaEol>();
-            var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(request.CodigoTurma, realizaAgrupamento: false));
+            var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(request.CodigoTurma, realizaAgrupamento: request.RealizarAgrupamento));
             if (!professores?.Any() ?? true) return retorno;
 
             foreach (var professor in professores)

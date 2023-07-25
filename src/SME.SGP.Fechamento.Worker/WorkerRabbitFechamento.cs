@@ -17,9 +17,10 @@ namespace SME.SGP.Fechamento.Worker
         public WorkerRabbitFechamento(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitFechamento", 
                 typeof(RotasRabbitSgpFechamento))
         {
@@ -32,7 +33,7 @@ namespace SME.SGP.Fechamento.Worker
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidarDreConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da dre", typeof(IExecutarConsolidacaoDreConselhoClasseUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidarUeConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da ue", typeof(IExecutarConsolidacaoUeConselhoClasseUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
-            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase), TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_3));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase), TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_1));
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por ue", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por turma", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase)));

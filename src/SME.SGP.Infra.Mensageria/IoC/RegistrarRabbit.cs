@@ -26,6 +26,7 @@ namespace SME.SGP.IoC
             });
 
             services.AddSingleton<IServicoMensageriaLogs, ServicoMensageriaLogs>();
+            services.AddSingleton<IServicoMensageriaMetricas, ServicoMensageriaMetricas>();
         }
 
         public static void ConfigurarRabbit(this IServiceCollection services, IConfiguration configuration)

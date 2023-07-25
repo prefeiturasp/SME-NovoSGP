@@ -42,14 +42,20 @@ namespace SME.SGP.Aplicacao
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
             // Carrega lista de alunos com relatório já preenchido
             var alunosComRelatorio = await ObterRelatoriosAlunosPorTurmaAsync(turma.Id, semestre);
-            
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(dadosAlunos.Select(x => x.CodigoEOL).ToArray(), anoLetivo);
             await VerificaEstudantePossuiAtendimentoAEE(turma, dadosAlunos);
-
+            await VerificaEstudantePossuiMatriculaPap(matriculadosTurmaPAP,dadosAlunos);
             // Atuliza flag de processo concluido do aluno
             foreach (var dadosAluno in dadosAlunos.Where(d => alunosComRelatorio.Any(a => a.AlunoCodigo == d.CodigoEOL)))
                 dadosAluno.ProcessoConcluido = true;
 
             return dadosAlunos.OrderBy(w => w.Nome);
+        }
+
+        private async Task VerificaEstudantePossuiMatriculaPap(IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPap, IEnumerable<AlunoDadosBasicosDto> dadosAlunos)
+        {
+            foreach (var dadosAluno in dadosAlunos)
+                dadosAluno.EhMatriculadoTurmaPAP = matriculadosTurmaPap.Any(x => x.CodigoAluno.ToString() == dadosAluno.CodigoEOL);
         }
 
         private async Task VerificaEstudantePossuiAtendimentoAEE(Turma turma, IEnumerable<AlunoDadosBasicosDto> dadosAlunos)
@@ -60,6 +66,10 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private async Task<PeriodoEscolar> ObterPeriodoEscolar(Turma turma, int semestre)
         {
             var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);

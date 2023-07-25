@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterUsuarioLogadoQuery(), cancellationToken);
 
             var professoresTitulares = await mediator
-                .Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo), cancellationToken);
+                .Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo, true), cancellationToken);
 
             if (request.Aulas.Any())
             {
