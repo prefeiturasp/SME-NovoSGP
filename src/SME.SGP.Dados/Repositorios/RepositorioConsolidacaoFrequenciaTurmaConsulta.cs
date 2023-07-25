@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<GraficoAusenciasComJustificativaDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre });
         }
 
-        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade, string codigoTurma, DateTime dataInicioSemana, DateTime datafimSemana, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade, long[] turmaIds, DateTime dataInicioSemana, DateTime datafimSemana, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
         {
             var query = new StringBuilder();
 
@@ -163,8 +163,8 @@ namespace SME.SGP.Dados.Repositorios
                            and modalidade_codigo = @modalidade
                            and tipo = @tipoPeriodo ");
 
-            if (!string.IsNullOrEmpty(codigoTurma) && !codigoTurma.Contains("-99"))
-                query.AppendLine("and t.turma_id = @codigoTurma ");
+            if (turmaIds != null && turmaIds.Any())
+                query.AppendLine("and t.turma_id = any(@turmaIds) ");
 
             if (dreId != -99)
                 query.AppendLine("and dre.id = @dreId ");
@@ -193,6 +193,7 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade,
                 dataInicioSemana,
                 datafimSemana,
+                turmaIds,
                 mes,
                 tipoPeriodo = tipoPeriodoDashboard
             });
