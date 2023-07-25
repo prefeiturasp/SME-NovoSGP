@@ -305,6 +305,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId)
         {
             string sql;
+            const long linguaInglesaCompartilhada = 1106;
+
             if (ehInfantil)
             {
                 sql = @"SELECT 1  
@@ -320,7 +322,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             else
             {
-                sql = @"SELECT 1 FROM aula
+                sql = @$"SELECT 1 FROM aula
                         INNER JOIN turma ON aula.turma_id = turma.turma_id
                         INNER JOIN componente_curricular cc ON (cc.id = aula.disciplina_id::bigint or cc.id = any(@componentesCurricularesId))
 	                    LEFT JOIN registro_frequencia_aluno rfa ON aula.id = rfa.aula_id and not rfa.excluido
@@ -328,10 +330,11 @@ namespace SME.SGP.Dados.Repositorios
 	                    AND aula.id = ANY(@aulas)
                         AND aula.data_aula::date < @hoje
                         AND rfa.id is null 
-                        AND cc.permite_registro_frequencia ";
+                        AND cc.permite_registro_frequencia
+                        {(componentesCurricularesId.Any(x => x == linguaInglesaCompartilhada) ? $" AND disciplina_id != @linguaInglesaCompartilhada" : String.Empty)}";
             }   
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId }));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId, linguaInglesaCompartilhada = linguaInglesaCompartilhada.ToString() }));
 
         }
 
