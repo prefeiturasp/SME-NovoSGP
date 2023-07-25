@@ -77,9 +77,6 @@ namespace SME.SGP.Aplicacao
             consolidacaoDashBoardFrequencia.TurmaAno = turma.AnoComModalidade();
             consolidacaoDashBoardFrequencia.semestre = turma.Semestre;
             consolidacaoDashBoardFrequencia.DataAula = dados.DataAula;
-            consolidacaoDashBoardFrequencia.DataInicio = dataInicio;
-            consolidacaoDashBoardFrequencia.DataFim = dataFim;
-            consolidacaoDashBoardFrequencia.Mes = mes;
             consolidacaoDashBoardFrequencia.ModalidadeCodigo = (int)turma.ModalidadeCodigo;
             consolidacaoDashBoardFrequencia.Tipo = tipoPeriodo;
             consolidacaoDashBoardFrequencia.DreId = turma.Ue.DreId;

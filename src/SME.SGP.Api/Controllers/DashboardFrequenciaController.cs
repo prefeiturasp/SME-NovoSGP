@@ -83,15 +83,25 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre));
         }
 
-        [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/consolidado/anos-turmas")]
+        [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/consolidado-diario/anos-turmas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciasConsolidadasPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoPeriodoDashboard, [FromQuery] long[] turmaIds, int semestre, DateTime dataInicio, DateTime datafim, int mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaPorAnoTurmaUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciasConsolidadacaoDiariaPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, [FromQuery] long[] turmaIds, int semestre, DateTime dataAula, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaDiariaPorAnoTurmaUseCase useCase)
         {
-            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre, turmaIds, dataInicio, datafim, mes, tipoPeriodoDashboard, visaoDre));
-        }        
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, semestre, turmaIds, dataAula, visaoDre));
+        }       
+        
+        [HttpGet("anos/{anoLetivo}/dres/{dreId}/ues/{ueId}/modalidades/{modalidade}/consolidado-semanal-mensal/anos-turmas")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
+        [Permissao(Permissao.DF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFrequenciasConsolidacaoSemanalMensalPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoPeriodoDashboard, [FromQuery] long[] turmaIds, DateTime? dataInicio, DateTime? datafim, int? mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, turmaIds, dataInicio, datafim,mes, tipoPeriodoDashboard, visaoDre));
+        }    
 
         [HttpGet("filtro/anos/{anoLetivo}/semanas")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

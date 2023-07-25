@@ -43,8 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                 
             groupBySQL += ", total_aulas, total_frequencias ";
 
-            selectSQL += @"tipo as TipoFrequenciaAluno,
-                               dre_codigo as DreCodigo,
+            selectSQL += @"    dre_codigo as DreCodigo,
                                total_aulas as TotalAulas,
                                total_frequencias as TotalFrequencias, 
                                sum(quantidade_presencas) as Presentes,
