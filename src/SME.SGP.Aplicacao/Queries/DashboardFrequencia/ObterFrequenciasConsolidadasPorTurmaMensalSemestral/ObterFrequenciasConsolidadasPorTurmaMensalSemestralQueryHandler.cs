@@ -26,8 +26,7 @@ namespace SME.SGP.Aplicacao
                                                                                                   request.TurmaIds,
                                                                                                   request.DataInicioSemmana,
                                                                                                   request.DataFimSemana,
-                                                                                                  request.Mes,
-                                                                                                  request.TipoPeriodoDashboard,
+                                                                                                  request.TipoConsolidadoFrequencia,
                                                                                                   request.VisaoDre);
         }
     }

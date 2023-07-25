@@ -1203,8 +1203,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterFiltroSemanaUseCase, ObterFiltroSemanaUseCase>();
 
             // Dashboard Frequencia Aluno
-            services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();
-            services.TryAddScoped<IObterDadosDashboardFrequenciaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaPorAnoTurmaUseCase>();
+            services.TryAddScoped<IObterDadosDashboardFrequenciaDiariaPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaDiariaPorAnoTurmaUseCase>();
+            services.TryAddScoped<IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase, ObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase>();
             services.TryAddScoped<IObterFrequenciasPorPeriodoUseCase, ObterFrequenciasPorPeriodoUseCase>();
             services.TryAddScoped<IObterFaltasNaoCompensadaUseCase, ObterFaltasNaoCompensadaUseCase>();
             services.TryAddScoped<IObterDadosDashboardTotalAtividadesCompensacaoUseCase, ObterDadosDashboardTotalAtividadesCompensacaoUseCase>();

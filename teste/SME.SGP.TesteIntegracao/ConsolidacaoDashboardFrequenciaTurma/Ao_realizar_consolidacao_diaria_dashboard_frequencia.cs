@@ -43,8 +43,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             var mensagem = new ConsolidacaoPorTurmaDashBoardFrequencia()
             {
                 AnoLetivo = dataReferencia.Year, 
-                Mes = dataReferencia.Month, 
                 TurmaId = ConstantesTeste.TURMA_ID_1,
+                Mes = dataReferencia.Month, 
                 DataAula = dataReferencia
             };
             
@@ -55,48 +55,12 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             var consolidacoes = ObterTodos<ConsolidacaoDashBoardFrequencia>();
             consolidacoes.ShouldNotBeEmpty();
             consolidacoes.Count.ShouldBe(1);
-            consolidacoes.FirstOrDefault().Mes.ShouldBe(dataReferencia.Month);
             consolidacoes.FirstOrDefault().DataAula.ShouldBe(dataReferencia);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(1);
             consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
         }
-        
-        [Fact(DisplayName = "Consolidação Dashboard - Deve gerar a consolidação diaria com período")]
-        public async Task Deve_gerar_consolidacao_diaria_com_periodo()
-        {
-            await CriarItensBasicos();
-
-            var dataReferencia = DateTimeExtension.HorarioBrasilia().Date.AddDays(-1);
-
-            await CriarAulas(dataReferencia);
-
-            await CriarRegistroFrequencia();
-
-            await CriarRegistroFrequenciaAluno();
-            
-            var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase>();
-            var mensagem = new ConsolidacaoPorTurmaDashBoardFrequencia()
-            {
-                AnoLetivo = dataReferencia.Year, 
-                Mes = dataReferencia.Month, 
-                TurmaId = ConstantesTeste.TURMA_ID_1,
-            };
-            
-            var jsonMensagem = JsonSerializer.Serialize(mensagem);
-
-            await useCase.Executar(new MensagemRabbit(jsonMensagem));
-
-            var consolidacoes = ObterTodos<ConsolidacaoDashBoardFrequencia>();
-            consolidacoes.ShouldNotBeEmpty();
-            consolidacoes.Count.ShouldBe(1);
-            consolidacoes.FirstOrDefault().Mes.ShouldBe(dataReferencia.Month);
-            consolidacoes.FirstOrDefault().DataAula.ShouldBe(dataReferencia);
-            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(1);
-            consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
-            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
-        }
-        
+       
         [Fact(DisplayName = "Consolidação Dashboard - Deve atualizar a consolidação diaria com data")]
         public async Task Deve_atualizar_consolidacao_diaria_com_data()
         {
@@ -152,74 +116,12 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             consolidacoes = ObterTodos<ConsolidacaoDashBoardFrequencia>();
             consolidacoes.ShouldNotBeEmpty();
             consolidacoes.Count.ShouldBe(1);
-            consolidacoes.FirstOrDefault().Mes.ShouldBe(dataReferencia.Month);
             consolidacoes.FirstOrDefault().DataAula.ShouldBe(dataReferencia);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(1);
             consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
             consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
         }
         
-        [Fact(DisplayName = "Consolidação Dashboard - Deve atualizar a consolidação diaria com período")]
-        public async Task Deve_atualizar_consolidacao_diaria_com_periodo()
-        {
-            await CriarItensBasicos();
-
-            var dataReferencia = DateTimeExtension.HorarioBrasilia().Date.AddDays(-1);
-
-            await CriarAulas(dataReferencia);
-
-            await CriarRegistroFrequencia();
-
-            await CriarRegistroFrequenciaAluno();
-            
-            await InserirNaBase(new ConsolidacaoDashBoardFrequencia
-            {
-                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
-                UeId = ConstantesTeste.UE_1_ID,
-                DataAula = dataReferencia,
-                AnoLetivo = dataReferencia.Year,
-                Mes = dataReferencia.Month,
-                TurmaId = ConstantesTeste.TURMA_ID_1,
-                TurmaNome = ConstantesTeste.TURMA_NOME_1A,
-                TurmaAno = ConstantesTeste.TURMA_ANO_1,
-                DreId = ConstantesTeste.DRE_1_ID,
-                DreAbreviacao = ConstantesTeste.DRE_1_NOME,
-                DreCodigo = ConstantesTeste.DRE_1_CODIGO,
-                ModalidadeCodigo = (int)Modalidade.Fundamental,
-                QuantidadeAusentes = 2,
-                QuantidadePresencas = 1,
-                QuantidadeRemotos = 2,
-                Tipo = (int)TipoPeriodoDashboardFrequencia.Diario,
-                semestre = 0
-            });
-            
-            var consolidacoes = ObterTodos<ConsolidacaoDashBoardFrequencia>();
-            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(2);
-            consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(1);
-            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(2);
-            
-            var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase>();
-            var mensagem = new ConsolidacaoPorTurmaDashBoardFrequencia()
-            {
-                AnoLetivo = dataReferencia.Year, 
-                Mes = dataReferencia.Month, 
-                TurmaId = ConstantesTeste.TURMA_ID_1,
-            };
-            
-            var jsonMensagem = JsonSerializer.Serialize(mensagem);
-
-            await useCase.Executar(new MensagemRabbit(jsonMensagem));
-
-            consolidacoes = ObterTodos<ConsolidacaoDashBoardFrequencia>();
-            consolidacoes.ShouldNotBeEmpty();
-            consolidacoes.Count.ShouldBe(1);
-            consolidacoes.FirstOrDefault().Mes.ShouldBe(dataReferencia.Month);
-            consolidacoes.FirstOrDefault().DataAula.ShouldBe(dataReferencia);
-            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeAusentes.ShouldBe(1);
-            consolidacoes.FirstOrDefault(c=> c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadePresencas.ShouldBe(2);
-            consolidacoes.FirstOrDefault(c => c.TurmaId == ConstantesTeste.TURMA_ID_1).QuantidadeRemotos.ShouldBe(1);
-        }
-
         private async Task CriarRegistroFrequenciaAluno()
         {
             await InserirNaBase(new RegistroFrequenciaAluno

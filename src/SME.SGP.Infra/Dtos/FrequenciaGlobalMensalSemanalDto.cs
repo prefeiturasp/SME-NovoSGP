@@ -4,16 +4,18 @@ namespace SME.SGP.Infra.Dtos
 {
     public class FrequenciaGlobalMensalSemanalDto
     {
+        public string Descricao { get { return ObterDescricao(); } }
+        public string DreCodigo { get; set; }
+        
         public string NomeTurma { get; set; }
         public int AnoTurma {  get; set; }
         public Modalidade ModalidadeTurma { get; set; }
         public string AbreviacaoDre { get; set; }
-        public string CodigoDre { get; set; }
+        
         public int QuantidadeAbaixoMinimoFrequencia { get; set; }
         public int QuantidadeAcimaMinimoFrequencia { get; set; }
         public bool VisaoDre { get; set; }
         public long UeId { get; set; }
-        public string Descricao { get { return ObterDescricao(); } }
 
         private string ObterDescricao()
         {

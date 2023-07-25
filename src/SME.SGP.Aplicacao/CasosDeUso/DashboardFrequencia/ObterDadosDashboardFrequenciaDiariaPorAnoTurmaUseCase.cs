@@ -7,22 +7,22 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosDashboardFrequenciaPorAnoTurmaUseCase : AbstractUseCase, IObterDadosDashboardFrequenciaPorAnoTurmaUseCase
+    public class ObterDadosDashboardFrequenciaDiariaPorAnoTurmaUseCase : AbstractUseCase, IObterDadosDashboardFrequenciaDiariaPorAnoTurmaUseCase
     {
-        public ObterDadosDashboardFrequenciaPorAnoTurmaUseCase(IMediator mediator) : base(mediator)
+        public ObterDadosDashboardFrequenciaDiariaPorAnoTurmaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
-        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, long[] turmaIds, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, long[] turmaIds, DateTime dataAula, bool visaoDre = false)
         {
             var dadosFrequenciaAlunos = Enumerable.Empty<FrequenciaAlunoDashboardDto>();
             
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(anoLetivo, dreId, ueId, modalidade, semestre, turmaIds, dataInicio, visaoDre));
-            
+            dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(anoLetivo, dreId, ueId, modalidade, semestre, turmaIds, dataAula, visaoDre));
+
             if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
                 return null;
             

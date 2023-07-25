@@ -14,5 +14,7 @@ namespace SME.SGP.Infra
         public int Ausentes { get; set; } 
         public long TotalAulas { get; set; }
         public long TotalFrequencias { get; set; }
+        public int QuantidadeAcimaMinimoFrequencia { get; set; }
+        public int QuantidadeAbaixoMinimoFrequencia { get; set; }
     }
 }
