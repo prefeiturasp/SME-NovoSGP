@@ -37,38 +37,6 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public async Task ExcluirConsolidacaoDashBoard(int anoLetivo, long turmaId, DateTime dataAula, DateTime? dataInicioSemanda, DateTime? dataFinalSemena, int? mes, TipoPeriodoDashboardFrequencia tipoPeriodo)
-        {
-            var query = new StringBuilder(@"delete 
-                                              from consolidado_dashboard_frequencia
-                                             where turma_id = @turmaId
-                                               and tipo = @tipoPeriodo
-                                               and ano_letivo = @anoLetivo ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and data_aula::date = @dataAula ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine(@"and data_inicio_semana::date = @dataInicioSemanda
-                                   and data_fim_semana::date = @dataFinalSemena ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine("and mes = @mes ");
-
-            var parametros = new
-            {
-                anoLetivo,
-                turmaId,
-                dataAula,
-                dataInicioSemanda,
-                dataFinalSemena,
-                mes,
-                tipoPeriodo
-            };
-
-            await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
-        }
-
         public async Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, DateTime dataAula, int? mes, DateTime? dataInicioSemana, DateTime? dataFimSemana)
         {
             var query = new StringBuilder(@"select cdf.id as Id, 
@@ -109,6 +77,50 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = "delete from consolidacao_frequencia_turma where turma_id = @turmaId;";
             await database.Conexao.ExecuteAsync(query, new { turmaId });
+        }
+        
+        public async Task<ConsolidacaoDashBoardFrequencia> ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(long turmaId, DateTime dataAula, Modalidade modalidadeCodigo, int anoLetivo, long dreId, long ueId, TipoPeriodoDashboardFrequencia tipo)
+        {
+            var query = new StringBuilder(@"SELECT id, 
+			                                     turma_nome, 
+			                                     turma_id,
+			                                     turma_ano, 
+			                                     semestre, 
+			                                     data_aula, 
+			                                     modalidade_codigo, 
+			                                     data_inicio_semana, 
+			                                     data_fim_semana, 
+			                                     mes, 
+			                                     tipo, 
+			                                     ano_letivo, 
+			                                     dre_id, 
+			                                     ue_id, 
+			                                     dre_codigo, 
+			                                     dre_abreviacao, 
+			                                     quantidade_presencas, 
+			                                     quantidade_ausencias, 
+			                                     quantidade_remotos, 
+			                                     criado_em
+                                    FROM consolidado_dashboard_frequencia
+                                    where turma_id = @turmaId 
+                                       and data_aula = @dataAula 
+                                       and modalidade_codigo = @modalidadeCodigo 
+                                       and ano_letivo = @anoLetivo 
+                                       and dre_id = @dreId 
+                                       and ue_id = @ueId
+                                       and tipo = @tipo ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDashBoardFrequencia>(query.ToString(), new { turmaId, dataAula, modalidadeCodigo = (int)modalidadeCodigo, anoLetivo, dreId, ueId, tipo = (int)tipo});
+        }
+        
+        public virtual async Task<long> SalvarAsync(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia)
+        {
+            if (consolidacaoDashBoardFrequencia.Id > 0)
+                await database.Conexao.UpdateAsync(consolidacaoDashBoardFrequencia);
+            else
+                consolidacaoDashBoardFrequencia.Id = (long)(await database.Conexao.InsertAsync(consolidacaoDashBoardFrequencia));
+
+            return consolidacaoDashBoardFrequencia.Id;
         }
     }
 }
