@@ -39,8 +39,12 @@ namespace SME.SGP.Aplicacao
                 var tiposParaConsulta = new List<int>();
                 
                 tiposParaConsulta.AddRange(fechamentoTurma.Turma.ObterTiposRegularesDiferentes());
-                
-                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(fechamentoTurma.Turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta), cancellationToken);
+
+                var matriculasAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, null, null));
+                var matriculaAluno = matriculasAluno.FirstOrDefault(x => x.DataSituacao.Year == fechamentoTurma.Turma.AnoLetivo);
+                bool historico = matriculaAluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && !fechamentoTurma.Turma.Historica;
+
+                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(fechamentoTurma.Turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, historico), cancellationToken);
                 
                 if (turmasRegularesDoAluno == null)
                     throw new NegocioException($"Não foi possível obter a turma Regular do aluno {request.AlunoCodigo}");

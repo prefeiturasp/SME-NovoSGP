@@ -57,6 +57,10 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery(bimestre, turma.CodigoTurma, turma.AnoLetivo, turma.Semestre, tipoCalendarioTurma));
 
+            var matriculasAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(alunoCodigo, null, null));
+            var matriculaAluno = matriculasAluno.FirstOrDefault(x => x.DataSituacao.Year == turma.AnoLetivo);
+            bool historico = matriculaAluno.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && !turma.Historica || consideraHistorico;
+
             switch (fechamentoTurma)
             {
                 case null when !turma.EhAnoAnterior():
@@ -77,7 +81,7 @@ namespace SME.SGP.Aplicacao
                 var tiposParaConsulta = new List<int>();
                 tiposParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
 
-                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposParaConsulta));
+                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposParaConsulta, historico));
                 
                 var turmaRegularCodigo = turmasRegularesDoAluno.FirstOrDefault();
                 var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo));
@@ -173,7 +177,7 @@ namespace SME.SGP.Aplicacao
                 var turmasCodigosParaConsulta = new List<int>();
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
 
-                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico));
 
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
