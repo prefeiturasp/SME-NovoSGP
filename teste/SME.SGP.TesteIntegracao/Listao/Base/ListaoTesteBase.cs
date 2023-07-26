@@ -78,10 +78,10 @@ namespace SME.SGP.TesteIntegracao.Listao
             
             await CriarTipoCalendario(filtroListao.TipoCalendario, filtroListao.TurmaHistorica);
             
-            if (filtroListao.CriarAula)
-                await CriarAulas(filtroListao.ComponenteCurricularId, filtroListao.Bimestre, filtroListao.TurmaHistorica);
-            
             await CriarPeriodoEscolarTodosBimestres(filtroListao.TipoCalendario, filtroListao.TurmaHistorica);
+            
+            if (filtroListao.CriarAula)
+                await CriarAulas(filtroListao.ComponenteCurricularId, filtroListao.Bimestre);
             
             if (filtroListao.CriarPeriodoReaberturaTodosBimestres)
                 await CriarPeriodoReaberturaTodosBimestres(filtroListao.TipoCalendario, filtroListao.TurmaHistorica);
@@ -89,6 +89,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await InserirParametroSistema();
             await CriarMotivoAusencia();
             await CriarFrequenciaPreDefinida(filtroListao.ComponenteCurricularId);
+            await CriarParametrosSistema(DateTimeExtension.HorarioBrasilia().Year);
         }
         
         protected IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno(bool desabilitado = false)
@@ -128,22 +129,14 @@ namespace SME.SGP.TesteIntegracao.Listao
             }).ToList();
         }
 
-        private async Task CriarAulas(long componenteCurricularId, int bimestre, bool turmaHistorica)
+        private async Task CriarAulas(long componenteCurricularId, int bimestre)
         {
             var datasAulasIncluidas = new List<DateTime>();
-            var hoje = DateTimeExtension.HorarioBrasilia().Date;
-
-            var (dataInicio, dataFim) = await DefinirDataInicioFimBimestre(bimestre, turmaHistorica);
-            var range = dataFim.Subtract(dataInicio).Days;
-            if (hoje > dataInicio && hoje <= dataFim) 
-                range = hoje.Subtract(dataInicio).Days;
-
-            for (var i = 0; i < Math.Min(QTDE_AULAS_A_SEREM_LANCADAS, range); i++)
+            var periodoEscolar = ObterTodos<PeriodoEscolar>().FirstOrDefault(w=> w.Bimestre == bimestre);
+            
+            for (var i = 0; i < QTDE_AULAS_A_SEREM_LANCADAS; i++)
             {
-                var dataAula = dataInicio.AddDays(new Random().Next(0, range));
-                while (datasAulasIncluidas.Contains(dataAula) || (dataAula > hoje && hoje >= dataInicio))
-                    dataAula = dataInicio.AddDays(new Random().Next(0, range));
-                
+                var dataAula = periodoEscolar.PeriodoInicio.AddDays(i);
                 await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_LOGIN_2222222,
                     TURMA_CODIGO_1, UE_CODIGO_1, componenteCurricularId.ToString(), TIPO_CALENDARIO_1);
 

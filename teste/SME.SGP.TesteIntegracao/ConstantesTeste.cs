@@ -53,5 +53,13 @@
         public const string ALUNO_NOME_4 = "Aluno 4";
         
         public const string SITUACAO_MATRICULA_ATIVO = "Ativo";
+        
+        public const string PERCENTUAL_FREQUENCIA_CRITICO_TIPO_4_NOME = "PercentualFrequenciaCritico";
+        public const string PERCENTUAL_FREQUENCIA_CRITICO_TIPO_4_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
+        
+        public const string PERCENTUAL_FREQUENCIA_MINIMO_INFANTIL_TIPO_27_NOME = "PercentualFrequenciaMinimaInfantil";
+        public const string PERCENTUAL_FREQUENCIA_MINIMO_INFANTIL_TIPO_27_DESCRICAO = "Percentual de frequência mínima da educação infantil para envio da notificação bimestral";
+        public const string VALOR_75 = "75";
+        public const string VALOR_60 = "60";
     }
 }

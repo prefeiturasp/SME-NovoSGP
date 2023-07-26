@@ -12,25 +12,26 @@ namespace SME.SGP.TesteIntegracao
     public class IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake : IRequestHandler<IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase consolidacaoDashBoardFrequenciaPorDataETipoUseCase;
+        private readonly IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase;
         
 
-        public IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake(IMediator mediator, IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase consolidacaoDashBoardFrequenciaPorDataETipoUseCase)
+        public IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake(IMediator mediator, IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase)
         {
-            this.consolidacaoDashBoardFrequenciaPorDataETipoUseCase = consolidacaoDashBoardFrequenciaPorDataETipoUseCase ?? throw new ArgumentNullException(nameof(consolidacaoDashBoardFrequenciaPorDataETipoUseCase));
+            this.executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase = executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase ?? throw new ArgumentNullException(nameof(executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand request, CancellationToken cancellationToken)
         {
-            var filtro = new FiltroConsolidadoDashBoardFrequenciaDto()
+            var filtro = new ConsolidacaoPorTurmaDashBoardFrequencia()
             {
-
+                Mes = request.DataAula.Month,
+                AnoLetivo = request.DataAula.Year,
                 TurmaId = request.TurmaId,
                 DataAula = request.DataAula
             };
 
-            await consolidacaoDashBoardFrequenciaPorDataETipoUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(filtro)));
+            await executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(filtro)));
 
             return true;
         }

@@ -144,6 +144,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
+            await CriarParametrosSistema(dataInicio.Year);
         }
 
         protected async Task CriarDadosBasicosAulaRecorrencia(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3, int quantidadeRecorrencia = QUANTIDADE_AULA_2)
