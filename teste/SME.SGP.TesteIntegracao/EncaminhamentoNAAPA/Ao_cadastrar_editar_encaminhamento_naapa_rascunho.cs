@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
