@@ -705,6 +705,9 @@
         RERI_C = 243,
 
         [PermissaoMenu(Menu = "Frequência", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/frequencia/controle-mensal", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Controle de frequência mensal")]
-        RCFM_C = 244
+        RCFM_C = 244,
+
+        [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/ocorrencias", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Ocorrências")]
+        ROCO_C = 245
     }
 }

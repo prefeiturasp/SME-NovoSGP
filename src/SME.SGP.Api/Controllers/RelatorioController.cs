@@ -338,7 +338,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("listagem-ocorrencias")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.RCFM_C, Policy = "Bearer")]
+        [Permissao(Permissao.ROCO_C, Policy = "Bearer")]
         public async Task<IActionResult> ListagemOcorrencias([FromBody] FiltroRelatorioListagemOcorrenciasDto filtro, [FromServices] IRelatorioListagemOcorrenciasUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
