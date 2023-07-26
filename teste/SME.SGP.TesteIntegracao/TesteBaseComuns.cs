@@ -1499,5 +1499,34 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
         }
+
+        protected async Task CriarParametrosSistema(int ano)
+        {
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = ConstantesTeste.PERCENTUAL_FREQUENCIA_CRITICO_TIPO_4_NOME,
+                Descricao = ConstantesTeste.PERCENTUAL_FREQUENCIA_CRITICO_TIPO_4_DESCRICAO,
+                Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
+                Valor = ConstantesTeste.VALOR_75,
+                Ano = ano,
+                Ativo = true,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+            
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = ConstantesTeste.PERCENTUAL_FREQUENCIA_MINIMO_INFANTIL_TIPO_27_NOME,
+                Descricao = ConstantesTeste.PERCENTUAL_FREQUENCIA_MINIMO_INFANTIL_TIPO_27_DESCRICAO,
+                Tipo = TipoParametroSistema.PercentualFrequenciaMinimaInfantil,
+                Valor = ConstantesTeste.VALOR_60,
+                Ano = ano,
+                Ativo = true,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+        }
     }
 }
