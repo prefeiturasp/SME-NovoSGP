@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public class IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake : IRequestHandler<IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand, bool>
+    public class IncluirFilaConsolidacaoDashBoardFrequenciaCommandHandlerFake : IRequestHandler<IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase;
         
 
-        public IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake(IMediator mediator, IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase)
+        public IncluirFilaConsolidacaoDashBoardFrequenciaCommandHandlerFake(IMediator mediator, IExecutaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase)
         {
             this.executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase = executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase ?? throw new ArgumentNullException(nameof(executaConsolidacaoDiariaDashBoardFrequenciaPorTurmaUseCase));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
