@@ -53,7 +53,7 @@ namespace SME.SGP.Dominio
                 {
                     return (from a in aulas
                             from ccp in componentesUsuario
-                            where ((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai != null && ccp.CodigoComponenteCurricularPai > 0 ? ccp.CodigoComponenteCurricularPai : ccp.Codigo).ToString()) || 
+                            where ((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai ?? ccp.Codigo).ToString()) || 
                                    (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString()) && (professoresDesconsideradosTerritorio != null && !professoresDesconsideradosTerritorio.Contains(a.ProfessorRf)))) ||
                                   a.ProfessorRf == CodigoRf
                             select a).Distinct();
