@@ -678,6 +678,42 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
+        protected async Task CriarComunicadoAluno(string comunicado, int anoLetivo, string codigoDre, string codigoUe, string codigoTurma, string codigoAluno, long comunicadoId = 1)
+        {
+            await InserirNaBase(new Comunicado
+            {
+                Id = comunicadoId,
+                Descricao = comunicado,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                AnoLetivo = anoLetivo,
+                CodigoDre = codigoDre,
+                CodigoUe = codigoUe,
+                Titulo = comunicado,
+                TipoComunicado = TipoComunicado.ALUNO,
+            });
+
+            await InserirNaBase(new ComunicadoAluno
+            {
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                ComunicadoId = comunicadoId,
+                AlunoCodigo = codigoAluno,
+                AlunoNome = "Nome Teste Aluno",
+            });
+
+            await InserirNaBase(new ComunicadoTurma
+            {
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                ComunicadoId = comunicadoId,
+                CodigoTurma = codigoTurma
+            });
+        }
+
         protected async Task CriarEventoTipoResumido(string descricao, EventoLocalOcorrencia localOcorrencia, bool concomitancia, EventoTipoData tipoData, bool dependencia, EventoLetivo letivo, long codigo)
         {
             await CriarEventoTipo(descricao, localOcorrencia, concomitancia, tipoData, dependencia, letivo, true, false, codigo, false, false);
