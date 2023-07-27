@@ -37,31 +37,6 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public async Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, DateTime dataAula, int? mes, DateTime? dataInicioSemana, DateTime? dataFimSemana)
-        {
-            var query = new StringBuilder(@"select cdf.id as Id, 
-                                                cdf.turma_id as TurmaId,
-                                                cdf.quantidade_presencas as Presentes, 
-                                                cdf.quantidade_ausencias as Ausentes, 
-                                                cdf.quantidade_remotos as Remotos
-                                                from consolidado_dashboard_frequencia cdf 
-                                                where cdf.turma_id = @turmaId 
-                                                and cdf.ano_letivo = @anoLetivo 
-                                                and cdf.tipo = @tipo");
-
-            if (tipo == TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine(" and cdf.data_aula = @dataAula");
-
-            if (tipo == TipoPeriodoDashboardFrequencia.Semanal && dataFimSemana != null && dataInicioSemana != null)
-                query.AppendLine(@" and cdf.data_inicio_semana = @dataInicioSemana
-                                    and cdf.data_fim_semana = @dataFimSemana");
-
-            if (tipo == TipoPeriodoDashboardFrequencia.Mensal && mes != null)
-                query.AppendLine(" and cdf.mes = @mes");
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<RetornoConsolidacaoExistenteDto>(query.ToString(), new { turmaId, anoLetivo, tipo, dataAula, mes, dataInicioSemana, dataFimSemana});
-        }
-
         public async Task AlterarConsolidacaoDashboardTurmaMesPeriodoAno(long id, int quantidadePresente, int quantidadeAusente, int quantidadeRemoto)
         {
             string query = @"update consolidado_dashboard_frequencia 

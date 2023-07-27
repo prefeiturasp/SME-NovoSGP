@@ -98,7 +98,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoFrequenciaAlunoDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciasConsolidacaoSemanalMensalPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, int tipoConsolidadoFrequencia, string anoTurma, [FromQuery] DateTime? dataInicio, DateTime? datafim, int? mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciasConsolidacaoSemanalMensalPorTurmaEAno(int anoLetivo, long dreId, long ueId, int modalidade, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, string anoTurma, [FromQuery] DateTime? dataInicio, DateTime? datafim, int? mes, bool visaoDre, [FromServices] IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio, datafim,mes, tipoConsolidadoFrequencia, visaoDre));
         }    

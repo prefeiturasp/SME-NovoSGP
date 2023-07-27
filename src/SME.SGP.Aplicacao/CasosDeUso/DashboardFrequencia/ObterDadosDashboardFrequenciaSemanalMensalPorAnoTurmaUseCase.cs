@@ -17,11 +17,11 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<GraficoFrequenciaSemanalMensalDTO>> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, int tipoConsolidadoFrequencia, bool visaoDre = false)
+        public async Task<IEnumerable<GraficoFrequenciaSemanalMensalDTO>> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, bool visaoDre = false)
         {
             var tipoConsolidado = (int)TipoConsolidadoFrequencia.Semanal;
                 
-            if (tipoConsolidadoFrequencia == (int)TipoConsolidadoFrequencia.Mensal)
+            if (tipoConsolidadoFrequencia == TipoConsolidadoFrequencia.Mensal)
             {
                 tipoConsolidado = (int)TipoConsolidadoFrequencia.Mensal;
 
