@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao
             var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(turmasCodigo));
             var turmaDreUe = turmasDreUe.FirstOrDefault();
 
+            var gerouPendencia = false;
             var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigo));
             foreach (var componente in componentes)
             {
@@ -74,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
                             unitOfWork.PersistirTransacao();
 
-                            return true;
+                            gerouPendencia = true;
                         }
                         catch
                         {
@@ -85,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return false;
+            return gerouPendencia;
         }
 
         private async Task SalvarPendenciaUsuario(long pendenciaId, string professorRf)
