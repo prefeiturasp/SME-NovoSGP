@@ -7,13 +7,13 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery : IRequest<IEnumerable<FrequenciaGlobalMensalSemanalDto>>
     {
-        public ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(int anoLetivo, long dreId, long ueId, int modalidade, long[] turmaIds, DateTime dataInicioSemmana, DateTime dataFimSemana, int tipoConsolidadoFrequencia, bool visaoDre)
+        public ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime dataInicioSemmana, DateTime dataFimSemana, int tipoConsolidadoFrequencia, bool visaoDre)
         {
             AnoLetivo = anoLetivo;
             DreId = dreId;
             UeId = ueId;
             Modalidade = modalidade;
-            TurmaIds = turmaIds;
+            AnoTurma = anoTurma;
             DataInicioSemmana = dataInicioSemmana;
             DataFimSemana = dataFimSemana;
             TipoConsolidadoFrequencia = tipoConsolidadoFrequencia;
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public long DreId { get; set; }
         public long UeId { get; set; }
         public int Modalidade { get; set; }
-        public long[] TurmaIds { get; set; }
+        public string AnoTurma { get; set; }
         public DateTime DataInicioSemmana { get; set; }
         public DateTime DataFimSemana { get; set; }
         public int TipoConsolidadoFrequencia { get; set; }

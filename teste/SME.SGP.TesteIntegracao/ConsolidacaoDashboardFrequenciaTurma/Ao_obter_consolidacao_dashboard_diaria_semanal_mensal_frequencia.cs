@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             var useCase = ServiceProvider.GetService<IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase>();
             
             var retornoSemanal = await useCase.Executar(dataReferencia.Year,
-                ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,new []{ConstantesTeste.TURMA_ID_1},
+                ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,ConstantesTeste.TURMA_ANO_1,
                 inicioSemanaReferencia,inicioSemanaReferencia.AddDays(6),null, (int)TipoConsolidadoFrequencia.Semanal);
             
             retornoSemanal.ShouldNotBeNull();
@@ -149,7 +149,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             var useCase = ServiceProvider.GetService<IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase>();
             
             var retornoMensal = await useCase.Executar(dataReferencia.Year,
-                ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,new []{ConstantesTeste.TURMA_ID_1},
+                ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,ConstantesTeste.TURMA_ANO_1,
                 null,null,dataReferencia.Month, (int)TipoConsolidadoFrequencia.Mensal);
             
             retornoMensal.ShouldNotBeNull();

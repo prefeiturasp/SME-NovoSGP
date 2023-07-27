@@ -17,19 +17,19 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<GraficoFrequenciaSemanalMensalDTO>> Executar(int anoLetivo, long dreId, long ueId, int modalidade, long[] turmaIds, DateTime? dataInicio, DateTime? datafim, int? mes, int tipoPeriodoDashboard, bool visaoDre = false)
+        public async Task<IEnumerable<GraficoFrequenciaSemanalMensalDTO>> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, int tipoConsolidadoFrequencia, bool visaoDre = false)
         {
-            var tipoConsolidadoFrequencia = (int)TipoConsolidadoFrequencia.Semanal;
+            var tipoConsolidado = (int)TipoConsolidadoFrequencia.Semanal;
                 
-            if (tipoPeriodoDashboard == (int)TipoConsolidadoFrequencia.Mensal)
+            if (tipoConsolidadoFrequencia == (int)TipoConsolidadoFrequencia.Mensal)
             {
-                tipoConsolidadoFrequencia = (int)TipoConsolidadoFrequencia.Mensal;
+                tipoConsolidado = (int)TipoConsolidadoFrequencia.Mensal;
 
                 dataInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, mes.Value, 1);
                 datafim = dataInicio.Value.AddMonths(1).AddDays(-1);
             }
 
-            var frequenciaSemanalMensalDtos = await mediator.Send(new ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(anoLetivo, dreId, ueId, modalidade, turmaIds, dataInicio.Value, datafim.Value, tipoConsolidadoFrequencia, visaoDre));
+            var frequenciaSemanalMensalDtos = await mediator.Send(new ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio.Value, datafim.Value, tipoConsolidado, visaoDre));
 
             if (frequenciaSemanalMensalDtos != null && frequenciaSemanalMensalDtos.Any())
             {

@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasDiariaConsolidadas(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, long[] turmaIds, DateTime dataAula, bool visaoDre)
+        public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> ObterFrequenciasDiariaConsolidadas(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataAula, bool visaoDre)
         {
             var selectSQL = string.Empty;
             var groupBySQL = string.Empty;
@@ -50,22 +50,25 @@ namespace SME.SGP.Dados.Repositorios
                                sum(quantidade_remotos) as Remotos,
                                sum(quantidade_ausencias) as Ausentes
                           from consolidado_dashboard_frequencia cdf
-                         where ano_letivo = @anoLetivo
-                           and modalidade_codigo = @modalidade
-                           and tipo = @tipoPeriodo 
-                           and data_aula = @dataAula ";
+                            join turma t on t.id = cdf.turma_id 
+                            join ue on ue.id = t.ue_id 
+                            join dre on dre.id = ue.dre_id 
+                         where t.ano_letivo = @anoLetivo
+                           and t.modalidade_codigo = @modalidade
+                           and cdf.tipo = @tipoPeriodo 
+                           and cdf.data_aula = @dataAula ";
 
             if (dreId != -99)
-                selectSQL += "and dre_id = @dreId ";
+                selectSQL += "and dre.dre_id = @dreId ";
 
             if (ueId != -99)
-                selectSQL += "and ue_id = @ueId ";
+                selectSQL += "and ue.ue_id = @ueId ";
 
             if (semestre > 0)
-                selectSQL += "and semestre = @semestre ";
+                selectSQL += "and t.semestre = @semestre ";
 
-            if (turmaIds != null && turmaIds.Any())
-                selectSQL += "and turma_Id = any(@turmaIds) ";
+            if (anoTurma != "-99")
+                selectSQL += "and t.ano = @anoTurma ";
 
             selectSQL += groupBySQL;
 
@@ -76,7 +79,7 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo,
                 modalidade,
                 semestre,
-                turmaIds,
+                anoTurma,
                 dataAula,
                 tipoPeriodo = (int)TipoPeriodoDashboardFrequencia.Diario
             });

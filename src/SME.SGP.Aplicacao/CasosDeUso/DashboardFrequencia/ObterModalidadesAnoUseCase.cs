@@ -25,8 +25,7 @@ namespace SME.SGP.Aplicacao
                 modalidadesPorAnoRetornoDto.Add(new RetornoModalidadesPorAnoDto()
                 {
                     ModalidadeAno = $"{item.Key.Modalidade.ShortName()}-{item.Key.Ano}",
-                    Ano = item.Key.Ano,
-                    TurmaId = item.Select(s=> s.TurmaId).ToArray()
+                    Ano = item.Key.Ano
                 });
             }
             return modalidadesPorAnoRetornoDto;
