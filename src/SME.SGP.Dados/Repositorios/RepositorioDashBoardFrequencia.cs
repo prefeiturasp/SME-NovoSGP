@@ -59,10 +59,10 @@ namespace SME.SGP.Dados.Repositorios
                            and cdf.data_aula = @dataAula ";
 
             if (dreId != -99)
-                selectSQL += "and dre.dre_id = @dreId ";
+                selectSQL += "and dre.id = @dreId ";
 
             if (ueId != -99)
-                selectSQL += "and ue.ue_id = @ueId ";
+                selectSQL += "and ue.id = @ueId ";
 
             if (semestre > 0)
                 selectSQL += "and t.semestre = @semestre ";
