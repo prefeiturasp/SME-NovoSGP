@@ -9,14 +9,14 @@ namespace SME.SGP.Dominio
                                             long turmaId, 
                                             int quantidadeAcimaMinimoFrequencia, 
                                             int quantidadeAbaixoMinimoFrequencia, 
-                                            TipoConsolidadoFrequencia tipoConsolidado,
+                                            TipoConsolidadoFrequencia tipoConsolidacao,
                                             DateTime? periodoInicio,
                                             DateTime? periodoFim)
         {
             TurmaId = turmaId;
             QuantidadeAcimaMinimoFrequencia = quantidadeAcimaMinimoFrequencia;
             QuantidadeAbaixoMinimoFrequencia = quantidadeAbaixoMinimoFrequencia;
-            TipoConsolidado = tipoConsolidado;
+            TipoConsolidacao = tipoConsolidacao;
             PeriodoInicio = periodoInicio;
             PeriodoFim = periodoFim;
         }
@@ -26,7 +26,7 @@ namespace SME.SGP.Dominio
 
         public int QuantidadeAcimaMinimoFrequencia { get; set; }
         public int QuantidadeAbaixoMinimoFrequencia { get; set; }
-        public TipoConsolidadoFrequencia TipoConsolidado { get; set; }
+        public TipoConsolidadoFrequencia TipoConsolidacao { get; set; }
         public DateTime? PeriodoInicio { get; set; }
         public DateTime? PeriodoFim { get; set; }
     }

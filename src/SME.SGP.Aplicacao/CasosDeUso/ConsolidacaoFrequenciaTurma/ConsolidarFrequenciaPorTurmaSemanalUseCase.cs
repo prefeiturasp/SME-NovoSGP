@@ -37,14 +37,10 @@ namespace SME.SGP.Aplicacao
             if (diaDaSemana == DayOfWeek.Sunday || diaDaSemana == DayOfWeek.Saturday)
                 return diaDaSemana == DayOfWeek.Sunday ? (data.AddDays(-6), data) : (data.AddDays(-5), data);
 
-            var dataSemanaPassada = data.AddDays(-7);
+            while (data.DayOfWeek != DayOfWeek.Monday)
+                data = data.AddDays(-1);
 
-            while (dataSemanaPassada.DayOfWeek != DayOfWeek.Monday)
-            {
-                dataSemanaPassada = dataSemanaPassada.AddDays(-1);
-            }
-
-            return (dataSemanaPassada, dataSemanaPassada.AddDays(4));
+            return (data, data.AddDays(6));
         }
     }
 }

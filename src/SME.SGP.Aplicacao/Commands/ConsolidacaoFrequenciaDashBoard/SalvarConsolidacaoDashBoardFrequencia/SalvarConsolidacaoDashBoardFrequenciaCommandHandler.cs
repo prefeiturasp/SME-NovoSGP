@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarConsolidacaoDashBoardFrequenciaCommand request, CancellationToken cancellationToken)
         {
-            await repositorioConsolidacaoFrequenciaTurma.SalvarAsync(request.ConsolidacaoDashBoardFrequencia);
+            await repositorioConsolidacaoFrequenciaTurma.SalvarConsolidacaoDashBoardFrequencia(request.ConsolidacaoDashBoardFrequencia);
 
             return true ;
         }
