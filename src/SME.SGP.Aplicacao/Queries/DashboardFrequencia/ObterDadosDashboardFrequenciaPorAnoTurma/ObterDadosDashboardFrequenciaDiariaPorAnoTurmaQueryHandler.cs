@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<FrequenciaAlunoDashboardDto>> Handle(ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequencia.ObterFrequenciasDiariaConsolidadas(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Semestre, request.TurmaIds, request.DataAula, request.VisaoDre);
+            => await repositorioFrequencia.ObterFrequenciasDiariaConsolidadas(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade, request.Semestre, request.AnoTurma, request.DataAula, request.VisaoDre);
     }
 }

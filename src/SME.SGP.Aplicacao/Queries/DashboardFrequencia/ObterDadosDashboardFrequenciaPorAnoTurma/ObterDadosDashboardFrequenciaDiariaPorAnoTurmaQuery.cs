@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery : IRequest<IEnumerable<FrequenciaAlunoDashboardDto>>
     {
-        public ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, long[] turmaIds, DateTime dataAula, bool visaoDre)
+        public ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataAula, bool visaoDre)
         {
             AnoLetivo = anoLetivo;
             DreId = dreId;
             UeId = ueId;
             Modalidade = modalidade;
             Semestre = semestre;
-            TurmaIds = turmaIds;
+            AnoTurma = anoTurma;
             DataAula = dataAula;
             VisaoDre = visaoDre;
         }
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         public long UeId { get; set; }
         public int Modalidade { get; set; }
         public int Semestre { get; set; }
-        public long[] TurmaIds { get; set; }
+        public string AnoTurma { get; set; }
         public DateTime DataAula { get; set; }
         public bool VisaoDre { get; set; }
     }

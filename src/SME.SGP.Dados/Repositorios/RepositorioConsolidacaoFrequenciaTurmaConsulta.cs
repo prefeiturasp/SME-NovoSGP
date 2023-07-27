@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<GraficoAusenciasComJustificativaDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre });
         }
 
-        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade, long[] turmaIds, DateTime dataInicioSemana, DateTime datafimSemana, int tipoConsolidadoFrequencia, bool visaoDre = false)
+        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade,string anoTurma, DateTime dataInicioSemana, DateTime datafimSemana, int tipoConsolidadoFrequencia, bool visaoDre = false)
         {
             var selectSQL = string.Empty;
 
@@ -164,8 +164,8 @@ namespace SME.SGP.Dados.Repositorios
                               and t.modalidade_codigo = @modalidade
                               and cft.tipo_consolidacao = @tipoConsolidadoFrequencia ";
 
-            if (turmaIds != null && turmaIds.Any())
-                selectSQL += "and t.id = any(@turmaIds) ";
+            if (anoTurma != "-99")
+                selectSQL += "and t.ano = @anoTurma ";
 
             if (dreId != -99)
                 selectSQL += "and dre.id = @dreId ";
@@ -184,7 +184,7 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade,
                 dataInicioSemana,
                 datafimSemana,
-                turmaIds,
+                anoTurma,
                 tipoConsolidadoFrequencia
             });
 

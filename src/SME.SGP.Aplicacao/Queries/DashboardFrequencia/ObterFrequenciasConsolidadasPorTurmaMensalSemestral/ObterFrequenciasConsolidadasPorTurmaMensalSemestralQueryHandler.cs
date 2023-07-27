@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                                                                                                   request.DreId,
                                                                                                   request.UeId,
                                                                                                   request.Modalidade,
-                                                                                                  request.TurmaIds,
+                                                                                                  request.AnoTurma,
                                                                                                   request.DataInicioSemmana,
                                                                                                   request.DataFimSemana,
                                                                                                   request.TipoConsolidadoFrequencia,
