@@ -43,7 +43,7 @@ ALTER TABLE public.relatorio_periodico_pap_aluno DROP CONSTRAINT if exists relat
 ALTER TABLE public.relatorio_periodico_pap_aluno ADD CONSTRAINT relatorio_periodico_pap_aluno_relatorio_turma_fk FOREIGN KEY (relatorio_periodico_pap_turma_id) REFERENCES relatorio_periodico_pap_turma(id);
 
 
-CREATE table public.relatorio_periodico_pap_secao (
+CREATE table IF NOT EXISTS public.relatorio_periodico_pap_secao (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	relatorio_periodico_pap_aluno_id int8 not null,
 	secao_relatorio_periodico_pap_id int8 not null,
@@ -66,7 +66,7 @@ CREATE INDEX if not exists relatorio_periodico_pap_secao_secao_idx ON public.rel
 ALTER TABLE public.relatorio_periodico_pap_secao DROP CONSTRAINT if exists relatorio_periodico_pap_secao_secao_fk;
 ALTER TABLE public.relatorio_periodico_pap_secao ADD CONSTRAINT relatorio_periodico_pap_secao_secao_fk FOREIGN KEY (secao_relatorio_periodico_pap_id) REFERENCES secao_relatorio_periodico_pap(id);
 
-CREATE table public.relatorio_periodico_pap_questao (
+CREATE table IF NOT EXISTS public.relatorio_periodico_pap_questao (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	relatorio_periodico_pap_secao_id int8 not null,
 	questao_id int8 not null,
@@ -89,7 +89,7 @@ ALTER TABLE public.relatorio_periodico_pap_questao DROP CONSTRAINT if exists rel
 ALTER TABLE public.relatorio_periodico_pap_questao ADD CONSTRAINT relatorio_periodico_pap_questao_secao_fk FOREIGN KEY (relatorio_periodico_pap_secao_id) REFERENCES relatorio_periodico_pap_secao(id);
 
 
-CREATE table public.relatorio_periodico_pap_resposta (
+CREATE table IF NOT EXISTS public.relatorio_periodico_pap_resposta (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	relatorio_periodico_pap_questao_id int8 not null,
 	resposta_id int8 null,
