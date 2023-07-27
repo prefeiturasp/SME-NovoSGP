@@ -6,7 +6,6 @@
         public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
         public const string ConsolidarFrequenciasPorTurmaMensal = "sgp.frequencia.turma.mensal.consolidar";
         public const string ConsolidarFrequenciasPorTurmaSemanal = "sgp.frequencia.turma.semanal.consolidar";
-        public const string RotaConsolidacaoDashBoardFrequencia = "sgp.consolidacao.frequencia.dashboard";
         public const string ConsolidarFrequenciasTurmasPorUe = "sgp.frequencia.turma.ue.consolidar";
         public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
         public const string ConsolidacaoFrequenciasTurmasMensalCarregar = "sgp.frequencia.turma.mensal.carregar";
