@@ -9,7 +9,7 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public int AnoLetivo { get; set; }
         public string CodigoDre { get; set; }
         public string CodigoUe { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public int Modalidade { get; set; }
         public int Semestre { get; set; }
         public string[] CodigosTurma { get; set; }
         public DateTime? DataInicio { get; set; }
