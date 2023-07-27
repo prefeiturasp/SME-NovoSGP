@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(recomendacaoDto.CodigoTurma));
 
-            var ehTurmaEdFisica = EnumExtension.EhUmDosValores(turma.TipoTurma, TipoTurma.EdFisica) ? true: false;
+            var ehTurmaEdFisica = EnumExtension.EhUmDosValores(turma.TipoTurma, TipoTurma.EdFisica);
 
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
