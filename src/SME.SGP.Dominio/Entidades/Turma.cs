@@ -121,6 +121,11 @@ namespace SME.SGP.Dominio
             return TiposRegulares.Any(a => a == TipoTurma);
         }
 
+        public bool EhTurmaPercurso()
+        {
+            return EnumExtension.EhUmDosValores(TipoTurma, new Enum[] { TipoTurma.Regular, TipoTurma.EdFisica, TipoTurma.Programa, TipoTurma.EvenParaAtribuicao, TipoTurma.ClasseBilingueII, TipoTurma.ItinerarioEnsMedio, TipoTurma.Itinerarios2AAno });
+        }
+
         public bool EhTurmaRegular()
         {
             return TipoTurma == TipoTurma.Regular;
