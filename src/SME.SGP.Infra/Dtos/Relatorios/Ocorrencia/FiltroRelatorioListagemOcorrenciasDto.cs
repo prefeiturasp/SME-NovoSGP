@@ -11,10 +11,10 @@ namespace SME.SGP.Infra.Dtos.Relatorios
         public string CodigoUe { get; set; }
         public Modalidade Modalidade { get; set; }
         public int Semestre { get; set; }
-        public string CodigoTurma { get; set; }
+        public string[] CodigosTurma { get; set; }
         public DateTime? DataInicio { get; set; }
         public DateTime? DataFim { get; set; }
-        public long? OcorrenciaTipoId { get; set; }
+        public long[] OcorrenciaTipoIds { get; set; }
         public bool ImprimirDescricaoOcorrencia { get; set; }
         public string NomeUsuario { get; set; }
         public string CodigoRf { get; set; }
