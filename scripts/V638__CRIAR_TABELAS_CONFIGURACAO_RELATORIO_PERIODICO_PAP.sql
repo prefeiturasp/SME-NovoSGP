@@ -26,7 +26,7 @@ CREATE table IF NOT EXISTS public.periodo_relatorio_pap (
 );
 
 CREATE INDEX if not exists periodo_relatorio_pap_config_idx ON public.periodo_relatorio_pap USING btree (configuracao_relatorio_pap_id);
-ALTER TABLE public.periodo_relatorio_pap DROP CONSTRAINT if exists periodo_relatorio_pap_config_fk FOREIGN KEY (configuracao_relatorio_pap_id) REFERENCES public.configuracao_relatorio_pap(id);
+ALTER TABLE public.periodo_relatorio_pap DROP CONSTRAINT if exists periodo_relatorio_pap_config_fk;
 ALTER TABLE public.periodo_relatorio_pap ADD CONSTRAINT periodo_relatorio_pap_config_fk FOREIGN KEY (configuracao_relatorio_pap_id) REFERENCES public.configuracao_relatorio_pap(id);
 
 
