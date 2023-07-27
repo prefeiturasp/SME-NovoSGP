@@ -8,6 +8,7 @@ namespace SME.SGP.Dominio
     public class Turma
     {
         public static readonly TipoTurma[] TiposRegulares = { TipoTurma.Regular, TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno };
+        public static readonly TipoTurma[] TiposTurmas = { TipoTurma.Regular, TipoTurma.EdFisica, TipoTurma.Programa, TipoTurma.EvenParaAtribuicao, TipoTurma.ClasseBilingueII, TipoTurma.ItinerarioEnsMedio, TipoTurma.Itinerarios2AAno };
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoTurma { get; set; }
@@ -123,7 +124,7 @@ namespace SME.SGP.Dominio
 
         public bool EhTurmaPercurso()
         {
-            return EnumExtension.EhUmDosValores(TipoTurma, new Enum[] { TipoTurma.Regular, TipoTurma.EdFisica, TipoTurma.Programa, TipoTurma.EvenParaAtribuicao, TipoTurma.ClasseBilingueII, TipoTurma.ItinerarioEnsMedio, TipoTurma.Itinerarios2AAno });
+            return TiposTurmas.Any(b => !b.Equals(TipoTurma) && TipoTurma > 0);
         }
 
         public bool EhTurmaRegular()
