@@ -8,7 +8,6 @@
         EvenParaAtribuicao = 4,
         ClasseBilingueII = 5,
         ItinerarioEnsMedio = 6,
-        Itinerarios2AAno = 7,
-        ItinerarioPercurso = 35
+        Itinerarios2AAno = 7
     }
 }

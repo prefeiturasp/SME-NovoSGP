@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
-            var turmaItinerarioPercurso = EnumExtension.EhUmDosValores(turma.TipoTurma, new Enum[] { TipoTurma.ItinerarioPercurso }) ? turma.CodigoTurma : "";
+            var turmaItinerarioPercurso = EnumExtension.EhUmDosValores(turma.TipoTurma, new Enum[] { TipoTurma.Regular, TipoTurma.EdFisica, TipoTurma.Programa, TipoTurma.EvenParaAtribuicao, TipoTurma.ClasseBilingueII, TipoTurma.ItinerarioEnsMedio, TipoTurma.Itinerarios2AAno }) ? "" : turma.CodigoTurma;
 
             var anoLetivo = turma.AnoLetivo;
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(notasFrequenciaDto.FechamentoTurmaId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.ConsideraHistorico));
