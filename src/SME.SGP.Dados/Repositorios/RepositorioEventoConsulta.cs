@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
 
 			var sql = $@"with vw_eventos as (select 
 							coalesce (cc.descricao_sgp, cc.descricao) as componente_curricular,							
-							aa.id, aa.nome_avaliacao nome, aa.descricao_avaliacao descricao, aa.data_avaliacao data_inicio, aa.data_avaliacao data_fim,
+							null::varchar as evento_id, aa.nome_avaliacao nome, aa.descricao_avaliacao descricao, aa.data_avaliacao data_inicio, aa.data_avaliacao data_fim,
 							aa.dre_id, aa.ue_id, 
 							0::int tipo_evento_id,
 							aa.turma_id,
@@ -52,7 +52,7 @@ namespace SME.SGP.Dados.Repositorios
 						union 
 						select
 							null as componente_curricular,
-							e.id, e.nome, e.descricao, e.data_inicio, e.data_fim,
+							e.id::varchar as evento_id, e.nome, e.descricao, e.data_inicio, e.data_fim,
 							e.dre_id, e.ue_id,
 							e.tipo_evento_id,
 							null::varchar turma_id,
