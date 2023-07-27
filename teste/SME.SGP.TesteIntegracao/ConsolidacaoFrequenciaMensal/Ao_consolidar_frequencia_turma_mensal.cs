@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
             consolidacao.Count.ShouldBe(1);
             var consolidado = consolidacao.FirstOrDefault();
             consolidado.ShouldNotBeNull();
-            consolidado.TipoConsolidado.ShouldBe(TipoConsolidadoFrequencia.Mensal);
+            consolidado.TipoConsolidacao.ShouldBe(TipoConsolidadoFrequencia.Mensal);
             consolidado.QuantidadeAcimaMinimoFrequencia.ShouldBe(1);
             consolidado.QuantidadeAbaixoMinimoFrequencia.ShouldBe(1);
         }
@@ -90,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
             consolidacao.Count.ShouldBe(1);
             var consolidado = consolidacao.FirstOrDefault();
             consolidado.ShouldNotBeNull();
-            consolidado.TipoConsolidado.ShouldBe(TipoConsolidadoFrequencia.Mensal);
+            consolidado.TipoConsolidacao.ShouldBe(TipoConsolidadoFrequencia.Mensal);
             consolidado.QuantidadeAcimaMinimoFrequencia.ShouldBe(2);
             consolidado.QuantidadeAbaixoMinimoFrequencia.ShouldBe(0);
         }

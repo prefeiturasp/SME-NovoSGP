@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                     TurmaId = ConstantesTeste.TURMA_ID_1,
                     QuantidadeAbaixoMinimoFrequencia = frequenciasSemanais[contagem].Minimo,
                     QuantidadeAcimaMinimoFrequencia = frequenciasSemanais[contagem].Maximo,
-                    TipoConsolidado = TipoConsolidadoFrequencia.Semanal,
+                    TipoConsolidacao = TipoConsolidadoFrequencia.Semanal,
                     PeriodoInicio = inicioSemana,
                     PeriodoFim = fimSemanaReferencia
                 });
@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 TurmaId = ConstantesTeste.TURMA_ID_1,
                 QuantidadeAbaixoMinimoFrequencia = 25,
                 QuantidadeAcimaMinimoFrequencia = 5,
-                TipoConsolidado = TipoConsolidadoFrequencia.Mensal,
+                TipoConsolidacao = TipoConsolidadoFrequencia.Mensal,
                 PeriodoInicio = inicioMesReferencia,
                 PeriodoFim = fimMesReferencia
             });
@@ -128,7 +128,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                     TurmaId = ConstantesTeste.TURMA_ID_1,
                     QuantidadeAbaixoMinimoFrequencia = frequenciasSemanais[contagem].Minimo,
                     QuantidadeAcimaMinimoFrequencia = frequenciasSemanais[contagem].Maximo,
-                    TipoConsolidado = TipoConsolidadoFrequencia.Semanal,
+                    TipoConsolidacao = TipoConsolidadoFrequencia.Semanal,
                     PeriodoInicio = inicioSemana,
                     PeriodoFim = fimSemanaReferencia,
                 });
@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 TurmaId = ConstantesTeste.TURMA_ID_1,
                 QuantidadeAbaixoMinimoFrequencia = 25,
                 QuantidadeAcimaMinimoFrequencia = 5,
-                TipoConsolidado = TipoConsolidadoFrequencia.Mensal,
+                TipoConsolidacao = TipoConsolidadoFrequencia.Mensal,
                 PeriodoInicio = inicioMesReferencia,
                 PeriodoFim = fimMesReferencia
             });
