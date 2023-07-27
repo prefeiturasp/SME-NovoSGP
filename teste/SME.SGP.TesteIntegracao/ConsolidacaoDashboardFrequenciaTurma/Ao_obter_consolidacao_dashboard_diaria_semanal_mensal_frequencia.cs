@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             
             var retornoSemanal = await useCase.Executar(dataReferencia.Year,
                 ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,ConstantesTeste.TURMA_ANO_1,
-                inicioSemanaReferencia,inicioSemanaReferencia.AddDays(6),null, (int)TipoConsolidadoFrequencia.Semanal);
+                inicioSemanaReferencia,inicioSemanaReferencia.AddDays(6),null, TipoConsolidadoFrequencia.Semanal);
             
             retornoSemanal.ShouldNotBeNull();
             retornoSemanal.FirstOrDefault().QuantidadeAcimaMinimoFrequencia.ShouldBeEquivalentTo(20);
@@ -150,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             
             var retornoMensal = await useCase.Executar(dataReferencia.Year,
                 ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,ConstantesTeste.TURMA_ANO_1,
-                null,null,dataReferencia.Month, (int)TipoConsolidadoFrequencia.Mensal);
+                null,null,dataReferencia.Month, TipoConsolidadoFrequencia.Mensal);
             
             retornoMensal.ShouldNotBeNull();
             retornoMensal.FirstOrDefault().QuantidadeAbaixoMinimoFrequencia.ShouldBeEquivalentTo(25);
