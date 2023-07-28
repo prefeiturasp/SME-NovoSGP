@@ -59,8 +59,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciasConsideradas = await ObterFrequenciaConsideradas(turmaCodigo);
 
-            var quantidadeReprovados = 0;
-            var quantidadeAprovados = 0;
+            int quantidadeReprovados, quantidadeAprovados, totalAulas, totalFrequencias = 0;
 
             var frequenciasAgrupadasPorAluno = frequenciasConsideradas.GroupBy(f => f.AlunoCodigo);
             var listaAlunoPercentualGeral = (from fa in frequenciasAgrupadasPorAluno
@@ -69,23 +68,28 @@ namespace SME.SGP.Aplicacao
                                                 {
                                                     codigoAluno = fa.Key,
                                                     totalAulas = Convert.ToDouble(fa.Sum(f => f.TotalAulas)),
-                                                    totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes))
+                                                    totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes)),
+                                                    totalFrequencias = fa.Sum(f => f.TotalAusencias) + fa.Sum(f => f.TotalPresencas) + fa.Sum(f => f.TotalRemotos)
                                                 })
                                                 .Select(fa => new
                                                 {
                                                     fa.codigoAluno,
-                                                    percentualTotal = Math.Round(100 - ((fa.totalAusencias / fa.totalAulas) * 100))
+                                                    percentualTotal = Math.Round(100 - ((fa.totalAusencias / fa.totalAulas) * 100)),
+                                                    totalAulas = fa.totalAulas,
+                                                    totalFrequencias = fa.totalFrequencias
                                                 });
 
             quantidadeReprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal < percentualFrequenciaMinimo);
             quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
+            totalAulas = listaAlunoPercentualGeral.Sum(fg => int.Parse(fg.totalAulas.ToString()));
+            totalFrequencias = listaAlunoPercentualGeral.Sum(fg => fg.totalFrequencias);
 
-            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados);
+            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias);
         }
 
-        private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados)
+        private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados, int totalAulas, int totalFrequencias)
         {
-            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.Item1, Periodos.Item2));
+            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.Item1, Periodos.Item2,totalAulas, totalFrequencias));
         }
     }
 }

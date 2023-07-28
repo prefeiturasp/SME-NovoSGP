@@ -12,7 +12,9 @@ namespace SME.SGP.Aplicacao
                                                           int quantidadeAbaixoMinimoFrequencia, 
                                                           TipoConsolidadoFrequencia tipoConsolidacao,
                                                           DateTime? periodoInicio,
-                                                          DateTime? periodoFim)
+                                                          DateTime? periodoFim,
+                                                          int totalAulas, 
+                                                          int totalFrequencias)
         {
             TurmaId = turmaId;
             QuantidadeAcimaMinimoFrequencia = quantidadeAcimaMinimoFrequencia;
@@ -20,6 +22,8 @@ namespace SME.SGP.Aplicacao
             TipoConsolidacao = tipoConsolidacao;
             PeriodoInicio = periodoInicio;
             PeriodoFim = periodoFim;
+            TotalAulas = totalAulas;
+            TotalFrequencias = totalFrequencias;
         }
 
         public TipoConsolidadoFrequencia TipoConsolidacao { get; set; }
@@ -28,5 +32,7 @@ namespace SME.SGP.Aplicacao
         public int QuantidadeAbaixoMinimoFrequencia { get; }
         public DateTime? PeriodoInicio { get; set; }
         public DateTime? PeriodoFim { get; set; }
+        public int TotalAulas { get; set; }
+        public int TotalFrequencias { get; set; }
     }
 }

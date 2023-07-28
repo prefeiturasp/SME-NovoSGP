@@ -153,8 +153,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 null,null,dataReferencia.Month, TipoConsolidadoFrequencia.Mensal);
             
             retornoMensal.ShouldNotBeNull();
-            retornoMensal.DadosFrequenciaDashboard.FirstOrDefault().Quantidade.ShouldBeEquivalentTo(5);
-            retornoMensal.DadosFrequenciaDashboard.LastOrDefault().Quantidade.ShouldBeEquivalentTo(25);
+            retornoMensal.DadosFrequenciaDashboard.FirstOrDefault().Quantidade.ShouldBeEquivalentTo(25);
+            retornoMensal.DadosFrequenciaDashboard.LastOrDefault().Quantidade.ShouldBeEquivalentTo(5);
         }
     }
 }

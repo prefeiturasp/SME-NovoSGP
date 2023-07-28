@@ -32,6 +32,8 @@ namespace SME.SGP.Aplicacao
                 consolidacaoFrequenciaTurma.PeriodoFim = request.PeriodoFim;
                 consolidacaoFrequenciaTurma.TurmaId = request.TurmaId;
                 consolidacaoFrequenciaTurma.TipoConsolidacao = request.TipoConsolidacao;
+                consolidacaoFrequenciaTurma.TotalAulas = request.TotalAulas;
+                consolidacaoFrequenciaTurma.TotalFrequencias = request.TotalFrequencias;
                 
                 var id = await repositorio.SalvarConsolidacaoFrequenciaTurma(consolidacaoFrequenciaTurma);
 
