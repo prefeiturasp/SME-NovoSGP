@@ -17,22 +17,22 @@ namespace SME.SGP.Aplicacao
 
             var filtro = mensagem.ObterObjetoMensagem<FiltroAnoDto>();
 
-            var parametroPercentualMinimo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.PercentualFrequenciaCritico, filtro.Ano));
-            var parametroPercentualMinimoInfantil = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.PercentualFrequenciaMinimaInfantil, filtro.Ano));
+            var parametroPercentualMinimo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.PercentualFrequenciaCritico, filtro.Data.Year));
+            var parametroPercentualMinimoInfantil = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.PercentualFrequenciaMinimaInfantil, filtro.Data.Year));
 
-            await ConsolidarFrequenciasTurmas(filtro.Ano, double.Parse(parametroPercentualMinimo.Valor), double.Parse(parametroPercentualMinimoInfantil.Valor));
+            await ConsolidarFrequenciasTurmas(filtro, double.Parse(parametroPercentualMinimo.Valor), double.Parse(parametroPercentualMinimoInfantil.Valor));
 
             return true;
 
         }
 
-        private async Task ConsolidarFrequenciasTurmas(int ano, double percentualMinimo, double percentualMinimoInfantil)
+        private async Task ConsolidarFrequenciasTurmas(FiltroAnoDto filtroAno, double percentualMinimo, double percentualMinimoInfantil)
         {
             var dres = await mediator.Send(new ObterIdsDresQuery());
 
             foreach(var dre in dres)
             {
-                var filtro = new FiltroConsolidacaoFrequenciaTurmaPorDre(ano, dre, percentualMinimo, percentualMinimoInfantil);
+                var filtro = new FiltroConsolidacaoFrequenciaTurmaPorDre(filtroAno.Data, filtroAno.TipoConsolidado, dre, percentualMinimo, percentualMinimoInfantil);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasPorDre, filtro, Guid.NewGuid(), null));
             }

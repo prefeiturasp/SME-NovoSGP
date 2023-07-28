@@ -36,8 +36,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var retornoAluno = retorno.ListaFrequencia;
             retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
-            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
-            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Marcador == null).ShouldBeTrue();
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Marcador == null).ShouldBeTrue();
             (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Marcador == null).ShouldBeTrue();
         }
 

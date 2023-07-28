@@ -4,9 +4,12 @@
     {
         public const string RotaCalculoFrequenciaPorTurmaComponente = "sgp.frequencia.turma.componente";
         public const string ConsolidarFrequenciasPorTurma = "sgp.frequencia.turma.consolidar";
-        public const string RotaConsolidacaoDashBoardFrequencia = "sgp.consolidacao.frequencia.dashboard";
+        public const string ConsolidarFrequenciasPorTurmaMensal = "sgp.frequencia.turma.mensal.consolidar";
+        public const string ConsolidarFrequenciasPorTurmaSemanal = "sgp.frequencia.turma.semanal.consolidar";
         public const string ConsolidarFrequenciasTurmasPorUe = "sgp.frequencia.turma.ue.consolidar";
         public const string ConsolidacaoFrequenciasTurmasCarregar = "sgp.frequencia.turma.carregar";
+        public const string ConsolidacaoFrequenciasTurmasMensalCarregar = "sgp.frequencia.turma.mensal.carregar";
+        public const string ConsolidacaoFrequenciasTurmasSemanalCarregar = "sgp.frequencia.turma.semanal.carregar";
         public const string ConsolidarFrequenciasTurmasNoAno = "sgp.frequencia.turma.ano.consolidar";
         public const string ConsolidarFrequenciasTurmasPorDre = "sgp.frequencia.turma.dre.consolidar";
         public const string RotaConciliacaoFrequenciaAnoSync = "sgp.frequencia.turma.conciliacao.ano.sync";
@@ -28,9 +31,8 @@
         public const string FrequenciaDaAulaExcluir = "sgp.frequencia.aula.excluir";
         public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
         public const string RotaConsolidacaoDiariaDashBoardFrequencia = "sgp.consolidacao.diaria.frequencia.dashboard";
-        public const string RotaConsolidacaoSemanalDashBoardFrequencia = "sgp.consolidacao.semanal.frequencia.dashboard";
-        public const string RotaConsolidacaoMensalDashBoardFrequencia = "sgp.consolidacao.mensal.frequencia.dashboard";
-        public const string RotaConsolidacaoDashBoardFrequenciaPorUe = "sgp.consolidacao.frequencia.dashboard.ue";
+        public const string RotaConsolidacaoDiariaDashBoardFrequenciaPorUe = "sgp.consolidacao.diaria.frequencia.dashboard.ue";
+        public const string RotaConsolidacaoDiariaDashBoardFrequenciaPorTurma = "sgp.consolidacao.diaria.frequencia.dashboard.turma";
         public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
         public const string NotifificarRegistroFrequencia = "sgp.registro.frequencia.notificacao";
 

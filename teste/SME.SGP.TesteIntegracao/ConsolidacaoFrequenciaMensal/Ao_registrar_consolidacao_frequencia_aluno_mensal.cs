@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
+namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 {
     public class Ao_registrar_consolidacao_frequencia_aluno_mensal : TesteBase
     {
