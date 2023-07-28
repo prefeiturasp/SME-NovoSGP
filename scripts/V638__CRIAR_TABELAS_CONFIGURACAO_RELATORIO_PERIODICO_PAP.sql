@@ -25,9 +25,9 @@ CREATE table IF NOT EXISTS public.periodo_relatorio_pap (
 	CONSTRAINT periodo_relatorio_pap_pk PRIMARY KEY (id)
 );
 
-CREATE INDEX periodo_relatorio_pap_config_idx ON public.periodo_relatorio_pap USING btree (configuracao_relatorio_pap_id);
-ALTER TABLE public.periodo_relatorio_pap ADD CONSTRAINT periodo_relatorio_pap_config_fk 
-FOREIGN KEY (configuracao_relatorio_pap_id) REFERENCES public.configuracao_relatorio_pap(id);
+CREATE INDEX if not exists periodo_relatorio_pap_config_idx ON public.periodo_relatorio_pap USING btree (configuracao_relatorio_pap_id);
+ALTER TABLE public.periodo_relatorio_pap DROP CONSTRAINT if exists periodo_relatorio_pap_config_fk;
+ALTER TABLE public.periodo_relatorio_pap ADD CONSTRAINT periodo_relatorio_pap_config_fk FOREIGN KEY (configuracao_relatorio_pap_id) REFERENCES public.configuracao_relatorio_pap(id);
 
 
 CREATE table IF NOT EXISTS public.periodo_escolar_relatorio_pap (
@@ -43,13 +43,13 @@ CREATE table IF NOT EXISTS public.periodo_escolar_relatorio_pap (
 	CONSTRAINT periodo_escolar_relatorio_pap_pk PRIMARY KEY (id)
 );
 
-CREATE INDEX periodo_escolar_relatorio_pap_periodo_pap_idx ON public.periodo_escolar_relatorio_pap USING btree (periodo_relatorio_pap_id);
-ALTER TABLE public.periodo_escolar_relatorio_pap ADD CONSTRAINT periodo_escolar_relatorio_pap_periodo_pap_fk 
-FOREIGN KEY (periodo_relatorio_pap_id) REFERENCES public.periodo_relatorio_pap(id);
+CREATE INDEX if not exists periodo_escolar_relatorio_pap_periodo_pap_idx ON public.periodo_escolar_relatorio_pap USING btree (periodo_relatorio_pap_id);
+ALTER TABLE public.periodo_escolar_relatorio_pap DROP CONSTRAINT if exists periodo_escolar_relatorio_pap_periodo_pap_fk;
+ALTER TABLE public.periodo_escolar_relatorio_pap ADD CONSTRAINT periodo_escolar_relatorio_pap_periodo_pap_fk FOREIGN KEY (periodo_relatorio_pap_id) REFERENCES public.periodo_relatorio_pap(id);
 
-CREATE INDEX periodo_escolar_relatorio_pap_periodo_escolar_idx ON public.periodo_escolar_relatorio_pap USING btree (periodo_escolar_id);
-ALTER TABLE public.periodo_escolar_relatorio_pap ADD CONSTRAINT periodo_escolar_relatorio_pap_periodo_escolar_fk 
-FOREIGN KEY (periodo_escolar_id) REFERENCES public.periodo_escolar(id);
+CREATE INDEX if not exists  periodo_escolar_relatorio_pap_periodo_escolar_idx ON public.periodo_escolar_relatorio_pap USING btree (periodo_escolar_id);
+ALTER TABLE public.periodo_escolar_relatorio_pap DROP CONSTRAINT if exists periodo_escolar_relatorio_pap_periodo_escolar_fk;
+ALTER TABLE public.periodo_escolar_relatorio_pap ADD CONSTRAINT periodo_escolar_relatorio_pap_periodo_escolar_fk FOREIGN KEY (periodo_escolar_id) REFERENCES public.periodo_escolar(id);
 
 CREATE table IF NOT EXISTS public.secao_relatorio_periodico_pap (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -68,7 +68,8 @@ CREATE table IF NOT EXISTS public.secao_relatorio_periodico_pap (
 	CONSTRAINT secao_relatorio_periodico_pap_pk PRIMARY KEY (id)
 );
 
-CREATE INDEX secao_relatorio_periodico_pap_questionario_idx ON public.secao_relatorio_periodico_pap USING btree (questionario_id);
+CREATE INDEX if not exists  secao_relatorio_periodico_pap_questionario_idx ON public.secao_relatorio_periodico_pap USING btree (questionario_id);
+ALTER TABLE public.secao_relatorio_periodico_pap DROP CONSTRAINT if exists secao_relatorio_periodico_pap_questionario_fk;
 ALTER TABLE public.secao_relatorio_periodico_pap ADD CONSTRAINT secao_relatorio_periodico_pap_questionario_fk FOREIGN KEY (questionario_id) REFERENCES questionario(id);
 
 
@@ -85,9 +86,10 @@ CREATE table IF NOT EXISTS public.secao_config_relatorio_periodico_pap (
 	CONSTRAINT secao_config_relatorio_periodico_pap_pk PRIMARY KEY (id)
 );
 
-CREATE INDEX secao_config_secao_relatorio_periodico_pap_idx ON public.secao_config_relatorio_periodico_pap USING btree (secao_relatorio_periodico_pap_id);
+CREATE INDEX if not exists  secao_config_secao_relatorio_periodico_pap_idx ON public.secao_config_relatorio_periodico_pap USING btree (secao_relatorio_periodico_pap_id);
+ALTER TABLE public.secao_config_relatorio_periodico_pap DROP CONSTRAINT if exists secao_config_secao_relatorio_periodico_pap_fk;
 ALTER TABLE public.secao_config_relatorio_periodico_pap ADD CONSTRAINT secao_config_secao_relatorio_periodico_pap_fk FOREIGN KEY (secao_relatorio_periodico_pap_id) REFERENCES secao_relatorio_periodico_pap(id);
 
-CREATE INDEX secao_config_pap_config_idx ON public.secao_config_relatorio_periodico_pap USING btree (configuracao_relatorio_pap_id);
-ALTER TABLE public.secao_config_relatorio_periodico_pap ADD CONSTRAINT secao_relatorio_periodico_pap_config_fk 
-FOREIGN KEY (configuracao_relatorio_pap_id) REFERENCES public.configuracao_relatorio_pap(id);
+CREATE INDEX if not exists  secao_config_pap_config_idx ON public.secao_config_relatorio_periodico_pap USING btree (configuracao_relatorio_pap_id);
+ALTER TABLE public.secao_config_relatorio_periodico_pap DROP CONSTRAINT if exists secao_relatorio_periodico_pap_config_fk;
+ALTER TABLE public.secao_config_relatorio_periodico_pap ADD CONSTRAINT secao_relatorio_periodico_pap_config_fk FOREIGN KEY (configuracao_relatorio_pap_id) REFERENCES public.configuracao_relatorio_pap(id);

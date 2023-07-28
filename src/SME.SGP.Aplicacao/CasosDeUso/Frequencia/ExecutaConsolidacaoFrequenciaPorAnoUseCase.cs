@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -13,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public async Task Executar(int ano)
         {
             await mediator.Send(new LimparConsolidacaoFrequenciaTurmasPorAnoCommand(ano));
-            await mediator.Send(new ExecutarConsolidacaoFrequenciaNoAnoCommand(ano));
+            await mediator.Send(new ExecutarConsolidacaoFrequenciaNoAnoCommand(new DateTime(ano,1,1)));
         }
     }
 }

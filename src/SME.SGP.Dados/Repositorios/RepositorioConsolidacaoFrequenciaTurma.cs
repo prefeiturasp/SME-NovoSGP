@@ -37,63 +37,6 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public async Task ExcluirConsolidacaoDashBoard(int anoLetivo, long turmaId, DateTime dataAula, DateTime? dataInicioSemanda, DateTime? dataFinalSemena, int? mes, TipoPeriodoDashboardFrequencia tipoPeriodo)
-        {
-            var query = new StringBuilder(@"delete 
-                                              from consolidado_dashboard_frequencia
-                                             where turma_id = @turmaId
-                                               and tipo = @tipoPeriodo
-                                               and ano_letivo = @anoLetivo ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and data_aula::date = @dataAula ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine(@"and data_inicio_semana::date = @dataInicioSemanda
-                                   and data_fim_semana::date = @dataFinalSemena ");
-
-            if (tipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine("and mes = @mes ");
-
-            var parametros = new
-            {
-                anoLetivo,
-                turmaId,
-                dataAula,
-                dataInicioSemanda,
-                dataFinalSemena,
-                mes,
-                tipoPeriodo
-            };
-
-            await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
-        }
-
-        public async Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, DateTime dataAula, int? mes, DateTime? dataInicioSemana, DateTime? dataFimSemana)
-        {
-            var query = new StringBuilder(@"select cdf.id as Id, 
-                                                cdf.turma_id as TurmaId,
-                                                cdf.quantidade_presencas as Presentes, 
-                                                cdf.quantidade_ausencias as Ausentes, 
-                                                cdf.quantidade_remotos as Remotos
-                                                from consolidado_dashboard_frequencia cdf 
-                                                where cdf.turma_id = @turmaId 
-                                                and cdf.ano_letivo = @anoLetivo 
-                                                and cdf.tipo = @tipo");
-
-            if (tipo == TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine(" and cdf.data_aula = @dataAula");
-
-            if (tipo == TipoPeriodoDashboardFrequencia.Semanal && dataFimSemana != null && dataInicioSemana != null)
-                query.AppendLine(@" and cdf.data_inicio_semana = @dataInicioSemana
-                                    and cdf.data_fim_semana = @dataFimSemana");
-
-            if (tipo == TipoPeriodoDashboardFrequencia.Mensal && mes != null)
-                query.AppendLine(" and cdf.mes = @mes");
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<RetornoConsolidacaoExistenteDto>(query.ToString(), new { turmaId, anoLetivo, tipo, dataAula, mes, dataInicioSemana, dataFimSemana});
-        }
-
         public async Task AlterarConsolidacaoDashboardTurmaMesPeriodoAno(long id, int quantidadePresente, int quantidadeAusente, int quantidadeRemoto)
         {
             string query = @"update consolidado_dashboard_frequencia 
@@ -104,11 +47,79 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.Conexao.ExecuteAsync(query, new { id, quantidadePresente, quantidadeAusente, quantidadeRemoto});
         }
-
-        public async Task Excluir(long turmaId)
+        
+        public async Task<ConsolidacaoDashBoardFrequencia> ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(long turmaId, DateTime dataAula, Modalidade modalidadeCodigo, int anoLetivo, long dreId, long ueId, TipoPeriodoDashboardFrequencia tipo)
         {
-            var query = "delete from consolidacao_frequencia_turma where turma_id = @turmaId;";
-            await database.Conexao.ExecuteAsync(query, new { turmaId });
+            var query = new StringBuilder(@"SELECT id, 
+			                                     turma_nome, 
+			                                     turma_id,
+			                                     turma_ano, 
+			                                     semestre, 
+			                                     data_aula, 
+			                                     modalidade_codigo, 
+			                                     data_inicio_semana, 
+			                                     data_fim_semana, 
+			                                     mes, 
+			                                     tipo, 
+			                                     ano_letivo, 
+			                                     dre_id, 
+			                                     ue_id, 
+			                                     dre_codigo, 
+			                                     dre_abreviacao, 
+			                                     quantidade_presencas, 
+			                                     quantidade_ausencias, 
+			                                     quantidade_remotos, 
+			                                     criado_em
+                                    FROM consolidado_dashboard_frequencia
+                                    where turma_id = @turmaId 
+                                       and data_aula = @dataAula 
+                                       and modalidade_codigo = @modalidadeCodigo 
+                                       and ano_letivo = @anoLetivo 
+                                       and dre_id = @dreId 
+                                       and ue_id = @ueId
+                                       and tipo = @tipo ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDashBoardFrequencia>(query.ToString(), new { turmaId, dataAula, modalidadeCodigo = (int)modalidadeCodigo, anoLetivo, dreId, ueId, tipo = (int)tipo});
+        }
+        
+        public async Task<long> SalvarConsolidacaoDashBoardFrequencia(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia)
+        {
+            if (consolidacaoDashBoardFrequencia.Id > 0)
+                await database.Conexao.UpdateAsync(consolidacaoDashBoardFrequencia);
+            else
+                consolidacaoDashBoardFrequencia.Id = (long)(await database.Conexao.InsertAsync(consolidacaoDashBoardFrequencia));
+
+            return consolidacaoDashBoardFrequencia.Id;
+        }
+        
+        public async Task<long> SalvarConsolidacaoFrequenciaTurma(ConsolidacaoFrequenciaTurma consolidacaoFrequenciaTurma)
+        {
+	        if (consolidacaoFrequenciaTurma.Id > 0)
+		        await database.Conexao.UpdateAsync(consolidacaoFrequenciaTurma);
+	        else
+		        consolidacaoFrequenciaTurma.Id = (long)(await database.Conexao.InsertAsync(consolidacaoFrequenciaTurma));
+
+	        return consolidacaoFrequenciaTurma.Id;
+        }
+
+        public async Task<ConsolidacaoFrequenciaTurma> ObterConsolidacaoDashboardPorTurmaETipoPeriodo(long turmaId, TipoConsolidadoFrequencia tipoConsolidacao, DateTime? periodoInicio, DateTime? periodoFim)
+        {
+            var query = new StringBuilder(@"SELECT id, 
+			                                       turma_id,
+			                                       quantidade_acima_minimo_frequencia,
+			                                       quantidade_abaixo_minimo_frequencia,
+			                                       tipo_consolidacao,
+			                                       periodo_inicio,
+			                                       periodo_fim
+                                    FROM consolidacao_frequencia_turma
+									where turma_id = @turmaId 
+									      and tipo_consolidacao = @tipo ");
+
+            if (periodoInicio.HasValue && periodoFim.HasValue)
+	            query.Append(" and periodo_inicio = @periodoInicio and periodo_fim = @periodoFim ");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoFrequenciaTurma>(query.ToString(), new { turmaId, tipo = (int)tipoConsolidacao, periodoInicio, periodoFim });
+
         }
     }
 }

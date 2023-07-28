@@ -10,16 +10,17 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public long DreId { get; set; }
         public long UeId { get; set; }
-        public int modalidade { get; set; }
-        public int semestre { get; set; }
+        public int Modalidade { get; set; }
+        public int Semestre { get; set; }
+        public int AnoTurma { get; set; }
 
         public ObterModalidadesPorAnosQuery(int anoLetivo, long dreId, long ueId, int modalidade, int semestre)
         {
             AnoLetivo = anoLetivo;
-            this.modalidade = modalidade;
+            Modalidade = modalidade;
             DreId = dreId;
             UeId = ueId;
-            this.semestre = semestre;
+            Semestre = semestre;
         }
     }
 
