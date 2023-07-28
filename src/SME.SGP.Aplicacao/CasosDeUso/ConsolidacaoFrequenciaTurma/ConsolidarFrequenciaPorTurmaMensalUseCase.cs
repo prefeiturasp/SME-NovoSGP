@@ -23,9 +23,8 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaConsideradas(string codigoTurma)
         {
-            var dataMesAnterior = Filtro.Data.AddMonths(-1);
-            _dataInicio = new DateTime(dataMesAnterior.Year, dataMesAnterior.Month, 01);
-            _dataFim = new DateTime(dataMesAnterior.Year, dataMesAnterior.Month, DateTime.DaysInMonth(dataMesAnterior.Year, dataMesAnterior.Month));
+            _dataInicio = new DateTime(Filtro.Data.Year, Filtro.Data.Month, 01);
+            _dataFim = _dataInicio.AddMonths(1).AddDays(-1);
             var alunos = await mediator.Send(new ObterAlunosDentroPeriodoQuery(codigoTurma, (_dataInicio, _dataFim)));
             var frequenciaTurma = await mediator.Send(new ObterFrequenciaPorTurmaPeriodoQuery(codigoTurma, _dataInicio, _dataFim));
 
