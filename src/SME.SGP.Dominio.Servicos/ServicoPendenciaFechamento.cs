@@ -143,6 +143,16 @@ namespace SME.SGP.Dominio.Servicos
                     var professor = usuariosPendencias
                         .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p => p.ProfessorRf == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
 
+                    var professorTitularAtualDaTurma = professoresTitularesDaTurma.FirstOrDefault(p => p.DisciplinasId.Any(d => d == long.Parse(aula.DisciplinaId)));
+
+                    professor = professorTitularAtualDaTurma != null && professor.CodigoRf != professorTitularAtualDaTurma.ProfessorRf
+                        ? new Usuario()
+                        {
+                            CodigoRf = professorTitularAtualDaTurma.ProfessorRf,
+                            Nome = professorTitularAtualDaTurma.ProfessorNome
+                        } 
+                        : professor;
+
                     mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")} {(aula.EhReposicao() ? " - Reposição" : String.Empty)}.<br>");
                     mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}{(aula.EhReposicao() ? " - Reposição" : String.Empty)}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
                 }
