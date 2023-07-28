@@ -15,8 +15,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.TipoConsolidacao).ToColumn("tipo_consolidacao");
             Map(c => c.PeriodoInicio).ToColumn("periodo_inicio");
             Map(c => c.PeriodoFim).ToColumn("periodo_fim");
+            Map(c => c.TotalAulas).ToColumn("total_aulas");
+            Map(c => c.TotalFrequencias).ToColumn("total_frequencias");
         }
     }
-
-    
 }

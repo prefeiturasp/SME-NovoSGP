@@ -155,7 +155,9 @@ namespace SME.SGP.Dados.Repositorios
 
             selectSQL += @$"       dre.dre_id DreCodigo,
                                    cft.quantidade_acima_minimo_frequencia QuantidadeAcimaMinimoFrequencia, 
-                                   cft.quantidade_abaixo_minimo_frequencia QuantidadeAbaixoMinimoFrequencia                                 
+                                   cft.quantidade_abaixo_minimo_frequencia QuantidadeAbaixoMinimoFrequencia,
+                                   cft.total_aulas TotalAulas, 
+                                   cft.total_frequencias TotalFrequencias                              
                             from consolidacao_frequencia_turma cft
                                 join turma t on cft.turma_id = t.id
                                 join ue on t.ue_id = ue.id

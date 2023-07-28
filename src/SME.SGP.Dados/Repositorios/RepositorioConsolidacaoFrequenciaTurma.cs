@@ -110,7 +110,9 @@ namespace SME.SGP.Dados.Repositorios
 			                                       quantidade_abaixo_minimo_frequencia,
 			                                       tipo_consolidacao,
 			                                       periodo_inicio,
-			                                       periodo_fim
+			                                       periodo_fim,
+			                                       total_aulas,
+			                                       total_frequencias
                                     FROM consolidacao_frequencia_turma
 									where turma_id = @turmaId 
 									      and tipo_consolidacao = @tipo ");
