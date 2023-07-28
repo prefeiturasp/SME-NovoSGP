@@ -20,5 +20,6 @@
         public const string CHAVE_COMPONENTES_PROFESSOR_TURMA = "componentes-professor-turma-agrupado:{0}-{1}-{2}-{3}";
         public const string NOME_CHAVE_COMPENSACAO_TURMA_BIMESTRE = "compensacao-ausencia-turma:turma-{0}-bimestre-{1}";
         public const string CHAVE_NOTA_CONSOLIDACAO_CONSELHO_CLASSE_TURMA_COMPONENTE_BIMESTRE_ALUNO = "nota-consolidacao-conselho-classe-turma-componente-bimestre-aluno:{0}-{1}-{2}-{3}";
+        public const string CHAVE_AUTENTICACAO_FREQUENCIA = "autenticacao-frequencia:{0}";
     }
 }
