@@ -67,22 +67,22 @@ namespace SME.SGP.Aplicacao
                                                 select new
                                                 {
                                                     codigoAluno = fa.Key,
-                                                    totalAulas = Convert.ToDouble(fa.Sum(f => f.TotalAulas)),
+                                                    totalAulas = fa.FirstOrDefault().TotalAulas,
                                                     totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes)),
-                                                    totalFrequencias = fa.Sum(f => f.TotalAusencias) + fa.Sum(f => f.TotalPresencas) + fa.Sum(f => f.TotalRemotos)
+                                                    totalFrequencias = int.Parse(fa.FirstOrDefault().TotalFrequencias.ToString())
                                                 })
                                                 .Select(fa => new
                                                 {
                                                     fa.codigoAluno,
                                                     percentualTotal = Math.Round(100 - ((fa.totalAusencias / fa.totalAulas) * 100)),
-                                                    totalAulas = fa.totalAulas,
-                                                    totalFrequencias = fa.totalFrequencias
+                                                    fa.totalAulas,
+                                                    fa.totalFrequencias
                                                 });
 
             quantidadeReprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal < percentualFrequenciaMinimo);
             quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
-            totalAulas = listaAlunoPercentualGeral.Sum(fg => int.Parse(fg.totalAulas.ToString()));
-            totalFrequencias = listaAlunoPercentualGeral.Sum(fg => fg.totalFrequencias);
+            totalAulas = int.Parse(listaAlunoPercentualGeral.FirstOrDefault().totalAulas.ToString());
+            totalFrequencias = listaAlunoPercentualGeral.FirstOrDefault().totalFrequencias;
 
             await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias);
         }

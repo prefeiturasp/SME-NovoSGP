@@ -10,22 +10,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery : IRequest<IEnumerable<DadosParaConsolidacaoDashBoardFrequenciaDto>>
     {
-        public ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(int anoLetivo, long turmaId, Modalidade modalidade, DateTime dataInicio, DateTime dataFim, DateTime? dataAula)
+        public ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(int anoLetivo, long turmaId, Modalidade modalidade, DateTime dataAula)
         {
             AnoLetivo = anoLetivo;
             TurmaId = turmaId;
             Modalidade = modalidade;
-            DataInicio = dataInicio;
-            DataFim = dataFim;
             DataAula = dataAula;
         }
 
         public int AnoLetivo { get; set; }
         public long TurmaId { get; set; }
         public Modalidade Modalidade { get; set; }
-        public DateTime DataInicio { get; set; }
-        public DateTime DataFim { get; set; }
-        public DateTime? DataAula { get; set; }
+        public DateTime DataAula { get; set; }
     }
     
     public class ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQueryValidator : AbstractValidator<ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery>
@@ -44,13 +40,9 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("A modalidade deve ser informada para obter a consolidacao dashboard frequência");
             
-            RuleFor(a => a.DataInicio)
+            RuleFor(a => a.DataAula)
                 .NotEmpty()
-                .WithMessage("A data de início deve ser informada para obter a consolidacao dashboard frequência");
-            
-            RuleFor(a => a.DataFim)
-                .NotEmpty()
-                .WithMessage("A data fim deve ser informada para obter a consolidacao dashboard frequência");
+                .WithMessage("A data da aula deve ser informada para obter a consolidacao dashboard frequência");
         }
     }
 }
