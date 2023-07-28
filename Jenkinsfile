@@ -20,7 +20,7 @@ pipeline {
     }
   
     agent {
-      node { label 'dotnet-5-rc' }
+      node { label 'SME-AGENT-SGP' }
     }
 
     options {
@@ -41,7 +41,7 @@ pipeline {
           parallel {
             stage('Sonar') {
             agent { node { label 'SME-AGENT-SGP-SONAR' } }
-            when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch '_development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+            when { anyOf { branch '_master'; branch 'main'; branch '_pre-prod'; branch "story/*"; branch '_development'; branch '_release'; branch '_release-r2'; branch 'infra/*'; } } 
                 steps {
                   checkout scm
                   script{
@@ -198,7 +198,7 @@ pipeline {
     }
     stage('Push'){
       agent { node { label 'SME-AGENT-SGP' } }
-      when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2';; } }       
+      when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }       
       steps {
         script{
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
@@ -221,7 +221,7 @@ pipeline {
       }
     }
         stage('Deploy'){
-            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }        
+            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }        
             steps {
                 script{
                   //if(testPassed){
@@ -257,7 +257,7 @@ pipeline {
              
       stage('Flyway') {
         agent { label 'master' }
-        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
@@ -325,6 +325,7 @@ def sendTelegram(message) {
 def getKubeconf(branchName) {
     if("main".equals(branchName)) { return "config_prd"; }
     else if ("master".equals(branchName)) { return "config_prd"; }
+    else if ("pre-prod".equals(branchName)) { return "config_prd"; }
     else if ("homolog".equals(branchName)) { return "config_hom"; }
     else if ("release".equals(branchName)) { return "config_hom"; }
     else if ("release-r2".equals(branchName)) { return "config_hom"; }
