@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase
     {
-        Task<IEnumerable<GraficoFrequenciaSemanalMensalDTO>> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, bool visaoDre = false);
+        Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, bool visaoDre = false);
     }
 }

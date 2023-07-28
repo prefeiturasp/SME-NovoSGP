@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                     Descricao = TipoFrequenciaDashboard.Presentes.Name(),
                     TurmaAno = frequencia.Descricao,
                     Quantidade = totalPresentes
-                }); ;
+                });
 
                 dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {

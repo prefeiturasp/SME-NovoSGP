@@ -17,8 +17,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<GraficoFrequenciaSemanalMensalDTO>> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, bool visaoDre = false)
+        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, bool visaoDre = false)
         {
+            var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
+            
             var tipoConsolidado = (int)TipoConsolidadoFrequencia.Semanal;
                 
             if (tipoConsolidadoFrequencia == TipoConsolidadoFrequencia.Mensal)
@@ -31,16 +33,38 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaSemanalMensalDtos = await mediator.Send(new ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio.Value, datafim.Value, tipoConsolidado, visaoDre));
 
-            if (frequenciaSemanalMensalDtos != null && frequenciaSemanalMensalDtos.Any())
+            foreach (var frequenciasGroup in frequenciaSemanalMensalDtos.GroupBy(f => f.Descricao))
             {
-                return frequenciaSemanalMensalDtos.Select(s => new GraficoFrequenciaSemanalMensalDTO()
+                var frequenciaDescricao = frequenciasGroup.FirstOrDefault();
+                
+                dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
                 {
-                    Descricao = s.Descricao,
-                    QuantidadeAbaixoMinimoFrequencia = s.QuantidadeAbaixoMinimoFrequencia,
-                    QuantidadeAcimaMinimoFrequencia = s.QuantidadeAcimaMinimoFrequencia
+                    Descricao = DashboardFrequenciaConstants.QuantidadeAbaixoMinimoFrequenciaDescricao,
+                    TurmaAno = frequenciaDescricao.Descricao,
+                    Quantidade = frequenciaDescricao.QuantidadeAbaixoMinimoFrequencia
+                });
+
+                dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
+                {
+                    Descricao = DashboardFrequenciaConstants.QuantidadeAcimaMinimoFrequenciaDescricao,
+                    TurmaAno = frequenciaDescricao.Descricao,
+                    Quantidade = frequenciaDescricao.QuantidadeAcimaMinimoFrequencia
                 });
             }
-            return Enumerable.Empty<GraficoFrequenciaSemanalMensalDTO>();
+            
+            var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
+            {
+                TotalAulas = 0,
+                TotalFrequencias = 0,
+            };
+            var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
+
+            return new GraficoFrequenciaAlunoDto()
+            {
+                TagTotalFrequencia = totalFrequencia,
+                TotalFrequenciaFormatado = totalFrequencia,
+                DadosFrequenciaDashboard = dadosFrequenciaDashboard
+            };
         }
     }
 }

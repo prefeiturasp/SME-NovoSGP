@@ -89,8 +89,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 inicioSemanaReferencia,inicioSemanaReferencia.AddDays(6),null, TipoConsolidadoFrequencia.Semanal);
             
             retornoSemanal.ShouldNotBeNull();
-            retornoSemanal.FirstOrDefault().QuantidadeAcimaMinimoFrequencia.ShouldBeEquivalentTo(20);
-            retornoSemanal.FirstOrDefault().QuantidadeAbaixoMinimoFrequencia.ShouldBeEquivalentTo(10);
+            retornoSemanal.DadosFrequenciaDashboard.FirstOrDefault().Quantidade.ShouldBeEquivalentTo(10); //Mínimo
+            retornoSemanal.DadosFrequenciaDashboard.LastOrDefault().Quantidade.ShouldBeEquivalentTo(20); //Maximo
         }
         
         [Fact(DisplayName = "Consolidação Dashboard - Deve obter a consolidação mensal")]
@@ -153,8 +153,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 null,null,dataReferencia.Month, TipoConsolidadoFrequencia.Mensal);
             
             retornoMensal.ShouldNotBeNull();
-            retornoMensal.FirstOrDefault().QuantidadeAbaixoMinimoFrequencia.ShouldBeEquivalentTo(25);
-            retornoMensal.FirstOrDefault().QuantidadeAcimaMinimoFrequencia.ShouldBeEquivalentTo(5);
+            retornoMensal.DadosFrequenciaDashboard.FirstOrDefault().Quantidade.ShouldBeEquivalentTo(5);
+            retornoMensal.DadosFrequenciaDashboard.LastOrDefault().Quantidade.ShouldBeEquivalentTo(25);
         }
     }
 }
