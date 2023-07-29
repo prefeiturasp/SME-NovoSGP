@@ -24,5 +24,12 @@ namespace SME.SGP.Infra
                 return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
             }
         }
+        public double TotalFrequencias 
+        {
+            get
+            {
+                return TotalPresencas + TotalAusencias + TotalRemotos;
+            }
+        }
     }
 }

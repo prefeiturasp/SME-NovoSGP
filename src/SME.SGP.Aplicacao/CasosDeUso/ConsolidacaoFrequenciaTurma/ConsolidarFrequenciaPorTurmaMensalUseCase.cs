@@ -28,9 +28,16 @@ namespace SME.SGP.Aplicacao
             var alunos = await mediator.Send(new ObterAlunosDentroPeriodoQuery(codigoTurma, (DataInicio, DataFim)));
             var frequenciaTurma = await mediator.Send(new ObterFrequenciaPorTurmaPeriodoQuery(codigoTurma, DataInicio, DataFim));
 
-            return from ft in frequenciaTurma
-                   join a in alunos on ft.AlunoCodigo equals a.CodigoAluno
-                   select ft;
+            return from a in alunos
+                   join ft in frequenciaTurma on a.CodigoAluno equals ft.AlunoCodigo
+                   select new FrequenciaAlunoDto()
+                   {
+                       AlunoCodigo = a.CodigoAluno,
+                       TotalAulas = ft.TotalAulas,
+                       TotalAusencias = ft.TotalAusencias,
+                       TotalPresencas = ft.TotalPresencas,
+                       TotalRemotos = ft.TotalRemotos,
+                   };
         }
     }
 }

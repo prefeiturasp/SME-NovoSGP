@@ -29,5 +29,7 @@ namespace SME.SGP.Dominio
         public TipoConsolidadoFrequencia TipoConsolidacao { get; set; }
         public DateTime? PeriodoInicio { get; set; }
         public DateTime? PeriodoFim { get; set; }
+        public int TotalAulas { get; set; }
+        public int TotalFrequencias { get; set; }
     }
 }

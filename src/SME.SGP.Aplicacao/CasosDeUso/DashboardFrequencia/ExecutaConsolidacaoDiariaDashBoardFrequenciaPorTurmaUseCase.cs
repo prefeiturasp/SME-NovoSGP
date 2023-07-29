@@ -29,46 +29,54 @@ namespace SME.SGP.Aplicacao
             var ultimoDiaDoMes = new DateTime(anoLetivo, mes, DateTime.DaysInMonth(anoLetivo, mes));
             
             var frequenciasParaConsolidar = await mediator.Send(new ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(anoLetivo,
-                filtro.TurmaId,turma.ModalidadeCodigo,primeiroDiaDoMes,ultimoDiaDoMes, filtro.DataAula));
+                filtro.TurmaId,turma.ModalidadeCodigo,filtro.DataAula));
             
             if (frequenciasParaConsolidar == null)
                 return false;
             
             var alunos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (primeiroDiaDoMes, ultimoDiaDoMes)));
-            
-            var frequenciasFinais = 
-                (from ft in frequenciasParaConsolidar
-                 join a in alunos on ft.CodigoAluno equals a.CodigoAluno
-                 where (ehAnosAnterior && !a.Inativo && a.DataMatricula.Date <= ultimoDiaDoMes.Date) ||
-                      (!ehAnosAnterior && a.DataMatricula.Date <= ultimoDiaDoMes.Date)
-                 select ft)
-                .GroupBy(g=> new {g.DataAula, g.TotalAulas, g.TotalFrequencias})
-                .Select(f => new DadosParaConsolidacaoDashBoardFrequenciaDto()
+
+            if (frequenciasParaConsolidar.Any(a => a.CodigoAluno is null))
+                await SalvarConsolidacaoDashBoardFrequencia(filtro.AnoLetivo, new DadosParaConsolidacaoDashBoardFrequenciaDto()
                 {
-                    DataAula = f.Key.DataAula,
-                    TotalAulas = f.Key.TotalAulas,
-                    TotalFrequencias = f.Key.TotalFrequencias,
-                    Presentes = f.Sum(s => s.Presentes),
-                    Ausentes = f.Sum(s => s.Ausentes),
-                    Remotos = f.Sum(s => s.Remotos)
-                });
-
-            foreach (var frequencia in frequenciasFinais)
+                    DataAula = frequenciasParaConsolidar.FirstOrDefault().DataAula,
+                    TotalAulas = frequenciasParaConsolidar.FirstOrDefault().TotalAulas
+                }, turma, mes);
+            else
             {
-                if (frequencia.Presentes == 0 && frequencia.Ausentes == 0 && frequencia.Remotos == 0)
-                    continue;
+                var frequenciasFinais = 
+                    (from a in alunos
+                        join ft in frequenciasParaConsolidar on a.CodigoAluno equals ft.CodigoAluno
+                        where (ehAnosAnterior && !a.Inativo && a.DataMatricula.Date <= ultimoDiaDoMes.Date) ||
+                              (!ehAnosAnterior && a.DataMatricula.Date <= ultimoDiaDoMes.Date)
+                        select new {a.CodigoAluno, ft.DataAula, ft.TotalAulas, ft.TotalFrequencias, ft.Presentes, ft.Ausentes, ft.Remotos})
+                    .GroupBy(g=> new {g.DataAula, g.TotalAulas, g.TotalFrequencias})
+                    .Select(f => new DadosParaConsolidacaoDashBoardFrequenciaDto()
+                    {
+                        DataAula = f.Key.DataAula,
+                        TotalAulas = f.Key.TotalAulas,
+                        TotalFrequencias = f.Key.TotalFrequencias,
+                        Presentes = f.Sum(s => s.Presentes),
+                        Ausentes = f.Sum(s => s.Ausentes),
+                        Remotos = f.Sum(s => s.Remotos)
+                    }).ToList();
 
-                var consolidacaoDashBoardFrequencia = await mediator.Send(new ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipoQuery(filtro.TurmaId,
-                            frequencia.DataAula, turma.ModalidadeCodigo, filtro.AnoLetivo, turma.Ue.DreId, turma.Ue.Id, TipoPeriodoDashboardFrequencia.Diario)) ?? new ConsolidacaoDashBoardFrequencia();
-
-                await mediator.Send(new SalvarConsolidacaoDashBoardFrequenciaCommand(MapearParaEntidade(consolidacaoDashBoardFrequencia,turma, frequencia, (int)TipoPeriodoDashboardFrequencia.Diario,mes:mes)));
-                
+                foreach (var frequencia in frequenciasFinais)
+                    await SalvarConsolidacaoDashBoardFrequencia(filtro.AnoLetivo, frequencia, turma, mes);
             }
-
             return true;
         }
-        
+
+        private async Task SalvarConsolidacaoDashBoardFrequencia(int anoLetivo, DadosParaConsolidacaoDashBoardFrequenciaDto frequencia, Turma turma, int mes)
+        {
+            var consolidacaoDashBoardFrequencia = await mediator.Send(new ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipoQuery(turma.Id,
+                    frequencia.DataAula, turma.ModalidadeCodigo, anoLetivo, turma.Ue.DreId, turma.Ue.Id, TipoPeriodoDashboardFrequencia.Diario)) ?? new ConsolidacaoDashBoardFrequencia();
+
+            await mediator.Send(new SalvarConsolidacaoDashBoardFrequenciaCommand(MapearParaEntidade(
+                consolidacaoDashBoardFrequencia, turma, frequencia, (int)TipoPeriodoDashboardFrequencia.Diario, mes: mes)));
+        }
+
         private ConsolidacaoDashBoardFrequencia MapearParaEntidade(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia, Turma turma, DadosParaConsolidacaoDashBoardFrequenciaDto dados, int tipoPeriodo, DateTime? dataInicio = null, DateTime? dataFim = null, int? mes = null)
         {
             consolidacaoDashBoardFrequencia.AnoLetivo = turma.AnoLetivo;

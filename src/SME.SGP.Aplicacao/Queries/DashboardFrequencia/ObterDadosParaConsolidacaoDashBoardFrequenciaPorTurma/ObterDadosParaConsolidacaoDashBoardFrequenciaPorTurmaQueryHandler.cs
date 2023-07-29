@@ -21,8 +21,6 @@ namespace SME.SGP.Aplicacao
             => await repositorioDashBoardFrequencia.ObterDadosParaConsolidacao(request.AnoLetivo,
                                                                                request.TurmaId,
                                                                                (int)request.Modalidade,
-                                                                               request.DataInicio,
-                                                                               request.DataFim,
                                                                                request.DataAula);
     }
 }
