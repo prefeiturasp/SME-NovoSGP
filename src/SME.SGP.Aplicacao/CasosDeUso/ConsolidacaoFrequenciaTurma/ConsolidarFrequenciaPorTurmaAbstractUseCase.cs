@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciasConsideradas = await ObterFrequenciaConsideradas(turmaCodigo);
 
-            int quantidadeReprovados, quantidadeAprovados, totalAulas, totalFrequencias = 0;
+            int quantidadeReprovados, quantidadeAprovados, totalAulas, totalFrequencias,totalAlunos = 0;
 
             var frequenciasAgrupadasPorAluno = frequenciasConsideradas.GroupBy(f => f.AlunoCodigo);
             var listaAlunoPercentualGeral = (from fa in frequenciasAgrupadasPorAluno
@@ -83,13 +83,13 @@ namespace SME.SGP.Aplicacao
             quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
             totalAulas = int.Parse(listaAlunoPercentualGeral.FirstOrDefault().totalAulas.ToString());
             totalFrequencias = listaAlunoPercentualGeral.FirstOrDefault().totalFrequencias;
-
-            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias);
+            totalAlunos = frequenciasAgrupadasPorAluno.Any() ? frequenciasAgrupadasPorAluno.Count() : 0;
+            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias,totalAlunos);
         }
 
-        private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados, int totalAulas, int totalFrequencias)
+        private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados, int totalAulas, int totalFrequencias, int totalAlunos)
         {
-            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.Item1, Periodos.Item2,totalAulas, totalFrequencias));
+            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.Item1, Periodos.Item2,totalAulas, totalFrequencias, totalAlunos));
         }
     }
 }
