@@ -54,10 +54,10 @@ namespace SME.SGP.Aplicacao
             
             var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
             {
-                TotalAulas = frequenciaSemanalMensalDtos.FirstOrDefault().TotalAulas,
-                TotalFrequencias = frequenciaSemanalMensalDtos.FirstOrDefault().TotalFrequencias,
+                TotalAulas = frequenciaSemanalMensalDtos.Any() ? frequenciaSemanalMensalDtos.FirstOrDefault().TotalAulas : 0,
+                TotalFrequencias = frequenciaSemanalMensalDtos.Any() ? frequenciaSemanalMensalDtos.FirstOrDefault().TotalFrequencias : 0
             };
-            var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
+            var totalFrequencia = dadosTotal.TotalFrequenciaFormatado;
 
             return new GraficoFrequenciaAlunoDto()
             {
