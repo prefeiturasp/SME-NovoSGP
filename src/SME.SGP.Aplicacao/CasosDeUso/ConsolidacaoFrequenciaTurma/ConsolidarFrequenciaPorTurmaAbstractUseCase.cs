@@ -81,8 +81,8 @@ namespace SME.SGP.Aplicacao
 
             quantidadeReprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal < percentualFrequenciaMinimo);
             quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
-            totalAulas = int.Parse(listaAlunoPercentualGeral.FirstOrDefault().totalAulas.ToString());
-            totalFrequencias = listaAlunoPercentualGeral.FirstOrDefault().totalFrequencias;
+            totalAulas = listaAlunoPercentualGeral.Any() ? int.Parse(listaAlunoPercentualGeral.FirstOrDefault().totalAulas.ToString()) : 0;
+            totalFrequencias = listaAlunoPercentualGeral.Any() ? listaAlunoPercentualGeral.FirstOrDefault().totalFrequencias : 0;
 
             await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias);
         }
