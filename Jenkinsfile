@@ -17,6 +17,8 @@ pipeline {
       deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
       deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao-r2' : 'sme-worker-compressao' }"
       deployment14 = "${env.branchname == 'release-r2' ? 'sme-worker-naapa-r2' : 'sme-worker-naapa' }"
+      namespace = "${env.branchname == 'pre-prod' ? 'sme-novosgp-d1' : 'sme-novosgp' }"  
+        
     }
   
     agent {
@@ -234,20 +236,20 @@ pipeline {
                         }
                         withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
                                 sh('cp $config '+"$home"+'/.kube/config')
-                                sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp-d1"   
-                                sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp-d1"   
-                                sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment5} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment6} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment7} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment8} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment9} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment10} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment11} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment12} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment13} -n sme-novosgp-d1"
-                                sh "kubectl rollout restart deployment/${deployment14} -n sme-novosgp-d1"
+                                sh "kubectl rollout restart deployment/${deployment1} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment2} -n $(namespace)"   
+                                sh "kubectl rollout restart deployment/${deployment3} -n $(namespace)"   
+                                sh "kubectl rollout restart deployment/${deployment4} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment5} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment6} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment7} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment8} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment9} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment10} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment11} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment12} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment13} -n $(namespace)"
+                                sh "kubectl rollout restart deployment/${deployment14} -n $(namespace)"
                                 sh('rm -f '+"$home"+'/.kube/config')
                         }
                     //}
