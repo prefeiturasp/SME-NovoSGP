@@ -33,6 +33,9 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaSemanalMensalDtos = await mediator.Send(new ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio.Value, datafim.Value, tipoConsolidado, visaoDre));
 
+            if (frequenciaSemanalMensalDtos == null || !frequenciaSemanalMensalDtos.Any())
+                return null;
+            
             foreach (var frequenciasGroup in frequenciaSemanalMensalDtos.GroupBy(f => f.Descricao))
             {
                 var frequenciaDescricao = frequenciasGroup.FirstOrDefault();
@@ -54,8 +57,8 @@ namespace SME.SGP.Aplicacao
             
             var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
             {
-                TotalAulas = frequenciaSemanalMensalDtos.Any() ? frequenciaSemanalMensalDtos.FirstOrDefault().TotalAulas : 0,
-                TotalFrequencias = frequenciaSemanalMensalDtos.Any() ? frequenciaSemanalMensalDtos.FirstOrDefault().TotalFrequencias : 0
+                TotalAulas = frequenciaSemanalMensalDtos.FirstOrDefault().TotalAulas,
+                TotalFrequencias = frequenciaSemanalMensalDtos.FirstOrDefault().TotalFrequencias
             };
             var totalFrequencia = dadosTotal.TotalFrequenciaFormatado;
 
