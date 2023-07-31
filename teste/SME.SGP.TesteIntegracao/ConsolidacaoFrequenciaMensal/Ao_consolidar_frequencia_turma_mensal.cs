@@ -16,7 +16,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
 {
-    public class Ao_consolidar_frequencia_turma_mensal : TesteBaseComuns
+    public class Ao_consolidar_frequencia_turma_mensal : FrequenciaTesteBase
     {
         public Ao_consolidar_frequencia_turma_mensal(CollectionFixture collectionFixture) : base(collectionFixture)
         {

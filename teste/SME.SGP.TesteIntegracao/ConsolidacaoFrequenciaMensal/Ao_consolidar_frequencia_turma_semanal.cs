@@ -16,7 +16,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
 {
-    public class Ao_consolidar_frequencia_turma_semanal : TesteBaseComuns
+    public class Ao_consolidar_frequencia_turma_semanal : FrequenciaTesteBase
     {
         public Ao_consolidar_frequencia_turma_semanal(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
             await CriaAulaFrequencia(AULA_ID_5, new(2023, 03, 10), TipoFrequencia.C, TipoFrequencia.F);
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaPorTurmaSemanalUseCase>();
-            var mensagem = new FiltroConsolidacaoFrequenciaTurma(TURMA_ID_1, TURMA_CODIGO_1, 50, new(2023, 03, 14));
+            var mensagem = new FiltroConsolidacaoFrequenciaTurma(TURMA_ID_1, TURMA_CODIGO_1, 50, new(2023, 03, 10));
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
