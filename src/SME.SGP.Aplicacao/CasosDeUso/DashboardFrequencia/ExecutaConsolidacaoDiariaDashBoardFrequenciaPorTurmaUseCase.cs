@@ -36,35 +36,27 @@ namespace SME.SGP.Aplicacao
             
             var alunos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (primeiroDiaDoMes, ultimoDiaDoMes)));
-
-            if (frequenciasParaConsolidar.Any(a => a.CodigoAluno is null))
-                await SalvarConsolidacaoDashBoardFrequencia(filtro.AnoLetivo, new DadosParaConsolidacaoDashBoardFrequenciaDto()
+            
+            var frequenciasFinais = 
+                (from a in alunos
+                    join ft in frequenciasParaConsolidar on a.CodigoAluno equals ft.CodigoAluno
+                    where (ehAnosAnterior && !a.Inativo && a.DataMatricula.Date <= ultimoDiaDoMes.Date) ||
+                          (!ehAnosAnterior && a.DataMatricula.Date <= ultimoDiaDoMes.Date)
+                    select new {a.CodigoAluno, ft.DataAula, ft.TotalAulas, ft.TotalFrequencias, ft.Presentes, ft.Ausentes, ft.Remotos})
+                .GroupBy(g=> new {g.DataAula, g.TotalAulas, g.TotalFrequencias})
+                .Select(f => new DadosParaConsolidacaoDashBoardFrequenciaDto()
                 {
-                    DataAula = frequenciasParaConsolidar.FirstOrDefault().DataAula,
-                    TotalAulas = frequenciasParaConsolidar.FirstOrDefault().TotalAulas
-                }, turma, mes);
-            else
-            {
-                var frequenciasFinais = 
-                    (from a in alunos
-                        join ft in frequenciasParaConsolidar on a.CodigoAluno equals ft.CodigoAluno
-                        where (ehAnosAnterior && !a.Inativo && a.DataMatricula.Date <= ultimoDiaDoMes.Date) ||
-                              (!ehAnosAnterior && a.DataMatricula.Date <= ultimoDiaDoMes.Date)
-                        select new {a.CodigoAluno, ft.DataAula, ft.TotalAulas, ft.TotalFrequencias, ft.Presentes, ft.Ausentes, ft.Remotos})
-                    .GroupBy(g=> new {g.DataAula, g.TotalAulas, g.TotalFrequencias})
-                    .Select(f => new DadosParaConsolidacaoDashBoardFrequenciaDto()
-                    {
-                        DataAula = f.Key.DataAula,
-                        TotalAulas = f.Key.TotalAulas,
-                        TotalFrequencias = f.Key.TotalFrequencias,
-                        Presentes = f.Sum(s => s.Presentes),
-                        Ausentes = f.Sum(s => s.Ausentes),
-                        Remotos = f.Sum(s => s.Remotos)
-                    }).ToList();
+                    DataAula = f.Key.DataAula,
+                    TotalAulas = f.Key.TotalAulas,
+                    TotalFrequencias = f.Key.TotalFrequencias,
+                    Presentes = f.Sum(s => s.Presentes),
+                    Ausentes = f.Sum(s => s.Ausentes),
+                    Remotos = f.Sum(s => s.Remotos)
+                }).ToList();
 
-                foreach (var frequencia in frequenciasFinais)
-                    await SalvarConsolidacaoDashBoardFrequencia(filtro.AnoLetivo, frequencia, turma, mes);
-            }
+            foreach (var frequencia in frequenciasFinais)
+                await SalvarConsolidacaoDashBoardFrequencia(filtro.AnoLetivo, frequencia, turma, mes);
+                
             return true;
         }
 
