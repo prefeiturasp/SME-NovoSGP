@@ -540,6 +540,65 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         }
 
+        [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar Encaminhamento NAAPA para aluno com encaminhamento ativo.")]
+        public async Task Ao_cadastrar_encaminhamento_para_aluno_com_encaminhamento_ativo()
+        {
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+
+            var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
+
+            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            {
+                TurmaId = TURMA_ID_1,
+                Situacao = SituacaoNAAPA.Rascunho,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = "Nome do aluno do naapa",
+                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                {
+                    new ()
+                    {
+                        SecaoId = 1,
+                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        {
+                            new ()
+                            {
+                                QuestaoId = 1,
+                                Resposta = dataQueixa.ToString("dd/MM/yyyy"),
+                                TipoQuestao = TipoQuestao.Data
+                            },
+                            new ()
+                            {
+                                QuestaoId = 2,
+                                Resposta = "1",
+                                TipoQuestao = TipoQuestao.Combo
+                            }
+                        }
+                    }
+                }
+            };
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto));
+
+            excecao.Message.ShouldBe(MensagemNegocioEncaminhamentoNAAPA.EXISTE_ENCAMINHAMENTO_ATIVO_PARA_ALUNO);
+        }
+
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             await CriarEncaminhamentoNAAPA();
