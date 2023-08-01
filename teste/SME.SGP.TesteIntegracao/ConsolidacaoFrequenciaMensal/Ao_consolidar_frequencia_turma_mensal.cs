@@ -31,21 +31,21 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
         [Fact(DisplayName = "Ao consolidar frequência de turma mensal do mês")]
         public async Task Ao_consolidar_frequencia_turma_mensal_do_mes()
         {
-            var mesAnterior = DateTimeExtension.HorarioBrasilia().AddMonths(-1);
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().AddMonths(-1);
             await CriarDreUePerfilComponenteCurricular();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
             await CriarTurma(Modalidade.Medio, ANO_5, TURMA_CODIGO_1);
-            await CriaAulaFrequencia(AULA_ID_1, new(mesAnterior.Year, mesAnterior.Month, 01), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_2, new(mesAnterior.Year, mesAnterior.Month, 05), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_3, new(mesAnterior.Year, mesAnterior.Month, 10), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_4, new(mesAnterior.Year, mesAnterior.Month, 15), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_5, new(mesAnterior.Year, mesAnterior.Month, 16), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_6, new(mesAnterior.Year, mesAnterior.Month, 20), TipoFrequencia.F, TipoFrequencia.C);
-            await CriaAulaFrequencia(AULA_ID_7, new(mesAnterior.Year, mesAnterior.Month, 25), TipoFrequencia.F, TipoFrequencia.C);
-            await CriaAulaFrequencia(AULA_ID_8, new(mesAnterior.Year, mesAnterior.Month, 28), TipoFrequencia.R, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_1, new(dataReferencia.Year, dataReferencia.Month, 01), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_2, new(dataReferencia.Year, dataReferencia.Month, 05), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_3, new(dataReferencia.Year, dataReferencia.Month, 10), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_4, new(dataReferencia.Year, dataReferencia.Month, 15), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_5, new(dataReferencia.Year, dataReferencia.Month, 16), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_6, new(dataReferencia.Year, dataReferencia.Month, 20), TipoFrequencia.F, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_7, new(dataReferencia.Year, dataReferencia.Month, 25), TipoFrequencia.F, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_8, new(dataReferencia.Year, dataReferencia.Month, 28), TipoFrequencia.R, TipoFrequencia.C);
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaPorTurmaMensalUseCase>();
-            var mensagem = new FiltroConsolidacaoFrequenciaTurma(TURMA_ID_1, TURMA_CODIGO_1, 50, new(mesAnterior.Year, mesAnterior.Month, 01));
+            var mensagem = new FiltroConsolidacaoFrequenciaTurma(TURMA_ID_1, TURMA_CODIGO_1, 50, new(dataReferencia.Year, dataReferencia.Month, 01));
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -58,29 +58,30 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
             consolidado.TipoConsolidacao.ShouldBe(TipoConsolidadoFrequencia.Mensal);
             consolidado.QuantidadeAcimaMinimoFrequencia.ShouldBe(1);
             consolidado.QuantidadeAbaixoMinimoFrequencia.ShouldBe(1);
+            consolidado.TotalAlunos.ShouldBe(2);
         }
 
         [Fact(DisplayName = "Ao consolidar frequência de turma mensal com mais meses")]
         public async Task Ao_consolidar_frequencia_turma_mensal_com_mais_meses()
         {
-            var mesAnterior = DateTimeExtension.HorarioBrasilia().AddMonths(-1);
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().AddMonths(-1);
             await CriarDreUePerfilComponenteCurricular();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
             await CriarTurma(Modalidade.Medio, ANO_5, TURMA_CODIGO_1);
-            await CriaAulaFrequencia(AULA_ID_1, new(mesAnterior.Year, mesAnterior.Month, 01), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_2, new(mesAnterior.Year, mesAnterior.Month, 05), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_3, new(mesAnterior.Year, mesAnterior.Month, 10), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_4, new(mesAnterior.Year, mesAnterior.Month, 15), TipoFrequencia.C, TipoFrequencia.F);
-            await CriaAulaFrequencia(AULA_ID_5, new(mesAnterior.Year, mesAnterior.Month, 16), TipoFrequencia.C, TipoFrequencia.C);
-            await CriaAulaFrequencia(AULA_ID_6, new(mesAnterior.Year, mesAnterior.Month, 20), TipoFrequencia.F, TipoFrequencia.C);
-            await CriaAulaFrequencia(AULA_ID_7, new(mesAnterior.Year, mesAnterior.Month, 25), TipoFrequencia.F, TipoFrequencia.C);
-            await CriaAulaFrequencia(AULA_ID_8, new(mesAnterior.Year, mesAnterior.Month, 28), TipoFrequencia.R, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_1, new(dataReferencia.Year, dataReferencia.Month, 01), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_2, new(dataReferencia.Year, dataReferencia.Month, 05), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_3, new(dataReferencia.Year, dataReferencia.Month, 10), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_4, new(dataReferencia.Year, dataReferencia.Month, 15), TipoFrequencia.C, TipoFrequencia.F);
+            await CriaAulaFrequencia(AULA_ID_5, new(dataReferencia.Year, dataReferencia.Month, 16), TipoFrequencia.C, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_6, new(dataReferencia.Year, dataReferencia.Month, 20), TipoFrequencia.F, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_7, new(dataReferencia.Year, dataReferencia.Month, 25), TipoFrequencia.F, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_8, new(dataReferencia.Year, dataReferencia.Month, 28), TipoFrequencia.R, TipoFrequencia.C);
 
-            await CriaAulaFrequencia(AULA_ID_9, new(mesAnterior.Year, mesAnterior.Month, 01), TipoFrequencia.C, TipoFrequencia.C);
-            await CriaAulaFrequencia(AULA_ID_10, new(mesAnterior.Year, mesAnterior.Month, 05), TipoFrequencia.C, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_9, new(dataReferencia.Year, dataReferencia.Month, 01), TipoFrequencia.C, TipoFrequencia.C);
+            await CriaAulaFrequencia(AULA_ID_10, new(dataReferencia.Year, dataReferencia.Month, 05), TipoFrequencia.C, TipoFrequencia.C);
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaPorTurmaMensalUseCase>();
-            var mensagem = new FiltroConsolidacaoFrequenciaTurma(TURMA_ID_1, TURMA_CODIGO_1, 50, new(mesAnterior.Year, mesAnterior.Month, 01));
+            var mensagem = new FiltroConsolidacaoFrequenciaTurma(TURMA_ID_1, TURMA_CODIGO_1, 50, new(dataReferencia.Year, dataReferencia.Month, 01));
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -93,6 +94,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
             consolidado.TipoConsolidacao.ShouldBe(TipoConsolidadoFrequencia.Mensal);
             consolidado.QuantidadeAcimaMinimoFrequencia.ShouldBe(2);
             consolidado.QuantidadeAbaixoMinimoFrequencia.ShouldBe(0);
+            consolidado.TotalAlunos.ShouldBe(2);
         }
 
         private async Task CriaAulaFrequencia(long aulaId, DateTime data, TipoFrequencia tipoAluno1, TipoFrequencia tipoAluno2)

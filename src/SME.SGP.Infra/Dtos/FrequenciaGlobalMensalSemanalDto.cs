@@ -16,6 +16,7 @@ namespace SME.SGP.Infra.Dtos
         public int QuantidadeAcimaMinimoFrequencia { get; set; }
         public int TotalAulas { get; set; }
         public int TotalFrequencias { get; set; }
+        public int TotalAlunos { get; set; }
         public bool VisaoDre { get; set; }
         public long UeId { get; set; }
 

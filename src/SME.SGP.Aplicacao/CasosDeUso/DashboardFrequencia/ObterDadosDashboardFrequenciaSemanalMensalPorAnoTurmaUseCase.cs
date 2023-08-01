@@ -53,6 +53,13 @@ namespace SME.SGP.Aplicacao
                     TurmaAno = frequenciaDescricao.Descricao,
                     Quantidade = frequenciaDescricao.QuantidadeAcimaMinimoFrequencia
                 });
+                
+                dadosFrequenciaDashboard.Add(new DadosRetornoFrequenciaAlunoDashboardDto()
+                {
+                    Descricao = modalidade == (int)Modalidade.EducacaoInfantil ? TipoFrequenciaDashboard.TotalCriancas.Name() : TipoFrequenciaDashboard.TotalEstudantes.Name(),
+                    TurmaAno = frequenciaDescricao.Descricao,
+                    Quantidade = frequenciaDescricao.TotalAlunos
+                });
             }
             
             var dadosTotal = new TotalFrequenciaEAulasPorPeriodoDto()
