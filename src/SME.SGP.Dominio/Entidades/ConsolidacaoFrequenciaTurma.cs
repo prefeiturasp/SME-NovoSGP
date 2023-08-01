@@ -31,6 +31,5 @@ namespace SME.SGP.Dominio
         public DateTime? PeriodoFim { get; set; }
         public int TotalAulas { get; set; }
         public int TotalFrequencias { get; set; }
-        public int TotalAlunos { get; set; }
     }
 }

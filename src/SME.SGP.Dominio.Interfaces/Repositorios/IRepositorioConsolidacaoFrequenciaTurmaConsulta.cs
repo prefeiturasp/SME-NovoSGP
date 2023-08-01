@@ -12,6 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<FrequenciaGlobalPorAnoDto>> ObterFrequenciaGlobalPorAnoAsync(int anoLetivo, long dreId, long ueId, Modalidade? modalidade, int semestre);
         Task<IEnumerable<FrequenciaGlobalPorDreDto>> ObterFrequenciaGlobalPorDreAsync(int anoLetivo, Modalidade modalidade, string ano, int? semestre);
         Task<bool> ExisteConsolidacaoFrequenciaTurmaPorAno(int ano);
-        Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime dataInicioSemana, DateTime datafimSemana, int tipoConsolidadoFrequencia, bool visaoDre = false);
+        Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime dataInicioSemana, DateTime datafimSemana, int tipoConsolidadoFrequencia, int semestre, bool visaoDre = false);
     }
 }
