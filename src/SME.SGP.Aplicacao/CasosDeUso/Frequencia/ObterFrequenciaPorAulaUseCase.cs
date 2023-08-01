@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
                 registroFrequenciaDto.ListaFrequencia.Add(registroFrequenciaAluno);
             }
 
-            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura || !aula.PermiteRegistroFrequencia(turma);
+            registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura;
 
             return registroFrequenciaDto;
         }
