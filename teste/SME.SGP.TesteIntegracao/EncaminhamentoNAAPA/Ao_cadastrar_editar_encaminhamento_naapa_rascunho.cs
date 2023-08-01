@@ -562,41 +562,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
-            var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
+            var useCase = ObterServicoExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase();
+            var retorno = await useCase.Executar(ALUNO_CODIGO_1);
 
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
-            {
-                TurmaId = TURMA_ID_1,
-                Situacao = SituacaoNAAPA.Rascunho,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
-                {
-                    new ()
-                    {
-                        SecaoId = 1,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
-                        {
-                            new ()
-                            {
-                                QuestaoId = 1,
-                                Resposta = dataQueixa.ToString("dd/MM/yyyy"),
-                                TipoQuestao = TipoQuestao.Data
-                            },
-                            new ()
-                            {
-                                QuestaoId = 2,
-                                Resposta = "1",
-                                TipoQuestao = TipoQuestao.Combo
-                            }
-                        }
-                    }
-                }
-            };
-
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto));
-
-            excecao.Message.ShouldBe(MensagemNegocioEncaminhamentoNAAPA.EXISTE_ENCAMINHAMENTO_ATIVO_PARA_ALUNO);
+            retorno.ShouldBeTrue();
         }
 
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)

@@ -71,9 +71,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (await mediator.Send(new ExisteEncaminhamentoNAAPAAtivoParaAlunoQuery(aluno.CodigoAluno)))
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.EXISTE_ENCAMINHAMENTO_ATIVO_PARA_ALUNO);
-
             var resultadoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoNAAPACommand(
                 encaminhamentoNAAPADto.TurmaId, aluno.NomeAluno, aluno.CodigoAluno,
                 encaminhamentoNAAPADto.Situacao));

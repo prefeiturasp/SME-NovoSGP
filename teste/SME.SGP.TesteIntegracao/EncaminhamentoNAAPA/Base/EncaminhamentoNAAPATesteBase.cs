@@ -226,6 +226,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
         }
 
+        protected IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase ObterServicoExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase()
+        {
+            return ServiceProvider.GetService<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
+        }
+
         private async Task CriarRespostasComplementares()
         {
             await InserirNaBase(new OpcaoQuestaoComplementar()
