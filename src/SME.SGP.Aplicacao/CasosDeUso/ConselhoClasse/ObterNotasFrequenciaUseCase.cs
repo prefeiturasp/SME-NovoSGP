@@ -36,6 +36,8 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
+            var turmaItinerarioPercurso = turma.EhTurmaPercurso() ? turma.CodigoTurma : "";
+
             var anoLetivo = turma.AnoLetivo;
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(notasFrequenciaDto.FechamentoTurmaId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.ConsideraHistorico));
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
@@ -188,6 +190,9 @@ namespace SME.SGP.Aplicacao
             }
 
             var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if(!String.IsNullOrEmpty(turmaItinerarioPercurso))
+                turmasCodigos.Add(turmaItinerarioPercurso);
 
             var disciplinasDaTurmaEol =
                 (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos.ToArray(), usuarioAtual.PerfilAtual,
