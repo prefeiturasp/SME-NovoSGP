@@ -58,7 +58,6 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
             consolidado.TipoConsolidacao.ShouldBe(TipoConsolidadoFrequencia.Mensal);
             consolidado.QuantidadeAcimaMinimoFrequencia.ShouldBe(1);
             consolidado.QuantidadeAbaixoMinimoFrequencia.ShouldBe(1);
-            consolidado.TotalAlunos.ShouldBe(2);
         }
 
         [Fact(DisplayName = "Ao consolidar frequência de turma mensal com mais meses")]
@@ -94,7 +93,6 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal
             consolidado.TipoConsolidacao.ShouldBe(TipoConsolidadoFrequencia.Mensal);
             consolidado.QuantidadeAcimaMinimoFrequencia.ShouldBe(2);
             consolidado.QuantidadeAbaixoMinimoFrequencia.ShouldBe(0);
-            consolidado.TotalAlunos.ShouldBe(2);
         }
 
         private async Task CriaAulaFrequencia(long aulaId, DateTime data, TipoFrequencia tipoAluno1, TipoFrequencia tipoAluno2)

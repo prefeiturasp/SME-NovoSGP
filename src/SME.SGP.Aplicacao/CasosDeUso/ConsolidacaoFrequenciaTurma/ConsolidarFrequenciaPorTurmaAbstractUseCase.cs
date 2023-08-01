@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciasConsideradas = await ObterFrequenciaConsideradas(turmaCodigo);
 
-            int quantidadeReprovados, quantidadeAprovados, totalAulas, totalFrequencias,totalAlunos = 0;
+            int quantidadeReprovados, quantidadeAprovados, totalAulas, totalFrequencias = 0;
 
             var frequenciasAgrupadasPorAluno = frequenciasConsideradas.GroupBy(f => f.AlunoCodigo);
             var listaAlunoPercentualGeral = (from fa in frequenciasAgrupadasPorAluno
@@ -83,14 +83,13 @@ namespace SME.SGP.Aplicacao
             quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
             totalAulas = listaAlunoPercentualGeral.Any() ? int.Parse(listaAlunoPercentualGeral.FirstOrDefault().totalAulas.ToString()) : 0;
             totalFrequencias = listaAlunoPercentualGeral.Any() ? listaAlunoPercentualGeral.FirstOrDefault().totalFrequencias : 0;
-            totalAlunos = frequenciasAgrupadasPorAluno.Any() ? frequenciasAgrupadasPorAluno.Count() : 0;
             
-            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias,totalAlunos);
+            await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados,totalAulas, totalFrequencias);
         }
 
-        private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados, int totalAulas, int totalFrequencias, int totalAlunos)
+        private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados, int totalAulas, int totalFrequencias)
         {
-            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.Item1, Periodos.Item2,totalAulas, totalFrequencias, totalAlunos));
+            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.Item1, Periodos.Item2,totalAulas, totalFrequencias));
         }
     }
 }

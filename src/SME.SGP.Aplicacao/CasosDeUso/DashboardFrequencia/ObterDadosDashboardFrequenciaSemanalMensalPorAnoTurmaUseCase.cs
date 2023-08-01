@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, bool visaoDre = false)
+        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, string anoTurma, DateTime? dataInicio, DateTime? datafim, int? mes, TipoConsolidadoFrequencia tipoConsolidadoFrequencia, int semestre, bool visaoDre = false)
         {
             var dadosFrequenciaDashboard = new List<DadosRetornoFrequenciaAlunoDashboardDto>();
             
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 datafim = dataInicio.Value.AddMonths(1).AddDays(-1);
             }
 
-            var frequenciaSemanalMensalDtos = await mediator.Send(new ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio.Value, datafim.Value, tipoConsolidado, visaoDre));
+            var frequenciaSemanalMensalDtos = await mediator.Send(new ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio.Value, datafim.Value, tipoConsolidado, semestre, visaoDre));
 
             if (frequenciaSemanalMensalDtos == null || !frequenciaSemanalMensalDtos.Any())
                 return null;

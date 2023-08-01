@@ -27,6 +27,7 @@ namespace SME.SGP.Aplicacao
                                                                                                   request.DataInicio,
                                                                                                   request.DataFim,
                                                                                                   request.TipoConsolidadoFrequencia,
+                                                                                                  request.Semestre,
                                                                                                   request.VisaoDre);
         }
     }

@@ -17,7 +17,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.PeriodoFim).ToColumn("periodo_fim");
             Map(c => c.TotalAulas).ToColumn("total_aulas");
             Map(c => c.TotalFrequencias).ToColumn("total_frequencias");
-            Map(c => c.TotalAlunos).ToColumn("total_alunos");
         }
     }
 }
