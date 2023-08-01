@@ -22,5 +22,11 @@ namespace SME.SGP.Infra.Utilitarios
             texto = Regex.Replace(texto, @"<video.+</video>", " [arquivo indisponível na visualização] ");
             return texto;
         }
+
+        public static string AdicionarEspacos(string texto)
+        {
+            texto = Regex.Replace(texto, @"\.(?! |$)", ". ");
+            return texto;
+        }
     }
 }
