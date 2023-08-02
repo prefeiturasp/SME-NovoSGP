@@ -418,7 +418,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComponenteCurricularGrupoAreaOrdenacao, RepositorioComponenteCurricularGrupoAreaOrdenacao>();
             services.TryAddScoped<IRepositorioPendenciaDevolutiva, RepositorioPendenciaDevolutiva>();
             services.TryAddScoped<IRepositorioFrequenciaDiariaAluno, RepositorioFrequenciaDiariaAluno>();
-
+            services.TryAddScoped<IRepositorioConselhoClasseAlunoRecomendacaoConsulta, RepositorioConselhoClasseAlunoRecomendacaoConsulta>();
+            services.TryAddScoped<IRepositorioEventoConsulta, RepositorioEventoConsulta>();
+            services.TryAddScoped<IRepositorioComunicadoConsulta, RepositorioComunicadoConsulta>();
 
             // Acompanhamento Aluno
             services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
@@ -743,7 +745,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAbrangenciaDresUseCase, ObterAbrangenciaDresUseCase>();
             services.TryAddScoped<IObterTurmasNaoHistoricasUseCase, ObterTurmasNaoHistoricasUseCase>();
             services.TryAddScoped<ICarregarAbrangenciaUsusarioUseCase, CarregarAbrangenciaUsusarioUseCase>();
-
+            
             services.TryAddScoped<IRabbitDeadletterSerapSyncUseCase, RabbitDeadletterSerapSyncUseCase>();
 
             // Acompanhamento Aluno
@@ -1017,6 +1019,8 @@ namespace SME.SGP.IoC
 
             services.TryAddScoped<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
             services.TryAddScoped<IDeslogarSuporteUsuarioUseCase, DeslogarSuporteUsuarioUseCase>();
+            services.TryAddScoped<IObterGuidAutenticacaoFrequencia, ObterGuidAutenticacaoFrequencia>();
+            services.TryAddScoped<IObterAutenticacaoFrequencia, ObterAutenticacaoFrequencia>();            
 
             // EncaminhamentoAEE
             services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase, ObterSecoesPorEtapaDeEncaminhamentoAEEUseCase>();
@@ -1313,6 +1317,12 @@ namespace SME.SGP.IoC
 
             // Log.
             services.TryAddScoped<ISalvarLogUseCase, SalvarLogUseCase>();
+
+            //Eventos Escola Aqui/Conselho Classe Recomendação/Dre integração
+            services.TryAddScoped<IObterRecomendacoesPorAlunoTurmaUseCase, ObterRecomendacoesPorAlunoTurmaUseCase>();
+            services.TryAddScoped<IObterEventosEscolaAquiPorDreUeTurmaMesUseCase, ObterEventosEscolaAquiPorDreUeTurmaMesUseCase>();
+            services.TryAddScoped<IObterDresUseCase, ObterDresUseCase>();
+            services.TryAddScoped<IObterComunicadosAnoAtualUseCase, ObterComunicadosAnoAtualUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

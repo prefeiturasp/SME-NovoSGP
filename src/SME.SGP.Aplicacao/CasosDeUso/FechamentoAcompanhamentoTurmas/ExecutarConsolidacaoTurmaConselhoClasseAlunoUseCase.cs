@@ -224,8 +224,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurmaRegularPorConselhoClasseComplementar(Turma turmaComplementar, string aluno)
         {
-            var turmasAluno = await mediator.Send(new ObterTurmasFechamentoConselhoPorAlunosQuery(new long[] { long.Parse(aluno) }, turmaComplementar.AnoLetivo));
-            var turmaRegularCodigo = turmasAluno.FirstOrDefault(t => t.TurmaCodigo == turmaComplementar.CodigoTurma && !string.IsNullOrEmpty(t.RegularCodigo))?.RegularCodigo;
+            var turmasAluno = await mediator.Send(new ObterTurmasFechamentoConselhoPorAlunosQuery(new long[] {long.Parse(aluno)}, turmaComplementar.AnoLetivo));
+            if (!turmasAluno.Any())
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
+            var turmaRegularCodigo = turmasAluno.Count() == 1 && turmasAluno.Any(x=>x.TipoTurma == TipoTurma.Regular) ? turmasAluno.FirstOrDefault().TurmaCodigo : turmasAluno.FirstOrDefault(t => t.TurmaCodigo == turmaComplementar.CodigoTurma && !string.IsNullOrEmpty(t.RegularCodigo))?.RegularCodigo ;
             if (!string.IsNullOrEmpty(turmaRegularCodigo))
                 return (await mediator.Send(new ObterTurmasPorCodigosQuery(new string[] { turmaRegularCodigo }))).FirstOrDefault();
             return null;
