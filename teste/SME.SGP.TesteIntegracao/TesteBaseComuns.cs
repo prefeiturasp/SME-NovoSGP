@@ -647,22 +647,24 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarEvento(EventoLetivo letivo, DateTime dataInicioEvento, DateTime dataFimEvento)
+        protected async Task CriarEvento(EventoLetivo letivo, DateTime dataInicioEvento, DateTime dataFimEvento, bool eventoEscolaAqui = false, long tipoEventoId = 1)
         {
             await InserirNaBase(new EventoTipo
             {
+                Id = tipoEventoId,
                 Descricao = EVENTO_NOME_FESTA,
                 Ativo = true,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
+                CriadoEm = DateTime.Now,
+                EventoEscolaAqui = eventoEscolaAqui
             });
 
             await InserirNaBase(new Evento
             {
                 Nome = EVENTO_NOME_FESTA,
                 TipoCalendarioId = 1,
-                TipoEventoId = 1,
+                TipoEventoId = tipoEventoId,
                 UeId = UE_CODIGO_1,
                 Letivo = letivo,
                 DreId = DRE_CODIGO_1,
@@ -673,6 +675,42 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Migrado = false
+            });
+        }
+
+        protected async Task CriarComunicadoAluno(string comunicado, int anoLetivo, string codigoDre, string codigoUe, string codigoTurma, string codigoAluno, long comunicadoId = 1)
+        {
+            await InserirNaBase(new Comunicado
+            {
+                Id = comunicadoId,
+                Descricao = comunicado,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                AnoLetivo = anoLetivo,
+                CodigoDre = codigoDre,
+                CodigoUe = codigoUe,
+                Titulo = comunicado,
+                TipoComunicado = TipoComunicado.ALUNO,
+            });
+
+            await InserirNaBase(new ComunicadoAluno
+            {
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                ComunicadoId = comunicadoId,
+                AlunoCodigo = codigoAluno,
+                AlunoNome = "Nome Teste Aluno",
+            });
+
+            await InserirNaBase(new ComunicadoTurma
+            {
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                ComunicadoId = comunicadoId,
+                CodigoTurma = codigoTurma
             });
         }
 
