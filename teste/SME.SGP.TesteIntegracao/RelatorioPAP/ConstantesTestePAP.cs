@@ -5,8 +5,17 @@
         public const char TIPO_PERIODICIDADE_SEMANAL = 'S';
         public const char TIPO_PERIODICIDADE_BIMESTRAL = 'B';
         public const long CONFIGURACAO_RELATORIO_PAP_ID_1 = 1;
+        public const long CONFIGURACAO_RELATORIO_PAP_ID_2 = 2;
+        public const long CONFIGURACAO_RELATORIO_PAP_ID_3 = 3;
         public const int PERIODO_SEGUNDO_SEMESTRE = 2;
+        public const int PERIODO_PRIMEIRO_SEMESTRE = 1;
         public const long PERIODO_RELATORIO_PAP_ID_1 = 1;
+        public const long PERIODO_RELATORIO_PAP_ID_2 = 2;
+        public const long PERIODO_RELATORIO_PAP_ID_3 = 3;
+        public const long RELATORIO_PERIODICO_TURMA_ID_1 = 1;
+        public const long RELATORIO_PERIODICO_TURMA_ID_2 = 2;
+        public const long RELATORIO_PERIODICO_ALUNO_ID_1 = 1;
+        public const long RELATORIO_PERIODICO_ALUNO_ID_2 = 2;
         public const int QUESTIONARIO_FREQUENCIA_ID = 1;
         public const string QUESTIONARIO_FREQUENCIA_NOME = "Questionário frequência";
         public const int QUESTIONARIO_DIFIC_APRES_ID = 2;

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             var respostasEncaminhamento = request.PAPSecaoId.HasValue ?
                     (await repositorio.ObterRespostas(request.PAPSecaoId.Value)).ToList() :
-                    new List<RelatorioPeriodicoPAPResposta>();
+                    (await repositorio.ObterRespostasPeriodosAnteriores(request.CodigoAluno, request.CodigoTurma)).ToList();
 
             var repostaPorTipo = await ObterRepostaPorTipoQuestao(request);
 
