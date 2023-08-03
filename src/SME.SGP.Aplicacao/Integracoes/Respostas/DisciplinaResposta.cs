@@ -67,15 +67,25 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
                 var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.CodigoComponenteCurricular
                                                                                     || (componenteCurricular.CodigoComponenteTerritorioSaber != 0 &&
                                                                                         cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber)).FirstOrDefault();
-                componenteCurricular.GrupoMatriz = new GrupoMatriz() { Id = componenteCurricularSgp.GrupoMatrizId, Nome = componenteCurricularSgp.GrupoMatrizNome };
-                componenteCurricular.LancaNota = componenteCurricularSgp.LancaNota;
-                componenteCurricular.RegistroFrequencia = componenteCurricularSgp.RegistraFrequencia;
-                componenteCurricular.Nome = componenteCurricularSgp.Nome;
-                componenteCurricular.NomeComponenteInfantil = componenteCurricularSgp.NomeComponenteInfantil;
-                componenteCurricular.Compartilhada = componenteCurricularSgp.EhCompartilhada;
-                componenteCurricular.BaseNacional = componenteCurricularSgp.EhBaseNacional;
-                componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia;
-                componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
+
+                if (componenteCurricularSgp != null)
+                {
+                    componenteCurricular.GrupoMatriz = new GrupoMatriz() { Id = componenteCurricularSgp.GrupoMatrizId, Nome = componenteCurricularSgp.GrupoMatrizNome };
+                    componenteCurricular.LancaNota = componenteCurricularSgp.LancaNota;
+                    componenteCurricular.RegistroFrequencia = componenteCurricularSgp.RegistraFrequencia;
+                    componenteCurricular.Compartilhada = componenteCurricularSgp.EhCompartilhada;
+                    componenteCurricular.BaseNacional = componenteCurricularSgp.EhBaseNacional;
+                    componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia;
+                    componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
+
+                    var naoEhComponenteTerritorioExtenso = (componenteCurricular.CodigoComponenteTerritorioSaber ?? 0) == 0 ||
+                                                            componenteCurricular.CodigoComponenteCurricular == (componenteCurricular.CodigoComponenteTerritorioSaber ?? 0);
+                    if (naoEhComponenteTerritorioExtenso)
+                    {
+                        componenteCurricular.Nome = componenteCurricularSgp.Nome;
+                        componenteCurricular.NomeComponenteInfantil = componenteCurricularSgp.NomeComponenteInfantil;
+                    }
+                }
             });
         }
     }

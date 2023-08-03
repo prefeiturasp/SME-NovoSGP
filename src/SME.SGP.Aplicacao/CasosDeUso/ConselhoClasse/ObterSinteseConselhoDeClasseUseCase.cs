@@ -52,12 +52,9 @@ namespace SME.SGP.Aplicacao
             if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && conselhoClasseSinteseDto.Bimestre == 0 && !(await mediator.Send(new ExisteConselhoClasseUltimoBimestreQuery(turma, conselhoClasseSinteseDto.AlunoCodigo))))
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_POSSUI_CONSELHO_CLASSE_ULTIMO_BIMESTRE);
 
-            var disciplinas = (await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma)))?.ToList();
+            var disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
             if (disciplinas == null || !disciplinas.Any())
                 return null;
-
-            var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(disciplinas.ObterCodigos()));
-            disciplinas.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
 
             var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
                                             .GroupBy(c => new { Id = c.GrupoMatriz?.Id, Nome = c.GrupoMatriz?.Nome });
