@@ -34,6 +34,58 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             secoes.Secoes.Exists(secao => secao.Nome == ConstantesTestePAP.OBSERVACOES).ShouldBeTrue();
         }
 
+        [Fact(DisplayName = "Obter todos as seçoes com auditoria")]
+        public async Task Ao_obter_secoes_com_auditoria()
+        {
+            await CriarDadosBase(true, true);
+
+            await InserirNaBase(new RelatorioPeriodicoPAPTurma()
+            {
+                Id = 1,
+                PeriodoRelatorioId = 1,
+                TurmaId = TURMA_ID_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RelatorioPeriodicoPAPAluno()
+            {
+                Id = 1,
+                CodigoAluno = CODIGO_ALUNO_1,
+                NomeAluno = "Joooooose",
+                RelatorioPeriodicoTurmaId = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RelatorioPeriodicoPAPSecao()
+            {
+                Id = 1,
+                RelatorioPeriodicoAlunoId = 1,
+                SecaoRelatorioPeriodicoId = ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ServiceProvider.GetService<IObterSecoesPAPUseCase>();
+            var secoes = await useCase.Executar(new Infra.FiltroObterSecoesDto(CODIGO_ALUNO_1, TURMA_CODIGO_1, 1));
+
+            secoes.ShouldNotBeNull();
+            secoes.Secoes.ShouldNotBeNull();
+            secoes.Secoes.Count().ShouldBe(4);
+            
+            var secaoAvanco = secoes.Secoes.Find(secao => secao.Nome == ConstantesTestePAP.AVANÇOS_NA_APRENDIZAGEM_DURANTE_O_BIMESTRE);
+            secaoAvanco.ShouldNotBeNull();
+            secaoAvanco.Auditoria.ShouldNotBeNull();
+
+            secoes.Secoes.Exists(secao => secao.Nome == ConstantesTestePAP.FREQUENCIA_NA_TURMA_PAP).ShouldBeTrue();
+            secoes.Secoes.Exists(secao => secao.Nome == ConstantesTestePAP.DIFICULDADES_APRESENTADAS).ShouldBeTrue();
+            secoes.Secoes.Exists(secao => secao.Nome == ConstantesTestePAP.OBSERVACOES).ShouldBeTrue();
+        }
+
 
         [Fact(DisplayName = "Obter o questionario")]
         public async Task Ao_obter_questionario()
