@@ -16,11 +16,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<SecaoTurmaAlunoPAPDto> ObterSecoesPorAluno(string codigoTurma, string codigoAluno, long pAPPeriodoId)
         {
             var secao = new SecaoTurmaAlunoPAPDto();
-            var sql = @"select rppt.id PAPTurmaId,  rppa.id PAPAlunoId, rpps.id, 
+            var sql = @"select rpps.id, 
                         srpp.nome, srpp.ordem, srpp.questionario_id QuestionarioId, 
                         case when questao is null then false else true end QuestoesObrigatorias,
                         rpps.id PAPSecaoId, 
-                        case when rpps.concluido is null then false else true end Concluido
+                        case when rpps.concluido is null then false else true end Concluido,
+                        rppt.id PAPTurmaId, rppa.id PAPAlunoId,
+                        rpps.id,
+                        rpps.Alterado_Em as AlteradoEm,
+                        rpps.Alterado_Por as AlteradoPor,
+                        rpps.Alterado_RF as AlteradoRF,
+                        rpps.Criado_Em as CriadoEm,
+                        rpps.Criado_Por as CriadoPor,
+                        rpps.Criado_RF as CriadoRF
                         from secao_config_relatorio_periodico_pap scrpp 
                         inner join secao_relatorio_periodico_pap srpp on scrpp.secao_relatorio_periodico_pap_id = srpp.id 
                         inner join questionario q on q.id = srpp.questionario_id 
@@ -33,7 +41,13 @@ namespace SME.SGP.Dados.Repositorios
                         where prp.id = @pAPPeriodoId 
                         order by ordem";
 
-            var secoes = await database.Conexao.QueryAsync<SecaoPAPDto>(sql, new { codigoTurma, codigoAluno, pAPPeriodoId });
+            var secoes = await database.Conexao.QueryAsync<SecaoPAPDto, AuditoriaDto, SecaoPAPDto>(
+                sql, (secaoPAP, auditoria) =>
+                {
+                    secaoPAP.Auditoria = auditoria;
+                    return secaoPAP;
+                }, 
+                new { codigoTurma, codigoAluno, pAPPeriodoId });
 
             secao.PAPTurmaId = secoes.FirstOrDefault()?.PAPTurmaId;
             secao.PAPAlunoId = secoes.FirstOrDefault()?.PAPTurmaId;
