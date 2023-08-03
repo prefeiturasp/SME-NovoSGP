@@ -39,5 +39,13 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoTurma, codigoAluno, periodoIdPAP, questionarioId, papSecaoId));
         }
+
+        [HttpGet("turma/{turmaCodigo}/relatorio-periodo/{periodoRelatorioPAPId}/alunos")]
+        [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAlunos(string turmaCodigo, long periodoRelatorioPAPId, [FromServices] IObterAlunosPorPeriodoPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaCodigo, periodoRelatorioPAPId));
+        }
     }
 }
