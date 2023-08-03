@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         public long CodigoComponenteTerritorioSaber { get; set; }
         public bool Compartilhada { get; set; }
         public string Descricao { get; set; }
+        public string DescricaoComponenteInfantil { get; set; }
         public bool LancaNota { get; set; }
         public bool PossuiObjetivos { get; set; }
         public bool Regencia { get; set; }
@@ -34,6 +35,35 @@ namespace SME.SGP.Dominio
         public bool PossuiObjetivosDeAprendizagemOpcionais(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, bool ensinoEspecial)
         {
             return ensinoEspecial && (componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo && new long[] { 218, 138, 1116 }.Contains(Codigo)) || Regencia);
+        }
+    }
+
+    public static class ComponenteCurricularEolExtension
+    {
+        public static long[] ObterCodigos(this IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        {
+            var codigosComponentes = componentesCurriculares.Select(cc => cc.Codigo).ToList();
+            codigosComponentes.AddRange(componentesCurriculares.Select(cc => cc.CodigoComponenteTerritorioSaber).Where(cc => cc != 0).ToList());
+            return codigosComponentes.ToArray();
+        }
+
+        public static void PreencherInformacoesPegagogicasSgp(this List<ComponenteCurricularEol> disciplinasReposta, IEnumerable<InfoComponenteCurricular> componentesCurricularesSgp)
+        {
+            disciplinasReposta.ForEach(componenteCurricular =>
+            {
+                var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.Codigo
+                                                                                    || (componenteCurricular.CodigoComponenteTerritorioSaber != 0 &&
+                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber)).FirstOrDefault();
+                componenteCurricular.GrupoMatriz = new GrupoMatriz() { Id = componenteCurricularSgp.GrupoMatrizId, Nome = componenteCurricularSgp.GrupoMatrizNome };
+                componenteCurricular.LancaNota = componenteCurricularSgp.LancaNota;
+                componenteCurricular.RegistraFrequencia = componenteCurricularSgp.RegistraFrequencia;
+                componenteCurricular.Descricao = componenteCurricularSgp.Nome;
+                componenteCurricular.DescricaoComponenteInfantil = componenteCurricularSgp.NomeComponenteInfantil;
+                componenteCurricular.Compartilhada = componenteCurricularSgp.EhCompartilhada;
+                componenteCurricular.BaseNacional = componenteCurricularSgp.EhBaseNacional;
+                componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia;
+                componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
+            });
         }
     }
 }

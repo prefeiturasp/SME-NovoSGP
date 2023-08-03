@@ -13,13 +13,11 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQueryHandler : IRequestHandler<ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQuery, IEnumerable<DisciplinaDto>>
     {
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-        private readonly IServicoEol servicoEol;
         private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IServicoEol servicoEol, IMediator mediator)
+        public ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -34,9 +32,8 @@ namespace SME.SGP.Aplicacao
             {
                 var listaDisciplinas = new List<DisciplinaDto>();                
 
-                var disciplinasAgrupadas = await servicoEol
-                    .ObterDisciplinasPorIdsAgrupadas(codigosComponentes, request.CodigoTurma);
-
+                var disciplinasAgrupadas = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(codigosComponentes, request.CodigoTurma)); 
+                
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     var codigoTerritorioSaberCorrespondente = request.CodigoComponentes

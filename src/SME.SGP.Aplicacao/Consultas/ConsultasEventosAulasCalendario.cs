@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasUsuario = usuario.EhProfessorCj() ?
                 await consultasDisciplina.ObterDisciplinasPerfilCJ(filtro.TurmaId, usuario.CodigoRf) :
-                await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual);
+                MapearDto(await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(filtro.TurmaId, usuario.CodigoRf, usuario.PerfilAtual)));
 
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(filtro.TipoCalendarioId, filtro.DreId, filtro.UeId, data, filtro.EhEventoSme, usuario.PodeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme());
             var aulas = await ObterAulasDia(filtro, data, perfil, rf, disciplinasUsuario);
@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
                 });
             });
 
-            var dentroDoPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data) || await PodeCriarAulaNoPeriodo(filtro.Data, filtro.TipoCalendarioId, filtro.UeId, filtro.DreId );
+            var dentroDoPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data) || await PodeCriarAulaNoPeriodo(filtro.Data, filtro.TipoCalendarioId, filtro.UeId, filtro.DreId);
 
             return new DiaEventoAula
             {
@@ -177,6 +177,30 @@ namespace SME.SGP.Aplicacao
             };
         }
 
+        private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        {
+            if (!componentesCurriculares.Any())
+                return Enumerable.Empty<DisciplinaResposta>();
+            return componentesCurriculares.Select(cc => new DisciplinaResposta()
+            {
+                CodigoComponenteCurricular = cc.Codigo,
+                Id = cc.Codigo,
+                Compartilhada = cc.Compartilhada,
+                CodigoComponenteCurricularPai = cc.CodigoComponenteCurricularPai,
+                CodigoComponenteTerritorioSaber = cc.CodigoComponenteTerritorioSaber,
+                Nome = cc.Descricao,
+                Regencia = cc.Regencia,
+                RegistroFrequencia = cc.RegistraFrequencia,
+                TerritorioSaber = cc.TerritorioSaber,
+                LancaNota = cc.LancaNota,
+                BaseNacional = cc.BaseNacional,
+                TurmaCodigo = cc.TurmaCodigo,
+                GrupoMatriz = cc.GrupoMatriz != null ? new Integracoes.Respostas.GrupoMatriz() { Id = cc.GrupoMatriz.Id, Nome = cc.GrupoMatriz.Nome } : null,
+                NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
+                Professor = cc.Professor,
+                CodigosTerritoriosAgrupamento = cc.CodigosTerritoriosAgrupamento
+            });
+        }
         private async Task<bool> PodeCriarAulaNoPeriodo(DateTime dataAula, long tipoCalendarioId, string ueCodigo, string dreCodigo)
         {
 

@@ -1,5 +1,6 @@
 ﻿using MailKit.Security;
 using MediatR;
+using Minio.DataModel;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -314,9 +315,7 @@ namespace SME.SGP.Aplicacao
             if (codigosDisciplinasAtribuicao.Any())
             {
                 idsDisciplinas = idsDisciplinas.Union(codigosDisciplinasAtribuicao).ToArray();
-
-                var componentesInclusao = await servicoEOL
-                    .ObterDisciplinasPorIdsAgrupadas(codigosDisciplinasAtribuicao, codigoTurma);
+                var componentesInclusao = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(codigosDisciplinasAtribuicao, codigoTurma));
 
                 componentesInclusao.ToList().ForEach(ci =>
                 {
@@ -461,14 +460,14 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     // Carrega disciplinas do professor
-                    IEnumerable<DisciplinaResposta> disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+                    IEnumerable<ComponenteCurricularEol> disciplinas = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(codigoTurma, login, perfilAtual));
                     foreach (var disciplina in disciplinas)
                     {
                         if (disciplina.CodigoComponenteCurricularPai.HasValue)
                         {
                             // TODO Consulta por disciplina pai não esta funcionando no EOL. Refatorar na proxima sprint
-                            disciplina.CodigoComponenteCurricular = 11211124;
-                            disciplina.Nome = "REG CLASSE INTEGRAL";
+                            disciplina.Codigo = 11211124;
+                            disciplina.Descricao = "REG CLASSE INTEGRAL";
 
                             //var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina.CodigoComponenteCurricularPai.Value });
                             //if (consultaDisciplinaPai == null)
