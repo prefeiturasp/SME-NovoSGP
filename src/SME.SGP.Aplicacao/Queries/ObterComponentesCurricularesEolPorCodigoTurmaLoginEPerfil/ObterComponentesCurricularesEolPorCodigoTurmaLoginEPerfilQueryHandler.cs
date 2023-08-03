@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
         }
-
+                                                                       
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
             var componenteCurricularEol = new List<ComponenteCurricularEol>();

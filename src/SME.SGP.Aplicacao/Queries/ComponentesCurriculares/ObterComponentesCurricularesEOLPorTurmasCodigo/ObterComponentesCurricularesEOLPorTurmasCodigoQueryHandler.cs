@@ -11,27 +11,34 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandler : IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>
+    public class ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandler : IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
             var turmas = String.Join("&codigoTurmas=", request.CodigosDeTurmas);
 
-            var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/turmas?codigoTurmas={turmas}{(request.AdicionarComponentesPlanejamento.HasValue ? $"&adicionarComponentesPlanejamento={request.AdicionarComponentesPlanejamento.Value}" : string.Empty)}");
+            var resposta = await httpClient.GetAsync($"v1/componentes-curriculares/turmas?codigoTurmas={turmas}{(request.AdicionarComponentesPlanejamento.HasValue ? $"&adicionarComponentesPlanejamento={request.AdicionarComponentesPlanejamento.Value}" : string.Empty)}");
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(json);
+                var retorno = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
+
+                var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(retorno.ObterCodigos()));
+                retorno.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
+                return retorno;
+
             }
             else throw new NegocioException("Não foi possível obter Componentes Curriculares.");
 

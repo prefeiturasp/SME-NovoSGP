@@ -105,11 +105,11 @@ namespace SME.SGP.Aplicacao
 
                     //Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
-                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != "6");
+                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != 6);
 
                     var possuiComponentesSemNotaConceito = componentesDaTurmaEol
                         .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
-                        .Select(ct => ct.Codigo)
+                        .Select(ct => ct.Codigo.ToString())
                         .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
                         .Any();
 

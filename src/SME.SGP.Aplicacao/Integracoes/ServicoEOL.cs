@@ -253,12 +253,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
-        {
-            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
-            return await ObterComponentesCurriculares(url);
-        }
-
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true, bool verificarTipoTurma = true)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -271,12 +265,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
 
             return alunos;
-        }
-        
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesRegenciaPorAno(int anoTurma)
-        {
-            var url = $"v1/componentes-curriculares/anos/{anoTurma}/regencia";
-            return await ObterComponentesCurriculares(url, true);
         }
 
         public IEnumerable<DreRespostaEolDto> ObterDres()
@@ -832,13 +820,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurriculares(string url, bool ignorarInfoPedagogicasSgp = false)
+        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurriculares(string url, string rotina, bool ignorarInfoPedagogicasSgp = false)
         {
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                await RegistrarLogAsync(resposta, "ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil", url);
+                await RegistrarLogAsync(resposta, rotina, url);
                 throw new NegocioException("Ocorreu um erro na tentativa de buscar as disciplinas no EOL.");
             }
 
@@ -888,32 +876,15 @@ namespace SME.SGP.Aplicacao.Integracoes
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo, string[] anosEscolares)
         {
-            var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{(int)modalidade}/anos/{anoLetivo}/anos-escolares?anosEscolares={string.Join("&anosEscolares=", anosEscolares)}";
+            var url = string.Empty;
+            if (anosEscolares == null || !anosEscolares.Any())
+                url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{(int)modalidade}/anos/{anoLetivo}";
+            else
+              url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{(int)modalidade}/anos/{anoLetivo}/anos-escolares?anosEscolares={string.Join("&anosEscolares=", anosEscolares)}";
 
-            var resposta = await httpClient.GetAsync(url);
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
-            }
-            return Enumerable.Empty<ComponenteCurricularEol>();
-        }
-
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesTurmasProgramaPorAnoEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo)
-        {
-            var url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{modalidade}/anos/{anoLetivo}";
-
-            var resposta = await httpClient.GetAsync(url);
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularEol>>(json);
-            }
-            return Enumerable.Empty<ComponenteCurricularEol>();
+            return await ObterComponentesCurriculares(url, "ObterComponentesCurricularesPorAnosEModalidade");
         }
 
         public async Task AtribuirPerfil(string codigoRf, Guid perfil)
