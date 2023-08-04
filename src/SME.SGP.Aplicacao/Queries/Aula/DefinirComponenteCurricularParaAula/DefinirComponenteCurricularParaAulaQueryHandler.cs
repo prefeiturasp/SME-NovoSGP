@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 if (atribuicaoDisciplinaCorrespondente == null)
                 {
                     var componentesTurma = await mediator
-                        .Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(request.CodigoTurma));
+                        .Send(new ObterDisciplinasPorCodigoTurmaQuery(request.CodigoTurma));
 
                     var componenteTurmaCorrespondente = componentesTurma?
                         .FirstOrDefault(ct => ct.CodigoComponenteCurricular.Equals(request.CodigoComponenteCurricular));

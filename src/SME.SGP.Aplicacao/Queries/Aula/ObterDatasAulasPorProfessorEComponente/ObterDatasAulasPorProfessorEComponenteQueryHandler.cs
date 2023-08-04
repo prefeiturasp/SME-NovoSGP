@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
                         }
                         else if (professor != null && String.IsNullOrEmpty(professor.ProfessorRf))
                         {
-                            var componentesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(turma.CodigoTurma));
+                            var componentesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
 
                             if (componentesDaTurma != null && componentesDaTurma.Any())
                             {
