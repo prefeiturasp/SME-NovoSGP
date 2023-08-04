@@ -132,7 +132,8 @@ namespace SME.SGP.Aplicacao
                     Nota = request.ConselhoClasseNotaDto.Nota,
                     ConceitoId = request.ConselhoClasseNotaDto.Conceito,
                     ComponenteCurricularId = request.ConselhoClasseNotaDto.CodigoComponenteCurricular,
-                    Inativo = aluno.Inativo
+                    Inativo = aluno.Inativo,
+                    ConselhoClasse = true
                 };
                 
                 await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);

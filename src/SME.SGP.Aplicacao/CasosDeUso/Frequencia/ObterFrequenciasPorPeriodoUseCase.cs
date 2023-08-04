@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorCj() ? usuarioLogado.Login : null));
 
             var professorConsiderado = (string)null;
-            if (codigosComponentesTerritorioEquivalentes != null && codigosComponentesTerritorioEquivalentes.Any())
+            if ((codigosComponentesTerritorioEquivalentes != null && codigosComponentesTerritorioEquivalentes.Any()) && componenteCurricular.TerritorioSaber)
             {
                 codigosComponentesBusca.AddRange(codigosComponentesTerritorioEquivalentes.Select(ct => ct.codigoComponente));
                 professorConsiderado = codigosComponentesTerritorioEquivalentes.First().professor;
@@ -67,6 +67,7 @@ namespace SME.SGP.Aplicacao
             var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoPorPeriodoQuery(param.TurmaId, param.DataInicio, param.DataFim));
             var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(turma.Id, componenteCurricularId));
 
+            
             return await mediator.Send(new ObterListaFrequenciaAulasQuery(turma,
                                                                           alunosDaTurma.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno),
                                                                           aulas,
@@ -117,7 +118,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string[] disciplinasId, bool aulaCJ, string professor = null)
         {
             var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinasId, aulaCJ, professor));
-            if (aulas == null)
+            if (aulas == null || !aulas.Any())
                 throw new NegocioException("Aulas não encontradas para a turma no Período.");
 
             return aulas;
