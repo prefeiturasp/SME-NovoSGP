@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
-     
+
                     if (componenteAtual.TerritorioSaber)
                     {
                         // remove territórios replicados definidos pela atribuição cj com base nos códigos de agrupamento
@@ -281,7 +281,7 @@ namespace SME.SGP.Aplicacao
                 await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);
 
             if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
-               disciplinasDto = disciplinasDto.DistinctBy(x => x.CodigoComponenteCurricular).ToList();
+                disciplinasDto = disciplinasDto.DistinctBy(x => x.CodigoComponenteCurricular).ToList();
 
             return disciplinasDto;
         }
@@ -479,7 +479,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
-            if (!componentesCurriculares.Any())
+            if (componentesCurriculares == null || !componentesCurriculares.Any())
                 return Enumerable.Empty<DisciplinaResposta>();
             return componentesCurriculares.Select(cc => new DisciplinaResposta()
             {

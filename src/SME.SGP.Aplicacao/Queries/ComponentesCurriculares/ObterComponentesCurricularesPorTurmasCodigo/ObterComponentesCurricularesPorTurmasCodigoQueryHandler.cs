@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
-            if (!componentesCurriculares.Any())
+            if (componentesCurriculares == null || !componentesCurriculares.Any())
                 return Enumerable.Empty<DisciplinaResposta>();
             return componentesCurriculares.Select(cc => new DisciplinaResposta()
             {
@@ -157,8 +157,8 @@ namespace SME.SGP.Aplicacao
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
-            GrupoMatrizId = disciplina.GrupoMatriz.Id,
-            GrupoMatrizNome = disciplina.GrupoMatriz.Nome,
+            GrupoMatrizId = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Id : default,
+            GrupoMatrizNome = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Nome : string.Empty,
             Nome = disciplina.Nome,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,
