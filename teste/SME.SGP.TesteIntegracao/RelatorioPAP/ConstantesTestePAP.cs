@@ -26,7 +26,23 @@
         public const string QUESTIONARIO_OBS_NOME = "Questionário observação";
 
         public const string FREQUENCIA_NA_TURMA_PAP = "Frequência na turma de PAP";
-        
+
+        public const long PAP_ALUNO_ID_1 = 1;
+        public const long PAP_TURMA_ID_1 = 1;
+        public const long PAP_SECAO_ID_1 = 1;
+        public const long PAP_SECAO_ID_2 = 2;
+        public const long PAP_SECAO_ID_3 = 3;
+
+        public const long PAP_QUESTAO_ID_1 = 1;
+        public const long PAP_QUESTAO_ID_2 = 2;
+        public const long PAP_QUESTAO_ID_3 = 3;
+        public const long PAP_QUESTAO_ID_4 = 4;
+
+        public const long PAP_RESPOSTA_ID_1 = 1;
+        public const long PAP_RESPOSTA_ID_2 = 2;
+        public const long PAP_RESPOSTA_ID_3 = 3;
+        public const long PAP_RESPOSTA_ID_4 = 4;
+
         public const int ORDEM_1 = 1;
         public const int ORDEM_2 = 2;
         public const int ORDEM_3 = 3;
@@ -69,8 +85,10 @@
         public const long SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2 = 2;
         public const long SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3 = 3;
         public const long SECAO_RELATORIO_PERIODICO_PAP_SECAO_OBS_ID_4 = 4;
-        
+
+        public const string OPCAO_RESPOSTA_LEITURA_ID = "1";
         public const string OPCAO_RESPOSTA_LEITURA = "Leitura";
+        public const long OPCAO_RESPOSTA_ESCRITA_ID = 2;
         public const string OPCAO_RESPOSTA_ESCRITA = "Escrita";
         public const string OPCAO_RESPOSTA_CALCULOS = "Cálculos";
         public const string OPCAO_RESPOSTA_INTERPRETACAO_TEXTO = "Interpretação de texto";

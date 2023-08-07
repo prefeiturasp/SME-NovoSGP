@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<SecaoTurmaAlunoPAPDto> ObterSecoesPorAluno(string codigoTurma, string codigoAluno, long pAPPeriodoId)
         {
             var secao = new SecaoTurmaAlunoPAPDto();
-            var sql = @"select rpps.id, 
+            var sql = @"select srpp.id, 
                         srpp.nome, srpp.ordem, srpp.questionario_id QuestionarioId, 
                         case when questao is null then false else true end QuestoesObrigatorias,
                         rpps.id PAPSecaoId, 
