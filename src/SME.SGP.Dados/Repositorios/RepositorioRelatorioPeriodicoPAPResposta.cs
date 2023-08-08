@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -76,6 +77,16 @@ namespace SME.SGP.Dados.Repositorios
 
                                                                                         return resposta;
                                                                                     }, new { codigoAluno, codigoTurma });
+        }
+
+        public async Task<bool> RemoverPorArquivoId(long arquivoId)
+        {
+            var sql =$@"update relatorio_periodico_pap_resposta 
+                        set excluido = true,
+                            arquivo_id = null
+					where arquivo_id = @arquivoId";
+
+            return (await database.Conexao.ExecuteAsync(sql, new { arquivoId })) > 0;
         }
     }
 }

@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<RelatorioPeriodicoPAPResposta>> ObterRespostas(long papSecaoId);
         Task<IEnumerable<RelatorioPeriodicoPAPResposta>> ObterRespostasPeriodosAnteriores(string codigoAluno, string codigoTurma);
+        Task<bool> RemoverPorArquivoId(long arquivoId);
     }
 }
