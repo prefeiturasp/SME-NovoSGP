@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoRelatorioPAPDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPAP_I, Policy = "Bearer")]
         public async Task<IActionResult> Salvar([FromBody] RelatorioPAPDto relatorioPAPDto, [FromServices] ISalvarRelatorioPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(relatorioPAPDto));
@@ -24,6 +26,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<PeriodosPAPDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.RPAP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPeriodos(string codigoTurma, [FromServices] IObterPeriodosPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoTurma));
@@ -33,6 +36,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(SecaoTurmaAlunoPAPDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.RPAP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSecoes(string codigoTurma, string codigoAluno, long periodoIdPAP, [FromServices] IObterSecoesPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroObterSecoesDto(codigoTurma, codigoAluno, periodoIdPAP)));
@@ -41,6 +45,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turma/{codigoTurma}/aluno/{codigoAluno}/periodo/{periodoIdPAP}/questionario/{questionarioId}")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPAP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestionario(string codigoTurma, string codigoAluno, long periodoIdPAP, long questionarioId, [FromQuery] long? papSecaoId, [FromServices] IObterQuestionarioPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoTurma, codigoAluno, periodoIdPAP, questionarioId, papSecaoId));
@@ -49,6 +54,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turma/{turmaCodigo}/relatorio-periodo/{periodoRelatorioPAPId}/alunos")]
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RPAP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAlunos(string turmaCodigo, long periodoRelatorioPAPId, [FromServices] IObterAlunosPorPeriodoPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(turmaCodigo, periodoRelatorioPAPId));
