@@ -1303,6 +1303,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuestionarioPAPUseCase, ObterQuestionarioPAPUseCase>();
             services.TryAddScoped<IObterAlunosPorPeriodoPAPUseCase, ObterAlunosPorPeriodoPAPUseCase>();
             services.TryAddScoped<ISalvarRelatorioPAPUseCase, SalvarRelatorioPAPUseCase>();
+            services.TryAddScoped<IExcluirArquivoPAPUseCase, ExcluirArquivoPAPUseCase>();
 
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();

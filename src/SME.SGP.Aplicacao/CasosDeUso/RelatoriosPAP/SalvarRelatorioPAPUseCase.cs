@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                     await AlterarQuestao(questaoExistente, questaoRespostas);
             }
 
-            return ObterResultadoSecao(relatorioSecao);
+            return ObterResultadoSecao(relatorioSecao, secao.SecaoId);
         }
 
         private async Task<RelatorioPeriodicoPAPSecao> PersistirRelatorioSecao(RelatorioPAPSecaoDto secao, long relatorioAlunoId)
@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
                 await SalvarQuestao(relatorioSecao.Id, questoes.Key, questoes);
             }
 
-            return ObterResultadoSecao(relatorioSecao);
+            return ObterResultadoSecao(relatorioSecao, secao.SecaoId);
         }
 
         private async Task SalvarQuestao(long relatorioSecaoId, long questaoId, IEnumerable<RelatorioPAPRespostaDto> respostas)
@@ -162,13 +162,14 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private ResultadoRelatorioPAPSecaoDto ObterResultadoSecao(RelatorioPeriodicoPAPSecao relatorioSecao)
+        private ResultadoRelatorioPAPSecaoDto ObterResultadoSecao(RelatorioPeriodicoPAPSecao relatorioSecao, long secaoId)
         {
             return new ResultadoRelatorioPAPSecaoDto()
             {
                 SecaoId = relatorioSecao.Id,
                 Auditoria = new AuditoriaDto()
                 {
+                    Id = secaoId,
                     CriadoEm = relatorioSecao.CriadoEm,
                     CriadoPor = relatorioSecao.CriadoPor,
                     CriadoRF = relatorioSecao.CriadoRF,
