@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -32,14 +31,14 @@ namespace SME.SGP.Aplicacao
         {
             var respostasEncaminhamento = request.PAPSecaoId.HasValue ?
                     (await repositorio.ObterRespostas(request.PAPSecaoId.Value)).ToList() :
-                    new List<RelatorioPeriodicoPAPResposta>();
+                    (await repositorio.ObterRespostasPeriodosAnteriores(request.CodigoAluno, request.CodigoTurma)).ToList();
 
             var repostaPorTipo = await ObterRepostaPorTipoQuestao(request);
 
             if (repostaPorTipo != null)
                 respostasEncaminhamento.Add(repostaPorTipo);
 
-            return await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
+            var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                 respostasEncaminhamento.Where(c => c.RelatorioPeriodicoQuestao.QuestaoId == questaoId)
                 .Select(respostaEncaminhamento =>
                 {
@@ -51,6 +50,19 @@ namespace SME.SGP.Aplicacao
                         Arquivo = respostaEncaminhamento.Arquivo
                     };
                 })));
+
+            return request.PAPSecaoId.HasValue ? questoes : ObterQuestoesSemIdResposta(questoes);
+        }
+
+        private IEnumerable<QuestaoDto> ObterQuestoesSemIdResposta(IEnumerable<QuestaoDto> questoes)
+        {
+            foreach(var questao in questoes)
+            {
+                foreach (var resposta in questao.Resposta)
+                    resposta.Id = 0;
+            }
+
+            return questoes;
         }
 
         private async Task<RelatorioPeriodicoPAPResposta> ObterRepostaPorTipoQuestao(ObterQuestionarioPAPQuery request)

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -23,7 +24,14 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = request.CodigoTurma });
 
-            return await repositorio.ObterPeriodos(turma.AnoLetivo);
+            var periodos = await repositorio.ObterPeriodos(turma.AnoLetivo);
+
+            foreach(var periodo in periodos)
+            {
+                periodo.PeriodoAberto = await mediator.Send(new PeriodoEstaEmAbertoPAPQuery(periodo.PeriodoRelatorioPAPId, turma));
+            }
+
+            return periodos;
         }
     }
 }

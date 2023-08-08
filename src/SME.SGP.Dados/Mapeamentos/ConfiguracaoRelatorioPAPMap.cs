@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.InicioVigencia).ToColumn("inicio_vigencia");
             Map(c => c.FimVigencia).ToColumn("fim_vigencia");
             Map(c => c.TipoPeriocidade).ToColumn("tipo_periodicidade");
+            Map(c => c.EhSemestre).Ignore();
         }
     }
 }

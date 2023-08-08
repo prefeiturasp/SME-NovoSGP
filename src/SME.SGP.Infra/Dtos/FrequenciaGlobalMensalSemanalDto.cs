@@ -28,5 +28,7 @@ namespace SME.SGP.Infra.Dtos
             
             return $"{ModalidadeTurma.ShortName()}-{NomeTurma}";
         }
+
+        public int TotalAlunos { get { return QuantidadeAbaixoMinimoFrequencia + QuantidadeAcimaMinimoFrequencia; } }
     }
 }

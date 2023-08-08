@@ -24,9 +24,10 @@ namespace SME.SGP.Aplicacao
                                                                                                   request.UeId,
                                                                                                   request.Modalidade,
                                                                                                   request.AnoTurma,
-                                                                                                  request.DataInicioSemmana,
-                                                                                                  request.DataFimSemana,
+                                                                                                  request.DataInicio,
+                                                                                                  request.DataFim,
                                                                                                   request.TipoConsolidadoFrequencia,
+                                                                                                  request.Semestre,
                                                                                                   request.VisaoDre);
         }
     }
