@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                 new { codigoTurma, codigoAluno, pAPPeriodoId });
 
             secao.PAPTurmaId = secoes.FirstOrDefault()?.PAPTurmaId;
-            secao.PAPAlunoId = secoes.FirstOrDefault()?.PAPTurmaId;
+            secao.PAPAlunoId = secoes.FirstOrDefault()?.PAPAlunoId;
             secao.Secoes.AddRange(secoes);
 
             return secao;
