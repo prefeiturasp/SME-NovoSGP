@@ -2,7 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -60,6 +60,18 @@ namespace SME.SGP.Dados.Repositorios
                         where tc.ano_letivo = @anoLetivo";
 
             return await database.Conexao.QueryAsync<PeriodosPAPDto>(sql, new { anoLetivo });
+        }
+
+        public async Task<bool> PeriodoEmAberto(long periodoRelatorioId, DateTime dataReferencia)
+        {
+            var sql = @"select 1 from periodo_relatorio_pap prp 
+                    inner join periodo_escolar_relatorio_pap perp on prp.id = perp.periodo_relatorio_pap_id 
+                    inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
+                    where prp.id = @periodoRelatorioId
+                    and periodo_fim::date >= @dataReferencia::date
+                    and periodo_inicio <= @dataReferencia";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql.ToString(), new { periodoRelatorioId, dataReferencia });
         }
     }
 }
