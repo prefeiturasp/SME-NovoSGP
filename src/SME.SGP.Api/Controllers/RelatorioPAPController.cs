@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -13,7 +12,14 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class RelatorioPAPController : ControllerBase
     {
-        
+        [HttpPost("salvar")]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoRelatorioPAPDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Salvar([FromBody] RelatorioPAPDto relatorioPAPDto, [FromServices] ISalvarRelatorioPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(relatorioPAPDto));
+        }
+
         [HttpGet("periodos/{codigoTurma}")]
         [ProducesResponseType(typeof(IEnumerable<PeriodosPAPDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -38,6 +44,14 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterQuestionario(string codigoTurma, string codigoAluno, long periodoIdPAP, long questionarioId, [FromQuery] long? papSecaoId, [FromServices] IObterQuestionarioPAPUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoTurma, codigoAluno, periodoIdPAP, questionarioId, papSecaoId));
+        }
+
+        [HttpGet("turma/{turmaCodigo}/relatorio-periodo/{periodoRelatorioPAPId}/alunos")]
+        [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ObterAlunos(string turmaCodigo, long periodoRelatorioPAPId, [FromServices] IObterAlunosPorPeriodoPAPUseCase useCase)
+        {
+            return Ok(await useCase.Executar(turmaCodigo, periodoRelatorioPAPId));
         }
     }
 }

@@ -1,7 +1,13 @@
-﻿using System;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
@@ -10,6 +16,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
     {
         public RelatorioPAPTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBase(bool criarPeriodoEscolar = true, bool criarConfiguracoesPAP = false)
@@ -27,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
 
             if (criarConfiguracoesPAP)
             {
-                await CriarConfiguracaoRelatorio();
+                await CriarConfiguracaoRelatorio(DATA_03_01_INICIO_BIMESTRE_1);
 
                 await CriarPeriodoRelatorio();
 
@@ -148,7 +161,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             });
         }
 
-        private async Task CriarSecaoConfRelatorioPeriodico()
+        protected async Task CriarSecaoConfRelatorioPeriodico(long configuracaoId = ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1)
         {
             var campos = new[] { ConstantesTestePAP.CAMPO_SECAO_RELATORIO_PERIODICO_PAP_ID, 
                                        ConstantesTestePAP.CAMPO_CONFIGURACAO_RELATORIO_PAP_ID, 
@@ -159,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             var valores = new[]
             {
                 ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_FREQUENCIA_NA_TURMA_PAP_ID_1.ToString(),
-                ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1.ToString(),
+                configuracaoId.ToString(),
                 $"'{DateTimeExtension.HorarioBrasilia().ToString("yyyy-MM-dd HH:mm:ss")}'",
                 $"'{SISTEMA_NOME}'",
                 $"'{SISTEMA_CODIGO_RF}'"
@@ -169,7 +182,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             valores = new[]
             {
                 ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_DIFICULDADES_APRESENTADAS_ID_2.ToString(),
-                ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1.ToString(),
+                configuracaoId.ToString(),
                 $"'{DateTimeExtension.HorarioBrasilia().ToString("yyyy-MM-dd HH:mm:ss")}'",
                 $"'{SISTEMA_NOME}'",
                 $"'{SISTEMA_CODIGO_RF}'"
@@ -179,7 +192,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             valores = new[]
             {
                 ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_AVANC_APREND_BIMES_ID_3.ToString(),
-                ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1.ToString(),
+                configuracaoId.ToString(),
                 $"'{DateTimeExtension.HorarioBrasilia().ToString("yyyy-MM-dd HH:mm:ss")}'",
                 $"'{SISTEMA_NOME}'",
                 $"'{SISTEMA_CODIGO_RF}'"
@@ -189,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             valores = new[]
             {
                 ConstantesTestePAP.SECAO_RELATORIO_PERIODICO_PAP_SECAO_OBS_ID_4.ToString(),
-                ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1.ToString(),
+                configuracaoId.ToString(),
                 $"'{DateTimeExtension.HorarioBrasilia().ToString("yyyy-MM-dd HH:mm:ss")}'",
                 $"'{SISTEMA_NOME}'",
                 $"'{SISTEMA_CODIGO_RF}'"
@@ -298,21 +311,22 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
             }
         }
 
-        private async Task CriarPeriodoRelatorio()
+        protected async Task CriarPeriodoRelatorio(long configuracaoId = ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1, 
+                                                 int periodo = ConstantesTestePAP.PERIODO_PRIMEIRO_SEMESTRE)
         {
             await InserirNaBase(new PeriodoRelatorioPAP()
             {
-                ConfiguracaoId = ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1,
-                Periodo = ConstantesTestePAP.PERIODO_SEGUNDO_SEMESTRE,
+                ConfiguracaoId = configuracaoId,
+                Periodo = periodo,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
-        private async Task CriarConfiguracaoRelatorio()
+        protected async Task CriarConfiguracaoRelatorio(DateTime dataInicio)
         {
             await InserirNaBase(new ConfiguracaoRelatorioPAP()
             {
-                InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
+                InicioVigencia = dataInicio,
                 FimVigencia = DATA_22_12_FIM_BIMESTRE_4,
                 TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_SEMANAL,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF

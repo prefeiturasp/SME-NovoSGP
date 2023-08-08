@@ -6,5 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioRelatorioPeriodicoPAPResposta : IRepositorioBase<RelatorioPeriodicoPAPResposta>
     {
         Task<IEnumerable<RelatorioPeriodicoPAPResposta>> ObterRespostas(long papSecaoId);
+        Task<IEnumerable<RelatorioPeriodicoPAPResposta>> ObterRespostasPeriodosAnteriores(string codigoAluno, string codigoTurma);
     }
 }

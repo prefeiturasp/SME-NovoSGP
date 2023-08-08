@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
                 .QueryAsync<GraficoAusenciasComJustificativaDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre });
         }
 
-        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade,string anoTurma, DateTime dataInicioSemana, DateTime datafimSemana, int tipoConsolidadoFrequencia, bool visaoDre = false)
+        public async Task<IEnumerable<FrequenciaGlobalMensalSemanalDto>> ObterFrequenciasConsolidadasPorTurmaMensalSemestral(int anoLetivo, long dreId, long ueId, int modalidade,string anoTurma, DateTime dataInicio, DateTime datafim, int tipoConsolidadoFrequencia, int semestre, bool visaoDre = false)
         {
             var selectSQL = string.Empty;
 
@@ -157,7 +157,7 @@ namespace SME.SGP.Dados.Repositorios
                                    cft.quantidade_acima_minimo_frequencia QuantidadeAcimaMinimoFrequencia, 
                                    cft.quantidade_abaixo_minimo_frequencia QuantidadeAbaixoMinimoFrequencia,
                                    cft.total_aulas TotalAulas, 
-                                   cft.total_frequencias TotalFrequencias                              
+                                   cft.total_frequencias TotalFrequencias     
                             from consolidacao_frequencia_turma cft
                                 join turma t on cft.turma_id = t.id
                                 join ue on t.ue_id = ue.id
@@ -174,9 +174,11 @@ namespace SME.SGP.Dados.Repositorios
 
             if (ueId != -99)
                 selectSQL += "and ue.id = @ueId ";
+            
+            if (semestre > 0)
+                selectSQL += "and t.semestre = @semestre ";
 
-            if (tipoConsolidadoFrequencia == (int)TipoConsolidadoFrequencia.Semanal)
-                selectSQL += "and cft.periodo_inicio = @dataInicioSemana and cft.periodo_fim = @datafimSemana";
+            selectSQL += "and cft.periodo_inicio = @dataInicio and cft.periodo_fim = @datafim";
 
             var frequencias = await database.Conexao.QueryAsync<FrequenciaGlobalMensalSemanalDto>(selectSQL, new
             {
@@ -184,10 +186,11 @@ namespace SME.SGP.Dados.Repositorios
                 ueId,
                 anoLetivo,
                 modalidade,
-                dataInicioSemana,
-                datafimSemana,
+                dataInicio,
+                datafim,
                 anoTurma,
-                tipoConsolidadoFrequencia
+                tipoConsolidadoFrequencia,
+                semestre
             });
 
             return frequencias.OrderBy(f => f.Descricao).ThenBy(f => f.DreCodigo).ToList();
