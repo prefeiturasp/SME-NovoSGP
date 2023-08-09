@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
+    <SonarQubeTestProject>true</SonarQubeTestProject>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

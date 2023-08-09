@@ -1,0 +1,12 @@
+diff a/src/SME.SGP.Dados/Repositorios/RepositorioAcompanhamentoAlunoConsulta.cs b/src/SME.SGP.Dados/Repositorios/RepositorioAcompanhamentoAlunoConsulta.cs	(rejected hunks)
+@@ -85,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
+                                  WHERE aa2.aluno_codigo = @alunoCodigo)
+                               AND aa.aluno_codigo = @alunoCodigo";
+ 
+-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new { alunoCodigo });
++            return await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new {alunoCodigo});
+         }
+     }
+-}
++}
+\ No newline at end of file

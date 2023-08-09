@@ -1,0 +1,42 @@
+diff a/src/SME.SGP.Dados.Cache/RepositorioCache.cs b/src/SME.SGP.Dados.Cache/RepositorioCache.cs	(rejected hunks)
+@@ -140,15 +140,10 @@ namespace SME.SGP.Dados.Repositorios
+                 NomeChave = nomeChave
+             };
+             
+-            try
+-            {
++            
+                 await servicoTelemetria.RegistrarAsync(async () => await RemoverValor(nomeChave),
+                     NomeServicoCache, $"{NomeServicoCache} Remover async", "", param.ToString());
+-            }
+-            catch (Exception)
+-            {
+-                throw;
+-            }
++           //new precisaria capturar para relancar
+         }
+ 
+         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
+@@ -160,8 +155,7 @@ namespace SME.SGP.Dados.Repositorios
+                 UtilizarGZip = utilizarGZip
+             };
+             
+-            try
+-            {
++            
+                 if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
+                 {
+                     if (utilizarGZip)
+@@ -173,11 +167,7 @@ namespace SME.SGP.Dados.Repositorios
+                     await servicoTelemetria.RegistrarAsync(async () => await SalvarValor(nomeChave, valor, minutosParaExpirar),
+                         NomeServicoCache, $"{NomeServicoCache} Salvar async", "", param.ToString());
+                 }
+-            }
+-            catch (Exception)
+-            {
+-                throw;
+-            }
++                //new precisaria capturar para relancar
+         }
+ 
+         public async Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false)

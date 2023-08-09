@@ -11,6 +11,7 @@ namespace SME.SGP.TesteIntegracao.Setup
 {
     public class ConstrutorDeTabelas
     {
+        //typo => Construir
         public void Contruir(NpgsqlConnection connection)
         {
             MontaBaseDados(connection);

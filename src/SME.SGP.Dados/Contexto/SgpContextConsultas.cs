@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Contexto
         {
         }
 
-        public SgpContextConsultas(IDbConnection conexao, IContextoAplicacao contextoAplicacao): base(conexao, contextoAplicacao)  //Raphael. Coloquei esse construtor que é usado em teste.
+        public SgpContextConsultas(IDbConnection conexao, IContextoAplicacao contextoAplicacao): base(conexao, contextoAplicacao)
         {
         
         }

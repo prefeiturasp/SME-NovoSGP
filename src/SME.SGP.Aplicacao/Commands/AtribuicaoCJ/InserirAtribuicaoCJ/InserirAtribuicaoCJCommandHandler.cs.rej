@@ -1,0 +1,10 @@
+diff a/src/SME.SGP.Aplicacao/Commands/AtribuicaoCJ/InserirAtribuicaoCJ/InserirAtribuicaoCJCommandHandler.cs b/src/SME.SGP.Aplicacao/Commands/AtribuicaoCJ/InserirAtribuicaoCJ/InserirAtribuicaoCJCommandHandler.cs	(rejected hunks)
+@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
+                      (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
+             {
+                 if (ehHistorico)
+-                    repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
++                    await repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                 else
+                     repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+ 

@@ -1,0 +1,9 @@
+﻿﻿- method: GET
+  path: /github/repos/prefeiturasp/SME-NovoSGP/tags
+  features:
+    delay: 0
+  response:
+    status: 200
+    body:
+      - name: "v.1000"
+      - name: "v.2000"

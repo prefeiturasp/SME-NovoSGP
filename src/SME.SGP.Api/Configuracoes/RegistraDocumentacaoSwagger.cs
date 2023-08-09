@@ -9,10 +9,10 @@ namespace SME.SGP.Api.Configuracoes
     {
         public static void Registrar(IServiceCollection services)
         {
-            var sp = services.BuildServiceProvider();
-
-            var versaoService = sp.GetService<IServicoGithub>();
-            var versaoAtual = versaoService?.RecuperarUltimaVersao().Result;
+            var serviceProvider = services.BuildServiceProvider();
+            var versaoService = serviceProvider.GetService<IServicoGithub>()!;
+            var versaoAtual = versaoService.RecuperarUltimaVersao()
+                .GetAwaiter().GetResult();
 
             services.AddSwaggerGen(c =>
             {

@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<AutenticacaoApiEolDto> Autenticar(string login, string senha)
+        public Task<AutenticacaoApiEolDto?> Autenticar(string login, string senha)
         {
             throw new NotImplementedException();
         }

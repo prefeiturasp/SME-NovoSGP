@@ -21,6 +21,7 @@ using System.Diagnostics.Tracing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dados.Contexto;
 
 namespace SME.SGP.Aplicacao.Workers
 {
@@ -179,15 +180,18 @@ namespace SME.SGP.Aplicacao.Workers
                 var comandoRabbit = Comandos[rota];
 
                 var transacao = telemetriaOptions.Apm ? Agent.Tracer.StartTransaction(rota, apmTransactionType) : null;
+                using var scope = serviceScopeFactory.CreateScope();
+
+                await using var sgpContext = scope.ServiceProvider.GetRequiredService<ISgpContext>();
+                await sgpContext.OpenAsync();
                 try
                 {
-                    using var scope = serviceScopeFactory.CreateScope();
                     AtribuirContextoAplicacao(mensagemRabbit, scope);
 
                     var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
+                    //nao seria melhor seguir uma interface e refatorar para nao usar reflexao que custa caro?
                     var metodo = UtilMethod.ObterMetodo(comandoRabbit.TipoCasoUso, "Executar");
-
                     await servicoTelemetria.RegistrarAsync(async () =>
                         await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
                             "RabbitMQ",
@@ -245,6 +249,7 @@ namespace SME.SGP.Aplicacao.Workers
                 finally
                 {
                     transacao?.End();
+                    await sgpContext.CloseAsync();
                 }
             }
             else
@@ -297,6 +302,7 @@ namespace SME.SGP.Aplicacao.Workers
                 var mensagem = JsonConvert.SerializeObject(request);
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
+                //essa mensagem não é persistente ?
                 canalRabbit.BasicPublish(ExchangeSgpRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario, null, body);
             }
         }
@@ -315,6 +321,7 @@ namespace SME.SGP.Aplicacao.Workers
                 catch (Exception ex)
                 {
                     await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag} - {ea.RoutingKey}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
+                    //senao conseguir rejeitar por algum motivo a instancia do worker nao vai conseguir subir
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };

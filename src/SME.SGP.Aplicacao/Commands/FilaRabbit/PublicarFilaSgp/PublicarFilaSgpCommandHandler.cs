@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = command.Usuario ?? await ObtenhaUsuario();
 
-            var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
+            var administrador = await mediator.Send(ObterAdministradorDoSuporteQuery.Instance);
 
             var mensagem = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,

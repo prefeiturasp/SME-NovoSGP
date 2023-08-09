@@ -1,0 +1,38 @@
+diff a/src/SME.SGP.Infra.Mensageria/ServicoMensageria.cs b/src/SME.SGP.Infra.Mensageria/ServicoMensageria.cs	(rejected hunks)
+@@ -32,11 +33,10 @@ namespace SME.SGP.Infra
+                 NullValueHandling = NullValueHandling.Ignore
+             });
+             var body = Encoding.UTF8.GetBytes(mensagem);
+-
+-            await servicoTelemetria.RegistrarAsync(async () =>
+-                    await policy.ExecuteAsync(async () => await PublicarMensagem(rota, body, exchange, canalRabbit)),
+-                            "RabbitMQ", nomeAcao, rota, ObterParametrosMensagem(request));
+-
++            Func<Task> fnTaskPublicarMensagem = async () => await PublicarMensagem(rota, body, exchange, canalRabbit);
++            Func<Task> fnTaskPolicy = async () => await policy.ExecuteAsync(fnTaskPublicarMensagem);
++            await servicoTelemetria.RegistrarAsync(fnTaskPolicy, "RabbitMQ", nomeAcao,
++                rota, ObterParametrosMensagem(request));
+             return true;
+         }
+ 
+@@ -75,11 +86,14 @@ namespace SME.SGP.Infra
+         {
+             var json = JsonConvert.SerializeObject(mensagemLog);
+             var mensagem = JsonConvert.DeserializeObject<LogMensagem>(json);
+-            return mensagem!.Mensagem +", ExcecaoInterna:" + mensagem.ExcecaoInterna;
++            //poderia alocar menos strings para esses casos com interpolacao
++            return $"{mensagem!.Mensagem}, ExcecaoInterna:{mensagem.ExcecaoInterna}";
+         }
+ 
+-        public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+-            : base(conexaoRabbit, servicoTelemetria, registry) { }
++        public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria,
++            IReadOnlyPolicyRegistry<string> registry)
++            : base(conexaoRabbit, servicoTelemetria, registry)
++        {
++        }
+     }
+-
+-}
++}
+\ No newline at end of file

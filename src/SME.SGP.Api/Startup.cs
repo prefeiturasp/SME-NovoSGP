@@ -4,7 +4,9 @@ using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -70,7 +72,6 @@ namespace SME.SGP.Api
                 .AllowCredentials());
 
             app.UseMetricServer();
-
             app.UseHttpMetrics();
 
             app.UseAuthentication();
@@ -96,7 +97,7 @@ namespace SME.SGP.Api
 
             var configTamanhoLimiteRequest = Configuration.GetSection("SGP_MaxRequestSizeBody").Value ?? "104857600";
 
-            services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
+            services.Configure<KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = long.Parse(configTamanhoLimiteRequest);
             });
@@ -130,7 +131,8 @@ namespace SME.SGP.Api
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
-                options.SupportedCultures = new List<CultureInfo> { new("pt-BR"), new("pt-BR") };
+                //ta duplicado esse culture mesmo ?
+                options.SupportedCultures = new List<CultureInfo> {new("pt-BR")};
             });
             
             services.AddHealthChecksUiSgp()

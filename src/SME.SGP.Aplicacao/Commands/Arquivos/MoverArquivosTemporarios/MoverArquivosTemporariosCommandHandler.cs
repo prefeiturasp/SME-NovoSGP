@@ -15,6 +15,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
+        //o ideal é sempre deixar regex pré compiladas ou num singleton a parte injetado
+        //ou como static readonly da classe. para o .net7 (se for atualizar) seria bom incluir nonbacktracking tambem
+        private static readonly Regex Regex = new(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO, RegexOptions.Compiled);
+        private static readonly Regex RegexImagensPasta = new (ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO_COM_PASTA, RegexOptions.Compiled);
+
+
 
         public MoverArquivosTemporariosCommandHandler(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
@@ -23,16 +29,15 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<string> Handle(MoverArquivosTemporariosCommand request, CancellationToken cancellationToken)
         {
-            var regex = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
-            var regexImagensPasta = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO_COM_PASTA);
 
-            var novo = regex.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
-            var atual = regex.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual) ? request.TextoEditorAtual : string.Empty).Cast<Match>().Select(c => c.Value).ToList();
+            var novo = Regex.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
+            var atual = Regex.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual) ? request.TextoEditorAtual : string.Empty).Cast<Match>().Select(c => c.Value).ToList();
 
-            var imagensEditorNovo = regexImagensPasta.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
+            var imagensEditorNovo = RegexImagensPasta.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
 
             novo = imagensEditorNovo.Any() ? RetornaImagensTemporariasParaMover(imagensEditorNovo) : novo;
-            var diferenca = novo.Any() ? novo.Except(atual) : new  List<string>();
+            //precisaria nem alocar uma lista vazia
+            var diferenca = novo.Any() ? novo.Except(atual) : Enumerable.Empty<string>();
 
             foreach (var item in diferenca)
             {

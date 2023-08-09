@@ -1,0 +1,8 @@
+﻿﻿- method: POST
+  path: /apm/intake/v2/events
+  features:
+    delay: 0
+  response:
+    status: 200
+    body:
+      message: "ok"

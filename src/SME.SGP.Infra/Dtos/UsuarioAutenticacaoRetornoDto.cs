@@ -2,13 +2,8 @@
 
 namespace SME.SGP.Infra
 {
-    public class UsuarioAutenticacaoRetornoDto
+    public struct UsuarioAutenticacaoRetornoDto
     {
-        public UsuarioAutenticacaoRetornoDto()
-        {
-            Autenticado = false;
-            ModificarSenha = false;
-        }
 
         public bool Autenticado { get; set; }
         public bool ModificarSenha { get; set; }

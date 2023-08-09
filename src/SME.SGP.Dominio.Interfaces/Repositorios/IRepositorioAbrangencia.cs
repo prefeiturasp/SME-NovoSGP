@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         void ExcluirAbrangencias(IEnumerable<long> ids);
 
-        void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);
+        Task ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);
 
         void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 

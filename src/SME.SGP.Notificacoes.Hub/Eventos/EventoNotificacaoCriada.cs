@@ -7,12 +7,16 @@ namespace SME.SGP.Notificacoes.Hub
 {
     public class EventoNotificacaoCriada : EventoNotificacao<MensagemCriacaoNotificacaoDto>, IEventoNotificacaoCriada
     {
-        public EventoNotificacaoCriada(IServicoTelemetria servicoTelemetria) 
+        public EventoNotificacaoCriada(IServicoTelemetria servicoTelemetria)
             : base(servicoTelemetria, "Criada")
         {
         }
 
-        protected override Task Disparar(IHubCallerClients clients, MensagemCriacaoNotificacaoDto mensagem)
-            => clients.Usuario(mensagem.UsuarioRf)?.SendAsync("NotificacaoCriada", mensagem.Codigo, mensagem.Data, mensagem.Titulo, mensagem.Id);
+        protected override async Task DispararAsync(IHubCallerClients clients, MensagemCriacaoNotificacaoDto mensagem)
+        {
+            var iClientProxy = await clients.UsuarioAsync(mensagem.UsuarioRf);
+            await iClientProxy.SendAsync("NotificacaoCriada", mensagem.Codigo, mensagem.Data,
+                mensagem.Titulo, mensagem.Id);
+        }
     }
 }

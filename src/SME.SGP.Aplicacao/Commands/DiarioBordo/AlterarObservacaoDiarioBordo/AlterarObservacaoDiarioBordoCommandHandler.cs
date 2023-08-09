@@ -27,7 +27,6 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Handle(AlterarObservacaoDiarioBordoCommand request, CancellationToken cancellationToken)
         {
             var diarioBordoObservacao = await repositorioDiarioBordoObservacao.ObterPorIdAsync(request.ObservacaoId);
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             if (diarioBordoObservacao == null)
                 throw new NegocioException("Observação do diário de bordo não encontrada.");
 
@@ -38,6 +37,7 @@ namespace SME.SGP.Aplicacao
             await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
 
             var notificacoes = await repositorioDiarioBordoObservacaoNotificacao.ObterPorDiarioBordoObservacaoId(request.ObservacaoId);
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             if (request.Observacao.Trim().Length < 200 && (request.UsuariosIdNotificacao == null || !request.UsuariosIdNotificacao.Any()))
             {          

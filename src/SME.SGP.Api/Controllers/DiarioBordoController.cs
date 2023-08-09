@@ -106,6 +106,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.DDB_C, Policy = "Bearer")]
+        //typo alterarrObservacao
         public async Task<IActionResult> AlterarrObservacao(long observacaoId, [FromBody] ObservacaoDiarioBordoDto dto, [FromServices] IAlterarObservacaoDiarioBordoUseCase alterarObservacaoDiarioBordoUseCase)
         {
             return Ok(await alterarObservacaoDiarioBordoUseCase.Executar(dto.Observacao, observacaoId, dto.UsuariosIdNotificacao));

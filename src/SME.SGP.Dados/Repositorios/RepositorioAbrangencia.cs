@@ -74,7 +74,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
+        public async Task ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
         {
             const string comando = @"delete from public.abrangencia where id in (#ids) and historico = true";
 
@@ -82,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = ids.Skip(i).Take(900);
 
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
@@ -203,7 +203,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from");
             query.AppendLine("public.v_abrangencia_sintetica where login = @login and historico");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login })).AsList();
+            return await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login });
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false)

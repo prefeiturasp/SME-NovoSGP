@@ -101,6 +101,11 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
         {
+            //Tem patterns mais interessantes para lidar com caches como ComputeIfAbsent por exemplo usando lazy delegates e genericos e formatos
+            // ex: var turmaDto = await cache.ObterAsync<IEnumerable<TurmaDto>>(chave, () => funcaoquedeveserarmazenadaemcache, CacheEntryFormat.JSON);
+            // return turmaDto
+            //Outro caso utilizando patterns como decorators deixando a logica de cache envolta da chamada sem poluicao
+            //Ou ate mesmo usando dynamic proxies com diretive de cache especificas
             IEnumerable<TurmaDto> turmasDto = null;
             var chaveCache = $"Turmas-Professor-{rfProfessor}-ano-{anoLetivo}-escolal-{codigoEscola}";
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);

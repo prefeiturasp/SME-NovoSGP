@@ -7,17 +7,19 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioAcompanhamentoAlunoConsulta : RepositorioBase<AcompanhamentoAluno>, IRepositorioAcompanhamentoAlunoConsulta
+    public class RepositorioAcompanhamentoAlunoConsulta : RepositorioBase<AcompanhamentoAluno>,
+        IRepositorioAcompanhamentoAlunoConsulta
     {
         public RepositorioAcompanhamentoAlunoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
-        public async Task<AcompanhamentoAlunoSemestre> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId, string alunoCodigo, int semestre)
+        public async Task<AcompanhamentoAlunoSemestre> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId,
+            string alunoCodigo, int semestre)
         {
-            try
-            {
-                var query = @"select aas.*
+            //esse try catch fica sem sentido ja que so pega e relanca
+            //e ainda acaba alterando a stack trace original, nao entendi a motivacao
+            var query = @"select aas.*
                         from acompanhamento_aluno_semestre aas
                             inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
                         where aa.turma_id = @turmaId
@@ -25,20 +27,16 @@ namespace SME.SGP.Dados.Repositorios
                             and aas.semestre = @semestre 
                             and not aas.excluido ";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoSemestre>(query, new { turmaId, alunoCodigo, semestre });
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-
+            return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoSemestre>(query,
+                new {turmaId, alunoCodigo, semestre});
         }
 
         public async Task<long> ObterPorTurmaEAluno(long turmaId, string alunoCodigo)
         {
-            var query = @"select id from acompanhamento_aluno where not excluido and turma_id = @turmaId and aluno_codigo = @alunoCodigo";
+            var query =
+                @"select id from acompanhamento_aluno where not excluido and turma_id = @turmaId and aluno_codigo = @alunoCodigo";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new {turmaId, alunoCodigo});
         }
 
         public async Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaSemestre(long turmaId, int semestre, string[] codigosAlunos)
@@ -58,7 +56,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<int> ObterTotalAlunosTurmaSemestre(long turmaId, int semestre)
         {
-
             var whereBimestre = semestre == 1 ? " and pe.bimestre in (1,2) " : "and pe.bimestre in (3, 4)";
 
             var query = $@"select count(distinct rfa.codigo_aluno)
@@ -71,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
                                and t.id = @turmaId
                               {whereBimestre}";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new {turmaId, semestre});
         }
 
         public async Task<int> ObterUltimoSemestreAcompanhamentoGerado(string alunoCodigo)

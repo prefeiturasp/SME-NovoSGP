@@ -19,7 +19,8 @@ namespace SME.SGP.Infra
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
 
-        public ServicoMensageria(IConexoesRabbit conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
+        public ServicoMensageria(IConexoesRabbit conexaoRabbit, IServicoTelemetria servicoTelemetria,
+            IReadOnlyPolicyRegistry<string> registry)
         {
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
@@ -56,24 +57,35 @@ namespace SME.SGP.Infra
                 props.Persistent = true;
 
                 channel.BasicPublish(exchange, rota, true, props, body);
+                //essa task retornava como completa mesmo que tenha dado erro ?
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                //nao deveria no caso de exception devolver uma task com erro ?
+                return Task.FromException(ex);
             }
             finally
             {
                 conexaoRabbit.Return(channel);
             }
-
-            return Task.CompletedTask;
         }
 
-        
+
         public virtual string ObterParametrosMensagem(T mensagemRabbit)
-            => "";
+        {
+            //nao precisa alocar string vazia
+            return String.Empty;
+        }
     }
 
     public class ServicoMensageriaSGP : ServicoMensageria<MensagemRabbit>, IServicoMensageriaSGP
     {
-        public ServicoMensageriaSGP(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
-            : base(conexaoRabbit, servicoTelemetria, registry) { }
+        public ServicoMensageriaSGP(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria,
+            IReadOnlyPolicyRegistry<string> registry)
+            : base(conexaoRabbit, servicoTelemetria, registry)
+        {
+        }
     }
 
     public class ServicoMensageriaLogs : ServicoMensageria<LogMensagem>, IServicoMensageriaLogs

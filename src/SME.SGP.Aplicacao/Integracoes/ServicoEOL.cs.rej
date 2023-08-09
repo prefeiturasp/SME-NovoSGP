@@ -1,0 +1,48 @@
+diff a/src/SME.SGP.Aplicacao/Integracoes/ServicoEOL.cs b/src/SME.SGP.Aplicacao/Integracoes/ServicoEOL.cs	(rejected hunks)
+@@ -258,23 +286,29 @@ namespace SME.SGP.Aplicacao.Integracoes
+             return await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, login, perfil, realizarAgrupamentoComponente, checaMotivoDisponibilizacao));
+         }
+ 
+-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorLoginEIdPerfil(string login, Guid idPerfil)
++        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorLoginEIdPerfil(
++            string login, Guid idPerfil)
+         {
+             var url = $"v1/componentes-curriculares/funcionarios/{login}/perfis/{idPerfil}";
+             return await ObterComponentesCurriculares(url);
+         }
+ 
+-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
++        public async Task<IEnumerable<ComponenteCurricularEol>>
++            ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login,
++                Guid perfil)
+         {
+-            var url = $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
++            var url =
++                $"v1/componentes-curriculares/turmas/{codigoTurma}/funcionarios/{login}/perfis/{perfil}/planejamento";
+             return await ObterComponentesCurriculares(url);
+         }
+ 
+-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
++        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo,
++            bool consideraHistorico, bool filtrarSituacao = true)
+         {
+             var alunos = new List<AlunoPorTurmaResposta>();
+ 
+-            var resposta = await httpClient.GetAsync($"alunos/{codigoAluno}/turmas/anosLetivos/{anoLetivo}/historico/{consideraHistorico}/filtrar-situacao/{filtrarSituacao}");
++            var resposta = await httpClient.GetAsync(
++                $"alunos/{codigoAluno}/turmas/anosLetivos/{anoLetivo}/historico/{consideraHistorico}/filtrar-situacao/{filtrarSituacao}");
+             if (resposta.IsSuccessStatusCode)
+             {
+                 var json = await resposta.Content.ReadAsStringAsync();
+@@ -845,7 +948,10 @@ namespace SME.SGP.Aplicacao.Integracoes
+         {
+             return disciplinas.Select(x => new DisciplinaDto
+             {
+-                CodigoComponenteCurricular = !x.Territorio? x.CdComponenteCurricular : long.Parse(x.CdComponenteCurricular.ToString().Substring(x.CdComponenteCurricular.ToString().Length - 4)),
++                CodigoComponenteCurricular = !x.Territorio
++                    ? x.CdComponenteCurricular
++                    : long.Parse(x.CdComponenteCurricular.ToString()
++                        .Substring(x.CdComponenteCurricular.ToString().Length - 4)),
+                 Nome = x.Descricao,
+                 Regencia = x.EhRegencia,
+                 Compartilhada = x.EhCompartilhada,

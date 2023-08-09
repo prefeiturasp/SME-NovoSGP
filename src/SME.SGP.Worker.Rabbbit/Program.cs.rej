@@ -1,0 +1,32 @@
+diff a/src/SME.SGP.Worker.Rabbbit/Program.cs b/src/SME.SGP.Worker.Rabbbit/Program.cs	(rejected hunks)
+@@ -2,9 +2,11 @@
+ using Microsoft.Extensions.Configuration;
+ using Microsoft.Extensions.Hosting;
+ 
++//Tem typo nessa solution Rabbbit com 3 b
+ namespace SME.SGP.Worker.Rabbbit
+ {
+-    public class Program {
++    public class Program
++    {
+         public static void Main(string[] args)
+         {
+             CreateHostBuilder(args).Build().Run();
+@@ -12,14 +14,11 @@ namespace SME.SGP.Worker.Rabbbit
+ 
+         public static IHostBuilder CreateHostBuilder(string[] args) =>
+             Host.CreateDefaultBuilder(args)
+-                .ConfigureAppConfiguration((hostingContext, config) =>
++                .ConfigureAppConfiguration( config =>
+                 {
+                     config.AddEnvironmentVariables();
+                     config.AddUserSecrets<Program>();
+                 })
+-                .ConfigureWebHostDefaults(webBuilder =>
+-                {
+-                    webBuilder.UseStartup<Startup>();
+-                });
++                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+     }
+ }
+\ No newline at end of file

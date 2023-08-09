@@ -1,0 +1,8 @@
+﻿﻿- method: GET
+  path: /jurema/v1/learning_objectives
+  features:
+    delay: 0
+  response:
+    status: 200
+    body:
+      message: "ok"

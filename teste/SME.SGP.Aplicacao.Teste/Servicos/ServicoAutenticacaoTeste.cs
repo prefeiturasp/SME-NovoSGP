@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
         public async Task DeveAlterarSenhaComSucesso()
         {
             servicoEol.Setup(c => c.Autenticar(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new AutenticacaoApiEolDto
+                .Returns(Task.FromResult<AutenticacaoApiEolDto?>(new AutenticacaoApiEolDto
                 {
                     CodigoRf = "123",
                     Status = AutenticacaoStatusEol.Ok
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
         public async Task NaoDeveAlterarSenhaComSenhaAnteriorReutilizada()
         {
             servicoEol.Setup(c => c.Autenticar(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new AutenticacaoApiEolDto
+                .Returns(Task.FromResult<AutenticacaoApiEolDto?>(new AutenticacaoApiEolDto
                 {
                     CodigoRf = "123",
                     Status = AutenticacaoStatusEol.Ok,
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
         public async Task NaoDeveAlterarSenhaComSenhaAtualIncorreta()
         {
             servicoEol.Setup(c => c.Autenticar(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new AutenticacaoApiEolDto
+                .Returns(Task.FromResult<AutenticacaoApiEolDto?>(new AutenticacaoApiEolDto
                 {
                     CodigoRf = "123",
                     Status = AutenticacaoStatusEol.SenhaPadrao,

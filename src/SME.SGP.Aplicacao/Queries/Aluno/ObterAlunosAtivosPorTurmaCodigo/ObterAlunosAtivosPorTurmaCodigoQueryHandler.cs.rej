@@ -1,0 +1,12 @@
+diff a/src/SME.SGP.Aplicacao/Queries/Aluno/ObterAlunosAtivosPorTurmaCodigo/ObterAlunosAtivosPorTurmaCodigoQueryHandler.cs b/src/SME.SGP.Aplicacao/Queries/Aluno/ObterAlunosAtivosPorTurmaCodigo/ObterAlunosAtivosPorTurmaCodigoQueryHandler.cs	(rejected hunks)
+@@ -28,7 +28,9 @@ namespace SME.SGP.Aplicacao
+             if (!resposta.IsSuccessStatusCode)
+                 throw new NegocioException("Não foi possível buscar alunos ativos no EOL.");
+ 
+-            var json = resposta.Content.ReadAsStringAsync().Result;
++            //Outro caso por exemplo ainda mais simples de .Result que poderia ser await ja que está num metodo async
++            //Sempre passar para frente tambem cancellationTokens
++            var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
+             return JsonConvert.DeserializeObject<IEnumerable<AlunoPorTurmaResposta>>(json);
+         }
+     }

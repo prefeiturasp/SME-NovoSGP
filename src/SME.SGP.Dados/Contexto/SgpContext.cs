@@ -4,63 +4,87 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Data;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Contexto
 {
     public class SgpContext : ISgpContext
     {
-        private readonly IDbConnection conexao; //Raphael - Trocado classe concreta de PgConnection pra IDbConnection
+        private readonly NpgsqlConnection conexao;
         private readonly IContextoAplicacao contextoAplicacao;
 
-        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao, string stringConexao = "SGP_Postgres")
+        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao,
+            string stringConexao = "SGP_Postgres")
         {
-            conexao = new NpgsqlConnection(configuration.GetConnectionString(stringConexao));
+            //o NpgsqlConnection tem suporte a async, dava pra tirar vantagem disso
+            //ao trocar para interface deixa mais extensivel e testavel porem do jeito que esta hoje perde as vantagens
+            //que a implementacao do NpgsqlConnection oferece.
+            //Uma opcao seria complementar o ISGPContext com metodos async
+            //e tirar proveito nos casos de chamada que suportem async/await
+            var connectionString = configuration.GetConnectionString(stringConexao);
+            this.conexao = new NpgsqlConnection(connectionString);
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
-            Open();
+            //Pelo profile boa parte do tempo esta sendo de espera de abertura de conexao e wait de thread
+            //em escala abrindo desse jeito sync o throughput da aplicacao tende a diminuir
+            //talvez mover a abertura para o comeco do request no filter
         }
 
-        //Ctor para ser usado com o teste.
         public SgpContext(IDbConnection conexao, IContextoAplicacao contextoAplicacao)
         {
-            this.conexao = conexao;
+            this.conexao = conexao as NpgsqlConnection;
             this.contextoAplicacao = contextoAplicacao;
         }
 
-        public IDbConnection Conexao
+        public IDbConnection Conexao => conexao;
+
+        public string ConnectionString
         {
-            get
-            {
-                //if (conexao.State != ConnectionState.Open)
-                //    Open();
-                return conexao;
-            }
+            get => conexao.ConnectionString;
+            set => conexao.ConnectionString = value;
         }
 
-        public string ConnectionString { get { return Conexao.ConnectionString; } set { Conexao.ConnectionString = value; } }
+        public int ConnectionTimeout => conexao.ConnectionTimeout;
 
-        public int ConnectionTimeout => Conexao.ConnectionTimeout;
+        public string Database => conexao.Database;
 
-        public string Database => Conexao.Database;
-
-        public ConnectionState State => Conexao.State;
-
-        public string UsuarioLogado =>
-                                       contextoAplicacao.UsuarioLogado;
+        public ConnectionState State => conexao.State;
 
         public string UsuarioLogadoNomeCompleto =>
-                                          contextoAplicacao.NomeUsuario;
+            contextoAplicacao.NomeUsuario;
+
         public string PerfilUsuario => contextoAplicacao.PerfilUsuario;
 
         public string UsuarioLogadoRF =>
-                                          contextoAplicacao.ObterVariavel<string>("RF") ?? "0";
+            contextoAplicacao.ObterVariavel<string>("RF") ?? "0";
 
         public string Administrador => contextoAplicacao.Administrador;
 
+        public async Task OpenAsync()
+        {
+            if (IsNotOpened)
+            {
+                await conexao.OpenAsync();
+            }
+        }
+
+        public async Task CloseAsync()
+        {
+            if (IsNotClosed)
+            {
+                await conexao.CloseAsync();
+            }
+        }
+
+        public async Task<IDbTransaction> BeginTransactionAsync()
+        {
+            await OpenAsync();
+            return await conexao.BeginTransactionAsync();
+        }
+
         public IDbTransaction BeginTransaction()
         {
-            if (conexao.State == ConnectionState.Closed)
-                conexao.Open();
-
+            Open();
             return conexao.BeginTransaction();
         }
 
@@ -71,48 +95,44 @@ namespace SME.SGP.Dados.Contexto
 
         public void ChangeDatabase(string databaseName)
         {
-            throw new NotImplementedException();
+            conexao.ChangeDatabase(databaseName);
+        }
+
+        public void Open()
+        {
+            if (IsNotOpened)
+            {
+                conexao.Open();
+            }
         }
 
         public void Close()
         {
-            conexao.Close();
+            if (IsNotClosed)
+            {
+                conexao.Close();
+            }
         }
+
+        private bool IsNotOpened => conexao.State is not ConnectionState.Open;
+
+        private bool IsNotClosed => conexao.State is not ConnectionState.Closed;
 
         public IDbCommand CreateCommand()
         {
             return conexao.CreateCommand();
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (conexao.State == ConnectionState.Open)
-                conexao.Close();
-        }
-
         public void Dispose()
         {
-            Dispose(true);
+            Close();
             GC.SuppressFinalize(this);
         }
 
-        public void Open()
+        public async ValueTask DisposeAsync()
         {
-            if (conexao.State != ConnectionState.Open)
-                conexao.Open();
-        }
-
-        public void AbrirConexao()
-        {
-            Open();
-        }
-
-        public void FecharConexao()
-        {
-            if (conexao.State != ConnectionState.Closed)
-            {
-                Close();
-            }
+            await conexao.CloseAsync();
+            await conexao.DisposeAsync();
         }
     }
 }

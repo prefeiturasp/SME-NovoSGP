@@ -6,18 +6,17 @@ namespace SME.SGP.Api
 {
     public class Program
     {
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                  .ConfigureAppConfiguration((hostingContext, config) =>
-                  {
-                      config.AddEnvironmentVariables();
-                      config.AddUserSecrets<Program>();
-                  })
-                .UseStartup<Startup>();
-
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((_, configurationBuilder) =>
+                {
+                    configurationBuilder.AddEnvironmentVariables();
+                    configurationBuilder.AddUserSecrets<Program>();
+                })
+                .UseStartup<Startup>()
+                .Build()
+                .Run();
         }
     }
 }

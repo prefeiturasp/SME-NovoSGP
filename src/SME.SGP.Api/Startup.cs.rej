@@ -1,0 +1,16 @@
+diff a/src/SME.SGP.Api/Startup.cs b/src/SME.SGP.Api/Startup.cs	(rejected hunks)
+@@ -83,9 +84,11 @@ namespace SME.SGP.Api
+             if (threadPoolOptions.WorkerThreads > 0 && threadPoolOptions.CompletionPortThreads > 0)
+                 ThreadPool.SetMinThreads(threadPoolOptions.WorkerThreads, threadPoolOptions.CompletionPortThreads);
+ 
+-            Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
+-            Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
+-            
++            //ideal é sempre usar log para logar essas coisas
++            //esses parametros tambem nao serao printados no console do jeito que estao
++            Console.WriteLine("CURRENT {0}:", Directory.GetCurrentDirectory());
++            Console.WriteLine("COMBINE {0}:", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
++ 
+             app.UseHealthChecksSgp();
+             app.UseHealthCheckPrometheusSgp();
+         }

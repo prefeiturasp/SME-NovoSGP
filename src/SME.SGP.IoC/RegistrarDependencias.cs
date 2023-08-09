@@ -87,6 +87,12 @@ namespace SME.SGP.IoC
             services.AddHttpContextAccessor();
             services.AdicionarMediatr();
             services.AdicionarValidadoresFluentValidation();
+            //caches em memoria por instancia podem levar a estados inconsistentes entre nós dependendo de como o balanceamento é feito
+            //e dependendo da politica de cache
+            //o ideal é migrar pra um sistema de cache compartilhado como Cluster de Redis por exemplo
+            //alem do que o cache em memoria da microsoft apesar de dizerem que é thread safe, tem problemas de concorrência
+            //basta testar multiplas threads com api de Parallel e um contador por exemplo tentando incrementar valores pegando do cache em threads distintas
+            //era esperado que a primeira thread ao escrever todas as outras lessem o mesmo valor porém isso não acontece. aparentemente a implementação de cache nao funciona de maneira atomica e deterministica, que é desejavel
             services.AddMemoryCache();
 
             RegistrarHttpClients(services, configuration);

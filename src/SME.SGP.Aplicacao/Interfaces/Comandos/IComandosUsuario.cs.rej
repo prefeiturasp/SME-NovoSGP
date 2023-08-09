@@ -1,0 +1,14 @@
+diff a/src/SME.SGP.Aplicacao/Interfaces/Comandos/IComandosUsuario.cs b/src/SME.SGP.Aplicacao/Interfaces/Comandos/IComandosUsuario.cs	(rejected hunks)
+@@ -33,8 +33,10 @@ namespace SME.SGP.Aplicacao
+ 
+         Task<UsuarioAutenticacaoRetornoDto> AutenticarSuporte(string login);
+ 
++        //sugestao de nomear tuplas se for manter ou trocar para records ou tipos de estrutura mais flexiveis
++        //que encapsulem o retorno
+         Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao(
+-            (UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol,
++            (UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ) retornoAutenticacaoEol,
+             string login, AdministradorSuporteDto administradorSuporte = null);
+     }
+ }
+\ No newline at end of file

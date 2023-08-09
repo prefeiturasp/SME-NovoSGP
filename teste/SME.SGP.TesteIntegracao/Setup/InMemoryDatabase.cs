@@ -11,6 +11,12 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
+    //mesmo localmente e em memoria a execucao de testes de integracao estao extremamente lentos (pelo menos no meu pc)
+    //o ideal para os teste de integracao nesse caso era subir apenas um runner de postgres buildar o schema da base apenas uma vez
+    //e cada caso de testes trabalhar apenas com abertura de transacao e rollback no final para jogar todos os dados foras
+
+    //fazendo profile a maior parte do tempo de execucao de cada teste de integracao fica em subir o runner gerar a base e limpar toda vez
+    //eu avaliaria outra estrategia de execucao de testes de integracao pois em pouco tempo essa estrategia nao escala e vai demorar cada vez mais conforme a suite de testes vao crescendo
     public class InMemoryDatabase : IDisposable
     {
         public NpgsqlConnection Conexao;
@@ -19,6 +25,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         public InMemoryDatabase()
         {
             _postgresRunner = PostgresRunner.Start();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             CriarConexaoEAbrir();
             new ConstrutorDeTabelas().Contruir(Conexao);
         }

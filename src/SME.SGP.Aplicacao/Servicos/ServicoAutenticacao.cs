@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Servicos
         public async Task AlterarSenha(string login, string senhaAtual, string novaSenha)
         {
             var autenticacao = await servicoEOL.Autenticar(login, senhaAtual);
-            if (autenticacao == null || autenticacao.Status != AutenticacaoStatusEol.Ok)
+            if (autenticacao is null || autenticacao.Status != AutenticacaoStatusEol.Ok)
             {
                 throw new NegocioException("Senha atual incorreta.", HttpStatusCode.Unauthorized);
             }
@@ -32,37 +32,42 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
-        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEol(string login, string senha)
+        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEol(
+            string login, string senha)
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
 
             return await ObterAutenticacao(retornoServicoEol);
         }
 
-        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEolSemSenha(string login)
+        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)>
+            AutenticarNoEolSemSenha(string login)
         {
             var retornoServicoEol = await servicoEOL.ObtenhaAutenticacaoSemSenha(login);
 
             return await ObterAutenticacao(retornoServicoEol);
         }
 
-        private async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> ObterAutenticacao(AutenticacaoApiEolDto retornoServicoEol)
+        private async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> ObterAutenticacao(
+            AutenticacaoApiEolDto? retornoServicoEol)
         {
             var retornoDto = new UsuarioAutenticacaoRetornoDto();
 
-            if (retornoServicoEol == null) 
+            if (retornoServicoEol is null)
+            {
                 return (retornoDto, "", null, false, false);
-            
+            }
+
             retornoDto.Autenticado = retornoServicoEol.Status is AutenticacaoStatusEol.Ok or AutenticacaoStatusEol.SenhaPadrao;
             retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
             retornoDto.UsuarioId = retornoServicoEol.UsuarioId;
 
             var perfis = await servicoEOL.ObterPerfisPorLogin(retornoServicoEol.CodigoRf);
-
-            if (perfis == null)
+            if (perfis is null)
                 throw new NegocioException("Usuário sem perfis de acesso.");
 
-            return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ, perfis.PossuiPerfilCJ);
+            return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ,
+                perfis.PossuiPerfilCJ);
         }
 
         public bool TemPerfilNoToken(string guid)

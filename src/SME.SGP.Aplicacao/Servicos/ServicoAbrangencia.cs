@@ -59,14 +59,14 @@ namespace SME.SGP.Aplicacao.Servicos
             repositorioAbrangencia.ExcluirAbrangencias(ids);
         }
 
-        public void RemoverAbrangenciasHistoricas(long[] ids)
+        public async Task RemoverAbrangenciasHistoricas(long[] ids)
         {
-            repositorioAbrangencia.ExcluirAbrangenciasHistoricas(ids);
+            await repositorioAbrangencia.ExcluirAbrangenciasHistoricas(ids);
         }
 
-        public void RemoverAbrangenciasHistoricasIncorretas(string login, List<Guid> perfis)
+        public async Task RemoverAbrangenciasHistoricasIncorretas(string login, List<Guid> perfis)
         {
-            var abrangenciasHistorica = ObterAbrangenciaHistorica(login).Result;
+            var abrangenciasHistorica = await ObterAbrangenciaHistorica(login);
             long[] idsRemover = abrangenciasHistorica
                 .Where(a => a.perfil != Perfis.PERFIL_PAEE
                             && a.perfil != Perfis.PERFIL_PAP
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 ).Select(a => a.Id).ToArray();
 
             if (idsRemover.Any())
-                RemoverAbrangenciasHistoricas(idsRemover);
+                await RemoverAbrangenciasHistoricas(idsRemover);
         }
 
         public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistorica(string login)
@@ -91,8 +91,13 @@ namespace SME.SGP.Aplicacao.Servicos
         public async Task Salvar(string login, Guid perfil, bool ehLogin)
         {
             if (ehLogin)
+            {
                 await TrataAbrangenciaLogin(login, perfil);
-            else await TrataAbrangenciaModificaoPerfil(login, perfil);
+            }
+            else
+            {
+                await TrataAbrangenciaModificaoPerfil(login, perfil);
+            }
         }
 
         public void SalvarAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
@@ -295,11 +300,13 @@ namespace SME.SGP.Aplicacao.Servicos
                     turmas = estrutura.Item3;
 
                     // sincronizamos a abrangencia do login + perfil
-                    unitOfWork.IniciarTransacao();
+                    await unitOfWork.IniciarTransacaoAsync();
 
                     SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
 
-                    unitOfWork.PersistirTransacao();
+                    await unitOfWork.PersistirTransacaoAsync();
+
+                    //nao tem rollback essa logica ?
                 }
             }
         }

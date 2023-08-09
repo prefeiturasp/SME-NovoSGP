@@ -7,42 +7,43 @@ namespace SME.SGP.Infra
 {
     public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>
     {
-        private readonly IConnection conexao;
+        private readonly IConnection _connection;
 
         public RabbitModelPooledObjectPolicy(ConfiguracaoRabbit configuracaoRabbitOptions)
         {
-            conexao = GetConnection(configuracaoRabbitOptions ?? throw new ArgumentNullException(nameof(configuracaoRabbitOptions)));
+            _connection = CreateConnection(configuracaoRabbitOptions ??
+                                    throw new ArgumentNullException(nameof(configuracaoRabbitOptions)));
         }
 
-        private IConnection GetConnection(ConfiguracaoRabbit configuracaoRabbit)
+        private IConnection CreateConnection(ConfiguracaoRabbit configuracaoRabbit)
         {
-            var factory = new ConnectionFactory()
+            var connectionFactory = new ConnectionFactory()
             {
+                Port = configuracaoRabbit.Port,
                 HostName = configuracaoRabbit.HostName,
                 UserName = configuracaoRabbit.UserName,
                 Password = configuracaoRabbit.Password,
                 VirtualHost = configuracaoRabbit.VirtualHost
             };
-
-            return factory.CreateConnection();
+            return connectionFactory.CreateConnection();
         }
 
         public IModel Create()
         {
-            var channel = conexao.CreateModel();
-            channel.ConfirmSelect();
-            return channel;
+            var model = _connection.CreateModel();
+            model.ConfirmSelect();
+            return model;
         }
 
-        public bool Return(IModel obj)
+        public bool Return(IModel model)
         {
-            if (obj.IsOpen)
-                return true;
-            else
+            if (model.IsOpen)
             {
-                obj?.Dispose();
-                return false;
+                return true;
             }
+
+            model.Dispose();
+            return false;
         }
     }
 }

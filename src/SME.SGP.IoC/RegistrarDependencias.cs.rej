@@ -1,0 +1,21 @@
+diff a/src/SME.SGP.IoC/RegistrarDependencias.cs b/src/SME.SGP.IoC/RegistrarDependencias.cs	(rejected hunks)
+@@ -39,10 +39,18 @@ using SME.SGP.Infra.Contexto;
+ using SME.SGP.Infra.Interfaces;
+ using SME.SGP.Infra.Utilitarios;
+ using System;
++using SME.SGP.Aplicacao.Commands.FilaRabbit;
+ 
+ namespace SME.SGP.IoC
+ {
+-    public class RegistrarDependencias //Raphael. Tirei o static para facilitar o teste
++    //evitar comunicacao escrevendo comentario em codigo, ideal é sempre comunicar por ticket
++    //comentario em pr, atividade etc.
++    
++    //essa classe realmente está gigantesca nao seria melhor segregar por interface esses registros de dependencia por contextos
++    //em classes menores e aqui ser um ponto de acumulacao de dependencias
++    //alem do que no teste de integracao seria facilmente trocada por um mock, stub, fake, os blocos nao desejaveis de registros como foi feito no teste de integracao.
++
++    public class RegistrarDependencias
+     {
+         public virtual void Registrar(IServiceCollection services, IConfiguration configuration)
+         {

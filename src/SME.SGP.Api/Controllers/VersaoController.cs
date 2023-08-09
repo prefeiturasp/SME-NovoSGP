@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
+
+    //o frontend esta solicitando essa url na pagina de login
+    //pelo que vi no blame passou a ser autorizada, esta certa essa modificacao? ou o front esta solicitando no momento errado
+    //ou essa autorizacao nao deveria existir aqui
     [ApiController]
     [Route("api/v1/versoes")]
-    [Authorize("Bearer")]
+    [AllowAnonymous]
     public class VersaoController : ControllerBase
     {
         [HttpGet]

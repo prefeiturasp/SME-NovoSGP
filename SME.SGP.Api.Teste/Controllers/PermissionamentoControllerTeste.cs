@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using SME.SGP.Api.Controllers;
 using Xunit;
 
 namespace SME.SGP.Api.Teste.Controllers
@@ -27,8 +29,11 @@ namespace SME.SGP.Api.Teste.Controllers
 
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
-            var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize ==false);
+
+            //o ideal seria olhar pelo atributo [AllowAnonymous] para criterio de exclusao
+            var exclusions = new []{nameof(VersaoController)};
+            var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0 && !exclusions.Contains(x.ControllerName));
+            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize ==false && !exclusions.Contains(x.ControllerName));
             var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 
@@ -44,8 +49,10 @@ namespace SME.SGP.Api.Teste.Controllers
 
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
-            var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize == false);
+            //o ideal seria olhar pelo atributo [AllowAnonymous] para criterio de exclusao
+            var exclusions = new []{nameof(VersaoController)};
+            var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0 && !exclusions.Contains(x.ControllerName));
+            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize == false && !exclusions.Contains(x.ControllerName));
             var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 

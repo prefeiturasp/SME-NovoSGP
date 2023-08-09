@@ -9,7 +9,9 @@ namespace SME.SGP.Aplicacao
     {
         Task AlterarSenha(string login, string senhaAtual, string novaSenha);
 
-        Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEol(string login, string senha);
+        //sugestao de nomear tuplas se for manter ou trocar para records ou tipos de estrutura mais flexiveis
+        //que encapsulem o retorno
+        Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoEol(string login, string senha);
 
         bool TemPerfilNoToken(string guid);
 

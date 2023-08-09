@@ -10,9 +10,9 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void RemoverAbrangencias(long[] ids);
 
-        void RemoverAbrangenciasHistoricas(long[] ids);
+        Task RemoverAbrangenciasHistoricas(long[] ids);
 
-        void RemoverAbrangenciasHistoricasIncorretas(string login, List<Guid> perfis);
+        Task RemoverAbrangenciasHistoricasIncorretas(string login, List<Guid> perfis);
 
         Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistorica(string login);
 

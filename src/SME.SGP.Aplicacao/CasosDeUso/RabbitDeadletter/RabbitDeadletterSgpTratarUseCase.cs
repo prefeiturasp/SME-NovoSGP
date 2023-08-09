@@ -25,15 +25,17 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var fila = mensagemRabbit.Mensagem.ToString();
 
-            var factory = new ConnectionFactory
+            var configuracaoRabbit = configuration.GetSection("ConfiguracaoRabbit");
+            var connectionFactory = new ConnectionFactory
             {
-                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
-                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
-                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
-                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
+                Port = configuracaoRabbit.GetValue<int>("Port"),
+                HostName = configuracaoRabbit.GetValue<string>("HostName"),
+                UserName = configuracaoRabbit.GetValue<string>("UserName"),
+                Password = configuracaoRabbit.GetValue<string>("Password"),
+                VirtualHost = configuracaoRabbit.GetValue<string>("Virtualhost")
             };
 
-            await policy.ExecuteAsync(() => TratarMensagens(fila, factory));
+            await policy.ExecuteAsync(() => TratarMensagens(fila, connectionFactory));
 
             return await Task.FromResult(true);
         }
@@ -52,6 +54,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                             break;
                         else
                         {
+                            //essa mensagem não é persistente ?
                             await Task.Run(() => _channel.BasicPublish(ExchangeSgpRabbit.Sgp, fila, null, mensagemParaEnviar.Body.ToArray()));
                         }                        
                     }

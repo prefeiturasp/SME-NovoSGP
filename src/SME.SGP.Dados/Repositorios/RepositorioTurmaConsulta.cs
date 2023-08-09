@@ -102,8 +102,6 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        turma_id = @turmaCodigo";
 
-            contexto.AbrirConexao();
-
             return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);

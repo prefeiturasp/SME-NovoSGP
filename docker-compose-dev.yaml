@@ -1,0 +1,61 @@
+﻿﻿version: "3.1"
+services:
+  sme-db:
+    container_name: sme-db
+    restart: always
+    image: postgres:11-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sgp_db
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 10g
+        reservations:
+          cpus: "4"
+          memory: 10g
+    networks:
+      - sme-network
+  sme-flyway:
+    container_name: sme-flyway
+    restart: on-failure
+    image: boxfuse/flyway:5.2.4
+    command: migrate -locations='filesystem:/opt/scripts' -url='jdbc:postgresql://sme-db:5432/sgp_db?user=postgres&password=postgres' -outOfOrder=true
+    volumes:
+      - ./scripts:/opt/scripts
+    depends_on:
+      - sme-db
+    networks:
+      - sme-network
+  sme-rabbitmq:
+      container_name: sme-rabbitmq
+      image: rabbitmq:3.10.6-management-alpine
+      environment:
+        - RABBITMQ_DEFAULT_USER=rabbitmq
+        - RABBITMQ_DEFAULT_PASS=rabbitmq
+      deploy:
+        resources:
+          limits:
+            cpus: "4"
+            memory: 10g
+          reservations:
+            cpus: "4"
+            memory: 10g
+      ports:
+        - "5673:5672"
+        - "15673:15672"
+      networks:
+        - sme-network
+networks:
+  sme-network:
+    driver: bridge
+
+#  insert into ue (nome,data_atualizacao) values ('ue1',now());
+#  insert into tipo_calendario (nome,ano_letivo,periodo,modalidade,criado_em,criado_por,criado_rf) values ('Calendario 1',2022,1,1,now(),1,1);
+#  insert into aula (ue_id,disciplina_id,turma_id,tipo_calendario_id,professor_rf,quantidade,data_aula,recorrencia_aula,tipo_aula,criado_em,criado_por,criado_rf)
+#  values (1,1,1,1,'prof1',1,now(),'1','1',now(),now(),'admin');
+#  insert into diario_bordo (aula_id,planejamento,criado_em,criado_por,criado_rf) values (1,'sd',now(),1,1);
+#  insert into diario_bordo_observacao (diario_bordo_id,observacao,criado_em,criado_por,criado_rf,usuario_id) values (1,'sd',now(),1,1,1);

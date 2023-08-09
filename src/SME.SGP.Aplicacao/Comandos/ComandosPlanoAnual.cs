@@ -87,6 +87,9 @@ namespace SME.SGP.Aplicacao
                 }
             }
             unitOfWork.PersistirTransacao();
+
+
+            //Nao tem rotina de rollback pra esse caso?
         }
 
         public async Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto)

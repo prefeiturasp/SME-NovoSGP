@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task AtribuirPerfil(string codigoRf, Guid perfil);
 
-        Task<AutenticacaoApiEolDto> Autenticar(string login, string senha);
+        Task<AutenticacaoApiEolDto?> Autenticar(string login, string senha);
 
         IEnumerable<CicloRetornoDto> BuscarCiclos();
 
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<PerfisApiEolDto> ObterPerfisPorLogin(string login);
 
-        Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null);
+        Task<RetornoDadosAcessoUsuarioSgpDto?> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null);
 
         Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor);
 

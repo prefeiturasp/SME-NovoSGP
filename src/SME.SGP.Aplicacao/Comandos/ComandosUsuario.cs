@@ -173,6 +173,7 @@ namespace SME.SGP.Aplicacao
             };
 
             var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(loginAtual, perfil, administradorSuporte);
+            //aqui pode dar nullpointer em dadosAcesso nao?
             var permissionamentos = dadosAcesso.Permissoes.ToList();
 
             if (permissionamentos == null || !permissionamentos.Any())
@@ -236,6 +237,9 @@ namespace SME.SGP.Aplicacao
 
             // Busca lista de permissões do EOL
             var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(login, guidPerfil);
+            //aqui pode dar nullpointer em dadosAcesso nao?
+
+
             var permissionamentos = dadosAcesso.Permissoes.ToList();
             
             if (!permissionamentos.Any())

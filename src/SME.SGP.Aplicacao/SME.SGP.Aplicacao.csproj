@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <UserSecretsId>874d00b9-29fa-4e52-be2b-2ea73c09535a</UserSecretsId>
+    <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
 
   <ItemGroup>

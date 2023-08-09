@@ -155,6 +155,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Pode_Editar_Encaminhamento_Professor()
         {
+            //esses testes falham  com NPE por falta de Ue na turma
             mediator.Setup(a => a.Send(It.IsAny<ObterEncaminhamentoAEEComTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new EncaminhamentoAEE()
                 {

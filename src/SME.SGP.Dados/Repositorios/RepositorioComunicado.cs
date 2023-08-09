@@ -291,7 +291,8 @@ namespace SME.SGP.Dados.Repositorios
         private string MontarCondicoesDaConsultaObterComunicadosParaFiltroDaDashboard(FiltroObterComunicadosParaFiltroDaDashboardDto filtro, string comunicadoAlias,
             string comunicadoTumaAlias, string turmaAlias, string comunicadoModalidadeAlias)
         {
-            var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @anoLetivo ");
+            //aqui ta pegando nome de coluna invalido e dando erro, provavel bug
+            var where = new StringBuilder($" WHERE {comunicadoAlias}.ano_letivo = @AnoLetivo ");
 
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoDre) ? $" AND {comunicadoAlias}.codigo_dre = @CodigoDre" : $" AND {comunicadoAlias}.codigo_dre is null");
 
