@@ -50,7 +50,13 @@ namespace SME.SGP.Aplicacao
 
                             if (situacoesAlunoNaUEAnoAtual.Any() && situacoesAlunoNaUEAnoAtual != null)
                             {
-                                var ultimaSituacaoAlunoNaUE = situacoesAlunoNaUEAnoAtual.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
+                                var codigosTurmasAluno = situacoesAlunoNaUEAnoAtual.Select(b => b.CodigoTurma.ToString()).ToArray();
+
+                                var turmas = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(codigosTurmasAluno));
+
+                                var codigoTurmaRegular = turmas?.Where(b => b.TipoTurma == TipoTurma.Regular)?.Select(b => long.Parse(b.CodigoTurma)).FirstOrDefault();
+
+                                var ultimaSituacaoAlunoNaUE = situacoesAlunoNaUEAnoAtual.Where(b => b.CodigoTurma == codigoTurmaRegular).OrderByDescending(c => c.DataSituacao).FirstOrDefault();
 
                                 if (PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
                                     await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
@@ -60,8 +66,6 @@ namespace SME.SGP.Aplicacao
                                 var dadosMatricula = dadosMatriculaAlunoNaUEPlano.Where(x => x.CodigoTurma == long.Parse(turmaDoPlanoAee.CodigoTurma))?.OrderByDescending(c => c.DataSituacao).FirstOrDefault();
                                 await EncerrarPlanoAee(planoAEE, dadosMatricula?.SituacaoMatricula ?? "Inativo", dadosMatricula.DataSituacao);
                             }
-                                
-
                         }
                         else
                             throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
