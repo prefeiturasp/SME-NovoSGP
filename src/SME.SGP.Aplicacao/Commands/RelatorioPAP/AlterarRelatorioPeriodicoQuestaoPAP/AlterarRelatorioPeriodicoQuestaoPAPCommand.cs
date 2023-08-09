@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
@@ -11,5 +12,15 @@ namespace SME.SGP.Aplicacao
         }
 
         public RelatorioPeriodicoPAPQuestao RelatorioPeriodicoQuestao { get; set; }
+    }
+
+    public class AlterarRelatorioPeriodicoQuestaoPAPCommandValidator : AbstractValidator<AlterarRelatorioPeriodicoQuestaoPAPCommand>
+    {
+        public AlterarRelatorioPeriodicoQuestaoPAPCommandValidator()
+        {
+            RuleFor(x => x.RelatorioPeriodicoQuestao)
+                   .NotEmpty()
+                   .WithMessage("O objeto relatório periodico questão pap deve ser informado para registar sua alteração!");
+        }
     }
 }

@@ -417,7 +417,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComponenteCurricularGrupoAreaOrdenacao, RepositorioComponenteCurricularGrupoAreaOrdenacao>();
             services.TryAddScoped<IRepositorioPendenciaDevolutiva, RepositorioPendenciaDevolutiva>();
             services.TryAddScoped<IRepositorioFrequenciaDiariaAluno, RepositorioFrequenciaDiariaAluno>();
-
+            services.TryAddScoped<IRepositorioConselhoClasseAlunoRecomendacaoConsulta, RepositorioConselhoClasseAlunoRecomendacaoConsulta>();
+            services.TryAddScoped<IRepositorioEventoConsulta, RepositorioEventoConsulta>();
+            services.TryAddScoped<IRepositorioComunicadoConsulta, RepositorioComunicadoConsulta>();
 
             // Acompanhamento Aluno
             services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
@@ -742,7 +744,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAbrangenciaDresUseCase, ObterAbrangenciaDresUseCase>();
             services.TryAddScoped<IObterTurmasNaoHistoricasUseCase, ObterTurmasNaoHistoricasUseCase>();
             services.TryAddScoped<ICarregarAbrangenciaUsusarioUseCase, CarregarAbrangenciaUsusarioUseCase>();
-
+            
             services.TryAddScoped<IRabbitDeadletterSerapSyncUseCase, RabbitDeadletterSerapSyncUseCase>();
 
             // Acompanhamento Aluno
@@ -1071,6 +1073,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
             services.TryAddScoped<IObterOcorrenciasPorAlunoUseCase, ObterOcorrenciasPorAlunoUseCase>();
             services.TryAddScoped<IRelatorioOcorrenciasUseCase, RelatorioOcorrenciasUseCase>();
+            services.TryAddScoped<IRelatorioListagemOcorrenciasUseCase, RelatorioListagemOcorrenciasUseCase>();
 
             // Itinerancia
             services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();
@@ -1317,6 +1320,12 @@ namespace SME.SGP.IoC
 
             // Log.
             services.TryAddScoped<ISalvarLogUseCase, SalvarLogUseCase>();
+
+            //Eventos Escola Aqui/Conselho Classe Recomendação/Dre integração
+            services.TryAddScoped<IObterRecomendacoesPorAlunoTurmaUseCase, ObterRecomendacoesPorAlunoTurmaUseCase>();
+            services.TryAddScoped<IObterEventosEscolaAquiPorDreUeTurmaMesUseCase, ObterEventosEscolaAquiPorDreUeTurmaMesUseCase>();
+            services.TryAddScoped<IObterDresUseCase, ObterDresUseCase>();
+            services.TryAddScoped<IObterComunicadosAnoAtualUseCase, ObterComunicadosAnoAtualUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

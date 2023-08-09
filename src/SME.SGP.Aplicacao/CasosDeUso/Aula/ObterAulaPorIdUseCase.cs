@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                                                                                       string.Empty,
                                                                                       long.Parse(aula.DisciplinaId),
                                                                                       usuarioLogado.CodigoRf, false))
-                                    : await mediator.Send(new ObterComponentesCurricularesPorTurmaLoginEPerfilQuery(aula.TurmaId,
+                                    : await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(aula.TurmaId,
                                                                                                                     usuarioLogado.CodigoRf,
                                                                                                                     usuarioLogado.PerfilAtual));
 

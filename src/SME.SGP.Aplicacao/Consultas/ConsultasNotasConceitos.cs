@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
                         }
                         else
                         {
-                            IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
+                            IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
                             if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Where(x => x.Regencia).Any())
                                 throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
                             disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(x => x.Regencia));

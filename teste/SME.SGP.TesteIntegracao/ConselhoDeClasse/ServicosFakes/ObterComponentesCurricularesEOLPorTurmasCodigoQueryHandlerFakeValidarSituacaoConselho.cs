@@ -3,33 +3,32 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
     public class ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFakeValidarSituacaoConselho :
-        IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>
+        IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>
     {
-        public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new List<ComponenteCurricularDto>()
+            return new List<ComponenteCurricularEol>()
             {
-                new ComponenteCurricularDto()
+                new ComponenteCurricularEol()
                 {
-                    Codigo = "139",
+                    Codigo = 139,
                     Descricao = "ARTE",
                     LancaNota = true,
                     Regencia = false,
-                    DescricaoEol = "ARTE",
                     TerritorioSaber = false
                 },
-                new ComponenteCurricularDto()
+                new ComponenteCurricularEol()
                 {
-                    Codigo = "138",
+                    Codigo = 138,
                     Descricao = "LINGUA PORTUGUESA",
                     LancaNota = true,
                     Regencia = false,
-                    DescricaoEol = "LINGUA PORTUGUESA",
                     TerritorioSaber = false
                 }
             };

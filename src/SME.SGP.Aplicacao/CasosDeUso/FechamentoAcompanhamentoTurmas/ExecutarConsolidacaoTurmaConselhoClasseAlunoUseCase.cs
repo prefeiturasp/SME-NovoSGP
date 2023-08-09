@@ -105,11 +105,11 @@ namespace SME.SGP.Aplicacao
 
                     //Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
-                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != "6");
+                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != 6);
 
                     var possuiComponentesSemNotaConceito = componentesDaTurmaEol
                         .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
-                        .Select(ct => ct.Codigo)
+                        .Select(ct => ct.Codigo.ToString())
                         .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
                         .Any();
 
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
                     if (componentesComNotaFechamentoOuConselho != null && componentesComNotaFechamentoOuConselho.Any())
                     {
                         var turmasIds = await mediator.Send(new ObterTurmaIdsPorCodigosQuery(turmasCodigos.ToArray()));
-                        var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0));
+                        var conselhoClasseNotas = await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, alunoCodigo: filtro.AlunoCodigo));
                         var fechamentoNotas = await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreEAlunoCodigoQuery(turmasCodigos.ToArray(), filtro.Bimestre ?? 0, filtro.AlunoCodigo));
                         var converterNotaEmConceitoTurmaEdFisicaEJA = (turma.EhEJA() && componenteEdFisicaEJANecessitaConversaoNotaConceito);
                         if (converterNotaEmConceitoTurmaEdFisicaEJA)
@@ -224,8 +224,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurmaRegularPorConselhoClasseComplementar(Turma turmaComplementar, string aluno)
         {
-            var turmasAluno = await mediator.Send(new ObterTurmasFechamentoConselhoPorAlunosQuery(new long[] { long.Parse(aluno) }, turmaComplementar.AnoLetivo));
-            var turmaRegularCodigo = turmasAluno.FirstOrDefault(t => t.TurmaCodigo == turmaComplementar.CodigoTurma && !string.IsNullOrEmpty(t.RegularCodigo))?.RegularCodigo;
+            var turmasAluno = await mediator.Send(new ObterTurmasFechamentoConselhoPorAlunosQuery(new long[] {long.Parse(aluno)}, turmaComplementar.AnoLetivo));
+            if (!turmasAluno.Any())
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
+            var turmaRegularCodigo = turmasAluno.Count() == 1 && turmasAluno.Any(x=>x.TipoTurma == TipoTurma.Regular) ? turmasAluno.FirstOrDefault().TurmaCodigo : turmasAluno.FirstOrDefault(t => t.TurmaCodigo == turmaComplementar.CodigoTurma && !string.IsNullOrEmpty(t.RegularCodigo))?.RegularCodigo ;
             if (!string.IsNullOrEmpty(turmaRegularCodigo))
                 return (await mediator.Send(new ObterTurmasPorCodigosQuery(new string[] { turmaRegularCodigo }))).FirstOrDefault();
             return null;

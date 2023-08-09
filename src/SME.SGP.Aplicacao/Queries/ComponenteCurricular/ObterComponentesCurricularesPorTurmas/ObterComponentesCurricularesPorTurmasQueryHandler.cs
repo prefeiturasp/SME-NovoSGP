@@ -13,10 +13,12 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesPorTurmasQueryHandler : IRequestHandler<ObterComponentesCurricularesPorTurmasQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesPorTurmasQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterComponentesCurricularesPorTurmasQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator)); ;
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorTurmasQuery request, CancellationToken cancellationToken)
@@ -28,7 +30,11 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
+                var retorno = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
+
+                var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(retorno.ObterCodigos()));
+                retorno.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
+                return retorno;
             }
 
             return Enumerable.Empty<ComponenteCurricularEol>();

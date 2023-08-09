@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -23,11 +24,15 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var queryParamTurmas = string.Empty;
 
+            if (request.CodigosDeTurmas != null && request.CodigosDeTurmas.Any())
+            {
+                var codigosTurmas = String.Join("&turmas=", request.CodigosDeTurmas);
+                queryParamTurmas = $"?turmas={codigosTurmas}";
+            }
 
-            var turmas = String.Join("&turmas=", request.CodigosDeTurmas);
-
-            var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/ues/{request.CodigoUe}/turmas?turmas={turmas}");
+            var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/ues/{request.CodigoUe}/turmas{queryParamTurmas}");
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

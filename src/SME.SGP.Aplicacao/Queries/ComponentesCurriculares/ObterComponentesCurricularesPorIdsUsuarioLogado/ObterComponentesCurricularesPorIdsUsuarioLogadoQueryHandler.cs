@@ -34,9 +34,8 @@ namespace SME.SGP.Aplicacao
             var disciplinasUsuario = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
-            var disciplinasAgrupadas = await servicoEol
-                    .ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);
-
+            var disciplinasAgrupadas = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(request.Ids, request.CodigoTurma));
+            
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {
                 foreach (var disciplina in disciplinasAgrupadas)

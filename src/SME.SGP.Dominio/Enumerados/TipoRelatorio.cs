@@ -154,6 +154,9 @@ namespace SME.SGP.Dominio
         RelatorioControleFrequenciaMensal = 50,
 
         [Display(Name = "relatorios/historicoescolareja", ShortName = "HistoricoEscolar", Description = "Histórico Escolar")]
-        HistoricoEscolarEJARazor = 51
+        HistoricoEscolarEJARazor = 51,
+
+        [Display(Name = "relatorios/listagem-ocorrencias", ShortName = "ListagemOcorrencia", Description = "Relatório listagem de ocorrências")]
+        ListagemOcorrencias = 52
     }
 }

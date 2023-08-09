@@ -15,12 +15,10 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryHandler : IRequestHandler<ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery, IEnumerable<DisciplinaNomeDto>>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
-
-        public ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryHandler(IMediator mediator, IServicoEol servicoEol)
+        
+        public ObterComponentesCurricularesPorUsuarioECodigoTurmaQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<IEnumerable<DisciplinaNomeDto>> Handle(ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery request, CancellationToken cancellationToken)
@@ -36,7 +34,9 @@ namespace SME.SGP.Aplicacao
         {
             var obterTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
             bool realizarAgrupamentoComponente = obterTurma.AnoLetivo != DateTimeExtension.HorarioBrasilia().Year;
-            var componentesCurricularesEol = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, codigoRf, perfilAtual, realizarAgrupamentoComponente);
+            var componentesCurricularesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, codigoRf,
+                                                               perfilAtual,
+                                                               realizarAgrupamentoComponente));
 
             if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
                 return null;
