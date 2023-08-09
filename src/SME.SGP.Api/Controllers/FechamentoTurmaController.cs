@@ -52,7 +52,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_A, Policy = "Bearer")]
         public async Task<IActionResult> Reprocessar(IEnumerable<long> fechamentoId, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
         {
-            comandos.Reprocessar(fechamentoId);
+            await comandos.Reprocessar(fechamentoId);
             return Ok();
         }
 

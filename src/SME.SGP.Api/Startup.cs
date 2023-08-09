@@ -81,10 +81,7 @@ namespace SME.SGP.Api
             });
 
             RegistrarConfigsThreads.Registrar(Configuration);
-
-            Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
-            Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
-            
+     
             app.UseHealthChecksSgp();
             app.UseHealthCheckPrometheusSgp();
         }
