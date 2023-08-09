@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
-        public void AtualizaAbrangenciaHistorica(IEnumerable<long> ids)
+        public async Task AtualizaAbrangenciaHistorica(IEnumerable<long> ids)
         {
             var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
 
@@ -39,11 +39,11 @@ namespace SME.SGP.Dados.Repositorios
             for (int i = 0; i < ids.Count(); i = i + 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> ids, int anoLetivo)
+        public async Task AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> ids, int anoLetivo)
         {
             var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
 
@@ -58,11 +58,11 @@ namespace SME.SGP.Dados.Repositorios
             for (int i = 0; i < ids.Count(); i += 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void ExcluirAbrangencias(IEnumerable<long> ids)
+        public async Task ExcluirAbrangencias(IEnumerable<long> ids)
         {
             const string comando = @"delete from public.abrangencia where id in (#ids) and historico = false";
 
@@ -70,11 +70,11 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = ids.Skip(i).Take(900);
 
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
+        public async Task ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
         {
             const string comando = @"delete from public.abrangencia where id in (#ids) and historico = true";
 
@@ -82,11 +82,11 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = ids.Skip(i).Take(900);
 
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
+        public async Task InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
         {
             foreach (var item in abrangencias)
             {
@@ -94,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
                                         values ((select id from usuario where login = @login), @dreId, @ueId, @turmaId, @perfil, @historico)
                                         RETURNING id";
 
-                database.Conexao.Execute(comando,
+                await database.Conexao.ExecuteAsync(comando,
                     new
                     {
                         login,
@@ -535,7 +535,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
 
-        public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo)
+        public async Task RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo)
         {
             var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and historico = false and perfil = @perfil and #escopo";
 
@@ -554,7 +554,7 @@ namespace SME.SGP.Dados.Repositorios
                     break;
             }
 
-            database.Execute(query, new { login, perfil });
+            await database.ExecuteAsync(query, new { login, perfil });
         }
 
         public async Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId)

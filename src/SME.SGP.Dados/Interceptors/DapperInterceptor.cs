@@ -159,6 +159,20 @@ namespace SME.SGP.Dados
             return result;
         }
 
+        public static async Task<int> ExecuteAsync(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null, string queryName = "Command Postgres")
+        {
+            var result = await servicoTelemetria.RegistrarComRetornoAsync<int>(async () => await SqlMapper.ExecuteAsync(cnn, sql, param, transaction, commandTimeout, commandType), "Postgres", $"Command {queryName}", sql, param?.ToString());
+            
+            return result;
+        }
+
+        public static async Task<int> ExecuteAsync(this IDbConnection cnn, CommandDefinition command, string queryName = "Command Postgres")
+        {
+            var result = await servicoTelemetria.RegistrarComRetornoAsync<int>(async () => await SqlMapper.ExecuteAsync(cnn, command), "Postgres", $"Command {queryName}", command.ToString());
+
+            return result;
+        }
+
         #region Repositório Base
 
         public static IEnumerable<TEntity> GetAll<TEntity>(this IDbConnection connection, bool buffered = true) where TEntity : class

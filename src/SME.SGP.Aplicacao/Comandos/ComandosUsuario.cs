@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
             retornoAutenticacaoEol.Item1.PerfisUsuario = await servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
 
             var perfis = retornoAutenticacaoEol.Item1.PerfisUsuario.Perfis.Select(x => x.CodigoPerfil).ToList();
-            servicoAbrangencia.RemoverAbrangenciasHistoricasIncorretas(login, perfis);
+            await servicoAbrangencia.RemoverAbrangenciasHistoricasIncorretas(login, perfis);
 
             var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
 

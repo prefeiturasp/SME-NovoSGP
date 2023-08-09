@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                     var existePendencia = await mediator.Send(new VerificaSeExistePendenciaDiarioComPendenciaIdQuery(pendencia.PendenciaId), cancellationToken);
 
                     if (!existePendencia)
-                        repositorioPendencia.ExclusaoLogicaPendencia(pendencia.PendenciaId);
+                        await repositorioPendencia.ExclusaoLogicaPendencia(pendencia.PendenciaId);
                 }
 
                 return true;
