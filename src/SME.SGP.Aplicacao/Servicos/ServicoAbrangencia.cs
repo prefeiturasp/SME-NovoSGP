@@ -290,9 +290,9 @@ namespace SME.SGP.Aplicacao.Servicos
                     // sincronizamos as dres, ues e turmas
                     var estrutura = await MaterializarEstruturaInstitucional(abrangenciaEol, dres, ues, turmas);
 
-                    dres = estrutura.Item1;
-                    ues = estrutura.Item2;
-                    turmas = estrutura.Item3;
+                    dres = estrutura.Dres;
+                    ues = estrutura.Ues;
+                    turmas = estrutura.Turmas;
 
                     // sincronizamos a abrangencia do login + perfil
                     unitOfWork.IniciarTransacao();
@@ -316,22 +316,22 @@ namespace SME.SGP.Aplicacao.Servicos
             return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);
         }
 
-        private async Task<Tuple<IEnumerable<Dre>, IEnumerable<Ue>, IEnumerable<Turma>>> MaterializarEstruturaInstitucional(AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas)
+        private async Task<(IEnumerable<Dre> Dres, IEnumerable<Ue> Ues, IEnumerable<Turma> Turmas)> MaterializarEstruturaInstitucional(AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas)
         {
             string[] codigosNaoEncontrados;
 
             if (abrangenciaEol.IdDres != null && abrangenciaEol.IdDres.Length > 0)
             {
                 var retorno = await mediator.Send(new ObterDreMaterializarCodigosQuery(abrangenciaEol.IdDres));
-                dres = retorno.Item1;
-                codigosNaoEncontrados = retorno.Item2;
+                dres = retorno.Dres;
+                codigosNaoEncontrados = retorno.CodigosDresNaoEncontrados;
             }
 
             if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
             {
                 var retorno = await mediator.Send(new ObterUeMaterializarCodigosQuery(abrangenciaEol.IdUes));
-                ues = retorno.Item1;
-                codigosNaoEncontrados = retorno.Item2;
+                ues = retorno.Ues;
+                codigosNaoEncontrados = retorno.CodigosUesNaoEncontradas;
             }
 
             if (abrangenciaEol.IdTurmas != null && abrangenciaEol.IdTurmas.Length > 0)
@@ -340,7 +340,7 @@ namespace SME.SGP.Aplicacao.Servicos
                     .Union(await ImportarTurmasNaoEncontradas(codigosNaoEncontrados));
             }
 
-            return new Tuple<IEnumerable<Dre>, IEnumerable<Ue>, IEnumerable<Turma>>(dres, ues, turmas);
+            return (dres, ues, turmas);
         }
 
         private async Task<string[]> ObterAbrangenciaEolSupervisor(string login)

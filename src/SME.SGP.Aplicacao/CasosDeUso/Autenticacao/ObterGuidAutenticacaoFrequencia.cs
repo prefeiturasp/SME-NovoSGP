@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var guid = Guid.NewGuid();
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEolSemSenha(filtroSolicitacaoGuidAutenticacao.Rf);
-            if (!retornoAutenticacaoEol.Item1.Autenticado)
+            if (!retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Autenticado)
                 throw new NegocioException("", HttpStatusCode.Unauthorized);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(filtroSolicitacaoGuidAutenticacao.TurmaCodigo));

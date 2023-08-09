@@ -96,22 +96,22 @@ namespace SME.SGP.Aplicacao
             return await ObterAutenticacao(retornoAutenticacaoEol, login);
         }
 
-        public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)
-            retornoAutenticacaoEol, string login, SuporteUsuario suporte = null)
+        public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, 
+                                                                            bool PossuiCargoCJ, bool PossuiPerfilCJ) retornoAutenticacaoEol, string login, SuporteUsuario suporte = null)
         {
-            if (!retornoAutenticacaoEol.Item1.Autenticado)
-                return retornoAutenticacaoEol.Item1;
+            if (!retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Autenticado)
+                return retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto;
 
             var dadosUsuario = await servicoEOL.ObterMeusDados(login);
 
-            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.Item2, login, dadosUsuario.Nome, dadosUsuario.Email, true);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.CodigoRf, login, dadosUsuario.Nome, dadosUsuario.Email, true);
 
-            retornoAutenticacaoEol.Item1.PerfisUsuario = await servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Item3, usuario);
+            retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.PerfisUsuario = await servicoPerfil.DefinirPerfilPrioritario(retornoAutenticacaoEol.Perfis, usuario);
 
             var perfis = retornoAutenticacaoEol.Item1.PerfisUsuario.Perfis.Select(x => x.CodigoPerfil).ToList();
             await servicoAbrangencia.RemoverAbrangenciasHistoricasIncorretas(login, perfis);
 
-            var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
+            var perfilSelecionado = retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.PerfisUsuario.PerfilSelecionado;
 
             var administradorSuporte = ObterAdministradorSuporte(suporte, usuario);
 
@@ -121,12 +121,12 @@ namespace SME.SGP.Aplicacao
 
             if (!permissionamentos.Any())
             {
-                retornoAutenticacaoEol.Item1.Autenticado = false;
-                return retornoAutenticacaoEol.Item1;
+                retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Autenticado = false;
+                return retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto;
             }
 
-            retornoAutenticacaoEol.Item1.Token = dadosAcesso.Token;
-            retornoAutenticacaoEol.Item1.DataHoraExpiracao = dadosAcesso.DataExpiracaoToken;
+            retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Token = dadosAcesso.Token;
+            retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.DataHoraExpiracao = dadosAcesso.DataExpiracaoToken;
 
             usuario.AtualizaUltimoLogin();
 
@@ -135,11 +135,11 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
-            retornoAutenticacaoEol.Item1.UsuarioLogin = usuario.Login;
-            retornoAutenticacaoEol.Item1.UsuarioRf = usuario.CodigoRf;
-            retornoAutenticacaoEol.Item1.AdministradorSuporte = administradorSuporte;
+            retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioLogin = usuario.Login;
+            retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.UsuarioRf = usuario.CodigoRf;
+            retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.AdministradorSuporte = administradorSuporte;
 
-            return retornoAutenticacaoEol.Item1;
+            return retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto;
         }
 
         private Task SalvarCacheUsuario(Usuario usuario)
