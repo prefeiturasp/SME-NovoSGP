@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task IncluirRespostasEncaminhamento(RelatorioPeriodicoPAPQuestao questaoExistente, IEnumerable<RelatorioPAPRespostaDto> respostas)
         {
-            var repostasIncluidas = respostas.Where(c => c.RelatorioRespostaId == 0);
+            var repostasIncluidas = respostas.Where(c => !c.RelatorioRespostaId.HasValue);
 
             foreach (var questao in repostasIncluidas)
                 await mediator.Send(new SalvarRelatorioPeriodicoRespostaPAPCommand(questao.Resposta, questao.TipoQuestao, questaoExistente.Id));

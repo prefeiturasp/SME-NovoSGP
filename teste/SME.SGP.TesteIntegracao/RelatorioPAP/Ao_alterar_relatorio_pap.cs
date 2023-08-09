@@ -163,10 +163,15 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                         {
                             new RelatorioPAPRespostaDto()
                             {
-                                RelatorioRespostaId = ConstantesTestePAP.PAP_RESPOSTA_ID_1,
                                 QuestaoId = ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2,
                                 TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
                                 Resposta = ConstantesTestePAP.OPCAO_RESPOSTA_LEITURA_ID
+                            },
+                            new RelatorioPAPRespostaDto()
+                            {
+                                QuestaoId = ConstantesTestePAP.QUESTAO_DIFICULDADES_APRESENTADAS_ID_2,
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+                                Resposta = ConstantesTestePAP.OPCAO_RESPOSTA_CALCULOS_ID
                             },
                             new RelatorioPAPRespostaDto()
                             {
@@ -219,7 +224,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
 
             var relatorioResposta = ObterTodos<RelatorioPeriodicoPAPResposta>();
             relatorioResposta.ShouldNotBeNull();
-            relatorioResposta.Count.ShouldBe(4);
+            relatorioResposta.Count.ShouldBe(6);
 
             var relatorioQuestao = ObterTodos<RelatorioPeriodicoPAPQuestao>();
             relatorioQuestao.ShouldNotBeNull();
@@ -237,10 +242,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             var questaoObsevacao = relatorioQuestao.Find(a => a.QuestaoId == ConstantesTestePAP.QUESTAO_OBSERVACOES_ID_5);
             questaoObsevacao.ShouldNotBeNull();
 
-            var respostaDificuldade = relatorioResposta.Find(r => r.RelatorioPeriodicoQuestaoId == questaoDificuldade.Id);
+            var respostaDificuldade = relatorioResposta.FindAll(r => r.RelatorioPeriodicoQuestaoId == questaoDificuldade.Id);
             respostaDificuldade.ShouldNotBeNull();
-            respostaDificuldade.RespostaId.ShouldNotBeNull();
-            respostaDificuldade.RespostaId.ShouldBe(long.Parse(ConstantesTestePAP.OPCAO_RESPOSTA_LEITURA_ID));
+            respostaDificuldade.Any(resposta => resposta.RespostaId == long.Parse(ConstantesTestePAP.OPCAO_RESPOSTA_LEITURA_ID)).ShouldBeTrue();
+
+            respostaDificuldade.Any(resposta => resposta.RespostaId == long.Parse(ConstantesTestePAP.OPCAO_RESPOSTA_CALCULOS_ID)).ShouldBeTrue();
+
+            respostaDificuldade.Any(resposta => resposta.Excluido && resposta.RespostaId == ConstantesTestePAP.OPCAO_RESPOSTA_ESCRITA_ID).ShouldBeTrue();
 
             var respostaDificuldadeObservacao = relatorioResposta.Find(r => r.RelatorioPeriodicoQuestaoId == questaoDificuldadeObservacao.Id);
             respostaDificuldadeObservacao.ShouldNotBeNull();
