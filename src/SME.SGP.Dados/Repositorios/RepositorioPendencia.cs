@@ -194,18 +194,12 @@ namespace SME.SGP.Dados.Repositorios
                 var queryFiltrada = MontaQueryTurmaFiltrada();
                 var idsPendencias = pendenciasPerfilUsuario.Select(c => c.Id).Distinct().ToArray();
                 
-                try
-                {
-                    pendenciasFiltradas = await database.Conexao
-                        .QueryAsync<long>(queryFiltrada, 
-                            new { pendencias = idsPendencias, turmaCodigo, usuarioId, situacao}, commandTimeout: 300);
+                pendenciasFiltradas = await database.Conexao
+                    .QueryAsync<long>(queryFiltrada, 
+                        new { pendencias = idsPendencias, turmaCodigo, usuarioId, situacao}, commandTimeout: 300);
 
-                    pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
-                }
-                catch(Exception ex)
-                {
-                    throw new NegocioException(ex.Message);
-                }
+                pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
+                
             }
 
             //-> Havendo tipo de pendência definido no filtro com ou sem turma:
@@ -214,18 +208,12 @@ namespace SME.SGP.Dados.Repositorios
                 var queryFiltrada = RetornaQueryParaUnicoTipoPendenciaGrupo((TipoPendenciaGrupo)tiposPendenciasGrupos.FirstOrDefault(), turmaCodigo);
                 var idsPendencias = pendenciasPerfilUsuario.Select(c => c.Id).Distinct().ToArray();
 
-                try
-                {
-                    pendenciasFiltradas = await database.Conexao
-                        .QueryAsync<long>(queryFiltrada, 
-                            new { pendencias = idsPendencias, turmaCodigo }, commandTimeout: 300);
+                pendenciasFiltradas = await database.Conexao
+                    .QueryAsync<long>(queryFiltrada, 
+                        new { pendencias = idsPendencias, turmaCodigo }, commandTimeout: 300);
 
-                    pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
-                }
-                catch (Exception ex)
-                {
-                    throw new NegocioException(ex.Message);
-                }
+                pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
+                
             }
             
             //-> Não havendo turma e nem grupos de pendência, porém, com filtro por título
@@ -375,9 +363,7 @@ namespace SME.SGP.Dados.Repositorios
                     query.Append(" AND t.turma_id = @turmaCodigo ");                
             }
 
-            try
-            {
-                return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
                     pendenciasIdsAula,
                     pendenciasIdsCalendario,
                     pendenciasIdsProfessor,
@@ -385,12 +371,6 @@ namespace SME.SGP.Dados.Repositorios
                     pendenciasIdsDevolutiva,
                     pendenciasIds,
                     turmaCodigo });
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
