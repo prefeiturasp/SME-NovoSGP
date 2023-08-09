@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao 
 {
-    public class ObterDreMaterializarCodigosQueryHandler : IRequestHandler<ObterDreMaterializarCodigosQuery, Tuple<IEnumerable<Dre>, string[]>>
+    public class ObterDreMaterializarCodigosQueryHandler : IRequestHandler<ObterDreMaterializarCodigosQuery, (IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados)>
     {
         private readonly IRepositorioDreConsulta repositorioDre;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioDre = repositorio;
         }
 
-        public async Task<Tuple<IEnumerable<Dre>, string[]>> Handle(ObterDreMaterializarCodigosQuery request, CancellationToken cancellationToken)
+        public async Task<(IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados)> Handle(ObterDreMaterializarCodigosQuery request, CancellationToken cancellationToken)
         {
             return repositorioDre.MaterializarCodigosDre(request.IdDres);
         }
