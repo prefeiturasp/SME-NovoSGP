@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
-                var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{usuario.PerfilAtual}/dres/{request.CodigoDRE}", cancellationToken);
+                var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{usuario.PerfilAtual}/dres/{request.CodigoDRE}{(request.CodigoCargo > 0 ? $"&codigoFuncaoAtividade={request.CodigoCargo}" : string.Empty)}", cancellationToken);
 
                 if (resposta.IsSuccessStatusCode)
                 {

@@ -334,5 +334,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+
+        [HttpPost("listagem-ocorrencias")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ROCO_C, Policy = "Bearer")]
+        public async Task<IActionResult> ListagemOcorrencias([FromBody] FiltroRelatorioListagemOcorrenciasDto filtro, [FromServices] IRelatorioListagemOcorrenciasUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }

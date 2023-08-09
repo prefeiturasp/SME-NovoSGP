@@ -199,11 +199,11 @@ namespace SME.SGP.Aplicacao
             var usuarioRF = (string)null;
 
             var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
-            IEnumerable<DisciplinaResposta> disciplinasRegenciaEOL = null;
+            IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEOL = null;
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             if (disciplina.Regencia)
-                disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQuery(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             fechamentoBimestre.EhSintese = !disciplina.LancaNota;
 
@@ -356,7 +356,7 @@ namespace SME.SGP.Aplicacao
                                     string nomeDisciplina;
 
                                     if (disciplina.Regencia)
-                                        nomeDisciplina = disciplinasRegenciaEOL.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
+                                        nomeDisciplina = disciplinasRegenciaEOL.FirstOrDefault(a => a.Codigo == notaConceitoBimestre.DisciplinaId)?.Descricao;
                                     else nomeDisciplina = disciplina.Nome;
 
                                     var nota = new FechamentoNotaRetornoDto()

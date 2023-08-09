@@ -14,9 +14,11 @@ namespace SME.SGP.Aplicacao
     public class ObterDisciplinasPorCodigoTurmaQueryHandler : IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        public ObterDisciplinasPorCodigoTurmaQueryHandler(IHttpClientFactory httpClientFactory)
+        private readonly IMediator mediator;
+        public ObterDisciplinasPorCodigoTurmaQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> Handle(ObterDisciplinasPorCodigoTurmaQuery request, CancellationToken cancellationToken)
@@ -28,7 +30,11 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<DisciplinaResposta>>(json);
+                var retorno  = JsonConvert.DeserializeObject<List<DisciplinaResposta>>(json);
+
+                var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(retorno.ObterCodigos()));
+                retorno.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
+                return retorno;
             }
 
             if (resposta.StatusCode == HttpStatusCode.BadRequest)

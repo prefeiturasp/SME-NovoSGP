@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -257,6 +258,44 @@ namespace SME.SGP.Dados.Repositorios
                          where cc.id = @id";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ComponenteGrupoMatrizDto>(query, new { id }, queryName: "ObterComponenteGrupoMatrizPorId");
+        }
+
+        public async Task<IEnumerable<InfoComponenteCurricular>> ObterInformacoesComponentesCurriculares()
+        {
+            var query = $@"select
+                                cc.id as Codigo,
+                                cc.componente_curricular_pai_id as CodigoComponenteCurricularPai,                                
+                                cc.eh_compartilhada as EhCompartilhada,
+                                cc.eh_base_nacional as EhBaseNacional,
+                                case                     
+                                when (cc.descricao_sgp is not null and cc.descricao_sgp  != '' and cc.descricao_sgp != ' ')
+                                then
+                                	cc.descricao_sgp
+                                else
+                                 	cc.descricao 
+                                end as Nome,
+                                descricao_infantil as NomeComponenteInfantil,
+                                cc.eh_regencia as EhRegencia,
+                                cc.permite_lancamento_nota as LancaNota,
+                                cc.permite_registro_frequencia as RegistraFrequencia,
+                                cc.eh_territorio as EhTerritorioSaber,
+                                cc.grupo_matriz_id as GrupoMatrizId,
+                                ccgm.nome as GrupoMatrizNome,
+                                cc.area_conhecimento_id as AreaConhecimentoId,
+                                ccac.nome  as AreaConhecimentoNome                                                             
+                           from componente_curricular cc 
+                           left join componente_curricular_grupo_matriz ccgm on ccgm.id = cc.grupo_matriz_id
+                           left join componente_curricular_area_conhecimento ccac on ccac.id = cc.area_conhecimento_id";
+            try
+            {
+                return (await database.Conexao.QueryAsync<InfoComponenteCurricular>(query));
+            }
+            catch (System.Exception e)
+            {
+                throw e;
+            }
+
+            
         }
     }
 }
