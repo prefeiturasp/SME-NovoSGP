@@ -90,8 +90,8 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoTurma.Turma.AnoLetivo >= DateTime.Now.Year)
                 {
                     var validacaoConselhoFinal = await mediator.Send(new ObterUltimoBimestreTurmaQuery(fechamentoTurma.Turma));
-                    if (!validacaoConselhoFinal.Item2)
-                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_SEM_REGISTRAR_CONSELHO_BIMESTRE, validacaoConselhoFinal.Item1));
+                    if (!validacaoConselhoFinal.possuiConselho)
+                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_SEM_REGISTRAR_CONSELHO_BIMESTRE, validacaoConselhoFinal.bimestre));
                 }
             }
 

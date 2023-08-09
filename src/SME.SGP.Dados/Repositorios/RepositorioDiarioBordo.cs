@@ -91,7 +91,7 @@ namespace SME.SGP.Dados.Repositorios
             };
         }
 
-        public async Task<IEnumerable<Tuple<long, DateTime>>> ObterDatasPorIds(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim)
+        public async Task<IEnumerable<(long Id, DateTime DataAula)>> ObterDatasPorIds(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim)
         {
             var query = @"select db.id as item1
                                , a.data_aula as item2 
@@ -102,11 +102,11 @@ namespace SME.SGP.Dados.Repositorios
                            and db.componente_curricular_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
 
-            return await database.Conexao.QueryAsync<long, DateTime, Tuple<long, DateTime>>(
+            return await database.Conexao.QueryAsync<long, DateTime, (long Id, DateTime DataAula)>(
                 query,
                 (id, data) =>
                 {
-                    return new Tuple<long, DateTime>(id, data);
+                    return (id, data);
                 },
                 new
                 {
