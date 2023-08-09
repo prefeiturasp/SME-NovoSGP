@@ -15,23 +15,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<AcompanhamentoAlunoSemestre> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId, string alunoCodigo, int semestre)
         {
-            try
-            {
-                var query = @"select aas.*
-                        from acompanhamento_aluno_semestre aas
-                            inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
-                        where aa.turma_id = @turmaId
-                            and aa.aluno_codigo = @alunoCodigo
-                            and aas.semestre = @semestre 
-                            and not aas.excluido ";
+            var query = @"select aas.*
+                    from acompanhamento_aluno_semestre aas
+                        inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
+                    where aa.turma_id = @turmaId
+                        and aa.aluno_codigo = @alunoCodigo
+                        and aas.semestre = @semestre 
+                        and not aas.excluido ";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoSemestre>(query, new { turmaId, alunoCodigo, semestre });
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-
+            return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoSemestre>(query, new { turmaId, alunoCodigo, semestre });
         }
 
         public async Task<long> ObterPorTurmaEAluno(long turmaId, string alunoCodigo)

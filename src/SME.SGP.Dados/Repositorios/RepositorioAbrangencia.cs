@@ -245,7 +245,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico, int anoMinimo)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var anos = (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
                                                              order by 1 desc", new { login, perfil, consideraHistorico }));
             return anos.Where(a => a >= anoMinimo);
@@ -341,7 +340,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = new StringBuilder();
             query.AppendLine("select distinct abreviacao, ");
             query.AppendLine("codigo,");
@@ -385,7 +383,6 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modalidadesQueSeraoIgnoradas) order by 1";
             var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var retorno = await database.Conexao
                 .QueryAsync<int>(query, new { login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray });
 
@@ -403,7 +400,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var parametros = new { login, perfil, consideraHistorico, modalidade, anoLetivo, dreCodigo, ueCodigo };
 
             var retorno = await database.Conexao
@@ -420,7 +416,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select ano,
 	                             anoLetivo,
 	                             codigo,
@@ -462,7 +457,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = new StringBuilder();
 
             query.AppendLine("select distinct codigo,");

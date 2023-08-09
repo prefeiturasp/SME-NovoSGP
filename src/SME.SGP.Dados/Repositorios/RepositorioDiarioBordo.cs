@@ -46,7 +46,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirDiarioBordoDaAula(long aulaId)
         {
-            // Excluir plano de aula
             var command = "update diario_bordo set excluido = true where not excluido and aula_id = @aulaId";
             await database.ExecuteAsync(command, new { aulaId });
         }
@@ -329,66 +328,58 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>> ObterQuantidadeTotalDeDiariosPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade)
         {
-            try
+            var sql = @"";
+            if (dreId == 0 && ueId == 0)
             {
-                var sql = @"";
-                if (dreId == 0 && ueId == 0)
-                {
-                    sql = @"select
-                            distinct 
-                            t.ano,
-                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes
-                        from consolidacao_diarios_bordo c
-                            inner join turma t on t.id = c.turma_id
-                            inner join ue on ue.id = t.ue_id 
-                            inner join dre on dre.id = ue.dre_id
-                            and t.ano <> '0'
-                            and t.ano_letivo = @anoLetivo
-                            and t.modalidade_codigo = @modalidade
-                        group by t.ano  ";
-                }
-
-                if (dreId > 0 && ueId == 0)
-                {
-                    sql = @"select
-                            distinct 
-                            t.ano,
-                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes
-                        from consolidacao_diarios_bordo c
-                            inner join turma t on t.id = c.turma_id
-                            inner join ue on ue.id = t.ue_id 
-                            inner join dre on dre.id = ue.dre_id
-                            and t.ano <> '0'
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-                            and t.modalidade_codigo = @modalidade
-                        group by t.ano ";
-                }
-
-                if (dreId > 0 && ueId > 0)
-                {
-                    sql = @"select
-                            distinct 
-                            t.ano,
-                            sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes
-                        from consolidacao_diarios_bordo c
-                            inner join turma t on t.id = c.turma_id
-                            inner join ue on ue.id = t.ue_id 
-                            inner join dre on dre.id = ue.dre_id
-                            and t.ano <> '0'
-                            and t.ano_letivo = @anoLetivo
-                            and dre.id = @dreId
-	                        and t.ue_id = @ueId
-                            and t.modalidade_codigo = @modalidade
-                        group by t.ano ";
-                }
-
-                return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });
+                sql = @"select
+                        distinct 
+                        t.ano,
+                        sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes
+                    from consolidacao_diarios_bordo c
+                        inner join turma t on t.id = c.turma_id
+                        inner join ue on ue.id = t.ue_id 
+                        inner join dre on dre.id = ue.dre_id
+                        and t.ano <> '0'
+                        and t.ano_letivo = @anoLetivo
+                        and t.modalidade_codigo = @modalidade
+                    group by t.ano  ";
             }
-            catch (Exception ex)
+
+            if (dreId > 0 && ueId == 0)
             {
-                throw ex;
+                sql = @"select
+                        distinct 
+                        t.ano,
+                        sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes
+                    from consolidacao_diarios_bordo c
+                        inner join turma t on t.id = c.turma_id
+                        inner join ue on ue.id = t.ue_id 
+                        inner join dre on dre.id = ue.dre_id
+                        and t.ano <> '0'
+                        and t.ano_letivo = @anoLetivo
+                        and dre.id = @dreId
+                        and t.modalidade_codigo = @modalidade
+                    group by t.ano ";
             }
+
+            if (dreId > 0 && ueId > 0)
+            {
+                sql = @"select
+                        distinct 
+                        t.ano,
+                        sum(c.quantidade_pendentes) as quantidadeTotalDiariosPendentes
+                    from consolidacao_diarios_bordo c
+                        inner join turma t on t.id = c.turma_id
+                        inner join ue on ue.id = t.ue_id 
+                        inner join dre on dre.id = ue.dre_id
+                        and t.ano <> '0'
+                        and t.ano_letivo = @anoLetivo
+                        and dre.id = @dreId
+	                    and t.ue_id = @ueId
+                        and t.modalidade_codigo = @modalidade
+                    group by t.ano ";
+            }
+            return await database.Conexao.QueryAsync<QuantidadeTotalDiariosPendentesPorAnoETurmaDTO>(sql, new { anoLetivo, dreId, ueId, modalidade });           
         }
 
         public async Task<IEnumerable<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO>> ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade, bool ehPerfilSMEDRE)

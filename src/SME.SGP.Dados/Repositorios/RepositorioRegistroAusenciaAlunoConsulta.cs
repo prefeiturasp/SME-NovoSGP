@@ -83,7 +83,6 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(disciplinaId))
                 query.AppendLine("and a.disciplina_id = @disciplinaId ");
 
-            //TODO: filtro da turma?
             query.AppendLine("and a.turma_id = @turmaId ");
 
             query.AppendLine("and p.periodo_inicio <= @dataAula ");
