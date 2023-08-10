@@ -21,6 +21,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<bool> Executar(FiltroRelatorioPlanejamentoAnualDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            filtro.Usuario = $"{usuarioLogado.Nome} ({usuarioLogado.ObterCodigoRfLogin()})";
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioPlanejamentoAnual, filtro, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanejamentoAnual));
         }
