@@ -297,7 +297,7 @@ namespace SME.SGP.Dominio.Servicos
                                         await mediator.Send(new ObterTurmaCodigoPorIdQuery(notaEmAprovacao.TurmaId)),
                                         notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId));
 
-            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                                             notaEmAprovacao.TurmaId,
                                             notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId,
                                             notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId);
@@ -311,7 +311,7 @@ namespace SME.SGP.Dominio.Servicos
                                                                                    codigoTurma);
             await mediator.Send(new RemoverChaveCacheCommand(chaveCacheNotaFinal));
 
-            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                                             turmaId,
                                             periodoEscolarId,
                                             disciplinaId);
@@ -319,7 +319,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private string ObterChaveFechamentoNotaFinalComponenteTurma(string codigoDisciplina, string codigoTurma)
-            => string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma);
+            => string.Format(NomeChaveCache.FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma);
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
         {

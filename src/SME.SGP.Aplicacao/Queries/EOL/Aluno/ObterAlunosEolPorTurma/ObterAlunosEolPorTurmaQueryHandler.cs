@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -26,7 +27,6 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        private string ObterChaveCacheAlunosTurma(string turmaId) => $"alunos-turma:{turmaId}";
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosEolPorTurmaQuery request, CancellationToken cancellationToken)
         {
             try
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 var httpClient = httpClientFactory.CreateClient("servicoEOL");
                 var alunos = new List<AlunoPorTurmaResposta>();
 
-                var chaveCache = ObterChaveCacheAlunosTurma(request.TurmaId);
+                var chaveCache = string.Format(NomeChaveCache.ALUNOS_TURMA_INATIVOS, request.TurmaId, request.ConsideraInativos);
                 var cacheAlunos = cache.Obter(chaveCache);
 
                 if (cacheAlunos != null)

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Unit> Handle(RemoverPerfisUsuarioAtualCommand request, CancellationToken cancellationToken)
         {
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, request.Login);
+            var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, request.Login);
 
             await repositorioCache.RemoverAsync(chaveCache);
 
