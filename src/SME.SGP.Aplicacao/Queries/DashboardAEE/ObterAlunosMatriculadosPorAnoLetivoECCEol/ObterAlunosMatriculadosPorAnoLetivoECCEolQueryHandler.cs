@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunosMatriculadosEolDto>> Handle(ObterAlunosMatriculadosPorAnoLetivoECCEolQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<AlunosMatriculadosEolDto>();
+            var alunos = Enumerable.Empty<AlunosMatriculadosEolDto>();
             var componentesCurriculares = String.Join("&componentesCurriculares=", request.ComponentesCurriculares);
 
             var url = $"alunos/ano-letivo/{request.Ano}/matriculados?componentesCurriculares={componentesCurriculares}";

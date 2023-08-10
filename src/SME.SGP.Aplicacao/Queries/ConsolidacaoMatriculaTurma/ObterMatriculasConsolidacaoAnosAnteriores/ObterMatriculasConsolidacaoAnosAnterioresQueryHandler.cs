@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao.Queries.ConsolidacaoMatriculaTurma.ObterMatriculasCo
 
         public async Task<IEnumerable<ConsolidacaoMatriculaTurmaDto>> Handle(ObterMatriculasConsolidacaoAnosAnterioresQuery request, CancellationToken cancellationToken)
         {
-            var matriculasConsolidadas = new List<ConsolidacaoMatriculaTurmaDto>();
+            var matriculasConsolidadas = Enumerable.Empty<ConsolidacaoMatriculaTurmaDto>();
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"matriculas/anos-anteriores?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}");
