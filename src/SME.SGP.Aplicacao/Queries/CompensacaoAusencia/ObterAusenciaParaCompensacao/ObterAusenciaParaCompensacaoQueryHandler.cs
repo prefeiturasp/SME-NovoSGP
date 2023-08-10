@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> Handle(ObterAusenciaParaCompensacaoQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { request.DisciplinaId };
             var codigosTerritorioEquivalentes = await mediator
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
         private async Task<long> VerificarSeComponenteEhDeTerritorio(string turmaCodigo, long componenteCurricularId)
         {
             long codigoComponenteTerritorioCorrespondente = 0;
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado.EhProfessor())
             {

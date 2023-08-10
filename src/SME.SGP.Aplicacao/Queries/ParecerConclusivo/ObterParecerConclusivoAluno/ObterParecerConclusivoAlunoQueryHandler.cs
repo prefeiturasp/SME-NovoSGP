@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseParecerConclusivo> Handle(ObterParecerConclusivoAlunoQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo));
-            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
             var alunosEol = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(request.AlunoCodigo)));           
 
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolaresTipoCalendario.Any())
                 periodos = periodosEscolaresTipoCalendario.Select(p => p.Id).ToArray();
 
-            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            Usuario usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
 

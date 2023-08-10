@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado.EhGestorEscolar())
             {

@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>> ListarPaginado(string turmaId, string disciplinaId, int bimestre, string nomeAtividade, string nomeAluno)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var listaCompensacoesDto = new List<CompensacaoAusenciaListagemDto>();
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { disciplinaId };
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null)
                 throw new NegocioException("Alunos não localizados para a turma.");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { compensacao.DisciplinaId };
             var codigosTerritorioEquivalentes = await mediator
@@ -288,7 +288,7 @@ namespace SME.SGP.Aplicacao
         private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
         {
             var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado.EhProfessor())
             {

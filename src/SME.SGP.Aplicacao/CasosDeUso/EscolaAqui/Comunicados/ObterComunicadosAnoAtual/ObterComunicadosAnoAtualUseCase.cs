@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<ComunicadoTurmaAlunoDto>> Executar()
         {
-            return mediator.Send(new ObterComunicadosAnoAtualQuery());
+            return mediator.Send(ObterComunicadosAnoAtualQuery.Instance);
         }
     }
 }

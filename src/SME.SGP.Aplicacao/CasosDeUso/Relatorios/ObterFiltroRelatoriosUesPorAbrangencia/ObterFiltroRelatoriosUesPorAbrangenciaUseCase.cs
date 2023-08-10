@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 return ues;
             }
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             return await mediator.Send(new ObterFiltroRelatoriosUesPorAbrangenciaQuery(usuarioLogado, codigoDre, anoLetivo, consideraNovasUEs, consideraHistorico));
         }
     }

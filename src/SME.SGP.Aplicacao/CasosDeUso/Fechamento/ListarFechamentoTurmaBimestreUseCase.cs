@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             fechamentoNotaConceitoTurma.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
 
             var componenteCurricularSelecionado = componentesCurriculares.FirstOrDefault();
-            var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
             var bimestreAtual = bimestre;
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
             if (bimestre > 0)
             {
-                var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
+                var tipoAvaliacaoBimestral = await mediator.Send(ObterTipoAvaliacaoBimestralQuery.Instance);
                 await ValidaMinimoAvaliacoesBimestrais(componenteCurricularSelecionado, disciplinasRegencia, tipoCalendario.Id, turma.CodigoTurma, bimestreAtual, tipoAvaliacaoBimestral, fechamentoNotaConceitoTurma);
                 var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestreAtual);
                 if (periodoAtual == null)

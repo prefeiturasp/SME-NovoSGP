@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
             int bimestre;
             long[] conselhosClassesIds;
             string[] turmasCodigos;
-            var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery())).ToList();
+            var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance)).ToList();
 
             if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(periodoEscolarId == null && turma.EhEJA()))
             {
@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
         {
             var componentesTurma = new List<DisciplinaDto>();
-            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            Usuario usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
             if (componentesCurriculares != null && componentesCurriculares.Any())

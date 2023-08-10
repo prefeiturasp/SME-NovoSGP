@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }      
 
         public async Task<IEnumerable<OpcaoDropdownDto>> Executar()
-            => MapearParaDto(await mediator.Send(new ObterMotivosAusenciaQuery()));
+            => MapearParaDto(await mediator.Send(ObterMotivosAusenciaQuery.Instance));
 
         private IEnumerable<OpcaoDropdownDto> MapearParaDto(IEnumerable<MotivoAusencia> motivos)
         {

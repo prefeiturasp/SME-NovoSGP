@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo, true));
             aluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);

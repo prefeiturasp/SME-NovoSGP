@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 respostasPlano = await mediator.Send(new ObterRespostasPlanoAEEPorVersaoQuery(ultimaVersaoId));
             }
 
-            var questionarioId = await mediator.Send(new ObterQuestionarioPlanoAEEIdQuery());
+            var questionarioId = await mediator.Send(ObterQuestionarioPlanoAEEIdQuery.Instance);
 
             plano.Questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(questionarioId, questaoId =>
                respostasPlano.Where(c => c.QuestaoId == questaoId)));

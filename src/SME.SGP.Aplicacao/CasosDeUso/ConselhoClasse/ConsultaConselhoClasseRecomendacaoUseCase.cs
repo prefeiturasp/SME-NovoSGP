@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
         
             long[] conselhosClassesIds;
             string[] turmasCodigos;
-            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
         
             if (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {

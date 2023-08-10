@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(string turmaCodigo, long componenteCurricularId, SalvarCartaIntencoesObservacaoDto dto)
         {
-            var usuarioLogadoId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioLogadoId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaCodigo));
             if (turmaId == 0)
                 throw new NegocioException("Turma não encontrada.");

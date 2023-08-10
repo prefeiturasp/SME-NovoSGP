@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma == null)
                 throw new NegocioException("Fechamento da turma não localizado");
 
-            var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken)).ToList();
+            var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance, cancellationToken)).ToList();
 
             //Se for dos tipos 2 e 7, deve utilizar o fechamento da turma do tipo 1.
             //Caso não exista, gerar;

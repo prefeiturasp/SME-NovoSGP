@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             {
                 var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
 
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, atribuicaoCJPersistenciaDto.Historico));
 
                 var perfilCJ = atribuicao.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new AtribuirPerfilCommand(atribuicaoCJPersistenciaDto.UsuarioRf, perfil));
 
-            var codigoRf = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            var codigoRf = await mediator.Send(ObterUsuarioLogadoRFQuery.Instance);
             await mediator.Send(new RemoverPerfisUsuarioAtualCommand(codigoRf));
 
             return true;

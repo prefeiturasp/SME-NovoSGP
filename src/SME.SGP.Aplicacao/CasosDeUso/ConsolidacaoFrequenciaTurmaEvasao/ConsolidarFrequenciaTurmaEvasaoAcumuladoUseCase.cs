@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro.TurmaId == 0)
             {
-                var dres = await mediator.Send(new ObterIdsDresQuery());
+                var dres = await mediator.Send(ObterIdsDresQuery.Instance);
 
                 foreach (var dre in dres)
                 {

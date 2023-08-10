@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var disciplinasRetorno = new List<DisciplinaDto>();
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));

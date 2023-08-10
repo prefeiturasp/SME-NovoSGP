@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var codigosComponentes = request.CodigoComponentes
                     .Select(c => c.codigo)
                     .ToArray();

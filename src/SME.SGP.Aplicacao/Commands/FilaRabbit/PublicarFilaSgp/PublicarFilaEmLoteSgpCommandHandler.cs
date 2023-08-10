@@ -25,11 +25,11 @@ namespace SME.SGP.Aplicacao
                 string usuarioLogadoNomeCompleto = command.Usuario?.Nome;
                 string usuarioLogadoRf = command.Usuario?.CodigoRf;
                 Guid? perfilUsuario = command.Usuario?.PerfilAtual;
-                var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
+                var administrador = await mediator.Send(ObterAdministradorDoSuporteQuery.Instance);
 
                 if (command.Usuario == null)
                 {
-                    var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                    var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                     usuarioLogadoNomeCompleto = usuario.Nome;
                     usuarioLogadoRf = usuario.CodigoRf;

@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             var turmasCodigos = new List<string>();
             long[] conselhosClassesIds;
 
-            var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery())).ToList();
+            var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance)).ToList();
             var alunosEol = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(notasFrequenciaDto.AlunoCodigo)));
             var alunoNaTurma = periodoEscolar != null ? alunosEol.FirstOrDefault(a => a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) : alunosEol.Last();
             var codigosAlunos = alunosEol.Select(a => a.CodigoAluno).ToArray();
@@ -191,7 +191,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigosFiltro, notasFrequenciaDto.AlunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, notasFrequenciaDto.Bimestre, validaMatricula));
             }
 
-            var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if(!String.IsNullOrEmpty(turmaItinerarioPercurso))
                 turmasCodigos.Add(turmaItinerarioPercurso);
@@ -339,7 +339,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ObterSeATurmaEhTipoNotaConceito(string alunoCodigo, Turma turma)
         {
             var turmaAluno = turma;
-            var turmasitinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery())).ToList();
+            var turmasitinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance)).ToList();
             if (turmaAluno.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turmaAluno.TipoTurma))
             {
                 var turmasCodigosParaConsulta = new List<int>();

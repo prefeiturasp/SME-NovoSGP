@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ListarObservacaoDiarioBordoDto>> Executar(long diarioBordoId)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             return await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordoId, usuarioId));
         }
     }

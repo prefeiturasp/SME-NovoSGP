@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
                     if (turmasSemAvaliacao != null && turmasSemAvaliacao.Any())
                     {
-                        var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesQuery());
+                        var componentesCurriculares = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
                         foreach (var turmaSemAvaliacao in turmasSemAvaliacao.GroupBy(a => (a.TurmaCodigo, a.TurmaId)))
                         {
                             try
