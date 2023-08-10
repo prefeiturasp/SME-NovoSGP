@@ -90,6 +90,7 @@
         public const string OPCAO_RESPOSTA_LEITURA = "Leitura";
         public const long OPCAO_RESPOSTA_ESCRITA_ID = 2;
         public const string OPCAO_RESPOSTA_ESCRITA = "Escrita";
+        public const string OPCAO_RESPOSTA_CALCULOS_ID = "3";
         public const string OPCAO_RESPOSTA_CALCULOS = "Cálculos";
         public const string OPCAO_RESPOSTA_INTERPRETACAO_TEXTO = "Interpretação de texto";
     }
