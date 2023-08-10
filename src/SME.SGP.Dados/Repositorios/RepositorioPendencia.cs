@@ -382,7 +382,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var idsPendencias = await database.Conexao.QueryAsync<long>(query, new { planoAeeId });
 
-            return idsPendencias.AsList().ToArray();
+            return idsPendencias.ToArray();
         }
 
         public async Task AtualizarStatusPendenciasPorIds(long[] ids, SituacaoPendencia situacaoPendencia)

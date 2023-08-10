@@ -93,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ccc.componente_curricular_id = cc.id
                             WHERE ccc.componente_curricular_id = @id;";
 
-            return (await database.Conexao.QueryAsync<long>(query, new { id })).AsList().ToArray();
+            return (await database.Conexao.QueryAsync<long>(query, new { id })).ToArray();
         }
 
         public async Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id)
