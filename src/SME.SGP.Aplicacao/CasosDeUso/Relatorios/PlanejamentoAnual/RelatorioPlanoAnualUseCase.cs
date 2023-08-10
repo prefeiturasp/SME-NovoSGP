@@ -9,21 +9,21 @@ using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class RelatorioPlanejamentoAnualUseCase : IRelatorioPlanejamentoAnualUseCase
+    public class RelatorioPlanoAnualUseCase : IRelatorioPlanoAnualUseCase
     {
         private readonly IMediator mediator;
 
-        public RelatorioPlanejamentoAnualUseCase(IMediator mediator)
+        public RelatorioPlanoAnualUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(FiltroRelatorioPlanejamentoAnualDto filtro)
+        public async Task<bool> Executar(FiltroRelatorioPlanoAnualDto filtro)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             filtro.Usuario = $"{usuarioLogado.Nome} ({usuarioLogado.ObterCodigoRfLogin()})";
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioPlanejamentoAnual, filtro, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanejamentoAnual));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioPlanoAnual, filtro, usuarioLogado,rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanoAnual));
         }
     }
 }

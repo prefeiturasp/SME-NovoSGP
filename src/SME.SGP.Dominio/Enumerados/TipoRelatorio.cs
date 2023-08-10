@@ -159,7 +159,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/listagem-ocorrencias", ShortName = "ListagemOcorrencia", Description = "Relatório listagem de ocorrências")]
         ListagemOcorrencias = 52,
             
-        [Display(Name = "relatorios/planejamento-anual", ShortName = "Planejamento Anual", Description = "Relatório Planejamento Anual")]
-        RelatorioPlanejamentoAnual = 53,
+        [Display(Name = "relatorios/plano-anual", ShortName = "Plano Anual", Description = "Relatório Plano Anual")]
+        RelatorioPlanoAnual = 53,
     }
 }

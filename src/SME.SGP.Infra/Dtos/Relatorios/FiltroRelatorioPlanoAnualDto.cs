@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Infra
 {
-    public class FiltroRelatorioPlanejamentoAnualDto
+    public class FiltroRelatorioPlanoAnualDto
     {
         public long Id { get; set; }
         public string Usuario { get; set; }
