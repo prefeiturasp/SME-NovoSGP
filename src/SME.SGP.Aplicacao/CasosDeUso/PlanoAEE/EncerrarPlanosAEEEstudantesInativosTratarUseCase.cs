@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
                                 var turmas = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(codigosTurmasAluno));
 
-                                var codigoTurmaRegular = turmas?.Where(b => b.TipoTurma == TipoTurma.Regular)?.Select(b => long.Parse(b.CodigoTurma)).FirstOrDefault();
+                                var codigoTurmaRegular = turmas!.Where(b => b.TipoTurma == TipoTurma.Regular).Select(b => long.Parse(b.CodigoTurma)).FirstOrDefault();
 
                                 var ultimaSituacaoAlunoNaUE = situacoesAlunoNaUEAnoAtual.Where(b => b.CodigoTurma == codigoTurmaRegular).OrderByDescending(c => c.DataSituacao).FirstOrDefault();
 
