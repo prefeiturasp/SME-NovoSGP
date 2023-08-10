@@ -57,7 +57,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join periodo_escolar_relatorio_pap perp on perp.periodo_relatorio_pap_id = prp.id
                         inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
                         inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id 
-                        where tc.ano_letivo = @anoLetivo";
+                        where tc.ano_letivo = @anoLetivo
+                        order by crp.tipo_periodicidade desc, prp.periodo";
 
             return await database.Conexao.QueryAsync<PeriodosPAPDto>(sql, new { anoLetivo });
         }
