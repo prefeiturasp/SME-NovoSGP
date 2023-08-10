@@ -1,12 +1,11 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Globalization;
 
 namespace SME.SGP.Infra
 {
     public class FrequenciaAlunoDto
     {
-        public const int PERCENTUAL_FREQUENCIA_PRECISAO = 2;
-
         public string AlunoCodigo { get; set; }
         public int TotalAulas { get; set; }
         public int TotalAusencias { get; set; }
@@ -15,7 +14,7 @@ namespace SME.SGP.Infra
         public int TotalRemotos { get; set; }
         public DateTime PeriodoFim { get; set; }
         public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
-        public string PercentualFrequenciaFormatado => FormatarPercentual(PercentualFrequencia);
+        public string PercentualFrequenciaFormatado => FrequenciaAluno.FormatarPercentual(PercentualFrequencia);
         public int TotalPresencaRemoto { get => TotalPresencas - TotalRemotos; }
         public double PercentualFrequencia 
         {
@@ -35,11 +34,6 @@ namespace SME.SGP.Infra
             {
                 return TotalPresencas + TotalAusencias + TotalRemotos;
             }
-        }
-
-        public string FormatarPercentual(double percentual)
-        {
-            return percentual.ToString($"N{PERCENTUAL_FREQUENCIA_PRECISAO}", CultureInfo.CurrentCulture);
         }
     }
 }
