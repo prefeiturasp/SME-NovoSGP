@@ -343,5 +343,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+        
+        [HttpPost("planejamento-anual")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PA_C, Policy = "Bearer")]
+        public async Task<IActionResult> PlanejamentoAnual([FromBody] FiltroRelatorioPlanejamentoAnualDto filtro, [FromServices] IRelatorioPlanejamentoAnualUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
     }
 }
