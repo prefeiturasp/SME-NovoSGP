@@ -37,7 +37,6 @@ namespace SME.SGP.Avaliacao.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

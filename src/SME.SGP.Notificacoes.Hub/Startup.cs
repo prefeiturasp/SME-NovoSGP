@@ -54,7 +54,6 @@ namespace SME.SGP.Notificacoes.Hub
 
         private void RegistrarCache(IServiceCollection services)
         {
-            services.ConfigurarMetricasCache();
             services.ConfigurarCache(Configuration);
 
             services.AddSingleton<IRepositorioUsuario>(serviceProvider =>
@@ -82,7 +81,6 @@ namespace SME.SGP.Notificacoes.Hub
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

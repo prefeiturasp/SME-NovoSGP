@@ -1,4 +1,3 @@
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -57,7 +56,6 @@ namespace SME.SGP.IoC
             RegistrarCasosDeUso(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
-            RegistrarMetricas(services);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
             RegistrarServicoArmazenamento(services, configuration);
@@ -100,17 +98,11 @@ namespace SME.SGP.IoC
             RegistrarServicos(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
-            RegistrarMetricas(services);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
             RegistrarServicoArmazenamento(services,configuration);
 
             RegistrarMapeamentos.Registrar();
-        }
-
-        private void RegistrarMetricas(IServiceCollection services)
-        {
-            services.ConfigurarMetricasCache();
         }
 
         public virtual void RegistrarConsumoFilas(IServiceCollection services, IConfiguration configuration)
@@ -1343,8 +1335,7 @@ namespace SME.SGP.IoC
 
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+            var servicoTelemetria = new ServicoTelemetria(options);
             DapperExtensionMethods.Init(servicoTelemetria);
         }
 

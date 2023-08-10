@@ -51,12 +51,6 @@ namespace SME.SGP.Infra
             return builder.AddCheck<ElasticSearchCheck>("Elastic Search");
         }
 
-        public static void UseHealthCheckPrometheusSgp(this IApplicationBuilder app)
-        {
-            app.UseHealthChecksPrometheusExporter("/health-metrics",
-                options => options.ResultStatusCodes[HealthStatus.Unhealthy] = (int)HttpStatusCode.OK);
-        }
-
         public static void UseHealthChecksSgp(this IApplicationBuilder app)
         {
             app.UseHealthChecks("/healthz", new HealthCheckOptions

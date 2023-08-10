@@ -8,15 +8,12 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Prometheus;
-using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
-using System.Threading;
 using SME.SGP.Infra;
 using SME.SGP.Api.Configuracoes;
 using SME.SGP.IoC.Extensions;
@@ -69,10 +66,6 @@ namespace SME.SGP.Api
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials());
 
-            app.UseMetricServer();
-
-            app.UseHttpMetrics();
-
             app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
@@ -86,7 +79,6 @@ namespace SME.SGP.Api
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

@@ -41,7 +41,6 @@ namespace SME.SGP.Worker.Rabbbit
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

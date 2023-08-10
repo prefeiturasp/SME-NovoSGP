@@ -121,7 +121,6 @@ namespace SME.SGP.ComprimirArquivos.Worker
                 new HttpDiagnosticsSubscriber());
 
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();

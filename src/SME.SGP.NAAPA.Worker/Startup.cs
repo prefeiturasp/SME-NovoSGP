@@ -38,7 +38,6 @@ namespace SME.SGP.NAAPA.Worker
                 new HttpDiagnosticsSubscriber());
 
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

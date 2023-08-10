@@ -6,9 +6,6 @@ using System;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Dados;
-using Prometheus;
-using SME.SGP.Dados.Cache;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -16,8 +13,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IServicoMensageriaLogs servicoMensageriaLogs;
-        private readonly IMetricasCache metricasCache;
-
+        
         protected string NomeServicoCache { get; set; }
 
         protected virtual string ObterValor(string nomeChave)
@@ -29,11 +25,10 @@ namespace SME.SGP.Dados.Repositorios
         protected virtual Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar)
             => throw new NotImplementedException($"Método SalvarValor do serviço {NomeServicoCache} não implementado");
 
-        public RepositorioCache(IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs, IMetricasCache metricasCache)
+        public RepositorioCache(IServicoTelemetria servicoTelemetria, IServicoMensageriaLogs servicoMensageriaLogs)
         {
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
-            this.servicoMensageriaLogs = servicoMensageriaLogs ?? throw new ArgumentNullException(nameof(servicoMensageriaLogs));
-            this.metricasCache = metricasCache ?? throw new ArgumentNullException(nameof(metricasCache));
+            this.servicoMensageriaLogs = servicoMensageriaLogs ?? throw new ArgumentNullException(nameof(servicoMensageriaLogs));          
         }
 
         public string Obter(string nomeChave, string telemetriaNome, bool utilizarGZip = false)
@@ -52,17 +47,10 @@ namespace SME.SGP.Dados.Repositorios
                 if (utilizarGZip)
                     cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
 
-                if (!string.IsNullOrEmpty(cacheParaRetorno))
-                    metricasCache.Hit(nomeChave);
-                else
-                    metricasCache.Miss(nomeChave);
-
                 return cacheParaRetorno;    
             }
             catch (Exception e)
             {
-                metricasCache.Fail(nomeChave);
-
                 var mensagem = new LogMensagem($"Erro ao obter cache - {NomeServicoCache}",
                     LogNivel.Alerta.ToString(),
                     LogContexto.Cache.ToString(),
@@ -98,19 +86,16 @@ namespace SME.SGP.Dados.Repositorios
 
                 if (string.IsNullOrWhiteSpace(stringCache))
                 {
-                    metricasCache.Miss(nomeChave);
                     return await Task.FromResult(string.Empty);
                 }
                 
                 if (utilizarGZip)
                     stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
 
-                metricasCache.Hit(nomeChave);
                 return stringCache;
             }
             catch (Exception e)
             {
-                metricasCache.Fail(nomeChave);
                 var mensagem = new LogMensagem($"Erro ao obter cache - {NomeServicoCache}",
                     LogNivel.Alerta.ToString(),
                     LogContexto.Cache.ToString(),
@@ -151,11 +136,9 @@ namespace SME.SGP.Dados.Repositorios
                     if (utilizarGZip)
                         stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
 
-                    metricasCache.Hit(nomeChave);
                     return JsonConvert.DeserializeObject<T>(stringCache);
                 }
 
-                metricasCache.Miss(nomeChave);
                 var dados = await buscarDados();
                 await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
 
@@ -163,7 +146,6 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception e)
             {
-                metricasCache.Fail(nomeChave);
                 var mensagem = new LogMensagem($"Erro ao obter cache - {NomeServicoCache}",
                     LogNivel.Alerta.ToString(),
                     LogContexto.Cache.ToString(),
@@ -202,19 +184,16 @@ namespace SME.SGP.Dados.Repositorios
 
                 if (string.IsNullOrWhiteSpace(stringCache))
                 {
-                    metricasCache.Miss(nomeChave);
                     return default;
                 }
 
                 if (utilizarGZip)
                     stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
 
-                metricasCache.Hit(nomeChave);
                 return await Task.FromResult(JsonConvert.DeserializeObject<T>(stringCache));
             }
             catch (Exception e)
             {
-                metricasCache.Fail(nomeChave);
                 var mensagem = new LogMensagem($"Erro ao obter cache - {NomeServicoCache}",
                     LogNivel.Alerta.ToString(),
                     LogContexto.Cache.ToString(),
@@ -247,12 +226,9 @@ namespace SME.SGP.Dados.Repositorios
             {
                 await servicoTelemetria.RegistrarAsync(async () => await RemoverValor(nomeChave),
                     NomeServicoCache, $"{NomeServicoCache} Remover async", "", param.ToString());
-
-                metricasCache.Hit(nomeChave, "DELETE");
             }
             catch (Exception e)
             {
-                metricasCache.Fail(nomeChave, "DELETE");
                 var mensagem = new LogMensagem($"Erro ao remover cache - {NomeServicoCache}",
                     LogNivel.Alerta.ToString(),
                     LogContexto.Cache.ToString(),
@@ -287,13 +263,10 @@ namespace SME.SGP.Dados.Repositorios
 
                     await servicoTelemetria.RegistrarAsync(async () => await SalvarValor(nomeChave, valor, minutosParaExpirar),
                         NomeServicoCache, $"{NomeServicoCache} Salvar async", "", param.ToString());
-
-                    metricasCache.Hit(nomeChave, "POST");
                 }
             }
             catch (Exception e)
             {
-                metricasCache.Fail(nomeChave, "POST");
                 var mensagem = new LogMensagem($"Erro ao salvar cache - {NomeServicoCache}",
                     LogNivel.Alerta.ToString(),
                     LogContexto.Cache.ToString(),
