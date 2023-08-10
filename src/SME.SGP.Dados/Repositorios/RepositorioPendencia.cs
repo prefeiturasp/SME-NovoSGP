@@ -20,9 +20,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public void ExclusaoLogicaPendencia(long pendenciaId)
+        public async Task ExclusaoLogicaPendencia(long pendenciaId)
         {
-            database.Conexao.Execute("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
+            await database.Conexao.ExecuteAsync("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
         }
 
         public async Task AtualizarQuantidadeDiasAulas(long pendenciaId, long quantidadeAulas,long quantidadeDias)
@@ -33,12 +33,12 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"where id =@pendenciaId ");
                 await database.Conexao.ExecuteAsync(sql.ToString(), new { pendenciaId, qtdeaulas = quantidadeAulas, qtdedias = quantidadeDias });
         }
-        public void ExclusaoLogicaPendenciaIds(long[] pendenciasIds)
+        public async Task ExclusaoLogicaPendenciaIds(long[] pendenciasIds)
         {
-            database.Conexao.Execute("update pendencia set excluido = true where id = ANY(@pendenciasIds)", new { pendenciasIds });
+            await database.Conexao.ExecuteAsync("update pendencia set excluido = true where id = ANY(@pendenciasIds)", new { pendenciasIds });
         }
 
-        public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
+        public async Task AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
         {
             const string query = @"update pendencia p
                                     set situacao = @situacaoPendencia
@@ -48,10 +48,10 @@ namespace SME.SGP.Dados.Repositorios
                                     and f.fechamento_turma_disciplina_id = @fechamentoId
                                     and not p.excluido ";
 
-            database.Conexao.Execute(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
+            await database.Conexao.ExecuteAsync(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
         }
 
-        public void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
+        public async Task ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
         {
             const string query = @"update pendencia p
                                     set excluido = true
@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and p.tipo = @tipoPendencia
 	                                and f.fechamento_turma_disciplina_id = @fechamentoId";
 
-            database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
+            await database.Conexao.ExecuteAsync(query, new { fechamentoId, tipoPendencia });
         }
 
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)
