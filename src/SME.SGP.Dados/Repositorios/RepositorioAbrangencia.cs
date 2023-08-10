@@ -153,7 +153,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by ue.nome");
             query.AppendLine("limit 10;");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar })).AsList();
+            return await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar });
         }
 
         public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false)
@@ -203,7 +203,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from");
             query.AppendLine("public.v_abrangencia_sintetica where login = @login and historico");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login })).AsList();
+            return await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login });
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false)
@@ -430,9 +430,7 @@ namespace SME.SGP.Dados.Repositorios
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
-            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
-
-            return result;
+            return await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo });
         }
 
         public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)

@@ -222,7 +222,7 @@ namespace SME.SGP.Dados.Repositorios
                        where pa.aula_id = @aula 
                        group by p.tipo";
 
-            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aula = aulaId })).AsList().ToArray();
+            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aula = aulaId })).ToArray();
         }
 
         public async Task<long[]> ListarPendenciasPorAulasId(long[] aulas)
@@ -233,7 +233,7 @@ namespace SME.SGP.Dados.Repositorios
                        where pa.aula_id =ANY(@aulas) 
                        group by p.tipo";
 
-            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aulas })).AsList().ToArray();
+            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { aulas })).ToArray();
         }
 
         public async Task<Turma> ObterTurmaPorPendencia(long pendenciaId)
