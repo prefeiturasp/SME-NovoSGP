@@ -554,7 +554,7 @@ namespace SME.SGP.Dados.Repositorios
                     break;
             }
 
-            await database.ExecuteAsync(query, new { login, perfil });
+            await database.Conexao.ExecuteAsync(query, new { login, perfil });
         }
 
         public async Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId)
