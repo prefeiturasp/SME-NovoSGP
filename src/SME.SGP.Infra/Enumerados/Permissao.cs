@@ -708,6 +708,22 @@
         RCFM_C = 244,
 
         [PermissaoMenu(Menu = "Gestão", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = false, Url = "/relatorios/gestao/ocorrencias", EhSubMenu = true, OrdemSubMenu = 2, SubMenu = "Ocorrências")]
-        ROCO_C = 245
+        ROCO_C = 245,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhConsulta = true,
+        Url = "/relatorios/pap/relatorio-pap", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Relatório de PAP")]
+        RPAP_C = 246,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhInclusao = true,
+            Url = "/relatorios/pap/relatorio-pap", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Relatório de PAP")]
+        RPAP_I = 247,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhExclusao = true,
+            Url = "/relatorios/pap/relatorio-pap", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Relatório de PAP")]
+        RPAP_E = 248,
+
+        [PermissaoMenu(Menu = "PAP", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, EhAlteracao = true,
+            Url = "/relatorios/pap/relatorio-pap", EhSubMenu = true, OrdemSubMenu = 4, SubMenu = "Relatório de PAP")]
+        RPAP_A = 249
     }
 }

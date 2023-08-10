@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
+using System.Globalization;
 
 namespace SME.SGP.Infra
 {
@@ -12,6 +14,8 @@ namespace SME.SGP.Infra
         public int TotalRemotos { get; set; }
         public DateTime PeriodoFim { get; set; }
         public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
+        public string PercentualFrequenciaFormatado => FrequenciaAluno.FormatarPercentual(PercentualFrequencia);
+        public int TotalPresencaRemoto { get => TotalPresencas - TotalRemotos; }
         public double PercentualFrequencia 
         {
             get

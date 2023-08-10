@@ -8,6 +8,7 @@
         public string TipoConfiguracaoPeriodicaRelatorioPAP { get; set; }
         public string DescricaoPeriodo { get { return ObterDescricaoPeriodo(); } }
         public int PeriodoRelatorioPAP { get; set; }
+        public bool PeriodoAberto { get; set; }
 
         private string ObterDescricaoPeriodo()
         {

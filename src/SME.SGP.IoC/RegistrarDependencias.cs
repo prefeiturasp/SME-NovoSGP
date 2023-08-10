@@ -28,7 +28,6 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.SolicitarReiniciarSenha
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
-using SME.SGP.Dados.Cache;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dados.Mapeamentos;
 using SME.SGP.Dados.Repositorios;
@@ -1307,6 +1306,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPeriodosPAPUseCase, ObterPeriodosPAPUseCase>();
             services.TryAddScoped<IObterSecoesPAPUseCase, ObterSecoesPAPUseCase>();
             services.TryAddScoped<IObterQuestionarioPAPUseCase, ObterQuestionarioPAPUseCase>();
+            services.TryAddScoped<IObterAlunosPorPeriodoPAPUseCase, ObterAlunosPorPeriodoPAPUseCase>();
+            services.TryAddScoped<ISalvarRelatorioPAPUseCase, SalvarRelatorioPAPUseCase>();
+            services.TryAddScoped<IExcluirArquivoPAPUseCase, ExcluirArquivoPAPUseCase>();
 
             // Historico Escolar Observação
             services.TryAddScoped<IObterHistoricoEscolarObservacaoUseCase, ObterHistoricoEscolarObservacaoUseCase>();
