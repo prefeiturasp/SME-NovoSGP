@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             }, new { papSecaoId });
         }
 
-        public async Task<IEnumerable<RelatorioPeriodicoPAPResposta>> ObterRespostasPeriodosAnteriores(string codigoAluno, string codigoTurma)
+        public async Task<IEnumerable<RelatorioPeriodicoPAPResposta>> ObterRespostasPeriodosAnteriores(string codigoAluno, string codigoTurma, long periodoRelatorioId)
         {
             var query = @"select rppr.id, rppr.relatorio_periodico_pap_questao_id, rppr.resposta_id, rppr.arquivo_id, rppr.texto, rppr.excluido,
                         rppq.id, rppq.relatorio_periodico_pap_secao_id, rppq.questao_id, rppq.excluido,
@@ -45,10 +45,12 @@ namespace SME.SGP.Dados.Repositorios
                         inner join relatorio_periodico_pap_resposta rppr on rppr.relatorio_periodico_pap_questao_id = rppq.id
                         inner join relatorio_periodico_pap_secao rpps on rpps.id = rppq.relatorio_periodico_pap_secao_id 
                         left join arquivo a on a.id = rppr.arquivo_id 
-                        where rpps.relatorio_periodico_pap_aluno_id = (select rppa.id 
+                        where rpps.relatorio_periodico_pap_aluno_id = (select distinct rppa.id 
 												                        from relatorio_periodico_pap_aluno rppa 
 												                        inner join relatorio_periodico_pap_turma rppt on rppt.id = rppa.relatorio_periodico_pap_turma_id 
 												                        inner join periodo_relatorio_pap prp on prp.id = rppt.periodo_relatorio_pap_id 
+                                                                        inner join periodo_escolar_relatorio_pap perp on perp.periodo_relatorio_pap_id = prp.id
+                        												inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
 												                        inner join configuracao_relatorio_pap crp on crp.id = prp.configuracao_relatorio_pap_id 
                                                                         inner join turma t on t.id = rppt.turma_id
 												                        where crp.inicio_vigencia = (select max(crp_.inicio_vigencia)   
@@ -58,6 +60,10 @@ namespace SME.SGP.Dados.Repositorios
 																			                         inner join configuracao_relatorio_pap crp_ on crp_.id = prp_.configuracao_relatorio_pap_id 
 																			                         where rppa_.aluno_codigo = @codigoAluno 
                                                                                                        and rppt_.turma_id = t.id)
+                                                                        and pe.bimestre < (select max(bimestre) 
+																	                        from periodo_escolar_relatorio_pap perp 
+																	                        inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
+																	                        where perp.periodo_relatorio_pap_id = @periodoRelatorioId)
                         												and prp.periodo = (select max(periodo) 
                         																   from periodo_relatorio_pap prp 
                         																   where prp.configuracao_relatorio_pap_id = crp.id)
@@ -76,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
                                                                                         resposta.Arquivo = arquivo;
 
                                                                                         return resposta;
-                                                                                    }, new { codigoAluno, codigoTurma });
+                                                                                    }, new { codigoAluno, codigoTurma, periodoRelatorioId });
         }
 
         public async Task<bool> RemoverPorArquivoId(long arquivoId)
