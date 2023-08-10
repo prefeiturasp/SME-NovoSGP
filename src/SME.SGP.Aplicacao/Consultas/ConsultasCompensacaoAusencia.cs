@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
             var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
 
             var compensacoes =
-                (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma, professorConsiderado)) : null) ??
+                (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(id, alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma, professorConsiderado)) : null) ??
                 new List<CompensacaoDataAlunoDto>();
 
             foreach (var aluno in compensacao.Alunos)

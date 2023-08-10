@@ -29,10 +29,6 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O bimestre deve ser informado para consulta de compensações no periodo");
 
-            RuleFor(a => a.Alunos)
-                .NotEmpty()
-                .WithMessage("Os alunos devem ser informados para consulta de compensações no periodo");
-
             RuleFor(a => a.TurmaCodigo)
                 .NotEmpty()
                 .WithMessage("O codigo da turma deve ser informado para consulta de compensações no periodo");
