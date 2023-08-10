@@ -110,8 +110,8 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
                 {
                     var validacaoConselhoFinal = await mediator.Send(new ObterUltimoBimestreTurmaQuery(turma));
-                    if (!validacaoConselhoFinal.Item2)
-                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.PARA_ACESSAR_ESTA_ABA_E_PRECISO_REGISTRAR_O_CONSELHO_DE_CLASSE_DO_X_BIMESTRE,validacaoConselhoFinal.Item1));
+                    if (!validacaoConselhoFinal.possuiConselho)
+                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.PARA_ACESSAR_ESTA_ABA_E_PRECISO_REGISTRAR_O_CONSELHO_DE_CLASSE_DO_X_BIMESTRE,validacaoConselhoFinal.bimestre));
                 }
         
                 emFechamento = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today));

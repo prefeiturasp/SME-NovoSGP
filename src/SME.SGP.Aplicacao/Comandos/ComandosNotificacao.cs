@@ -86,15 +86,15 @@ namespace SME.SGP.Aplicacao
             return resultado;
         }
 
-        public Task Salvar(NotificacaoDto notificacaoDto)
+        public async Task Salvar(NotificacaoDto notificacaoDto)
         {
-            var notificacao = MapearParaDominio(notificacaoDto);
-            return servicoNotificacao.Salvar(notificacao);
+            var notificacao = await MapearParaDominio(notificacaoDto);
+            await servicoNotificacao.Salvar(notificacao);
         }
 
-        private Notificacao MapearParaDominio(NotificacaoDto notificacaoDto)
+        private async Task<Notificacao> MapearParaDominio(NotificacaoDto notificacaoDto)
         {
-            var notificacao = new Notificacao()
+            var notificacao = new Notificacao
             {
                 Categoria = notificacaoDto.Categoria,
                 DreId = notificacaoDto.DreId,
@@ -106,28 +106,21 @@ namespace SME.SGP.Aplicacao
                 Tipo = notificacaoDto.Tipo,
                 Codigo = notificacaoDto.Codigo
             };
-
-            TrataUsuario(notificacao, notificacaoDto.UsuarioRf);
-
-            return notificacao;
+            return await TrataUsuario(notificacao, notificacaoDto.UsuarioRf);
         }
 
         private Notificacao ObterPorIdENotificarCasoNaoExista(long notificacaoId)
         {
-            Notificacao notificacao = repositorioNotificacao.ObterPorId(notificacaoId);
-            if (notificacao == null)
-            {
-                throw new NegocioException($"Notificação com id: '{notificacaoId}' não encontrada.");
-            }
-
-            return notificacao;
+            return repositorioNotificacao.ObterPorId(notificacaoId) ??
+                   throw new NegocioException($"Notificação com id: '{notificacaoId}' não encontrada.");
         }
 
-        private async void TrataUsuario(Notificacao notificacao, string usuarioRf)
+        private async Task<Notificacao> TrataUsuario(Notificacao notificacao, string usuarioRf)
         {
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioRf);
             notificacao.Usuario = usuario;
             notificacao.UsuarioId = usuario.Id;
+            return notificacao;
         }
     }
 }

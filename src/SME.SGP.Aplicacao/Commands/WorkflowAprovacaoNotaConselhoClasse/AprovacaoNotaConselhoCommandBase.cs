@@ -89,8 +89,8 @@ namespace SME.SGP.Aplicacao
             return $@"<tr>
                            <td style='padding: 3px;'>{aprovacao.DescricaoComponenteCurricular}</td>
                            <td style='padding: 3px;'>{aprovacao.NumeroAlunoChamada} - {aprovacao.NomeAluno} ({aprovacao.CodigoAluno})</td>
-                           <td style='padding: 3px;'>{notas.Item1}</td>
-                           <td style='padding: 3px;'>{notas.Item2}</td>
+                           <td style='padding: 3px;'>{notas.ValorAnterior}</td>
+                           <td style='padding: 3px;'>{notas.ValorNovo}</td>
                            <td style='padding: 3px;'>{aprovacao.NomeUsuarioSolicitante} ({aprovacao.CodigoRfUsuarioSolicitante})</td>
                            <td style='padding: 3px;'>{aprovacao.CriadoEm.ToString("dd/MM/yyy HH:mm")}</td>
                       </tr>";
@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
         {
             return $@"Alteração em nota/conceito pós-conselho - {ue.Nome} ({ue.Dre.Abreviacao}) - {turma.NomeFiltro} (ano anterior)";
         }
-        private (string, string) ObterValoresNotasNovoAnterior(long? conceitoIdConselhoClasse, double? notaConselhoClasse, long? conceitoId, double? nota)
+        private (string ValorAnterior, string ValorNovo) ObterValoresNotasNovoAnterior(long? conceitoIdConselhoClasse, double? notaConselhoClasse, long? conceitoId, double? nota)
         {
             var valorAnterior = string.Empty;
             var valorNovo = string.Empty;
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
             return (valorAnterior, valorNovo);
         }
 
-        private async Task<(long?, double?)> ObterConceitoNotaFechamentoAluno(long fechamentoTurmaId, string codigoAluno, long componenteCurricularId)
+        private async Task<(long? ConceitoId, double? Nota)> ObterConceitoNotaFechamentoAluno(long fechamentoTurmaId, string codigoAluno, long componenteCurricularId)
         {
 
             var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(fechamentoTurmaId,
@@ -165,8 +165,8 @@ namespace SME.SGP.Aplicacao
                 var notaConceitoFechamento = await ObterConceitoNotaFechamentoAluno(aprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId,
                                                                                     aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo,
                                                                                     aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
-                retorno.ConceitoIdConselhoClasse = notaConceitoFechamento.Item1;
-                retorno.NotaConselhoClasse = notaConceitoFechamento.Item2;
+                retorno.ConceitoIdConselhoClasse = notaConceitoFechamento.ConceitoId;
+                retorno.NotaConselhoClasse = notaConceitoFechamento.Nota;
             }
 
             return retorno;

@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<QuantidadeCriancaDto> Handle(ObterQuantidadeCriancaQuery request, CancellationToken cancellationToken)
         {
             var quantidadeCrianca = new QuantidadeCriancaDto();
-            var alunosMatriculados = new List<QuantidadeAlunoMatriculadoDTO>();
+            var alunosMatriculados = Enumerable.Empty<QuantidadeAlunoMatriculadoDTO>();
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
             var parametros = "";

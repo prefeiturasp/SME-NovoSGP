@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<long>> Handle(ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery request, CancellationToken cancellationToken)
         {
-            var turmasCodigo = new List<long>();
+            var turmasCodigo = Enumerable.Empty<long>();
             var anosLetivosVigentes = String.Join("&anosLetivosVigente=", request.AnosLetivos);
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
