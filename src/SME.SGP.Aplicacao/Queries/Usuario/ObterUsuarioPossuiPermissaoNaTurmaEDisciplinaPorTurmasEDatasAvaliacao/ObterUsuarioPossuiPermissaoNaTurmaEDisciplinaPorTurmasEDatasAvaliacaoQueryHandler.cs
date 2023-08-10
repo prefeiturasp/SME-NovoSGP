@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UsuarioPossuiAtribuicaoEolDto>> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery request, CancellationToken cancellationToken)
         {
-            var retorno = new List<UsuarioPossuiAtribuicaoEolDto>();
+            var retorno = Enumerable.Empty<UsuarioPossuiAtribuicaoEolDto>();
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.PostAsync($"professores/{request.UsuarioLogado.CodigoRf}/disciplina/{request.DisciplinaId.ToString()}/turmas",
                 new StringContent(JsonConvert.SerializeObject(request.TurmasIds), Encoding.UTF8, "application/json-patch+json"));

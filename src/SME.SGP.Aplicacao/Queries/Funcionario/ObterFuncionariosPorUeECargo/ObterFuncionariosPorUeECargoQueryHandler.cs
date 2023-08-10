@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<FuncionarioDTO>> Handle(ObterFuncionariosPorUeECargoQuery request, CancellationToken cancellationToken)
         {
 
-            var listaRetorno = new List<FuncionarioDTO>();
+            var listaRetorno = Enumerable.Empty<FuncionarioDTO>();
 
             if (request.CodigoCargo == (int)Cargo.Supervisor)
                 return await ObterSupervisoresUE(request.CodigoUE);
@@ -38,9 +38,7 @@ namespace SME.SGP.Aplicacao
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    var listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<FuncionarioDTO>>(json) as List<FuncionarioDTO>;
-                    if (listaRetornoEOL.Any())
-                        listaRetorno.AddRange(listaRetornoEOL);
+                    listaRetorno = JsonConvert.DeserializeObject<IEnumerable<FuncionarioDTO>>(json) as List<FuncionarioDTO>;
                 }
 
             }

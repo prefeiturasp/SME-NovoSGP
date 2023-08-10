@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<EncaminhamentoNAAPAResumoDto>> MapearParaDto(IEnumerable<EncaminhamentoNAAPAResumoDto> encaminhamentos, int anoLetivo)
         {
             var listaEncaminhamentos = new List<EncaminhamentoNAAPAResumoDto>();
-            IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = new List<AlunosTurmaProgramaPapDto>();
+            IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = Enumerable.Empty<AlunosTurmaProgramaPapDto>();
             
             if(encaminhamentos.Any())
                 matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(encaminhamentos.Select(x => x.CodigoAluno).ToArray(), anoLetivo);

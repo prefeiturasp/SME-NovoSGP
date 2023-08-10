@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var alunos = new List<AlunoPorTurmaResposta>();
+                var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
 
                 var chaveCache = ObterChaveCacheAlunosTurma(request.TurmaId);
                 var cacheAlunos = cache.Obter(chaveCache);

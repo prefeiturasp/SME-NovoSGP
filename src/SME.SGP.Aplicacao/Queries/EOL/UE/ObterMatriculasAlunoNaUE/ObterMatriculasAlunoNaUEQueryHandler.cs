@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async System.Threading.Tasks.Task<IEnumerable<AlunoPorUeDto>> Handle(ObterMatriculasAlunoNaUEQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<AlunoPorUeDto>();
+            var alunos = Enumerable.Empty<AlunoPorUeDto>();
             var httpClient = _httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"escolas/{request.UeCodigo}/aluno/{request.AlunoCodigo}/matriculas");
 

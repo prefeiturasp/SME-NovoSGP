@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 var respostaErro = resposta?.Content?.ReadAsStringAsync(cancellationToken)?.Result.ToString();
 
                 await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, respostaErro), cancellationToken);
-                return new List<AlunoPorTurmaResposta>();
+                return Enumerable.Empty<AlunoPorTurmaResposta>();
             }
             catch (Exception e)
             {
