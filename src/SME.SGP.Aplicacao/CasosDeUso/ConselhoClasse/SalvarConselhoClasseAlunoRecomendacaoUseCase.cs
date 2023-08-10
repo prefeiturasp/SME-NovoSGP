@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
 
             return conselhoClasseAluno;
         }
-
+        
         private async Task<bool> EstaInativoDentroPeriodoAberturaReabertura(AlunoPorTurmaResposta dadosAluno, int bimestre, long tipoCalendarioId, Turma turma)
         {
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dadosAluno.DataSituacao.Date, bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendarioId));
