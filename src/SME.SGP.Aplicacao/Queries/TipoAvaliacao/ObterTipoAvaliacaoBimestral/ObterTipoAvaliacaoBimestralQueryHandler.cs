@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -17,9 +18,10 @@ namespace SME.SGP.Aplicacao
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
         }
+
         public async Task<TipoAvaliacao> Handle(ObterTipoAvaliacaoBimestralQuery request, CancellationToken cancellationToken)
         {
-            var tipoAvaliacao =  await repositorioCache.ObterAsync("tipo-avaliacao-bimestral", () => repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral());
+            var tipoAvaliacao =  await repositorioCache.ObterAsync(NomeChaveCache.TIPO_AVALIACAO_BIMESTRAL, () => repositorioTipoAvaliacao.ObterTipoAvaliacaoBimestral());
             return tipoAvaliacao;
         }
     }

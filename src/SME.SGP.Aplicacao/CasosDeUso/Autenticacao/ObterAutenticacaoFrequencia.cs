@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AutenticacaoFrequenciaDto> ObterUsuarioAutenticacaoFrequenciaCache(Guid guid)
         {
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_AUTENTICACAO_FREQUENCIA, guid);
+            var chaveCache = string.Format(NomeChaveCache.AUTENTICACAO_FREQUENCIA, guid);
             var autenticacaoFrequenciaDtoCache = await repositorioCache.ObterAsync(chaveCache);
 
             if (string.IsNullOrWhiteSpace(autenticacaoFrequenciaDtoCache))
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverUsuarioAutenticacaoFrequenciaCache(Guid guid)
         {
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_AUTENTICACAO_FREQUENCIA, guid);
+            var chaveCache = string.Format(NomeChaveCache.AUTENTICACAO_FREQUENCIA, guid);
             await mediator.Send(new RemoverChaveCacheCommand(chaveCache));
         }
     }
