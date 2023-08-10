@@ -37,5 +37,6 @@
         public const string PERIODOS_ESCOLARES_CALENDARIO = "periodos-escolares-calendario:{0}";
         public const string TIPO_AVALIACAO_BIMESTRAL = "tipo-avaliacao-bimestral";
         public const string VERSAO = "versao";
+        public const string NOME_CHAVE_COMPENSACAO_TURMA_BIMESTRE = "compensacao-ausencia-turma:turma-{0}-bimestre-{1}";
     }
 }

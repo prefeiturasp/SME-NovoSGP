@@ -132,6 +132,7 @@ namespace SME.SGP.Aplicacao
                         Compartilhada = componenteAtual.Compartilhada,
                         CodigoComponenteCurricularPai = componenteAtual.CodigoComponenteCurricularPai,
                         CodigoComponenteTerritorioSaber = componenteAtual.CodigoComponenteTerritorioSaber,
+                        NomeComponenteInfantil = turma.EhTurmaInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteAtual.Codigo)) : null,
                         Nome = componenteAtual.Descricao,
                         Regencia = componenteAtual.Regencia,
                         RegistroFrequencia = registraFrequencia,
@@ -158,7 +159,7 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente))).ToList();
 
                     componentesCurriculares ??= (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();                    
 
                     componentesCurriculares.ForEach(c =>
                     {
@@ -174,7 +175,7 @@ namespace SME.SGP.Aplicacao
 
                     if (!componentesCurriculares.Any())
                     {
-                        var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+                       var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
 
                         if (componentesCurricularesDaTurma.Any() && componentesCurricularesDaTurma != null)
                         {
