@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -131,6 +132,7 @@ namespace SME.SGP.Aplicacao
                         Compartilhada = componenteAtual.Compartilhada,
                         CodigoComponenteCurricularPai = componenteAtual.CodigoComponenteCurricularPai,
                         CodigoComponenteTerritorioSaber = componenteAtual.CodigoComponenteTerritorioSaber,
+                        NomeComponenteInfantil = turma.EhTurmaInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteAtual.Codigo)) : null,
                         Nome = componenteAtual.Descricao,
                         Regencia = componenteAtual.Regencia,
                         RegistroFrequencia = registraFrequencia,
@@ -199,7 +201,7 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas))?.OrderBy(c => c.Nome)?.ToList();
 
-                var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+                var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
 
                 if (componentesCurricularesJurema == null)
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -340,7 +342,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
-            var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{codigoDisciplina}-{usuario.PerfilAtual}";
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_PLANEJAMENTO_TURMA_COMPONENTE_PERFIL, codigoTurma, codigoDisciplina, usuario.PerfilAtual);
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
             {
                 var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
@@ -353,7 +355,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+            var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
             if (componentesCurricularesJurema == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -416,7 +418,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var chaveCache = $"Disciplinas-Agrupadas-{codigoTurma}-{login}--{perfilAtual}";
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_AGRUPADOS_TURMA_PROFESSOR_PERFIL, codigoTurma, login, perfilAtual);
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
@@ -547,8 +549,7 @@ namespace SME.SGP.Aplicacao
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var ehPefilCJ = perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
-
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA_PROFESSOR_PERFIL, codigoTurma, login, perfilAtual);
             var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
@@ -581,7 +582,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var chaveCache = $"Disciplinas-{codigoTurma}";
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA, codigoTurma);
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));

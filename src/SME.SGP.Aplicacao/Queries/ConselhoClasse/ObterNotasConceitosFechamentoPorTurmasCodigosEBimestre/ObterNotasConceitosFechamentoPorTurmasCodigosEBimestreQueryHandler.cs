@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in request.TurmasCodigos)
             {   
                 var notasConceitosFechamento = (await repositorioCache.ObterAsync(
-                        string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, turmaCodigo),
+                        string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, turmaCodigo),
                         async () => await repositorioConselhoClasseNota
                             .ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre, tipoCalendario: request.TipoCalendario),
                         "Obter notas ou conceitos do fechamento."))
