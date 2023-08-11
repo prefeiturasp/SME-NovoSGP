@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
-            var chaveCache = $"Disciplinas-planejamento-{request.CodigoTurma}-{request.CodigoDisciplina}-{usuario.PerfilAtual}";
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_PLANEJAMENTO_TURMA_COMPONENTE_PERFIL, request.CodigoTurma, request.CodigoDisciplina, usuario.PerfilAtual);
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
             {
                 var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+            var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
             if (componentesCurricularesJurema == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");

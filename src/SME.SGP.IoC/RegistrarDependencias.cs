@@ -647,6 +647,7 @@ namespace SME.SGP.IoC
 
         protected virtual void RegistrarCasosDeUso(IServiceCollection services)
         {
+            services.TryAddScoped<IObterPrefixosCacheUseCase, ObterPrefixosCacheUseCase>();
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
@@ -1300,6 +1301,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioEncaminhamentoNAAPAUseCase, RelatorioEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
             services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
+            services.TryAddScoped<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase, ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
 
             // Relatório PAP
             services.TryAddScoped<IObterPeriodosPAPUseCase, ObterPeriodosPAPUseCase>();

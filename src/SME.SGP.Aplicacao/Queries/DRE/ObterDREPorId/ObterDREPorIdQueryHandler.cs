@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         }
         private string ObterChave(long id)
         {
-            return string.Format(NomeChaveCache.CHAVE_DRE_ID, id);
+            return string.Format(NomeChaveCache.DRE_ID, id);
         }
     }
 }

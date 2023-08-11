@@ -364,7 +364,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private static string ObterChaveFechamentoNotaFinalComponenteTurma(string codigoDisciplina, string codigoTurma)
         {
-            return string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina,
+            return string.Format(NomeChaveCache.FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina,
                 codigoTurma);
         }
 

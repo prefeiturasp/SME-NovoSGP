@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -96,7 +97,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                     if (houveAlteracaoNosDados)
-                        await repositorioCache.RemoverAsync("ObjetivosAprendizagem");
+                        await repositorioCache.RemoverAsync(NomeChaveCache.OBJETIVOS_APRENDIZAGEM);
                 }
             }
             else

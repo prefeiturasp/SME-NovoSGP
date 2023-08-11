@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                                                                                                         NomeTipoUeDre = turma.ObterEscola()
                                                                                   }, 
                                                                                   UsuarioAutenticacao = retornoAutenticacaoEol };
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.CHAVE_AUTENTICACAO_FREQUENCIA, guid), autenticacaoFrequenciaDto, 1));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.AUTENTICACAO_FREQUENCIA, guid), autenticacaoFrequenciaDto, 1));
             return guid;
         }
     }

@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterChave(long turmaId)
         {
-            return string.Format(NomeChaveCache.CHAVE_TURMA_UE_DRE_ID, turmaId); 
+            return string.Format(NomeChaveCache.TURMA_UE_DRE_ID, turmaId); 
         }
     }
 }
