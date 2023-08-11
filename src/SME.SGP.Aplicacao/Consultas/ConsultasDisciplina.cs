@@ -132,6 +132,7 @@ namespace SME.SGP.Aplicacao
                         Compartilhada = componenteAtual.Compartilhada,
                         CodigoComponenteCurricularPai = componenteAtual.CodigoComponenteCurricularPai,
                         CodigoComponenteTerritorioSaber = componenteAtual.CodigoComponenteTerritorioSaber,
+                        NomeComponenteInfantil = turma.EhTurmaInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteAtual.Codigo)) : null,
                         Nome = componenteAtual.Descricao,
                         Regencia = componenteAtual.Regencia,
                         RegistroFrequencia = registraFrequencia,
