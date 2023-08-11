@@ -159,7 +159,7 @@ namespace SME.SGP.Infra
             => DataMatricula.Date > dataReferencia && DataMatricula.Date.Equals(DataSituacao.Date) && CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido);
 
         public bool VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(DateTime dataReferencia)
-            => DataMatricula.Date <= dataReferencia;
+            => DataMatricula.Date <= dataReferencia || Ano == dataReferencia.Year;
 
         public bool VerificaSePodeEditarAluno(PeriodoEscolar ultimoPeriodoEscolar)
         {
