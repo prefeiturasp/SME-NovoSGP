@@ -159,7 +159,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<AulaDto>(query.ToString(), new
             {
-                //mudará para int
                 disciplinaId,
                 turmaId,
                 ueId,

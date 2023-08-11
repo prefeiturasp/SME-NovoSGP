@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<EstudanteDto>> Handle(ObterEstudantesAtivosPorTurmaEDataReferenciaQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<EstudanteDto>();
+            var alunos = Enumerable.Empty<EstudanteDto>();
 
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"alunos/turmas/{request.TurmaCodigo}/ativos");

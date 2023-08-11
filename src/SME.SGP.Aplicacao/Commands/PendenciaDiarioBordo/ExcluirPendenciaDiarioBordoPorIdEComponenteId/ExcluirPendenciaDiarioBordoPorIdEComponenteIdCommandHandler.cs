@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 if (!existePendencia)
                 {
                     await mediator.Send(new ExcluirPendenciaUsuarioPorPendenciaIdEUsuarioIdCommand(pendenciaId, usuario.Id));
-                    repositorioPendencia.ExclusaoLogicaPendencia(pendenciaId);
+                    await repositorioPendencia.ExclusaoLogicaPendencia(pendenciaId);
                 }                    
 
                 return true;

@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
-            this.connectionString = database.ConnectionString; //Raphael. Troquei uma connectionstring que pegava das configurações, pela connectionstring do contexto
+            this.connectionString = database.ConnectionString;
         }
 
         public async Task SalvarVariosAsync(IEnumerable<FrequenciaAluno> entidades)

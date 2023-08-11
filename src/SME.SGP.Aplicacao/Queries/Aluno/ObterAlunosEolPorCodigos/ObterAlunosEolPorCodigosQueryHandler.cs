@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosEolPorCodigos
 
         public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<TurmasDoAlunoDto>();
+            var alunos = Enumerable.Empty<TurmasDoAlunoDto>();
 
             var codigosAlunos = string.Join("&codigosAluno=", request.CodigosAluno);
 

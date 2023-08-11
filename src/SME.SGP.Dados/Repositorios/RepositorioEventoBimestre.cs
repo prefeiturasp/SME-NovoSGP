@@ -27,12 +27,11 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public Task ExcluiEventoBimestre(long eventoId)
+        public async Task ExcluiEventoBimestre(long eventoId)
         {
             string query = @"delete from evento_bimestre where evento_id =  @eventoId";
 
-            database.Execute(query, new { eventoId });
-            return Task.CompletedTask;
+            await database.Conexao.ExecuteAsync(query, new { eventoId });
         }
 
         public async Task<int[]> ObterBimestresEventoPorTipoCalendarioDataReferencia(long tipoCalendarioId, DateTime dataReferencia)

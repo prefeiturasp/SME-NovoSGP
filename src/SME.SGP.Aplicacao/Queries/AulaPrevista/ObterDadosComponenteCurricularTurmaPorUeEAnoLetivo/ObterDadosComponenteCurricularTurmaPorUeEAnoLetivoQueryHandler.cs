@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DadosTurmaAulasAutomaticaDto>> Handle(ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            var listaRetorno = new List<DadosTurmaAulasAutomaticaDto>();
+            var listaRetornoEOL = Enumerable.Empty<DadosTurmaAulasAutomaticaDto>();
 
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
@@ -31,14 +31,12 @@ namespace SME.SGP.Aplicacao
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    var listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<DadosTurmaAulasAutomaticaDto>>(json) as List<DadosTurmaAulasAutomaticaDto>;
-                    if (listaRetornoEOL.Any())
-                        listaRetorno.AddRange(listaRetornoEOL);
+                    listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<DadosTurmaAulasAutomaticaDto>>(json) as List<DadosTurmaAulasAutomaticaDto>;
                 }
 
             }
 
-            return listaRetorno;
+            return listaRetornoEOL;
         }
     }
 }

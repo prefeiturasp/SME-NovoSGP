@@ -19,14 +19,14 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public void ExcluirBimestres(long id)
+        public async Task ExcluirBimestres(long id)
         {
-            database.Conexao.Execute("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @id", new { id });
+            await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @id", new { id });
         }
 
-        public void ExcluirBimestre(long fechamentoReaberturaId, long bimestreId)
+        public async Task ExcluirBimestre(long fechamentoReaberturaId, long bimestreId)
         {
-            database.Conexao.Execute("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId AND FRB.BIMESTRE = @bimestreId", new { fechamentoReaberturaId, bimestreId });
+            await database.Conexao.ExecuteAsync("DELETE FROM FECHAMENTO_REABERTURA_BIMESTRE FRB WHERE FRB.FECHAMENTO_REABERTURA_ID = @fechamentoReaberturaId AND FRB.BIMESTRE = @bimestreId", new { fechamentoReaberturaId, bimestreId });
         }
 
         public async Task ExcluirVinculoDeNotificacoesAsync(long fechamentoReaberturaId)

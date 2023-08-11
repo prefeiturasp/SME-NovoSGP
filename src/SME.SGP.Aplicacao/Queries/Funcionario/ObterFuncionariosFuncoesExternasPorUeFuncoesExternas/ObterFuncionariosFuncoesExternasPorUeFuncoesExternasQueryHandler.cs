@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
 
             var funcoes = String.Join("&funcoes=", request.FuncoesExternasIds);
-            var listaRetorno = new List<FuncionarioFuncaoExternaDTO>();
+            var listaRetorno = Enumerable.Empty<FuncionarioFuncaoExternaDTO>();
 
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
@@ -36,9 +36,7 @@ namespace SME.SGP.Aplicacao
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    var listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<FuncionarioFuncaoExternaDTO>>(json) as List<FuncionarioFuncaoExternaDTO>;
-                    if (listaRetornoEOL.Any())
-                        listaRetorno.AddRange(listaRetornoEOL);
+                    listaRetorno = JsonConvert.DeserializeObject<IEnumerable<FuncionarioFuncaoExternaDTO>>(json) as List<FuncionarioFuncaoExternaDTO>;
                 }
 
             }

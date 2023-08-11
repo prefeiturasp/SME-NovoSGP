@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(evento);
+                await ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(evento);
             }
             catch (NegocioException)
             {
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                     if (existeComunicadoParaEvento)
                         throw new NegocioException($"Existem comunicados vigentes vinculados para o evento ID: {idEvento}");
 
-                    ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(evento);
+                    await ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(evento);
 
                     if (evento.WorkflowAprovacaoId.HasValue)
                         await servicoWorkflowAprovacao.ExcluirWorkflowNotificacoes(evento.WorkflowAprovacaoId.Value);
@@ -194,17 +194,19 @@ namespace SME.SGP.Aplicacao
             return mensagens;
         }
 
-        private void ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(Evento evento)
+        private async Task ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(Evento evento)
         {
             var usuario = servicoUsuario.ObterUsuarioLogado().Result;
 
             if (evento.EhEventoSME() && !usuario.EhPerfilSME())
                 throw new NegocioException(evento.Nome);
 
-            if (evento.EhEventoDRE() && ((!usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.DreEstaNaAbrangencia(usuario.Login, usuario.PerfilAtual, evento.DreId)))
+            var dreEstaNaAbrangencia = await servicoAbrangencia.DreEstaNaAbrangencia(usuario.Login, usuario.PerfilAtual, evento.DreId);
+            if (evento.EhEventoDRE() && ((!usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !dreEstaNaAbrangencia))
                 throw new NegocioException(evento.Nome);
 
-            if (evento.EhEventoUE() && ((!usuario.EhPerfilUE() && !usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !servicoAbrangencia.UeEstaNaAbrangecia(usuario.Login, usuario.PerfilAtual, evento.DreId, evento.UeId)))
+            var ueEstaNaAbrangecia = await servicoAbrangencia.UeEstaNaAbrangecia(usuario.Login, usuario.PerfilAtual, evento.DreId, evento.UeId);
+            if (evento.EhEventoUE() && ((!usuario.EhPerfilUE() && !usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !ueEstaNaAbrangecia))
                 throw new NegocioException(evento.Nome);
         }
     }

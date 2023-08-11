@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<AlunoPorTurmaResposta>();
+            var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
 
             var chaveCache = $"alunos-turma:{request.TurmaCodigo}/considera-inativos:{request.ConsideraInativos}";
             var cacheAlunos = repositorioCache.Obter(chaveCache);

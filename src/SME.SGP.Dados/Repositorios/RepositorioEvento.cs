@@ -771,7 +771,6 @@ namespace SME.SGP.Dados.Repositorios
                                                                      @desconsidera_eventos_sme)";
 
             var dataConsulta = new DateTime(anoLetivo, mes, dia);
-            // Está sendo utilizado a função com intuíto da melhoria de performance
             return await database.Conexao.QueryAsync<CalendarioEventosNoDiaRetornoDto>(query.ToString(), new
             {
                 login = usuario.CodigoRf,
@@ -992,7 +991,6 @@ namespace SME.SGP.Dados.Repositorios
                                                                             @desconsidera_local_dre,
                                                                             @desconsidera_eventos_sme)";
 
-            // Está sendo utilizado a função com intuíto da melhoria de performance
             return await database.Conexao.QueryAsync<EventosPorDiaRetornoQueryDto>(query.ToString(), new
             {
                 login = usuario.CodigoRf,
