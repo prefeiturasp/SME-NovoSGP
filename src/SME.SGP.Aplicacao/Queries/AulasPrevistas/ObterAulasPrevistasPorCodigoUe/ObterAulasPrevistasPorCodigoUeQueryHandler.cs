@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -25,10 +26,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AulaPrevista>> Handle(ObterAulasPrevistasPorCodigoUeQuery request, CancellationToken cancellationToken)
         {
-            var nomeChave = $"Aulas-Previstas-{request.CodigoUe}";
-
             if (request.ObterPorCache)
             {
+                var nomeChave = string.Format(NomeChaveCache.AULAS_PREVISTAS_UE, request.CodigoUe);
                 var atividadesPrevistasNoCache = await repositorioCache.ObterAsync(nomeChave);
 
                 if (string.IsNullOrEmpty(atividadesPrevistasNoCache))

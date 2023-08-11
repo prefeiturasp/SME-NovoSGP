@@ -634,6 +634,7 @@ namespace SME.SGP.IoC
 
         protected virtual void RegistrarCasosDeUso(IServiceCollection services)
         {
+            services.TryAddScoped<IObterPrefixosCacheUseCase, ObterPrefixosCacheUseCase>();
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();

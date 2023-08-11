@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<DateTime> Handle(ObterFimPeriodoRecorrenciaQuery request, CancellationToken cancellationToken)
         {
             var periodos = await repositorioCache.ObterAsync(
-                $"TipoCalendario-{request.TipoCalendarioId}", 
+                string.Format(NomeChaveCache.PERIODOS_ESCOLARES_CALENDARIO, request.TipoCalendarioId),
                 async () => await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(request.TipoCalendarioId));
 
             if (periodos == null || !periodos.Any())

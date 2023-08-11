@@ -99,8 +99,8 @@ namespace SME.SGP.Aplicacao
             var periodoEscolarId = await mediator.Send(new ObterPeriodoEscolarIdPorTurmaBimestreAnoLetivoQuery(fechamentoTurma.TurmaId,
                 fechamentoTurma.Bimestre, turma.AnoLetivo));
             
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolarId, fechamentoTurma.DisciplinaId));
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, fechamentoTurma.Bimestre));
+            await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolarId, fechamentoTurma.DisciplinaId));
+            await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, fechamentoTurma.Bimestre));
         }
     }
 }

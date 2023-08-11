@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Ue> Handle(ObterUeComDrePorIdQuery request, CancellationToken cancellationToken)
         {
-            var nomeChave = string.Format(NomeChaveCache.CHAVE_UE_ID, request.UeId);
+            var nomeChave = string.Format(NomeChaveCache.UE_ID, request.UeId);
             return await repositorioCache.ObterAsync(nomeChave, 
                 async () => await repositorioUe.ObterUeComDrePorId(request.UeId),
                 "Obter UE");
