@@ -212,7 +212,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select 
                            case 
-                            when descricao_infantil != null and descricao_infantil != '' and descricao_infantil != ' '
+                            when descricao_infantil is not null and descricao_infantil != '' and descricao_infantil != ' '
                                then 
                                     descricao_infantil 
                                else 
