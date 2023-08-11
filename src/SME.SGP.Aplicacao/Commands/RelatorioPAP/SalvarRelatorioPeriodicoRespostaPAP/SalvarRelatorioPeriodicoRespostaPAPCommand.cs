@@ -22,9 +22,6 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarRelatorioPeriodicoRespostaPAPCommandValidator()
         {
-            RuleFor(x => x.Resposta)
-                .NotEmpty()
-                .WithMessage("O resposta relatório PAP deve ser informada para cadastro da resposta!");
             RuleFor(x => x.TipoQuestao)
                .NotEmpty()
                .WithMessage("O tipo questão relatório PAP deve ser informada para cadastro da resposta!");
