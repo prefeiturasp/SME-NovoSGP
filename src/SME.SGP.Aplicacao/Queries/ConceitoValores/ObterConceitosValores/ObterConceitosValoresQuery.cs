@@ -6,5 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConceitosValoresQuery : IRequest<IEnumerable<Conceito>>
     {
+        private static ObterConceitosValoresQuery _instance;
+        public static ObterConceitosValoresQuery Instance => _instance ??= new();
     }
 }

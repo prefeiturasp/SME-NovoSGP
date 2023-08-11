@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foram localizados alunos com matrícula ativa na turma, no período escolar selecionado.");
 
             var usuarioLogado = await mediator
-                .Send(new ObterUsuarioLogadoQuery());
+                .Send(ObterUsuarioLogadoQuery.Instance);
 
             var codigosTerritoriosEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
         private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
         {
             var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado.EhProfessor())
             {

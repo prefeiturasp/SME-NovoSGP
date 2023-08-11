@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
             if (ano > 0)
             {
-                var dres = await mediator.Send(new ObterIdsDresQuery());
+                var dres = await mediator.Send(ObterIdsDresQuery.Instance);
 
                 foreach(long dreId in dres)
                 {

@@ -257,7 +257,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string[]> ObterTurmasComplementaresEOL(Turma turma, Ue ue, string codigoAluno)
         {
-            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
             if (turma.DeveVerificarRegraRegulares() || (turmasItinerarioEnsinoMedio?.Any(a => a.Id == (int)turma.TipoTurma) ?? false))
             {

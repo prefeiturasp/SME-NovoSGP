@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var turmas = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
 
             var periodoFechamentoBimestres = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
+            var componentes = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             foreach (var turma in turmas.Where(t => periodoFechamentoBimestres.Any(p => t.UeId == p.PeriodoFechamento.UeId.Value)))
             {

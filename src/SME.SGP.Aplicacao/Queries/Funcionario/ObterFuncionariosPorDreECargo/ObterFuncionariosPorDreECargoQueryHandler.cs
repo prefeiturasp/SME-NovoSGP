@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorDreECargoQuery request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
 
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {

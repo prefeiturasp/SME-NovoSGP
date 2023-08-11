@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             if (ano < 2014 || ano >= DateTimeExtension.HorarioBrasilia().Year)
                 return false;
 
-            var idsDres = await mediator.Send(new ObterIdsDresQuery());
+            var idsDres = await mediator.Send(ObterIdsDresQuery.Instance);
 
             foreach (var idDre in idsDres)
             {

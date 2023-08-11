@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var turmaCompleta = await mediator
                 .Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaCodigo));
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (turmaCompleta == null)
                 throw new NegocioException("Não foi possível obter a turma.");
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo || a.Id == filtro.DisciplinaCodigo);
 
             var retorno = new NotasConceitosRetornoDto();
-            var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
+            var tipoAvaliacaoBimestral = await mediator.Send(ObterTipoAvaliacaoBimestralQuery.Instance);
 
             retorno.BimestreAtual = filtro.Bimestre;
             retorno.MediaAprovacaoBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));

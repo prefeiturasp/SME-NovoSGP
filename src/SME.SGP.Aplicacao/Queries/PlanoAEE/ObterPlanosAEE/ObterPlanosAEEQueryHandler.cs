@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<PlanoAEEResumoDto>> Handle(ObterPlanosAEEQuery request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             bool ehAdmin = usuario.EhAdmGestao();
             bool ehPAEE = usuario.EhProfessorPaee();
             var turmasCodigos = await ObterCodigosTurmas(request.UeId, ehAdmin);

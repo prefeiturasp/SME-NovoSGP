@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var dres = await mediator.Send(new ObterIdsDresQuery());
+            var dres = await mediator.Send(ObterIdsDresQuery.Instance);
             foreach (var dreId in dres)
             {
                 var dre = new FiltroConsolidacaoMatriculaDreDto(dreId, anosLetivosParaConsolidar);

@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var pendenciaId = await mediator.Send(new ObterIdPendenciaDiarioBordoPorAulaEComponenteIdQuery(request.AulaId, request.ComponenteCurricularId), cancellationToken);
 
             if (pendenciaId > 0)

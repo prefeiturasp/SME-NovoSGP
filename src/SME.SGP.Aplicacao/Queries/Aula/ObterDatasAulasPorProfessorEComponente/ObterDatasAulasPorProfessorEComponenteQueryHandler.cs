@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(request.TurmaCodigo);
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
 
             var componentesCurricularesEolProfessor = (await mediator

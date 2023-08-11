@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var codigoTurma = long.Parse(request.Turma.CodigoTurma);
             var registrosFrequencias = new RegistroFrequenciaPorDataPeriodoDto();
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhGestorEscolar());
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(request.AlunosDaTurma.Select(x => x.CodigoAluno).ToArray(), request.Turma.AnoLetivo);

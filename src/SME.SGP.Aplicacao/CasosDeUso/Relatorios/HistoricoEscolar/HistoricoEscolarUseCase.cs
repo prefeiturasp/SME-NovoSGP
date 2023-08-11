@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroHistoricoEscolarDto.DreCodigo));
             await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroHistoricoEscolarDto.UeCodigo));
             await mediator.Send(new ValidaSeExisteTurmaPorCodigoQuery(filtroHistoricoEscolarDto.TurmaCodigo));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             filtroHistoricoEscolarDto.Usuario = usuarioLogado ?? throw new NegocioException("Não foi possível localizar o usuário.");
 
             var historicoEscolarObservacoes = filtroHistoricoEscolarDto.Alunos.Select(t => new HistoricoEscolarObservacaoDto(t.AlunoCodigo, t.ObservacaoComplementar));
