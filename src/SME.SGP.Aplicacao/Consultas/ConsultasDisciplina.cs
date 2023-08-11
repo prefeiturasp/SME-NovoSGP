@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -140,8 +141,8 @@ namespace SME.SGP.Aplicacao
                         TerritorioSaber = componenteAtual.TerritorioSaber,
                         LancaNota = componenteAtual.LancaNota,
                         TurmaCodigo = componenteAtual.TurmaCodigo,
-                        Professor = componenteAtual.Professor,
-                        NomeComponenteInfantil = disciplinasAtribuicaoEol.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteAtual.Codigo)?.NomeComponenteInfantil
+                        Professor = componenteAtual.Professor
+                        //NomeComponenteInfantil = disciplinasAtribuicaoEol.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteAtual.Codigo)?.NomeComponenteInfantil
                     });
                 }
 

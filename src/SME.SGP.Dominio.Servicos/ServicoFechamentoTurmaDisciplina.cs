@@ -477,7 +477,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private static string ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(string codigoTurma, string codigoAluno)
         {
-            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, codigoTurma,codigoAluno);
+            return string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, codigoTurma,codigoAluno);
         }
 
         private static void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota, bool inativo)

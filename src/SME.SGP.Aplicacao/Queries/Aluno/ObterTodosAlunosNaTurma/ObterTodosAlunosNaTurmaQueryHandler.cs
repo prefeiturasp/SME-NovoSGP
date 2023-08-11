@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTodosAlunosNaTurmaQuery request, CancellationToken cancellationToken)
         {
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_ALUNOS_TURMA, request.CodigoTurma, request.CodigoAluno?.ToString());
+            var chaveCache = string.Format(NomeChaveCache.ALUNOS_TURMA, request.CodigoTurma, request.CodigoAluno?.ToString());
             return await repositorioCache.ObterAsync(chaveCache,
                 async () => await BuscarAlunosTurma(request.CodigoTurma, request.CodigoAluno),
                 request.TempoArmazenamentoCache);
