@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestoesPorQuestionarioPorIdQuery request, CancellationToken cancellationToken)
         {
-            var dadosQuestionario = await repositorioCache.ObterAsync(string.Format(NomeChaveCache.CHAVE_QUESTIONARIO, request.QuestionarioId),
+            var dadosQuestionario = await repositorioCache.ObterAsync(string.Format(NomeChaveCache.QUESTIONARIO, request.QuestionarioId),
                 async () => await repositorioQuestionario.ObterQuestoesPorQuestionarioId(request.QuestionarioId),
                 "Obter questionário");
 

@@ -230,7 +230,7 @@ namespace SME.SGP.Aplicacao
                 await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
                 unitOfWork.PersistirTransacao();
 
-                await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, bimestre), cancellationToken);
+                await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, bimestre), cancellationToken);
 
                 var alunosDaTurma = (await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma), cancellationToken)).ToList();
 

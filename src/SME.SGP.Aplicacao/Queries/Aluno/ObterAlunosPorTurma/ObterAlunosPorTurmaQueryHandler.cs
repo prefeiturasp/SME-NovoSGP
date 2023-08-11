@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
 
-            var chaveCache = $"alunos-turma:{request.TurmaCodigo}/considera-inativos:{request.ConsideraInativos}";
+            var chaveCache = string.Format(NomeChaveCache.ALUNOS_TURMA_INATIVOS, request.TurmaCodigo, request.ConsideraInativos);
             var cacheAlunos = repositorioCache.Obter(chaveCache);
             if (cacheAlunos != null)
                 alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(cacheAlunos);
