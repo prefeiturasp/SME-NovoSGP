@@ -109,9 +109,6 @@ namespace SME.SGP.Aplicacao
                 var componentesCurricularesAtribuicaoEol = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
-                var disciplinasAtribuicaoEol = await repositorioComponenteCurricular
-                         .ObterDisciplinasPorIds(componentesCurricularesAtribuicaoEol.Select(a => a.Codigo).Distinct().ToArray());
-
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
 
@@ -134,7 +131,7 @@ namespace SME.SGP.Aplicacao
                         Compartilhada = componenteAtual.Compartilhada,
                         CodigoComponenteCurricularPai = componenteAtual.CodigoComponenteCurricularPai,
                         CodigoComponenteTerritorioSaber = componenteAtual.CodigoComponenteTerritorioSaber,
-                        NomeComponenteInfantil = turma.EhTurmaInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteAtual.Codigo)) : null,
+                        NomeComponenteInfantil = turma.EhTurmaInfantil ? componenteAtual.DescricaoComponenteInfantil : null,
                         Nome = componenteAtual.Descricao,
                         Regencia = componenteAtual.Regencia,
                         RegistroFrequencia = registraFrequencia,
@@ -142,7 +139,6 @@ namespace SME.SGP.Aplicacao
                         LancaNota = componenteAtual.LancaNota,
                         TurmaCodigo = componenteAtual.TurmaCodigo,
                         Professor = componenteAtual.Professor
-                        //NomeComponenteInfantil = disciplinasAtribuicaoEol.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteAtual.Codigo)?.NomeComponenteInfantil
                     });
                 }
 
