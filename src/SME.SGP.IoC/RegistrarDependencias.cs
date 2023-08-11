@@ -1,4 +1,3 @@
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -1343,8 +1342,7 @@ namespace SME.SGP.IoC
 
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+            var servicoTelemetria = new ServicoTelemetria(options);
             DapperExtensionMethods.Init(servicoTelemetria);
         }
 

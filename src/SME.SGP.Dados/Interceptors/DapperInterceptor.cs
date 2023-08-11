@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Microsoft.ApplicationInsights;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -19,37 +18,7 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<dynamic> Query(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null, string queryName = "query")
         {
-
             throw new NotImplementedException("Telemtria não implementada para esta função;");
-
-            //var result = servicoTelemetria.RegistrarAsync( async () => await Task.FromResult(SqlMapper.Query(cnn, sql, param, transaction, buffered, commandTimeout, commandType)), "Postgres", "Query", sql);
-
-
-            //return default;
-            //var inicioOperacao = DateTime.UtcNow;
-            //var timer = System.Diagnostics.Stopwatch.StartNew();
-            //IEnumerable<dynamic> result = default;
-            //try
-            //{
-            //    var transactionElk = Agent.Tracer.CurrentTransaction;
-
-            //    transactionElk.CaptureSpan("Query", "Postgres", () =>
-            //    {
-            //        result = SqlMapper.Query(cnn, sql, param, transaction, buffered, commandTimeout, commandType);
-            //    });
-
-            //    timer.Stop();
-
-            //    insightsClient?.TrackDependency("PostgreSQL", "Query", sql, inicioOperacao, timer.Elapsed, true);
-
-            //    return result;
-            //}
-            //catch (Exception ex)
-            //{
-            //    insightsClient?.TrackDependency("PostgreSQL", "Query", $"{sql} -> erro: {ex.Message}", inicioOperacao, timer.Elapsed, false);
-            //    throw ex;
-            //}
-
         }
         public static IEnumerable<T> Query<T>(this IDbConnection Connection, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null, string queryName = "")
         {
