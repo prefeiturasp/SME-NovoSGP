@@ -232,7 +232,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
 
             // Obter Perfil do token atual
-            var guidPerfil = await mediator.Send(new ObterPerfilDoTokenQuery());
+            var guidPerfil = await mediator.Send(ObterPerfilDoTokenQuery.Instance);
 
             // Busca lista de permissões do EOL
             var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(login, guidPerfil);
@@ -272,7 +272,7 @@ namespace SME.SGP.Aplicacao
 
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEolSemSenha(login);
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var suporte = new SuporteUsuario
             {

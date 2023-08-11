@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int[]> Executar()
         {
-            var codigoRf = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            var codigoRf = await mediator.Send(ObterUsuarioLogadoRFQuery.Instance);
 
             var listaRetorno = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, null, 0,
                 codigoRf, null, true))).ToList();

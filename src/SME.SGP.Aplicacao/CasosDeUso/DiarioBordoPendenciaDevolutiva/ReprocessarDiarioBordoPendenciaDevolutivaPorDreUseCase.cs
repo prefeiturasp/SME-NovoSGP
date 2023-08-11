@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 if (parametroPermitiGerarPendenciaDevolutiva.Ativo && parametroDataInicioGeracaoPendencias.Ativo)
                 {
                     var filtro = param.ObterObjetoMensagem<FiltroDiarioBordoPendenciaDevolutivaDto>();
-                    var dres = await mediator.Send(new ObterIdsDresQuery());
+                    var dres = await mediator.Send(ObterIdsDresQuery.Instance);
                     foreach (var dreId in dres)
                     {
                         await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorUe,

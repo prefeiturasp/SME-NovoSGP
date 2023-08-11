@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAvaliacaoProfessorCommand request, CancellationToken cancellationToken)
         {
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesQuery());
+            var componentesCurriculares = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
             foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade != ModalidadeTipoCalendario.Infantil))

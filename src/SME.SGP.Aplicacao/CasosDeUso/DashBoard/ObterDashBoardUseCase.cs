@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DashBoard>> Executar()
         {
-            return await mediator.Send(new ObterDashBoardPorPerfilQuery());
+            return await mediator.Send(ObterDashBoardPorPerfilQuery.Instance);
         }
     }
 }

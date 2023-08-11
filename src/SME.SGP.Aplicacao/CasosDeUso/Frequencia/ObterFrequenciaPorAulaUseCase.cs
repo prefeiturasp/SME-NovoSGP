@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
 
             var usuarioLogado = await mediator
-                .Send(new ObterUsuarioLogadoQuery());
+                .Send(ObterUsuarioLogadoQuery.Instance);
 
             var professorConsiderado = usuarioLogado.Login;
 

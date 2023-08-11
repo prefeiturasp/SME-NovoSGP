@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ConsolidarFrequenciasTurmas(FiltroAnoDto filtroAno, double percentualMinimo, double percentualMinimoInfantil)
         {
-            var dres = await mediator.Send(new ObterIdsDresQuery());
+            var dres = await mediator.Send(ObterIdsDresQuery.Instance);
 
             foreach(var dre in dres)
             {

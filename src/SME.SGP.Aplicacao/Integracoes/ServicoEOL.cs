@@ -579,7 +579,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var dadosUsuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
 
                 if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)

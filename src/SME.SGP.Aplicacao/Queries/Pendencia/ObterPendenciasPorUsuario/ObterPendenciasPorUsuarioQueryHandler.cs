@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PendenciaDto>> MapearParaDto(IEnumerable<Pendencia> pendencias)
         {
             var listaPendenciasDto = new List<PendenciaDto>();
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             foreach (var pendencia in pendencias)
                 listaPendenciasDto.AddRange(await ObterPendencias(pendencia, usuarioLogado.CodigoRf));

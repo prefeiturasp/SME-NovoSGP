@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private Task<Usuario> ObterUsuarioLogado()
-            => mediator.Send(new ObterUsuarioLogadoQuery());
+            => mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {

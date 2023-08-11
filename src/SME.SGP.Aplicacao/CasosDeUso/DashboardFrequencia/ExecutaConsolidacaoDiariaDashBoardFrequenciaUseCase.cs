@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtroConsolicacao = mensagem.ObterObjetoMensagem<FiltroConsolicacaoDiariaDashBoardFrequenciaDTO>();
 
-            var uesCodigos = await mediator.Send(new ObterCodigosUEsQuery());
+            var uesCodigos = await mediator.Send(ObterCodigosUEsQuery.Instance);
 
             if (uesCodigos == null || !uesCodigos.Any())
                 return false;

@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorProfessorETurmaParaPlanejamentoQuery request, CancellationToken cancellationToken)
         {
             List<DisciplinaDto> disciplinasDto;
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
             var chaveCache = $"Disciplinas-planejamento-{request.CodigoTurma}-{request.CodigoDisciplina}-{usuario.PerfilAtual}";

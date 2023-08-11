@@ -311,7 +311,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task ExcluirPendenciaAusenciaFechamento(long disciplinaId, long turmaId)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(disciplinaId, null, turmaId, usuarioLogado));
         }
 

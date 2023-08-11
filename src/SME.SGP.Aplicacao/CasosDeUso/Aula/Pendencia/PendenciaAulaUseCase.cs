@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
                 if (DateTimeExtension.HorarioBrasilia() >= dataDefinida)
                 {
-                    var dres = await mediator.Send(new ObterIdsDresQuery());
+                    var dres = await mediator.Send(ObterIdsDresQuery.Instance);
 
                     foreach (var dreId in dres)
                         await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDre, new DreDto(dreId)));

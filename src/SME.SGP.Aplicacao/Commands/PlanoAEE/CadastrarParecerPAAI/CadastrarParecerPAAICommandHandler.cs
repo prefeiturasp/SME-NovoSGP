@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.Commands
             if (planoAEE == null)
                 throw new NegocioException("Plano AEE não encontrado!");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
 
             if (planoAEE.ResponsavelPaaiId != usuarioLogado)
                 throw new NegocioException("O usuário atual não é o PAAI responsável por este Plano AEE");

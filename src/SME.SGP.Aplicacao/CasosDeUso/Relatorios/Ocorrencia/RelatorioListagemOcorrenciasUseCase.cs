@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             ValidarPreenchimento(param);
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery()) ?? throw new NegocioException("Não foi possível localizar o usuário.");
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance) ?? throw new NegocioException("Não foi possível localizar o usuário.");
             param.NomeUsuario = usuario.Nome;
             param.CodigoRf = usuario.CodigoRf;
 

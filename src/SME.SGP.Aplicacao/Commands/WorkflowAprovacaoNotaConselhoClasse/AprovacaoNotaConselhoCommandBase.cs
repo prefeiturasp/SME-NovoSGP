@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task CarregarConceitos()
         {
-            Conceitos = (await mediator.Send(new ObterConceitosValoresQuery())).ToList();
+            Conceitos = (await mediator.Send(ObterConceitosValoresQuery.Instance)).ToList();
         }
 
         private async Task<IEnumerable<Ue>> ObterUes(long[] ueIds)

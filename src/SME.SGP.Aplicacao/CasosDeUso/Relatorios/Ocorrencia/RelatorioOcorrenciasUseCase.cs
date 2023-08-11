@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
         public RelatorioOcorrenciasUseCase(IMediator mediator) : base(mediator){}
         public async Task<bool> Executar(FiltroImpressaoOcorrenciaDto filtro)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             filtro.UsuarioNome = usuarioLogado.Nome;
             filtro.UsuarioRf = usuarioLogado.CodigoRf;
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioOcorrencias, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosOcorrencias));

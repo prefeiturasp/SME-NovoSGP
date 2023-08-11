@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> AtribuidoAoMesmoUsuario(PlanoAEE planoAEE)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             return usuarioId == planoAEE.ResponsavelPaaiId;
         }
 
