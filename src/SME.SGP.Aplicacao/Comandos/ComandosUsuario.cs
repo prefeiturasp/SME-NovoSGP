@@ -143,7 +143,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private Task SalvarCacheUsuario(Usuario usuario)
-            => mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.CHAVE_USUARIO, usuario.Login)
+            => mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.USUARIO, usuario.Login)
                                                                 , usuario));
 
         private AdministradorSuporteDto ObterAdministradorSuporte(SuporteUsuario suporte, Usuario usuarioSimulado)
@@ -251,7 +251,7 @@ namespace SME.SGP.Aplicacao
         public void Sair()
         {
             var login = servicoUsuario.ObterLoginAtual();
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
+            var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
             repositorioCache.SalvarAsync(chaveCache, string.Empty);
         }
 

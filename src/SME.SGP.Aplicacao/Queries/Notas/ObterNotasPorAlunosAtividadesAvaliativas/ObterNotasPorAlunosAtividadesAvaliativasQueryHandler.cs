@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<NotaConceito>> ObterCacheAtividadeAvaliativa(ObterNotasPorAlunosAtividadesAvaliativasQuery request)
         {
-            var nomeChave = $"Atividade-Avaliativa-{request.CodigoTurma}";
+            var nomeChave = string.Format(NomeChaveCache.ATIVIDADES_AVALIATIVAS_TURMA, request.CodigoTurma);
             var atividadesAvaliativasNoCache = await repositorioCache.ObterAsync(nomeChave);
 
             if (string.IsNullOrEmpty(atividadesAvaliativasNoCache))

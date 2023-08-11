@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FechamentoPorTurmaPeriodoCCDto>> Handle(ObterFechamentosPorTurmaPeriodoCCQuery request, CancellationToken cancellationToken)
         {
-            var nomeChave = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+            var nomeChave = string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                 request.TurmaId, request.PeriodoEscolarId, request.ComponenteCurricularId);
 
             var retornoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoPorTurmaPeriodoCCDto>>(nomeChave,
