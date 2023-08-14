@@ -51,5 +51,6 @@
         public const string RotaRelatoriosSolicitadosAnaliticoSondagemTodasDresUes = "sr.relatorios.solicitados.sondagem.analitico.todas.dres.ues";
         public const string RotaRelatoriosSolicitadosControleFrequenciaMensal = "sr.relatorios.solicitados.controle.frequencia.mensal";
         public const string RotaRelatoriosSolicitadosListagemOcorrencias = "sr.relatorios.solicitados.listagem.ocorrencias";
+        public const string RotaRelatoriosSolicitadosPlanoAnual = "sr.relatorios.solicitados.planoanual";
     }
 }
