@@ -981,6 +981,7 @@ namespace SME.SGP.IoC
 
             // Relatórios
             services.TryAddScoped<IRelatorioPlanoAulaUseCase, RelatorioPlanoAulaUseCase>();
+            services.TryAddScoped<IRelatorioPlanoAnualUseCase, RelatorioPlanoAnualUseCase>();
             services.TryAddScoped<IRelatorioUsuariosUseCase, RelatorioUsuariosUseCase>();
             services.TryAddScoped<IRelatorioControleFrequenciaMensalUseCase, RelatorioControleFrequenciaMensalUseCase>();
 
