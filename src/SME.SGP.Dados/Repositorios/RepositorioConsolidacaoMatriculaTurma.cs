@@ -162,7 +162,8 @@ namespace SME.SGP.Dados
                                              inner join ue on ue.id = t.ue_id 
                                              inner join dre on dre.id = ue.dre_id 
                                              where t.ano_letivo = @anoLetivo 
-                                               and t.modalidade_codigo = @modalidade");
+                                               and t.modalidade_codigo = @modalidade
+                                               and t.tipo_turma = '1'");
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId ");
