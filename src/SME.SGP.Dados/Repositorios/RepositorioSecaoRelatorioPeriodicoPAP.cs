@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -21,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
                         case when questao is null then false else true end QuestoesObrigatorias,
                         alunoTurma.PAPSecaoId, 
                         case when alunoTurma.concluido is null then false else true end Concluido,
-                        alunoTurma.id PAPTurmaId, alunoTurma.id PAPAlunoId,
+                        alunoTurma.PAPTurmaId, alunoTurma.PAPAlunoId,
                         alunoTurma.id,
                         alunoTurma.AlteradoEm,
                         alunoTurma.AlteradoPor,
@@ -60,12 +59,15 @@ namespace SME.SGP.Dados.Repositorios
                 sql, (secaoPAP, auditoria) =>
                 {
                     secaoPAP.Auditoria = auditoria;
+                    if (secaoPAP.PAPAlunoId.HasValue)
+                        secao.PAPAlunoId = secaoPAP.PAPAlunoId.GetValueOrDefault();
+                    if (secaoPAP.PAPTurmaId.HasValue)
+                        secao.PAPTurmaId = secaoPAP.PAPTurmaId.GetValueOrDefault();
+
                     return secaoPAP;
                 }, 
                 new { codigoTurma, codigoAluno, pAPPeriodoId });
 
-            secao.PAPTurmaId = secoes.FirstOrDefault()?.PAPTurmaId;
-            secao.PAPAlunoId = secoes.FirstOrDefault()?.PAPAlunoId;
             secao.Secoes.AddRange(secoes);
 
             return secao;
