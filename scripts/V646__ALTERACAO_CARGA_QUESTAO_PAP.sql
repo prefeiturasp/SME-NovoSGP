@@ -93,50 +93,83 @@ begin
 	VALUES(questaoId, 28, 'Analisar, interpretar situações-problema do campo multiplicativo com números naturais', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 29, 'Solucionar problemas envolvendo regularidades', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 29, 'Resolver situações-problema do campo multiplicativo com números naturais', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 30, 'Identificar o valor de cédulas e moedas', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 30, 'Analisar, interpretar situações-problema do campo aditivo com números racionais (com representação decimal)', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 31, 'Realizar operações envolvendo dinheiro', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 31, 'Resolver situações-problema do campo aditivo com números racionais (com representação decimal)', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 32, 'Utilizar o relógio analógico para identificar as horas e minutos', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 32, 'Analisar, interpretar situações-problema do campo multiplicativo com números racionais (com representação decimal)', NOW(), 'SISTEMA', '0');
+
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 33, 'Resolver situações-problema do campo multiplicativo com números racionais (com representação decimal)', NOW(), 'SISTEMA', '0');
+
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 34, 'Analisar, interpretar situações-problema do campo aditivo com números racionais (com representação fracionária)', NOW(), 'SISTEMA', '0');
+
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 35, 'Resolver situações-problema do campo multiplicativo com números racionais (com representação fracionária)', NOW(), 'SISTEMA', '0');
+
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 36, 'Identificar padrões numéricos e figurais', NOW(), 'SISTEMA', '0');
+
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 37, 'Identificar sequências numéricas ou figurais recursivas', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 33, 'Interpretar as ideias contidas nas situações problema do campo aditivo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 38, 'Realizar generalizações', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 34, 'Resolver situações problema do campo aditivo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 39, 'Analisar, interpretar problemas envolvendo regularidades', NOW(), 'SISTEMA', '0');
+
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 40, 'Solucionar problemas envolvendo regularidades', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 35, 'Interpretar as ideias contidas nas situações problema do campo multiplicativo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 41, 'Identificar o valor de cédulas e moedas', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 36, 'Resolver situações problema do campo Multiplicativo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 42, 'Realizar operações envolvendo dinheiro', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 37, 'Mensurar grandezas e medidas com', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 43, 'Utilizar o relógio analógico para identificar as horas e minutos', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 38, 'Localizar pessoas e objetos em representações planas', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 44, 'Interpretar as ideias contidas nas situações problema do campo aditivo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 39, 'Movimentar pessoas e objetos em representações planas', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 45, 'Resolver situações problema do campo aditivo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 40, 'Nomear as características dos sólidos geométricos', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 46, 'Interpretar as ideias contidas nas situações problema do campo multiplicativo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 41, 'Identificar as características dos sólidos geométricos', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 47, 'Resolver situações problema do campo Multiplicativo, utilizando sistema monetário', NOW(), 'SISTEMA', '0');
+	
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 48, 'Mensurar grandezas e medidas com', NOW(), 'SISTEMA', '0');
+	
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 49, 'Localizar pessoas e objetos em representações planas', NOW(), 'SISTEMA', '0');
+	
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 50, 'Movimentar pessoas e objetos em representações planas', NOW(), 'SISTEMA', '0');
+	
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 51, 'Nomear as características dos sólidos geométricos', NOW(), 'SISTEMA', '0');
+	
+	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+	VALUES(questaoId, 52, 'Identificar as características dos sólidos geométricos', NOW(), 'SISTEMA', '0');
 		
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 42, 'Identificar as planificações dos sólidos geométricos', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 53, 'Identificar as planificações dos sólidos geométricos', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 43, 'Ler e interpretar dados em tabelas simples e de dupla entrada', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 54, 'Ler e interpretar dados em tabelas simples e de dupla entrada', NOW(), 'SISTEMA', '0');
 	
 	INSERT INTO opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
-	VALUES(questaoId, 44, 'Ler e interpretar dados em e gráficos, de colunas, barras e de setor', NOW(), 'SISTEMA', '0');
+	VALUES(questaoId, 55, 'Ler e interpretar dados em e gráficos, de colunas, barras e de setor', NOW(), 'SISTEMA', '0');
 end $$;
