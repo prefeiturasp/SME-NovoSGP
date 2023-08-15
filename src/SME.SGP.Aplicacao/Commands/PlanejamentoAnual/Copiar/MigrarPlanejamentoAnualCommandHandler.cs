@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                                 excessoes.Add($"Você não possui atribuição na turma {checarTurma.Nome} - {periodo.Bimestre}° Bimestre.");
                         }
 
-                        var periodoEmAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(checarTurma, DateTime.Today, periodo.Bimestre, checarTurma.AnoLetivo == DateTime.Today.Year)).Result;
+                        var periodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(checarTurma, DateTime.Today, periodo.Bimestre, checarTurma.AnoLetivo == DateTime.Today.Year));
                         if (!periodoEmAberto)
                             excessoes.Add($"O {periodo.Bimestre}° Bimestre não está aberto.");
                     }

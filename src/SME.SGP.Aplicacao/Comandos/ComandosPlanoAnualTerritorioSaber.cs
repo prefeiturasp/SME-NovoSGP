@@ -51,7 +51,8 @@ namespace SME.SGP.Aplicacao
                 PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, usuarioAtual.EhProfessor() ? usuarioAtual.CodigoRf : null);
                 if (planoAnualTerritorioSaber != null)
                 {
-                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now).Result)
+                    var podePersistirTurmaDisciplina = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now);
+                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistirTurmaDisciplina)
                         throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                 }
                 listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto() { DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,

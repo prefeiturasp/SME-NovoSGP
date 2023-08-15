@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao
 
             if (usuario.EhPerfilProfessor())
             {
-                var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
+                var turmasAtribuidasAoProfessor = await consultasProfessor.Listar(usuario.CodigoRf);
 
                 var lstTurmasCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(turma.ModalidadeCodigo, null, null,
                                         Convert.ToInt64(disciplinaId), usuario.CodigoRf, null, true);

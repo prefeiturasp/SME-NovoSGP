@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IConsultasProfessor
     {
-        IEnumerable<ProfessorTurmaDto> Listar(string codigoRf);
+        Task<IEnumerable<ProfessorTurmaDto>> Listar(string codigoRf);
 
         Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId,string nomeProfessor);
 

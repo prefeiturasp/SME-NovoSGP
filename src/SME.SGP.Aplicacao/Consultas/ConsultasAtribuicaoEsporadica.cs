@@ -36,26 +36,26 @@ namespace SME.SGP.Aplicacao.Consultas
                !retornoConsultaPaginada.Items.Any() ||
                retornoConsultaPaginada.Items.ElementAt(0).Id == 0;
 
-            retorno.Items = !nenhumItemEncontrado ? ListaEntidadeParaListaDto(retornoConsultaPaginada.Items) : null;
+            retorno.Items = !nenhumItemEncontrado ? await ListaEntidadeParaListaDto(retornoConsultaPaginada.Items) : null;
 
             return retorno;
         }
 
-        public AtribuicaoEsporadicaCompletaDto ObterPorId(long id)
+        public async Task<AtribuicaoEsporadicaCompletaDto> ObterPorId(long id)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterPorId(id);
+            var atribuicaoEsporadica = await repositorioAtribuicaoEsporadica.ObterPorIdAsync(id);
 
             if (atribuicaoEsporadica is null)
                 return null;
 
-            return EntidadeParaDtoCompleto(atribuicaoEsporadica);
+            return await EntidadeParaDtoCompleto(atribuicaoEsporadica);
         }
 
-        private AtribuicaoEsporadicaDto EntidadeParaDto(AtribuicaoEsporadica entidade, bool buscarNome = true, string nomeProfessor = "")
+        private async Task<AtribuicaoEsporadicaDto> EntidadeParaDto(AtribuicaoEsporadica entidade, bool buscarNome = true, string nomeProfessor = "")
         {
             if (buscarNome)
             {
-                var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
+                var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year);
                 nomeProfessor = professorResumo != null ? professorResumo.Nome : "Professor não encontrado";
             }
 
@@ -74,9 +74,9 @@ namespace SME.SGP.Aplicacao.Consultas
             };
         }
 
-        private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
+        private async Task<AtribuicaoEsporadicaCompletaDto> EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
         {
-            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
+            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year);
 
             return new AtribuicaoEsporadicaCompletaDto
             {
@@ -99,11 +99,11 @@ namespace SME.SGP.Aplicacao.Consultas
             };
         }
 
-        private IEnumerable<AtribuicaoEsporadicaDto> ListaEntidadeParaListaDto(IEnumerable<AtribuicaoEsporadica> entidades)
+        private async Task<IEnumerable<AtribuicaoEsporadicaDto>> ListaEntidadeParaListaDto(IEnumerable<AtribuicaoEsporadica> entidades)
         {
-            var professores = servicoEOL.ObterListaNomePorListaRF(entidades.Select(x => x.ProfessorRf)).Result;
+            var professores = await servicoEOL.ObterListaNomePorListaRF(entidades.Select(x => x.ProfessorRf));
 
-            return entidades.Select(x => EntidadeParaDto(x, false, ObterNomeProfessor(professores, x.ProfessorRf)));
+            return entidades.Select(async x => await EntidadeParaDto(x, false, ObterNomeProfessor(professores, x.ProfessorRf))).Select(_task => _task.Result);
         }
 
         private string ObterNomeProfessor(IEnumerable<ProfessorResumoDto> professores, string codigoRF)

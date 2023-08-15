@@ -54,14 +54,14 @@ namespace SME.SGP.Aplicacao.Consultas
             return MapearListagem(retornoquery, retornoPaginado, nenhumItemEncontrado, nomes);
         }
 
-        public RegistroPoaCompletoDto ObterPorId(long id)
+        public async Task<RegistroPoaCompletoDto> ObterPorId(long id)
         {
-            var registro = repositorioRegistroPoa.ObterPorId(id);
+            var registro = await repositorioRegistroPoa.ObterPorIdAsync(id);
 
             if (registro == null)
                 return null;
 
-            var professor = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(registro.CodigoRf, registro.AnoLetivo).Result;
+            var professor = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(registro.CodigoRf, registro.AnoLetivo);
 
             return MapearParaDtoCompleto(registro, professor == null ? "Professor não encontrado" : professor.Nome);
         }

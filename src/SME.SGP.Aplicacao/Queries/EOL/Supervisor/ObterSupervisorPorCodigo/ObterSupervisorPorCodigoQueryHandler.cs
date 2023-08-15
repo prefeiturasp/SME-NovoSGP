@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
             }
 

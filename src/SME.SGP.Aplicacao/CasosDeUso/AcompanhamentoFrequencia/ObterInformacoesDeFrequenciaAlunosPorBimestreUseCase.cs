@@ -235,11 +235,11 @@ namespace SME.SGP.Aplicacao
 
             return frequenciaAlunosRegistrada
                 .GroupBy(x => x.CodigoAluno)
-                .Select(x => ObterFrequenciaAluno(x, alunosPorTurma).Result)
+                .Select(x => ObterFrequenciaAluno(x, alunosPorTurma))
                 .ToList();
         }
 
-        private async Task<FrequenciaAluno> ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<AlunoPorTurmaResposta> alunos)
+        private FrequenciaAluno ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<AlunoPorTurmaResposta> alunos)
         {
             var frequenciasAluno = agrupamentoAluno.ToList();
 
