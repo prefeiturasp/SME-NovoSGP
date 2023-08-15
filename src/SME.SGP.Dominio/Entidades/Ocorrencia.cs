@@ -75,13 +75,17 @@ namespace SME.SGP.Dominio
                 return;
             }
 
-            if (!Regex.IsMatch(horaOcorrencia, "^([01][0-9]|2[0-3]):([0-5][0-9])$"))
-                throw new NegocioException("A hora informada está em um formato inválido.");
-
             var horaOcorrenciaSplit = horaOcorrencia.Split(':');
-            var hora = int.Parse(horaOcorrenciaSplit[0]);
-            var minutos = int.Parse(horaOcorrenciaSplit[1]);
-            HoraOcorrencia = new TimeSpan(hora, minutos, 0);
+            try
+            {
+                var hora = int.Parse(horaOcorrenciaSplit[0]);
+                var minutos = int.Parse(horaOcorrenciaSplit[1]);
+                HoraOcorrencia = new TimeSpan(hora, minutos, 0);
+            }
+            catch (Exception)
+            {
+                HoraOcorrencia = null;
+            }
         }
 
         public void SetOcorrenciaTipo(OcorrenciaTipo ocorrenciaTipo)
