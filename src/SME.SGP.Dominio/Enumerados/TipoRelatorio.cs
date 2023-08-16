@@ -156,7 +156,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "relatorios/historicoescolareja", ShortName = "HistoricoEscolar", Description = "Histórico Escolar")]
         HistoricoEscolarEJARazor = 51,
 
-        [Display(Name = "relatorios/listagem-ocorrencias", ShortName = "ListagemOcorrencia", Description = "Relatório listagem de ocorrências")]
+        [Display(Name = "relatorios/listagem-ocorrencias", ShortName = "ListagemOcorrencia", Description = "Relatório de Ocorrências")]
         ListagemOcorrencias = 52,
             
         [Display(Name = "relatorios/plano-anual", ShortName = "Plano Anual", Description = "Relatório Plano Anual")]
