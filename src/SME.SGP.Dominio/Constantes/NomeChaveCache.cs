@@ -14,7 +14,7 @@
         public const string FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA = "fechamento-nota-final-componentecodigo-turmacodigo:{0}-{1}";
         public const string FECHAMENTO_NOTA_TURMA_BIMESTRE = "fechamento-nota-turmacodigo-bimestre:{0}-{1}";
         public const string ALUNOS_TURMA = "todos-alunos-turma:{0}/codigo-aluno:{1}";
-        public const string ALUNOS_TURMA_INATIVOS = "alunos-turma:{0}/considera-inativos:{2}";
+        public const string ALUNOS_TURMA_INATIVOS = "alunos-turma:{0}/considera-inativos:{1}";
         public const string ALUNO_TURMA = "aluno-turma:{0}-{1}/considera-inativos:{2}";
         public const string COMPONENTES_PROFESSOR_TURMA = "componentes-professor-turma-agrupado:{0}-{1}-{2}-{3}";
         public const string NOTA_CONSOLIDACAO_CONSELHO_CLASSE_TURMA_COMPONENTE_BIMESTRE_ALUNO = "nota-consolidacao-conselho-classe-turma-componente-bimestre-aluno:{0}-{1}-{2}-{3}";
