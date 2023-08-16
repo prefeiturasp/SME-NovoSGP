@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<string>> Handle(ObterTurmasProgramaQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"turmas/turmas-programa";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = ServicosEolConstants.URL_TURMAS_TURMAS_PROGRAMA;
             try
             {
                 var parametros = JsonConvert.SerializeObject(request.CodigosTurmas);

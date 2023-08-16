@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -18,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Unit> Handle(AtribuirPerfilCommand request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"perfis/servidores/{request.CodigoRf}/perfil/{request.Perfil}/atribuirPerfil");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PERFIS_SERVIDORES_PERFIL_ATRIBUIR_PERFIL, request.CodigoRf, request.Perfil));
 
             if (resposta.IsSuccessStatusCode)
                 return Unit.Value;

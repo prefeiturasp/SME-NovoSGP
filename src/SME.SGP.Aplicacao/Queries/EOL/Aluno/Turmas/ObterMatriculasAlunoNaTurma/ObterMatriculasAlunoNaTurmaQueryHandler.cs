@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterMatriculasAlunoNaTurmaQuery request, CancellationToken cancellationToken)
         {
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/{request.CodigoTurma}/aluno/{request.CodigoAluno}/matriculas");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_ALUNO_MATRICULAS, request.CodigoTurma, request.CodigoAluno));
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

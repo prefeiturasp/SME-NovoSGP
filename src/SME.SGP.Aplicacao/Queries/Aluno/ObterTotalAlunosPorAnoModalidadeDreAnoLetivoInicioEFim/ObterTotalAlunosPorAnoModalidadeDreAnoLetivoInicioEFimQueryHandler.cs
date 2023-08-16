@@ -36,9 +36,14 @@ namespace SME.SGP.Aplicacao
                 quantidadeAlunos = Convert.ToInt64(cacheAlunos);
             else
             {
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var resposta = await httpClient.GetAsync($"turmas/todos-alunos/anoTurma/{request.AnoEscolar}/modalidade/{request.ModalidadeTurma}/anoLetivo/{request.AnoLetivo}" +
-                    $"/dre/{request.CodigoDre}/inicio/{request.DataInicio.Ticks}/fim/{request.DataFim.Ticks}");
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_TODOS_ALUNOS_ANO_MODALIDADE_ANO_LETIVO_DRE_INICIO_FIM, 
+                                                                       request.AnoEscolar, 
+                                                                       request.ModalidadeTurma,
+                                                                       request.AnoLetivo,
+                                                                       request.CodigoDre,
+                                                                       request.DataInicio.Ticks,
+                                                                       request.DataFim.Ticks));
                 
                 if (resposta.IsSuccessStatusCode)
                 {

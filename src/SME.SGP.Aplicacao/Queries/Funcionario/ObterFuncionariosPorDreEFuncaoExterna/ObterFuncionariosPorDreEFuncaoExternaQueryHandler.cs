@@ -25,9 +25,9 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
 
-            using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
+            using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
-                var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{usuario.PerfilAtual}/dres/{request.CodigoDRE}", cancellationToken);
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_PERFIS_DRES, usuario.PerfilAtual, request.CodigoDRE), cancellationToken);
 
                 if (resposta.IsSuccessStatusCode)
                 {
