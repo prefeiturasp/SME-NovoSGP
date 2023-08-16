@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (ehHistorico)
                     repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
-                else
+                else if(!atribuicoesAtuais.Any(a => a.Substituir = true))
                     repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
 
                 if(!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
