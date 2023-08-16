@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"alunos/{request.CodigoAluno}/turmas/anosLetivos/{request.AnoLetivo}/historico/{request.Historico}/filtrar-situacao/{request.FiltrarSituacao}");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO, request.CodigoAluno, request.AnoLetivo, request.Historico, request.FiltrarSituacao));
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

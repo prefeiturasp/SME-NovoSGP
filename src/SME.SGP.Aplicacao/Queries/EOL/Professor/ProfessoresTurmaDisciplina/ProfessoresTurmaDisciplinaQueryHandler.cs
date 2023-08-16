@@ -23,9 +23,9 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>> Handle(ProfessoresTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var datasParaEnvio = string.Join("&dataTicks=", request.Data.Ticks);
-            var resposta = await httpClient.GetAsync($"professores/{request.CodigoTurma}/disciplinas/{request.DisciplinaId}/atribuicao/data?dataTicks={datasParaEnvio}");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_DISCIPLINAS_ATRIBUICAO_DATA, request.CodigoTurma, request.DisciplinaId) + $"?dataTicks={datasParaEnvio}");
 
             if (resposta.IsSuccessStatusCode)
             {

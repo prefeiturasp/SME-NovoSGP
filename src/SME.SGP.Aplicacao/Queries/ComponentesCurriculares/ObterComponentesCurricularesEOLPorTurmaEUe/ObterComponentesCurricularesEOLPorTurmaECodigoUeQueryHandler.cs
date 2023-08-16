@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var queryParamTurmas = string.Empty;
 
             if (request.CodigosDeTurmas != null && request.CodigosDeTurmas.Any())
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 queryParamTurmas = $"?turmas={codigosTurmas}";
             }
 
-            var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/ues/{request.CodigoUe}/turmas{queryParamTurmas}");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_UES_TURMAS, request.CodigoUe) + $"{queryParamTurmas}");
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

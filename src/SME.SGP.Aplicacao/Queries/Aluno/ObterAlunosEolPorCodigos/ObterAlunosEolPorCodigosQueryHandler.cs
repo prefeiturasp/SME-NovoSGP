@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosEolPorCodigos
 
             var codigosAlunos = string.Join("&codigosAluno=", request.CodigosAluno);
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"alunos/alunos?codigosAluno={codigosAlunos}");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_ALUNOS_ALUNOS + $"?codigosAluno={codigosAlunos}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

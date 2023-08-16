@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +25,12 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(VerificaPodePersistirTurmaDisciplinaEOLQuery request, CancellationToken cancellationToken)
         {
             var dataString = request.Data.ToString("s");
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.GetAsync($"professores/{request.Usuario.CodigoRf}/turmas/{request.TurmaId}/disciplinas/{request.ComponenteCurricularId}/atribuicao/verificar/data?dataConsulta={dataString}");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_TURMAS_DISCIPLINAS_ATRIBUICAO_VERIFICAR_DATA,
+                                                                    request.Usuario.CodigoRf,
+                                                                    request.TurmaId,
+                                                                    request.ComponenteCurricularId) + $"?dataConsulta={dataString}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");

@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<SupervisoresRetornoDto>> Handle(ObterSupervisoresPorDreEolQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"dres/{request.DreCodigo}/supervisores", cancellationToken);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_DRES_SUPERVISORES, request.DreCodigo), cancellationToken);
 
             if (resposta.IsSuccessStatusCode)
             {

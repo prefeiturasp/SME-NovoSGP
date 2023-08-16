@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = Enumerable.Empty<AlunoParaAutoCompleteAtivoDto>();
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"alunos/ues/{request.UeCodigo}/autocomplete/ativos?DataReferencia={request.DataReferencia.ToString("s")}&alunoNome={request.AlunoNome}&alunoCodigo={request.AlunoCodigo}");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ALUNOS_UES_AUTOCOMPLETE_ATIVOS, request.UeCodigo) + $"?DataReferencia={request.DataReferencia.ToString("s")}&alunoNome={request.AlunoNome}&alunoCodigo={request.AlunoCodigo}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

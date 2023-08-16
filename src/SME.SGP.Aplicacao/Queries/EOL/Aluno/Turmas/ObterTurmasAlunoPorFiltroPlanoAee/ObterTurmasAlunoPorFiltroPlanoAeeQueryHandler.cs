@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroPlanoAeeQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"alunos/{request.CodigoAluno}/turmas/anosLetivos/{request.AnoLetivo}/matriculaTurma/{request.FiltrarSituacaoMatricula}/tipoTurma/{request.TipoTurma}";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = string.Format(ServicosEolConstants.URL_ALUNOS_TURMAS_ANO_LETIVO_MATRICULA_TURMA_TIPO_TURMA, request.CodigoAluno, request.AnoLetivo, request.FiltrarSituacaoMatricula, request.TipoTurma);
 
             try
             {

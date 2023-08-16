@@ -24,9 +24,12 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<List<PodePersistirNaDataRetornoEolDto>> Handle(ObterValidacaoPodePersistirTurmaNasDatasQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var datasParaEnvio = string.Join("&dataTicks=", request.DateTimes.Select(a => a.Ticks).ToArray());
-            var resposta = await httpClient.GetAsync($"professores/{request.CodigoRf}/turmas/{request.TurmaCodigo}/disciplinas/{request.ComponenteCurricularCodigo}/atribuicao/recorrencia/verificar/datas?dataTicks={datasParaEnvio}");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_TURMAS_DISCIPLINAS_ATRIBUICAO_RECORRENCIA_VERIFICAR_DATA,
+                                                                    request.CodigoRf,
+                                                                    request.TurmaCodigo,
+                                                                    request.ComponenteCurricularCodigo) + $"?dataTicks={datasParaEnvio}");
 
             if (resposta.IsSuccessStatusCode)
             {

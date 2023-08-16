@@ -27,8 +27,8 @@ namespace SME.SGP.Aplicacao
             var alunos = Enumerable.Empty<AlunosMatriculadosEolDto>();
             var componentesCurriculares = String.Join("&componentesCurriculares=", request.ComponentesCurriculares);
 
-            var url = $"alunos/ano-letivo/{request.Ano}/matriculados?componentesCurriculares={componentesCurriculares}";
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var url = string.Format(ServicosEolConstants.URL_ALUNOS_ANO_LETIVO_MATRICULADOS, request.Ano) + $"?componentesCurriculares={componentesCurriculares}";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             if (!string.IsNullOrEmpty(request.DreCodigo))
                 url += $"&dreId={request.DreCodigo}";
 

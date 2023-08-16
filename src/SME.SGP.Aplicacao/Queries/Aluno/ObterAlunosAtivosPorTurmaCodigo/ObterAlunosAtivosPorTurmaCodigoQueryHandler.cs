@@ -21,9 +21,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosAtivosPorTurmaCodigoQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.GetAsync($"Turmas/{request.TurmaCodigo}/alunos-ativos/data-aula-ticks/{request.DataAula.Ticks}");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_ALUNOS_ATIVOS_DATA_AULA_TICKS, request.TurmaCodigo, request.DataAula.Ticks));
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível buscar alunos ativos no EOL.");
