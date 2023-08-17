@@ -28,9 +28,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_I, Permissao.ARP_A, Permissao.ARP_C, Policy = "Bearer")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok(consultaDres.ObterTodos());
+            return Ok(await consultaDres.ObterTodos());
         }
 
         [HttpGet("{dreId}/ues/sem-atribuicao/{tipoResponsavel}")]

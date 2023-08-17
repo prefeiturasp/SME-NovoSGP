@@ -393,7 +393,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessor(string codigoRf, long disciplinaId)
         {
-            var turmasAtribuidasAoProfessorTitular = consultasProfessor.Listar(codigoRf);
+            var turmasAtribuidasAoProfessorTitular = await consultasProfessor.Listar(codigoRf);
             var turmasAtribuidasAoProfessorCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(null, null, null, disciplinaId, codigoRf, null, true);
 
             var turmasAtribuidasAoProfessor = new List<TurmaDto>();

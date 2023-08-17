@@ -83,13 +83,13 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplina in grupoDisciplinasMatriz)
                 {
                     var somaPercentualFrequenciaDisciplinaBimestre = 0.0;
-                    periodos.ToList().ForEach(p =>
+                    foreach (var p in periodos)
                     {
-                        var frequenciaAlunoPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo
-                            .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, new string[] { disciplina.CodigoComponenteCurricular.ToString() }).Result;
+                        var frequenciaAlunoPeriodo = await repositorioFrequenciaAlunoDisciplinaPeriodo
+                            .ObterPorAlunoBimestreAsync(alunoCodigo, p.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, new string[] { disciplina.CodigoComponenteCurricular.ToString() });
 
                         somaPercentualFrequenciaDisciplinaBimestre += frequenciaAlunoPeriodo?.PercentualFrequencia ?? 0;
-                    });
+                    }
                     var mediaFinalFrequenciaDiscipina = FrequenciaAluno.ArredondarPercentual(somaPercentualFrequenciaDisciplinaBimestre / periodos.Count());
                     somaFrequenciaFinal += mediaFinalFrequenciaDiscipina;
                 }

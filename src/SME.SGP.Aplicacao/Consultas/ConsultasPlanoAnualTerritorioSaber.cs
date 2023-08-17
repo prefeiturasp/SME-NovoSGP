@@ -52,14 +52,15 @@ namespace SME.SGP.Aplicacao
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
             long[] codigosComponentes = new long[2];
 
-            periodos.Select(s => s.Bimestre).Distinct().ToList().ForEach(bimestre =>
+            foreach(var bimestre in periodos.Select(s => s.Bimestre).Distinct().ToList())
             {
                 bimestresAbertoFechado.Add(new PeriodoEscolarPorTurmaDto()
                 {
                     Bimestre = bimestre,
-                    PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result,
+                    PeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year)),
                 });
-            });
+            }
+
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (!usuarioLogado.EhProfessorCj())

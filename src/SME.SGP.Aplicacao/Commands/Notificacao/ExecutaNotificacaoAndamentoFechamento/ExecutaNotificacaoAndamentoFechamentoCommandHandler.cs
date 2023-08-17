@@ -43,11 +43,11 @@ namespace SME.SGP.Aplicacao
                 ues.Add(ue);
             else
             {
-                turmas.Select(t => t.UeId).Distinct().ToList().ForEach(ueId =>
+                foreach(var ueId in turmas.Select(t => t.UeId).Distinct().ToList())
                 {
-                    var ueLocalizada = mediator.Send(new ObterUePorIdQuery(ueId)).Result;
+                    var ueLocalizada = await mediator.Send(new ObterUePorIdQuery(ueId));
                     ues.Add(ueLocalizada);
-                });
+                }
             }
 
             foreach (var ueAtual in ues)

@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesCurricularesDoProfessorCJ.Any())
                 {
-                    componentesCurricularesDoProfessorCJ.ToList().ForEach(ccj =>
+                    componentesCurricularesDoProfessorCJ.ToList().ForEach(async ccj =>
                     {
                         var componenteListaProfessor = componentesCurricularesEolProfessor
                             .Any(ccp => ccp.Codigo == ccj.DisciplinaId || ccp.CodigoComponenteTerritorioSaber == ccj.DisciplinaId);
@@ -57,8 +57,8 @@ namespace SME.SGP.Aplicacao
 
                         if (!componenteListaProfessor)
                         {
-                            codigosTerritorioEquivalentes = mediator
-                                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(ccj.DisciplinaId, turma.CodigoTurma, null)).Result;
+                            codigosTerritorioEquivalentes = await mediator
+                                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(ccj.DisciplinaId, turma.CodigoTurma, null));
 
                             var componentesConsiderados = codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any() ? 
                                 codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(new string[] { ccj.DisciplinaId.ToString() }) : null;
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                             else
                             {
                                 codigoComponenteEquivalente = ccj.Modalidade == Modalidade.EducacaoInfantil ?
-                                    (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;
+                                    (await mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)))?.CdComponenteCurricularPai : null;
                             }                                
                         }
 
@@ -156,8 +156,8 @@ namespace SME.SGP.Aplicacao
                         var professor = dc.TerritorioSaber ? professores.FirstOrDefault(p => p.DisciplinasId.Contains(dc.CodigoComponenteCurricular)) : null;
                         if (professor != null && !String.IsNullOrEmpty(professor.ProfessorRf))
                         {
-                            var componentesProfessorAtrelado = mediator
-                                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR)).Result;
+                            var componentesProfessorAtrelado = await mediator
+                                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
 
                             var componenteProfessorAtreladoEquivalente = componentesProfessorAtrelado
                                 .FirstOrDefault(c => c.CodigoComponenteTerritorioSaber.Equals(dc.CodigoComponenteCurricular));

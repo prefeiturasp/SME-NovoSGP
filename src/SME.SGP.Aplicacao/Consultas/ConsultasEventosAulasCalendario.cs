@@ -112,9 +112,7 @@ namespace SME.SGP.Aplicacao
             if (idsDisciplinasAulas != null && idsDisciplinasAulas.Any())
                 disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
 
-            aulas
-            .ToList()
-            .ForEach(x =>
+            foreach (var x in aulas.ToList())
             {
                 bool podeCriarAtividade = true;
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId
@@ -127,9 +125,9 @@ namespace SME.SGP.Aplicacao
                     {
                         if (disciplina.Regencia)
                         {
-                            var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
-
-                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = (repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) })).Result.ToList().FirstOrDefault()?.Nome);
+                            var disciplinasRegenciasComAtividades = (await repositorioAtividadeAvaliativaRegencia.Listar(item.Id)).ToList();
+                            foreach (var disciplinaRegencia in disciplinasRegenciasComAtividades)
+                                disciplinaRegencia.DisciplinaContidaRegenciaNome = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(disciplinaRegencia.DisciplinaContidaRegenciaId) })).FirstOrDefault()?.Nome;
 
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
@@ -165,7 +163,7 @@ namespace SME.SGP.Aplicacao
                         Atividade = listaAtividades
                     }
                 });
-            });
+            }
 
             var dentroDoPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data) || await PodeCriarAulaNoPeriodo(filtro.Data, filtro.TipoCalendarioId, filtro.UeId, filtro.DreId);
 

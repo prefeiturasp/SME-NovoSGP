@@ -28,9 +28,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Policy = "Bearer")]
-        public IActionResult Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
+        public async Task<IActionResult> Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto, [FromServices]IComandosPlanoAnual comandosPlanoAnual)
         {
-            comandosPlanoAnual.Migrar(migrarPlanoAnualDto);
+            await comandosPlanoAnual.Migrar(migrarPlanoAnualDto);
             return Ok();
         }
 

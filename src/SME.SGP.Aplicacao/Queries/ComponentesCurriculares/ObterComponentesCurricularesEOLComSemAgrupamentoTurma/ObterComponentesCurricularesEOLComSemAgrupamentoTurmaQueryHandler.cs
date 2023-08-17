@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 return Enumerable.Empty<DisciplinaDto>();
             }
 
-            var json = resposta.Content.ReadAsStringAsync().Result;
+            var json = await resposta.Content.ReadAsStringAsync();
             var retorno = (JsonConvert.DeserializeObject<IEnumerable<RetornoDisciplinaDto>>(json)).MapearDto();
 
             var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(retorno.ObterCodigos()));

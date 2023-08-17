@@ -24,8 +24,6 @@ namespace SME.SGP.Aplicacao
 
         Task<DisciplinaDto> ObterDisciplina(long disciplinaId);
 
-        
-        IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool ehEnsinoMedio = false);
         IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares);
     }
 }

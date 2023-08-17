@@ -124,13 +124,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        public IEnumerable<CicloRetornoDto> BuscarCiclos()
+        public async Task<IEnumerable<CicloRetornoDto>> BuscarCiclos()
         {
-            var resposta = httpClient.GetAsync("abrangencia/ciclo-ensino").Result;
+            var resposta = await httpClient.GetAsync("abrangencia/ciclo-ensino");
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<CicloRetornoDto>>(json);
             }
             else
@@ -140,13 +140,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        public IEnumerable<TipoEscolaRetornoDto> BuscarTiposEscola()
+        public async Task<IEnumerable<TipoEscolaRetornoDto>> BuscarTiposEscola()
         {
-            var resposta = httpClient.GetAsync("escolas/tiposEscolas").Result;
+            var resposta = await httpClient.GetAsync("escolas/tiposEscolas");
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<TipoEscolaRetornoDto>>(json);
             }
             else
@@ -267,43 +267,43 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        public IEnumerable<DreRespostaEolDto> ObterDres()
+        public async Task<IEnumerable<DreRespostaEolDto>> ObterDres()
         {
-            var resposta = httpClient.GetAsync("dres").Result;
+            var resposta = await httpClient.GetAsync("dres");
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<DreRespostaEolDto>>(json);
             }
             return Enumerable.Empty<DreRespostaEolDto>();
         }
 
-        public IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes)
+        public async Task<IEnumerable<EscolasRetornoDto>> ObterEscolasPorCodigo(string[] codigoUes)
         {
-            var resposta = httpClient.PostAsync("escolas", new StringContent(JsonConvert.SerializeObject(codigoUes), Encoding.UTF8, "application/json-patch+json")).Result;
+            var resposta = await httpClient.PostAsync("escolas", new StringContent(JsonConvert.SerializeObject(codigoUes), Encoding.UTF8, "application/json-patch+json"));
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
             }
             return Enumerable.Empty<EscolasRetornoDto>();
         }
 
-        public IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId)
+        public async Task<IEnumerable<EscolasRetornoDto>> ObterEscolasPorDre(string dreId)
         {
-            var resposta = httpClient.GetAsync($"DREs/{dreId}/escolas").Result;
+            var resposta = await httpClient.GetAsync($"DREs/{dreId}/escolas");
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<EscolasRetornoDto>>(json);
             }
             return Enumerable.Empty<EscolasRetornoDto>();
         }
 
-        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre()
+        public async Task<EstruturaInstitucionalRetornoEolDTO> ObterEstruturaInstuticionalVigentePorDre()
         {
             EstruturaInstitucionalRetornoEolDTO resultado = null;
-            var codigosDres = ObterCodigosDres();
+            var codigosDres = await ObterCodigosDres();
             string url = $"abrangencia/estrutura-vigente";
 
             if (codigosDres != null && codigosDres.Length > 0)
@@ -311,11 +311,11 @@ namespace SME.SGP.Aplicacao.Integracoes
                 resultado = new EstruturaInstitucionalRetornoEolDTO();
                 foreach (var item in codigosDres)
                 {
-                    var resposta = httpClient.GetAsync($"{url}/{item}").Result;
+                    var resposta = await httpClient.GetAsync($"{url}/{item}");
 
                     if (resposta.IsSuccessStatusCode)
                     {
-                        var json = resposta.Content.ReadAsStringAsync().Result;
+                        var json = await resposta.Content.ReadAsStringAsync();
                         var parcial = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
 
                         if (parcial != null)
@@ -323,7 +323,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                     }
                     else
                     {
-                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
+                        var httpContentResult = await resposta.Content?.ReadAsStringAsync();
+                        _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {httpContentResult ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
                         throw new NegocioException($"Erro ao obter a estrutura organizacional vigente no EOL. URL base: {httpClient.BaseAddress}");
                     }
                 }
@@ -332,22 +333,23 @@ namespace SME.SGP.Aplicacao.Integracoes
             return resultado;
         }
 
-        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
+        public async Task<EstruturaInstitucionalRetornoEolDTO> ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
         {
             var filtroTurmas = new StringContent(JsonConvert.SerializeObject(codigosTurma ?? new string[] { }), UnicodeEncoding.UTF8, "application/json");
 
             string url = $"abrangencia/estrutura-vigente";
 
-            var resposta = httpClient.PostAsync(url, filtroTurmas).Result;
+            var resposta = await httpClient.PostAsync(url, filtroTurmas);
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
             }
             else
             {
-                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
+                var httpContentResult = await resposta.Content?.ReadAsStringAsync();
+                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente - HttpCode {resposta.StatusCode} - Body {httpContentResult ?? string.Empty}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
 
                 return null;
             }
@@ -358,7 +360,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var resposta = await httpClient.GetAsync($"escolas/{ueId}/funcionarios/cargos/{cargoId}");
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
@@ -413,12 +415,12 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
         }
 
-        public IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf)
+        public async Task<IEnumerable<ProfessorTurmaReposta>> ObterListaTurmasPorProfessor(string codigoRf)
         {
-            var resposta = httpClient.GetAsync($"professores/{codigoRf}/turmas").Result;
+            var resposta = await httpClient.GetAsync($"professores/{codigoRf}/turmas");
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorTurmaReposta>>(json);
             }
             return Enumerable.Empty<ProfessorTurmaReposta>();
@@ -640,23 +642,23 @@ namespace SME.SGP.Aplicacao.Integracoes
             return retorno;
         }
 
-        public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
+        public async Task<IEnumerable<SupervisoresRetornoDto>> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
-            var resposta = httpClient.PostAsync("funcionarios/supervisores", new StringContent(JsonConvert.SerializeObject(codigoSupervisores), Encoding.UTF8, "application/json-patch+json")).Result;
+            var resposta = await httpClient.PostAsync("funcionarios/supervisores", new StringContent(JsonConvert.SerializeObject(codigoSupervisores), Encoding.UTF8, "application/json-patch+json"));
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
             }
             return Enumerable.Empty<SupervisoresRetornoDto>();
         }
 
-        public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId)
+        public async Task<IEnumerable<SupervisoresRetornoDto>> ObterSupervisoresPorDre(string dreId)
         {
-            var resposta = httpClient.GetAsync($"dres/{dreId}/supervisores").Result;
+            var resposta = await httpClient.GetAsync($"dres/{dreId}/supervisores");
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<SupervisoresRetornoDto>>(json);
             }
             return Enumerable.Empty<SupervisoresRetornoDto>();
@@ -699,7 +701,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var turmas = Enumerable.Empty<TurmaPorUEResposta>();
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 turmas = JsonConvert.DeserializeObject<List<TurmaPorUEResposta>>(json);
             }
             return turmas;
@@ -714,7 +716,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
 
-            var json = resposta.Content.ReadAsStringAsync().Result;
+            var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
@@ -727,7 +729,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
 
-            var json = resposta.Content.ReadAsStringAsync().Result;
+            var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
@@ -736,7 +738,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var resposta = await httpClient.GetAsync($"professores/{professorRf}/turmas/{codigoTurma}/atribuicao/status");
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<AtribuicaoProfessorTurmaEOLDto>(json);
             }
             else
@@ -802,20 +804,21 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         private string ObterChaveCacheAlunosTurma(string turmaId) => $"alunos-turma:{turmaId}";
 
-        private string[] ObterCodigosDres()
+        private async Task<string[]> ObterCodigosDres()
         {
             string url = $"abrangencia/codigos-dres";
 
-            var resposta = httpClient.GetAsync(url).Result;
+            var resposta = await httpClient.GetAsync(url);
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await  resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<string[]>(json);
             }
             else
             {
-                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
+                var httpContentResult = await resposta.Content?.ReadAsStringAsync();
+                _ = mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {httpContentResult ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.ApiEol, string.Empty)).Result;
                 throw new NegocioException($"Erro ao obter os códigos de DREs no EOL. URL base: {httpClient.BaseAddress}");
             }
         }
@@ -909,7 +912,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
 
-            var json = resposta.Content.ReadAsStringAsync().Result;
+            var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<bool>(json);
         }
 

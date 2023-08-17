@@ -37,7 +37,10 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 return true;
             else
-                throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}", new Exception($"Erro ao enviar a notificação para o App Aluno: {resposta.Content.ReadAsStringAsync().Result}"));
+            {
+                var httpContentResult = await resposta.Content.ReadAsStringAsync();
+                throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}", new Exception($"Erro ao enviar a notificação para o App Aluno: {httpContentResult}"));
+            }
 
         }
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
