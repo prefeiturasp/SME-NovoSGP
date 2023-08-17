@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (!usuarioLogado.EhGestorEscolar())
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.SOMENTE_GESTOR_ESCOLAR_PODE_REALIZAR_INDEFERIMENTO);

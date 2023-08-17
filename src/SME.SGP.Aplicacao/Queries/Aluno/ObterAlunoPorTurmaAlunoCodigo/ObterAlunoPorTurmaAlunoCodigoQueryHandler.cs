@@ -32,8 +32,8 @@ namespace SME.SGP.Aplicacao
                 alunos = JsonConvert.DeserializeObject<AlunoPorTurmaResposta>(cacheAlunos);
             else
             {
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var resposta = await httpClient.GetAsync($"turmas/{request.TurmaCodigo}/aluno/{request.AlunoCodigo}/considera-inativos/{request.ConsideraInativos}");
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_ALUNO_CONSIDERA_INATIVOS, request.TurmaCodigo, request.AlunoCodigo, request.ConsideraInativos));
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();

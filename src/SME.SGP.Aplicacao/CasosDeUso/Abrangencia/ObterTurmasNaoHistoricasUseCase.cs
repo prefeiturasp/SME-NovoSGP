@@ -2,6 +2,7 @@
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,17 +16,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaNaoHistoricaDto>> Executar()
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             bool possuiAbrangenciaUE = usuario.EhAbrangenciaSomenteUE();
 
             if (possuiAbrangenciaUE)
             {
-                long usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+                long usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
                 int anoLetivo = DateTime.Now.Year;
                 return await mediator.Send(new ObterTurmasPorAnoEUsuarioIdQuery(usuarioId, anoLetivo));
             }
 
-            return new List<TurmaNaoHistoricaDto>();
+            return Enumerable.Empty<TurmaNaoHistoricaDto>();
         }
     }
 }

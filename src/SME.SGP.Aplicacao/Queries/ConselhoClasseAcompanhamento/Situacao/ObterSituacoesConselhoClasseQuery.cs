@@ -8,5 +8,7 @@ namespace SME.SGP.Aplicacao
 {
    public class ObterSituacoesConselhoClasseQuery : IRequest<List<SituacaoDto>>
     {
+        private static ObterSituacoesConselhoClasseQuery _instance;
+        public static ObterSituacoesConselhoClasseQuery Instance => _instance ??= new();
     }
 }

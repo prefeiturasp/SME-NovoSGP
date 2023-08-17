@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Commands
 
         public async Task<bool> Handle(CriarEventoItineranciaPAAICommand request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var tipoCalendarioId = await ObterTipoCalendarioId(request.UeCodigo);
             var tipoEventoId = await ObterTipoEventoItinerancia();

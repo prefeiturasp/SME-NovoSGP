@@ -32,16 +32,19 @@ namespace SME.SGP.Aplicacao
             {
                 var diasNoMes = DateTime.DaysInMonth(dataReferencia.Year, mes);
                 DateTime primeiroDiaMes = new DateTime(dataReferencia.Year, mes, 1);
-                for (int dia = 0; dia < diasNoMes && primeiroDiaMes.AddDays(dia) <= dataReferencia; dia++)
+                for (int dia = 0; dia < diasNoMes && primeiroDiaMes.AddDays(dia) < dataReferencia; dia++)
                 {
-                    if (primeiroDiaMes.AddDays(dia).DayOfWeek == DayOfWeek.Monday)
+                    var inicio = primeiroDiaMes.AddDays(dia);
+
+                    if (inicio.DayOfWeek == DayOfWeek.Monday && inicio.Date != dataReferencia.Date)
                     {
-                        var inicio = primeiroDiaMes.AddDays(dia);
+                        var dataFim = inicio.AddDays(6);
                         semanas.Add(new FiltroSemanaDto()
                         {
                             Inicio = inicio,
-                            Fim = inicio.AddDays(6) <= dataReferencia ? inicio.AddDays(6) : dataReferencia
+                            Fim = dataFim <= dataReferencia ? dataFim : dataReferencia
                         });
+                        dia += 6;
                     }
                 }
             }

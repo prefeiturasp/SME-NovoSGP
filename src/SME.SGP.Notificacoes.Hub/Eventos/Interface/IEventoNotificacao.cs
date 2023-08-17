@@ -7,6 +7,6 @@ namespace SME.SGP.Notificacoes.Hub
     public interface IEventoNotificacao<TMensagem>
         where TMensagem : MensagemNotificacaoDto
     {
-        Task Enviar(IHubCallerClients clients, TMensagem mensagem);
+        Task EnviarAsync(IHubCallerClients clients, TMensagem mensagem);
     }
 }

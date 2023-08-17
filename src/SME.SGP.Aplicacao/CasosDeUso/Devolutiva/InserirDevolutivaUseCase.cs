@@ -17,13 +17,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
         {
-            IEnumerable<Tuple<long, DateTime>> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date));
+            IEnumerable<(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date));
 
             if (!dados.Any())
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
 
-            DateTime inicioEfetivo = dados.Select(x => x.Item2.Date).Min();
-            DateTime fimEfetivo = dados.Select(x => x.Item2.Date).Max();
+            DateTime inicioEfetivo = dados.Select(x => x.DataAula.Date).Min();
+            DateTime fimEfetivo = dados.Select(x => x.DataAula.Date).Max();
 
             await ValidarDevolutivaNoPeriodo(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date);
 
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var bimestre = await ValidarBimestreDiarios(turma, inicioEfetivo, fimEfetivo);
             await ValidarBimestreEmAberto(turma, bimestre);
 
-            IEnumerable<long> idsDiarios = dados.Select(x => x.Item1);
+            IEnumerable<long> idsDiarios = dados.Select(x => x.Id);
             await MoverRemoverExcluidos(param);
             AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao, turma.Id));
 

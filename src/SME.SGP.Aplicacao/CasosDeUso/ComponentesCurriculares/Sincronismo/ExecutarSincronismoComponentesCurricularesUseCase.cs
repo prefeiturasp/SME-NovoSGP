@@ -13,8 +13,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolQuery());
-            var componentesSGP = await mediator.Send(new ObterComponentesCurricularesQuery());
+            var componentesEol = await mediator.Send(ObterComponentesCurricularesEolQuery.Instance);
+            var componentesSGP = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
             var naoExiste = componentesEol.Where(c => !componentesSGP.Any(x => x.Codigo == c.Codigo));
 
             if (naoExiste.Any())

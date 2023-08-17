@@ -108,7 +108,6 @@ namespace SME.SGP.Dados.Repositorios
                 var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
                 query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
 
-                // 1/6/ano ou 1/7/ano dependendo do semestre
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
             query.AppendLine("order by bimestre desc ");
@@ -222,7 +221,6 @@ namespace SME.SGP.Dados.Repositorios
                 var periodoReferencia = semestre == 1 ? "pe.periodo_inicio < @dataReferencia" : "pe.periodo_fim > @dataReferencia";
                 query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
 
-                // 1/6/ano ou 1/7/ano dependendo do semestre
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
@@ -283,7 +281,6 @@ namespace SME.SGP.Dados.Repositorios
                 var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
                 query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
 
-                // 1/6/ano ou 1/7/ano dependendo do semestre
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
@@ -332,7 +329,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select pe.id
                                               from periodo_escolar pe
                                               left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
-                                              left join turma t on t.ano_letivo = tc.ano_letivo and id = @turmaId
+                                              left join turma t on t.ano_letivo = tc.ano_letivo and t.id = @turmaId
                                               where tc.modalidade = @modalidade
                                               and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
                                               and not tc.excluido ");

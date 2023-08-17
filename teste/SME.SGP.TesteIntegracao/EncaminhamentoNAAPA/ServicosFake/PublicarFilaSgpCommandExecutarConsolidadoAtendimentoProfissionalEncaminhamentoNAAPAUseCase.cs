@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 
-namespace SME.SGP.TesteIntegracao.PendenciaGeral.ServicosFake
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {
     public class PublicarFilaSgpCommandExecutarConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase : IRequestHandler<PublicarFilaSgpCommand, bool>
     {

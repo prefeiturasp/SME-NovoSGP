@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var wfSemAprovacao = await mediator.Send(new ObterWorkflowAprovacaoNotaFechamentoSemAprovacaoIdQuery());
+            var wfSemAprovacao = await mediator.Send(ObterWorkflowAprovacaoNotaFechamentoSemAprovacaoIdQuery.Instance);
             var agruparEmTurmaBimestre = wfSemAprovacao.GroupBy(w => new { w.TurmaId, w.Bimestre });
 
             foreach (var turmas in agruparEmTurmaBimestre)

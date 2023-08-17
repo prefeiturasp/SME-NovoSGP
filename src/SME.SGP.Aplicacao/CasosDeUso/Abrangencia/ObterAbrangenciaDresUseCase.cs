@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> Executar(Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "")
         {
             var login = await mediator
-                .Send(new ObterLoginAtualQuery());
+                .Send(ObterLoginAtualQuery.Instance);
 
             var perfil = await mediator
-                .Send(new ObterPerfilAtualQuery());
+                .Send(ObterPerfilAtualQuery.Instance);
 
             var filtroEhCodigo = false;
 

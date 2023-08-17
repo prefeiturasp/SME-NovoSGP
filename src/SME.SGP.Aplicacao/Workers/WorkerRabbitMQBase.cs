@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao.Workers
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IServicoMensageriaSGP servicoMensageria;
+        private readonly IServicoMensageriaMetricas servicoMensageriaMetricas;
         private readonly TelemetriaOptions telemetriaOptions;
         private readonly IMediator mediator;
         private readonly string apmTransactionType;
@@ -39,6 +40,7 @@ namespace SME.SGP.Aplicacao.Workers
         protected WorkerRabbitMQBase(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory,
@@ -48,6 +50,7 @@ namespace SME.SGP.Aplicacao.Workers
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory), "Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
+            this.servicoMensageriaMetricas = servicoMensageriaMetricas ?? throw new ArgumentNullException(nameof(servicoMensageriaMetricas));
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
 
             if (consumoFilasOptions == null)
@@ -168,6 +171,8 @@ namespace SME.SGP.Aplicacao.Workers
             var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
             var rota = ea.RoutingKey;
 
+            await servicoMensageriaMetricas.Obtido(rota);
+
             if (Comandos.ContainsKey(rota))
             {
                 var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
@@ -191,12 +196,14 @@ namespace SME.SGP.Aplicacao.Workers
                             mensagem);
 
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
+                    await servicoMensageriaMetricas.Concluido(rota);
                 }
                 catch (NegocioException nex)
                 {
                     transacao?.CaptureException(nex);
 
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
+                    await servicoMensageriaMetricas.Concluido(rota);
 
                     await RegistrarLog(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
 
@@ -208,6 +215,7 @@ namespace SME.SGP.Aplicacao.Workers
                     transacao?.CaptureException(vex);
 
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
+                    await servicoMensageriaMetricas.Concluido(rota);
 
                     await RegistrarLog(ea, mensagemRabbit, vex, LogNivel.Negocio, $"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
 
@@ -228,6 +236,7 @@ namespace SME.SGP.Aplicacao.Workers
                     }
                     else canalRabbit.BasicReject(ea.DeliveryTag, false);
 
+                    await servicoMensageriaMetricas.Erro(rota);
                     await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
@@ -241,6 +250,8 @@ namespace SME.SGP.Aplicacao.Workers
             else
             {
                 canalRabbit.BasicReject(ea.DeliveryTag, false);
+                await servicoMensageriaMetricas.Erro(rota);
+
                 var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
                 await RegistrarLog(ea, mensagemRabbit, null, LogNivel.Critico, $"Rota não registrada");
             }

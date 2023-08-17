@@ -52,7 +52,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.FB_A, Policy = "Bearer")]
         public async Task<IActionResult> Reprocessar(IEnumerable<long> fechamentoId, [FromServices] IComandosFechamentoTurmaDisciplina comandos)
         {
-            comandos.Reprocessar(fechamentoId);
+            await comandos.Reprocessar(fechamentoId);
             return Ok();
         }
 
@@ -84,7 +84,6 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoDadosBasicosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        //[Permissao(Permissao.FB_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterAlunos(string codigoTurma, int anoLetivo, int semestre, [FromServices] IConsultasFechamentoTurmaDisciplina consultas)
            => Ok(await consultas.ObterDadosAlunos(codigoTurma, anoLetivo, semestre));
 

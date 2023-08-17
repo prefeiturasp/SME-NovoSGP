@@ -9,5 +9,8 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesEolQuery : IRequest<IEnumerable<ComponenteCurricularDto>>
     {
         public ObterComponentesCurricularesEolQuery() { }
+
+        private static ObterComponentesCurricularesEolQuery _instance;
+        public static ObterComponentesCurricularesEolQuery Instance => _instance ??= new();
     }
 }

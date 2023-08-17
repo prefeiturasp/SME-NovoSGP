@@ -14,5 +14,6 @@
         public bool PossuiJustificativas { get; set; }
         public MarcadorFrequenciaDto MarcadorFrequencia { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
     }
 }

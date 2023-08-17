@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDreMaterializarCodigosQuery : IRequest<Tuple<IEnumerable<Dre>, string[]>>
+    public class ObterDreMaterializarCodigosQuery : IRequest<(IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados)>
     {
         public string[] IdDres { get; set; }
 

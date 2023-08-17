@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact(DisplayName = "Deve Aceitar o Tipo de Arquivo PDF")]
-        public async void Deve_Aceitar_Arquivo()
+        public void Deve_Aceitar_Arquivo()
         {
             //var fileNewName = Guid.NewGuid();
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact(DisplayName = "Não Aceitar o Tipo de Arquivo TXT")]
-        public async void Nao_Deve_Aceitar_Arquivo()
+        public void Nao_Deve_Aceitar_Arquivo()
         {
             //var fileNewName = Guid.NewGuid();
 

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -11,28 +10,33 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ListarObjetivoAprendizagemPorAnoEComponenteCurricularQueryHandler : AbstractUseCase, IRequestHandler<ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery, IEnumerable<ObjetivoAprendizagemDto>>
+    public class ListarObjetivoAprendizagemPorAnoEComponenteCurricularQueryHandler : IRequestHandler<ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery, IEnumerable<ObjetivoAprendizagemDto>>
     {
         private readonly IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem;
 
-        public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQueryHandler(IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem, IMediator mediator) : base(mediator)
+        public ListarObjetivoAprendizagemPorAnoEComponenteCurricularQueryHandler(IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem)
         {
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
         }
         public async Task<IEnumerable<ObjetivoAprendizagemDto>> Handle(ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
-            int anoTurma;
             var listaRetorno = new List<ObjetivoAprendizagemDto>();
 
-            if (request.Anos.Any())
+            if (request.Anos == null || !request.Anos.Any())
             {
-                if(!request.Anos.FirstOrDefault().Equals("0"))
+                listaRetorno.AddRange(
+                    await repositorioObjetivoAprendizagem
+                        .ObterPorAnoEComponenteCurricularJuremaIds(null, request.JuremaIds));
+            }
+            else
+            {
+                foreach (var ano in request.Anos)
                 {
-                    foreach (var ano in request.Anos)
-                    {
-                        listaRetorno.AddRange(await repositorioObjetivoAprendizagem
-                            .ObterPorAnoEComponenteCurricularJuremaIds(int.TryParse(ano, out anoTurma) ? (AnoTurma)Convert.ToInt32(ano) : (AnoTurma?)null, request.JuremaIds));
-                    }
+                    var anoTurmaEInteiro = int.TryParse(ano, out int anoTurma);
+
+                    listaRetorno.AddRange(
+                        await repositorioObjetivoAprendizagem
+                            .ObterPorAnoEComponenteCurricularJuremaIds(anoTurmaEInteiro ? (AnoTurma)anoTurma : null, request.JuremaIds));
                 }
             }
 

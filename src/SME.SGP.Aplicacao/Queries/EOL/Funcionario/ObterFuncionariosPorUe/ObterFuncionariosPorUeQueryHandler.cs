@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao
         {
             var dto = new { CodigosRfs = request.CodigosRfs, Filtro = request.Filtro };
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(dto), UnicodeEncoding.UTF8, "application/json");
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.PostAsync($@"funcionarios/ue/{request.CodigoUe}", jsonParaPost);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_UE, request.CodigoUe), jsonParaPost);
 
             if (resposta.IsSuccessStatusCode)
             {

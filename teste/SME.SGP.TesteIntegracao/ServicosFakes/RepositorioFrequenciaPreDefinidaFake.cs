@@ -1,17 +1,9 @@
 ﻿using SME.SGP.Dominio.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Dapper;
-using Npgsql;
-using NpgsqlTypes;
 using SME.SGP.Dados;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
