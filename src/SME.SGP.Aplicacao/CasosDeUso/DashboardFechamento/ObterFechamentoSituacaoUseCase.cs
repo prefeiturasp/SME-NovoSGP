@@ -22,11 +22,35 @@ namespace SME.SGP.Aplicacao
 
             List<GraficoBaseDto> fechamentos = new List<GraficoBaseDto>();
 
+            bool filtrouTodos = param.DreId == 0 || param.UeId == 0;
+
             foreach (var fechamento in fechamentosRetorno)
             {
-                var grupo = $"{fechamento.AnoTurma}";
+                var grupo = filtrouTodos ? $"{fechamento.Ano}" : $"{fechamento.AnoTurma}";
+
                 if(fechamento.Quantidade > 0)
-                    fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
+                {
+                    GraficoBaseDto fechamentoExistente = fechamentos?.FirstOrDefault(f => f.Grupo == grupo && f.Descricao == fechamento.Situacao.Name());
+
+                    if (fechamentoExistente != null)
+                    {
+                        int quantidadeAtual = fechamentos.FirstOrDefault(f => f.Grupo == grupo && f.Descricao == fechamento.Situacao.Name()).Quantidade;
+
+                        var novoValorConsolidado = new GraficoBaseDto()
+                        {
+                            Grupo = grupo,
+                            Quantidade = quantidadeAtual + fechamento.Quantidade,
+                            Descricao = fechamento.Situacao.Name()
+                        };
+
+                        fechamentos.RemoveAt(fechamentos.IndexOf(fechamentoExistente));
+
+                        fechamentos.Add(novoValorConsolidado);
+                    }
+                    else
+                        fechamentos.Add(new GraficoBaseDto(grupo, fechamento.Quantidade, fechamento.Situacao.Name()));
+                }
+                    
             }
 
             return fechamentos.OrderBy(a => a.Grupo).ToList();
