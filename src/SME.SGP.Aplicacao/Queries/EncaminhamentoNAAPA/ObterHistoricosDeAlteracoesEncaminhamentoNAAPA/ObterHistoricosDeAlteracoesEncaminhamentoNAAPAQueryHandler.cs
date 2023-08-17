@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -167,7 +168,7 @@ namespace SME.SGP.Aplicacao
         {
             if (EhCampoLista(respostasEncaminhamento))
                 return ((questaoExistente == null && respostasEncaminhamento.Resposta != "[]") ||
-                        (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && ObterCampoJsonSemId(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) != ObterCampoJsonSemId(respostasEncaminhamento.Resposta)));
+                        (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && UtilRegex.ObterJsonSemAtributoId(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) != UtilRegex.ObterJsonSemAtributoId(respostasEncaminhamento.Resposta)));
 
             if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha, TipoQuestao.Upload }))
                 return questaoExistente == null || questaoExistente.Respostas.Any();
@@ -251,7 +252,7 @@ namespace SME.SGP.Aplicacao
         private bool? CampoPorJsonFoiAlterado(RespostaEncaminhamentoNAAPA RespostaAtual, EncaminhamentoNAAPASecaoQuestaoDto respostaAlteracao)
         {
             if (EhCampoLista(respostaAlteracao))
-                return ObterCampoJsonSemId(RespostaAtual.Texto) != ObterCampoJsonSemId(respostaAlteracao.Resposta);
+                return UtilRegex.ObterJsonSemAtributoId(RespostaAtual.Texto) != UtilRegex.ObterJsonSemAtributoId(respostaAlteracao.Resposta);
             
             return null;
         }
@@ -268,11 +269,6 @@ namespace SME.SGP.Aplicacao
         {
             return EnumExtension.EhUmDosValores(respostaAlteracao.TipoQuestao, new Enum[] { TipoQuestao.Endereco, TipoQuestao.ContatoResponsaveis,
                                                                                             TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma});
-        }
-
-        private string ObterCampoJsonSemId(string campo)
-        {
-            return Regex.Replace(campo, @"""id"":""(.*?)""", "");
         }
 
         private async Task<string> ObterNomeQuestao(Questao questao)

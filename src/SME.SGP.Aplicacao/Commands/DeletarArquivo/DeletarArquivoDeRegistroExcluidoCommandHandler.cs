@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
 {
@@ -29,10 +29,7 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
         public async Task<bool> Handle(DeletarArquivoDeRegistroExcluidoCommand request, CancellationToken cancellationToken)
         {
             var arquivoAtual = request.ArquivoAtual.Replace(@"\", @"/");
-
-            var regex = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
-
-            var atual = regex.Matches(arquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
+            var atual = UtilRegex.RegexNomesArquivosUUID.Matches(arquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
 
             return await DeletarArquivo(atual);
 
