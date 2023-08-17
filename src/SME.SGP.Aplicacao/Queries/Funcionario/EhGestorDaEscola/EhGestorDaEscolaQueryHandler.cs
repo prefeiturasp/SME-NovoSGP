@@ -28,13 +28,13 @@ namespace SME.SGP.Aplicacao
             var cargo = ObterCargoPorPerfil(request.Perfil);
             var funcaoExterna = ObterFuncaoExternaPorPerfil(request.Perfil);
 
-            using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
+            using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 HttpResponseMessage resposta;
                 if (request.UsuarioRf.EhLoginCpf())
-                    resposta = await httpClient.GetAsync($"/api/escolas/{request.UeCodigo}/funcionarios/funcoes-externas/{funcaoExterna}");
+                    resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_FUNCOES_EXTERNAS, request.UeCodigo, funcaoExterna));
                 else
-                    resposta = await httpClient.GetAsync($"/api/escolas/{request.UeCodigo}/funcionarios/cargos/{cargo}");
+                    resposta = await httpClient.GetAsync($"/api/" + string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_CARGOS, request.UeCodigo, cargo));
                     
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {

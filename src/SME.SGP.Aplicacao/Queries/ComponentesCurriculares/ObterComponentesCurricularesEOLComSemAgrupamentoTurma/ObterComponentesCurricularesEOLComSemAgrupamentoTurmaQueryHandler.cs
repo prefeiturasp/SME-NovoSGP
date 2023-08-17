@@ -32,18 +32,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var parametros = JsonConvert.SerializeObject(request.Ids);
             var url = string.Empty;
 
             if (!request.SemAgrupamentoTurma)
             {
-                url = @"disciplinas/turma/";
+                url = ServicosEolConstants.URL_DISCIPLINAS_TURMA;
                 if (request.CodigoTurma != null)
                     url += $"?codigoTurma={request.CodigoTurma}";
             }
             else
-                url = "disciplinas/SemAgrupamento";
+                url = ServicosEolConstants.URL_DISCIPLINAS_SEM_AGRUPAMENTO;
 
             var resposta = await httpClient.PostAsync(url, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)

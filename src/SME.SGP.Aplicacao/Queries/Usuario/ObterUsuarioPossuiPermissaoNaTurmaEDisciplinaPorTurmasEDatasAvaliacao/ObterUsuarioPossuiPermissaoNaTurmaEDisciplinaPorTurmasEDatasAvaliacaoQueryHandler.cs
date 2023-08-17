@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<UsuarioPossuiAtribuicaoEolDto>> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery request, CancellationToken cancellationToken)
         {
             var retorno = Enumerable.Empty<UsuarioPossuiAtribuicaoEolDto>();
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.PostAsync($"professores/{request.UsuarioLogado.CodigoRf}/disciplina/{request.DisciplinaId.ToString()}/turmas",
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_DISCIPLINA_TURMAS, request.UsuarioLogado.CodigoRf, request.DisciplinaId.ToString()),
                 new StringContent(JsonConvert.SerializeObject(request.TurmasIds), Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)

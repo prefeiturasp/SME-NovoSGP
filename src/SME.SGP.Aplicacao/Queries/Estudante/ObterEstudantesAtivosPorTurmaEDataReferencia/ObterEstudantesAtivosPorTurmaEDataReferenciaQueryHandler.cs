@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = Enumerable.Empty<EstudanteDto>();
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"alunos/turmas/{request.TurmaCodigo}/ativos");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ALUNOS_TURMAS_ATIVOS, request.TurmaCodigo));
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

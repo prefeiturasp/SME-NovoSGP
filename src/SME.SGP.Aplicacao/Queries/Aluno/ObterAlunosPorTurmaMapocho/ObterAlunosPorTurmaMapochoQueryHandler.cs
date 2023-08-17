@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -20,8 +21,8 @@ namespace SME.SGP.Aplicacao
         {
             string[] alunos;
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/{request.TurmaCodigo}/calculo-frequencia");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_CALCULO_FREQUENCIA, request.TurmaCodigo));
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

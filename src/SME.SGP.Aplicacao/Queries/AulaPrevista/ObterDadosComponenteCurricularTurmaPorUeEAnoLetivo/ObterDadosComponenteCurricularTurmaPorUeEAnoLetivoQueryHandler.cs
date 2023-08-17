@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
         {
             var listaRetornoEOL = Enumerable.Empty<DadosTurmaAulasAutomaticaDto>();
 
-            using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
+            using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 var componentesCurriculares = String.Join("&componentesCurriculares=", request.ComponentesCurriculares);
-                var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/dados-aula-turma?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}");
+                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA + $"?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}");
 
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {

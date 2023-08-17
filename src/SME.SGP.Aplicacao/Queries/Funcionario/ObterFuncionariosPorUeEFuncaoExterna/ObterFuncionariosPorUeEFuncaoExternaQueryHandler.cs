@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
@@ -26,9 +27,9 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<FuncionarioDTO>> Handle(ObterFuncionariosPorUeEFuncaoExternaQuery request, CancellationToken cancellationToken)
         {
             var listaRetorno = Enumerable.Empty<FuncionarioDTO>();
-            using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
+            using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
-                var resposta = await httpClient.GetAsync($"/api/escolas/{request.CodigoUE}/funcionarios/funcoes-externas/{request.CodigoFuncaoExterna}");
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_FUNCOES_EXTERNAS, request.CodigoUE, request.CodigoFuncaoExterna));
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();

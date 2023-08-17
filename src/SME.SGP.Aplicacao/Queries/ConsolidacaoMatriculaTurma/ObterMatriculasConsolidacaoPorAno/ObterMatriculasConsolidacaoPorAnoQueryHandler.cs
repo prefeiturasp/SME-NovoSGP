@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao
         {
             var matriculasConsolidadas = Enumerable.Empty<ConsolidacaoMatriculaTurmaDto>();
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"matriculas?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_MATRICULAS + $"?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

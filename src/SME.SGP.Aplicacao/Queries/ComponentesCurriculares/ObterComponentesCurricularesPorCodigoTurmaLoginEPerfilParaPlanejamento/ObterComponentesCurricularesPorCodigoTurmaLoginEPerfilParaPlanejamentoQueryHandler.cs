@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -23,8 +24,8 @@ namespace SME.SGP.Aplicacao
                                                                        
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"v1/componentes-curriculares/turmas/{request.CodigoTurma}/funcionarios/{request.Login}/perfis/{request.Perfil}/planejamento";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = string.Format(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS_PLANEJAMENTO, request.CodigoTurma, request.Login, request.Perfil);
             var resposta = await httpClient.GetAsync(url);
             if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

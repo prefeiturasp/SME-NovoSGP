@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<TurmaParaSyncInstitucionalDto> Handle(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"ues/{request.UeCodigo}/turmas/{request.TurmaId}/sincronizacoes-institucionais");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_UES_TURMAS_SINCRONIZACOES, request.UeCodigo, request.TurmaId));
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

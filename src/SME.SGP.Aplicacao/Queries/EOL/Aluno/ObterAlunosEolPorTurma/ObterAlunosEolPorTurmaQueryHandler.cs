@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
                 var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
 
                 var chaveCache = string.Format(NomeChaveCache.ALUNOS_TURMA_INATIVOS, request.TurmaId, request.ConsideraInativos);
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    var resposta = await httpClient.GetAsync($"turmas/{request.TurmaId}/considera-inativos/{request.ConsideraInativos}");
+                    var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_CONSIDERA_INATIVOS, request.TurmaId, request.ConsideraInativos));
                     if (resposta.IsSuccessStatusCode)
                     {
                         var json = await resposta.Content.ReadAsStringAsync();

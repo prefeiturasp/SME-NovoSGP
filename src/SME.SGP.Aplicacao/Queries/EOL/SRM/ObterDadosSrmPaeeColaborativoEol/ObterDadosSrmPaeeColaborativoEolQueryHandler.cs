@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<SrmPaeeColaborativoSgpDto>> Handle(ObterDadosSrmPaeeColaborativoEolQuery request, CancellationToken cancellationToken)
         {
             var dados = new List<SrmPaeeColaborativoSgpDto>();
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"alunos/srm-paee/aluno/{request.CodigoAluno}";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = string.Format(ServicosEolConstants.URL_ALUNOS_SRM_PAEE_ALUNO, request.CodigoAluno);
 
             var resposta = await httpClient.GetAsync(url);
             if (resposta.IsSuccessStatusCode)
