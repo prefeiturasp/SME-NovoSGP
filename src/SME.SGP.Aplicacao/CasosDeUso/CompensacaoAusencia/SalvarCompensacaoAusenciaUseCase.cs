@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
 
                 if (compensacaoDto.Alunos.Any() || (ehAlteracao && compensacoesJaExistentes.Any()))
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes, professorConsiderado);
+                    compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes, professorConsiderado);
                     codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
