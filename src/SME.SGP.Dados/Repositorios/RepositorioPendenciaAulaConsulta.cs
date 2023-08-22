@@ -317,7 +317,6 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> PossuiPendenciasPorAulasId(long[] aulasId, bool ehInfantil, long[] componentesCurricularesId)
         {
             string sql;
-            const long linguaInglesaCompartilhada = 1106;
 
             if (ehInfantil)
             {
@@ -336,18 +335,17 @@ namespace SME.SGP.Dados.Repositorios
             {
                 sql = @$"SELECT 1 FROM aula
                         INNER JOIN turma ON aula.turma_id = turma.turma_id
-                        INNER JOIN componente_curricular cc ON (cc.id = aula.disciplina_id::bigint or cc.id = any(@componentesCurricularesId))
+                        INNER JOIN componente_curricular cc ON cc.id = aula.disciplina_id::bigint
 	                    LEFT JOIN registro_frequencia_aluno rfa ON aula.id = rfa.aula_id and not rfa.excluido
                         WHERE NOT aula.excluido
 	                    AND aula.id = ANY(@aulas)
                         AND aula.data_aula::date < @hoje
                         AND rfa.id is null 
                         AND cc.permite_registro_frequencia
-                        {(componentesCurricularesId.Any(x => x == linguaInglesaCompartilhada) ? $" AND disciplina_id != @linguaInglesaCompartilhada" : String.Empty)}";
+                        AND turma.etapa_eja = 0";
             }   
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId, linguaInglesaCompartilhada = linguaInglesaCompartilhada.ToString() }));
-
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { aulas = aulasId, hoje = DateTime.Today.Date, componentesCurricularesId}));
         }
 
         public async Task<bool> PossuiPendenciasAtividadeAvaliativaPorAulasId(long[] aulasId)
@@ -422,8 +420,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            aula
                             inner join turma on 
 	                            aula.turma_id = turma.turma_id
-                            inner join componente_curricular cc on 
-	                        	(aula.disciplina_id = cc.id::varchar {(disciplinaIdTerritorio.HasValue ? "or @disciplinaIdTerritorio = cc.id" : string.Empty)})
+                            inner join componente_curricular cc on (aula.disciplina_id = cc.id::varchar {(disciplinaIdTerritorio.HasValue ? "or @disciplinaIdTerritorio = cc.id" : string.Empty)})
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
                             left join pendencia_diario_bordo pdb on
