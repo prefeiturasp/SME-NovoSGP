@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
                 if (ehAlteracao)
                     compensacoesJaExistentes = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(id));
                 else
-                    compensacoesJaExistentes = new List<CompensacaoAusenciaAluno>();
+                    compensacoesJaExistentes = Enumerable.Empty<CompensacaoAusenciaAluno>();
 
                 if (compensacaoDto.Alunos.Any() || (ehAlteracao && compensacoesJaExistentes.Any()))
                 {
