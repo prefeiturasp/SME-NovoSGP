@@ -2,6 +2,7 @@ using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (necessidadesEspeciaisAluno != null)
                 informacoesEscolaresAluno = necessidadesEspeciaisAluno;
 
-            var frequenciasAluno = await mediator.Send(new ObterFrequenciasGeralAlunoPorCodigoAnoSemestreQuery(request.CodigoAluno, turma.AnoLetivo, tipoCalendarioId));
+            var frequenciasAluno = (await mediator.Send(new ObterFrequenciasGeralAlunoPorCodigoAnoSemestreQuery(request.CodigoAluno, turma.AnoLetivo, tipoCalendarioId))).GroupBy(x => (x.Bimestre, x.CodigoAluno));
 
             var frequenciaBimestreAlunoDto = new List<FrequenciaBimestreAlunoDto>();
 
@@ -39,11 +40,12 @@ namespace SME.SGP.Aplicacao
             {
                 var frequenciaBimestreAluno = new FrequenciaBimestreAlunoDto()
                 {
-                    Bimestre = frequencia.Bimestre,
-                    CodigoAluno = frequencia.CodigoAluno,
-                    Frequencia = frequencia.PercentualFrequencia,
-                    QuantidadeAusencias = frequencia.TotalAusencias,
-                    QuantidadeCompensacoes = frequencia.TotalCompensacoes
+                    Bimestre = frequencia.Key.Bimestre,
+                    CodigoAluno = frequencia.Key.CodigoAluno,
+                    Frequencia = frequencia.Sum(f => f.PercentualFrequencia),
+                    QuantidadeAusencias = frequencia.Sum(f => f.TotalAusencias),
+                    QuantidadeCompensacoes = frequencia.Sum(f => f.TotalCompensacoes),
+                    TotalAulas = frequencia.Sum(f => f.TotalAulas)
                 };
 
                 frequenciaBimestreAlunoDto.Add(frequenciaBimestreAluno);
@@ -55,13 +57,13 @@ namespace SME.SGP.Aplicacao
             {
                 informacoesEscolaresAluno.FrequenciaGlobal = "";
                 return informacoesEscolaresAluno;
-            }                
-
+            }
+            var frequenciaAlunoBimestre = informacoesEscolaresAluno.FrequenciaAlunoPorBimestres;
             var frequenciaAluno = new FrequenciaAluno()
             {
-                TotalAulas = frequenciasAluno.Sum(f => f.TotalAulas),
-                TotalAusencias = frequenciasAluno.Sum(f => f.TotalAusencias),
-                TotalCompensacoes = frequenciasAluno.Sum(f => f.TotalCompensacoes),
+                TotalAulas = frequenciaAlunoBimestre.Sum(f => f.TotalAulas),
+                TotalAusencias = frequenciaAlunoBimestre.Sum(f => f.QuantidadeAusencias),
+                TotalCompensacoes = frequenciaAlunoBimestre.Sum(f => f.QuantidadeCompensacoes),
             };
 
             informacoesEscolaresAluno.FrequenciaGlobal = frequenciaAluno.PercentualFrequenciaFormatado;
