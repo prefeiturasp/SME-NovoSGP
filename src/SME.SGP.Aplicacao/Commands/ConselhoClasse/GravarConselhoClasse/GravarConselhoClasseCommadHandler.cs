@@ -52,8 +52,8 @@ namespace SME.SGP.Aplicacao
             if (!situacaoConselhoAtualizada)
                 throw new NegocioException(MensagemNegocioConselhoClasse.ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE);
 
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
             await AtualizarCache(request.ConselhoClasseNotaDto, request.FechamentoTurma.Turma, request.FechamentoTurma, request.CodigoAluno, request.Bimestre);
 
             return await Task.FromResult(conselhoClasseNotaRetorno);
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
         }
         private static string ObterChaveNotaConceitoConselhoClasseTurmaBimestre(string codigoTurma, int bimestre)
         {
-            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE,codigoTurma, bimestre);
+            return string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE,codigoTurma, bimestre);
         }
 
         private async Task PersistirNotaConceitoConselhoClasseBimestreNoCache(List<NotaConceitoBimestreComponenteDto> notasConceitosFechamento,

@@ -105,7 +105,7 @@ namespace SME.SGP.Dominio
 
         public async Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login)
         {
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
+            var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
 
             var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
 
@@ -166,7 +166,7 @@ namespace SME.SGP.Dominio
             if (usuario.Perfis != null && usuario.Perfis.Any())
                 return usuario;
 
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
+            var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
             var perfisDoUsuario = await repositorioCache.ObterAsync(chaveCache, async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
@@ -272,7 +272,7 @@ namespace SME.SGP.Dominio
 
         public void RemoverPerfisUsuarioCache(string login)
         {
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_PERFIS_USUARIO, login);
+            var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
 
             _ = repositorioCache.RemoverAsync(chaveCache);
         }

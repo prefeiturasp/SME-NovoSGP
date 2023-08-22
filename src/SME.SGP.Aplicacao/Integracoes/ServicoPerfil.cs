@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         private async Task<Guid> ObterPerfilPrioritarioCJSemTurmaTitular(string login, bool usuarioPerfilCJPrioritario, bool usuarioPerfilCJInfantilPrioritario)
         {
             IEnumerable<Dto.AbrangenciaFiltroRetorno> lstTurmasAtribuidasInfantil;
+            string PerfilCj = "8431612";
 
             if (usuarioPerfilCJInfantilPrioritario)
             {
@@ -35,13 +36,13 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (usuarioPerfilCJPrioritario)
             {
-                lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR, false);
+                lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_CJ, false);
 
-                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any())
-                    return Perfis.PERFIL_PROFESSOR;
-                else
+                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any() && login == PerfilCj)
                     return Perfis.PERFIL_CJ;
-            }            
+                else 
+                    return Perfis.PERFIL_PROFESSOR;
+            }
 
             return Guid.Empty;
 

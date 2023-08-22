@@ -268,9 +268,9 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL, turmaFechamento.AnoLetivo);
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento,tipoNotaOuConceito?.TipoNota);
-
+            
             var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
-
+            
             var alunosAtivos = from a in alunos
                 where a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date
                 orderby a.NomeValido(), a.NumeroAlunoChamada
@@ -476,7 +476,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private static string ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(string codigoTurma)
         {
-            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, codigoTurma);
+            return string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, codigoTurma);
         }
 
         private static void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota, bool inativo)

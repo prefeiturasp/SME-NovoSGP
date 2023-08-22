@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Aplicacao.Queries;
 
 namespace SME.SGP.Aplicacao
 {
@@ -46,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 {
                     if (fechamentoTurma?.Justificativa != null)
                     {
-                        var tamanhoJustificativa = fechamentoTurma.Justificativa.Length;
+                        var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma.Justificativa));
                         var limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
                         
                         if (tamanhoJustificativa > limite)
@@ -99,8 +100,8 @@ namespace SME.SGP.Aplicacao
             var periodoEscolarId = await mediator.Send(new ObterPeriodoEscolarIdPorTurmaBimestreAnoLetivoQuery(fechamentoTurma.TurmaId,
                 fechamentoTurma.Bimestre, turma.AnoLetivo));
             
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolarId, fechamentoTurma.DisciplinaId));
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, fechamentoTurma.Bimestre));
+            await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolarId, fechamentoTurma.DisciplinaId));
+            await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, fechamentoTurma.Bimestre));
         }
     }
 }

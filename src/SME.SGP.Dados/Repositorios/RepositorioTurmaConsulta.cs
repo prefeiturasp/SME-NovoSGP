@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
