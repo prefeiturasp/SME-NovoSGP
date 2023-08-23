@@ -151,6 +151,15 @@ namespace SME.SGP.Dominio
         ListagemItinerancias = 49,
 
         [Display(Name = "relatorios/controle-frequencia-mensal", ShortName = "Frequência", Description = "Relatório de Controle de frequência mensal")]
-        RelatorioControleFrequenciaMensal = 50
+        RelatorioControleFrequenciaMensal = 50,
+
+        [Display(Name = "relatorios/historicoescolareja", ShortName = "HistoricoEscolar", Description = "Histórico Escolar")]
+        HistoricoEscolarEJARazor = 51,
+
+        [Display(Name = "relatorios/listagem-ocorrencias", ShortName = "ListagemOcorrencia", Description = "Relatório de Ocorrências")]
+        ListagemOcorrencias = 52,
+            
+        [Display(Name = "relatorios/plano-anual", ShortName = "Plano Anual", Description = "Relatório Plano Anual")]
+        RelatorioPlanoAnual = 53,
     }
 }

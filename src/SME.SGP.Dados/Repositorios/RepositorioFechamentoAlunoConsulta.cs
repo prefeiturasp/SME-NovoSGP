@@ -62,23 +62,15 @@ namespace SME.SGP.Dados.Repositorios
 
             sqlQuery.Append(@" group by t.id, fa.aluno_codigo order by t.ano;");
 
-            try
+            return await database.Conexao.QueryAsync<TurmaAlunoBimestreFechamentoDto>(sqlQuery.ToString(), new
             {
-                return await database.Conexao.QueryAsync<TurmaAlunoBimestreFechamentoDto>(sqlQuery.ToString(), new
-                {
-                    ueId,
-                    ano,
-                    dreId,
-                    modalidade,
-                    semestre,
-                    bimestre
-                });
-            }
-            catch(Exception ex)
-            {
-                var a = ex;
-                return null;
-            }
+                ueId,
+                ano,
+                dreId,
+                modalidade,
+                semestre,
+                bimestre
+            });
         }
 
         public async Task<FechamentoAluno> ObterFechamentoAluno(long fechamentoTurmaDisciplinaId, string alunoCodigo)

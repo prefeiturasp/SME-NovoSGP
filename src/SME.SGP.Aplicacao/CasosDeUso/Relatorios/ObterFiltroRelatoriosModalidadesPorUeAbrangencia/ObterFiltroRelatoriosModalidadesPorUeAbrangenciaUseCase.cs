@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, bool consideraNovasModalidades, bool consideraHistorico = false, int anoLetivo = 0)
         {
-            var login = await mediator.Send(new ObterLoginAtualQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var login = await mediator.Send(ObterLoginAtualQuery.Instance);
+            var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
 
             var modalidadesQueSeraoIgnoradas = await mediator
                 .Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo > 0 ? anoLetivo : DateTime.Today.Year, consideraNovasModalidades));

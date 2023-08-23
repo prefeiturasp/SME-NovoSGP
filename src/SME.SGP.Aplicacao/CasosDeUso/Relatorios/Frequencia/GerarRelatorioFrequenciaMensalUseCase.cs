@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioFrequenciaMensalDto filtro)
         {
-            var usuario = await _mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await _mediator.Send(ObterUsuarioLogadoQuery.Instance);
             filtro.UsuarioNome = usuario.Nome;
             filtro.UsuarioRf = usuario.CodigoRf;
 

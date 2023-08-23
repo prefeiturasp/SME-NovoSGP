@@ -14,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesPorTurmaCodigoQueryHandler_TurmasProgramaEstudanteFake : IRequestHandler<ObterComponentesCurricularesPorTurmaCodigoQuery, IEnumerable<DisciplinaResposta>>
+    public class ObterComponentesCurricularesPorTurmaCodigoQueryHandler_TurmasProgramaEstudanteFake : IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
         
-        public async Task<IEnumerable<DisciplinaResposta>> Handle(ObterComponentesCurricularesPorTurmaCodigoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<DisciplinaResposta>> Handle(ObterDisciplinasPorCodigoTurmaQuery request, CancellationToken cancellationToken)
         {
             return new List<DisciplinaResposta>()
             {

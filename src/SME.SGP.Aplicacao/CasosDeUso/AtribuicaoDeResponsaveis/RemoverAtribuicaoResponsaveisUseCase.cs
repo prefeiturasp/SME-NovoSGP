@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var dres = await mediator.Send(new ObterCodigosDresQuery());
+            var dres = await mediator.Send(ObterCodigosDresQuery.Instance);
 
             foreach (var dreId in dres)
             {

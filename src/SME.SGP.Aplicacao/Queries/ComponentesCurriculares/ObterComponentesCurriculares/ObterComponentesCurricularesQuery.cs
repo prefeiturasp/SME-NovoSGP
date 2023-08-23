@@ -11,6 +11,9 @@ namespace SME.SGP.Aplicacao
     {
         public ObterComponentesCurricularesQuery()
         { }
+
+        private static ObterComponentesCurricularesQuery _instance;
+        public static ObterComponentesCurricularesQuery Instance => _instance ??= new();
     }
 
 }

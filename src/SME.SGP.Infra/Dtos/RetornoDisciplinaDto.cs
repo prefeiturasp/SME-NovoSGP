@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Infra
 {
@@ -18,5 +20,27 @@ namespace SME.SGP.Infra
         public GrupoMatriz GrupoMatriz { get; set; }
         public bool BaseNacional { get; set; }
         public string Professor { get; set; }
+    }
+
+    public static class RetornoDisciplinaExtension
+    {
+        public static List<DisciplinaDto> MapearDto(this IEnumerable<RetornoDisciplinaDto> retornoDisciplinas)
+        {
+            return retornoDisciplinas.Select(x => new DisciplinaDto
+            {
+                CodigoComponenteCurricular = x.CdComponenteCurricular,
+                CdComponenteCurricularPai = x.CdComponenteCurricularPai,
+                CodigoTerritorioSaber = x.CodigoTerritorioSaber,
+                Nome = x.Descricao,
+                Regencia = x.EhRegencia,
+                Compartilhada = x.EhCompartilhada,
+                RegistraFrequencia = x.RegistraFrequencia,
+                TerritorioSaber = x.Territorio,
+                LancaNota = x.LancaNota,
+                GrupoMatrizId = x.GrupoMatriz?.Id ?? 0,
+                GrupoMatrizNome = x.GrupoMatriz?.Nome,
+                Professor = x.Professor
+            }).ToList();
+        }
     }
 }

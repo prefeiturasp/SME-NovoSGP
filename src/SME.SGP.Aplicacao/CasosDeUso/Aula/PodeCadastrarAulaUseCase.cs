@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<CadastroAulaDto> Executar(FiltroPodeCadastrarAulaDto filtro)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());           
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);           
 
             if (CriandoAula(filtro.AulaId) || await AlterandoDataAula(filtro.AulaId, filtro.DataAula))
             {                

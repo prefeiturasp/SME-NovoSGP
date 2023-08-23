@@ -45,12 +45,14 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             var scope = new WorkerServiceScopeFactoryFake(ServiceProvider);
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
             var mensageria = ServiceProvider.GetService<IServicoMensageriaSGP>();
+            var mensageriaMetricas = ServiceProvider.GetService<IServicoMensageriaMetricas>();
             var connection = new ConnectionFactoryFake();
 
             var worker = new WorkerRabbitAula(
                 scope,
                 telemetria,
                 mensageria,
+                mensageriaMetricas,
                 Options.Create(new TelemetriaOptions()),
                 Options.Create(new ConsumoFilasOptions()),
                 connection);

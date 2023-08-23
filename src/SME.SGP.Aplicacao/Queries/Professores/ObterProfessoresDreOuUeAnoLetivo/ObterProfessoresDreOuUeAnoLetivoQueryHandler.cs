@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ProfessorEolDto>> Handle(ObterProfessoresDreOuUeAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.GetAsync($"/api/escolas/{request.CodigoDreUe}/professores/{request.AnoLetivo}");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_PROFESSORES, request.CodigoDreUe, request.AnoLetivo));
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

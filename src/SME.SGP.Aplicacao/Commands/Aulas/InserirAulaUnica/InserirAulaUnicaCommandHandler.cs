@@ -90,6 +90,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                               retorno.Mensagens,
                                               request.Usuario);
 
+            await mediator.Send(new ExecutarExclusaoPendenciaProfessorComponenteSemAulaCommand(turma,
+                                                                                               request.CodigoComponenteCurricular,
+                                                                                               request.DataAula));
+
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");
 
             return retorno;

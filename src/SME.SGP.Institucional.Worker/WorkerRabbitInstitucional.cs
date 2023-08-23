@@ -15,9 +15,10 @@ namespace SME.SGP.Institucional.Worker
         public WorkerRabbitInstitucional(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitInstitucional",
                 typeof(RotasRabbitSgpInstitucional))
         {

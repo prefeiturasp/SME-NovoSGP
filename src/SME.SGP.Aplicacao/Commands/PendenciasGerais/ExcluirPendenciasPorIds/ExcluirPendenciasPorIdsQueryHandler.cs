@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                repositorioPendencia.ExclusaoLogicaPendenciaIds(request.PendenciasIds);
+                await repositorioPendencia.ExclusaoLogicaPendenciaIds(request.PendenciasIds);
                 return true;
             }
             catch(Exception ex)

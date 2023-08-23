@@ -85,7 +85,7 @@ namespace SME.SGP.Dominio
         /// <summary>
         /// Lista montada para particularidade de cálculo para o ano de 2020.
         /// </summary>
-        public ICollection<(int, double)> PercentuaisFrequenciaPorBimestre { get; private set; }
+        public ICollection<(int bimestre, double percentual)> PercentuaisFrequenciaPorBimestre { get; private set; }
 
         /// <summary>
         /// Cálculo de percentual final específico para 2020.
@@ -94,7 +94,7 @@ namespace SME.SGP.Dominio
         {
             get
             {
-                return ArredondarPercentual(PercentuaisFrequenciaPorBimestre.Any() ? PercentuaisFrequenciaPorBimestre.Sum(p => p.Item2) / PercentuaisFrequenciaPorBimestre.Count : 0);
+                return ArredondarPercentual(PercentuaisFrequenciaPorBimestre.Any() ? PercentuaisFrequenciaPorBimestre.Sum(p => p.percentual) / PercentuaisFrequenciaPorBimestre.Count : 0);
             }
         }
 

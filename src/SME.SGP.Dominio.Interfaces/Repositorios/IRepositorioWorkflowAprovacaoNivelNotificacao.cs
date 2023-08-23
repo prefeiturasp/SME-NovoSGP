@@ -7,6 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
         void Salvar(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao);
         Task SalvarAsync(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao);
 
-        void ExcluirPorWorkflowNivelNotificacaoId(long workflowNivelId, long notificacaoId);
+        Task ExcluirPorWorkflowNivelNotificacaoId(long workflowNivelId, long notificacaoId);
     }
 }

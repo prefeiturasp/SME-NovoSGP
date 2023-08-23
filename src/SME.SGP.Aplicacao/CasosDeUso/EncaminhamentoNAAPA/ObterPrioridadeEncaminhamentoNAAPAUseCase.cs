@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PrioridadeEncaminhamentoNAAPADto>> Executar()
         {
-            return await mediator.Send(new ObterPrioridadeEncaminhamentoNAAPAQuery());
+            return await mediator.Send(ObterPrioridadeEncaminhamentoNAAPAQuery.Instance);
         }
     }
 }

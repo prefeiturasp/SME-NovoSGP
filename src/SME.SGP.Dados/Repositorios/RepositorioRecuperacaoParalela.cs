@@ -98,12 +98,9 @@ namespace SME.SGP.Dados.Repositorios
             //a paginação desse ítem é diferente das outras, pois ela é determinada pela paginação da coluna pagina
             //ela não tem uma quantidade exata de ítens por página, apenas os objetivos daquele eixo, podendo variar para cada um
             if (pagina == 0) pagina = 1;
-            //TODO: colocar os wheres
-            //TODO: periodo 1 olhar bimestre 1,2...
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
             MontarCamposResumo(query);
-            //query.AppendLine(", resposta.ordem");
             MontarFromResumo(query);
             MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, pagina);
             query.AppendLine("and e.id NOT IN (1,2)");

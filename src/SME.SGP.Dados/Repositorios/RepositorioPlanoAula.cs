@@ -16,7 +16,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirPlanoDaAula(long aulaId)
         {
-            // Excluir objetivos de aprendizagem do plano
             var command = @"update objetivo_aprendizagem_aula 
                                 set excluido = true
                             where plano_aula_id in (
@@ -24,7 +23,6 @@ namespace SME.SGP.Dados.Repositorios
                                  where not excluido and aula_id = @aulaId) ";
             await database.ExecuteAsync(command, new { aulaId });
 
-            // Excluir plano de aula
             command = "update plano_aula set excluido = true where not excluido and aula_id = @aulaId";
             await database.ExecuteAsync(command, new { aulaId });
         }

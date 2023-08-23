@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Executar(long id, ComunicadoAlterarDto comunicado)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             await ValidarAbrangenciaUsuario(comunicado, usuarioLogado);
 

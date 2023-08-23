@@ -7,6 +7,7 @@
         public static string SgpProcessosIsolados => "sme.sgp.workers.processos.isolados";
 
         public static string SgpLogs => "EnterpriseApplicationLog";
+        public static string QueueLogs => "EnterpriseQueueLog";
         public static string SgpDeadLetter => "sme.sgp.workers.deadletter";
         public static string ServidorRelatoriosDeadLetter => "sme.sr.workers.relatorios.deadletter";
 

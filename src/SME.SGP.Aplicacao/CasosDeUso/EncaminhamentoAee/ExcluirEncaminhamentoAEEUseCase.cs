@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             if (!(encaminhamentoAee.Situacao == SituacaoAEE.Rascunho || encaminhamentoAee.Situacao == SituacaoAEE.Encaminhado))
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO);
             
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             
             if (usuarioLogado.EhGestorEscolar() || encaminhamentoAee.CriadoRF.Equals(usuarioLogado.CodigoRf))
             {

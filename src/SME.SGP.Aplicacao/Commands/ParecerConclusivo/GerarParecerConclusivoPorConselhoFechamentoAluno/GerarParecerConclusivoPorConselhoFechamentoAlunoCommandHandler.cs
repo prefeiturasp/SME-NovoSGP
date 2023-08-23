@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao.Commands
 
         public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoPorConselhoFechamentoAlunoCommand request,CancellationToken cancellationToken)
         {
-            var solicitanteId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var solicitanteId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             
             var conselhoClasseAluno = await mediator.Send(new  ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery(
                 request.ConselhoClasseId, 
