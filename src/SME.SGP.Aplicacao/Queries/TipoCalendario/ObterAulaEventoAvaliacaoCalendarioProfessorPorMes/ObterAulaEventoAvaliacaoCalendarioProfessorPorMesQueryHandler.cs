@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await servicoEol
                 .ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
-            var componentesCurricularesId = componentesCurriculares?
+            var componentesCurricularesId = componentesCurriculares?.Where(b => b.RegistraFrequencia == true)
                 .Select(x => x.TerritorioSaber && x.CodigoComponenteTerritorioSaber > 0 ? x.CodigoComponenteTerritorioSaber : x.Codigo)
                 .ToArray();
 
