@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     public class SalvarAcompanhamentoAlunoUseCase : AbstractUseCase, ISalvarAcompanhamentoAlunoUseCase
     {
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        
         public SalvarAcompanhamentoAlunoUseCase(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -66,11 +67,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
         {
-            var imagens = Regex.Matches(acompanhamentoAluno.PercursoIndividual, "<img[^>]*>");
+            var imagens = UtilRegex.RegexTagsIMG.Matches(acompanhamentoAluno.PercursoIndividual);
             if (imagens != null)
                 foreach (var imagem in imagens)
                 {
-                    var nomeArquivo = Regex.Match(imagem.ToString(), ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
+                    var nomeArquivo = UtilRegex.RegexNomesArquivosUUID.Match(imagem.ToString());
                     if (!ImagemJaExistente(imagem.ToString()) && ImagemExisteTemp(imagem.ToString()))
                     {
                         var novoCaminho = nomeArquivo.Success ? await mediator.Send(new MoverArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;

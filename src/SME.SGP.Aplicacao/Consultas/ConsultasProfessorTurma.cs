@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
         }
 
-        public IEnumerable<ProfessorTurmaDto> Listar(string codigoRf)
+        public async Task<IEnumerable<ProfessorTurmaDto>> Listar(string codigoRf)
         {
-            return MapearParaDto(servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
+            return MapearParaDto(await servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)

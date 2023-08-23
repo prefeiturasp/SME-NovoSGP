@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
                 .Where(cc => request.ConsideraRegencia || (!request.ConsideraRegencia && !cc.Regencia))
                 .Select(a => a.CodigoComponenteCurricular).ToList();
 
-            TratarComponentesRegencia(request, listaCodigosComponentes);
-            TratarComponentesTerritorio(request, listaCodigosComponentes);
+            await TratarComponentesRegencia(request, listaCodigosComponentes);
+            await TratarComponentesTerritorio(request, listaCodigosComponentes);
 
             if (listaCodigosComponentes == null || !listaCodigosComponentes.Any())
                 return default;
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterAreasConhecimentoComponenteCurricularQuery(listaCodigosComponentes.Distinct().ToArray()));
         }
 
-        private void TratarComponentesRegencia(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
+        private async Task TratarComponentesRegencia(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
         {
             if (request.ConsideraRegencia)
             {
@@ -42,32 +42,31 @@ namespace SME.SGP.Aplicacao
                     .Select(cc => cc.TurmaCodigo)
                     .Where(codigoTurma => codigoTurma != null)
                     .Distinct();
-
-                codigosTurmas.ToList().ForEach(ct =>
+                foreach (var ct in codigosTurmas)
                 {
-                    var componentesRegencia = mediator
-                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho: true))
-                        .Result;
+                    var componentesRegencia = await mediator
+                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho: true));
 
                     if (componentesRegencia != null && componentesRegencia.Any())
                         listaCodigosComponentes.AddRange(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
-                });
+                }
+                
             }
         }
 
-        private void TratarComponentesTerritorio(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
+        private async Task TratarComponentesTerritorio(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
         {
             if (request.ComponentesCurriculares.Any(cc => cc.TerritorioSaber))
             {
                 var componentesTerritorio = request.ComponentesCurriculares
                     .Where(cc => cc.TerritorioSaber).ToList();
 
-                componentesTerritorio.ForEach(cc =>
+                foreach (var cc in componentesTerritorio)
                 {
-                    if(cc.CodigoComponenteCurricular > 0 && !string.IsNullOrEmpty(cc.TurmaCodigo))
+                    if (cc.CodigoComponenteCurricular > 0 && !string.IsNullOrEmpty(cc.TurmaCodigo))
                     {
-                        var componenteTerritorioEquivalente = mediator
-                        .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(cc.CodigoComponenteCurricular, cc.TurmaCodigo, null)).Result;
+                        var componenteTerritorioEquivalente = await mediator
+                        .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(cc.CodigoComponenteCurricular, cc.TurmaCodigo, null));
 
                         if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
                         {
@@ -77,7 +76,7 @@ namespace SME.SGP.Aplicacao
                                 listaCodigosComponentes.Add(long.Parse(codigoConsiderado));
                         }
                     }
-                });
+                }
             }
         }
     }

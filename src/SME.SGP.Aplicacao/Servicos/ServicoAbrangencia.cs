@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             try
             {
-                estruturaInstitucionalVigente = servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
+                estruturaInstitucionalVigente = await servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
             }
             catch (Exception ex)
             {
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 throw new NegocioException(erro);
             }
 
-            var tiposEscolas = servicoEOL.BuscarTiposEscola();
+            var tiposEscolas = await servicoEOL.BuscarTiposEscola();
             if (tiposEscolas.Any())
             {
                 SincronizarTiposEscola(tiposEscolas);
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 throw new NegocioException(erro);
             }
 
-            var ciclos = servicoEOL.BuscarCiclos();
+            var ciclos = await servicoEOL.BuscarCiclos();
             if (ciclos.Any())
             {
                 SincronizarCiclos(ciclos);
@@ -308,7 +308,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
             {
-                var turmasEol = servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
+                var turmasEol = await servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
                 if (turmasEol != null)
                     await SincronizarEstruturaInstitucional(turmasEol);
             }

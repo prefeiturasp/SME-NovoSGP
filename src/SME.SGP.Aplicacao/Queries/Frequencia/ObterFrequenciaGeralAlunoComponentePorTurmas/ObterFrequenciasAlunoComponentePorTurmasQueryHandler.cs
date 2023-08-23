@@ -39,8 +39,8 @@ namespace SME.SGP.Aplicacao
             {
                 var codigosComponentesConsiderados = new List<string>() { aulaComponenteTurma.ComponenteCurricularCodigo };
 
-                var componentesTerritorioEquivalentes = mediator
-                    .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(aulaComponenteTurma.ComponenteCurricularCodigo), aulaComponenteTurma.TurmaCodigo, null)).Result;
+                var componentesTerritorioEquivalentes = await mediator
+                    .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(aulaComponenteTurma.ComponenteCurricularCodigo), aulaComponenteTurma.TurmaCodigo, null));
 
                 if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any())
                     codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ct => ct.codigoComponente).Except(codigosComponentesConsiderados));

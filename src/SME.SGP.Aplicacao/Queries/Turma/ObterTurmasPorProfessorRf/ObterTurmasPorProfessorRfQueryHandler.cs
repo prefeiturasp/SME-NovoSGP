@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        public Task<IEnumerable<ProfessorTurmaDto>> Handle(ObterTurmasPorProfessorRfQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProfessorTurmaDto>> Handle(ObterTurmasPorProfessorRfQuery request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(MapearParaDto(servicoEOL.ObterListaTurmasPorProfessor(request.CodigoRf)));
+            return MapearParaDto(await servicoEOL.ObterListaTurmasPorProfessor(request.CodigoRf));
         }
 
         private IEnumerable<ProfessorTurmaDto> MapearParaDto(IEnumerable<ProfessorTurmaReposta> turmas)

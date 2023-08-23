@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
+        public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
             var planoCopia = new PlanoAnualDto(
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                         planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
 
                     planoAnual.Descricao = planoAnualOrigem.Descricao;
-                    Salvar(planoCopia, planoAnual, bimestreAtual);
+                    await Salvar(planoCopia, planoAnual, bimestreAtual);
                 }
             }
             unitOfWork.PersistirTransacao();
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto)
         {
-            var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
+            var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
             {
                 throw new NegocioException("Não foi possível obter o RF do usuário.");
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                 }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
-                Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
+                await Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
             }
             unitOfWork.PersistirTransacao();
 
@@ -131,24 +131,24 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void AjustarObjetivosAprendizagem(PlanoAnualDto planoAnualDto, BimestrePlanoAnualDto bimestrePlanoAnualDto)
+        private async Task AjustarObjetivosAprendizagem(PlanoAnualDto planoAnualDto, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
             var objetivosAprendizagemPlanoAnual = repositorioObjetivoAprendizagemPlano.ObterObjetivosAprendizagemPorIdPlano(planoAnualDto.Id);
 
             if (objetivosAprendizagemPlanoAnual != null)
             {
                 RemoverObjetivos(objetivosAprendizagemPlanoAnual, bimestrePlanoAnualDto);
-                InserirObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual, bimestrePlanoAnualDto);
+                await InserirObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual, bimestrePlanoAnualDto);
             }
         }
 
-        private void InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
+        private async Task InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
             if (bimestrePlanoAnualDto.ObjetivosAprendizagem != null && bimestrePlanoAnualDto.ObjetivosAprendizagem.Any())
             {
                 var idsObjetivos = objetivosAprendizagemPlanoAnual?.Select(c => c.ObjetivoAprendizagemJuremaId);
-                IEnumerable<ComponenteCurricularJurema> componentesCurriculares = ObterComponentesCurriculares();
-                IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem = ObterObjetivosDeAprendizagem();
+                IEnumerable<ComponenteCurricularJurema> componentesCurriculares = await ObterComponentesCurriculares();
+                IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem = await ObterObjetivosDeAprendizagem();
 
                 foreach (var objetivo in bimestrePlanoAnualDto.ObjetivosAprendizagem)
                 {
@@ -176,9 +176,9 @@ namespace SME.SGP.Aplicacao
             return planoAnual;
         }
 
-        private IEnumerable<ComponenteCurricularJurema> ObterComponentesCurriculares()
+        private async Task<IEnumerable<ComponenteCurricularJurema>> ObterComponentesCurriculares()
         {
-            var componentesCurriculares = repositorioComponenteCurricular.Listar();
+            var componentesCurriculares = await repositorioComponenteCurricular.ListarAsync();
             if (componentesCurriculares == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -187,9 +187,9 @@ namespace SME.SGP.Aplicacao
             return componentesCurriculares;
         }
 
-        private IEnumerable<ObjetivoAprendizagemDto> ObterObjetivosDeAprendizagem()
+        private async Task <IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosDeAprendizagem()
         {
-            var objetivosAprendizagem = consultasObjetivoAprendizagem.Listar().Result;
+            var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
             if (objetivosAprendizagem == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de objetivos de aprendizagem.");
@@ -221,11 +221,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
+        private async Task Salvar(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
             planoAnualDto.Id = repositorioPlanoAnual.Salvar(planoAnual);
             if (!planoAnual.Migrado)
-                AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);
+                await AjustarObjetivosAprendizagem(planoAnualDto, bimestrePlanoAnualDto);
         }
 
         private void SalvarObjetivoAprendizagem(PlanoAnualDto planoAnualDto,

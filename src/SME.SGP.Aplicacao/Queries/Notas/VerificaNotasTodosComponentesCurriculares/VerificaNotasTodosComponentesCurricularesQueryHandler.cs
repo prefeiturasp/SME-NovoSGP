@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Queries
                 notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == bimestre));
             }
                 
-            turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(request.AlunoCodigo, request.PeriodoEscolar, turmasCodigos);
+            turmasCodigos = await DefinirTurmasConsideradasDeAcordoComMatricula(request.AlunoCodigo, request.PeriodoEscolar, turmasCodigos);
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: request.Turma.CodigoTurma), cancellationToken);
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao.Queries
             return disciplinasLancamNota.All(componenteCurricular => notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular));
         }
 
-        private string[] DefinirTurmasConsideradasDeAcordoComMatricula(string alunoCodigo, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
+        private async Task<string[]> DefinirTurmasConsideradasDeAcordoComMatricula(string alunoCodigo, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
         {
             if (periodoEscolar != null)
             {
@@ -105,12 +105,12 @@ namespace SME.SGP.Aplicacao.Queries
                 turmasCodigos.CopyTo(codigosTurmaVerificacao, 0);
                 var listaCodigosConsiderados = new List<string>();
 
-                codigosTurmaVerificacao.ToList().ForEach(ct =>
+                foreach (var ct in codigosTurmaVerificacao)
                 {
-                    var dadosMatricula = mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(ct, alunoCodigo)).Result;
+                    var dadosMatricula = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(ct, alunoCodigo));
                     if (dadosMatricula != null && dadosMatricula.Any() && dadosMatricula.OrderBy(dm => dm.DataSituacao).First().DataMatricula.Date <= periodoEscolar.PeriodoFim.Date)
                         listaCodigosConsiderados.Add(ct);
-                });
+                }
 
                 if (listaCodigosConsiderados.Any())
                     turmasCodigos = listaCodigosConsiderados.ToArray();

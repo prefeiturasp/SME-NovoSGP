@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
 
             var listaRetorno = new List<ResponsavelEscolasDto>();
 
-            TratarRegistrosComResponsaveis(escolasPorDre, supervisoresEscolasDres, listaRetorno);
+            await TratarRegistrosComResponsaveis(escolasPorDre, supervisoresEscolasDres, listaRetorno);
             TrataEscolasSemResponsaveis(escolasPorDre, listaRetorno);
 
             return listaRetorno;
@@ -268,12 +268,12 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private void TratarRegistrosComResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<ResponsavelEscolasDto> listaRetorno)
+        private async Task TratarRegistrosComResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<ResponsavelEscolasDto> listaRetorno)
         {
             if (supervisoresEscolasDres.Any())
             {
                 var supervisoresIds = supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key);
-                var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresIds.ToArray());
+                var supervisores = await servicoEOL.ObterSupervisoresPorCodigo(supervisoresIds.ToArray());
 
                 if (supervisores != null && supervisores.Any())
                 {

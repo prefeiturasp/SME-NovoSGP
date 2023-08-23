@@ -196,7 +196,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(Evento evento)
         {
-            var usuario = servicoUsuario.ObterUsuarioLogado().Result;
+            var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             if (evento.EhEventoSME() && !usuario.EhPerfilSME())
                 throw new NegocioException(evento.Nome);

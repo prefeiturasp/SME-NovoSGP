@@ -49,14 +49,14 @@ namespace SME.SGP.Aplicacao
                     listaDisciplinas.Add(disciplina);
                 }
 
-                request.CodigoComponentes
-                    .Where(cc => !disciplinasAgrupadas.Select(d => d.CodigoComponenteCurricular).Contains(cc.codigo) && cc.codigoTerritorioSaber.Equals(0))
-                    .ToList().ForEach(cc =>
-                    {
-                        var componente = repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { cc.codigo }).Result;
-                        listaDisciplinas.Add(componente.First());
-                    });
+                var codigoComponentes  = request.CodigoComponentes
+                    .Where(cc => !disciplinasAgrupadas.Select(d => d.CodigoComponenteCurricular).Contains(cc.codigo) && cc.codigoTerritorioSaber.Equals(0));
 
+                foreach (var cc in codigoComponentes)
+                {
+                    var componente = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { cc.codigo });
+                    listaDisciplinas.Add(componente.First());
+                }
                 return listaDisciplinas;
             }
             else

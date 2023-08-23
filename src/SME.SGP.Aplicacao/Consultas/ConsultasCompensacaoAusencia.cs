@@ -257,7 +257,7 @@ namespace SME.SGP.Aplicacao
                 return await ObtemTurmasUsuarioCPParaCopiaCompensacao(turmaOrigem, usuario.CodigoRf);
             else
             {
-                var turmas = servicoEOL.ObterListaTurmasPorProfessor(usuario.CodigoRf);
+                var turmas = await servicoEOL.ObterListaTurmasPorProfessor(usuario.CodigoRf);
                 return turmas.Where(t => t.CodTurma.ToString() != turmaOrigem.CodigoTurma
                                 && t.CodEscola == ue.CodigoUe
                                 && t.AnoLetivo == turmaOrigem.AnoLetivo
