@@ -216,7 +216,13 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAlunoRegenciaPai = new FrequenciaAluno();
             if (disciplinasDaTurmaEol.Any(x => x.Regencia))
-                frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == disciplinasDaTurmaEol.FirstOrDefault(d => d.Regencia)?.CdComponenteCurricularPai.ToString());
+            {
+                var componenteRegenciaPai = disciplinasDaTurmaEol.FirstOrDefault(d => d.Regencia)?.CdComponenteCurricularPai.ToString();
+                frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == componenteRegenciaPai);
+                frequenciaAlunoRegenciaPai.TotalAulas = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAulas);
+                frequenciaAlunoRegenciaPai.TotalAusencias = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAusencias);
+                frequenciaAlunoRegenciaPai.TotalCompensacoes = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalCompensacoes);
+            }
 
             var registrosFrequencia = (turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma != null ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(notasFrequenciaDto.AlunoCodigo, turmasCodigos.ToArray(),
