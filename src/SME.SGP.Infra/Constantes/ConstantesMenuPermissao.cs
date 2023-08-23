@@ -22,7 +22,7 @@
         public const string MENU_SONDAGEM = "Sondagem";
         public const string MENU_FECHAMENTO_DE_BIMESTRE = "Fechamento de Bimestre";
         public const string MENU_CONSELHO_DE_CLASSE = "Conselho de Classe";
-        public const string MENU_RELATORIO_DE_ACOMPANHAMENTO_E_APRENDIZAGEM_RAA = "Relatório de Acompanhamento e Aprendizagem (RAA)";
+        public const string MENU_RAA = "RAA";
         public const string MENU_PENDENCIAS_DO_FECHAMENTO = "Pendências do Fechamento";
         public const string MENU_ACOMPANHAMENTO_DO_FECHAMENTO = "Acompanhamento do fechamento";
         public const string MENU_DEVOLUTIVAS = "Devolutivas";
