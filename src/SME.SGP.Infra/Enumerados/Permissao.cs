@@ -6,8 +6,8 @@ namespace SME.SGP.Infra
     {
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_PLANO_DE_CICLO, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 1,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_CICLO,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_CICLO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhConsulta = true)]
@@ -15,8 +15,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_PLANO_DE_CICLO, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 1, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_CICLO,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_CICLO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhInclusao = true)]
@@ -24,8 +24,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_PLANO_DE_CICLO, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 1,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_CICLO,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_CICLO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT, 
             EhExclusao = true)]
@@ -33,8 +33,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_PLANO_DE_CICLO, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 1,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_CICLO,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_CICLO, 
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,  
             EhAlteracao = true)]
@@ -42,8 +42,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_PLANO_ANUAL,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 2, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_ANUAL,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT, 
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_MINUS,  
@@ -52,8 +52,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_PLANO_ANUAL,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 2, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_ANUAL,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT, 
             EhInclusao = true)]
@@ -61,8 +61,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_PLANO_ANUAL, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_ANUAL,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhExclusao = true)] 
@@ -70,8 +70,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_PLANO_ANUAL, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_ANUAL,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL,   
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhAlteracao = true)]
@@ -79,8 +79,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_TERRITORIO_DO_SABER,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TERRITORIO_SABER,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL_TERRITORIO_SABER,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT, 
             EhConsulta = true)]
@@ -88,8 +88,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_TERRITORIO_DO_SABER,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TERRITORIO_SABER,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL_TERRITORIO_SABER,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,  
             EhInclusao = true)]
@@ -97,8 +97,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_TERRITORIO_DO_SABER, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TERRITORIO_SABER,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL_TERRITORIO_SABER,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhExclusao = true)]
@@ -106,8 +106,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_TERRITORIO_DO_SABER, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 3, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TERRITORIO_SABER,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_PLANO_ANUAL_TERRITORIO_SABER,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,  
             EhAlteracao = true)]
@@ -115,8 +115,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_CARTA_DE_INTENCOES,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 4, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CARTA_DE_INTENCOES,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_CARTA_DE_INTENCOES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_ENVELOPE_OPEN,
@@ -125,8 +125,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_CARTA_DE_INTENCOES,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CARTA_DE_INTENCOES,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_CARTA_DE_INTENCOES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhInclusao = true)]
@@ -134,8 +134,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_CARTA_DE_INTENCOES,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CARTA_DE_INTENCOES,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_CARTA_DE_INTENCOES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,  
             EhExclusao = true)]
@@ -143,8 +143,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_CARTA_DE_INTENCOES,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CARTA_DE_INTENCOES,
             Url = ConstantesMenuPermissao.ROTA_PLANEJAMENTO_CARTA_DE_INTENCOES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,  
             EhAlteracao = true)]
@@ -152,8 +152,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_POA,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 5, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_POA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_POA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,  
             EhInclusao = true)]
@@ -161,8 +161,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_POA, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_POA,
             Url =ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_POA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,  
             EhAlteracao = true)]
@@ -170,8 +170,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_POA, 
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_POA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_POA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhConsulta = true)]
@@ -179,8 +179,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_PLANEJAMENTO,
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_POA,
-            OrdemAgrupamento = 1, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_PLANEJAMENTO, 
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_POA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_POA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_LIST_ALT,
             EhExclusao = true)]
@@ -188,8 +188,8 @@ namespace SME.SGP.Infra
           
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_LISTAO,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 1, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_LISTAO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_LISTAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
@@ -198,8 +198,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_LISTAO,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 1, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_LISTAO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_LISTAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,
             EhInclusao = true)]
@@ -207,8 +207,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_LISTAO,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 1, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_LISTAO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_LISTAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,
             EhExclusao = true)]
@@ -216,8 +216,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_LISTAO,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 1, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_LISTAO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_LISTAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,
             EhAlteracao = true)]
@@ -225,8 +225,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,  
             EhInclusao = true)]
@@ -234,8 +234,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
             Icone = "",  
             EhAlteracao = true)]
@@ -243,8 +243,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
             Icone = "",  
             EhConsulta = true)]
@@ -252,8 +252,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
             Icone = "",  
             EhExclusao = true)]
@@ -261,8 +261,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_DO_PROFESSOR,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 3, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_DO_PROFESSOR,  
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_CALENDARIO_PROFESSOR,
             Icone = ConstantesMenuPermissao.ICONE_FA_CALENDAR_ALT,
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
@@ -271,8 +271,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_DO_PROFESSOR,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 3, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_DO_PROFESSOR,  
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_CALENDARIO_PROFESSOR,
             Icone = ConstantesMenuPermissao.ICONE_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -280,8 +280,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_DO_PROFESSOR,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 3, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_DO_PROFESSOR,  
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_CALENDARIO_PROFESSOR,
             Icone = ConstantesMenuPermissao.ICONE_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -289,8 +289,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_DO_PROFESSOR,   
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 3, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_DO_PROFESSOR,  
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_CALENDARIO_PROFESSOR,
             Icone = ConstantesMenuPermissao.ICONE_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -298,8 +298,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA_PLANO_AULA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FREQUENCIA_PLANO_DE_AULA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_FREQUENCIA_PLANO_AULA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,  
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,  
@@ -308,8 +308,8 @@ namespace SME.SGP.Infra
                 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA_PLANO_AULA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FREQUENCIA_PLANO_DE_AULA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_FREQUENCIA_PLANO_AULA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,  
             EhInclusao = true)]
@@ -317,8 +317,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA_PLANO_AULA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FREQUENCIA_PLANO_DE_AULA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_FREQUENCIA_PLANO_AULA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,  
             EhExclusao = true)]
@@ -326,8 +326,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA_PLANO_AULA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FREQUENCIA_PLANO_DE_AULA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_FREQUENCIA_PLANO_AULA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_BOOK_READER,  
             EhAlteracao = true)]
@@ -335,8 +335,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_NOTAS, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_NOTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_NOTAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,  
             EhConsulta = true)]
@@ -344,8 +344,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_NOTAS, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_NOTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_NOTAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,  
             EhInclusao = true)]
@@ -353,8 +353,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_NOTAS, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_NOTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_NOTAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,  
             EhExclusao = true)]
@@ -362,8 +362,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_NOTAS, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_NOTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_NOTAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,  
             EhAlteracao = true)]
@@ -371,8 +371,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_COMPENSACAO_AUSENCIA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMPENSACAO_DE_AUSENCIA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_COMPENSACAO_AUSENCIA,
             Icone = "",  
             EhConsulta = true)]
@@ -380,8 +380,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_COMPENSACAO_AUSENCIA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMPENSACAO_DE_AUSENCIA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_COMPENSACAO_AUSENCIA,
             Icone = "",  
             EhInclusao = true)]
@@ -389,8 +389,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_COMPENSACAO_AUSENCIA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMPENSACAO_DE_AUSENCIA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_COMPENSACAO_AUSENCIA,
             Icone = "",  
             EhExclusao = true)]
@@ -398,8 +398,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_COMPENSACAO_AUSENCIA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMPENSACAO_DE_AUSENCIA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_COMPENSACAO_AUSENCIA,
             Icone = "",  
             EhAlteracao = true)]
@@ -407,8 +407,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_DIARIO_BORDO, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DIARIO_DE_BORDO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DIARIO_BORDO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,  
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_FILE_ALT,  
@@ -417,8 +417,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_DIARIO_BORDO, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DIARIO_DE_BORDO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DIARIO_BORDO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhInclusao = true)]
@@ -426,8 +426,8 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_DIARIO_BORDO, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DIARIO_DE_BORDO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DIARIO_BORDO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhExclusao = true)]
@@ -435,8 +435,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_DIARIO_BORDO, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DIARIO_DE_BORDO,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DIARIO_BORDO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhAlteracao = true)]
@@ -444,8 +444,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_INDIVIDUAL, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_INDIVIDUAL,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_INDIVIDUAL,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhConsulta = true)]
@@ -453,8 +453,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_INDIVIDUAL, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_INDIVIDUAL,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_INDIVIDUAL,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhInclusao = true)]
@@ -462,8 +462,8 @@ namespace SME.SGP.Infra
                 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_INDIVIDUAL, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_INDIVIDUAL,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_INDIVIDUAL,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhExclusao = true)]
@@ -471,8 +471,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_REGISTRO_INDIVIDUAL, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_INDIVIDUAL,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_REGISTRO_INDIVIDUAL,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhAlteracao = true)]
@@ -480,8 +480,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_CJ, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_CJ,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_CJS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
@@ -489,8 +489,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_CJ, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_CJ,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_CJS_EDITAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
@@ -498,8 +498,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_CJ, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_CJ,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_CJS_EDITAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
@@ -507,8 +507,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_CJ, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_CJ,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_CJS_EDITAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
@@ -516,8 +516,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_ACOMPANHAMENTO_DE_FREQUENCIA, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 10,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ACOMPANHAMENTO_DE_FREQUENCIA,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_ACOMPANHAMENTO_FREQUENCIA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
             EhConsulta = true)]
@@ -525,8 +525,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_RELATORIO_DE_PAP, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 11,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_DE_PAP,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_CJS_EDITAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
@@ -534,44 +534,44 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_SONDAGEM, 
-            OrdemAgrupamento = 2, 
-            OrdemMenu = 12,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_SONDAGEM,
             Url = ConstantesMenuPermissao.ROTA_SONDAGEM,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
             S_C = 5, 
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
-            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DE_BIMESTRE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DO_BIMESTRE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FECHAMENTO_DO_BIMESTRE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_FECHAMENTO_BIMESTRE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PENCIL_RULER,
             EhConsulta = true)]
             FB_C = 124,
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
-            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DE_BIMESTRE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DO_BIMESTRE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FECHAMENTO_DO_BIMESTRE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_FECHAMENTO_BIMESTRE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PENCIL_RULER,
             EhInclusao = true)]
             FB_I = 125,  
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
-            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DE_BIMESTRE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DO_BIMESTRE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FECHAMENTO_DO_BIMESTRE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_FECHAMENTO_BIMESTRE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PENCIL_RULER,
             EhExclusao = true)]
             FB_E = 126,                
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
-            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DE_BIMESTRE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_FECHAMENTO_DO_BIMESTRE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_FECHAMENTO_DO_BIMESTRE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_FECHAMENTO_BIMESTRE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PENCIL_RULER,
             EhAlteracao = true)]
@@ -579,8 +579,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_CONSELHO_DE_CLASSE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CONSELHO_DE_CLASSE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_CONSELHO_CLASSE,
             Icone = "",
             EhConsulta = true)]
@@ -588,8 +588,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_CONSELHO_DE_CLASSE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CONSELHO_DE_CLASSE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_CONSELHO_CLASSE,
             Icone = "",
             EhInclusao = true)]
@@ -597,8 +597,8 @@ namespace SME.SGP.Infra
      
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_CONSELHO_DE_CLASSE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CONSELHO_DE_CLASSE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_CONSELHO_CLASSE,
             Icone = "",
             EhExclusao = true)]
@@ -606,8 +606,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_CONSELHO_DE_CLASSE, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CONSELHO_DE_CLASSE,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_CONSELHO_CLASSE,
             Icone = "",
             EhAlteracao = true)]
@@ -615,8 +615,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_ACOMPANHAMENTO_DO_FECHAMENTO, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ACOMPANHAMENTO_DO_FECHAMENTO,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_ACOMPANHAMENTO_FECHAMENTO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PENCIL_RULER,
             EhConsulta = true)]
@@ -624,8 +624,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_PENDENCIAS_DO_FECHAMENTO, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PENDENCIAS_DO_FECHAMENTO,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_PENDENCIAS_FECHAMENTO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CHART_BAR,
             EhConsulta = true)]
@@ -633,8 +633,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_PENDENCIAS_DO_FECHAMENTO, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PENDENCIAS_DO_FECHAMENTO,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_PENDENCIAS_FECHAMENTO,
             Icone = "",
             EhInclusao = true)]
@@ -642,8 +642,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_PENDENCIAS_DO_FECHAMENTO, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PENDENCIAS_DO_FECHAMENTO,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_PENDENCIAS_FECHAMENTO,
             Icone = "",
             EhExclusao = true)]
@@ -651,8 +651,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_PENDENCIAS_DO_FECHAMENTO, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PENDENCIAS_DO_FECHAMENTO,
             Url = ConstantesMenuPermissao.ROTA_FECHAMENTO_PENDENCIAS_FECHAMENTO,
             Icone = "",
             EhAlteracao = true)]
@@ -660,44 +660,52 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_FECHAMENTO, 
             Menu = ConstantesMenuPermissao.MENU_RAA, 
-            OrdemAgrupamento = 3, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_FECHAMENTO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RAA,
             Url = ConstantesMenuPermissao.ROTA_DASHBOARD_ACOMPANHAMENTO_APRENDIZAGEM,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CHART_BAR,
             EhConsulta = true)]
             DAA_C = 223, 
             
+            
+            
+            
+            
+            
+            
+            
+            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS_EI, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DEVOLUTIVAS_EI,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DEVOLUTIVA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhConsulta = true)]
             DE_C = 167,        
          
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS_EI, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DEVOLUTIVAS_EI,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DEVOLUTIVA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhInclusao = true)]
             DE_I = 168,         
          
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS_EI, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DEVOLUTIVAS_EI,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DEVOLUTIVA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhExclusao = true)]
             DE_E = 169,   
           
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 1,
+            Menu = ConstantesMenuPermissao.MENU_DEVOLUTIVAS_EI, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DEVOLUTIVAS_EI,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_DEVOLUTIVA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_FILE_ALT,
             EhAlteracao = true)]
@@ -705,8 +713,8 @@ namespace SME.SGP.Infra
  
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
             EhConsulta = true)]
@@ -714,8 +722,8 @@ namespace SME.SGP.Infra
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -723,8 +731,8 @@ namespace SME.SGP.Infra
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -732,8 +740,8 @@ namespace SME.SGP.Infra
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 2,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -741,8 +749,8 @@ namespace SME.SGP.Infra
  
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_DOCUMENTOS_PLANOS_TRABALHO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
@@ -750,8 +758,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_DOCUMENTOS_PLANOS_TRABALHO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
@@ -759,8 +767,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_DOCUMENTOS_PLANOS_TRABALHO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
@@ -768,8 +776,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 3,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_DOCUMENTOS_E_PLANOS_DE_TRABALHO,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_DOCUMENTOS_PLANOS_TRABALHO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
@@ -777,8 +785,8 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_BIMESTRES, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODOS_ESCOLARES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhConsulta = true)]
@@ -786,8 +794,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_BIMESTRES, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODOS_ESCOLARES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -795,8 +803,8 @@ namespace SME.SGP.Infra
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_BIMESTRES, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODOS_ESCOLARES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -804,8 +812,8 @@ namespace SME.SGP.Infra
  
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_BIMESTRES, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 4,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_BIMESTRES,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODOS_ESCOLARES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -813,8 +821,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_ABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_ABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhConsulta = true)]
@@ -822,8 +830,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_ABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_ABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -831,8 +839,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_ABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_ABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -840,8 +848,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_ABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 5,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_ABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_ABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -849,8 +857,8 @@ namespace SME.SGP.Infra
  
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_REABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_REABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhConsulta = true)]
@@ -858,8 +866,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_REABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_REABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -867,8 +875,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_REABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_REABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -876,8 +884,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_PERIODOS_ESCOLARES_REABERTURA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 6,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PERIODOS_ESCOLARES_REABERTURA,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_PERIODO_FECHAMENTO_REABERTURA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -885,8 +893,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_EVENTOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_EVENTOS,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_CHECK,
@@ -895,8 +903,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_EVENTOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_EVENTOS,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -904,8 +912,8 @@ namespace SME.SGP.Infra
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_EVENTOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_EVENTOS,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -913,8 +921,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_EVENTOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 7,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_EVENTOS,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -922,8 +930,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_EVENTO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_EVENTO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhConsulta = true)]
@@ -931,8 +939,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_EVENTO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_EVENTO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -940,8 +948,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_EVENTO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_EVENTO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -949,8 +957,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_EVENTO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 8,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_EVENTO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_EVENTOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -958,8 +966,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_FERIADO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_FERIADO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_FERIADO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhConsulta = true)]
@@ -967,8 +975,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_FERIADO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_FERIADO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_FERIADO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -976,8 +984,8 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_FERIADO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_FERIADO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_FERIADO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -985,8 +993,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_FERIADO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 9,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_FERIADO,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_FERIADO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -994,8 +1002,8 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 10,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhConsulta = true)]
@@ -1003,8 +1011,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 10,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
@@ -1012,8 +1020,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 10,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
@@ -1021,8 +1029,8 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 10,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
@@ -1030,8 +1038,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 11,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
             Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
             EhConsulta = true)]
@@ -1039,8 +1047,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 11,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
             Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
             EhInclusao = true)]
@@ -1048,8 +1056,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 11,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
             Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
             EhExclusao = true)]
@@ -1057,8 +1065,8 @@ namespace SME.SGP.Infra
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 11,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
             Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
             EhAlteracao = true)]
@@ -1066,8 +1074,8 @@ namespace SME.SGP.Infra
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_DE_RESPONSAVEIS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 12,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_RESPONSAVEIS_LISTA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
@@ -1075,8 +1083,8 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_DE_RESPONSAVEIS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 12,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_RESPONSAVEIS_LISTA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
@@ -1084,8 +1092,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_DE_RESPONSAVEIS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 12,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_RESPONSAVEIS_LISTA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
@@ -1093,8 +1101,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_DE_RESPONSAVEIS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 12,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_RESPONSAVEIS_LISTA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
@@ -1102,8 +1110,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_ESPORADICA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 13,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_ESPORADICA,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_ESPORADICA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
@@ -1111,8 +1119,8 @@ namespace SME.SGP.Infra
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_ESPORADICA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 13,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_ESPORADICA,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_ESPORADICA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
@@ -1120,8 +1128,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_ESPORADICA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 13,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_ESPORADICA,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_ESPORADICA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
@@ -1129,8 +1137,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_ESPORADICA, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 13,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ATRIBUICAO_ESPORADICA,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_ESPORADICA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
@@ -1138,8 +1146,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_COMUNICADOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 14,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMUNICADOS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_COMUNICADOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
@@ -1147,8 +1155,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_COMUNICADOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 14,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMUNICADOS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_COMUNICADOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
@@ -1156,8 +1164,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_COMUNICADOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 14,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMUNICADOS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_COMUNICADOS_NOVO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
@@ -1165,8 +1173,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_COMUNICADOS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 14,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_COMUNICADOS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_COMUNICADOS_NOVO,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
@@ -1174,8 +1182,8 @@ namespace SME.SGP.Infra
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_OCORRENCIAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 15,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_OCORRENCIAS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_OCORRENCIAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
@@ -1183,8 +1191,8 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_OCORRENCIAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 15,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_OCORRENCIAS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_OCORRENCIAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
@@ -1192,8 +1200,8 @@ namespace SME.SGP.Infra
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_OCORRENCIAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 15,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_OCORRENCIAS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_OCORRENCIAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
@@ -1201,13 +1209,194 @@ namespace SME.SGP.Infra
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_OCORRENCIAS, 
-            OrdemAgrupamento = 4, 
-            OrdemMenu = 15,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_OCORRENCIAS,
             Url = ConstantesMenuPermissao.ROTA_GESTAO_OCORRENCIAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
             OCO_A = 196,          
 
-             
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhConsulta = true)]
+        AEE_C = 197,   
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhInclusao = true)]
+        AEE_I = 198,     
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhExclusao = true)]
+        AEE_E = 199,
+         
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhAlteracao = true)]
+        AEE_A = 200,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_PLANO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_PLANO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhConsulta = true)]
+        PAEE_C = 202,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_PLANO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_PLANO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhInclusao = true)]
+        PAEE_I = 203,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_PLANO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_PLANO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhExclusao = true)]
+        PAEE_E = 204,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_PLANO, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_PLANO_AEE,
+            Url = ConstantesMenuPermissao.ROTA_AEE_PLANO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhAlteracao = true)]
+        PAEE_A = 205, 
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_DE_ITINERANCIA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_DE_ITINERANCIA,
+            Url = ConstantesMenuPermissao.ROTA_AEE_REGISTRO_ITINERANCIA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhConsulta = true)]
+        RI_C = 206,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_DE_ITINERANCIA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_DE_ITINERANCIA,
+            Url = ConstantesMenuPermissao.ROTA_AEE_REGISTRO_ITINERANCIA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhInclusao = true)]
+        RI_I = 207,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_DE_ITINERANCIA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_DE_ITINERANCIA,
+            Url = ConstantesMenuPermissao.ROTA_AEE_REGISTRO_ITINERANCIA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhExclusao = true)]
+        RI_E = 208,
+         
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
+            Menu = ConstantesMenuPermissao.MENU_REGISTRO_DE_ITINERANCIA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_AEE,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_REGISTRO_DE_ITINERANCIA,
+            Url = ConstantesMenuPermissao.ROTA_AEE_REGISTRO_ITINERANCIA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_UNIVERSAL_ACCESS,
+            EhAlteracao = true)]
+        RI_A = 209,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+        NAAPA_C = 235,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+        NAAPA_I = 236,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+        NAAPA_E = 237,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+        NAAPA_A = 238,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
+            Menu = ConstantesMenuPermissao.MENU_FREQUENCIA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_FREQUENCIA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_FREQUENCIA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_FREQUENCIA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_FREQUENCIA_FREQUENCIA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+            EhAlteracao = true)]
+        FF_C = 156,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
+            Menu = ConstantesMenuPermissao.MENU_FREQUENCIA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_FREQUENCIA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_FREQUENCIA_MENSAL,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_FREQUENCIA_MENSAL,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_FREQUENCIA_MENSAL,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+            EhAlteracao = true)]
+        RFM_C = 232,
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
+            Menu = ConstantesMenuPermissao.MENU_FREQUENCIA, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_FREQUENCIA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_CONTROLE_DE_FREQUENCIA_MENSAL,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_CONTROLE_DE_FREQUENCIA_MENSAL,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_FREQUENCIA_CONTROLE_MENSAL,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CHECK_SQUARE,
+            EhAlteracao = true)]
+            RCFM_C = 244,  
     }
 }
