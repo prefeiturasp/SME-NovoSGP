@@ -511,7 +511,7 @@ namespace SME.SGP.Aplicacao
             var disciplinasEol = await repositorioComponenteCurricular
                 .ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
-            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
+            var professoresTitulares = !string.IsNullOrEmpty(codigoTurma) ? await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma)) : Enumerable.Empty<ProfessorTitularDisciplinaEol>();
 
             disciplinasEol.ToList().ForEach(d =>
             {
