@@ -104,7 +104,8 @@ namespace SME.SGP.Dominio
             => new TipoPendencia[] {
                 TipoPendencia.AusenciaDeAvaliacaoProfessor,
                 TipoPendencia.AusenciaDeAvaliacaoCP,
-                TipoPendencia.AusenciaFechamento
+                TipoPendencia.AusenciaFechamento,
+                TipoPendencia.ComponenteSemAula
             }.Contains(Tipo);
 
         public bool EhPendenciaCalendarioUe()

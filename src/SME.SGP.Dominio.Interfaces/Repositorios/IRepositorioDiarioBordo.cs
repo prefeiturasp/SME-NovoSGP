@@ -9,13 +9,14 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<DiarioBordo> ObterPorAulaId(long aulaId, long componenteCurricularId);
         Task<IEnumerable<DiarioBordo>> ObterPorAulaId(long aulaId);
+        Task<IEnumerable<DiarioBordo>> ObterDiariosDaMesmaAulaPorId(long id);
         Task<bool> ExisteDiarioParaAula(long aulaId);
 
         Task ExcluirDiarioBordoDaAula(long aulaId);
 
         Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorPeriodoPaginado(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao);
 
-        Task<IEnumerable<Tuple<long, DateTime>>> ObterDatasPorIds(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim);
+        Task<IEnumerable<(long Id, DateTime DataAula)>> ObterDatasPorIds(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim);
 
         Task AtualizaDiariosComDevolutivaId(long devolutivaId, IEnumerable<long> diariosBordoIds);
 

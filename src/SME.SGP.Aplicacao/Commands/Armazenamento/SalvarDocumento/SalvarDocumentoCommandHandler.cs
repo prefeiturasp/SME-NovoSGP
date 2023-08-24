@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             if (request.SalvarDocumentoDto.TipoDocumentoId == 1)
             {
                 var usuario = await mediator.Send(new ObterUsuarioPorIdQuery(request.SalvarDocumentoDto.UsuarioId), cancellationToken);
-                var tiposDocumentos = await mediator.Send(new ObterTipoDocumentoClassificacaoQuery(), cancellationToken);
+                var tiposDocumentos = await mediator.Send(ObterTipoDocumentoClassificacaoQuery.Instance, cancellationToken);
 
                 var classificacao = tiposDocumentos
                     .FirstOrDefault(t => t.Id == request.SalvarDocumentoDto.TipoDocumentoId)?.Classificacoes

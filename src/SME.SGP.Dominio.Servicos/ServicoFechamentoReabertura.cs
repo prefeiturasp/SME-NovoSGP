@@ -62,7 +62,7 @@ namespace SME.SGP.Dominio.Servicos
             var excluirBimestres = fechamentoReabertura.Bimestres.Select(s => s.Bimestre).Except(bimestresPropostos).ToList();
             foreach (var excluirBimestreId in excluirBimestres)
             {
-                repositorioFechamentoReabertura.ExcluirBimestre(fechamentoReabertura.Id, excluirBimestreId);
+                await repositorioFechamentoReabertura.ExcluirBimestre(fechamentoReabertura.Id, excluirBimestreId);
                 fechamentoReabertura.SobrescreverBimestres(fechamentoReabertura.Bimestres.Where(x => x.Bimestre != excluirBimestreId));
             }
 

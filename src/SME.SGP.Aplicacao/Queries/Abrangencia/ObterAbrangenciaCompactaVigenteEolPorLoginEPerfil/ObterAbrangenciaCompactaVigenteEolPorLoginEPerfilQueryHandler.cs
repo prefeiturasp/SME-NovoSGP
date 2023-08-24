@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -21,8 +22,8 @@ namespace SME.SGP.Aplicacao
         {
             var abrangencia = new AbrangenciaCompactaVigenteRetornoEOLDTO();
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"abrangencia/compacta-vigente/{request.Login}/perfil/{request.Perfil.ToString()}");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ABRANGENCIA_COMPACTA_VIGENTE_PERFIL, request.Login, request.Perfil.ToString()));
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

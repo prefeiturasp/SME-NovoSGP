@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var percentualReprovacao = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
             var mediaBimestre = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, DateTime.Today.Year)));
-            var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
+            var componentes = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             List<NotificarResultadoInsatisfatorioDto> listaNotificacoes = new List<NotificarResultadoInsatisfatorioDto>();
 

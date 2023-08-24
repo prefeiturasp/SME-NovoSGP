@@ -30,7 +30,7 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Ue>(query, new { codigos });
         }
 
-        public Tuple<List<Ue>, string[]> MaterializarCodigosUe(string[] idUes)
+        public (List<Ue> Ues, string[] CodigosUesNaoEncontradas) MaterializarCodigosUe(string[] idUes)
         {
             List<Ue> resultado = new List<Ue>();
             List<string> naoEncontrados = new List<string>();
@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             codigosNaoEncontrados = naoEncontrados.ToArray();
 
-            return new Tuple<List<Ue>, string[]>(resultado, codigosNaoEncontrados);
+            return (resultado, codigosNaoEncontrados);
         }
 
         public async Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)

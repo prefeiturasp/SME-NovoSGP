@@ -16,10 +16,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TipoDocumentoDto>> Executar()
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuario.EhGestorEscolar())
-                return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
+                return await mediator.Send(ObterTipoDocumentoClassificacaoQuery.Instance);
 
             var perfil = usuario.Perfis.Where(x => x.CodigoPerfil == usuario.PerfilAtual).Select(p => p.NomePerfil).ToArray();
             

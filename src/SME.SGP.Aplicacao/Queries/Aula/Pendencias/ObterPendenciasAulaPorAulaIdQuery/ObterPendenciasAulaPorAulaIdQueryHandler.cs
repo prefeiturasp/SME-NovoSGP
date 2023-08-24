@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdQuery request, CancellationToken cancellationToken)
         {
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var componentesCurricularesDoProfessorCJ = Enumerable.Empty<AtribuicaoCJ>();
             var componentesCurricularesEolProfessor = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.TurmaId,

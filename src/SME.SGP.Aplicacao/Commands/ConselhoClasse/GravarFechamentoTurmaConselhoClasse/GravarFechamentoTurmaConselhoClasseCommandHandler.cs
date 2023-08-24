@@ -44,8 +44,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var validacaoConselhoFinal = await mediator.Send(new ObterUltimoBimestreTurmaQuery(request.FechamentoDeTurma.Turma), cancellationToken);
 
-                    if (!validacaoConselhoFinal.Item2 && request.FechamentoDeTurma.Turma.AnoLetivo == DateTime.Today.Year)
-                        throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                    if (!validacaoConselhoFinal.possuiConselho && request.FechamentoDeTurma.Turma.AnoLetivo == DateTime.Today.Year)
+                        throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.bimestre}º bimestre");
                 }
             }
             

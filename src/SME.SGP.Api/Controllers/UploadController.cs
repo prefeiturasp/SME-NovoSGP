@@ -55,7 +55,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ObterBucketsServicoArmazenamento()
         {
-            return Ok(await mediator.Send(new ObterBucketsServicoArmazenamentoQuery()));
+            return Ok(await mediator.Send(ObterBucketsServicoArmazenamentoQuery.Instance));
         }
         
         [HttpPost("/servico-armazenamento/armazenar-temporario")]

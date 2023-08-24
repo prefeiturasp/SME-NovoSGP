@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException($"Período do {periodo.Bimestre}º Bimestre não está aberto.");
                 }
 
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                 if (!usuario.EhGestorEscolar())
                     await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
@@ -480,7 +480,6 @@ namespace SME.SGP.Aplicacao
                     .FirstOrDefault(t => t.AlunoCodigo == compensacaoAtual.CodigoAluno &&
                                          codigoComponentesConsiderados.Contains(t.ComponenteCurricularId) &&
                                          t.Professor == professorConsiderado);
-
                 if (totaisCompensacoesExistenteParaAluno != null)
                 {
                     totaisCompensacoesExistenteParaAluno.Compensacoes += compensacaoAtual.QuantidadeFaltasCompensadas;
@@ -499,6 +498,33 @@ namespace SME.SGP.Aplicacao
 
             await mediator
                 .Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand(codigoTurma, bimestre, totaisCompensacoesExistentes));
+        }
+
+        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
+        {
+            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+
+            if (usuarioLogado.EhProfessor())
+            {
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
+            }
+            else if (usuarioLogado.EhProfessorCj())
+            {
+                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
+                if (professor != null)
+                {
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                    if (componenteProfessorRelacionado != null)
+                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
+                }
+            }
+
+            return codigoComponenteTerritorioCorrespondente;
         }
     }
 }

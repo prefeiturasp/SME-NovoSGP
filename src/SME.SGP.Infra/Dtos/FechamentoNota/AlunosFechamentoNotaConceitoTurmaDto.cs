@@ -20,6 +20,7 @@ namespace SME.SGP.Infra
         public double PercentualFrequencia { get { return string.IsNullOrWhiteSpace(Frequencia) || !double.TryParse(Frequencia, out double valor) ? 0 : Convert.ToDouble(Frequencia ?? "0"); } }
         public string Frequencia { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
         public bool PodeEditar { get; set; }
         public bool PossuiAnotacao { get; set; }
         public MarcadorFrequenciaDto Marcador { get; set; }

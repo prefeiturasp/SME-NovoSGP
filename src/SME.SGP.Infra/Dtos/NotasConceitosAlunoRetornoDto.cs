@@ -20,5 +20,6 @@ namespace SME.SGP.Infra
         public int NumeroChamada { get; set; }
         public string PercentualFrequencia { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
     }
 }

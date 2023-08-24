@@ -14,6 +14,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<string> Executar()
-                => await mediator.Send(new ObterInstrucoesModalQuery());
+                => await mediator.Send(ObterInstrucoesModalQuery.Instance);
     }
 }

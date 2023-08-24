@@ -24,8 +24,6 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTodosAlunosNaTurmaQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<AlunoPorTurmaResposta>();
-
             var chaveCache = string.Format(NomeChaveCache.ALUNOS_TURMA, request.CodigoTurma, request.CodigoAluno?.ToString());
             return await repositorioCache.ObterAsync(chaveCache,
                 async () => await BuscarAlunosTurma(request.CodigoTurma, request.CodigoAluno),
@@ -34,8 +32,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunoPorTurmaResposta>> BuscarAlunosTurma(int codigoTurma, int? codigoAluno)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/{codigoTurma}/todos-alunos{(codigoAluno.HasValue ? $"?codigoAluno={codigoAluno.Value}" : string.Empty)}");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_TODOS_ALUNOS, codigoTurma) + $"{(codigoAluno.HasValue ? $"?codigoAluno={codigoAluno.Value}" : string.Empty)}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();

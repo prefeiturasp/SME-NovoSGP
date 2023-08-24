@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasseAluno.AlunoCodigo, 
                                                                                                          request.TurmaId, 
                                                                                                          request.Bimestre,
-                                                                                                         alunoDaTurma.Inativo,null,null,null,true);
+                                                                                                         alunoDaTurma.Inativo, null, true);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
 

@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PlanoAEEObservacaoDto>> Executar(long planoAEEId)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             return await mediator.Send(new ObterObservacoesPlanoAEEPorIdQuery(planoAEEId, usuario.CodigoRf));
         }
     }

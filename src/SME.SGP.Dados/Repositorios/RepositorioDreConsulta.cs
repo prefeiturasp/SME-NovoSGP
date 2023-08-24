@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.Query<Dre>(query, new { dresCodigos });
         }
 
-        public Tuple<IEnumerable<Dre>,string[]> MaterializarCodigosDre(string[] idDres)
+        public (IEnumerable<Dre> Dres,string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres)
         {
             string[] naoEncontradas;
 
@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
 
             naoEncontradas = idDres.Where(x => !armazenados.Select(y => y.CodigoDre).Contains(x)).ToArray();
 
-            return new Tuple<IEnumerable<Dre>, string[]>(armazenados, naoEncontradas);
+            return (armazenados, naoEncontradas);
         }
 
         public async Task<string> ObterCodigoDREPorTurmaId(long turmaId)

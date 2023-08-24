@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 List<string> excessoes = new List<string>();
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(comando.TurmaId));
                 if (turma == null)
                     throw new NegocioException($"Turma de id [{turma.Id}] não localizada!");

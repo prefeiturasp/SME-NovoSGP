@@ -90,7 +90,7 @@ namespace SME.SGP.Dominio.Servicos
                 await GerarPendencia(fechamentoId, TipoPendencia.AulasReposicaoPendenteAprovacao, mensagem.ToString(), professorRf, mensagemHtml.ToString(), bimestre, turmaId);
             }
             else
-                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
+                await repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
 
             aulasReposicaoPendentes = aulasPendentes.Count();
             return aulasReposicaoPendentes;
@@ -246,7 +246,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
 
 
-                ExcluirPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
+                await ExcluirPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
                 if (aulasNormais.Any())
                 {
                     var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turmaCodigo));
@@ -256,7 +256,7 @@ namespace SME.SGP.Dominio.Servicos
                     await GerarPendenciaAulasFechamento(TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString(), mensagemHtml.ToString(), aulasCJ, new List<ProfessorTitularDisciplinaEol>(), fechamentoId, disciplinaId, bimestre, turmaId, true);
             }
             else
-                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
+                await repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
 
             aulasSemFrequencia = registrosAulasSemFrequencia?.Count ?? 0;
             return aulasSemFrequencia;
@@ -285,7 +285,7 @@ namespace SME.SGP.Dominio.Servicos
                 var aulasNormais = registrosAulasSemPlanoAula.Where(w => !w.AulaCJ);
                 var aulasCJ = registrosAulasSemPlanoAula.Where(w => w.AulaCJ);
 
-                ExcluirPendencia(fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
+                await ExcluirPendencia(fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
                 if (aulasNormais.Any())
                 {
                     var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
@@ -295,7 +295,7 @@ namespace SME.SGP.Dominio.Servicos
                     await GerarPendenciaAulasFechamento(TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento, mensagem.ToString(), mensagemHtml.ToString(), aulasCJ, new List<ProfessorTitularDisciplinaEol>(), fechamentoId, disciplinaId, bimestre, turmaId, true);
             }
             else
-                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
+                await repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
 
             aulasSemPlanoAula = registrosAulasSemPlanoAula.Count();
             return aulasSemPlanoAula;
@@ -320,7 +320,7 @@ namespace SME.SGP.Dominio.Servicos
                 var aulasNormais = registrosAvaliacoesSemNotaParaNenhumAluno.Where(w => !w.EhCj);
                 var aulasCJ = registrosAvaliacoesSemNotaParaNenhumAluno.Where(w => w.EhCj);
 
-                ExcluirPendencia(fechamentoId, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
+                await ExcluirPendencia(fechamentoId, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
                 if (aulasNormais.Any())
                 {
                     var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(codigoTurma));
@@ -330,7 +330,7 @@ namespace SME.SGP.Dominio.Servicos
                     await GerarPendenciaAulasFechamento(TipoPendencia.AvaliacaoSemNotaParaNenhumAluno, mensagem.ToString(), mensagemHtml.ToString(), aulasCJ, new List<ProfessorTitularDisciplinaEol>(), fechamentoId, disciplinaId, bimestre, turmaId, true);
             }
             else
-                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
+                await repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
 
             avaliacoesSemnota = registrosAvaliacoesSemNotaParaNenhumAluno.Count();
             return avaliacoesSemnota;
@@ -352,7 +352,7 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 alunosAbaixoMedia = 0;
-                repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.ResultadosFinaisAbaixoDaMedia);
+                await repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.ResultadosFinaisAbaixoDaMedia);
             }
 
             return alunosAbaixoMedia;
@@ -390,10 +390,10 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void ExcluirPendencia(long fechamentoId,
+        private Task ExcluirPendencia(long fechamentoId,
                                         TipoPendencia tipoPendencia)
         {
-            repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
+            return repositorioPendencia.ExcluirPendenciasFechamento(fechamentoId, tipoPendencia);
         }
 
         private async Task GerarPendencia(
@@ -411,7 +411,7 @@ namespace SME.SGP.Dominio.Servicos
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 if (!IgnorarExclusaoPendencia)
-                    ExcluirPendencia(fechamentoId, tipoPendencia);
+                    await ExcluirPendencia(fechamentoId, tipoPendencia);
 
                 var tituloPendencia = $"{tipoPendencia.Name()} - {bimestre}º bimestre";
                 var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, null, turmaId, mensagem, "", tituloPendencia, descricaoHtml));
@@ -521,7 +521,7 @@ namespace SME.SGP.Dominio.Servicos
                 await GerarPendencia(fechamentoId, TipoPendencia.AlteracaoNotaFechamento, mensagem, professorRf, mensagemHtml, bimestre, turmaId);
             }
             else
-                repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
+                await repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
 
             notasExtemporaneasAlteradas = registrosNotasAlteradas.Count();
             return notasExtemporaneasAlteradas;

@@ -18,7 +18,7 @@ namespace SME.SGP.Notificacoes.Hub
         public NotificacaoHub(
             IEventoNotificacaoCriada eventoCriada,
             IEventoNotificacaoLida eventoLida,
-            IEventoNotificacaoExcluida eventoExcluida, 
+            IEventoNotificacaoExcluida eventoExcluida,
             IRepositorioUsuario repositorioUsuario)
         {
             this.eventoCriada = eventoCriada ?? throw new System.ArgumentNullException(nameof(eventoCriada));
@@ -46,7 +46,7 @@ namespace SME.SGP.Notificacoes.Hub
             var context = Context.GetHttpContext();
             var usuarioRf = context.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
             if (!string.IsNullOrEmpty(usuarioRf))
-                await repositorioUsuario.Excluir(usuarioRf, Context.ConnectionId);
+                await repositorioUsuario.Excluir(usuarioRf);
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -60,13 +60,13 @@ namespace SME.SGP.Notificacoes.Hub
         }
 
         public Task Criada(MensagemCriacaoNotificacaoDto mensagem)
-            => eventoCriada.Enviar(Clients, mensagem);
+            => eventoCriada.EnviarAsync(Clients, mensagem);
 
         public Task Lida(MensagemLeituraNotificacaoDto mensagem)
-            => eventoLida.Enviar(Clients, mensagem);
+            => eventoLida.EnviarAsync(Clients, mensagem);
 
         public Task Excluida(MensagemExclusaoNotificacaoDto mensagem)
-            => eventoExcluida.Enviar(Clients, mensagem);
+            => eventoExcluida.EnviarAsync(Clients, mensagem);
 
         [Authorize("Token")]
         public object TokenProtected()
@@ -80,6 +80,5 @@ namespace SME.SGP.Notificacoes.Hub
                 UserId = Context.UserIdentifier,
                 Claims = Context.User.Claims.Select(x => new { x.Type, x.Value })
             };
-
     }
 }

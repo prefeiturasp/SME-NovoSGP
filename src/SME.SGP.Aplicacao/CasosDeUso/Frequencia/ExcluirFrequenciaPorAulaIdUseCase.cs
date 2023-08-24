@@ -23,10 +23,11 @@ namespace SME.SGP.Aplicacao
 
             var aula = await mediator.Send(new ObterAulaPorIdQuery(filtro.Id));
             
-            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(aula.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
             
-            foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
-                await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turmaId, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo));
+            await mediator.Send(new IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand(turma.Id, aula.DataAula));
+            
+            await mediator.Send(new IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand(turma.Id, turma.CodigoTurma, turma.ModalidadeCodigo == Modalidade.EducacaoInfantil, turma.AnoLetivo, aula.DataAula));
             
             return true;
         }

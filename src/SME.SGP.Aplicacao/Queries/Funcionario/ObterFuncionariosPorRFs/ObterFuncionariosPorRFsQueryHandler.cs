@@ -21,9 +21,9 @@ namespace SME.SGP.Aplicacao.Queries.Funcionario.ObterListaNomePorListaRF
 
         public async Task<IEnumerable<ProfessorResumoDto>> Handle(ObterFuncionariosPorRFsQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.PostAsync($"funcionarios/BuscarPorListaRF", new StringContent(JsonConvert.SerializeObject(request.CodigosRf),
+            var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_BUSCAR_LISTA_RF), new StringContent(JsonConvert.SerializeObject(request.CodigosRf),
                 Encoding.UTF8, "application/json-patch+json"), cancellationToken);
 
             if (resposta.IsSuccessStatusCode)

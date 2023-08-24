@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var ues = await mediator.Send(new ObterUEsIdsPorDreQuery(filtro.DreId));
             foreach(var ue in ues)
             {
-                var filtroUe = new FiltroConsolidacaoFrequenciaTurmaPorUe(filtro.Ano, ue, filtro.PercentualMinimo, filtro.PercentualMinimoInfantil);
+                var filtroUe = new FiltroConsolidacaoFrequenciaTurmaPorUe(filtro.Data, filtro.TipoConsolidado, ue, filtro.PercentualMinimo, filtro.PercentualMinimoInfantil);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasPorUe, filtroUe, Guid.NewGuid(), null));
             }

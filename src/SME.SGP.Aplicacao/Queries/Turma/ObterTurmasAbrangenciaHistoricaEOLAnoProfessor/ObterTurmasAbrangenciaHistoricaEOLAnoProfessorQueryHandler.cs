@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -26,9 +27,9 @@ namespace SME.SGP.Aplicacao
             int anoLetivo = request.AnoLetivo;
             string professorRf = request.ProfessorRf;
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.GetAsync($"turmas/anos-letivos/{anoLetivo}/professor/{professorRf}/turmas-historicas-geral");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_ANOS_LETIVOS_PROFESSOR_HISTORICAS_GERAL, anoLetivo, professorRf));
 
             if (resposta.IsSuccessStatusCode)
             {

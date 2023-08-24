@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<CartaIntencoesObservacaoDto>> Executar(BuscaCartaIntencoesObservacaoDto param)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
 
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(param.TurmaCodigo));
             if (turmaId == 0)

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var dataConsulta = new DateTime(anoLetivo, mes, dia);
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");

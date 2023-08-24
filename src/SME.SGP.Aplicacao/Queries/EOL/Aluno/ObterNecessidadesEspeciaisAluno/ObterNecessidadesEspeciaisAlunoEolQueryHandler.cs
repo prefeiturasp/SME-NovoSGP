@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<InformacoesEscolaresAlunoDto> Handle(ObterNecessidadesEspeciaisAlunoEolQuery request, CancellationToken cancellationToken)
         {
-            var url = $@"alunos/{request.CodigoAluno}/necessidades-especiais";
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var url = string.Format(ServicosEolConstants.URL_ALUNOS_NECESSIDADES_ESPECIAIS, request.CodigoAluno);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode)

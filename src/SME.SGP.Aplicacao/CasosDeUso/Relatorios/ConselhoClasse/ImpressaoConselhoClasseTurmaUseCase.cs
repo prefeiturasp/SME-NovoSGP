@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioConselhoClasseDto filtroRelatorioConselhoClasseDto)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (!await mediator.Send(new VerificaSeExisteConselhoClassePorIdQuery(filtroRelatorioConselhoClasseDto.ConselhoClasseId)))
                 throw new NegocioException("O conselho de classe não existe");

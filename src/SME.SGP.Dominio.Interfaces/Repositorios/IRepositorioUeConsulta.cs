@@ -9,7 +9,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<Ue> ListarPorCodigos(string[] codigos);
 
-        Tuple<List<Ue>, string[]> MaterializarCodigosUe(string[] idUes);
+        (List<Ue> Ues, string[] CodigosUesNaoEncontradas) MaterializarCodigosUe(string[] idUes);
 
         Task<IEnumerable<Modalidade>> ObterModalidades(string ueCodigo, int ano, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas);
 

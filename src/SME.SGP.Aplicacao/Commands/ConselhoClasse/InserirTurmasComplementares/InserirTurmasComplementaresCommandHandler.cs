@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(InserirTurmasComplementaresCommand request, CancellationToken cancellationToken)
         {
             var turmaRegular = await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
-            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
             if (turmaRegular.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turmaRegular.TipoTurma))
             {
