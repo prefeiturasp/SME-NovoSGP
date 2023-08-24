@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioGamesDto filtroRelatorioGamesDto)
         {
             unitOfWork.IniciarTransacao();
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioExemplo, filtroRelatorioGamesDto, usuarioLogado));
             unitOfWork.PersistirTransacao();
             return retorno;

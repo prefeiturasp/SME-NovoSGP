@@ -18,8 +18,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioAnaliticoSondagemDto filtroRelatorioAnaliticoSondagemDto)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
 
             filtroRelatorioAnaliticoSondagemDto.PerfilUsuarioLogado = perfil;
             filtroRelatorioAnaliticoSondagemDto.LoginUsuarioLogado = usuarioLogado.Login;

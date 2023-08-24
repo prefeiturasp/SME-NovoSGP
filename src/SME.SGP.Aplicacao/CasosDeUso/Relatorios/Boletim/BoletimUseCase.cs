@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             unitOfWork.IniciarTransacao();
 
             var usuarioLogado = await mediator
-                .Send(new ObterUsuarioLogadoQuery());
+                .Send(ObterUsuarioLogadoQuery.Instance);
             
 
             filtroRelatorioBoletimDto.Usuario = usuarioLogado;

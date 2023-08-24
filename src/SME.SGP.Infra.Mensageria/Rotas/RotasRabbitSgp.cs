@@ -21,8 +21,6 @@
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
         public const string ExclusaoCompensacaoAusenciaAlunoEAula = "sgp.compensacao.ausencia.aluno.e.aula.excluir";
         public const string ExclusaoCompensacaoAusenciaPorIds = "sgp.compensacao.ausencia.excluir";
-        public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
-        public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
         public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
         public const string ConsolidarDevolutivasPorUE = "sgp.consolidacao.devolutivas.turma.infantil.ue";
         public const string ConsolidarDevolutivasPorTurmaInfantil = "sgp.consolidacao.devolutivas.turma.infantil";
@@ -84,8 +82,6 @@
 
         #endregion
 
-        public const string RotaRabbitSRDeadletterTratar = "sgp.sr.rabbit.deadletter.tratar";
-        public const string RotaRabbitSRDeadletterSync = "sgp.sr.rabbit.deadletter.sync";
         public const string WorkflowAprovacaoExcluir = "sgp.workflow.aprovacao.excluir";
         public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
         public const string ExecutarTipoCalendario = "sgp.executar.tipo.calendario";

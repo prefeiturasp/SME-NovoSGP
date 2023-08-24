@@ -1,4 +1,3 @@
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -648,6 +647,7 @@ namespace SME.SGP.IoC
 
         protected virtual void RegistrarCasosDeUso(IServiceCollection services)
         {
+            services.TryAddScoped<IObterPrefixosCacheUseCase, ObterPrefixosCacheUseCase>();
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();
@@ -1302,6 +1302,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioEncaminhamentoNAAPAUseCase, RelatorioEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
             services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
+            services.TryAddScoped<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase, ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
 
             // Relatório PAP
             services.TryAddScoped<IObterPeriodosPAPUseCase, ObterPeriodosPAPUseCase>();
@@ -1344,8 +1345,7 @@ namespace SME.SGP.IoC
 
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+            var servicoTelemetria = new ServicoTelemetria(options);
             DapperExtensionMethods.Init(servicoTelemetria);
         }
 

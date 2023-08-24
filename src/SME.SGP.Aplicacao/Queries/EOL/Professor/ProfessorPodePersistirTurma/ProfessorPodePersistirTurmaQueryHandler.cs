@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -19,8 +20,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ProfessorPodePersistirTurmaQuery request, CancellationToken cancellationToken)
         {
             var dataString = request.DataAula.ToString("s");
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}", cancellationToken);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_TURMAS_ATRIBUICAO_VERIFICAR_DATA, request.ProfessorRf, request.CodigoTurma) + $"?dataConsulta={dataString}", cancellationToken);
 
             if (!resposta.IsSuccessStatusCode)
                 throw new Exception("Não foi possível validar a atribuição do professor no EOL.");

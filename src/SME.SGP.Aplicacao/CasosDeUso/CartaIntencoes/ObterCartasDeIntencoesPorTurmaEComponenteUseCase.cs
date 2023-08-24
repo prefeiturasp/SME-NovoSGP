@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<CartaIntencoesRetornoDto>> MapearParaDto(IEnumerable<PeriodoEscolar> periodosEscolares, IEnumerable<CartaIntencoes> cartas, Turma turma, long componenteCurricularId)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var listaCartasDto = new List<CartaIntencoesRetornoDto>();
             var usuarioTemAtribuicao = false;
 

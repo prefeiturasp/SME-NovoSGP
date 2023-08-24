@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         protected string ObterChave(long turmaId)
         {
-            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, turmaId);
+            return string.Format(NomeChaveCache.TURMA_ID, turmaId);
         }
     }
 }

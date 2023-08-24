@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
 
             var verificarTipoTurma = !turma.EhTurmaPrograma();
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (aula.DataAula.Date <= DateTime.Today && !usuarioLogado.EhProfessorCj() && !usuarioLogado.EhGestorEscolar())
             {

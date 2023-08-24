@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         public async Task<DiarioBordoDetalhesDto> Handle(ObterDiarioDeBordoPorIdQuery request, CancellationToken cancellationToken)
         {
             var diariosBordo = await repositorioDiarioBordo.ObterDiariosDaMesmaAulaPorId(request.Id);
-            var usuario = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             var diarioBordo = diariosBordo.FirstOrDefault(diario => diario.Id == request.Id);
             var observacoes = await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordo.Id, usuario));
             var observacoesComUsuariosNotificados = await ObterUsuariosNotificados(observacoes);

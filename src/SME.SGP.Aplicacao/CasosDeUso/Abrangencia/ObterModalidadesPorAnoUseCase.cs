@@ -21,10 +21,10 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<EnumeradoRetornoDto>> Executar(int anoLetivo, bool consideraHistorico, bool consideraNovasModalidades)
         {
             var login = await mediator
-                .Send(new ObterLoginAtualQuery());
+                .Send(ObterLoginAtualQuery.Instance);
 
             var perfil = await mediator
-                .Send(new ObterPerfilAtualQuery());
+                .Send(ObterPerfilAtualQuery.Instance);
 
             var modalidadesQueSeraoIgnoradas = await mediator
                 .Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo, consideraNovasModalidades));

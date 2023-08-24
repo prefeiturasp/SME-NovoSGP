@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(string observacao, long observacaoId, IEnumerable<long> usuariosIdNotificacao)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             usuariosIdNotificacao = usuariosIdNotificacao?.Any() ?? false
                 ? usuariosIdNotificacao
                 : await ObterUsuariosQueForamNotificadosNoUltimoEnvioAsync(observacaoId);
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             var diarioBordoObs = await mediator.Send(new ObterDiarioBordoObservacaoPorObservacaoIdQuery(observacaoId));
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (!diarioBordoObs.UsuarioCodigoRfDiarioBordo.Equals(usuarioLogado.CodigoRf))
             {

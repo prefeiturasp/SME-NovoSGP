@@ -20,9 +20,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public void ExclusaoLogicaPendencia(long pendenciaId)
+        public async Task ExclusaoLogicaPendencia(long pendenciaId)
         {
-            database.Conexao.Execute("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
+            await database.Conexao.ExecuteAsync("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
         }
 
         public async Task AtualizarQuantidadeDiasAulas(long pendenciaId, long quantidadeAulas,long quantidadeDias)
@@ -33,12 +33,12 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(@"where id =@pendenciaId ");
                 await database.Conexao.ExecuteAsync(sql.ToString(), new { pendenciaId, qtdeaulas = quantidadeAulas, qtdedias = quantidadeDias });
         }
-        public void ExclusaoLogicaPendenciaIds(long[] pendenciasIds)
+        public async Task ExclusaoLogicaPendenciaIds(long[] pendenciasIds)
         {
-            database.Conexao.Execute("update pendencia set excluido = true where id = ANY(@pendenciasIds)", new { pendenciasIds });
+            await database.Conexao.ExecuteAsync("update pendencia set excluido = true where id = ANY(@pendenciasIds)", new { pendenciasIds });
         }
 
-        public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
+        public async Task AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
         {
             const string query = @"update pendencia p
                                     set situacao = @situacaoPendencia
@@ -48,10 +48,10 @@ namespace SME.SGP.Dados.Repositorios
                                     and f.fechamento_turma_disciplina_id = @fechamentoId
                                     and not p.excluido ";
 
-            database.Conexao.Execute(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
+            await database.Conexao.ExecuteAsync(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
         }
 
-        public void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
+        public async Task ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
         {
             const string query = @"update pendencia p
                                     set excluido = true
@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and p.tipo = @tipoPendencia
 	                                and f.fechamento_turma_disciplina_id = @fechamentoId";
 
-            database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
+            await database.Conexao.ExecuteAsync(query, new { fechamentoId, tipoPendencia });
         }
 
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)
@@ -194,18 +194,12 @@ namespace SME.SGP.Dados.Repositorios
                 var queryFiltrada = MontaQueryTurmaFiltrada();
                 var idsPendencias = pendenciasPerfilUsuario.Select(c => c.Id).Distinct().ToArray();
                 
-                try
-                {
-                    pendenciasFiltradas = await database.Conexao
-                        .QueryAsync<long>(queryFiltrada, 
-                            new { pendencias = idsPendencias, turmaCodigo, usuarioId, situacao}, commandTimeout: 300);
+                pendenciasFiltradas = await database.Conexao
+                    .QueryAsync<long>(queryFiltrada, 
+                        new { pendencias = idsPendencias, turmaCodigo, usuarioId, situacao}, commandTimeout: 300);
 
-                    pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
-                }
-                catch(Exception ex)
-                {
-                    throw new NegocioException(ex.Message);
-                }
+                pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
+                
             }
 
             //-> Havendo tipo de pendência definido no filtro com ou sem turma:
@@ -214,18 +208,12 @@ namespace SME.SGP.Dados.Repositorios
                 var queryFiltrada = RetornaQueryParaUnicoTipoPendenciaGrupo((TipoPendenciaGrupo)tiposPendenciasGrupos.FirstOrDefault(), turmaCodigo);
                 var idsPendencias = pendenciasPerfilUsuario.Select(c => c.Id).Distinct().ToArray();
 
-                try
-                {
-                    pendenciasFiltradas = await database.Conexao
-                        .QueryAsync<long>(queryFiltrada, 
-                            new { pendencias = idsPendencias, turmaCodigo }, commandTimeout: 300);
+                pendenciasFiltradas = await database.Conexao
+                    .QueryAsync<long>(queryFiltrada, 
+                        new { pendencias = idsPendencias, turmaCodigo }, commandTimeout: 300);
 
-                    pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
-                }
-                catch (Exception ex)
-                {
-                    throw new NegocioException(ex.Message);
-                }
+                pendenciasRetorno = (await ObterPendenciasPorIds(pendenciasFiltradas.Distinct().ToArray(), tituloPendencia)).ToList();
+                
             }
             
             //-> Não havendo turma e nem grupos de pendência, porém, com filtro por título
@@ -375,9 +363,7 @@ namespace SME.SGP.Dados.Repositorios
                     query.Append(" AND t.turma_id = @turmaCodigo ");                
             }
 
-            try
-            {
-                return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
                     pendenciasIdsAula,
                     pendenciasIdsCalendario,
                     pendenciasIdsProfessor,
@@ -385,12 +371,6 @@ namespace SME.SGP.Dados.Repositorios
                     pendenciasIdsDevolutiva,
                     pendenciasIds,
                     turmaCodigo });
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)
@@ -402,7 +382,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var idsPendencias = await database.Conexao.QueryAsync<long>(query, new { planoAeeId });
 
-            return idsPendencias.AsList().ToArray();
+            return idsPendencias.ToArray();
         }
 
         public async Task AtualizarStatusPendenciasPorIds(long[] ids, SituacaoPendencia situacaoPendencia)

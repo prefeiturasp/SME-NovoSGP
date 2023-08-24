@@ -81,10 +81,7 @@ namespace SME.SGP.Api
             });
 
             RegistrarConfigsThreads.Registrar(Configuration);
-
-            Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
-            Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
-            
+     
             app.UseHealthChecksSgp();
             app.UseHealthCheckPrometheusSgp();
         }
@@ -130,7 +127,7 @@ namespace SME.SGP.Api
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
-                options.SupportedCultures = new List<CultureInfo> { new("pt-BR"), new("pt-BR") };
+                options.SupportedCultures = new List<CultureInfo> { new("pt-BR") };
             });
             
             services.AddHealthChecksUiSgp()

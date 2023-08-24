@@ -220,7 +220,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
 
             await CriarPeriodoRelatorio(ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_2, ConstantesTestePAP.PERIODO_SEGUNDO_SEMESTRE);
 
-            await CriarPeriodoEscolarRelatorio(ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_2, PERIODO_ESCOLAR_CODIGO_1);
+            await CriarPeriodoEscolarRelatorio(ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_2, PERIODO_ESCOLAR_CODIGO_2);
 
             await CriarSecaoConfRelatorioPeriodico(ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_2);
 

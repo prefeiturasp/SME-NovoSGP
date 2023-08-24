@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -24,8 +25,8 @@ namespace SME.SGP.Aplicacao
             if (request.AlunosCodigos.Length > 0 )
             {
                 var alunos = string.Join("&codigosAlunos=", request.AlunosCodigos);
-                var url = $"alunos/alunos-pap/{request.AnoLetivo}?codigosAlunos={alunos}";
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
+                var url = string.Format(ServicosEolConstants.URL_ALUNOS_ALUNOS_PAP, request.AnoLetivo) + $"?codigosAlunos={alunos}";
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
                 var resposta = await httpClient.GetAsync(url, cancellationToken);
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
@@ -33,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     return JsonConvert.DeserializeObject<IEnumerable<AlunosTurmaProgramaPapDto>>(json);
                 }
             }
-            return new List<AlunosTurmaProgramaPapDto>();
+            return Enumerable.Empty<AlunosTurmaProgramaPapDto>();
         }
     }
 }

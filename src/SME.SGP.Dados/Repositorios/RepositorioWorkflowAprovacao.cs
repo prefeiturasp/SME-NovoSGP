@@ -131,8 +131,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public IEnumerable<WorkflowAprovacao> ObterNiveisPorCodigo(string codigo)
         {
-            return database.Conexao.Query<WorkflowAprovacao>("select * from WorkflowAprovaNivel w where w.codigo = @codigo ", new { codigo })
-                .AsList();
+            return database.Conexao.Query<WorkflowAprovacao>("select * from WorkflowAprovaNivel w where w.codigo = @codigo ", new { codigo });
         }
     }
 }

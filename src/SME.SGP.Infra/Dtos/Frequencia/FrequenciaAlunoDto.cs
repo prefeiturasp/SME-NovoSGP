@@ -15,7 +15,7 @@ namespace SME.SGP.Infra
         public DateTime PeriodoFim { get; set; }
         public int NumeroFaltasNaoCompensadas { get => TotalAusencias - TotalCompensacoes; }
         public string PercentualFrequenciaFormatado => FrequenciaAluno.FormatarPercentual(PercentualFrequencia);
-        public int TotalPresencaRemoto { get => TotalPresencas - TotalRemotos; }
+        public int TotalPresencaRemoto { get => TotalPresencas + TotalRemotos; }
         public double PercentualFrequencia 
         {
             get

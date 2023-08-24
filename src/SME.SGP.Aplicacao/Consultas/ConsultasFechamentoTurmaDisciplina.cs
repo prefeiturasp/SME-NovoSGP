@@ -201,7 +201,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
             IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEOL = null;
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             if (disciplina.Regencia)
                 disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 

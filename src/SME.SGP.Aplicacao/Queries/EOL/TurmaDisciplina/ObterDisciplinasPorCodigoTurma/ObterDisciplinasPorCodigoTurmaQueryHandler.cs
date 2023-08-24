@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -23,8 +24,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaResposta>> Handle(ObterDisciplinasPorCodigoTurmaQuery request, CancellationToken cancellationToken)
         {
-            var url = $"funcionarios/turmas/{request.CodigoTurma}/disciplinas";
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var url = string.Format(ServicosEolConstants.URL_FUNCIONARIOS_TURMAS_DISCIPLINAS, request.CodigoTurma);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var resposta = await httpClient.GetAsync(url);
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)

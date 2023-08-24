@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Handle(InserirDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
             bool inseridoCJ = false;
             

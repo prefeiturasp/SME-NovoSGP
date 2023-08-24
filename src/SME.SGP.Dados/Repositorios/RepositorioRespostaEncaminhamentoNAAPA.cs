@@ -34,9 +34,9 @@ namespace SME.SGP.Dados.Repositorios
                 ";
 
             return (
-                database
+                await database
                 .Conexao
-                .Execute(sql, new { arquivoId })
+                .ExecuteAsync(sql, new { arquivoId })
                 ) > 0;
         }
 

@@ -72,24 +72,16 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ComponenteCurricularDto>> ListarComponentesCurriculares()
         {
-            try
-            {
-                var query = $@"select
-	                        id as Codigo,
-                            permite_lancamento_nota as LancaNota,
-                            coalesce(descricao_infantil,descricao_sgp) as descricao,
-                            descricao as DescricaoEol,
-                            eh_regencia Regencia
-                        from
-	                        componente_curricular";
+            var query = $@"select
+	                    id as Codigo,
+                        permite_lancamento_nota as LancaNota,
+                        coalesce(descricao_infantil,descricao_sgp) as descricao,
+                        descricao as DescricaoEol,
+                        eh_regencia Regencia
+                    from
+	                    componente_curricular";
 
-                var retorno = (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { }));
-                return retorno;
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
+            return await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { });
         }
         public async Task<long[]> ListarCodigosJuremaPorComponenteCurricularId(long id)
         {
@@ -101,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ccc.componente_curricular_id = cc.id
                             WHERE ccc.componente_curricular_id = @id;";
 
-            return (await database.Conexao.QueryAsync<long>(query, new { id })).AsList().ToArray();
+            return (await database.Conexao.QueryAsync<long>(query, new { id })).ToArray();
         }
 
         public async Task<bool> VerificaPossuiObjetivosAprendizagemPorComponenteCurricularId(long id)
@@ -213,7 +205,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select 
                            case 
-                            when descricao_infantil != null and descricao_infantil != '' and descricao_infantil != ' '
+                            when descricao_infantil is not null and descricao_infantil != '' and descricao_infantil != ' '
                                then 
                                     descricao_infantil 
                                else 
@@ -286,16 +278,8 @@ namespace SME.SGP.Dados.Repositorios
                            from componente_curricular cc 
                            left join componente_curricular_grupo_matriz ccgm on ccgm.id = cc.grupo_matriz_id
                            left join componente_curricular_area_conhecimento ccac on ccac.id = cc.area_conhecimento_id";
-            try
-            {
-                return (await database.Conexao.QueryAsync<InfoComponenteCurricular>(query));
-            }
-            catch (System.Exception e)
-            {
-                throw e;
-            }
-
             
+            return await database.Conexao.QueryAsync<InfoComponenteCurricular>(query);
         }
     }
 }
