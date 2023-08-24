@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 // Carrega nomes das disciplinas para o DTO de retorno
                 var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray());
 
-                var componentesTurma = await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(filtro.TurmaCodigo));
+                var componentesTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(filtro.TurmaCodigo));
 
                 foreach(var disciplinaEOL in disciplinasEOL)
                 {
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinaEOL = disciplinasEOL.First();
 
-            var componentesTurma = await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(pendencia.CodigoTurma));
+            var componentesTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(pendencia.CodigoTurma));
 
             if (disciplinaEOL.TerritorioSaber)
             {
