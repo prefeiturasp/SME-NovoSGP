@@ -1371,7 +1371,7 @@ namespace SME.SGP.Infra
         RI_A = 209,
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
-            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
