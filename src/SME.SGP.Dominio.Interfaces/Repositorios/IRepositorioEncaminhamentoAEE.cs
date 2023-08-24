@@ -19,6 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<AEETurmaDto>> ObterQuantidadeDeferidos(int ano, long dreId, long ueId);
         Task<IEnumerable<AEESituacaoEncaminhamentoDto>> ObterQuantidadeSituacoes(int ano, long dreId, long ueId);
         Task<IEnumerable<EncaminhamentoAEECodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoAEEId(long encaminhamentoId);
-        Task<IEnumerable<EncaminhamentoAEEVigenteDto>> ObterEncaminhamentosVigentes();
+        Task<IEnumerable<EncaminhamentoAEEVigenteDto>> ObterEncaminhamentosVigentes(long? anoLetivo = null);
     }
 }

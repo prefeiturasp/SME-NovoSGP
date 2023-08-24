@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> Executar()
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             return await mediator.Send(new ObterFiltroRelatoriosDresPorAbrangenciaQuery(usuarioLogado));
         }

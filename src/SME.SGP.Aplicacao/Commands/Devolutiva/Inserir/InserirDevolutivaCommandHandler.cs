@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             await repositorioDevolutiva.SalvarAsync(devolutiva);            
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível obter o usuário logado");

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             int qtdeRegistros = Paginacao.QuantidadeRegistros;
             int qtdeRegistrosIgnorados = Paginacao.QuantidadeRegistrosIgnorados;
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var componentesCurricularesDoProfessorCJ = string.Empty;
             if (usuario.EhProfessorCj())

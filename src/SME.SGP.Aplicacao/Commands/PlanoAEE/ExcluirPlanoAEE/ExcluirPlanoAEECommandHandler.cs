@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery()); 
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance); 
             var planoAEEObservacoes = (await repositorioPlanoAEEObs.ObterObservacoesPlanoPorId(request.PlanoAEEId, usuarioLogado.CodigoRf));
 
             unitOfWork.IniciarTransacao();            

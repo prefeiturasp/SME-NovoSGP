@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var executarManutencao = await mediator.Send(new ObterExecutarManutencaoAulasInfantilQuery());
+            var executarManutencao = await mediator.Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
             if (!executarManutencao)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));

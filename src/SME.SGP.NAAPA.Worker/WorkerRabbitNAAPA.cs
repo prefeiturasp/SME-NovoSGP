@@ -15,9 +15,11 @@ namespace SME.SGP.NAAPA.Worker
             IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitNAAPA", typeof(RotasRabbitSgpNAAPA))
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
+                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitNAAPA", typeof(RotasRabbitSgpNAAPA))
         {
         }
 

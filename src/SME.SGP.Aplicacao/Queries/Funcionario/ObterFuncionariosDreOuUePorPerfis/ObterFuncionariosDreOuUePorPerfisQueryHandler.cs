@@ -23,11 +23,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterFuncionariosDreOuUePorPerfisQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var parametros = JsonConvert.SerializeObject(request.Perfis);
 
-            var resposta = await httpClient.PostAsync($"/api/funcionarios/unidade/{request.CodigoDreUe}", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"), cancellationToken);
+            var resposta = await httpClient.PostAsync($"/api/" + string.Format(ServicosEolConstants.URL_FUNCIONARIOS_UNIDADE, request.CodigoDreUe), new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"), cancellationToken);
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

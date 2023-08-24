@@ -37,25 +37,28 @@ namespace SME.SGP.Aplicacao
 
         private async Task ConsolidarFrequenciaTurmasAnoAtual()
         {
-            var anoAtual = DateTime.Now.Year;
-            await mediator.Send(new LimparConsolidacaoFrequenciaTurmasPorAnoCommand(anoAtual));
-            await ConsolidarFrequenciasTurmasNoAno(anoAtual);
+            await mediator.Send(new LimparConsolidacaoFrequenciaTurmasPorAnoCommand(DateTime.Now.Year));
+            await ConsolidarFrequenciasTurmasNoAno(DateTime.Now);
         }
 
         private async Task ConsolidarFrequenciaTurmasHistorico()
         {
-            for (var ano = 2014; ano < DateTime.Now.Year; ano++)
+            var diferencaAno = DateTime.Now.Year - 2014;
+
+            for (var contador = diferencaAno; contador == 0; contador--)
             {
-                if (!await mediator.Send(new ExisteConsolidacaoFrequenciaTurmaPorAnoQuery(ano)))
+                var data = DateTime.Now.AddYears(-contador);
+
+                if (!await mediator.Send(new ExisteConsolidacaoFrequenciaTurmaPorAnoQuery(data.Year)))
                 {
-                    await ConsolidarFrequenciasTurmasNoAno(ano);
+                    await ConsolidarFrequenciasTurmasNoAno(data);
                 }
             }
         }
 
-        private async Task ConsolidarFrequenciasTurmasNoAno(int ano)
+        private async Task ConsolidarFrequenciasTurmasNoAno(DateTime data)
         {
-            await mediator.Send(new ExecutarConsolidacaoFrequenciaNoAnoCommand(ano));
+            await mediator.Send(new ExecutarConsolidacaoFrequenciaNoAnoCommand(data));
         }
     }
 }

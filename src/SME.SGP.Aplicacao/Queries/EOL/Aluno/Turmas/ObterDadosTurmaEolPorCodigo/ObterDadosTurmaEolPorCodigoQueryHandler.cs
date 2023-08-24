@@ -6,6 +6,7 @@ using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
@@ -21,8 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<DadosTurmaEolDto> Handle(ObterDadosTurmaEolPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $@"turmas/{request.CodigoTurma}/dados";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = string.Format(ServicosEolConstants.URL_TURMAS_DADOS, request.CodigoTurma);
 
             var resposta = await httpClient.GetAsync(url);
 

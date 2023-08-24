@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDatasEfetivasDiariosQuery : IRequest<IEnumerable<Tuple<long, DateTime>>>
+    public class ObterDatasEfetivasDiariosQuery : IRequest<IEnumerable<(long Id, DateTime DataAula)>>
     {
         public string TurmaCodigo { get; set; }
         public long ComponenteCurricularCodigo { get; set; }

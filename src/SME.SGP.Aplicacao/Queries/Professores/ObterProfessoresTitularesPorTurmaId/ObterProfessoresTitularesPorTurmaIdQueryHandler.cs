@@ -36,14 +36,14 @@ namespace SME.SGP.Aplicacao
 
             StringBuilder url = new StringBuilder();
 
-            url.Append($"professores/titulares?codigosTurmas={turma.CodigoTurma}");
+            url.Append(ServicosEolConstants.URL_PROFESSORES_TITULARES  + $"?codigosTurmas={turma.CodigoTurma}");
 
             //Ao passar o RF do professor, o endpoint retorna todas as disciplinas que o professor não é titular para evitar
             //que o professor se atribua como CJ da própria da turma que ele é titular da disciplina
             if (!string.IsNullOrEmpty(request.ProfessorRf))
                 url.Append($"?codigoRf={request.ProfessorRf}");
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var resposta = await httpClient.GetAsync(url.ToString());
 

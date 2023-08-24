@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             await LimparConsolidacoes(anoLetivo);
 
-            var ues = await mediator.Send(new ObterTodasUesIdsQuery());
+            var ues = await mediator.Send(ObterTodasUesIdsQuery.Instance);
             foreach (var ue in ues)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDiariosBordoPorUeTratar, new FiltroConsolidacaoDiariosBordoPorUeDto(ue), new System.Guid(), null));
 

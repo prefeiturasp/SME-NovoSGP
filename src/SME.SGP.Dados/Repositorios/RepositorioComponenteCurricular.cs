@@ -48,17 +48,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task Atualizar(ComponenteCurricularDto componenteCurricular)
         {
-            try
-            {
-                var sql = @"UPDATE componente_curricular SET descricao = @descricao WHERE id = @id";
+            var sql = @"UPDATE componente_curricular SET descricao = @descricao WHERE id = @id";
 
-                await database.Conexao.QueryAsync<string>(sql.ToString(), new { descricao = componenteCurricular.Descricao, id = long.Parse(componenteCurricular.Codigo) });
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }           
-
+            await database.Conexao.QueryAsync<string>(sql.ToString(), new { descricao = componenteCurricular.Descricao, id = long.Parse(componenteCurricular.Codigo) });       
         }
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)

@@ -19,12 +19,12 @@ namespace SME.SGP.Notificacoes.Hub
             this.nomeEvento = nomeEvento ?? throw new ArgumentNullException(nameof(nomeEvento));
         }
 
-        public Task Enviar(IHubCallerClients clients, T mensagem)
+        public Task EnviarAsync(IHubCallerClients clients, T mensagem)
         {
             var transacao = servicoTelemetria.Iniciar($"EventoNotificacao.{nomeEvento}", "Hub");
             try
             {
-                servicoTelemetria.RegistrarAsync(() => Disparar(clients, mensagem), "Hub", "EventoNotificacao", nomeEvento, JsonConvert.SerializeObject(mensagem));
+                servicoTelemetria.RegistrarAsync(() => DispararAsync(clients, mensagem), "Hub", "EventoNotificacao", nomeEvento, JsonConvert.SerializeObject(mensagem));
             }
             finally
             {
@@ -33,7 +33,7 @@ namespace SME.SGP.Notificacoes.Hub
 
             return Task.CompletedTask;
         }
-        protected virtual Task Disparar(IHubCallerClients clients,T mensagem)
+        protected virtual Task DispararAsync(IHubCallerClients clients,T mensagem)
             => throw new NotImplementedException("Disparo do evento de notificação não implementado");
     }
 }

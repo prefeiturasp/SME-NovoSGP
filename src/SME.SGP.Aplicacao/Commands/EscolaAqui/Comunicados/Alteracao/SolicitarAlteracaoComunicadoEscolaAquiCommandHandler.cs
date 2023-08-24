@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
 
             ComunicadoInserirAeDto comunicadoServico = new ComunicadoInserirAeDto();
 
-            var usuarioLogado = await _mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await _mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             await ValidarAbrangenciaUsuario(request, usuarioLogado);
 

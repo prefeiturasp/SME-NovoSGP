@@ -12,8 +12,6 @@ namespace SME.SGP.IoC
             if (configuration == null)
                 return;
 
-            services.AddApplicationInsightsTelemetry(configuration);
-
             services.AddOptions<TelemetriaOptions>()
                 .Bind(configuration.GetSection(TelemetriaOptions.Secao), c => c.BindNonPublicProperties = true);
 

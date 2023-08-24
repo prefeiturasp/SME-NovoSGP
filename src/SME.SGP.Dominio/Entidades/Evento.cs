@@ -143,11 +143,11 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public bool EstaNoRangeDeDatas(IEnumerable<(DateTime, DateTime)> datas)
+        public bool EstaNoRangeDeDatas(IEnumerable<(DateTime DataInicio, DateTime DataFim)> datas)
         {
-            return datas.Any(a => (DataInicio.Date <= a.Item1.Date && DataFim >= a.Item2.Date)
-            || (DataInicio.Date <= a.Item2.Date && DataFim >= a.Item2.Date)
-            || (DataInicio.Date >= a.Item1.Date && DataFim <= a.Item2.Date));
+            return datas.Any(a => (DataInicio.Date <= a.DataInicio.Date && DataFim >= a.DataFim.Date)
+            || (DataInicio.Date <= a.DataFim.Date && DataFim >= a.DataFim.Date)
+            || (DataInicio.Date >= a.DataInicio.Date && DataFim <= a.DataFim.Date));
         }
 
         public void Excluir()

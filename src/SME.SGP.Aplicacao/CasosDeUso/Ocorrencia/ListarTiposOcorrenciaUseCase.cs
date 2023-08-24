@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<OcorrenciaTipoDto>> Executar()
         {
-            var retorno = await mediator.Send(new ListarTiposOcorrenciaQuery());
+            var retorno = await mediator.Send(ListarTiposOcorrenciaQuery.Instance);
             return retorno;
         }
     }

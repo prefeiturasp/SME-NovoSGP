@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Executar()
         {
-            return await mediator.Send(new ObterUltimaVersaoQuery());
+            return await mediator.Send(ObterUltimaVersaoQuery.Instance);
         }
     }
 }

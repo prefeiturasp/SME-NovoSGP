@@ -11,6 +11,6 @@ namespace SME.SGP.Aplicacao
         {
         }
         public async Task<IEnumerable<ItineranciaObjetivosBaseDto>> Executar()
-                => await mediator.Send(new ObterObjetivosBaseItineranciaQuery());
+                => await mediator.Send(ObterObjetivosBaseItineranciaQuery.Instance);
     }
 }

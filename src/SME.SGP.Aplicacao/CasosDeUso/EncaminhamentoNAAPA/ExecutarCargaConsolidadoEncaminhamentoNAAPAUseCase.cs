@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 && (ConsolidarAtendimento?.Ativo != true))
                 throw new NegocioException("Nenhum parâmetro ativo no banco, os parâmetros de encaminhamento e atendimento precisam estar ativos");
 
-            var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
+            var listaUes = await mediator.Send(ObterTodasUesIdsQuery.Instance);
             foreach (var ueId in listaUes)
             {
                 if (ConsolidarEncaminhamento?.Ativo == true)
