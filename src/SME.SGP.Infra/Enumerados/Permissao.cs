@@ -527,15 +527,42 @@ namespace SME.SGP.Infra
             Menu = ConstantesMenuPermissao.MENU_RELATORIO_DE_PAP, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_DE_PAP,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_ATRIBUICAO_CJS_EDITAR,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_PAP_RELATORIO_PAP,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
             RPAP_C = 246,  
             
+            [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
+                Menu = ConstantesMenuPermissao.MENU_RELATORIO_DE_PAP, 
+                OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+                OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_DE_PAP,
+                Url = ConstantesMenuPermissao.ROTA_RELATORIOS_PAP_RELATORIO_PAP,
+                Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+                EhInclusao = true)]
+            RPAP_I = 247,
+            
+            [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
+                Menu = ConstantesMenuPermissao.MENU_RELATORIO_DE_PAP, 
+                OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+                OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_DE_PAP,
+                Url = ConstantesMenuPermissao.ROTA_RELATORIOS_PAP_RELATORIO_PAP,
+                Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+                EhExclusao = true)]
+            RPAP_E = 248,
+
+            [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
+                Menu = ConstantesMenuPermissao.MENU_RELATORIO_DE_PAP, 
+                OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
+                OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_DE_PAP,
+                Url = ConstantesMenuPermissao.ROTA_RELATORIOS_PAP_RELATORIO_PAP,
+                Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+                EhAlteracao = true)]
+            RPAP_A = 249,
+            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
             Menu = ConstantesMenuPermissao.MENU_SONDAGEM, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_SONDAGEM,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_SONDAGEM_ACESSO,
             Url = ConstantesMenuPermissao.ROTA_SONDAGEM,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
@@ -1652,6 +1679,19 @@ namespace SME.SGP.Infra
             EhConsulta = true)]
         RESON_C = 242,
 
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
+            Menu = ConstantesMenuPermissao.MENU_ESCOLA_AQUI, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_ESCOLA_AQUI,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_ADESAO,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_ESCOLA_AQUI_ADESAO,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhAlteracao = false,
+            EhConsulta = true)]
+        RDE_C = 187,
+            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DOCUMENTOS_ESCOLARES, 
             Menu = ConstantesMenuPermissao.MENU_BOLETIM, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DOCUMENTOS_ESCOLARES,
@@ -1807,10 +1847,47 @@ namespace SME.SGP.Infra
             EhConsulta = true)]
         US_C = 234,
          
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_MEUS_DADOS, 
+            Menu = ConstantesMenuPermissao.MENU_MEUS_DADOS,
+            Url = ConstantesMenuPermissao.ROTA_MEUS_DADOS,
+            EhMenu = false,
+            EhConsulta = true)]
+        M_C = 48,
         
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_MEUS_DADOS, 
+            Menu = ConstantesMenuPermissao.MENU_MEUS_DADOS,
+            Url = ConstantesMenuPermissao.ROTA_MEUS_DADOS,
+            EhMenu = false,
+            EhAlteracao = true)]
+        M_A = 51,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NOTIFICACAO, 
+            Menu = ConstantesMenuPermissao.MENU_NOTIFICACAO,
+            Url = ConstantesMenuPermissao.ROTA_NOTIFICACOES,
+            EhMenu = false,
+            EhConsulta = true)]
+        N_C = 38,
         
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NOTIFICACAO, 
+            Menu = ConstantesMenuPermissao.MENU_NOTIFICACAO,
+            Url = ConstantesMenuPermissao.ROTA_NOTIFICACOES,
+            EhMenu = false,
+            EhInclusao = true)]
+        N_I = 39,
         
-        
-        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NOTIFICACAO, 
+            Menu = ConstantesMenuPermissao.MENU_NOTIFICACAO,
+            Url = ConstantesMenuPermissao.ROTA_NOTIFICACOES,
+            EhMenu = false,
+            EhExclusao = true)]
+        N_E = 40,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NOTIFICACAO, 
+            Menu = ConstantesMenuPermissao.MENU_NOTIFICACAO,
+            Url = ConstantesMenuPermissao.ROTA_NOTIFICACOES,
+            EhMenu = false,
+            EhAlteracao = true)]
+        N_A = 41,
+
     }
 }

@@ -71,6 +71,9 @@
         public const string MENU_ESCOLA_AQUI =  "Escola aqui";
         public const string MENU_REINICIAR_SENHA =  "Reiniciar Senha";
         public const string MENU_SUPORTE =  "Suporte";
+        public const string MENU_MEUS_DADOS =  "Meus Dados";
+        public const string MENU_NOTIFICACAO =  "Notificação";
+        public const string MENU_ADESAO =  "Adesão";
         
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
         public const string AGRUPAMENTO_DIARIO_DE_CLASSE = "Diário de Classe";
@@ -82,6 +85,8 @@
         public const string AGRUPAMENTO_DOCUMENTOS_ESCOLARES = "Documentos Escolares";
         public const string AGRUPAMENTO_GRAFICOS = "Gráficos";
         public const string AGRUPAMENTO_CONFIGURACOES = "Configurações";
+        public const string AGRUPAMENTO_MEUS_DADOS = "Meus Dados";
+        public const string AGRUPAMENTO_NOTIFICACAO = "Notificação";
         
         public const string ROTA_PLANEJAMENTO_PLANO_ANUAL = "/planejamento/plano-anual";
         public const string ROTA_PLANEJAMENTO_PLANO_CICLO = "/planejamento/plano-ciclo";
@@ -163,6 +168,10 @@
         public const string ROTA_DASHBOARD_ESCOLA_AQUI ="/dashboard/escola-aqui";
         public const string ROTA_USUARIOS_REINICIAR_SENHA = "/usuarios/reiniciar-senha";
         public const string ROTA_FECHAMENTO_ACOMPANHAMENTO_APRENDIZAGEM = "/fechamento/acompanhamento-aprendizagem";
+        public const string ROTA_RELATORIOS_PAP_RELATORIO_PAP = "/relatorios/pap/relatorio-pap";
+        public const string ROTA_MEUS_DADOS = "/meus-dados";
+        public const string ROTA_NOTIFICACOES = "/notificacoes";
+        public const string ROTA_RELATORIOS_ESCOLA_AQUI_ADESAO = "/relatorios/escola-aqui/adesao";
         
         public const string ICONE_FAS_FA_LIST_ALT = "fas fa-list-alt";
         public const string ICONE_FAR_FA_CALENDAR_MINUS = "far fa-calendar-minus";
@@ -246,6 +255,7 @@
         public const int ORDEM_MENU_RELATORIO_AEE = 5;
         public const int ORDEM_MENU_RELATORIO_NAAPA = 6;
         public const int ORDEM_MENU_RELATORIO_SONDAGEM = 7;
+        public const int ORDEM_MENU_RELATORIO_ESCOLA_AQUI = 8;
         
         public const int ORDEM_MENU_BOLETIM = 1;
         public const int ORDEM_MENU_ATA_BIMESTRAL = 2;
@@ -295,6 +305,7 @@
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_NAAPA = 1;
         
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ANALITICO = 1;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
         
 
     }

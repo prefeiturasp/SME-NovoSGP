@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                             Descricao = menuEnumerado.Menu,
                         };
 
-                        foreach (var subMenu in permissaoMenu.GroupBy(a => a.GetAttribute<PermissaoMenuAttribute>().Url))
+                        foreach (var subMenu in permissaoMenu.OrderBy(o=> o.GetAttribute<PermissaoMenuAttribute>().OrdemSubMenu).GroupBy(a => a.GetAttribute<PermissaoMenuAttribute>().Url))
                         {
                             if (!menuEnumerado.EhSubMenu) 
                                 continue;
@@ -90,7 +90,6 @@ namespace SME.SGP.Aplicacao
                                 AjudaDoSistema = ajudas.FirstOrDefault(c => c.IdModulo == (int)menuSubEnumerado)?.AjudaDoSistema
                             });
                         }
-
                         menuRetornoDto.Menus.Add(menuPai);
                     }
                     else
