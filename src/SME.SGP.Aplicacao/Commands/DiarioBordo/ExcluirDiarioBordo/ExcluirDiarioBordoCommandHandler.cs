@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var diarioBordo = await repositorioDiarioBordo.ObterPorIdAsync(request.DiarioBordoId);
             if (diarioBordo.Excluido) return false;
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var observacoesDiarioBordo = await repositorioDiarioBordoObservacao.ListarPorDiarioBordoAsync(request.DiarioBordoId, usuario.Id);
             unitOfWork.IniciarTransacao();
             try

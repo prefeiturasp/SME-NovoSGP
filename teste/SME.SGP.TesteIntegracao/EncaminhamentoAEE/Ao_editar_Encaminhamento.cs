@@ -10,6 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
@@ -26,6 +31,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
         public Ao_editar_Encaminhamento(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterTurmaRegularESrmPorAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]

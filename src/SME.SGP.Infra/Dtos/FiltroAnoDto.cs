@@ -1,13 +1,18 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+using System;
+
+namespace SME.SGP.Infra
 {
     public class FiltroAnoDto
     {
         public FiltroAnoDto() { }
-        public FiltroAnoDto(int ano)
+        public FiltroAnoDto(DateTime data, TipoConsolidadoFrequencia tipoConsolidado)
         {
-            Ano = ano;
+            Data = data;
+            TipoConsolidado = tipoConsolidado;
         }
 
-        public int Ano { get; set; }
+        public DateTime Data { get; set; }
+        public TipoConsolidadoFrequencia TipoConsolidado { get; set; }
     }
 }

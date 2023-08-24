@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         Task<UsuarioAutenticacaoRetornoDto> AutenticarSuporte(string login);
 
         Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao(
-            (UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol,
+            (UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ) retornoAutenticacaoEol,
             string login, SuporteUsuario suporte = null);
     }
 }

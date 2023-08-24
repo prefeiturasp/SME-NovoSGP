@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEDataMatriculaQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"turmas/{request.CodigoTurma}/data-matricula-ticks/{request.DataMatricula.Ticks}";            
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = string.Format(ServicosEolConstants.URL_TURMAS_DATA_MATRICULA_TICKS, request.CodigoTurma, request.DataMatricula.Ticks);            
                 var resposta = await httpClient.GetAsync(url);
                 if (resposta.IsSuccessStatusCode)
                 {

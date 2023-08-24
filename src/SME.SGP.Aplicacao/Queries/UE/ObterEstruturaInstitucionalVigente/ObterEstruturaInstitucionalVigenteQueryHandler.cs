@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
+using SME.SGP.Infra;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -13,7 +14,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
-        private const string BaseUrl = "abrangencia/estrutura-vigente";
+        private const string BaseUrl = ServicosEolConstants.URL_ABRANGENCIA_ESTRUTRURA_VIGENTE;
 
         public ObterEstruturaInstitucionalVigenteQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             EstruturaInstitucionalRetornoEolDTO resultado = null;
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var url = new StringBuilder(BaseUrl);
 

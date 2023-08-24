@@ -63,7 +63,6 @@ namespace SME.SGP.Dados.Repositorios
                 var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
                 query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
 
-                // 1/6/ano ou 1/7/ano dependendo do semestre
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
@@ -187,7 +186,6 @@ namespace SME.SGP.Dados.Repositorios
                 var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
                 query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
 
-                // 1/6/ano ou 1/7/ano dependendo do semestre
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 

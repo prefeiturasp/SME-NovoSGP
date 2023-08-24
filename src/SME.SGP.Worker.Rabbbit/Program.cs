@@ -15,15 +15,12 @@ namespace SME.SGP.Worker.Rabbbit
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
+                .ConfigureAppConfiguration((_, configurationBuilder) =>
                 {
-                    config.AddEnvironmentVariables();
-                    config.AddUserSecrets<Program>();
+                    configurationBuilder.AddEnvironmentVariables();
+                    configurationBuilder.AddUserSecrets<Program>();
                 })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .ConfigureServices(services =>
                 {
                     services.AddHostedService<WorkerRabbitMQ>();

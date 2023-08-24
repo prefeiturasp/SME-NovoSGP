@@ -33,7 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(dreId))
                 query.AppendLine("and sed.dre_id = @dreId");
 
-            return (await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId })).AsList();
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId });
         }
 
         public async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(string dreCodigo, string[]uesCodigos,int tipoAtribuicao)

@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var anoAtual = DateTime.Now.Year;
             await mediator.Send(new LimparConsolidacaoAcompanhamentoAprendizagemCommand(anoAtual));
 
-            var ues = await mediator.Send(new ObterCodigosUEsQuery());
+            var ues = await mediator.Send(ObterCodigosUEsQuery.Instance);
             foreach (var ue in ues)
                 await PublicarConsolidacaoPorUe(ue);
 

@@ -9,15 +9,15 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAbrangencia
     {
-        void AtualizaAbrangenciaHistorica(IEnumerable<long> paraAtualizar);
+        Task AtualizaAbrangenciaHistorica(IEnumerable<long> paraAtualizar);
 
-        void AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> paraAtualizar, int anoLetivo);
+        Task AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> paraAtualizar, int anoLetivo);
 
-        void ExcluirAbrangencias(IEnumerable<long> ids);
+        Task ExcluirAbrangencias(IEnumerable<long> ids);
 
-        void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);
+        Task ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);
 
-        void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
+        Task InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
 
@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login, bool cj = false);
 
-        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
+        Task RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
 
         Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos);
 

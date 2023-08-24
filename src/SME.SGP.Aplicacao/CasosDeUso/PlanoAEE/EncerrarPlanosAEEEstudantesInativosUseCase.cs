@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosQuery());
+            var planosAtivos = await mediator.Send(ObterPlanosAEEAtivosQuery.Instance);
             var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
 
             if (planosAtivos != null && planosAtivos.Any())

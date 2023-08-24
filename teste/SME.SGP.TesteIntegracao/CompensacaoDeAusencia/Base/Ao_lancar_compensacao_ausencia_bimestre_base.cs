@@ -16,16 +16,16 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         {
         }
         
-        protected static async Task<List<Tuple<string, int>>> ObterCompensacaoAusenciasAlunos()
+        protected static async Task<List<(string CodigoAluno, int QdadeAula)>> ObterCompensacaoAusenciasAlunos()
         {
             //-> Item1 = Código do aluno
             //   Item2 = Quantidade de aulas
-            return await Task.FromResult(new List<Tuple<string, int>>
+            return await Task.FromResult(new List<(string CodigoAluno, int QdadeAula)>
             {
-                new(CODIGO_ALUNO_1, QUANTIDADE_AULA),
-                new(CODIGO_ALUNO_2, QUANTIDADE_AULA_2),
-                new(CODIGO_ALUNO_3, QUANTIDADE_AULA_3),
-                new(CODIGO_ALUNO_4, QUANTIDADE_AULA_4)
+                (CODIGO_ALUNO_1, QUANTIDADE_AULA),
+                (CODIGO_ALUNO_2, QUANTIDADE_AULA_2),
+                (CODIGO_ALUNO_3, QUANTIDADE_AULA_3),
+                (CODIGO_ALUNO_4, QUANTIDADE_AULA_4)
             });
         }        
         
@@ -43,8 +43,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             {
                 alunos.Add(new CompensacaoAusenciaAlunoDto
                 {
-                    Id = compensacaoAusenciaAluno.Item1,
-                    QtdFaltasCompensadas = compensacaoAusenciaAluno.Item2
+                    Id = compensacaoAusenciaAluno.CodigoAluno,
+                    QtdFaltasCompensadas = compensacaoAusenciaAluno.QdadeAula
                 });
             };
             
@@ -73,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             //-> Item1 = Código do aluno
             //   Item2 = Quantidade de aulas
             //   Item3 = Tipo da frequência
-            var registrosFrequenciasAlunos = new List<Tuple<string, int, TipoFrequencia>>
+            var registrosFrequenciasAlunos = new List<(string CodigoAluno, int QdadeAula, TipoFrequencia TipoFrequencia)>
             {
                 new(CODIGO_ALUNO_1, QUANTIDADE_AULA_4, TipoFrequencia.F),
                 new(CODIGO_ALUNO_2, QUANTIDADE_AULA_4, TipoFrequencia.C),
@@ -83,8 +83,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             foreach (var registroFrequenciaAluno in registrosFrequenciasAlunos)
             {
-                await CriarRegistrosFrequenciasAlunos(registroFrequenciaAluno.Item1, registroFrequenciaAluno.Item2,
-                    registroFrequenciaAluno.Item3);
+                await CriarRegistrosFrequenciasAlunos(registroFrequenciaAluno.CodigoAluno, registroFrequenciaAluno.QdadeAula,
+                    registroFrequenciaAluno.TipoFrequencia);
             }
         }        
         
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             //    Item3 = Total de compensações
             //    Item4 = Total de presenças
             //    Item5 = Total remotos
-            var frequenciasAlunos = new List<Tuple<string, int, int, int, int>>
+            var frequenciasAlunos = new List<(string CodigoAluno, int TotalAusencias, int TotalCompensacoes, int TotalAulas, int TotalRemotos)>
             {
                 new(CODIGO_ALUNO_1, TOTAL_AUSENCIAS_1, TOTAL_COMPENSACOES_1, totalAulas, TOTAL_REMOTOS_0),
                 new(CODIGO_ALUNO_2, TOTAL_AUSENCIAS_3, TOTAL_COMPENSACOES_3, totalAulas, TOTAL_REMOTOS_0),
@@ -135,13 +135,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                     PeriodoFim = periodoEscolar.PeriodoFim,
                     Bimestre = bimestre,
                     TotalAulas = totalAulas,
-                    TotalAusencias = frequenciaAluno.Item2,
-                    TotalCompensacoes = frequenciaAluno.Item3,
+                    TotalAusencias = frequenciaAluno.TotalAusencias,
+                    TotalCompensacoes = frequenciaAluno.TotalCompensacoes,
                     PeriodoEscolarId = periodoEscolar.Id,
-                    TotalPresencas = frequenciaAluno.Item4,
-                    TotalRemotos = frequenciaAluno.Item5,
+                    TotalPresencas = frequenciaAluno.TotalAulas,
+                    TotalRemotos = frequenciaAluno.TotalRemotos,
                     DisciplinaId = disciplinaId,
-                    CodigoAluno = frequenciaAluno.Item1,
+                    CodigoAluno = frequenciaAluno.CodigoAluno,
                     TurmaId = TURMA_CODIGO_1,
                     Tipo = TipoFrequenciaAluno.PorDisciplina,
                     CriadoEm = DateTimeExtension.HorarioBrasilia(),

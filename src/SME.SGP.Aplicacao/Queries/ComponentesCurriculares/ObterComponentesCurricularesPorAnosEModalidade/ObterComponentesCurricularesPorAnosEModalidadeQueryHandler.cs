@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorAnosEModalidadeQuery request, CancellationToken cancellationToken)
         {
-            var componentes = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.CodigoUe, request.Modalidade, request.AnosEscolares, request.AnoLetivo))?.ToList();
+            var componentes = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.CodigoUe, request.Modalidade, request.AnoLetivo, request.AnosEscolares))?.ToList();
 
             if (request.TurmaPrograma)
             {                
-                var componentesTurmaPrograma = (await servicoEol.ObterComponentesCurricularesTurmasProgramaPorAnoEModalidade(request.CodigoUe, request.Modalidade, request.AnoLetivo))?.ToList();
+                var componentesTurmaPrograma = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.CodigoUe, request.Modalidade, request.AnoLetivo, null))?.ToList();
                 if (componentesTurmaPrograma != null)
                 {
                     var componentesTurmaProgramaFiltrada = componentesTurmaPrograma.Where(x => !componentes.Any(y => y.Codigo == x.Codigo));

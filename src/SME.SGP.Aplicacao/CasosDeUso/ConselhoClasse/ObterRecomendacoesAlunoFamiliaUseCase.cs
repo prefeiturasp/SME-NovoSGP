@@ -15,6 +15,6 @@ namespace SME.SGP.Aplicacao
 
         }
         public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> Executar()
-            => await mediator.Send(new ObterRecomendacoesAlunoFamiliaQuery());
+            => await mediator.Send(ObterRecomendacoesAlunoFamiliaQuery.Instance);
     }
 }

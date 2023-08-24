@@ -16,8 +16,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "")
         {
-            var login = await mediator.Send(new ObterLoginAtualQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var login = await mediator.Send(ObterLoginAtualQuery.Instance);
+            var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
             var filtroEhCodigo = false;
 
             if (!string.IsNullOrWhiteSpace(filtro))

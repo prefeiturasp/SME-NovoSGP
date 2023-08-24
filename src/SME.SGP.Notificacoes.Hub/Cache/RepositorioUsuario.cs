@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using SME.SGP.Dominio.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SME.SGP.Dominio.Interfaces;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Notificacoes.Hub
@@ -15,27 +12,13 @@ namespace SME.SGP.Notificacoes.Hub
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
         }
 
-        public async Task Excluir(string usuarioRf, string connectionId)
-        {
-            var cacheUsuario = await Obter(usuarioRf);
-            cacheUsuario.Remove(connectionId);
+        public Task Excluir(string usuarioRf)
+            => repositorioCache.RemoverAsync(usuarioRf);
 
-            if (cacheUsuario.Any())
-                await repositorioCache.SalvarAsync(usuarioRf, cacheUsuario);
-            else 
-                await repositorioCache.RemoverAsync(usuarioRf);
-        }
+        public Task<string> Obter(string usuarioRf)
+            => repositorioCache.ObterAsync(usuarioRf, "Obter Conexão Usuario");
 
-        public Task<List<string>> Obter(string usuarioRf)
-            => repositorioCache.ObterAsync<List<string>>(usuarioRf, () => Task.FromResult(new List<string>()), "Obter Conexão Usuario");
-
-        public async Task Salvar(string usuarioRf, string connectionId)
-        {
-            var cacheUsuario = await Obter(usuarioRf);
-
-            cacheUsuario.Add(connectionId);
-
-            await repositorioCache.SalvarAsync(usuarioRf, cacheUsuario);
-        }
+        public Task Salvar(string usuarioRf, string connectionId)
+            => repositorioCache.SalvarAsync(usuarioRf, connectionId);
     }
 }

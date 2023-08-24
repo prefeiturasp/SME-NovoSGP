@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolaresAulasInicioFim = periodosEscolares.Where(w => w.DataDentroPeriodo(request.AulaInicio) && w.DataDentroPeriodo(request.AulaFim));
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var ehProfessor = usuarioLogado.EhProfessor() || usuarioLogado.EhProfessorCj();
 

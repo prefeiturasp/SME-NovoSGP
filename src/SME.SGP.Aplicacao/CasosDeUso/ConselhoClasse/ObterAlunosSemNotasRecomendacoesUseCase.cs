@@ -43,14 +43,14 @@ namespace SME.SGP.Aplicacao
                 if (turmasComplementaresFiltradas.Any())
                     turmasCodigo.AddRange(turmasComplementaresFiltradas.Select(s=> s.CodigoTurma));
             
-                var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+                var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
                 var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
                 if (codigosItinerarioEnsinoMedio != null)
                     turmasCodigo.AddRange(codigosItinerarioEnsinoMedio);
 
-                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-                var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+                var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+                var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
 
                 var componentesCurricularesPorTurma = (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo.Distinct().ToArray(), perfil, usuarioLogado.CodigoRf, turmaRegular.EnsinoEspecial, turmaRegular.TurnoParaComponentesCurriculares)))
                     .Where(w=> w.LancaNota)

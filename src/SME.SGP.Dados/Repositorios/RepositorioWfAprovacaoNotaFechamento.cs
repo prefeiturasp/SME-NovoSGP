@@ -62,14 +62,14 @@ namespace SME.SGP.Dados.Repositorios
             );
         }
 
-        public Task<bool> AlterarWfAprovacaoNotaFechamentoComWfAprovacaoId(long workflowAprovacaoId, long[] workflowAprovacaoNotaFechamentoIds)
+        public async Task<bool> AlterarWfAprovacaoNotaFechamentoComWfAprovacaoId(long workflowAprovacaoId, long[] workflowAprovacaoNotaFechamentoIds)
         {
             var query = @"update wf_aprovacao_nota_fechamento 
                                     set wf_aprovacao_id = @workflowAprovacaoId 
                                     where id = ANY(@workflowAprovacaoNotaFechamentoIds)";
 
-            database.Conexao.Execute(query, new { workflowAprovacaoId, workflowAprovacaoNotaFechamentoIds });
-            return Task.FromResult(true);
+            await database.Conexao.ExecuteAsync(query, new { workflowAprovacaoId, workflowAprovacaoNotaFechamentoIds });
+            return true;
         }
         
         public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterWfAprovacaoNotaFechamentoComWfAprovacaoId(long workflowId)

@@ -89,15 +89,15 @@ namespace SME.SGP.Aplicacao
 
                     var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = ehHistorico } };
 
-                    repositorioAbrangencia.InserirAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
+                    await repositorioAbrangencia.InserirAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
             }
             else if (!atribuicaoCJ.Substituir)
             {
                 if (ehHistorico)
-                    repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                    await repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
                 else if(!atribuicoesAtuais.Any(a => a.Substituir == true))
-                    repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                    await repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
 
                 if(!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
                     await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);

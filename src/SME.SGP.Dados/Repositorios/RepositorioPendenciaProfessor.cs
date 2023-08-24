@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,10 +13,11 @@ namespace SME.SGP.Dados
     public class RepositorioPendenciaProfessor : IRepositorioPendenciaProfessor
     {
         private readonly ISgpContext database;
-
-        public RepositorioPendenciaProfessor(ISgpContext database)
+        private readonly IServicoAuditoria servicoAuditoria;
+        public RepositorioPendenciaProfessor(ISgpContext database, IServicoAuditoria servicoAuditoria)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
+            this.servicoAuditoria = servicoAuditoria ?? throw new ArgumentNullException(nameof(servicoAuditoria));
         }
 
         public async Task<bool> ExistePendenciaProfessorPorPendenciaId(long pendenciaId)
@@ -119,20 +121,26 @@ namespace SME.SGP.Dados
         public async Task Remover(PendenciaProfessor pendenciaProfessor)
         {
             await database.Conexao.DeleteAsync(pendenciaProfessor);
-            Auditar(pendenciaProfessor.Id, "E");
+            await Auditar(pendenciaProfessor.Id, "E");
         }
 
-        private void Auditar(long identificador, string acao)
+        private async Task Auditar(long identificador, string acao)
         {
-            database.Conexao.Insert<Auditoria>(new Auditoria()
+            var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
+
+            var auditoria = new Auditoria()
             {
-                Data = DateTime.Now,
-                Entidade = "pendenciaprofessor",
+                Data = DateTimeExtension.HorarioBrasilia(),
+                Entidade = typeof(PendenciaProfessor).Name.ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
-                Acao = acao
-            });
+                Perfil = perfil,
+                Acao = acao,
+                Administrador = database.Administrador
+            };
+
+            await servicoAuditoria.Auditar(auditoria);
         }
 
 

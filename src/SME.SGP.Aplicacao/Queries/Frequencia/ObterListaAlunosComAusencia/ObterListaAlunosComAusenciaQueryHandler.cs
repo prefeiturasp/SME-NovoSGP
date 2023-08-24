@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foram localizados alunos com matrícula ativa na turma, no período escolar selecionado.");
 
             var usuarioLogado = await mediator
-                .Send(new ObterUsuarioLogadoQuery());
+                .Send(ObterUsuarioLogadoQuery.Instance);
 
             var codigosTerritoriosEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
@@ -73,7 +73,8 @@ namespace SME.SGP.Aplicacao
 
             var percentualFrequenciaAlerta = int.Parse(await mediator
                 .Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                       
-
+            
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turma);
             foreach (var alunoEOL in alunosAtivos)
             {               
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo
@@ -91,13 +92,18 @@ namespace SME.SGP.Aplicacao
                     QuantidadeFaltasTotais = faltasNaoCompensadas,
                     MaximoCompensacoesPermitidas = quantidadeMaximaCompensacoes > faltasNaoCompensadas ? faltasNaoCompensadas : quantidadeMaximaCompensacoes,
                     PercentualFrequencia = frequenciaAluno.PercentualFrequencia,
-                    Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta
+                    Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == alunoEOL.CodigoAluno)
                 });
             }
 
             return alunosAusentesDto;
         }
 
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, Turma turma)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
+        }
         private async Task<Turma> BuscaTurma(string turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
@@ -123,5 +129,32 @@ namespace SME.SGP.Aplicacao
 
             return periodoEscolar;
         }        
+
+        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
+        {
+            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+
+            if (usuarioLogado.EhProfessor())
+            {
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
+            }
+            else if (usuarioLogado.EhProfessorCj())
+            {
+                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
+                if (professor != null)
+                {
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                    if (componenteProfessorRelacionado != null)
+                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
+                }
+            }
+
+            return codigoComponenteTerritorioCorrespondente;
+        }
     }
 }
