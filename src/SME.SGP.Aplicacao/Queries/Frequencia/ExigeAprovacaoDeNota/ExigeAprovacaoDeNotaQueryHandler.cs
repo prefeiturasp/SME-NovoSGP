@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExigeAprovacaoDeNotaQuery request, CancellationToken cancellationToken)
         {
             return request.Turma.AnoLetivo < DateTime.Today.Year
-                    && !(await mediator.Send(new ObterUsuarioLogadoQuery())).EhGestorEscolar()
+                    && !(await mediator.Send(ObterUsuarioLogadoQuery.Instance)).EhGestorEscolar()
                     && await ParametroAprovacaoAtivo(request.Turma.AnoLetivo);
         }
 

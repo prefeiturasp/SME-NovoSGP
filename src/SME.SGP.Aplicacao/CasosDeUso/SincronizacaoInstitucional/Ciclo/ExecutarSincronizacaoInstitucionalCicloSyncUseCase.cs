@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
 
-            var ciclos = await mediator.Send(new ObterCiclosEolQuery());
+            var ciclos = await mediator.Send(ObterCiclosEolQuery.Instance);
 
             if (ciclos == null || !ciclos.Any())
             {

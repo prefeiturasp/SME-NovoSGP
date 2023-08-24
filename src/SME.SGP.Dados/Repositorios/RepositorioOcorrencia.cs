@@ -189,27 +189,17 @@ namespace SME.SGP.Dados
 
         public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(long turmaId, long codigoAluno, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
         {
-            try
+            var query = MontaQueryCompleta(paginacao, turmaId, codigoAluno, periodoInicio, periodoFim);
+            var parametros = new { turmaId, codigoAluno, periodoInicio, periodoFim };
+            var retorno = new PaginacaoResultadoDto<OcorrenciasPorAlunoDto>();
+
+            using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                var query = MontaQueryCompleta(paginacao, turmaId, codigoAluno, periodoInicio, periodoFim);
-
-                var parametros = new { turmaId, codigoAluno, periodoInicio, periodoFim };
-                var retorno = new PaginacaoResultadoDto<OcorrenciasPorAlunoDto>();
-
-                using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
-                {
-                    retorno.Items = multi.Read<OcorrenciasPorAlunoDto>();
-                    retorno.TotalRegistros = multi.ReadFirst<int>();
-                }
-
-                retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
-
-                return retorno;
+                retorno.Items = multi.Read<OcorrenciasPorAlunoDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            return retorno;
         }
 
         private static string MontaQueryCompleta(Paginacao paginacao, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)

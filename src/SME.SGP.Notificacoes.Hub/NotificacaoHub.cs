@@ -60,13 +60,13 @@ namespace SME.SGP.Notificacoes.Hub
         }
 
         public Task Criada(MensagemCriacaoNotificacaoDto mensagem)
-            => eventoCriada.Enviar(Clients, mensagem);
+            => eventoCriada.EnviarAsync(Clients, mensagem);
 
         public Task Lida(MensagemLeituraNotificacaoDto mensagem)
-            => eventoLida.Enviar(Clients, mensagem);
+            => eventoLida.EnviarAsync(Clients, mensagem);
 
         public Task Excluida(MensagemExclusaoNotificacaoDto mensagem)
-            => eventoExcluida.Enviar(Clients, mensagem);
+            => eventoExcluida.EnviarAsync(Clients, mensagem);
 
         [Authorize("Token")]
         public object TokenProtected()

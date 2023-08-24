@@ -16,5 +16,6 @@ namespace SME.SGP.Infra
         public List<NotasConceitosNotaAvaliacaoListaoRetornoDto> NotasAvaliacoes { get; set; }
         public int NumeroChamada { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
     }
 }

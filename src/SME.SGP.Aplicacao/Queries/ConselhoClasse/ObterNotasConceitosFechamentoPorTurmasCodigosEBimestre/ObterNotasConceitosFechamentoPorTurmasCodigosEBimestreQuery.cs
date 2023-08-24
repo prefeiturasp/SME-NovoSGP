@@ -8,13 +8,14 @@ namespace SME.SGP.Aplicacao
     public class ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
         public ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery(string[] turmasCodigo, int bimestre,
-            DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null)
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null, string alunoCodigo = null)
         {
             TurmasCodigos = turmasCodigo;
             Bimestre = bimestre;
             DataMatricula = dataMatricula;
             DataSituacao = dataSituacao;
             TipoCalendario = tipoCalendario;
+            AlunoCodigo = alunoCodigo;
         }
 
         public string[] TurmasCodigos { get; }
@@ -22,5 +23,6 @@ namespace SME.SGP.Aplicacao
         public DateTime? DataMatricula { get; }
         public DateTime? DataSituacao { get; }
         public long? TipoCalendario { get; set; }
+        public string AlunoCodigo { get; set; }
     }
 }

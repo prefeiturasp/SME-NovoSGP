@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var wfNotasPosConselho = await mediator.Send(new ObterIdsWorkflowPorWfAprovacaoIdQuery(request.WfAprovacaoId, request.TabelaVinculada));
             if (wfNotasPosConselho == null || !wfNotasPosConselho.Except(new long[] { request.WfIgnoradoId }).Any())
             {
-                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, request.WfAprovacaoId, usuarioLogado);
                 return true;
             }

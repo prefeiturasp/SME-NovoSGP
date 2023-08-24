@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             var recomendacoes = await recomendacaoAlunoRepositorio.ObterRecomendacoesPorAlunoTurma(request.CodigoAluno, request.CodigoTurma, request.AnoLetivo, request.Modalidade, request.Semestre);
             if (recomendacoes != null && recomendacoes.Any())
             {
-                var recomendacoesGeral = await mediator.Send(new ObterRecomendacoesAlunoFamiliaQuery());
+                var recomendacoesGeral = await mediator.Send(ObterRecomendacoesAlunoFamiliaQuery.Instance);
                 foreach (var recomendacao in recomendacoes)
                 {
                     recomendacao.RecomendacoesAluno = recomendacao?.RecomendacoesAluno ?? MontaTextUlLis(recomendacoesGeral.Where(a => (ConselhoClasseRecomendacaoTipo)a.Tipo == ConselhoClasseRecomendacaoTipo.Aluno).Select(b => b.Recomendacao));

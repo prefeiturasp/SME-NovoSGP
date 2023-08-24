@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     turma = await mediator.Send(new ObterTurmaPorCodigoQuery(estudante.CodigoTurma.ToString()));
                     if (turma == null) continue;
 
-                    componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(estudante.CodigoTurma.ToString()));
+                    componentesCurriculares = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(estudante.CodigoTurma.ToString()));
                 }
 
                 if (ue == null || !estudante.CodigoEscola.Equals(ue.CodigoUe))

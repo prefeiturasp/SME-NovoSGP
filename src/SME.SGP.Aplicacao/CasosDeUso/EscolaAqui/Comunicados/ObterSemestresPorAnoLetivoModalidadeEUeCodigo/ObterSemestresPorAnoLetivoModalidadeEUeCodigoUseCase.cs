@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<int>> Executar(bool consideraHistorico, int modalidade, int anoLetivo, string ueCodigo)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado");

@@ -65,10 +65,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 
             foreach (var compensacaoAusenciaAluno in compensacaoAusenciasAlunos)
             {
-                var compensacaoAluno = listaDaCompensacaoAluno.Find(aluno => aluno.CodigoAluno == compensacaoAusenciaAluno.Item1);
+                var compensacaoAluno = listaDaCompensacaoAluno.Find(aluno => aluno.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno);
                 compensacaoAluno.ShouldNotBeNull();
 
-                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.Item2);                
+                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.QdadeAula);                
             }            
         }
 
@@ -138,10 +138,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 
             foreach (var compensacaoAusenciaAluno in compensacaoAusenciasAlunos)
             {
-                var compensacaoAluno = listaDaCompensacaoAluno.Find(aluno => aluno.CodigoAluno == compensacaoAusenciaAluno.Item1);
+                var compensacaoAluno = listaDaCompensacaoAluno.Find(aluno => aluno.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno);
                 compensacaoAluno.ShouldNotBeNull();
 
-                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.Item2);                
+                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.QdadeAula);                
             }
         }
 

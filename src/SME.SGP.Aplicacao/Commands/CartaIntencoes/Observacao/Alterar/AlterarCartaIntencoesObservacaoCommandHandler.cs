@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Handle(AlterarCartaIntencoesObservacaoCommand request, CancellationToken cancellationToken)
         {
             var cartaIntencoesObservacao = await repositorioCartaIntencoesObservacao.ObterPorIdAsync(request.ObservacaoId);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             if (cartaIntencoesObservacao == null)
                 throw new NegocioException("Observação da carta de intenção não encontrada.");
 

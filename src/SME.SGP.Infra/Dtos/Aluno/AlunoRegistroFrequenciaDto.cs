@@ -28,6 +28,7 @@ namespace SME.SGP.Infra
         public string CelularResponsavel { get; set; }
         public DateTime? DataAtualizacaoContato { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
 
         public IList<FrequenciaAulaDetalheDto> Aulas { get; set; }
 

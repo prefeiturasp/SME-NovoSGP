@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> Executar()
         {
-            var usuarioLogadoRF = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            var usuarioLogadoRF = await mediator.Send(ObterUsuarioLogadoRFQuery.Instance);
             return await mediator.Send(new ObterQuantidadeNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogadoRF));
         }
     }

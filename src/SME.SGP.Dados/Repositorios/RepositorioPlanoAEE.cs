@@ -1,8 +1,10 @@
 using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -30,5 +32,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.ExecuteAsync(query, new { planoAEEId, turmaId });                  
         }
+
     }
 }

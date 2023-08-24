@@ -38,6 +38,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     }
                 };
 
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new Turma() { CodigoTurma = "1", EnsinoEspecial = false, ModalidadeCodigo = Modalidade.Fundamental });
+
             mediator.Setup(a => a.Send(It.IsAny<ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockObjetivos);
 
@@ -47,7 +50,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 .ReturnsAsync(mockJurema);
 
             //Act
-            var retorno = await useCase.Executar("5", 139, false);
+            var retorno = await useCase.Executar("5", 139, false, 1);
 
             //Asert
             mediator.Verify(x => x.Send(It.IsAny<ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -73,6 +76,9 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     }
                 };
 
+            mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorIdQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new Turma() { CodigoTurma = "1", EnsinoEspecial = true, ModalidadeCodigo = Modalidade.Fundamental });
+
             mediator.Setup(a => a.Send(It.IsAny<ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockObjetivos);
 
@@ -82,7 +88,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 .ReturnsAsync(mockJurema);
 
             //Act
-            var retorno = await useCase.Executar("5", 138, true);
+            var retorno = await useCase.Executar("5", 138, true, 1);
 
             //Asert
             mediator.Verify(x => x.Send(It.IsAny<ListarObjetivoAprendizagemPorAnoEComponenteCurricularQuery>(), It.IsAny<CancellationToken>()), Times.Once);

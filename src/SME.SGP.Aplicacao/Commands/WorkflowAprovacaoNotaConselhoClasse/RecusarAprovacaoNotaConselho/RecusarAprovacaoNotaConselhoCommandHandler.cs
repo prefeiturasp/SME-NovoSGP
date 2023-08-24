@@ -46,7 +46,8 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
             var bimestre = periodoEscolar != null ? periodoEscolar.Bimestre : (int)Bimestre.Final;
-            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.TurmaCodigo, bimestre), cancellationToken);
+            var codigoAluno = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo;
+            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, request.TurmaCodigo, bimestre, codigoAluno), cancellationToken);
         }
 
         private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)

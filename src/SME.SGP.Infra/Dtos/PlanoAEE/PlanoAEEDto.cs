@@ -20,6 +20,7 @@ namespace SME.SGP.Infra
         public ResponsavelDto Responsavel { get; set; }
         public bool PodeDevolverPlanoAEE { get; set; }
         public bool PermitirExcluir { get; set; }
+        public bool RegistroCadastradoEmOutraUE { get; set; }
     }
 
 }

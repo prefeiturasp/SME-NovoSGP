@@ -86,7 +86,7 @@ namespace SME.SGP.Dominio.Servicos
                  
                     var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id , Historico  = turma.Historica } };
 
-                    servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
+                    await servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
 
                 if (abrangenciasAtuais != null)
@@ -95,7 +95,7 @@ namespace SME.SGP.Dominio.Servicos
                     if (abrangenciaDaTurma != null && abrangenciaDaTurma.Historico != turma.Historica)
                     {
                         var abangencia = new long[] { abrangenciaDaTurma.Id };
-                        repositorioAbrangencia.AtualizaAbrangenciaHistorica(abangencia);
+                        await repositorioAbrangencia.AtualizaAbrangenciaHistorica(abangencia);
                     }
 
                 }
@@ -105,7 +105,7 @@ namespace SME.SGP.Dominio.Servicos
             else if ((abrangenciasAtuais != null && abrangenciasAtuais.Any()) &&
                      (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
             {
-                servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
+                await servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
 
                 await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
             }

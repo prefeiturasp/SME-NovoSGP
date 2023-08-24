@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(RegistrarHistoricoDeAlteracaoExclusaoAtendimentoEncaminhamentoNAAPACommad request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var atendimento = await repositorioSecaoEncaminhamentoNAAPA.ObterAtendimentoSecaoItinerancia(request.EncaminhamentoNAAPASecaoId);
             var historico = new EncaminhamentoNAAPAHistoricoAlteracoes()
             {

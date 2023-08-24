@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(request.TurmaId);
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNovaNotificacaoObservacaoCartaIntencoes,
                        new SalvarNotificacaoCartaIntencoesObservacaoDto(turma, usuarioLogado, cartaIntencoesObservacao.Id, request.Observacao), Guid.NewGuid(), null));

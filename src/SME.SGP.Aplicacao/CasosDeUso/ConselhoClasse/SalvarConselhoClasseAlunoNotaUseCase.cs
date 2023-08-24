@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                     DisciplinaId = dto.ConselhoClasseNotaDto.CodigoComponenteCurricular
                 };
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var periodoEscolarValidacao = await ObtenhaPeriodoEscolar(periodoEscolar, turma, dto.Bimestre);
 
