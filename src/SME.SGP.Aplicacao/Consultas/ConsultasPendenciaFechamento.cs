@@ -80,8 +80,11 @@ namespace SME.SGP.Aplicacao
                 var nomeComponenteTerritorioSaber = componentesTurma?.Where(b => b.TerritorioSaber == true && disciplinaEOL.CodigoComponenteCurricular == b.CodigoComponenteTerritorioSaber)
                                      .Select(b => b.Nome).FirstOrDefault();
 
-                pendencia.DescricaoHtml = pendencia.DescricaoHtml.Replace(disciplinaEOL.Nome, nomeComponenteTerritorioSaber);
-                disciplinaEOL.Nome = nomeComponenteTerritorioSaber;
+                if (!String.IsNullOrEmpty(nomeComponenteTerritorioSaber))
+                {
+                    pendencia.DescricaoHtml = pendencia.DescricaoHtml.Replace(disciplinaEOL.Nome, nomeComponenteTerritorioSaber);
+                    disciplinaEOL.Nome = nomeComponenteTerritorioSaber;
+                }
             }
 
             pendencia.ComponenteCurricular = disciplinaEOL.Nome;
