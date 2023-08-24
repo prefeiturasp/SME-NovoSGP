@@ -26,8 +26,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AlunoEnderecoRespostaDto> Handle(ObterAlunoEnderecoEolQuery request, CancellationToken cancellationToken)
         {
-            var url = $@"alunos/{request.CodigoAluno}/informacoes";
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var url = string.Format(ServicosEolConstants.URL_ALUNOS_INFORMACOES, request.CodigoAluno);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode)

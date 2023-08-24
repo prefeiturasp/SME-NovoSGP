@@ -300,15 +300,12 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP.Base
 
         private async Task CriarPeriodoEscolarRelatorio()
         {
-            foreach (var periodoEscolar in ObterTodos<PeriodoEscolar>())
+            await InserirNaBase(new PeriodoEscolarRelatorioPAP()
             {
-                await InserirNaBase(new PeriodoEscolarRelatorioPAP()
-                {
-                    PeriodoRelatorioId = ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1,
-                    PeriodoEscolarId = periodoEscolar.Id,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-                });
-            }
+                PeriodoRelatorioId = ConstantesTestePAP.PERIODO_RELATORIO_PAP_ID_1,
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         protected async Task CriarPeriodoRelatorio(long configuracaoId = ConstantesTestePAP.CONFIGURACAO_RELATORIO_PAP_ID_1, 

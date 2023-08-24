@@ -14,10 +14,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto>> Executar((IEnumerable<DisciplinaDto>, IEnumerable<AreaDoConhecimentoDto>) param)
+        public async Task<IEnumerable<ComponenteCurricularGrupoAreaOrdenacaoDto>> Executar((IEnumerable<DisciplinaDto> Disciplinas, IEnumerable<AreaDoConhecimentoDto> AreasConhecimento) param)
         {
             return await mediator
-                .Send(new ObterOrdenacaoAreasConhecimentoQuery(param.Item1, param.Item2));
+                .Send(new ObterOrdenacaoAreasConhecimentoQuery(param.Disciplinas, param.AreasConhecimento));
         }
     }
 }

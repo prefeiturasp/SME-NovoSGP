@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 (int)TipoTurma.Regular,
                 (int)TipoTurma.EdFisica
             };
-            var tiposTurmaItinerarioEM = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var tiposTurmaItinerarioEM = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
             tiposTurma.AddRange(tiposTurmaItinerarioEM.Select(t => t.Id));
 
             var turmasUe = await mediator.Send(new ObterTurmasAulasNormaisQuery(filtro.UeId, DateTimeExtension.HorarioBrasilia().Year, tiposTurma.ToArray(), modalidades, ignorarTiposCiclos));

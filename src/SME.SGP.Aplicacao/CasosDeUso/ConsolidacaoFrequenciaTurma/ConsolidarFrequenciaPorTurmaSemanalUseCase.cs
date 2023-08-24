@@ -10,27 +10,27 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsolidarFrequenciaPorTurmaSemanalUseCase : ConsolidarFrequenciaPorTurmaAbstractUseCase, IConsolidarFrequenciaPorTurmaSemanalUseCase
     {
-        private (DateTime, DateTime) PeriodoInicioFim;
+        private (DateTime DataInicio, DateTime DataFim) PeriodoInicioFim;
         public ConsolidarFrequenciaPorTurmaSemanalUseCase(IMediator mediator) : base(mediator)
         {
         }
 
         protected override TipoConsolidadoFrequencia TipoConsolidado => TipoConsolidadoFrequencia.Semanal;
 
-        protected override (DateTime?, DateTime?) Periodos => PeriodoInicioFim;
+        protected override (DateTime? DataInicio, DateTime? DataFim) Periodos => PeriodoInicioFim;
 
         protected override async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaConsideradas(string codigoTurma)
         {
             PeriodoInicioFim = ObterPeriodoInicioFimDaSemana(Filtro.Data);
-            var alunos = await mediator.Send(new ObterAlunosDentroPeriodoQuery(codigoTurma, (PeriodoInicioFim.Item2, PeriodoInicioFim.Item2)));
-            var frequenciaTurma = await mediator.Send(new ObterFrequenciaPorTurmaPeriodoQuery(codigoTurma, PeriodoInicioFim.Item1, PeriodoInicioFim.Item2));
+            var alunos = await mediator.Send(new ObterAlunosDentroPeriodoQuery(codigoTurma, (PeriodoInicioFim.DataFim, PeriodoInicioFim.DataFim)));
+            var frequenciaTurma = await mediator.Send(new ObterFrequenciaPorTurmaPeriodoQuery(codigoTurma, PeriodoInicioFim.DataInicio, PeriodoInicioFim.DataFim));
 
             return from ft in frequenciaTurma
                    join a in alunos on ft.AlunoCodigo equals a.CodigoAluno
                    select ft;
         }
 
-        private (DateTime, DateTime) ObterPeriodoInicioFimDaSemana(DateTime data)
+        private (DateTime DataInicio, DateTime DataFim) ObterPeriodoInicioFimDaSemana(DateTime data)
         {
             var diaDaSemana = data.DayOfWeek;
 

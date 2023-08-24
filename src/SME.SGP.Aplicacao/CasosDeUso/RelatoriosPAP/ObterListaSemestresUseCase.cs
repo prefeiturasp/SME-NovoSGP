@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada!");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var turmaPossuiComponente = await mediator.Send(new TurmaPossuiComponenteCurricularPAPQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 

@@ -40,10 +40,11 @@ namespace SME.SGP.IoC
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IOptions<ConfiguracaoRabbitOptions>>().Value;
 
-            services.AddSingleton<IConnectionFactory>(serviceProvider =>
+            services.AddSingleton<IConnectionFactory>(_ =>
                 {
                     var factory = new ConnectionFactory
                     {
+                        Port = options.Port,
                         HostName = options.HostName,                        
                         UserName = options.UserName,
                         Password = options.Password,

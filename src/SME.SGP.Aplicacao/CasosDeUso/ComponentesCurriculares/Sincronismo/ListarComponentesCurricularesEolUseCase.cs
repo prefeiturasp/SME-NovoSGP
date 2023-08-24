@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularDto>> Executar()
         {
-            return await mediator.Send(new ObterComponentesCurricularesEolQuery());
+            return await mediator.Send(ObterComponentesCurricularesEolQuery.Instance);
         }
     }
 }

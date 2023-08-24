@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                             var notaConceitoCache = await ObterNotaConceitoCache(turmasIds.ToArray(), long.Parse(componenteCurricular.Codigo), filtro.Bimestre ?? 0, filtro.AlunoCodigo, converterNotaEmConceitoTurmaEdFisicaEJA);
                             await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, long.Parse(componenteCurricular.Codigo),
                                                                        filtro.AlunoCodigo, consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas,
-                                                                       notaConceitoCache.Item1, notaConceitoCache.Item2, notaConceitoCache.Item3);
+                                                                       notaConceitoCache.Nota, notaConceitoCache.ConceitoId, notaConceitoCache.EhNotaConceitoConselhoCache);
                         }
                     }
                 }
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<(double?, long?, bool)> ObterNotaConceitoCache(long[] turmasId, long componenteCurricularId, int bimestre, string alunoCodigo, bool converterNotaEmConceitoTurmaEdFisicaEJA = false)
+        private async Task<(double? Nota, long? ConceitoId, bool EhNotaConceitoConselhoCache)> ObterNotaConceitoCache(long[] turmasId, long componenteCurricularId, int bimestre, string alunoCodigo, bool converterNotaEmConceitoTurmaEdFisicaEJA = false)
         {
             var retorno = new List<ConsolidadoConselhoClasseAlunoNotaCacheDto>();
             foreach (var turma in turmasId)
@@ -257,7 +257,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string[]> ObterTurmasComplementaresEOL(Turma turma, Ue ue, string codigoAluno)
         {
-            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
             if (turma.DeveVerificarRegraRegulares() || (turmasItinerarioEnsinoMedio?.Any(a => a.Id == (int)turma.TipoTurma) ?? false))
             {

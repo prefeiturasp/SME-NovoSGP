@@ -100,29 +100,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<string>> ObterNomeUsuariosNotificadosObservacao(long observacaoId)
         {
-            try
-            {
-                var sql = @"select
-							concat(u.nome,'(',u.rf_codigo,')') as NomeUsuariosNotificado
-						from
-							diario_bordo_observacao_notificacao dbon
-						inner join diario_bordo_observacao dbo on
-							dbon.observacao_id = dbo.id
-						inner join notificacao n on
-							dbon.notificacao_id = n.id
-						inner join usuario u on
-							n.usuario_id = u.id
-						where u.nome  is not null
-							and dbo.id = @observacaoId";
+            var sql = @"select
+						concat(u.nome,'(',u.rf_codigo,')') as NomeUsuariosNotificado
+					from
+						diario_bordo_observacao_notificacao dbon
+					inner join diario_bordo_observacao dbo on
+						dbon.observacao_id = dbo.id
+					inner join notificacao n on
+						dbon.notificacao_id = n.id
+					inner join usuario u on
+						n.usuario_id = u.id
+					where u.nome  is not null
+						and dbo.id = @observacaoId";
 
-                var consulta = await database.Conexao.QueryAsync<string>(sql, new { observacaoId });
-                return consulta;
-            }
-            catch (System.Exception)
-            {
-
-                throw;
-            }
+            return await database.Conexao.QueryAsync<string>(sql, new { observacaoId });
 		}
     }
 }

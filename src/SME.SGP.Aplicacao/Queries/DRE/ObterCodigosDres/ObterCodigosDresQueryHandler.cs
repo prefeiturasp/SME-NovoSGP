@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -14,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
-        private const string BaseUrl = "abrangencia/codigos-dres";
+        private const string BaseUrl = ServicosEolConstants.URL_ABRANGENCIA_CODIGOS_DRES;
 
         public ObterCodigosDresQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string[]> Handle(ObterCodigosDresQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var url = new StringBuilder(BaseUrl);
 
             var resposta = await httpClient.GetAsync($"{url}", cancellationToken);

@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciasTurmasComponentesSemAulas(Ue ue)
         {
-            var executar = await mediator.Send(new PodeExecutarPendenciaComponenteSemAulaQuery());
+            var executar = await mediator.Send(PodeExecutarPendenciaComponenteSemAulaQuery.Instance);
             if (executar)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAulaUe, new DreUeDto(ue.DreId, ue.Id, ue.CodigoUe)));
         }

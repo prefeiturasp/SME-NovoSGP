@@ -10,18 +10,20 @@ using SME.SGP.Infra;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Utilitarios;
+using Microsoft.Extensions.Options;
 
 namespace SME.SGP.Aplicacao
 {
     public class RotasAgendamentoTratarUseCase : IRotasAgendamentoTratarUseCase
     {
-        private readonly IConfiguration configuration;
+        private readonly IOptions<ConfiguracaoRabbitOptions> configuracaoRabbit;
         private readonly IMediator mediator;
         private readonly IAsyncPolicy policy;
 
-        public RotasAgendamentoTratarUseCase(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IMediator mediator)
+        public RotasAgendamentoTratarUseCase(IOptions<ConfiguracaoRabbitOptions> configuracaoRabbit, IReadOnlyPolicyRegistry<string> registry, IMediator mediator)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.configuracaoRabbit = configuracaoRabbit ?? throw new ArgumentNullException(nameof(configuracaoRabbit));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
         }
@@ -32,10 +34,11 @@ namespace SME.SGP.Aplicacao
 
             var factory = new ConnectionFactory
             {
-                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
-                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
-                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
-                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
+                Port = configuracaoRabbit.Value.Port,
+                HostName = configuracaoRabbit.Value.HostName,
+                UserName = configuracaoRabbit.Value.UserName,
+                Password = configuracaoRabbit.Value.Password,
+                VirtualHost = configuracaoRabbit.Value.VirtualHost
             };
 
             await policy.ExecuteAsync(() => TratarMensagens(fila, factory));

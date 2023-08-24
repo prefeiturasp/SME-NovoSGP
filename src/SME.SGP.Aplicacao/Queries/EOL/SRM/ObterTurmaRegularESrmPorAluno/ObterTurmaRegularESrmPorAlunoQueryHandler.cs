@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,10 +21,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterTurmaRegularESrmPorAlunoQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<TurmasDoAlunoDto>();
+            var alunos = Enumerable.Empty<TurmasDoAlunoDto>();
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"alunos/paee/turma-srm-e-regular/aluno/{request.AlunoCodigo}", cancellationToken);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ALUNOS_PAEE_TURMA_SRM_REGULAR_ALUNO, request.AlunoCodigo), cancellationToken);
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync(cancellationToken);

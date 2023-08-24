@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
-            var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
+            var tipoAvaliacaoBimestral = await mediator.Send(ObterTipoAvaliacaoBimestralQuery.Instance);
 
             retorno.BimestreAtual = filtro.Bimestre;
             retorno.PercentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
             if (componenteReferencia.Regencia)
             {
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 if (usuario.EhProfessorCj())
                 {
                     IEnumerable<DisciplinaDto> disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(filtro.DisciplinaCodigo, filtro.TurmaCodigo, false, componenteReferencia.Regencia);

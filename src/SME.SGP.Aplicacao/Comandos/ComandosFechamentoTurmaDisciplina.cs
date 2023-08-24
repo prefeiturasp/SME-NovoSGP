@@ -31,9 +31,10 @@ namespace SME.SGP.Aplicacao
         public async Task Reprocessar(long fechamentoId, Usuario usuario = null)
             => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId, usuario);
 
-        public void Reprocessar(IEnumerable<long> fechamentoId, Usuario usuario = null)
+        public async Task Reprocessar(IEnumerable<long> fechamentoId, Usuario usuario = null)
         {
-            fechamentoId.ToList().ForEach(f => Reprocessar(f, usuario).Wait());
+            foreach (long id in fechamentoId)
+                await Reprocessar(id, usuario);
         }
 
         public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
@@ -99,8 +100,8 @@ namespace SME.SGP.Aplicacao
             var periodoEscolarId = await mediator.Send(new ObterPeriodoEscolarIdPorTurmaBimestreAnoLetivoQuery(fechamentoTurma.TurmaId,
                 fechamentoTurma.Bimestre, turma.AnoLetivo));
             
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolarId, fechamentoTurma.DisciplinaId));
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, fechamentoTurma.Bimestre));
+            await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolarId, fechamentoTurma.DisciplinaId));
+            await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, fechamentoTurma.Bimestre));
         }
     }
 }

@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException($@"Não existe usuário com o código RF {filtro.UsuarioRf}");
             }
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.AtribuicaoCJ, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosAtribuicoes));
         }

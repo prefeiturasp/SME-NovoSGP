@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
-            string nomechavecache = string.Format(NomeChaveCache.CHAVE_COMPONENTES_PROFESSOR_TURMA,
+            string nomechavecache = string.Format(NomeChaveCache.COMPONENTES_PROFESSOR_TURMA,
                                                   request.Login,
                                                   request.CodigoTurma,
                                                   request.ChecaMotivoDisponibilizacao,

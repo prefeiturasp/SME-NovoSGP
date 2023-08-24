@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao
             {
                 var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
 
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, atribuicaoCJPersistenciaDto.Historico));
 
                 var perfilCJ = atribuicao.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
@@ -53,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new AtribuirPerfilCommand(atribuicaoCJPersistenciaDto.UsuarioRf, perfil));
 
-            var codigoRf = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            var codigoRf = await mediator.Send(ObterUsuarioLogadoRFQuery.Instance);
             await mediator.Send(new RemoverPerfisUsuarioAtualCommand(codigoRf));
 
             return true;
@@ -61,13 +62,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverDisciplinasCache(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
         {
-            var chaveCache = $"Disciplinas-{atribuicaoCJPersistenciaDto.TurmaId}-{atribuicaoCJPersistenciaDto.UsuarioRf}--{Perfis.PERFIL_CJ}";
+            
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA_PROFESSOR_PERFIL, atribuicaoCJPersistenciaDto.TurmaId, atribuicaoCJPersistenciaDto.UsuarioRf, Perfis.PERFIL_CJ);
             await mediator.Send(new RemoverChaveCacheCommand(chaveCache));
         }
 
         private async Task RemoverAtribuicaoAtivaCache(string codigoRf)
         {
-            var chaveCache = $"AtribuicaoAtiva-{codigoRf}";
+            var chaveCache = string.Format(NomeChaveCache.ATRIBUICAO_CJ_PROFESSOR, codigoRf);
             await mediator.Send(new RemoverChaveCacheCommand(chaveCache));
         }
 

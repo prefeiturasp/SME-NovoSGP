@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +23,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<string>> Handle(ObterFuncionariosSmePorPerfisQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var parametros = JsonConvert.SerializeObject(request.Perfis);
 
-            var resposta = await httpClient.PostAsync("/api/funcionarios/admins/sme", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_FUNCIONARIOS_ADMINS_SME, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

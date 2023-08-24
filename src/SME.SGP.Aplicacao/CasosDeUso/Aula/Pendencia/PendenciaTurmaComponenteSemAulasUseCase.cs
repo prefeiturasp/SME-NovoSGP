@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null)
                 return false;
 
-            var diasAposInicioPeriodo = await mediator.Send(new DiasAposInicioPeriodoLetivoComponenteSemAulaQuery());
+            var diasAposInicioPeriodo = await mediator.Send(DiasAposInicioPeriodoLetivoComponenteSemAulaQuery.Instance);
             var periodoInicio = periodoEscolar.PeriodoInicio.AddDays(diasAposInicioPeriodo);
             if (periodoInicio.Date >= DateTimeExtension.HorarioBrasilia().Date)
                 return false;

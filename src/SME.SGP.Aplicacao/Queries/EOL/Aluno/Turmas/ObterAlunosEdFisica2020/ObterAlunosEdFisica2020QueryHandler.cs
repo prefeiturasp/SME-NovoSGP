@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<FechamentoAlunoComponenteDTO>> Handle(ObterAlunosEdFisica2020Query request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"turmas/edfisica-2020";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = ServicosEolConstants.URL_TURMAS_EDFISICA_2020;
             try
             {
                 var resposta = await httpClient.GetAsync(url);

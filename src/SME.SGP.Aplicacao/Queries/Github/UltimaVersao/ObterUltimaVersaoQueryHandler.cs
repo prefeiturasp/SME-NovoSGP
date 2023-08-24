@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -20,11 +21,11 @@ namespace SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease
 
         public async Task<string> Handle(ObterUltimaVersaoQuery request, CancellationToken cancellationToken)
         {
-            var versao = await repositorioCache.ObterAsync("versao", false);
+            var versao = await repositorioCache.ObterAsync(NomeChaveCache.VERSAO, false);
             if (string.IsNullOrWhiteSpace(versao))
             {
                 string numeroVersao = await servicoGithub.RecuperarUltimaVersao();
-                await repositorioCache.SalvarAsync("versao", numeroVersao, 1080, false);
+                await repositorioCache.SalvarAsync(NomeChaveCache.VERSAO, numeroVersao, 1080, false);
                 return numeroVersao;
             }
             return versao;

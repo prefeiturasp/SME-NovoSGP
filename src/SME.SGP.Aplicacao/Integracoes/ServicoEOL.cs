@@ -233,7 +233,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
         {
-            var alunos = new List<AlunoPorTurmaResposta>();
+            var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
             var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete"
                 + (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
                 + (codigoEol.HasValue ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
@@ -255,7 +255,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codigoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true, bool verificarTipoTurma = true)
         {
-            var alunos = new List<AlunoPorTurmaResposta>();
+            var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
 
             var resposta = await httpClient.GetAsync($"alunos/{codigoAluno}/turmas/anosLetivos/{anoLetivo}/historico/{consideraHistorico}/filtrar-situacao/{filtrarSituacao}/tipo-turma/{verificarTipoTurma}");
             if (resposta.IsSuccessStatusCode)
@@ -579,7 +579,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var dadosUsuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
 
                 if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
@@ -684,7 +684,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             });
 
             var resposta = await httpClient.PostAsync($"funcionarios/BuscarTurmasElegiveis", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
-            var turmas = new List<TurmaParaCopiaPlanoAnualDto>();
+            var turmas = Enumerable.Empty<TurmaParaCopiaPlanoAnualDto>();
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
@@ -696,7 +696,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
         {
             var resposta = await httpClient.GetAsync($"escolas/{ueId}/turmas/anos_letivos/{anoLetivo}");
-            var turmas = new List<TurmaPorUEResposta>();
+            var turmas = Enumerable.Empty<TurmaPorUEResposta>();
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;

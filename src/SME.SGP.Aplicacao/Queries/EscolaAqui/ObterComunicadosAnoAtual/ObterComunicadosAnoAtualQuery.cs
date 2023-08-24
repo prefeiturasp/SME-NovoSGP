@@ -10,5 +10,8 @@ namespace SME.SGP.Aplicacao
         public ObterComunicadosAnoAtualQuery()
         {}
 
+        private static ObterComunicadosAnoAtualQuery _instance;
+        public static ObterComunicadosAnoAtualQuery Instance => _instance ??= new();
+
     }
 }

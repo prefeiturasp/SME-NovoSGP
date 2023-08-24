@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MigrarPlanoAulaDto param)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             
             return await mediator.Send(new MigrarPlanoAulaCommand(param, usuario));
         }

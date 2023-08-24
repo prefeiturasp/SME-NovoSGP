@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>> Executar(long encaminhamentoNAAPAId)
         {
-            var usuarioLohadoRf = await mediator.Send(new ObterUsuarioLogadoRFQuery());
+            var usuarioLohadoRf = await mediator.Send(ObterUsuarioLogadoRFQuery.Instance);
             return await mediator.Send(new ObterObservacaoEncaminhamentosNAAPAQuery(encaminhamentoNAAPAId, usuarioLohadoRf));
         }
     }
