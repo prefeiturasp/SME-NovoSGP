@@ -1691,7 +1691,20 @@ namespace SME.SGP.Infra
             EhAlteracao = false,
             EhConsulta = true)]
         RDE_C = 187,
-            
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
+            Menu = ConstantesMenuPermissao.MENU_ESCOLA_AQUI, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_ESCOLA_AQUI,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_LEITURA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_ESCOLA_AQUI_LEITURA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhAlteracao = false,
+            EhConsulta = true)]
+        RLC_C = 185,
+        
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DOCUMENTOS_ESCOLARES, 
             Menu = ConstantesMenuPermissao.MENU_BOLETIM, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DOCUMENTOS_ESCOLARES,

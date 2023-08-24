@@ -74,6 +74,7 @@
         public const string MENU_MEUS_DADOS =  "Meus Dados";
         public const string MENU_NOTIFICACAO =  "Notificação";
         public const string MENU_ADESAO =  "Adesão";
+        public const string MENU_LEITURA =  "Leitura";
         
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
         public const string AGRUPAMENTO_DIARIO_DE_CLASSE = "Diário de Classe";
@@ -172,6 +173,7 @@
         public const string ROTA_MEUS_DADOS = "/meus-dados";
         public const string ROTA_NOTIFICACOES = "/notificacoes";
         public const string ROTA_RELATORIOS_ESCOLA_AQUI_ADESAO = "/relatorios/escola-aqui/adesao";
+        public const string ROTA_RELATORIOS_ESCOLA_AQUI_LEITURA = "/relatorios/escola-aqui/leitura";
         
         public const string ICONE_FAS_FA_LIST_ALT = "fas fa-list-alt";
         public const string ICONE_FAR_FA_CALENDAR_MINUS = "far fa-calendar-minus";
@@ -306,6 +308,7 @@
         
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ANALITICO = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
         
 
     }
