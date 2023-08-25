@@ -9,6 +9,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake;
+using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -32,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorUeECargoQuery, IEnumerable<FuncionarioDTO>>), typeof(ObterFuncionariosPorUeECargoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ExecutaNotificacaoConclusaoEncaminhamentoAEECommand, bool>), typeof(ExecutaNotificacaoConclusaoEncaminhamentoAEECommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>), typeof(EncaminhamentoAEE.ServicosFake.ObterUsuarioLogadoPaai4444444QueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>), typeof(ObterUsuarioLogadoPaai4444444QueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
