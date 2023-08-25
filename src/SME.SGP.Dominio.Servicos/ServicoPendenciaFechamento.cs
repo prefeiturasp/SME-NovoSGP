@@ -58,22 +58,33 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre, long turmaId)
         {
-            var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
+            var aulasPendentes = repositorioAula
+                .ObterAulasReposicaoPendentes(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
+
             if (aulasPendentes != null && aulasPendentes.Any())
             {
-                var componenteCurricular = await BuscaInformacoesDaDisciplina(disciplinaId);
+                var aulasId = aulasPendentes.Select(a => a.Id).ToArray();
+                
+                var aulasIdComPendenciaCriada = await mediator
+                    .Send(new ObterAulasReposicaoComPendenciaCriadaQuery(aulasId));
+                
+                aulasPendentes = aulasPendentes.Where(a => !aulasIdComPendenciaCriada.Contains(a.Id));
 
-                var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão pendentes de aprovação:<br>");
-
-                var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de reposição de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão pendentes de aprovação:</td></tr>");
-
-                mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
-
-                var professorTitularPorTurmaEDisciplina = await BuscaProfessorTitularPorTurmaEDisciplina(turmaCodigo, disciplinaId);
-
-                foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
+                if (aulasPendentes.Any())
                 {
-                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(aula.TurmaId));
+                    var componenteCurricular = await BuscaInformacoesDaDisciplina(disciplinaId);
+
+                    var mensagem = new StringBuilder($"A aulas de reposição de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão pendentes de aprovação:<br>");
+
+                    var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"2\">A aulas de reposição de {componenteCurricular.Nome} da turma {turmaNome} a seguir estão pendentes de aprovação:</td></tr>");
+
+                    mensagemHtml.Append("<tr class=\"cabecalho\"><td>Data da aula</td><td>Professor</td></tr>");
+
+                    var professorTitularPorTurmaEDisciplina = await BuscaProfessorTitularPorTurmaEDisciplina(turmaCodigo, disciplinaId);
+
+                    foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
+                    {
+                        var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(aula.TurmaId));
 
                     var professor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
 
@@ -82,12 +93,13 @@ namespace SME.SGP.Dominio.Servicos
                     if (usuarioCoreSSO != null && usuarioCoreSSO.CodigoRf == professor.CodigoRf)
                         professor.Nome = usuarioCoreSSO.Nome;
 
-                    mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
-                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
+                        mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
+                        mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
+                    }
+                    mensagemHtml.Append("</table>");
+                    var professorRf = aulasPendentes.First().ProfessorRf;
+                    await GerarPendencia(fechamentoId, TipoPendencia.AulasReposicaoPendenteAprovacao, mensagem.ToString(), professorRf, mensagemHtml.ToString(), bimestre, turmaId);
                 }
-                mensagemHtml.Append("</table>");
-                var professorRf = aulasPendentes.First().ProfessorRf;
-                await GerarPendencia(fechamentoId, TipoPendencia.AulasReposicaoPendenteAprovacao, mensagem.ToString(), professorRf, mensagemHtml.ToString(), bimestre, turmaId);
             }
             else
                 await repositorioPendencia.AtualizarPendencias(fechamentoId, SituacaoPendencia.Resolvida, TipoPendencia.AulasReposicaoPendenteAprovacao);
