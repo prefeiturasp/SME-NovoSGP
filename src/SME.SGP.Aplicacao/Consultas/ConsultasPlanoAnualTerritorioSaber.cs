@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
             var componenteCurricularId = territorioExperienciaId;
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
-            long[] codigosComponentes = new long[2];
+            long[] codigosComponentes = new long[1];
 
             periodos.Select(s => s.Bimestre).Distinct().ToList().ForEach(bimestre =>
             {
@@ -95,8 +95,7 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
                     };
 
-            codigosComponentes[0] = componenteCorrespondente?.Codigo ?? 0;
-            codigosComponentes[1] = componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0;
+            codigosComponentes[0] = componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0;
 
             var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, codigosComponentes, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
             if (listaPlanoAnual != null && listaPlanoAnual.Any())
