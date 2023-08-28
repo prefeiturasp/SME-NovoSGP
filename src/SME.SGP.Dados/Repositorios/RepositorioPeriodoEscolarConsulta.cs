@@ -182,12 +182,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!ehAnoLetivo)
                 query.AppendLine("and periodo_inicio <= @dataReferencia");
 
-            if (bimestre > 0 && !ehModalidadeInfantil)
-                query.AppendLine(" and pe.bimestre = @bimestre");
-            else
-            {
+            if (bimestre > 0)
                 query.AppendLine($"and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, ehModalidadeInfantil)} ");
-            }
 
             return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre })) > 0;
         }

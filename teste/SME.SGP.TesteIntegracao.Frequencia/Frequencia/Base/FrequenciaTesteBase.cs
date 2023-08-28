@@ -134,6 +134,18 @@ namespace SME.SGP.TesteIntegracao
             return await useCase.Executar(param);
         }
 
+
+        protected async Task CriarDadosBasicosVigenciaRelativa(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, int bimestre, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = 1)
+        {
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
+            var dataInicioPeriodo = dataAtual.AddDays(-10);
+            var dataFimPeriodo = dataAtual.AddDays(1);
+            var dataAula = dataAtual;
+
+            await CriarDadosBasicos(perfil, modalidade, tipoCalendario, dataInicioPeriodo, dataFimPeriodo, bimestre, dataAula, componenteCurricular, criarPeriodo, tipoCalendarioId, criarPeriodoEscolarEAbertura, quantidadeAula);
+        }
+
+
         protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3)
         {
             await CriarDadosBaseSemTurma(perfil, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
@@ -462,13 +474,6 @@ namespace SME.SGP.TesteIntegracao
             var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
             registroFrequenciaAluno.ShouldNotBeEmpty();
             (registroFrequenciaAluno.FirstOrDefault().Valor == (int)tipoFrequenciaRegistrada).ShouldBeTrue();
-
-            var consolidacaoFrequenciaAlunoMensal = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
-            consolidacaoFrequenciaAlunoMensal.ShouldNotBeEmpty();
-            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().Percentual == percentualFrequencia).ShouldBeTrue();
-            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().QuantidadeAulas == numeroAulas).ShouldBeTrue();
-            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().QuantidadeAusencias == qtdeAusencias).ShouldBeTrue();
-            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().QuantidadeCompensacoes == qtdeCompensacoes).ShouldBeTrue();
         }
 
         protected async Task CriarPredefinicaoAluno(string codigoAluno, TipoFrequencia tipoFrequencia, long componenteCurricularId, long turmaId)

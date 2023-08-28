@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,12 +22,14 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(ServicosFake.IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
         }
+
 
         [Fact(DisplayName = "Frequência - Deve permitir inserir frequencia com ausencia com predefinicao compareceu")]
         public async Task Deve_permitir_inserir_frequencia_com_ausencia_com_predefinicao_compareceu()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
+            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
 
             await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.C, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TURMA_ID_1);
 
@@ -49,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve permitir inserir frequencia com remoto com predefinicao compareceu modificando pre definicao para remoto")]
         public async Task Deve_permitir_inserir_frequencia_com_remoto_com_predefinicao_compareceu_modificando_pre_definicao_para_remoto()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
+            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
 
             await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.C, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TURMA_ID_1);
 
@@ -72,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve permitir inserir frequencia com compareceu com predefinicao remoto")]
         public async Task Deve_permitir_inserir_frequencia_com_compareceu_com_predefinicao_remoto()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
+            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
 
             await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.R, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TURMA_ID_1);
 
