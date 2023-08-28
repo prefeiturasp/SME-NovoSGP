@@ -36,15 +36,23 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaBimestreAlunoDto = new List<FrequenciaBimestreAlunoDto>();
 
+            var totalAulas = 0;
+            var totalAusencias = 0;
+            var totalCompensacoes = 0;
+
             foreach (var frequencia in frequenciasAluno)
             {
+                totalAulas = frequencia.Sum(f => f.TotalAulas);
+                totalAulas = frequencia.Sum(f => f.TotalAusencias);
+                totalAulas = frequencia.Sum(f => f.TotalCompensacoes);
+                
                 var frequenciaBimestreAluno = new FrequenciaBimestreAlunoDto()
                 {
                     Bimestre = frequencia.Key.Bimestre,
                     CodigoAluno = frequencia.Key.CodigoAluno,
-                    Frequencia = frequencia.Sum(f => f.PercentualFrequencia),
-                    QuantidadeAusencias = frequencia.Sum(f => f.TotalAusencias),
-                    QuantidadeCompensacoes = frequencia.Sum(f => f.TotalCompensacoes),
+                    Frequencia = PercentualFrequencia(totalAulas, totalAusencias, totalCompensacoes).percentualFrequencia,
+                    QuantidadeAusencias = totalAusencias,
+                    QuantidadeCompensacoes = totalCompensacoes,
                     TotalAulas = frequencia.Sum(f => f.TotalAulas)
                 };
 
@@ -59,16 +67,23 @@ namespace SME.SGP.Aplicacao
                 return informacoesEscolaresAluno;
             }
             var frequenciaAlunoBimestre = informacoesEscolaresAluno.FrequenciaAlunoPorBimestres;
-            var frequenciaAluno = new FrequenciaAluno()
-            {
-                TotalAulas = frequenciaAlunoBimestre.Sum(f => f.TotalAulas),
-                TotalAusencias = frequenciaAlunoBimestre.Sum(f => f.QuantidadeAusencias),
-                TotalCompensacoes = frequenciaAlunoBimestre.Sum(f => f.QuantidadeCompensacoes),
-            };
-
-            informacoesEscolaresAluno.FrequenciaGlobal = frequenciaAluno.PercentualFrequenciaFormatado;
+            totalAulas = frequenciaAlunoBimestre.Sum(f => f.TotalAulas);
+            totalAusencias = frequenciaAlunoBimestre.Sum(f => f.QuantidadeAusencias);
+            totalCompensacoes = frequenciaAlunoBimestre.Sum(f => f.QuantidadeCompensacoes);
+            informacoesEscolaresAluno.FrequenciaGlobal = PercentualFrequencia(totalAulas, totalAusencias, totalCompensacoes).percentualFrequenciaFormatado;
 
             return informacoesEscolaresAluno;
+        }
+
+        private (double percentualFrequencia,string percentualFrequenciaFormatado) PercentualFrequencia(int totalAulas,int totalAusencias,int totalCompensacoes)
+        {
+           var frequenciaAlunoCalculo = new FrequenciaAluno()
+            {
+                TotalAulas = totalAulas,
+                TotalAusencias = totalAusencias,
+                TotalCompensacoes = totalCompensacoes
+            };
+            return (frequenciaAlunoCalculo.PercentualFrequencia,frequenciaAlunoCalculo.PercentualFrequenciaFormatado);   
         }
     }
 }
