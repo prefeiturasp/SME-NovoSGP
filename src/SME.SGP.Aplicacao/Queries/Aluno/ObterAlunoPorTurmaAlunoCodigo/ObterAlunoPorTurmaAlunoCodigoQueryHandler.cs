@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -25,14 +26,14 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = new AlunoPorTurmaResposta();
 
-            var chaveCache = $"aluno-turma:{request.TurmaCodigo}/aluno:{request.AlunoCodigo}/considera-inativos:{request.ConsideraInativos}";
+            var chaveCache = string.Format(NomeChaveCache.ALUNO_TURMA, request.TurmaCodigo, request.AlunoCodigo, request.ConsideraInativos);
             var cacheAlunos = repositorioCache.Obter(chaveCache);
             if (cacheAlunos != null)
                 alunos = JsonConvert.DeserializeObject<AlunoPorTurmaResposta>(cacheAlunos);
             else
             {
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var resposta = await httpClient.GetAsync($"turmas/{request.TurmaCodigo}/aluno/{request.AlunoCodigo}/considera-inativos/{request.ConsideraInativos}");
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_ALUNO_CONSIDERA_INATIVOS, request.TurmaCodigo, request.AlunoCodigo, request.ConsideraInativos));
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();

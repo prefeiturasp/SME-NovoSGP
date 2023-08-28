@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioConselhoClasseAtaFinalDto filtroRelatorioConselhoClasseAtaFinalDto)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado == null)
                 throw new NegocioException("Não foi possível localizar o usuário.");

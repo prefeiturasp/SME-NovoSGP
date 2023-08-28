@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string ENCAMINHAMENTO_ALUNO_INATIVO_NAO_PODE_SER_REABERTO = "Encaminhamentos com aluno inativo não podem ser reabertos";
         public const string SECAO_NAO_ENCONTRADA = "Seção não encontrada";
         public const string SECAO_NAO_VALIDA_ITINERANCIA = "Seção inválida para o lançamento de atendimentos!";
+        public const string EXISTE_ENCAMINHAMENTO_ATIVO_PARA_ALUNO = "Existe encaminhamento ativo para o aluno";
     }
 }

@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
         public double? PercentualFrequencia { get; set; }
         public int MaximoCompensacoesPermitidas { get; set; }
         public bool Alerta { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
         public IEnumerable<CompensacaoDataAlunoDto> Compensacoes { get; set; }
         public string FrequenciaFormatado => FormatarPercentual(PercentualFrequencia ?? 0);
 

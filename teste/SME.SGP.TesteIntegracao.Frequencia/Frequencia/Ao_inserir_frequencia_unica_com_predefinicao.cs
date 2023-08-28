@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve permitir inserir frequencia com ausencia com predefinicao compareceu")]
         public async Task Deve_permitir_inserir_frequencia_com_ausencia_com_predefinicao_compareceu()
         {
-            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
+            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, TIPO_CALENDARIO_1, true, NUMERO_AULAS_1);
 
             await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.C, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TURMA_ID_1);
 
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve permitir inserir frequencia com remoto com predefinicao compareceu modificando pre definicao para remoto")]
         public async Task Deve_permitir_inserir_frequencia_com_remoto_com_predefinicao_compareceu_modificando_pre_definicao_para_remoto()
         {
-            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
+            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, TIPO_CALENDARIO_1, true, NUMERO_AULAS_1);
 
             await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.C, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TURMA_ID_1);
 
@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Deve permitir inserir frequencia com compareceu com predefinicao remoto")]
         public async Task Deve_permitir_inserir_frequencia_com_compareceu_com_predefinicao_remoto()
         {
-            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, NUMERO_AULAS_1);
+            await CriarDadosBasicosVigenciaRelativa(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, TIPO_CALENDARIO_1, true, NUMERO_AULAS_1);
 
             await CriarPredefinicaoAluno(CODIGO_ALUNO_99999, TipoFrequencia.R, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TURMA_ID_1);
 

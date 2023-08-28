@@ -93,24 +93,46 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos, bool exibirEncerrados)
         {
-            sql.AppendLine(" where ue.dre_id = @dreId and not ea.excluido ");
-            sql.AppendLine("   and t.ano_letivo = @anoLetivo ");
+            sql.AppendLine(" where not ea.excluido ");
 
-            if (ueId > 0)
-                sql.AppendLine(" and ue.id = @ueId ");
-            if (turmaId > 0)
-                sql.AppendLine(" and t.id = @turmaId ");
             if (!string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(" and ea.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and ea.situacao = @situacao ");
             if (!string.IsNullOrEmpty(responsavelRf))
                 sql.AppendLine(" and u.rf_codigo = @responsavelRf ");
-            if (turmasCodigos != null && turmaId == 0)
-                sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
             if (!exibirEncerrados)
                 sql.AppendLine(" and not ea.situacao = ANY(@situacoesEncerrado) ");
 
+            sql.AppendLine(" and ((ue.dre_id = @dreId ");
+            sql.AppendLine(" and t.ano_letivo = @anoLetivo ");
+
+            if (ueId > 0)
+                sql.AppendLine(" and ue.id = @ueId ");
+            if (turmaId > 0)
+                sql.AppendLine(" and t.id = @turmaId ");
+            if (turmasCodigos != null && turmaId == 0)
+                sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
+
+            sql.AppendLine(" ) ");
+
+            //-> considerar turmas de srm e regular onde o aluno possui matricula
+            sql.AppendLine("    or exists(select 1 ");
+            sql.AppendLine("              from encaminhamento_aee_turma_aluno eta ");
+            sql.AppendLine("              inner join turma t2 on t2.id = eta.turma_id ");
+            sql.AppendLine("              inner join ue u2 on t2.ue_id = u2.id");
+            sql.AppendLine("              where eta.encaminhamento_aee_id = ea.id ");
+            sql.AppendLine("                and u2.dre_id = @dreId ");
+            sql.AppendLine("                and t2.ano_letivo = @anoLetivo ");
+
+            if (ueId > 0)
+                sql.AppendLine("                and t2.ue_id = @ueId ");
+            if (turmaId > 0)
+                sql.AppendLine("                and t2.id = @turmaId ");
+            if (turmasCodigos != null && turmaId == 0)
+                sql.AppendLine("                and t2.turma_id = ANY(@turmasCodigos) ");
+
+            sql.AppendLine("              limit 1)) ");
         }
 
         public async Task<SituacaoAEE> ObterSituacaoEncaminhamentoAEE(long encaminhamentoAEEId)
@@ -294,7 +316,7 @@ namespace SME.SGP.Dados.Repositorios
                            and t.ue_id = @ueId
                            limit 1) ";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoEstudante, ueId });            
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoEstudante, ueId });
         }
 
         public async Task<IEnumerable<EncaminhamentoAEECodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoAEEId(long encaminhamentoId)
@@ -314,12 +336,12 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        ea.id = @encaminhamentoId";
 
-            return await database.Conexao.QueryAsync<EncaminhamentoAEECodigoArquivoDto>(sql.ToString(),new { encaminhamentoId });
+            return await database.Conexao.QueryAsync<EncaminhamentoAEECodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
         }
 
-        public async Task<IEnumerable<EncaminhamentoAEEVigenteDto>> ObterEncaminhamentosVigentes()
+        public async Task<IEnumerable<EncaminhamentoAEEVigenteDto>> ObterEncaminhamentosVigentes(long? anoLetivo = null)
         {
-            const string sql = @"select ea.id as encaminhamentoid,
+            string sql = @" select ea.id as encaminhamentoid,
                                         ea.aluno_codigo as alunocodigo,
                                         ea.turma_id as turmaid,
                                         t.turma_id as turmacodigo,
@@ -330,10 +352,14 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join turma t on (t.id = ea.turma_id)
                                     inner join ue u on (u.id = t.ue_id)
                                 where not ea.excluido
-                                and ea.situacao not in (5, 7, 8, 10)
-                                order by ea.id";
+                                and ea.situacao not in (5, 8, 10) ";
 
-            return await database.Conexao.QueryAsync<EncaminhamentoAEEVigenteDto>(sql);
+            if (anoLetivo.HasValue)
+                sql += " and t.ano_letivo = @anoLetivo";
+
+            sql += " order by ea.id";
+
+            return await database.Conexao.QueryAsync<EncaminhamentoAEEVigenteDto>(sql, new { anoLetivo });
         }
     }
 }

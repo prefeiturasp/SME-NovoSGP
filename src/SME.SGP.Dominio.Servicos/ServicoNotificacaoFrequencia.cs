@@ -63,7 +63,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ExecutaNotificacaoRegistroFrequencia()
         {
-            var cargosNotificados = new List<(string, Cargo?)>();
+            var cargosNotificados = new List<(string CodigoTurma, Cargo? Cargo)>();
 
             Console.WriteLine($"Notificando usuários de aulas sem frequência.");
 
@@ -114,7 +114,7 @@ namespace SME.SGP.Dominio.Servicos
             if (qtdDiasAlteracao < qtdDiasParametro)
                 return;
 
-            var usuariosNotificacao = new List<(Cargo?, Usuario)>();
+            var usuariosNotificacao = new List<(Cargo? Cargo, Usuario Usuario)>();
 
             // Dados da Aula
             var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
@@ -126,13 +126,13 @@ namespace SME.SGP.Dominio.Servicos
                 usuariosNotificacao.AddRange(usuarios);
 
             // Supervisores
-            usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Item1));
+            usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Cargo));
             if (usuarios != null)
                 usuariosNotificacao.AddRange(usuarios);
 
             foreach (var usuario in usuariosNotificacao)
             {
-                await NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
+                await NotificaAlteracaoFrequencia(usuario.Usuario, registroFrequencia, professor.Nome);
             }
 
         }
@@ -334,9 +334,9 @@ namespace SME.SGP.Dominio.Servicos
             var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, cargo);
 
             if (funcionariosRetornoEol == null)
-                return Enumerable.Empty<(Cargo?, Usuario)>();
+                return Enumerable.Empty<(Cargo? Cargo, Usuario Usuario)>();
 
-            var usuarios = new List<(Cargo?, Usuario)>();
+            var usuarios = new List<(Cargo? Cargo, Usuario Usuario)>();
             foreach (var usuarioEol in funcionariosRetornoEol)
                 usuarios.Add((usuarioEol.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(usuarioEol.Id).Result));
 
@@ -356,7 +356,7 @@ namespace SME.SGP.Dominio.Servicos
             return usuarios;
         }
 
-        private async Task<IEnumerable<(Cargo?, Usuario)>> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
+        private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscaProfessorAula(RegistroFrequenciaFaltanteDto turma)
         {
             if (turma.ModalidadeTurma == Modalidade.EducacaoInfantil)
             {
@@ -381,10 +381,10 @@ namespace SME.SGP.Dominio.Servicos
             return null;
         }
 
-        private async Task<IEnumerable<(Cargo?, Usuario)>> RetornaUsuarios(string procurarRfs)
+        private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> RetornaUsuarios(string procurarRfs)
         {
             var rfs = procurarRfs.Split(new char[] { ',' });
-            var usuarios = new List<(Cargo?, Usuario)>();
+            var usuarios = new List<(Cargo? Cargo, Usuario Usuario)>();
 
             foreach (var rf in rfs)
             {
@@ -396,23 +396,23 @@ namespace SME.SGP.Dominio.Servicos
             return usuarios;
         }
 
-        private IEnumerable<(Cargo?, Usuario)> BuscaSupervisoresUe(string codigoUe, IEnumerable<Cargo?> cargosNotificados)
+        private IEnumerable<(Cargo? Cargo, Usuario Usuario)> BuscaSupervisoresUe(string codigoUe, IEnumerable<Cargo?> cargosNotificados)
         {
             var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Supervisor);
 
             if (funcionariosRetorno == null || cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
-                return Enumerable.Empty<(Cargo?, Usuario)>();
+                return Enumerable.Empty<(Cargo? Cargo, Usuario Usuario)>();
 
-            var usuarios = new List<(Cargo?, Usuario)>();
+            var usuarios = new List<(Cargo? Cargo, Usuario Usuario)>();
             foreach (var funcionario in funcionariosRetorno)
                 usuarios.Add((funcionario.Cargo, servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id).Result));
 
             return usuarios;
         }
 
-        private async Task<IEnumerable<(Cargo?, Usuario)>> BuscaUsuarioNotificacao(RegistroFrequenciaFaltanteDto turma, TipoNotificacaoFrequencia tipo)
+        private async Task<IEnumerable<(Cargo? Cargo, Usuario Usuario)>> BuscaUsuarioNotificacao(RegistroFrequenciaFaltanteDto turma, TipoNotificacaoFrequencia tipo)
         {
-            IEnumerable<(Cargo?, Usuario)> usuarios = Enumerable.Empty<(Cargo?, Usuario)>();
+            IEnumerable<(Cargo? Cargo, Usuario Usuario)> usuarios = Enumerable.Empty<(Cargo?, Usuario)>();
             switch (tipo)
             {
                 case TipoNotificacaoFrequencia.Professor:
@@ -424,7 +424,7 @@ namespace SME.SGP.Dominio.Servicos
                     break;
 
                 case TipoNotificacaoFrequencia.SupervisorUe:
-                    usuarios = BuscaSupervisoresUe(turma.CodigoUe, usuarios.Select(u => u.Item1));
+                    usuarios = BuscaSupervisoresUe(turma.CodigoUe, usuarios.Select(u => u.Cargo));
                     break;
 
                 default:
@@ -462,7 +462,7 @@ namespace SME.SGP.Dominio.Servicos
             await servicoNotificacao.Salvar(notificacao);
         }
 
-        private async Task<List<(string, Cargo?)>> NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, List<(string, Cargo?)> cargosNotificados)
+        private async Task<List<(string CodigoTurma, Cargo? Cargo)>> NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, List<(string CodigoTurma, Cargo? Cargo)> cargosNotificados)
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
             IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
@@ -487,14 +487,14 @@ namespace SME.SGP.Dominio.Servicos
                             if (usuarios != null)
                             {
                                 var cargosLinq = cargosNotificados;
-                                var cargosNaoNotificados = usuarios.Select(u => u.Item1)
+                                var cargosNaoNotificados = usuarios.Select(u => u.Cargo)
                                                             .GroupBy(u => u)
-                                                            .Where(w => !cargosLinq.Any(l => l.Item1 == turma.CodigoTurma && l.Item2 == w.Key))
+                                                            .Where(w => !cargosLinq.Any(l => l.CodigoTurma == turma.CodigoTurma && l.Cargo == w.Key))
                                                             .Select(s => new { turma.CodigoTurma, s.Key });
 
-                                foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Select(c => c.Key).Contains(u.Item1)))
+                                foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Select(c => c.Key).Contains(u.Cargo)))
                                 {
-                                    NotificaRegistroFrequencia(usuario.Item2, turma, tipo);
+                                    NotificaRegistroFrequencia(usuario.Usuario, turma, tipo);
                                 }
 
                                 cargosNotificados.AddRange(cargosNaoNotificados.Select(n => (n.CodigoTurma, n.Key)));

@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
 
             var turmaCodigo = request.TurmaCodigo == null ? 0 : long.Parse(request.TurmaCodigo);
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"turmas/ues/{request.UeCodigo}/modalidades/{(int)request.Modalidade}/anos/{request.AnoLetivo}/componentes?codigoTurma={turmaCodigo}&ehProfessor={request.EhProfessor}&codigoRf={request.CodigoRf}&qtdeRegistros={request.QtdeRegistros}&qtdeRegistrosIgnorados={request.QtdeRegistrosIgnorados}&consideraHistorico={request.ConsideraHistorico}&periodoEscolarInicio={request.PeriodoEscolarInicio.Ticks}&anosInfantilDesconsiderar={request.AnosInfantilDesconsiderar}");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_UES_MODALIDADE_ANOS_COMPONENTES, request.UeCodigo, (int)request.Modalidade, request.AnoLetivo) + $"?codigoTurma={turmaCodigo}&ehProfessor={request.EhProfessor}&codigoRf={request.CodigoRf}&qtdeRegistros={request.QtdeRegistros}&qtdeRegistrosIgnorados={request.QtdeRegistrosIgnorados}&consideraHistorico={request.ConsideraHistorico}&periodoEscolarInicio={request.PeriodoEscolarInicio.Ticks}&anosInfantilDesconsiderar={request.AnosInfantilDesconsiderar}");
 
             if (!resposta.IsSuccessStatusCode) 
                 return turmas;

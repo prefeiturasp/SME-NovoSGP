@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var cargaPendencias = await mediator.Send(new ObterPendenciaCargaQuery());
+                var cargaPendencias = await mediator.Send(ObterPendenciaCargaQuery.Instance);
 
                 foreach (var pendencia in cargaPendencias)
                 {

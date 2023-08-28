@@ -8,5 +8,8 @@ namespace SME.SGP.Aplicacao
     {
         public ObterTurmaItinerarioEnsinoMedioQuery()
         {}
+
+        private static ObterTurmaItinerarioEnsinoMedioQuery _instance;
+        public static ObterTurmaItinerarioEnsinoMedioQuery Instance => _instance ??= new();
     }     
 }

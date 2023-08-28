@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var ue = await mediator.Send(new ObterUePorIdQuery(turma.UeId));
             
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, request.ComponenteCurricular));
 

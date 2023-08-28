@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDatasEfetivasDiariosQueryHandler : IRequestHandler<ObterDatasEfetivasDiariosQuery, IEnumerable<Tuple<long, DateTime>>>
+    public class ObterDatasEfetivasDiariosQueryHandler : IRequestHandler<ObterDatasEfetivasDiariosQuery, IEnumerable<(long Id, DateTime DataAula)>>
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
 
@@ -17,11 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
         }
 
-        public async Task<IEnumerable<Tuple<long, DateTime>>> Handle(ObterDatasEfetivasDiariosQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<(long Id, DateTime DataAula)>> Handle(ObterDatasEfetivasDiariosQuery request, CancellationToken cancellationToken)
         {
-            var datas = await repositorioDiarioBordo.ObterDatasPorIds(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.PeriodoInicio, request.PeriodoFim);
-
-            return datas;
+            return await repositorioDiarioBordo.ObterDatasPorIds(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.PeriodoInicio, request.PeriodoFim);
         }
     }
 }

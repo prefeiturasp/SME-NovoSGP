@@ -297,17 +297,12 @@ namespace SME.SGP.Dados.Repositorios
                                     delete from consolidacao_frequencia_turma where turma_id = @turmaId;
                                     delete from consolidado_fechamento_componente_turma where turma_id = @turmaId;
                                     delete from turma where id = @turmaId;";
-            try
-            {
-                var parametros = new { turmaId };
-
-                await servicoTelemetria.RegistrarAsync(async () =>
-                    await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "query", "Excluir Turma Extinta", sqlExcluirTurma, parametros.ToString());
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            
+            var parametros = new { turmaId };
+            await servicoTelemetria.RegistrarAsync(async () =>
+                        await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "query", "Excluir Turma Extinta", 
+                                                            sqlExcluirTurma, parametros.ToString());
+            
         }
 
         public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false)

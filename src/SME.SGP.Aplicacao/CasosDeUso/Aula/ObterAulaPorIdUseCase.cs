@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
             var aberto = await AulaDentroDoPeriodo(aula.TurmaId, aula.DataAula);
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var usuarioAcessoAoComponente = await UsuarioComAcessoAoComponente(usuarioLogado, aula, usuarioLogado.EhProfessorCj());
 
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                                                                                       string.Empty,
                                                                                       long.Parse(aula.DisciplinaId),
                                                                                       usuarioLogado.CodigoRf, false))
-                                    : await mediator.Send(new ObterComponentesCurricularesPorTurmaLoginEPerfilQuery(aula.TurmaId,
+                                    : await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(aula.TurmaId,
                                                                                                                     usuarioLogado.CodigoRf,
                                                                                                                     usuarioLogado.PerfilAtual));
 
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto, bool temEventoDeRecesso, bool possuiCompensacao)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             AulaConsultaDto dto = new AulaConsultaDto()
             {

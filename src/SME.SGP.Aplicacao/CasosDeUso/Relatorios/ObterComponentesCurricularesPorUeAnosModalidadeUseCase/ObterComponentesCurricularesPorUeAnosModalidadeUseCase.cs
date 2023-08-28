@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter turmas para obter os componentes curriculares.");
 
             if (!string.IsNullOrEmpty(ueCodigo))
-                listaComponentes = (await mediator.Send(new ObterComponentesCurricularesPorUeAnosModalidadeQuery(turmaCodigos.ToArray(), anoLetivo, modalidade, anos))).ToList();
+                listaComponentes = (await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmaCodigos.Select(t => t.ToString()).ToArray()))).ToList();
             else
             {
                 ueCodigo = string.IsNullOrEmpty(ueCodigo) ? "-99" : ueCodigo;

@@ -107,6 +107,7 @@ namespace SME.SGP.TesteIntegracao
             CriarClaimUsuario(perfil);
             await CriarUsuarios();
             await CriarTurma(modalidade);
+            await CriarParametrosSistema(dataInicio.Year);
         }
         
         protected async Task CriarDadosBasicosAulaSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)

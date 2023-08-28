@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmasAlunoPorFiltroQueryHandler_TurmasProgramaEstudanteFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorTurmaCodigoQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterComponentesCurricularesPorTurmaCodigoQueryHandler_TurmasProgramaEstudanteFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterComponentesCurricularesPorTurmaCodigoQueryHandler_TurmasProgramaEstudanteFake), ServiceLifetime.Scoped));
         }
 
         public Ao_obter_turmas_programa_aluno(CollectionFixture collectionFixture) : base(collectionFixture)

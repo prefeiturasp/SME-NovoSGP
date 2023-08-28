@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result,
                 });
             });
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (!usuarioLogado.EhProfessorCj())
                 componentesCurricularesEolProfessor = await mediator

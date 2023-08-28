@@ -241,5 +241,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
+
+        [HttpGet("aluno/{codigoAluno}/existe-encaminhamento-ativo")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ExisteEncaminhamentoAtivoParaAluno(string codigoAluno, [FromServices] IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoAluno));
+        }
     }
 }

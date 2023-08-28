@@ -35,5 +35,6 @@ namespace SME.SGP.Infra
         public DateTime? DataAtualizacaoContato { get; set; }
         public bool EhAtendidoAEE { get; set; }
         public string TipoFrequenciaPreDefinido { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
     }
 }

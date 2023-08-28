@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact(DisplayName = "Frequência - Ao registrar frenquecia professor cj ensino fundamental")]
         public async Task Ao_registrar_frenquecia_professor_cj_ensino_fundamental()
         {
-            await CriarDadosBasicosVigenciaRelativa(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),true, TIPO_CALENDARIO_1,false, NUMERO_AULAS_3);
+            await CriarDadosBasicosVigenciaRelativa(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),false, TIPO_CALENDARIO_1,true, NUMERO_AULAS_3);
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await InserirFrequenciaUseCaseComValidacaoBasica(ObterFrequenciaDto());

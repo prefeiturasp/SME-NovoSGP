@@ -424,24 +424,25 @@ namespace SME.SGP.Dominio.Servicos
                                          int bimestre,
                                          List<FechamentoAluno> fechamentosAlunos)
         {
-            var nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma);
-            var notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
+            var notasFechamentoFinaisNoCache = new List<NotaConceitoBimestreComponenteDto>();
 
-            if (notasFechamentoFinaisNoCache != null)
+            foreach (var fechamentoAluno in fechamentosAlunos)
             {
-                foreach (var fechamentoAluno in fechamentosAlunos)
+                var nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma,fechamentoAluno.AlunoCodigo);
+                notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
+
+                if (notasFechamentoFinaisNoCache != null)
                 {
                     foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
                         AtualizarNotasFinaisParaCache(notasFechamentoFinaisNoCache,
-                                                      fechamentoNota,
-                                                      bimestre,
-                                                      fechamentoAluno.AlunoCodigo,
-                                                      turma.CodigoTurma);
+                            fechamentoNota,
+                            bimestre,
+                            fechamentoAluno.AlunoCodigo,
+                            turma.CodigoTurma);
                     }
+                    await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma,fechamentoAluno.AlunoCodigo), notasFechamentoFinaisNoCache));
                 }
-
-                await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma), notasFechamentoFinaisNoCache));
             }
         }
 
@@ -474,9 +475,9 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private static string ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(string codigoTurma)
+        private static string ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(string codigoTurma, string codigoAluno)
         {
-            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, codigoTurma);
+            return string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, codigoTurma,codigoAluno);
         }
 
         private static void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota, bool inativo)

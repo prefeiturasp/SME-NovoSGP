@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(FiltroRelatorioPlanosAEEDto filtro)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             filtro.UsuarioNome = usuarioLogado.Nome;
             filtro.UsuarioRf = usuarioLogado.CodigoRf;
 

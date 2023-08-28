@@ -18,9 +18,10 @@ namespace SME.SGP.Worker.RabbitMQ
         public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitMQ",
                 typeof(RotasRabbitSgp))
         {
@@ -68,9 +69,6 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ConsolidarDiariosBordoPorUeTratar, new ComandoRabbit("Tratar consolidação de diarios de bordo por UE", typeof(IConsolidarDiariosBordoPorUeTratarUseCase), true));
             Comandos.Add(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorUeTratar, new ComandoRabbit("Tratar consolidação de registros pedagógicos por UE", typeof(IConsolidarRegistrosPedagogicosPorUeTratarUseCase), true));
             Comandos.Add(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorTurmaTratar, new ComandoRabbit("Tratar consolidação de registros pedagógicos por turma", typeof(IConsolidarRegistrosPedagogicosPorTurmaTratarUseCase), true));
-            Comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterSync, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSgpSyncUseCase)));
-            Comandos.Add(RotasRabbitSgp.RotaRabbitDeadletterTratar, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSgpTratarUseCase), true));
-            Comandos.Add(RotasRabbitSgp.RotaRabbitSRDeadletterTratar, new ComandoRabbit("Rotina para verificação das rotas de dead letter", typeof(IRabbitDeadletterSrTratarUseCase), true));
             Comandos.Add(RotasRabbitSgp.ConsolidarMediaRegistrosIndividuaisTurma, new ComandoRabbit("Consolidar Média de Registros Individuais", typeof(IConsolidacaoMediaRegistrosIndividuaisTurmaUseCase), true));
             Comandos.Add(RotasRabbitSgp.ConsolidarMediaRegistrosIndividuais, new ComandoRabbit("Consolidar Média de Registros Individuais", typeof(IConsolidacaoMediaRegistrosIndividuaisUseCase)));
             Comandos.Add(RotasRabbitSgp.ConsolidarAcompanhamentoAprendizagemAluno, new ComandoRabbit("Consolidar Acompanhamento Aprendizagem", typeof(IConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase), true));
@@ -107,6 +105,8 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, new ComandoRabbit("Executar a gravação das observações complementares histórico escolar", typeof(IExecutarGravarHistoricoEscolarObservacaoUseCase)));
             Comandos.Add(RotasRabbitSgp.ExclusaoCompensacaoAusenciaAlunoEAula, new ComandoRabbit("Executa exclusão lógica de compensações de ausências aluno e aula por aula", typeof(IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase)));
             Comandos.Add(RotasRabbitSgp.ExclusaoCompensacaoAusenciaPorIds, new ComandoRabbit("Executa exclusão lógica de compensações de ausências que não tem compensação ausência aluno e aula por ids", typeof(IExcluirCompensacaoAusenciaPorIdsUseCase)));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDasInformacoesPlanoAEE, new ComandoRabbit("Atualiza informações do plano AEE", typeof(IAtualizarInformacoesDoPlanoAEEUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoPlanoAEE, new ComandoRabbit("Atualiza turma do planoAEE", typeof(IAtualizarTurmaDoPlanoAEEUseCase), true));
         }
     }
 }

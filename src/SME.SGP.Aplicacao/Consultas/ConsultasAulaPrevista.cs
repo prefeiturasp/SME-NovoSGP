@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(turmaId);
             var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
             var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var codigoTerritorioCorrespondente = (long?)null;
             bool componenteEhTerritorio = false;
 
@@ -98,8 +98,15 @@ namespace SME.SGP.Aplicacao
                     totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
             rf = componenteEhTerritorio && usuarioLogado.EhProfessor() ? rf : string.Empty;
+            
             if (aulaPrevista == null)
-                aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) ? CODIGO_ALTERNATIVO_DISCIPLINA_INGLES : disciplinaId);
+            {
+                aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
+
+                if(disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista == null)
+                    aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
+            }
+                
 
             var ehAnoLetivo = turma.AnoLetivo == DateTime.Today.Year;
             var periodosAbertos = await consultasTurma

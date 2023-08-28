@@ -45,9 +45,10 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             return ServiceProvider.GetService<IExcluirDiarioBordoUseCase>();
         }
                 
-        protected async Task CriarDadosBasicos(FiltroDiarioBordoDto filtroDiarioBordoDto)
+        protected async Task CriarDadosBasicos(FiltroDiarioBordoDto filtroDiarioBordoDto, bool criarDiario = true)
         {
             await CriarDreUePerfil();
+            CriarClaimUsuario(PerfilUsuario.PROFESSOR.Name());
             await CriarUsuarios();
             await CriarPeriodoEscolar(DateTimeExtension.HorarioBrasilia().AddDays(-7), DateTimeExtension.HorarioBrasilia().AddDays(60), 3);
             await CriarComponenteCurricular();
@@ -58,7 +59,8 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
                             USUARIO_PROFESSOR_CODIGO_RF_1111111, 
                             TURMA_CODIGO_1, UE_CODIGO_1,
                             filtroDiarioBordoDto.ComponenteCurricularId.ToString(), TIPO_CALENDARIO_1);
-            await CriarDiarioBordo(filtroDiarioBordoDto);
+            if (criarDiario)
+                await CriarDiarioBordo(filtroDiarioBordoDto);
         }
 
         protected async Task CriarDiarioBordo(FiltroDiarioBordoDto filtroDiarioBordoDto)

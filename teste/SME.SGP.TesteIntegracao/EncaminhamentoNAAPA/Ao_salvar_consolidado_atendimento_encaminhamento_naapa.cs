@@ -8,6 +8,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
 using SME.SGP.TesteIntegracao.PendenciaGeral.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;

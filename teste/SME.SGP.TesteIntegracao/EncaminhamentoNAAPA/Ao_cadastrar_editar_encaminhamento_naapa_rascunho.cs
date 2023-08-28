@@ -536,6 +536,34 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         }
 
+        [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar Encaminhamento NAAPA para aluno com encaminhamento ativo.")]
+        public async Task Ao_cadastrar_encaminhamento_para_aluno_com_encaminhamento_ativo()
+        {
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+
+            var useCase = ObterServicoExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase();
+            var retorno = await useCase.Executar(ALUNO_CODIGO_1);
+
+            retorno.ShouldBeTrue();
+        }
+
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             await CriarEncaminhamentoNAAPA();

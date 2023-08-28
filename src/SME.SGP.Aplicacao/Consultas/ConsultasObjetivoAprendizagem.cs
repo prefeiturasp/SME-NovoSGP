@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -94,7 +95,7 @@ namespace SME.SGP.Aplicacao
         {
             int tempoExpiracao = int.Parse(configuration.GetSection("ExpiracaoCache").GetSection("ObjetivosAprendizagem").Value);
 
-            return await repositorioCache.ObterAsync("ObjetivosAprendizagem", () => ListarSemCache(), tempoExpiracao, true);
+            return await repositorioCache.ObterAsync(NomeChaveCache.OBJETIVOS_APRENDIZAGEM, () => ListarSemCache(), tempoExpiracao, true);
         }
 
         public async Task<ObjetivoAprendizagemSimplificadoDto> ObterAprendizagemSimplificadaPorId(long id)

@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
             {
                 var dadosProfessor = new ProfessorTitularDisciplinaEol();
 
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var resposta = await httpClient.GetAsync($"professores/titular/turmas/{request.TurmaCodigo}/componentes-curriculares/{request.ComponenteCurricularCodigo}");
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_TITULAR_TURMAS_COMPONENTES, request.TurmaCodigo, request.ComponenteCurricularCodigo));
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();

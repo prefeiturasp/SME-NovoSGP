@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -21,8 +22,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(PodePersistirTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"professores/{request.CriadoRF}/turmas/{request.TurmaCodigo}/disciplinas/{request.ComponenteParaVerificarAtribuicao}/atribuicao/verificar/datatick?dataConsultaTick={request.DataTick}";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = string.Format(ServicosEolConstants.URL_FUNCIONARIOS_TURMAS_DISCIPLINAS_ATRIBUICAO_VERIFICAR_DATA, request.CriadoRF, request.TurmaCodigo, request.ComponenteParaVerificarAtribuicao) + $"?dataConsultaTick={request.DataTick}";
             try
             {
                 var resposta = await httpClient.GetAsync(url);

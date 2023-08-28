@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             if (aula == null)
                 throw new NegocioException($"Não foi possível localizar a aula de id : {excluirDto.AulaId}");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
             var componenteCurricularId = long.Parse(aula.DisciplinaId);

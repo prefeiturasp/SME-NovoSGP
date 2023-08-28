@@ -74,13 +74,14 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesDoProfessorNaTurmaQueryHandlerAulaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidacaoDiariaDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidacaoDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosDentroPeriodoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosDentroPeriodoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidacaoSemanalMensalDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
@@ -153,6 +154,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
+            await CriarParametrosSistema(dataInicio.Year);
         }
 
         protected async Task CriarDadosBasicosAulaRecorrencia(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3, int quantidadeRecorrencia = QUANTIDADE_AULA_2)
@@ -163,6 +165,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarAulaRecorrente(componenteCurricular, dataAula, RecorrenciaAula.RepetirBimestreAtual, quantidadeAula, quantidadeRecorrencia);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
+            await CriarParametrosSistema(dataInicio.Year);
         }
 
         protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3)

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -25,7 +26,9 @@ namespace SME.SGP.Aplicacao
             int? bimestre = recomendacaoDto.Bimestre > 0 ? recomendacaoDto.Bimestre : null;
         
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(recomendacaoDto.CodigoTurma));
-        
+
+            var ehTurmaEdFisica = EnumExtension.EhUmDosValores(turma.TipoTurma, TipoTurma.EdFisica);
+
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
         
@@ -48,7 +51,7 @@ namespace SME.SGP.Aplicacao
         
             long[] conselhosClassesIds;
             string[] turmasCodigos;
-            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
         
             if (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
@@ -59,12 +62,14 @@ namespace SME.SGP.Aplicacao
                 tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
                 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, recomendacaoDto.AlunoCodigo, tiposParaConsulta, recomendacaoDto.ConsideraHistorico, periodoEscolar?.PeriodoFim));
-                
+
                 if (!turmasCodigos.Any())
                     turmasCodigos = new string[1] { turma.CodigoTurma };
                 else if (!turmasCodigos.Contains(recomendacaoDto.CodigoTurma))
                     turmasCodigos = turmasCodigos.Concat(new[] { recomendacaoDto.CodigoTurma }).ToArray();
-        
+                else if (ehTurmaEdFisica)
+                    turmasCodigos = turmasCodigos.Concat(new[] { turma.CodigoTurma }).ToArray();
+
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
         
                 if (conselhosClassesIds == null || !conselhosClassesIds.Any())
@@ -105,8 +110,8 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
                 {
                     var validacaoConselhoFinal = await mediator.Send(new ObterUltimoBimestreTurmaQuery(turma));
-                    if (!validacaoConselhoFinal.Item2)
-                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.PARA_ACESSAR_ESTA_ABA_E_PRECISO_REGISTRAR_O_CONSELHO_DE_CLASSE_DO_X_BIMESTRE,validacaoConselhoFinal.Item1));
+                    if (!validacaoConselhoFinal.possuiConselho)
+                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.PARA_ACESSAR_ESTA_ABA_E_PRECISO_REGISTRAR_O_CONSELHO_DE_CLASSE_DO_X_BIMESTRE,validacaoConselhoFinal.bimestre));
                 }
         
                 emFechamento = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today));

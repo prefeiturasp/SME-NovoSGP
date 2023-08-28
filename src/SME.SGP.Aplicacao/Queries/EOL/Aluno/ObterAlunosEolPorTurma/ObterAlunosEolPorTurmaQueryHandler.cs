@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -26,15 +28,14 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        private string ObterChaveCacheAlunosTurma(string turmaId) => $"alunos-turma:{turmaId}";
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosEolPorTurmaQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var alunos = new List<AlunoPorTurmaResposta>();
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+                var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
 
-                var chaveCache = ObterChaveCacheAlunosTurma(request.TurmaId);
+                var chaveCache = string.Format(NomeChaveCache.ALUNOS_TURMA_INATIVOS, request.TurmaId, request.ConsideraInativos);
                 var cacheAlunos = cache.Obter(chaveCache);
 
                 if (cacheAlunos != null)
@@ -43,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    var resposta = await httpClient.GetAsync($"turmas/{request.TurmaId}/considera-inativos/{request.ConsideraInativos}");
+                    var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_CONSIDERA_INATIVOS, request.TurmaId, request.ConsideraInativos));
                     if (resposta.IsSuccessStatusCode)
                     {
                         var json = await resposta.Content.ReadAsStringAsync();

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaNomeDto>> Executar(IEnumerable<string> turmasCodigos)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var componetesCurriculares = new List<DisciplinaNomeDto>();
 

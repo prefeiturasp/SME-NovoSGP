@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
             if (calcularFrequenciaDto.DataReferencia == DateTime.MinValue)
                 throw new NegocioException($"A data de referência deve ser informada.");
 
-            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesQuery());
+            var componenteCurricular = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             if (string.IsNullOrWhiteSpace(calcularFrequenciaDto.CodigoComponenteCurricular) || !componenteCurricular.Any(cc => cc.Codigo.Equals(calcularFrequenciaDto.CodigoComponenteCurricular)))
                 throw new NegocioException("O código de componente curricular informado é inválido.");

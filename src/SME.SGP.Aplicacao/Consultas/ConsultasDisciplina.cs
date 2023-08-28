@@ -1,9 +1,12 @@
 ﻿using MailKit.Security;
 using MediatR;
+using Minio.DataModel;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -22,11 +25,9 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultasDisciplina(IServicoEol servicoEOL,
-            IRepositorioCache repositorioCache,
+        public ConsultasDisciplina(IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,
             IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
@@ -34,8 +35,6 @@ namespace SME.SGP.Aplicacao
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IMediator mediator) : base(mediator)
         {
-            this.servicoEOL = servicoEOL ??
-                throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ??
                 throw new System.ArgumentNullException(nameof(repositorioCache));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ??
@@ -112,6 +111,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
+
                     if (componenteAtual.TerritorioSaber)
                     {
                         // remove territórios replicados definidos pela atribuição cj com base nos códigos de agrupamento
@@ -131,6 +131,7 @@ namespace SME.SGP.Aplicacao
                         Compartilhada = componenteAtual.Compartilhada,
                         CodigoComponenteCurricularPai = componenteAtual.CodigoComponenteCurricularPai,
                         CodigoComponenteTerritorioSaber = componenteAtual.CodigoComponenteTerritorioSaber,
+                        NomeComponenteInfantil = turma.EhTurmaInfantil ? componenteAtual.DescricaoComponenteInfantil : null,
                         Nome = componenteAtual.Descricao,
                         Regencia = componenteAtual.Regencia,
                         RegistroFrequencia = registraFrequencia,
@@ -199,7 +200,7 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas))?.OrderBy(c => c.Nome)?.ToList();
 
-                var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+                var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
 
                 if (componentesCurricularesJurema == null)
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -208,7 +209,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular || a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular);
 
-                    d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
+                    d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turma.ModalidadeCodigo);
                     d.CodigoComponenteCurricular = componenteEOL.Codigo;
                     d.CodigoTerritorioSaber = componenteEOL.CodigoComponenteTerritorioSaber;
                     d.Regencia = componenteEOL.Regencia;
@@ -278,7 +279,7 @@ namespace SME.SGP.Aplicacao
                 await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);
 
             if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
-               disciplinasDto = disciplinasDto.DistinctBy(x => x.CodigoComponenteCurricular).ToList();
+                disciplinasDto = disciplinasDto.DistinctBy(x => x.CodigoComponenteCurricular).ToList();
 
             return disciplinasDto;
         }
@@ -308,9 +309,7 @@ namespace SME.SGP.Aplicacao
             if (codigosDisciplinasAtribuicao.Any())
             {
                 idsDisciplinas = idsDisciplinas.Union(codigosDisciplinasAtribuicao).ToArray();
-
-                var componentesInclusao = await servicoEOL
-                    .ObterDisciplinasPorIdsAgrupadas(codigosDisciplinasAtribuicao, codigoTurma);
+                var componentesInclusao = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(codigosDisciplinasAtribuicao, codigoTurma));
 
                 componentesInclusao.ToList().ForEach(ci =>
                 {
@@ -340,7 +339,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
-            var chaveCache = $"Disciplinas-planejamento-{codigoTurma}-{codigoDisciplina}-{usuario.PerfilAtual}";
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_PLANEJAMENTO_TURMA_COMPONENTE_PERFIL, codigoTurma, codigoDisciplina, usuario.PerfilAtual);
             if (!usuario.EhProfessor() && !usuario.EhProfessorCj() && !usuario.EhProfessorPoa())
             {
                 var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
@@ -353,7 +352,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componentesCurricularesJurema = await repositorioCache.ObterAsync("ComponentesJurema", () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
+            var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
             if (componentesCurricularesJurema == null)
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
@@ -385,7 +384,7 @@ namespace SME.SGP.Aplicacao
                 disciplinasDto.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
-                    d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
+                    d.PossuiObjetivos = turma.AnoLetivo < Convert.ToInt32(dataInicioNovoSGP) ? false : componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turma.ModalidadeCodigo);
                     d.Regencia = componenteEOL.Regencia;
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
                 });
@@ -398,7 +397,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private IEnumerable<ComponenteCurricularEol> RemoverEdFisicaEJA(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
-            => componentesCurriculares.Where(c => c.Codigo != 6);
+            => componentesCurriculares.Where(c => c.Codigo != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
@@ -416,7 +415,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var chaveCache = $"Disciplinas-Agrupadas-{codigoTurma}-{login}--{perfilAtual}";
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_AGRUPADOS_TURMA_PROFESSOR_PERFIL, codigoTurma, login, perfilAtual);
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
@@ -440,12 +439,6 @@ namespace SME.SGP.Aplicacao
                                 // TODO Consulta por disciplina pai não esta funcionando no EOL. Refatorar na proxima sprint
                                 disciplinaEOL.CdComponenteCurricularPai = 11211124;
                                 disciplinaEOL.Nome = "REG CLASSE INTEGRAL";
-
-                                //var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplinaEOL.CodigoComponenteCurricularId });
-                                //if (consultaDisciplinaPai == null)
-                                //    throw new NegocioException($"Disciplina Pai de codigo [{disciplinaEOL.CodigoComponenteCurricularId}] não localizada no EOL.");
-
-                                //disciplinasDto.Add(consultaDisciplinaPai.First());
                             }
                             else
                                 disciplinasDto.Add(disciplinaEOL);
@@ -455,7 +448,8 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     // Carrega disciplinas do professor
-                    IEnumerable<DisciplinaResposta> disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+                    IEnumerable<DisciplinaResposta> disciplinas = MapearDto(await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, login, perfilAtual)));
+
                     foreach (var disciplina in disciplinas)
                     {
                         if (disciplina.CodigoComponenteCurricularPai.HasValue)
@@ -463,12 +457,6 @@ namespace SME.SGP.Aplicacao
                             // TODO Consulta por disciplina pai não esta funcionando no EOL. Refatorar na proxima sprint
                             disciplina.CodigoComponenteCurricular = 11211124;
                             disciplina.Nome = "REG CLASSE INTEGRAL";
-
-                            //var consultaDisciplinaPai = servicoEOL.ObterDisciplinasPorIds(new long[] { disciplina.CodigoComponenteCurricularPai.Value });
-                            //if (consultaDisciplinaPai == null)
-                            //    throw new NegocioException($"Disciplina Pai de codigo [{disciplina.CodigoComponenteCurricularPai}] não localizada no EOL.");
-
-                            //disciplinasDto.Add(consultaDisciplinaPai.First());
                         }
                         var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
                         if (turma == null)
@@ -485,6 +473,31 @@ namespace SME.SGP.Aplicacao
             }
 
             return disciplinasDto;
+        }
+
+        private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        {
+            if (componentesCurriculares == null || !componentesCurriculares.Any())
+                return Enumerable.Empty<DisciplinaResposta>();
+            return componentesCurriculares.Select(cc => new DisciplinaResposta()
+            {
+                CodigoComponenteCurricular = cc.Codigo,
+                Id = cc.Codigo,
+                Compartilhada = cc.Compartilhada,
+                CodigoComponenteCurricularPai = cc.CodigoComponenteCurricularPai,
+                CodigoComponenteTerritorioSaber = cc.CodigoComponenteTerritorioSaber,
+                Nome = cc.Descricao,
+                Regencia = cc.Regencia,
+                RegistroFrequencia = cc.RegistraFrequencia,
+                TerritorioSaber = cc.TerritorioSaber,
+                LancaNota = cc.LancaNota,
+                BaseNacional = cc.BaseNacional,
+                TurmaCodigo = cc.TurmaCodigo,
+                GrupoMatriz = cc.GrupoMatriz != null ? new Integracoes.Respostas.GrupoMatriz() { Id = cc.GrupoMatriz.Id, Nome = cc.GrupoMatriz.Nome } : null,
+                NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
+                Professor = cc.Professor,
+                CodigosTerritoriosAgrupamento = cc.CodigosTerritoriosAgrupamento
+            });
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login, bool verificaPerfilGestao = false, string codigoDre = null, string codigoUe = null)
@@ -547,8 +560,7 @@ namespace SME.SGP.Aplicacao
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var ehPefilCJ = perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
 
-            var chaveCache = $"Disciplinas-{codigoTurma}-{login}--{perfilAtual}";
-
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA_PROFESSOR_PERFIL, codigoTurma, login, perfilAtual);
             var disciplinasCacheString = await repositorioCache.ObterAsync(chaveCache);
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
@@ -562,7 +574,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
 
             var disciplinas = ehPefilCJ ? await ObterDisciplinasPerfilCJ(codigoTurma, login) :
-                await servicoEOL.ObterDisciplinasPorCodigoTurmaLoginEPerfil(codigoTurma, login, perfilAtual);
+                                          MapearDto(await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, login, perfilAtual)));
 
             if (disciplinas == null || !disciplinas.Any())
                 return disciplinasDto;
@@ -581,7 +593,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
 
-            var chaveCache = $"Disciplinas-{codigoTurma}";
+            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA, codigoTurma);
             var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
@@ -618,7 +630,7 @@ namespace SME.SGP.Aplicacao
                     else disciplinas = null;
                 }
                 else
-                    disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(codigoTurma);
+                    disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
 
                 if (disciplinas != null && disciplinas.Any())
                 {

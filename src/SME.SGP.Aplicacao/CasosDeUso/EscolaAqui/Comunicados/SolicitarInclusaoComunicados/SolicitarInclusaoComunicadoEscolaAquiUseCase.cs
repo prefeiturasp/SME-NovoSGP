@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarInsercao(ComunicadoInserirDto comunicado)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             await ValidarAbrangenciaUsuario(comunicado, usuarioLogado);
 

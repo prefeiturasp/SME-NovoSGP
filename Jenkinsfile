@@ -17,10 +17,12 @@ pipeline {
       deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
       deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao-r2' : 'sme-worker-compressao' }"
       deployment14 = "${env.branchname == 'release-r2' ? 'sme-worker-naapa-r2' : 'sme-worker-naapa' }"
+      namespace = "${env.branchname == 'pre-prod' ? 'sme-novosgp-d1' : 'sme-novosgp' }"  
+        
     }
   
     agent {
-      node { label 'dotnet-5-rc' }
+      node { label 'SME-AGENT-SGP' }
     }
 
     options {
@@ -41,7 +43,7 @@ pipeline {
           parallel {
             stage('Sonar') {
             agent { node { label 'SME-AGENT-SGP-SONAR' } }
-            when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch '_development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+            when { anyOf { branch '_master'; branch 'main'; branch '_pre-prod'; branch "story/*"; branch '_development'; branch '_release'; branch '_release-r2'; branch 'infra/*'; } } 
                 steps {
                   checkout scm
                   script{
@@ -198,7 +200,7 @@ pipeline {
     }
     stage('Push'){
       agent { node { label 'SME-AGENT-SGP' } }
-      when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2';; } }       
+      when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }       
       steps {
         script{
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
@@ -221,7 +223,7 @@ pipeline {
       }
     }
         stage('Deploy'){
-            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }        
+            when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }        
             steps {
                 script{
                   //if(testPassed){
@@ -233,21 +235,22 @@ pipeline {
                             }
                         }
                         withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                                sh('rm -f '+"$home"+'/.kube/config')
                                 sh('cp $config '+"$home"+'/.kube/config')
-                                sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"   
-                                sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"   
-                                sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment5} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment6} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment7} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment8} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment9} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment10} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment11} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment12} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment13} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment14} -n sme-novosgp"
+                                sh "kubectl rollout restart deployment/${deployment1} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment2} -n ${namespace}"   
+                                sh "kubectl rollout restart deployment/${deployment3} -n ${namespace}"   
+                                sh "kubectl rollout restart deployment/${deployment4} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment5} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment6} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment7} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment8} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment9} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment10} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment11} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment12} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment13} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/${deployment14} -n ${namespace}"
                                 sh('rm -f '+"$home"+'/.kube/config')
                         }
                     //}
@@ -257,7 +260,7 @@ pipeline {
              
       stage('Flyway') {
         agent { label 'master' }
-        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
@@ -272,6 +275,7 @@ pipeline {
               script{
                   try {
                       withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                          sh('rm -f '+"$home"+'/.kube/config')
                           sh('cp $config '+"$home"+'/.kube/config')
                           sh "kubectl -n sme-novosgp-treino rollout restart deploy"
                           sh('rm -f '+"$home"+'/.kube/config')
@@ -325,6 +329,7 @@ def sendTelegram(message) {
 def getKubeconf(branchName) {
     if("main".equals(branchName)) { return "config_prd"; }
     else if ("master".equals(branchName)) { return "config_prd"; }
+    else if ("pre-prod".equals(branchName)) { return "config_prd"; }
     else if ("homolog".equals(branchName)) { return "config_hom"; }
     else if ("release".equals(branchName)) { return "config_hom"; }
     else if ("release-r2".equals(branchName)) { return "config_hom"; }

@@ -12,20 +12,18 @@ namespace SME.SGP.Aplicacao
     public class ComandosAtribuicaoCJ : IComandosAtribuicaoCJ
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioCache repositorioCache;
         private readonly IMediator mediator;
         private readonly IServicoAtribuicaoCJ servicoAtribuicaoCJ;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ,
-            IServicoEol servicoEOL, IServicoUsuario servicoUsuario, IRepositorioCache repositorioCache, IMediator mediator)
+            IServicoEol servicoEOL, IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAtribuicaoCJ = servicoAtribuicaoCJ ?? throw new ArgumentNullException(nameof(servicoAtribuicaoCJ));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -35,8 +33,6 @@ namespace SME.SGP.Aplicacao
                atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null);
 
             bool atribuiuCj = false;
-
-            await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
 
             var professorValidoNoEol = await servicoEOL.ValidarProfessor(atribuicaoCJPersistenciaDto.UsuarioRf);
             if (!professorValidoNoEol)
@@ -68,12 +64,6 @@ namespace SME.SGP.Aplicacao
             servicoUsuario.RemoverPerfisUsuarioAtual();
 
             return true;
-        }
-
-        private async Task RemoverDisciplinasCache(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto)
-        {
-            var chaveCache = $"Disciplinas-{atribuicaoCJPersistenciaDto.TurmaId}-{atribuicaoCJPersistenciaDto.UsuarioRf}--{Perfis.PERFIL_CJ}";
-            await repositorioCache.RemoverAsync(chaveCache);
         }
 
         private AtribuicaoCJ TransformaDtoEmEntidade(AtribuicaoCJPersistenciaDto dto, AtribuicaoCJPersistenciaItemDto itemDto)

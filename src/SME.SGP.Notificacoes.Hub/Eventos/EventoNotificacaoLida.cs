@@ -12,7 +12,10 @@ namespace SME.SGP.Notificacoes.Hub
         {
         }
 
-        protected override Task Disparar(IHubCallerClients clients, MensagemLeituraNotificacaoDto mensagem)
-            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoLida", mensagem.Codigo, mensagem.AnoAnterior);
+        protected override async Task DispararAsync(IHubCallerClients clients, MensagemLeituraNotificacaoDto mensagem)
+        {
+            var iClientProxy = await clients.UsuarioAsync(mensagem.UsuarioRf);
+            await iClientProxy?.SendAsync("NotificacaoLida", mensagem.Codigo, mensagem.AnoAnterior);
+        }
     }
 }
