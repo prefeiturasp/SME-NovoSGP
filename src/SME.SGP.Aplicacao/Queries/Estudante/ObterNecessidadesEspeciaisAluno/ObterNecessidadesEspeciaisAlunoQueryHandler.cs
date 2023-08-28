@@ -43,8 +43,8 @@ namespace SME.SGP.Aplicacao
             foreach (var frequencia in frequenciasAluno)
             {
                 totalAulas = frequencia.Sum(f => f.TotalAulas);
-                totalAulas = frequencia.Sum(f => f.TotalAusencias);
-                totalAulas = frequencia.Sum(f => f.TotalCompensacoes);
+                totalAusencias = frequencia.Sum(f => f.TotalAusencias);
+                totalCompensacoes = frequencia.Sum(f => f.TotalCompensacoes);
                 
                 var frequenciaBimestreAluno = new FrequenciaBimestreAlunoDto()
                 {
