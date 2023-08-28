@@ -16,15 +16,4 @@ namespace SME.SGP.Aplicacao
         public int AnoLetivo { get; set; }
         public string[] AlunosCodigos { get; set; }
     }
-    
-    public class ObterAlunosAtivosTurmaProgramaPapEolQueryValidator : AbstractValidator<ObterAlunosAtivosTurmaProgramaPapEolQuery>
-    {
-        public ObterAlunosAtivosTurmaProgramaPapEolQueryValidator()
-        {
-
-            RuleFor(c => c.AlunosCodigos)
-                .NotEmpty()
-                .WithMessage("O código do aluno deve ser informado para realizar a consulta no EOL.");
-        }
-    }
 }
