@@ -16,6 +16,10 @@ pipeline {
         stage('Sonar & Testes') {
         parallel {
           stage('TesteIntegracao & build'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+            }
             steps{
               checkout scm
               script{
@@ -30,6 +34,10 @@ pipeline {
           }
 
           stage('TesteIntegracao.AEE'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+            }
             steps{
               checkout scm
               script{
@@ -39,6 +47,10 @@ pipeline {
           }
 
           stage('TesteIntegracao.Aula'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+            }
             steps{
               checkout scm
               script{
@@ -48,6 +60,10 @@ pipeline {
           }
 
           stage('TesteIntegracao.Fechamento'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+            }
             steps{
               checkout scm
               script{
@@ -57,6 +73,10 @@ pipeline {
           }
 
           stage('TesteIntegracao.Frequencia'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+            }
             steps{
               checkout scm
               script{
