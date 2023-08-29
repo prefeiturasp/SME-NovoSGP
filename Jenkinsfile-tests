@@ -28,6 +28,7 @@ pipeline {
                }
             }
           }
+
           stage('TesteIntegracao.AEE'){
             steps{
               checkout scm
@@ -36,6 +37,7 @@ pipeline {
                }
             }
           }
+
           stage('TesteIntegracao.Aula'){
             steps{
               checkout scm
@@ -44,6 +46,7 @@ pipeline {
               }
             }
           }
+
           stage('TesteIntegracao.Fechamento'){
             steps{
               checkout scm
@@ -52,6 +55,7 @@ pipeline {
               }
             }
           }
+
           stage('TesteIntegracao.Frequencia'){
             steps{
               checkout scm
