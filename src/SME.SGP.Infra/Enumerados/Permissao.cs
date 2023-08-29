@@ -1854,7 +1854,7 @@ namespace SME.SGP.Infra
             Menu = ConstantesMenuPermissao.MENU_SUPORTE, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_CONFIGURACAO,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_SUPORTE,
-            Url = ConstantesMenuPermissao.ROTA_USUARIOS_REINICIAR_SENHA,
+            Url = ConstantesMenuPermissao.ROTA_MENU_SUPORTE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
             EhInclusao = true,
             EhConsulta = true)]
