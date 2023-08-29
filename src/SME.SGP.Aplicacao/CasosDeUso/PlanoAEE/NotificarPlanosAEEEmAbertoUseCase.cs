@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             if (enviaNotificacao == null)
                 return false;
 
-            var planosAtivos = await mediator.Send(new ObterPlanosAEEAtivosComTurmaEVigenciaQuery());
+            var planosAtivos = await mediator.Send(ObterPlanosAEEAtivosComTurmaEVigenciaQuery.Instance);
 
             await EnviarNotificacao(planosAtivos.GroupBy(a => a.UECodigo));
 

@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 professorNome = diarioBordoObs.UsuarioNomeDiarioBordo;
             }
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (!professorRf.Equals(usuarioLogado.CodigoRf))
                 return await mediator.Send(new ObterUsuarioNotificarDiarioBordoObservacaoQuery(ObterProfessorTitular(professorRf, professorNome)));

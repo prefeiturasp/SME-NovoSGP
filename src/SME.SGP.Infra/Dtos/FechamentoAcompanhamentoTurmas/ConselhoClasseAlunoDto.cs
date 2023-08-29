@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public int SituacaoFechamentoCodigo { get; set; }
         public string FrequenciaGlobal { get; set; }
         public bool PodeExpandir { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
         public string ParecerConclusivo { get; set; }
     }
 }

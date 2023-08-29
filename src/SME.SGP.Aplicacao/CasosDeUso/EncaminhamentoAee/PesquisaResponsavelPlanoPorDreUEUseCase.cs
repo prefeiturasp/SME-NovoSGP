@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<UsuarioEolRetornoDto>> Executar(FiltroPesquisaFuncionarioDto request)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var codigoDre = request.CodigoDRE;
             var codigoUe = request.CodigoUE;

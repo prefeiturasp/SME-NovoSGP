@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AjudaDoSistemaDto>> Handle(ObterAjudasDoSistemaQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync("ajudadosistema/sgp", cancellationToken);
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_AJUDA_DO_SISTEMA_SGP, cancellationToken);
 
             var ajudas = Enumerable.Empty<AjudaDoSistemaDto>();
 

@@ -10,13 +10,14 @@ namespace SME.SGP.Aplicacao
             IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
         public ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(string[] turmasCodigos, int bimestre,
-            DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null)
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null, string alunoCodigo = null)
         {
             TurmasCodigos = turmasCodigos;
             Bimestre = bimestre;
             DataMatricula = dataMatricula;
             DataSituacao = dataSituacao;
             TipoCalendario = tipoCalendario;
+            AlunoCodigo = alunoCodigo;
         }
 
         public string[] TurmasCodigos { get; }
@@ -24,5 +25,6 @@ namespace SME.SGP.Aplicacao
         public DateTime? DataMatricula { get; }
         public DateTime? DataSituacao { get; }
         public long? TipoCalendario { get; set; }
+        public string AlunoCodigo { get; set; }
     }
 }

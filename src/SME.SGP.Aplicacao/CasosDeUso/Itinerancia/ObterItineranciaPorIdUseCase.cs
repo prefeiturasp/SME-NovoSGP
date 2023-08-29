@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             if (itinerancia == null)
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
-            var questoesBase = await mediator.Send(new ObterQuestoesBaseItineranciaEAlunoQuery());
+            var questoesBase = await mediator.Send(ObterQuestoesBaseItineranciaEAlunoQuery.Instance);
 
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
             WorkflowAprovacao workflow = null;

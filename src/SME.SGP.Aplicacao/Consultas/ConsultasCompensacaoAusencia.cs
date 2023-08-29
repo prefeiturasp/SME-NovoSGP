@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>> ListarPaginado(string turmaId, string disciplinaId, int bimestre, string nomeAtividade, string nomeAluno)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var listaCompensacoesDto = new List<CompensacaoAusenciaListagemDto>();
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { disciplinaId };
@@ -73,7 +73,8 @@ namespace SME.SGP.Aplicacao
 
             // Busca os nomes de alunos do EOL por turma
             var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
-
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), turma);
             foreach (var compensacaoAusencia in listaCompensacoes.Items)
             {
                 var compensacaoDto = MapearParaDto(compensacaoAusencia);
@@ -86,7 +87,7 @@ namespace SME.SGP.Aplicacao
                         // Adiciona nome do aluno no Dto de retorno
                         var alunoEol = alunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                         if (alunoEol != null)
-                            compensacaoDto.Alunos.Add(alunoEol.NomeAluno);
+                            compensacaoDto.Alunos.Add(new CompensacaoAusenciaListagemAlunosDto(alunoEol.NomeAluno,matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)));
                     }
                 }
 
@@ -94,14 +95,14 @@ namespace SME.SGP.Aplicacao
             };
 
             if (!string.IsNullOrEmpty(nomeAluno))
-                listaCompensacoesDto = listaCompensacoesDto.Where(c => c.Alunos.Exists(a => a.ToLower().Contains(nomeAluno.ToLower()))).ToList();
+                listaCompensacoesDto = listaCompensacoesDto.Where(c => c.Alunos.Exists(a => a.Nome.ToLower().Contains(nomeAluno.ToLower()))).ToList();
 
             // Mostrar apenas 3 alunos
             foreach (var compensacaoDto in listaCompensacoesDto.Where(c => c.Alunos.Count > 3))
             {
                 var qtd = compensacaoDto.Alunos.Count();
                 compensacaoDto.Alunos = compensacaoDto.Alunos.GetRange(0, 3);
-                compensacaoDto.Alunos.Add($"mais {qtd - 3} alunos");
+                compensacaoDto.Alunos.Add(new CompensacaoAusenciaListagemAlunosDto($"mais {qtd - 3} alunos"));
             }
 
             var resultado = new PaginacaoResultadoDto<CompensacaoAusenciaListagemDto>();
@@ -112,6 +113,10 @@ namespace SME.SGP.Aplicacao
             return resultado;
         }
 
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, Turma turma)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
+        }
         public async Task<CompensacaoAusenciaCompletoDto> ObterPorId(long id)
         {
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(id);
@@ -129,7 +134,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null)
                 throw new NegocioException("Alunos não localizados para a turma.");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { compensacao.DisciplinaId };
             var codigosTerritorioEquivalentes = await mediator
@@ -152,7 +157,7 @@ namespace SME.SGP.Aplicacao
             var compensacoes =
                 (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma, professorConsiderado)) : null) ??
                 new List<CompensacaoDataAlunoDto>();
-
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosCodigos, turma);
             foreach (var aluno in compensacao.Alunos)
             {
                 // Adiciona nome do aluno no Dto de retorno
@@ -162,6 +167,7 @@ namespace SME.SGP.Aplicacao
                     var alunoDto = MapearParaDtoAlunos(aluno);
                     alunoDto.Nome = alunoEol.NomeAluno;
                     alunoDto.Compensacoes = compensacoes.Where(x => x.CodigoAluno == aluno.CodigoAluno);
+                    alunoDto.EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno);
 
                     var frequenciaAluno = await mediator
                         .Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno.CodigoAluno, compensacao.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, codigosComponentesConsiderados.ToArray(), professorConsiderado));
@@ -216,7 +222,7 @@ namespace SME.SGP.Aplicacao
                 Id = compensacaoAusencia.Id,
                 Bimestre = compensacaoAusencia.Bimestre,
                 AtividadeNome = compensacaoAusencia.Nome,
-                Alunos = new List<string>()
+                Alunos = new List<CompensacaoAusenciaListagemAlunosDto>()
             };
 
         private CompensacaoAusenciaCompletoDto MapearParaDtoCompleto(CompensacaoAusencia compensacaoAusencia)
@@ -282,7 +288,7 @@ namespace SME.SGP.Aplicacao
         private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
         {
             var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuarioLogado.EhProfessor())
             {

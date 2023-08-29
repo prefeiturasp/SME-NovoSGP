@@ -190,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            var fechamentosAlunosNotas = new List<Tuple<string, long>>
+            var fechamentosAlunosNotas = new List<(string CodigoAluno, long IdFechamentoAluno)>
             {
                 new(CODIGO_ALUNO_1, FECHAMENTO_ALUNO_ID_1),
                 new(CODIGO_ALUNO_2, FECHAMENTO_ALUNO_ID_2),
@@ -204,7 +204,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 await InserirNaBase(new FechamentoAluno()
                 {
                     FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
-                    AlunoCodigo = fechamentoAlunoNota.Item1,
+                    AlunoCodigo = fechamentoAlunoNota.CodigoAluno,
                     CriadoEm = DateTimeExtension.HorarioBrasilia(),
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
@@ -216,7 +216,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 await InserirNaBase(new FechamentoNota()
                 {
                     DisciplinaId = disciplinaId,
-                    FechamentoAlunoId = fechamentoAlunoNota.Item2,
+                    FechamentoAlunoId = fechamentoAlunoNota.IdFechamentoAluno,
                     Nota = nota,
                     CriadoEm = DateTime.Now,
                     CriadoPor = SISTEMA_NOME,

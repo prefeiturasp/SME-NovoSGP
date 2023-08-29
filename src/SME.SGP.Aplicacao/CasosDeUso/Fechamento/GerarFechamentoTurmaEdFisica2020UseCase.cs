@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (valorParametro.Equals("true"))
                 {
-                    var dadosEolAlunoTurma = await mediator.Send(new ObterAlunosEdFisica2020Query());
+                    var dadosEolAlunoTurma = await mediator.Send(ObterAlunosEdFisica2020Query.Instance);
 
                     if (String.IsNullOrEmpty(codigoRfAluno))
                     {

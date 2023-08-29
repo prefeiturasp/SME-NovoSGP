@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -14,23 +15,15 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<AcompanhamentoAlunoSemestre> ObterAcompanhamentoPorTurmaAlunoESemestre(long turmaId, string alunoCodigo, int semestre)
         {
-            try
-            {
-                var query = @"select aas.*
-                        from acompanhamento_aluno_semestre aas
-                            inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
-                        where aa.turma_id = @turmaId
-                            and aa.aluno_codigo = @alunoCodigo
-                            and aas.semestre = @semestre 
-                            and not aas.excluido ";
+            var query = @"select aas.*
+                    from acompanhamento_aluno_semestre aas
+                        inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
+                    where aa.turma_id = @turmaId
+                        and aa.aluno_codigo = @alunoCodigo
+                        and aas.semestre = @semestre 
+                        and not aas.excluido ";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoSemestre>(query, new { turmaId, alunoCodigo, semestre });
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-
+            return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoAlunoSemestre>(query, new { turmaId, alunoCodigo, semestre });
         }
 
         public async Task<long> ObterPorTurmaEAluno(long turmaId, string alunoCodigo)
@@ -86,6 +79,21 @@ namespace SME.SGP.Dados.Repositorios
                               AND aa.aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new { alunoCodigo });
+        }
+
+        public async Task<IEnumerable<AcompanhamentoAluno>> ObterAlunosQueContemPercursoIndividalPreenchido(long turmaId, int semestre)
+        {
+            var query = $@"select aa.aluno_codigo
+                              from acompanhamento_aluno_semestre aas
+                             inner join acompanhamento_aluno aa on aa.id = aas.acompanhamento_aluno_id
+                             where not aas.excluido
+                               and not aa.excluido
+                               and aas.semestre = @semestre
+                               and aa.turma_id = @turmaId
+                               and not aas.percurso_individual isnull 
+                               and aas.percurso_individual <> ''";
+
+            return await database.Conexao.QueryAsync<AcompanhamentoAluno>(query, new { turmaId, semestre });
         }
     }
 }

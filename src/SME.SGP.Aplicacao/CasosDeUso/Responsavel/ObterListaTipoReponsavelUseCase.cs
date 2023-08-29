@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
                 .ToList()
                 .OrderBy(c => c.Codigo);
 
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
 
             if (exibirTodos || (perfil == Perfis.PERFIL_ADMDRE))
                 return await Task.FromResult(tipos);

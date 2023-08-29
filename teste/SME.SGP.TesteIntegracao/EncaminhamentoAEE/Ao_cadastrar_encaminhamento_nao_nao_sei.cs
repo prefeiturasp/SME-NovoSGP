@@ -1,13 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
@@ -19,9 +23,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         private const string RESPOSTA_COMBO_ESCRITA = "8";
         private const string RESPOSTA_COMBO_PAP = "17";
         private const string RESPOSTA_COMBO_SRM = "18";
-            
+
         public Ao_cadastrar_encaminhamento_nao_nao_sei(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>), typeof(ObterTurmaRegularESrmPorAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Encaminhamento AEE - (Não e Não sei) - Professor deve cadastrar encaminhamento com preenchimento correto dos campos obrigatórios")]
@@ -32,23 +43,27 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var encaminhamentoAeeDto = ObterPreenchimentoQuestionarioEncaminhamento();
 
             var useCase = ObterRegistrarEncaminhamentoAee();
-            var retorno  = await useCase.Executar(encaminhamentoAeeDto);
+            var retorno = await useCase.Executar(encaminhamentoAeeDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
 
             var encaminhamentoAeeSecao = ObterTodos<EncaminhamentoAEESecao>();
             encaminhamentoAeeSecao.ShouldNotBeNull();
             encaminhamentoAeeSecao.Count.ShouldBe(2);
-            
+
             var questaoEncaminhamentoAee = ObterTodos<QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAee.ShouldNotBeNull();
             questaoEncaminhamentoAee.Count.ShouldBe(17);
-            
+
             var respostaEncaminhamentoAee = ObterTodos<RespostaEncaminhamentoAEE>();
             respostaEncaminhamentoAee.ShouldNotBeNull();
             respostaEncaminhamentoAee.Count.ShouldBe(22);
+
+            var encaminhamentoTurmaAluno = ObterTodos<EncaminhamentoAEETurmaAluno>();
+            encaminhamentoTurmaAluno.ShouldNotBeNull();
+            encaminhamentoTurmaAluno.Count.ShouldBe(1);
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - (Não e Não sei) - Professor deve cadastrar encaminhamento com preenchimento correto dos campos obrigatórios e omissão de campos não obrigatórios")]
         public async Task Deve_cadastrar_com_campos_obrigatorios_preenchidos_campos_nao_obrigatorios()
         {
@@ -58,27 +73,31 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var questaoObrigatoria21Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 21);
             var questaoObrigatoria22Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 22);
 
-            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria21Secao2); 
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria21Secao2);
             encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria22Secao2);
 
             var useCase = ObterRegistrarEncaminhamentoAee();
-            var retorno  = await useCase.Executar(encaminhamentoAeeDto);
+            var retorno = await useCase.Executar(encaminhamentoAeeDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
 
             var encaminhamentoAeeSecao = ObterTodos<EncaminhamentoAEESecao>();
             encaminhamentoAeeSecao.ShouldNotBeNull();
             encaminhamentoAeeSecao.Count.ShouldBe(2);
-            
+
             var questaoEncaminhamentoAee = ObterTodos<QuestaoEncaminhamentoAEE>();
             questaoEncaminhamentoAee.ShouldNotBeNull();
             questaoEncaminhamentoAee.Count.ShouldBe(16);
-            
+
             var respostaEncaminhamentoAee = ObterTodos<RespostaEncaminhamentoAEE>();
             respostaEncaminhamentoAee.ShouldNotBeNull();
             respostaEncaminhamentoAee.Count.ShouldBe(20);
+
+            var encaminhamentoTurmaAluno = ObterTodos<EncaminhamentoAEETurmaAluno>();
+            encaminhamentoTurmaAluno.ShouldNotBeNull();
+            encaminhamentoTurmaAluno.Count.ShouldBe(1);
         }
-        
+
         [Fact(DisplayName = "Encaminhamento AEE - (Não e Não sei) - Professor não deve cadastrar encaminhamento quando não preencher campos obrigatórios")]
         public async Task Nao_deve_cadastrar_com_campos_obrigatorios_nao_preenchidos()
         {
@@ -89,10 +108,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var questaoObrigatoria7Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 7);
             var questaoObrigatoria9Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 9);
 
-            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoNaoObrigatoria3_1Secao1); 
-            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria7Secao2); 
-            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria9Secao2); 
-                
+            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoNaoObrigatoria3_1Secao1);
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria7Secao2);
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria9Secao2);
+
             var useCase = ObterRegistrarEncaminhamentoAee();
             var exceptionAEE = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(encaminhamentoAeeDto));
             Assert.Equal(string.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS, "Seção: Descrição do encaminhamento Questões: [2, 3]")
@@ -128,7 +147,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                             },
                             new ()
                             {
-                                QuestaoId = 5, 
+                                QuestaoId = 5,
                                 Resposta = $"{RESPOSTA_TEXTO} - Não na anterior - Questão 5",
                                 TipoQuestao = TipoQuestao.Texto,
                             }

@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -125,13 +126,26 @@ namespace SME.SGP.Aplicacao
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
 
             var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d => d.Nome);
-
-            return dadosAlunosFiltrados.OrderBy(aluno => aluno.CodigoEOL)
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(dadosAlunosFiltrados.Select(x => x.CodigoEOL).ToArray(), anoLetivo);
+            
+            var listaRetorno = dadosAlunosFiltrados.OrderBy(aluno => aluno.CodigoEOL)
                                        .ThenByDescending(aluno => aluno.DataSituacao)
                                        .GroupBy(aluno => aluno.CodigoEOL)
                                        .Select(aluno => aluno.First())
                                        .OrderBy(aluno => aluno.Nome)
                                        .ToList();
+            
+            return MapearAlunoPap(listaRetorno,matriculadosTurmaPAP);
+        }
+
+        private IEnumerable<AlunoDadosBasicosDto> MapearAlunoPap(List<AlunoDadosBasicosDto> listaAlunos, IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP)
+        {
+            foreach (var aluno in listaAlunos)
+            {
+                aluno.EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoEOL);
+            }
+
+            return listaAlunos;
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -185,11 +199,11 @@ namespace SME.SGP.Aplicacao
             var usuarioRF = (string)null;
 
             var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
-            IEnumerable<DisciplinaResposta> disciplinasRegenciaEOL = null;
+            IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEOL = null;
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             if (disciplina.Regencia)
-                disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQuery(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             fechamentoBimestre.EhSintese = !disciplina.LancaNota;
 
@@ -251,7 +265,7 @@ namespace SME.SGP.Aplicacao
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(codigosAlunos, fechamentosIds));
 
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
-
+                var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = fechamentosTurmasAlunos.Where(c => c.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
@@ -262,7 +276,8 @@ namespace SME.SGP.Aplicacao
                         NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
-                        EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
+                        EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno),
+                        EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                     };
 
                     var anotacaoAluno = anotacoesAlunos.Where(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
@@ -323,7 +338,7 @@ namespace SME.SGP.Aplicacao
 
                             // Excessão de disciplina ED. Fisica para modalidade EJA
                             if (turma.EhEJA() && notasConceitoBimestre != null && !turma.EhTurmaEdFisica())
-                                notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != 6);
+                                notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
                             if (fechamentoBimestre.EhSintese)
                             {
@@ -341,7 +356,7 @@ namespace SME.SGP.Aplicacao
                                     string nomeDisciplina;
 
                                     if (disciplina.Regencia)
-                                        nomeDisciplina = disciplinasRegenciaEOL.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
+                                        nomeDisciplina = disciplinasRegenciaEOL.FirstOrDefault(a => a.Codigo == notaConceitoBimestre.DisciplinaId)?.Descricao;
                                     else nomeDisciplina = disciplina.Nome;
 
                                     var nota = new FechamentoNotaRetornoDto()
@@ -378,7 +393,12 @@ namespace SME.SGP.Aplicacao
 
             return fechamentoBimestre;
         }
-        
+
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
+
         private async Task VerificaNotaEmAprovacao(string codigoAluno, long turmaFechamentoId, long disciplinaId, FechamentoNotaRetornoDto notasConceito)
         {
             double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));

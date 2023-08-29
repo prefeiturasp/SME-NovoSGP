@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(long observacaoId)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             return await mediator.Send(new ExcluirCartaIntencoesObservacaoCommand(observacaoId, usuarioId));
         }
     }

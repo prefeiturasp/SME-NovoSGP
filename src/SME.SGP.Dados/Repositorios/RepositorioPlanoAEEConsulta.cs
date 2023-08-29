@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, Paginacao paginacao, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
-        {          
+        {
             var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE, exibirEncerrados, responsavelRf, responsavelRfPaai);
             var situacoesEncerrado = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente };
             var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, situacoesEncerrado, responsavelRf, responsavelRfPaai };
@@ -41,8 +41,8 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
-        {                        
-            
+        {
+
             StringBuilder sql = new StringBuilder();
 
             MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE, exibirEncerrados, responsavelRf, responsavelRfPaai);
@@ -132,24 +132,46 @@ namespace SME.SGP.Dados.Repositorios
 
         private void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
         {
-            sql.AppendLine(" where ue.dre_id = @dreId and not pa.excluido ");
+            sql.AppendLine(" where not pa.excluido ");
 
-            if (ueId > 0)
-                sql.AppendLine(" and ue.id = @ueId ");
-            if (turmaId > 0)
-                sql.AppendLine(" and t.id = @turmaId ");
             if (!string.IsNullOrEmpty(alunoCodigo))
                 sql.AppendLine(" and pa.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and pa.situacao = @situacao ");
-            if (turmasCodigos != null && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
-                sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
             if (!string.IsNullOrEmpty(responsavelRf))
                 sql.AppendLine(" and usu_responsavel.rf_codigo = @responsavelRf ");
             if (!string.IsNullOrEmpty(responsavelRfPaai))
                 sql.AppendLine(" and usu_paai_responsavel.rf_codigo = @responsavelRfPaai ");
             if (!exibirEncerrados)
                 sql.AppendLine(" and not pa.situacao = ANY(@situacoesEncerrado) ");
+
+            sql.AppendLine(" and ((ue.dre_id = @dreId ");
+
+            if (ueId > 0)
+                sql.AppendLine(" and ue.id = @ueId ");
+            if (turmaId > 0)
+                sql.AppendLine(" and t.id = @turmaId ");
+            if (turmasCodigos != null && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
+                sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
+
+            sql.AppendLine(" ) ");
+
+            //-> considerar turmas de srm e regular onde o aluno possui matricula
+            sql.AppendLine("        or exists(select 1 ");
+            sql.AppendLine("                  from plano_aee_turma_aluno pta ");
+            sql.AppendLine("                  inner join turma t2 on t2.id = pta.turma_id ");
+            sql.AppendLine("                  inner join ue u2 on t2.ue_id = u2.id");
+            sql.AppendLine("                  where pta.plano_aee_id = pa.id ");
+            sql.AppendLine("                    and u2.dre_id = @dreId ");
+
+            if (ueId > 0)
+                sql.AppendLine("                    and u2.id = @ueId ");
+            if (turmaId > 0)
+                sql.AppendLine("                    and t2.id = @turmaId ");
+            if (turmasCodigos != null && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
+                sql.AppendLine("                    and t2.turma_id = ANY(@turmasCodigos) ");
+
+            sql.AppendLine("                  limit 1)) ");
         }
 
         public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante)
@@ -190,7 +212,7 @@ namespace SME.SGP.Dados.Repositorios
             if (ano != DateTimeExtension.HorarioBrasilia().Year)
                 query.AppendLine($@" and(EXTRACT(ISOYEAR from pa.criado_em) = @ano
                                      or EXTRACT(ISOYEAR from pav.criado_em) = @ano)");
-                    
+
             query.AppendLine($@" limit 1");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query.ToString(), new { codigoEstudante, ano });
@@ -216,7 +238,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@$" limit 1");
 
-            return await database.Conexao.QueryAsync<PlanoAEEResumoDto>(query.ToString(), new { codigoEstudante, ano});
+            return await database.Conexao.QueryAsync<PlanoAEEResumoDto>(query.ToString(), new { codigoEstudante, ano });
         }
 
         public async Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId)
@@ -483,6 +505,25 @@ namespace SME.SGP.Dados.Repositorios
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, null, false, false, exibirEncerrados, string.Empty, string.Empty);
 
             return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, situacoesEncerrado });
+        }
+
+        public async Task<IEnumerable<PlanoAEETurmaDto>> ObterPlanosComSituacaoDiferenteDeEncerrado(long? anoLetivo)
+        {
+            var query = $@"select 
+                           pa.id,
+                           pa.turma_id as TurmaId,
+                           pa.aluno_codigo as AlunoCodigo,
+                           pa.aluno_nome as AlunoNome,
+                           pa.situacao
+                           from plano_aee pa
+                           left join turma t on t.id = pa.turma_id
+                          where pa.situacao <> {(int)SituacaoPlanoAEE.Encerrado} and pa.situacao <> {(int)SituacaoPlanoAEE.EncerradoAutomaticamente}
+                                and not pa.excluido ";
+
+            if (anoLetivo.HasValue)
+                query += " and t.ano_letivo = @anoLetivo";
+
+            return await database.Conexao.QueryAsync<PlanoAEETurmaDto>(query, new { anoLetivo });
         }
     }
 }

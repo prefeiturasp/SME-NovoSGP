@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioAutenticacaoRetornoDto> Executar()
         {
-            var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
+            var administrador = await mediator.Send(ObterAdministradorDoSuporteQuery.Instance);
 
             if (administrador == null || string.IsNullOrEmpty(administrador.Login))
             {

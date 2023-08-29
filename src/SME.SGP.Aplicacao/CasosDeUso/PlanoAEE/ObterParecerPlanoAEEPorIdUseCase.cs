@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 await ObterResponsavel(planoAEE.ResponsavelPaaiId.Value) :
                 null;
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var usuarioCoreSSO = responsavel != null ? await mediator.Send(new ObterUsuarioCoreSSOQuery(responsavel.CodigoRf)) : null;
 

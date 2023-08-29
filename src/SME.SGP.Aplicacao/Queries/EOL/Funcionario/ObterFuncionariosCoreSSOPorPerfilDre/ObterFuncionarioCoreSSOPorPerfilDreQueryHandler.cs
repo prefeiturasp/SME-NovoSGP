@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
         {
             var json = new StringContent(JsonConvert.SerializeObject(new string[] { request.CodigoPerfil.ToString() }), Encoding.UTF8, "application/json");
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.PostAsync($@"funcionarios/unidade/{request.CodigoDre}", json);
+            var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_UNIDADE, request.CodigoDre), json);
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
                 return null;

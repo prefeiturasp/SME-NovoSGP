@@ -80,8 +80,10 @@ namespace SME.SGP.Dominio
         [Display(Name = "encaminhamento/naapa")]
         EncaminhamentoNAAPA = 25,
 
+        [Display(Name = "relatorio/pap")]
+        RelatorioPAP = 26,
+
         [Display(Name = "temp")]
         temp = 99
-
     }
 }

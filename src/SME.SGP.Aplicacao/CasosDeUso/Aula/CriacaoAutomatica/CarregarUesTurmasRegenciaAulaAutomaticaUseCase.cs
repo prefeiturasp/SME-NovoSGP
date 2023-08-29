@@ -120,14 +120,14 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(new string[] { turma.CodigoTurma }, false));
 
             var componentesConsiderados = componentesTurmaEol
-                .Where(ct => ct.Regencia && componentesCurriculares.Contains(ct.Codigo));
+                .Where(ct => ct.Regencia && componentesCurriculares.Contains(ct.Codigo.ToString()));
 
             var dadosTurmaEol = await mediator
                 .Send(new ObterDadosTurmaEolPorCodigoQuery(turma.CodigoTurma));
 
             componentesConsiderados.ToList().ForEach(cc => dadosTurmaComponente.Add(new DadosTurmaAulasAutomaticaDto()
             {
-                ComponenteCurricularCodigo = cc.Codigo,
+                ComponenteCurricularCodigo = cc.Codigo.ToString(),
                 ComponenteCurricularDescricao = cc.Descricao,
                 TurmaCodigo = turma.CodigoTurma,
                 DataInicioTurma = dadosTurmaEol.DataInicioTurma

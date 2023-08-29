@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var periodosOrigem = await mediator.Send(new ObterPlanejamentoAnualPeriodosEscolaresCompletoPorIdQuery(comando.Planejamento.PlanejamentoPeriodosEscolaresIds.ToArray()));
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                 List<string> excessoes = new List<string>();
 

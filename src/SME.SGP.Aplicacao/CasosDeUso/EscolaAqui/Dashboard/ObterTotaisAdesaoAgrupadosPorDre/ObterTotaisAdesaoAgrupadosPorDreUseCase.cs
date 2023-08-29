@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TotaisAdesaoAgrupadoProDreResultado>> Executar()
         {
-            return await mediator.Send(new ObterTotaisAdesaoAgrupadosPorDreQuery());
+            return await mediator.Send(ObterTotaisAdesaoAgrupadosPorDreQuery.Instance);
         }
     }
 }

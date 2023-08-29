@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private const long ID_COMPONENTE_ED_FISICA = 6;
+        
         public GerarFechamentoTurmaEdFisica2020CommandHandler(IMediator mediator, IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                                               IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                               IRepositorioFechamentoAluno repositorioFechamentoAluno,
@@ -52,11 +53,11 @@ namespace SME.SGP.Aplicacao
             var verificaFechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdQuery(request.TurmaId));
             
 
-            if (!verificaFechamentoTurmaDisciplina.Any(f=> f.DisciplinaId == ID_COMPONENTE_ED_FISICA))   
+            if (!verificaFechamentoTurmaDisciplina.Any(f=> f.DisciplinaId == MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA))   
             {
                 var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
                 {
-                    DisciplinaId = ID_COMPONENTE_ED_FISICA,
+                    DisciplinaId = MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA,
                     Situacao = SituacaoFechamento.ProcessadoComSucesso,
                     FechamentoTurmaId = fechamentoTurmaId
                 };
@@ -76,7 +77,7 @@ namespace SME.SGP.Aplicacao
                     var fechamentoAlunoNota = new FechamentoNota()
                     {
                         FechamentoAlunoId = fechamentoAlunoId,
-                        DisciplinaId = ID_COMPONENTE_ED_FISICA,
+                        DisciplinaId = MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA,
                         Nota = 5
                     };
 

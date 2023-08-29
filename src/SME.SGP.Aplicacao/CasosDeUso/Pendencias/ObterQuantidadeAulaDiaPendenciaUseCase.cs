@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
                 if(!string.IsNullOrEmpty(param.Mensagem?.ToString()))
                         anoletivo = int.Parse(param.Mensagem.ToString()!);
 
-                var listaUes = await mediator.Send(new ObterTodasUesIdsQuery());
+                var listaUes = await mediator.Send(ObterTodasUesIdsQuery.Instance);
                 foreach (var ue in listaUes)
                 {
                     var dto = new ObterQuantidadeAulaDiaPendenciaDto

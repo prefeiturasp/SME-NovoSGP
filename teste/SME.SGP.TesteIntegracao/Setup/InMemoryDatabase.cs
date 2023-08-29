@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             _postgresRunner = PostgresRunner.Start();
             CriarConexaoEAbrir();
-            new ConstrutorDeTabelas().Contruir(Conexao);
+            new ConstrutorDeTabelas().Construir(Conexao);
         }
 
         public void CriarConexaoEAbrir()

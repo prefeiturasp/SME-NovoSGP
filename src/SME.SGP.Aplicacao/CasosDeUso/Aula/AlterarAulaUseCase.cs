@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoBaseDto> Executar(PersistirAulaDto aulaDto)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (aulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {

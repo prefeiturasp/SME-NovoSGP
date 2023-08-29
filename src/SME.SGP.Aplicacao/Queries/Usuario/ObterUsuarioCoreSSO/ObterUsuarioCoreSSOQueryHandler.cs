@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<MeusDadosDto> Handle(ObterUsuarioCoreSSOQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var url = $"AutenticacaoSgp/{request.CodigoRf}/dados";
+            var url = string.Format(ServicosEolConstants.URL_AUTENTICACAO_SGP_DADOS, request.CodigoRf);
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode)

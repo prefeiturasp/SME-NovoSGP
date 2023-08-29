@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System;
+using SME.SGP.Dominio;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao.Integracoes.Respostas
 {
@@ -47,5 +49,44 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         public string Professor { get; set; }
         [JsonProperty("codigosTerritoriosAgrupamento")]
         public long[] CodigosTerritoriosAgrupamento { get; set; }
+    }
+
+    public static class DisciplinaRespostaExtension
+    {
+        public static long[] ObterCodigos(this IEnumerable<DisciplinaResposta> disciplinasReposta)
+        {
+            var codigosComponentes = disciplinasReposta.Select(cc => cc.CodigoComponenteCurricular).ToList();
+            codigosComponentes.AddRange(disciplinasReposta.Select(cc => cc.CodigoComponenteTerritorioSaber ?? 0).Where(cc => cc != 0).ToList());
+            return codigosComponentes.ToArray();
+        }
+        
+        public static void PreencherInformacoesPegagogicasSgp(this List<DisciplinaResposta> disciplinasReposta, IEnumerable<InfoComponenteCurricular> componentesCurricularesSgp)
+        {
+            disciplinasReposta.ForEach(componenteCurricular =>
+            {
+                var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.CodigoComponenteCurricular
+                                                                                    || (componenteCurricular.CodigoComponenteTerritorioSaber != 0 &&
+                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber)).FirstOrDefault();
+
+                if (componenteCurricularSgp != null)
+                {
+                    componenteCurricular.GrupoMatriz = new GrupoMatriz() { Id = componenteCurricularSgp.GrupoMatrizId, Nome = componenteCurricularSgp.GrupoMatrizNome };
+                    componenteCurricular.LancaNota = componenteCurricularSgp.LancaNota;
+                    componenteCurricular.RegistroFrequencia = componenteCurricularSgp.RegistraFrequencia;
+                    componenteCurricular.Compartilhada = componenteCurricularSgp.EhCompartilhada;
+                    componenteCurricular.BaseNacional = componenteCurricularSgp.EhBaseNacional;
+                    componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia;
+                    componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
+
+                    var naoEhComponenteTerritorioExtenso = (componenteCurricular.CodigoComponenteTerritorioSaber ?? 0) == 0 ||
+                                                            componenteCurricular.CodigoComponenteCurricular == (componenteCurricular.CodigoComponenteTerritorioSaber ?? 0);
+                    if (naoEhComponenteTerritorioExtenso)
+                    {
+                        componenteCurricular.Nome = componenteCurricularSgp.Nome;
+                        componenteCurricular.NomeComponenteInfantil = componenteCurricularSgp.NomeComponenteInfantil;
+                    }
+                }
+            });
+        }
     }
 }

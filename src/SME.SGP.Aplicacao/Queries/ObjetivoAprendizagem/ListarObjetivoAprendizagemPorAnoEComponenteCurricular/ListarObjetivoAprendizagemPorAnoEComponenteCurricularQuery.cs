@@ -23,9 +23,6 @@ namespace SME.SGP.Aplicacao
     {
         public ObterObjetivoAprendizagemPorAnoEComponenteCurricularQueryValidator()
         {
-            RuleFor(a => a.Anos)
-                .NotEmpty()
-                .WithMessage("Os anos precisam ser informados.");
             RuleFor(a => a.JuremaIds)
                 .NotEmpty()
                 .WithMessage("Os ids do jurema precisam ser informados.");

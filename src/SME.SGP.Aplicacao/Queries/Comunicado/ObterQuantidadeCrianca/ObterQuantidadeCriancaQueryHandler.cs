@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao
         public async Task<QuantidadeCriancaDto> Handle(ObterQuantidadeCriancaQuery request, CancellationToken cancellationToken)
         {
             var quantidadeCrianca = new QuantidadeCriancaDto();
-            var alunosMatriculados = new List<QuantidadeAlunoMatriculadoDTO>();
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var alunosMatriculados = Enumerable.Empty<QuantidadeAlunoMatriculadoDTO>();
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var parametros = "";
 
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
             if (parametros.StartsWith("&"))
                 parametros = parametros.Substring(1);
 
-            var resposta = await httpClient.GetAsync($"alunos/ano-letivo/{request.AnoLetivo}/matriculados/quantidade" + (parametros.Length > 0 ? $"?{parametros}" : ""));
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ALUNOS_ANO_LETIVO_MATRICULADOS_QUANTIDADE, request.AnoLetivo) + (parametros.Length > 0 ? $"?{parametros}" : ""));
 
             if (resposta.IsSuccessStatusCode)
             {

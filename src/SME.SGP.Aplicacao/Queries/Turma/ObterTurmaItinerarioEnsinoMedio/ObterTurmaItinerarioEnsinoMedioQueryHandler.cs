@@ -20,8 +20,8 @@ namespace SME.SGP.Aplicacao
 
             public async Task<IEnumerable<TurmaItinerarioEnsinoMedioDto>> Handle(ObterTurmaItinerarioEnsinoMedioQuery request, CancellationToken cancellationToken)
             {
-                var httpClient = httpClientFactory.CreateClient("servicoEOL");
-                var resposta = await httpClient.GetAsync($"turmas/itinerario/ensino-medio");
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_TURMAS_ITINERARIO_ENSINO_MEDIO);
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();

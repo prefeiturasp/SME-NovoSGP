@@ -36,11 +36,11 @@ namespace SME.SGP.Infra
 
             if (!ValidarPublicacao(request))
                 return true;
-
-            await servicoTelemetria.RegistrarAsync(async () =>
-                    await policy.ExecuteAsync(async () => await PublicarMensagem(rota, body, exchange, canalRabbit)),
-                            "RabbitMQ", nomeAcao, rota, ObterParametrosMensagem(request));
-
+ 
+            Func<Task> fnTaskPublicarMensagem = async () => await PublicarMensagem(rota, body, exchange, canalRabbit);
+            Func<Task> fnTaskPolicy = async () => await policy.ExecuteAsync(fnTaskPublicarMensagem);
+            await servicoTelemetria.RegistrarAsync(fnTaskPolicy, "RabbitMQ", nomeAcao,
+                                                    rota, ObterParametrosMensagem(request));
             return true;
         }
 
@@ -54,20 +54,22 @@ namespace SME.SGP.Infra
             {
                 var props = channel.CreateBasicProperties();
                 props.Persistent = true;
-
                 channel.BasicPublish(exchange, rota, true, props, body);
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                return Task.FromException(ex);
             }
             finally
             {
                 conexaoRabbit.Return(channel);
             }
-
-            return Task.CompletedTask;
         }
 
         
         public virtual string ObterParametrosMensagem(T mensagemRabbit)
-            => "";
+            => String.Empty;
     }
 
     public class ServicoMensageriaSGP : ServicoMensageria<MensagemRabbit>, IServicoMensageriaSGP
@@ -85,7 +87,7 @@ namespace SME.SGP.Infra
         {
             var json = JsonConvert.SerializeObject(mensagemLog);
             var mensagem = JsonConvert.DeserializeObject<LogMensagem>(json);
-            return mensagem!.Mensagem +", ExcecaoInterna:" + mensagem.ExcecaoInterna;
+            return $"{mensagem!.Mensagem}, ExcecaoInterna:{mensagem.ExcecaoInterna}";
         }
 
         protected override bool ValidarPublicacao(LogMensagem mensagem)
@@ -96,4 +98,29 @@ namespace SME.SGP.Infra
             .Contains(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
     }
 
+    public class ServicoMensageriaMetricas : ServicoMensageria<MetricaMensageria>, IServicoMensageriaMetricas
+    {
+        public ServicoMensageriaMetricas(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) : base(conexaoRabbit, servicoTelemetria, registry)
+        {
+        }
+
+        public Task Concluido(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Ack, rota);
+
+        public Task Erro(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Rej, rota);
+
+        public Task Obtido(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Get, rota);
+
+        public Task Publicado(string rota)
+            => PublicarMetrica(TipoAcaoMensageria.Pub, rota);
+
+        private Task PublicarMetrica(TipoAcaoMensageria tipoAcao, string rota)
+            => Publicar(new MetricaMensageria(tipoAcao.ToString(), rota),
+                        RotasRabbitLogs.RotaMetricas,
+                        ExchangeSgpRabbit.QueueLogs,
+                        "Publicar Metrica Mensageria");
+
+    }
 }

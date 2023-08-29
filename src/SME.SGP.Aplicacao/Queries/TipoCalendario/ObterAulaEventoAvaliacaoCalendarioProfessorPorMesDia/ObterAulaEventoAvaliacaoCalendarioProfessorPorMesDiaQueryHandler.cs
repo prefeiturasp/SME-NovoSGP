@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new List<EventoAulaDto>();
 
             var usuarioLogado = await mediator
-                .Send(new ObterUsuarioLogadoQuery(), cancellationToken);
+                .Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
 
             var professoresTitulares = await mediator
                 .Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(request.TurmaCodigo, true), cancellationToken);

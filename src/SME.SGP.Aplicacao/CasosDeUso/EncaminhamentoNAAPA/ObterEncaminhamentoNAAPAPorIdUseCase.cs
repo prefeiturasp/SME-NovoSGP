@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
@@ -27,7 +28,7 @@ namespace SME.SGP.Aplicacao
             if(encaminhamentoNAAPA == null)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
 
-            var aluno = await ObterAlunoPorCodigoETurma(encaminhamentoNAAPA.AlunoCodigo, encaminhamentoNAAPA.Turma.CodigoTurma);
+            var aluno = await ObterAlunoPorCodigoETurma(encaminhamentoNAAPA.AlunoCodigo, encaminhamentoNAAPA.Turma.CodigoTurma,encaminhamentoNAAPA.Turma.AnoLetivo);
             var nomeUe = encaminhamentoNAAPA.Turma.Ue.TipoEscola == TipoEscola.Nenhum ? encaminhamentoNAAPA.Turma.Ue.Nome : 
                             $"{encaminhamentoNAAPA.Turma.Ue.TipoEscola.ObterNomeCurto()} {encaminhamentoNAAPA.Turma.Ue.Nome}";
 
@@ -57,13 +58,17 @@ namespace SME.SGP.Aplicacao
                 MotivoEncerramento = encaminhamentoNAAPA.MotivoEncerramento
             };
         }
-
-        private async Task<AlunoTurmaReduzidoDto> ObterAlunoPorCodigoETurma(string alunoCodigo, string turmaCodigo)
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
+        private async Task<AlunoTurmaReduzidoDto> ObterAlunoPorCodigoETurma(string alunoCodigo, string turmaCodigo,int anoLetivo)
         {
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, alunoCodigo, true));
             if (aluno == null) throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_INFORMACOES_ALUNO_TURMA_EOL);           
 
             var frequencia = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo));
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new []{aluno.CodigoAluno}, anoLetivo);
             var alunoReduzido = new AlunoTurmaReduzidoDto()
             {
                 Nome = !string.IsNullOrEmpty(aluno.NomeAluno) ? aluno.NomeAluno : aluno.NomeSocialAluno,
@@ -79,7 +84,8 @@ namespace SME.SGP.Aplicacao
                 NomeResponsavel = aluno.NomeResponsavel,
                 DataAtualizacaoContato = aluno.DataAtualizacaoContato,
                 TipoResponsavel = aluno.TipoResponsavel,
-                Frequencia = frequencia
+                Frequencia = frequencia,
+                EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
             };
             return alunoReduzido;
         }

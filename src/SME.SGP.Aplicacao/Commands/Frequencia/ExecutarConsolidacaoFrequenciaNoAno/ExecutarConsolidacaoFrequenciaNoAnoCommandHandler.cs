@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Enumerados;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,8 +19,8 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExecutarConsolidacaoFrequenciaNoAnoCommand request, CancellationToken cancellationToken)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(request.Ano), Guid.NewGuid(), null));
-            await AtualizarDataExecucao(request.Ano);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasNoAno, new FiltroAnoDto(request.Data, TipoConsolidadoFrequencia.Anual), Guid.NewGuid(), null));
+            await AtualizarDataExecucao(request.Data.Year);
         }
 
         private async Task AtualizarDataExecucao(int ano)
