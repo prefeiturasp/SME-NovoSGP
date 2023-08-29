@@ -1,5 +1,10 @@
 pipeline {  
-    agent any
+    agent {
+      kubernetes { 
+         label 'dotnet5-sonar'
+         defaultContainer 'dotnet5-sonar'
+      }
+    }
 
     options {
       buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
