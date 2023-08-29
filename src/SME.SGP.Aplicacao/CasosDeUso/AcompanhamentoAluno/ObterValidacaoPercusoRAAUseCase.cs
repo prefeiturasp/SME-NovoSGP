@@ -56,12 +56,14 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<AlunosComInconsistenciaPercursoIndividualRAADto>> ObterInconsistenciaDeAlunosSemPercurso(List<AcompanhamentoAluno> acompanhamentoAlunos, FiltroInconsistenciaPercursoRAADto param)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, param.Semestre * 2));
             var alunos = await mediator.Send(new ObterDadosAlunosFechamentoQuery(turma.CodigoTurma, turma.AnoLetivo, param.Semestre));
             var inconsistencias = new List<AlunosComInconsistenciaPercursoIndividualRAADto>();
 
             foreach (var aluno in alunos)
             {
-                if (!acompanhamentoAlunos.Exists(alunoPercurso => alunoPercurso.AlunoCodigo == aluno.CodigoEOL))
+                var alunoAtivo = aluno.EstaAtivo() || aluno.DataSituacao.Date >= periodoEscolar?.PeriodoInicio;
+                if (alunoAtivo && !acompanhamentoAlunos.Exists(alunoPercurso => alunoPercurso.AlunoCodigo == aluno.CodigoEOL))
                 {
                     inconsistencias.Add(new AlunosComInconsistenciaPercursoIndividualRAADto()
                     {
