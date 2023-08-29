@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                     disciplinasCJ = await ObterDisciplinasCJRegencia(disciplinasCJ);
                 }
             }
-            disciplinas = await mediator.Send(new ObterDisciplinasTurmasEolQuery(request.TurmasCodigo, request.AdicionarComponentesPlanejamento));
+            disciplinas = MapearDto(await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(request.TurmasCodigo, request.AdicionarComponentesPlanejamento)));
 
             if (disciplinas != null && disciplinas.Any(a => a.Regencia) && request.AdicionarComponentesPlanejamento)
             {
@@ -64,11 +64,35 @@ namespace SME.SGP.Aplicacao
             return disciplinasDto;
         }
 
+        private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
+        {
+            if (componentesCurriculares == null || !componentesCurriculares.Any())
+                return Enumerable.Empty<DisciplinaResposta>();
+            return componentesCurriculares.Select(cc => new DisciplinaResposta()
+            {
+                CodigoComponenteCurricular = cc.Codigo,
+                Id = cc.Codigo,
+                Compartilhada = cc.Compartilhada,
+                CodigoComponenteCurricularPai = cc.CodigoComponenteCurricularPai,
+                CodigoComponenteTerritorioSaber = cc.CodigoComponenteTerritorioSaber,
+                Nome = cc.Descricao,
+                Regencia = cc.Regencia,
+                RegistroFrequencia = cc.RegistraFrequencia,
+                TerritorioSaber = cc.TerritorioSaber,
+                LancaNota = cc.LancaNota,
+                BaseNacional = cc.BaseNacional,
+                TurmaCodigo = cc.TurmaCodigo,
+                GrupoMatriz = cc.GrupoMatriz != null ? new Integracoes.Respostas.GrupoMatriz() { Id = cc.GrupoMatriz.Id, Nome = cc.GrupoMatriz.Nome } : null,
+                NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
+                Professor = cc.Professor,
+                CodigosTerritoriosAgrupamento = cc.CodigosTerritoriosAgrupamento
+            });
+        }
         private async Task adicionarComponenteRegenciaPaiAsync(string[] turmasCodigo, List<DisciplinaResposta> novasDisciplinasRegencia)
         {
             foreach (var turma in turmasCodigo)
             {
-                var componenteRegenciaTurmaPai = (await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(turma))).FirstOrDefault(x => x.Regencia == true);
+                var componenteRegenciaTurmaPai = (await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma))).FirstOrDefault(x => x.Regencia == true);
                 if (componenteRegenciaTurmaPai != null)
                     novasDisciplinasRegencia.ForEach(d =>
                     {
@@ -133,8 +157,8 @@ namespace SME.SGP.Aplicacao
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
-            GrupoMatrizId = disciplina.GrupoMatriz.Id,
-            GrupoMatrizNome = disciplina.GrupoMatriz.Nome,
+            GrupoMatrizId = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Id : default,
+            GrupoMatrizNome = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Nome : string.Empty,
             Nome = disciplina.Nome,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,

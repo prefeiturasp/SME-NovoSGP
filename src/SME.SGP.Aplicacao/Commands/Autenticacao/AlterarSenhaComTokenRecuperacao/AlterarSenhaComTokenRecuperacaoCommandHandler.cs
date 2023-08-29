@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
                 { new KeyValuePair<string, string>("token", request.Token.ToString()) },
                 { new KeyValuePair<string, string>("senha", request.Senha) }};
 
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.PostAsync($"v1/autenticacao/AlterarSenha/", new FormUrlEncodedContent(valoresParaEnvio));
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_AUTENTICACAO_ALTERAR_SENHA, new FormUrlEncodedContent(valoresParaEnvio));
 
             if (!resposta.IsSuccessStatusCode)
                 await RegistraLogErro(resposta, request.Token);

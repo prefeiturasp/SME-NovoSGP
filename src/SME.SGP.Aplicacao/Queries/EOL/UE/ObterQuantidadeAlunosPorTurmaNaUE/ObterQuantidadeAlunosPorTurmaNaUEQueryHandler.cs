@@ -24,8 +24,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunosPorTurmaDto>> Handle(ObterQuantidadeAlunosPorTurmaNaUEQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"escolas/{request.UeCodigo}/alunos/quantidade";
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var url = string.Format(ServicosEolConstants.URL_ESCOLAS_ALUNOS_QUANTIDADE, request.UeCodigo);
 
             var resposta = await httpClient.GetAsync(url);
             if (resposta.IsSuccessStatusCode)

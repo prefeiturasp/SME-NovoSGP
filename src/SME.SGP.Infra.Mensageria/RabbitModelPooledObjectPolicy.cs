@@ -11,38 +11,37 @@ namespace SME.SGP.Infra
 
         public RabbitModelPooledObjectPolicy(ConfiguracaoRabbit configuracaoRabbitOptions)
         {
-            conexao = GetConnection(configuracaoRabbitOptions ?? throw new ArgumentNullException(nameof(configuracaoRabbitOptions)));
+            conexao = CreateConnection(configuracaoRabbitOptions ?? throw new ArgumentNullException(nameof(configuracaoRabbitOptions)));
         }
 
-        private IConnection GetConnection(ConfiguracaoRabbit configuracaoRabbit)
+        private IConnection CreateConnection(ConfiguracaoRabbit configuracaoRabbit)
         {
-            var factory = new ConnectionFactory()
+            var connectionFactory = new ConnectionFactory()
             {
+                Port = configuracaoRabbit.Port,
                 HostName = configuracaoRabbit.HostName,
                 UserName = configuracaoRabbit.UserName,
                 Password = configuracaoRabbit.Password,
                 VirtualHost = configuracaoRabbit.VirtualHost
             };
 
-            return factory.CreateConnection();
+            return connectionFactory.CreateConnection();
         }
 
         public IModel Create()
         {
-            var channel = conexao.CreateModel();
-            channel.ConfirmSelect();
-            return channel;
+            var model = conexao.CreateModel();
+            model.ConfirmSelect();
+            return model;
         }
 
-        public bool Return(IModel obj)
+        public bool Return(IModel model)
         {
-            if (obj.IsOpen)
+            if (model.IsOpen)
                 return true;
-            else
-            {
-                obj?.Dispose();
-                return false;
-            }
+
+            model.Dispose();
+            return false;
         }
     }
 }

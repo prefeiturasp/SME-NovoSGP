@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         {
             if (encaminhamento.Situacao != situacao)
             {
-                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                 return new EncaminhamentoNAAPAHistoricoAlteracoes()
                 {

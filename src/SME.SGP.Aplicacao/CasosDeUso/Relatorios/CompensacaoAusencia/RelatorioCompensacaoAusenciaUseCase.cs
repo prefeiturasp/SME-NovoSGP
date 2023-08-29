@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioCompensacaoAusenciaDto.DreCodigo));
             await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioCompensacaoAusenciaDto.UeCodigo));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             filtroRelatorioCompensacaoAusenciaDto.UsuarioNome = usuarioLogado.Nome;
             filtroRelatorioCompensacaoAusenciaDto.UsuarioRf = usuarioLogado.CodigoRf;

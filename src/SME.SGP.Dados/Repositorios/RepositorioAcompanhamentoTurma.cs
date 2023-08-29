@@ -14,19 +14,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<AcompanhamentoTurma> ObterApanhadoGeralPorTurmaIdESemestre(long turmaId, int semestre)
         {
-            try
-            {
-                var query = @"select at.*
-                        from acompanhamento_turma at
-                        where at.turma_id = @turmaId
-                            and at.semestre = @semestre ";
+            var query = @"select at.*
+                    from acompanhamento_turma at
+                    where at.turma_id = @turmaId
+                        and at.semestre = @semestre ";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoTurma>(query, new { turmaId, semestre });
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
+            return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoTurma>(query, new { turmaId, semestre });
+            
         }
     }
 }

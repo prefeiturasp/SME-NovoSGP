@@ -43,6 +43,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirPlanoAulaPorAulaIdUseCase, ExcluirPlanoAulaPorAulaIdUseCase>();
             services.TryAddScoped<IExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase, ExcluirCompensacaoAusenciaAlunoEAulaPorAulaIdUseCase>();
             services.TryAddScoped<IExcluirCompensacaoAusenciaPorIdsUseCase, ExcluirCompensacaoAusenciaPorIdsUseCase>();
+            services.TryAddScoped<IPendenciaTurmaComponenteSemAulasPorUeUseCase, PendenciaTurmaComponenteSemAulasPorUeUseCase>();
+            services.TryAddScoped<IPendenciaTurmaComponenteSemAulasUseCase, PendenciaTurmaComponenteSemAulasUseCase>();
         }
     }
 }

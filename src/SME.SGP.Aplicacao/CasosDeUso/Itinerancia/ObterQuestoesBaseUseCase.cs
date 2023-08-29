@@ -12,6 +12,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<ItineranciaQuestoesBaseDto> Executar()
-                => await mediator.Send(new ObterQuestoesBaseItineranciaEAlunoQuery());
+                => await mediator.Send(ObterQuestoesBaseItineranciaEAlunoQuery.Instance);
     }
 }

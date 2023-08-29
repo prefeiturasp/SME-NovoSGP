@@ -21,5 +21,15 @@
         {
             return $"O registro de frequência do componente {descricaoComponenteCurricular} da turma {nomeComModalidade} da {nomeEscola} das aulas abaixo está pendente:";
         }
+
+        public static string ObterDescricaoPendenciaComponenteSemAula(string professor, string professorRf, int bimestre, string componenteCurricular, string turma, string descricaoUe)
+        {
+            return $"O professor {professor} ({professorRf}) ainda não cadastrou nenhuma aula no bimestre {bimestre} para o componente {componenteCurricular} na turma {turma} na {descricaoUe}";
+        }
+
+        public static string ObterTituloPendenciaComponenteSemAula(string componenteCurricular)
+        {
+            return $"Nenhuma aula cadastrada no bimestre - {componenteCurricular}";
+        }
     }
 }

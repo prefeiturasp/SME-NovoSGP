@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Executar(string turmaCodigo, int tipoPendencia, string tituloPendencia)
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
 
             return await mediator.Send(new ObterPendenciasPorUsuarioQuery(usuarioId, turmaCodigo, tipoPendencia, tituloPendencia));
         }

@@ -36,14 +36,14 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<FechamentoNotaAlunoAprovacaoDto>> ObterFechamentosNotasDoCache(AtualizarCacheFechamentoNotaCommand request)
         {
-            var nomeChaveCache = ObterChaveFechamentoNotaFinalComponenteTurma(request.DisciplinaId.ToString(), request.CodigoTurma);
+            var nomeChaveCache = ObterChaveFechamentoNotaFinalComponenteTurma(request.DisciplinaId.ToString(), request.CodigoTurma, request.CodigoAluno);
 
             return await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache);
         }
 
         private async Task<List<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosCache(AtualizarCacheFechamentoNotaCommand request)
         {
-            var nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(request.CodigoTurma);
+            var nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(request.CodigoTurma, request.CodigoAluno);
 
             return await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
         }
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
                 notaFinalAluno.EmAprovacao = request.EmAprovacao;
             }
 
-            await SalvarCache(ObterChaveFechamentoNotaFinalComponenteTurma(request.DisciplinaId.ToString(), request.CodigoTurma), notasFinais);
+            await SalvarCache(ObterChaveFechamentoNotaFinalComponenteTurma(request.DisciplinaId.ToString(), request.CodigoTurma, request.CodigoAluno), notasFinais);
         }
 
         private async Task PersistirNotaConceitoBimestreNoCache(
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                 notaConceitoFechamentoAluno.ConceitoId = request.FechamentoNota.ConceitoId;
             }
 
-            await SalvarCache(ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(request.CodigoTurma), notasConceitosFechamento);
+            await SalvarCache(ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(request.CodigoTurma, request.CodigoAluno), notasConceitosFechamento);
         }
 
         private NotaConceitoBimestreComponenteDto ObterNotaConceitoBimestreAluno(AtualizarCacheFechamentoNotaCommand request)
@@ -114,10 +114,10 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new SalvarCachePorValorObjetoCommand(chave, valor));
         }
 
-        private string ObterChaveFechamentoNotaFinalComponenteTurma(string codigoDisciplina, string codigoTurma)
-            => string.Format(NomeChaveCache.FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma);
+        private string ObterChaveFechamentoNotaFinalComponenteTurma(string codigoDisciplina, string codigoTurma, string alunoCodigo)
+            => string.Format(NomeChaveCache.FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma, alunoCodigo);
 
-        private string ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(string codigoTurma)
-            => string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, codigoTurma);
+        private string ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(string codigoTurma, string alunoCodigo)
+            => string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, codigoTurma, alunoCodigo);
     }
 }

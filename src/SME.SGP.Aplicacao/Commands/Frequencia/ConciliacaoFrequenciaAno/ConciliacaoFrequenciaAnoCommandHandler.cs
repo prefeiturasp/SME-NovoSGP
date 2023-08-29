@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ConciliacaoFrequenciaAnoCommand request, CancellationToken cancellationToken)
         {
-            var dresIds = await mediator.Send(new ObterIdsDresQuery(), cancellationToken);
+            var dresIds = await mediator.Send(ObterIdsDresQuery.Instance, cancellationToken);
 
             foreach (var dreId in dresIds)
             {

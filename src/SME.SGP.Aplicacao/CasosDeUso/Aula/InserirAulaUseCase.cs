@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoBaseDto> Executar(PersistirAulaDto inserirAulaDto)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (inserirAulaDto.TipoAula == TipoAula.Reposicao && inserirAulaDto.RecorrenciaAula != RecorrenciaAula.AulaUnica)
                 throw new NegocioException("Não é possível cadastrar aula de reposição com recorrência!");

@@ -14,7 +14,6 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        //Não retorna modalidade infantil
         public async Task<IEnumerable<RegistroAulaPrevistaDivergenteDto>> ObterTurmasAulasPrevistasDivergentes(int limiteDias)
         {
             var query = @"select a.turma_id as CodigoTurma, t.nome as NomeTurma

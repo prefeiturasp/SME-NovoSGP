@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(RelatorioGamesCommand request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioExemplo, request, usuarioLogado));
         }
     }

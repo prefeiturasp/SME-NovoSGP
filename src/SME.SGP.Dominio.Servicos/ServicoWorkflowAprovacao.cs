@@ -135,7 +135,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (Notificacao notificacao in wfNivel.Notificacoes)
                 {
-                    repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
+                    await repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
                     await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                 }
             }
@@ -244,7 +244,7 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
             
             // Resolve a pendencia de fechamento
-            repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
+            await repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
 
             foreach (var notaEmAprovacao in notasEmAprovacao)
             {

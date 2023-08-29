@@ -176,7 +176,7 @@ namespace SME.SGP.Aplicacao
             var datasPersistencia = validacaoDatas.datasPersistencia;
             var mensagensValidacao = validacaoDatas.mensagensValidacao;
 
-            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia, aulaRecorrente.EhRegencia, codigosTerritorioEquivalentes);
+            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia, aulaRecorrente.EhRegencia, turma, codigosTerritorioEquivalentes);
 
             // Notificar usuário da conclusão da geração de aulas
             await NotificarUsuario(geracaoRecorrencia.aula, geracaoRecorrencia.aulasQueDeramErro, mensagensValidacao, usuario, datasPersistencia.Count(), aulaRecorrente.NomeComponenteCurricular, turma);
@@ -401,7 +401,7 @@ namespace SME.SGP.Aplicacao
             return (datasAtribuicao, mensagensValidacao);
         }
 
-        private async Task<(Aula aula, IEnumerable<(DateTime dataAula, string mensagemDeErro)> aulasQueDeramErro)> GerarAulaDeRecorrenciaParaDias(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, IEnumerable<DateTime> datasParaPersistencia, bool ehRegencia, (string codigoComponente, string professor)[] codigosTerritorioEquivalentes = default)
+        private async Task<(Aula aula, IEnumerable<(DateTime dataAula, string mensagemDeErro)> aulasQueDeramErro)> GerarAulaDeRecorrenciaParaDias(InserirAulaRecorrenteCommand aulaRecorrente, Usuario usuario, IEnumerable<DateTime> datasParaPersistencia, bool ehRegencia, Turma turma, (string codigoComponente, string professor)[] codigosTerritorioEquivalentes = default)
         {
             var aulasQueDeramErro = new List<(DateTime dataAula, string errorMessage)>();
 
@@ -440,6 +440,9 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await repositorioAula.SalvarAsync(aulaParaAdicionar);
+                    await mediator.Send(new ExecutarExclusaoPendenciaProfessorComponenteSemAulaCommand(turma,
+                                                                                                       long.Parse(aulaParaAdicionar.DisciplinaId),
+                                                                                                       aulaParaAdicionar.DataAula)); 
                 }
                 catch (Exception ex)
                 {
