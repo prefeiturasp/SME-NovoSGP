@@ -2,7 +2,6 @@ pipeline {
     agent {
       kubernetes { 
          label 'dotnet5-sonar'
-         defaultContainer 'dotnet5-sonar'
       }
     }
 
