@@ -1863,14 +1863,14 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_MEUS_DADOS, 
             Menu = ConstantesMenuPermissao.MENU_MEUS_DADOS,
             Url = ConstantesMenuPermissao.ROTA_MEUS_DADOS,
-            EhMenu = false,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_EDIT,
             EhConsulta = true)]
         M_C = 48,
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_MEUS_DADOS, 
             Menu = ConstantesMenuPermissao.MENU_MEUS_DADOS,
             Url = ConstantesMenuPermissao.ROTA_MEUS_DADOS,
-            EhMenu = false,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_EDIT,
             EhAlteracao = true)]
         M_A = 51,
 
