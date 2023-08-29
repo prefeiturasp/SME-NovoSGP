@@ -146,12 +146,12 @@ namespace SME.SGP.Aplicacao
                 return default;
 
             var codigosTurmaPaginada = turmasPaginadas.Items.Select(c => c.TurmaCodigo).Distinct().ToArray();
-            var componentesCodigos = usuario.EhAdmGestao() ? codigosTurmaPaginada
+            var codigosTurmasComponente = usuario.EhAdmGestao() ? codigosTurmaPaginada
                                      : turmasAbrangencia != null ? turmasAbrangencia.Select(c => c).ToArray().Intersect(codigosTurmaPaginada).ToArray()
                                      : codigosTurmaPaginada;
 
             var retornoComponentesTurma = from item in turmasPaginadas.Items.ToList()
-                                          join componenteCodigo in componentesCodigos on item.TurmaCodigo equals componenteCodigo
+                                          join componenteCodigo in codigosTurmasComponente on item.TurmaCodigo equals componenteCodigo
                                           select item.TerritorioSaber && item.Id.HasValue && item.Id.Value > 0 ? item.Id.Value : item.ComponenteCurricularCodigo;
 
             if (turmasAbrangencia != null)
