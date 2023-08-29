@@ -188,6 +188,7 @@
         public const string ICONE_FAS_FA_TASKS = "fas fa-tasks";
         public const string ICONE_FAS_FA_PRINT = "fas fa-print";
         public const string ICONE_FAS_FA_USER_COG = "fas fa-user-cog";
+        public const string ICONE_FAS_FA_USER_EDIT = "fas fa-user-edit";
         public const string ICONE_FAS_FA_PENCIL_RULER = "fas fa-pencil-ruler";
         public const string ICONE_FAS_FA_CHART_BAR = "fas fa-chart-bar";
         public const string ICONE_FAS_FA_CALENDAR_ALT = "fas fa-calendar-alt";
