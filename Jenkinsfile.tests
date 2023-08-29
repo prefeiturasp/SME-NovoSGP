@@ -43,7 +43,12 @@ pipeline {
             steps{
               checkout scm
               script{
-                  sh 'dotnet test teste/SME.SGP.TesteIntegracao.AEE /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.AEE/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet build SME.SGP.sln'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.AEE --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
                }
             }
           }
@@ -57,8 +62,13 @@ pipeline {
             steps{
               checkout scm
               script{
-                  sh 'dotnet test teste/SME.SGP.TesteIntegracao.Aula /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-              }
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Aula/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet build SME.SGP.sln'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Aula --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
             }
           }
 
@@ -71,7 +81,8 @@ pipeline {
             steps{
               checkout scm
               script{
-                sh 'dotnet test teste/SME.SGP.TesteIntegracao.Fechamento /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                sh 'dotnet build SME.SGP.sln'
+                sh 'dotnet test teste/SME.SGP.TesteIntegracao.Fechamento --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
               }
             }
           }
@@ -83,10 +94,14 @@ pipeline {
               }
             }
             steps{
-              checkout scm
               script{
-                sh 'dotnet test teste/SME.SGP.TesteIntegracao.Frequencia /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-              }
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Frequencia/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet build SME.SGP.sln'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Frequencia --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
             }
           }
         }
