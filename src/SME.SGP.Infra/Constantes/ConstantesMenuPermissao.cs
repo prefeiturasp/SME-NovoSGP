@@ -174,6 +174,7 @@
         public const string ROTA_NOTIFICACOES = "/notificacoes";
         public const string ROTA_RELATORIOS_ESCOLA_AQUI_ADESAO = "/relatorios/escola-aqui/adesao";
         public const string ROTA_RELATORIOS_ESCOLA_AQUI_LEITURA = "/relatorios/escola-aqui/leitura";
+        public const string ROTA_MENU_SUPORTE = "/usuarios/suporte";
         
         public const string ICONE_FAS_FA_LIST_ALT = "fas fa-list-alt";
         public const string ICONE_FAR_FA_CALENDAR_MINUS = "far fa-calendar-minus";
