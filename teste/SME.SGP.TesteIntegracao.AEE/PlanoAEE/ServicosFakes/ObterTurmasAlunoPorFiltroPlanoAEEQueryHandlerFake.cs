@@ -10,7 +10,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
-    public class ObterTurmasAlunoPorFiltroQueryHandlerFake  : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterTurmasAlunoPorFiltroPlanoAEEQueryHandlerFake  : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly string ALUNO_CODIGO_1 = "1"; 
 

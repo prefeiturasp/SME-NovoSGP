@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
+using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {

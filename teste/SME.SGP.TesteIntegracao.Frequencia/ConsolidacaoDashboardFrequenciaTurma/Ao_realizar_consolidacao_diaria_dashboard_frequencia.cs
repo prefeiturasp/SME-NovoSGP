@@ -1,20 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.TesteIntegracao.Nota;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
