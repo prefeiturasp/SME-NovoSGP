@@ -259,7 +259,12 @@ pipeline {
         }
              
       stage('Flyway') {
-        agent { label 'master' }
+         agent {
+               kubernetes {
+                   label 'flyway'
+                   defaultContainer 'flyway'
+                }
+              }
         when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
@@ -289,7 +294,12 @@ pipeline {
       }
 
       stage('Treinamento Flyway') {
-        agent { label 'master' }
+        agent {
+               kubernetes {
+                   label 'flyway'
+                   defaultContainer 'flyway'
+                }
+              }
         when { anyOf {  branch 'release'; } }
         steps{
           script{
