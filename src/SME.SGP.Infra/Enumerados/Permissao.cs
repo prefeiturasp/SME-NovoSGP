@@ -1081,42 +1081,6 @@ namespace SME.SGP.Infra
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
             TCE_A = 67,
-
-        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
-            Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
-            EhConsulta = true)]
-            TA_C = 100,
-            
-        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
-            Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
-            EhInclusao = true)]
-            TA_I = 101,
-
-        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
-            Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
-            EhExclusao = true)]
-            TA_E = 102,
-           
-        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_AVALIACAO, 
-            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_AVALIACAO,
-            Url = ConstantesMenuPermissao.ROTA_CONFIGURACOES_TIPO_AVALIACAO,
-            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_USER_COG,
-            EhAlteracao = true)]
-            TA_A = 103,
            
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_ATRIBUICAO_DE_RESPONSAVEIS, 
