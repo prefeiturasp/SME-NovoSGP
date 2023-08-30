@@ -192,14 +192,14 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
-            plano.RegistroCadastradoEmOutraUE = await EncaminhamentoRegistradoEmOutraUE(turma);
+            plano.RegistroCadastradoEmOutraUE = await PlanoRegistradoEmOutraUE(turma);
 
             await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
 
             return plano;
         }
         
-        private async Task<bool> EncaminhamentoRegistradoEmOutraUE(Turma turma)
+        private async Task<bool> PlanoRegistradoEmOutraUE(Turma turma)
         {
             var turmas = await mediator.Send(
                 new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(turma.Ue.CodigoUe, 
