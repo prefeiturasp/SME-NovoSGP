@@ -34,7 +34,6 @@
         public const string MENU_TIPO_DE_EVENTO = "Tipo de Evento";
         public const string MENU_TIPO_DE_FERIADO = "Tipo de Feriado";
         public const string MENU_TIPOS_DE_CALENDARIO_ESCOLAR = "Tipos de Calendário Escolar";
-        public const string MENU_TIPO_DE_AVALIACAO = "Tipo de Avaliação";
         public const string MENU_ATRIBUICAO_DE_RESPONSAVEIS = "Atribuição de Responsáveis";
         public const string MENU_ATRIBUICAO_ESPORADICA = "Atribuição esporádica";
         public const string MENU_COMUNICADOS = "Comunicados";
@@ -121,7 +120,6 @@
         public const string ROTA_CALENDARIO_ESCOLAR_TIPO_EVENTOS = "/calendario-escolar/tipo-eventos";
         public const string ROTA_CALENDARIO_ESCOLAR_TIPO_FERIADO = "/calendario-escolar/tipo-feriado";
         public const string ROTA_CALENDARIO_ESCOLAR_TIPOS_CALENDARIO_ESCOLAR = "/calendario-escolar/tipo-calendario-escolar";
-        public const string ROTA_CONFIGURACOES_TIPO_AVALIACAO = "/configuracoes/tipo-avaliacao";
         public const string ROTA_GESTAO_ATRIBUICAO_RESPONSAVEIS_LISTA = "/gestao/atribuicao-responsaveis/lista";
         public const string ROTA_GESTAO_ATRIBUICAO_ESPORADICA = "/gestao/atribuicao-esporadica";
         public const string ROTA_GESTAO_COMUNICADOS = "/gestao/comunicados";
@@ -241,11 +239,10 @@
         public const int ORDEM_MENU_TIPO_DE_EVENTO = 8;
         public const int ORDEM_MENU_TIPO_DE_FERIADO = 9;
         public const int ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR = 10;
-        public const int ORDEM_MENU_TIPO_DE_AVALIACAO = 11;
-        public const int ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS = 12;
-        public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 13;
-        public const int ORDEM_MENU_COMUNICADOS = 14;
-        public const int ORDEM_MENU_OCORRENCIAS = 15;
+        public const int ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS = 11;
+        public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 12;
+        public const int ORDEM_MENU_COMUNICADOS = 13;
+        public const int ORDEM_MENU_OCORRENCIAS = 14;
         
         public const int ORDEM_MENU_ENCAMINHAMENTO_AEE = 1;
         public const int ORDEM_MENU_PLANO_AEE = 2;
