@@ -147,7 +147,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento rascunho quando perfil professor")]
@@ -179,7 +178,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de rascunho ou devolvido quando perfil professor")]
@@ -211,7 +209,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeTrue();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil professor infantil")]
@@ -243,7 +240,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento rascunho quando perfil professor infantil")]
@@ -275,7 +271,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de rascunho ou devolvido quando perfil professor infantil")]
@@ -307,7 +302,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeTrue();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando parecer da coordenação quando perfil gestor escolar")]
@@ -339,7 +333,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil gestor escolar")]
@@ -371,7 +364,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de encaminhado ou devolvido quando perfil gestor escolar")]
@@ -403,7 +395,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeTrue();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando atribuição de PAAI quando perfil coordenador CEFAI")]
@@ -435,7 +426,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando atribuição de PAAI quando perfil coordenador CEFAI")]
@@ -467,7 +457,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeTrue();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando análise do AEE quando perfil PAEE")]
@@ -499,7 +488,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando análise do AEE quando perfil PAEE")]
@@ -531,7 +519,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeTrue();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando análise do AEE quando perfil PAAI")]
@@ -563,7 +550,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeTrue();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando análise do AEE quando perfil PAAI")]
@@ -595,7 +581,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
             informacoes.PodeEditar.ShouldBeFalse();
-            informacoes.RegistroCadastradoEmOutraUE.ShouldBeTrue();
         }
     }
 }

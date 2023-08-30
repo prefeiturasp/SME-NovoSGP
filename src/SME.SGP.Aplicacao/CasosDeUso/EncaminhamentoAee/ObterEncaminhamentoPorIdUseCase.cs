@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
+            var registroCadastradoEmOutraUE = await EncaminhamentoRegistradoEmOutraUE(encaminhamentoAee.Turma);
+            
             aluno.EhMatriculadoTurmaPAP = await BuscarAlunosTurmaPAP(aluno.CodigoAluno, encaminhamentoAee.Turma.AnoLetivo);
             return new EncaminhamentoAEERespostaDto()
             {
@@ -56,8 +58,18 @@ namespace SME.SGP.Aplicacao
                     Nome = encaminhamentoAee.Responsavel.Nome,
                     Rf = encaminhamentoAee.Responsavel.CodigoRf
                 },
-                RegistroCadastradoEmOutraUE = !podeEditar
+                RegistroCadastradoEmOutraUE = registroCadastradoEmOutraUE
             };
+        }
+
+        private async Task<bool> EncaminhamentoRegistradoEmOutraUE(Turma turma)
+        {
+            var turmas = await mediator.Send(
+            new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(turma.Ue.CodigoUe, 
+                turma.ModalidadeCodigo, 0, turma.Historica, 
+                turma.AnoLetivo, null, true));
+
+            return turmas.All(a => a.Id != turma.Id);
         }
 
         private async Task<bool> BuscarAlunosTurmaPAP(string alunoCodigo, int anoLetivo)
