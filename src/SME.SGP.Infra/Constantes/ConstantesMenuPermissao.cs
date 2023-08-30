@@ -10,7 +10,7 @@
         public const string MENU_REGISTRO_POA = "Registro POA";
         public const string MENU_LISTAO = "Listão";
         public const string MENU_CALENDARIO_DO_PROFESSOR = "Calendário do Professor";
-        public const string MENU_AULA_PREVISTA_X_AULA_DADA = "Aula prevista X Aula dada";
+        public const string MENU_AULAS_DADAS_X_PREVISTAS = "Aulas dadas x Aulas previstas";
         public const string MENU_FREQUENCIA_PLANO_AULA = "Frequência/Plano de aula";
         public const string MENU_NOTAS = "Notas";
         public const string MENU_COMPENSACAO_AUSENCIA = "Compensação de Ausência";
@@ -33,7 +33,7 @@
         public const string MENU_EVENTOS = "Eventos";
         public const string MENU_TIPO_DE_EVENTO = "Tipo de Evento";
         public const string MENU_TIPO_DE_FERIADO = "Tipo de Feriado";
-        public const string MENU_TIPO_DE_CALENDARIO_ESCOLAR = "Tipo de Calendário Escolar";
+        public const string MENU_TIPOS_DE_CALENDARIO_ESCOLAR = "Tipos de Calendário Escolar";
         public const string MENU_TIPO_DE_AVALIACAO = "Tipo de Avaliação";
         public const string MENU_ATRIBUICAO_DE_RESPONSAVEIS = "Atribuição de Responsáveis";
         public const string MENU_ATRIBUICAO_ESPORADICA = "Atribuição esporádica";
@@ -61,7 +61,7 @@
         public const string MENU_USUARIOS =  "Usuários";
         public const string MENU_NOTIFICACOES =  "Notificações";
         public const string MENU_AEE =  "AEE";
-        public const string MENU_RELATORIO_ANALITICO =  "Relatório Analítico";
+        public const string MENU_RELATORIOS_ANALITICOS =  "Relatórios Analíticos";
         public const string MENU_BOLETIM =  "Boletim";
         public const string MENU_ATA_BIMESTRAL =  "Ata Bimestral";
         public const string MENU_ATA_FINAL_DE_RESULTADOS =  "Ata Final de Resultados";
@@ -120,7 +120,7 @@
         public const string ROTA_CALENDARIO_ESCOLAR_EVENTOS = "/calendario-escolar/eventos";
         public const string ROTA_CALENDARIO_ESCOLAR_TIPO_EVENTOS = "/calendario-escolar/tipo-eventos";
         public const string ROTA_CALENDARIO_ESCOLAR_TIPO_FERIADO = "/calendario-escolar/tipo-feriado";
-        public const string ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR = "/calendario-escolar/tipo-calendario-escolar";
+        public const string ROTA_CALENDARIO_ESCOLAR_TIPOS_CALENDARIO_ESCOLAR = "/calendario-escolar/tipo-calendario-escolar";
         public const string ROTA_CONFIGURACOES_TIPO_AVALIACAO = "/configuracoes/tipo-avaliacao";
         public const string ROTA_GESTAO_ATRIBUICAO_RESPONSAVEIS_LISTA = "/gestao/atribuicao-responsaveis/lista";
         public const string ROTA_GESTAO_ATRIBUICAO_ESPORADICA = "/gestao/atribuicao-esporadica";
@@ -152,7 +152,7 @@
         public const string ROTA_RELATORIOS_AEE_PLANO = "/relatorios/aee/plano";
         public const string ROTA_RELATORIOS_AEE_REGISTRO_ITINERANCIA = "/relatorios/aee/registro-itinerancia";
         public const string ROTA_RELATORIOS_NAAPA_ENCMAINHAMENTO = "/relatorios/naapa/encaminhamento";
-        public const string ROTA_RELATORIOS_SONDAGEM_ANALITICO = "/relatorios/sondagem/analitico";
+        public const string ROTA_RELATORIOS_SONDAGEM_ANALITICOS = "/relatorios/sondagem/analitico";
         public const string ROTA_RELATORIOS_DIARIO_CLASSE_BOLETIM_SIMPLES = "/relatorios/diario-classe/boletim-simples";
         public const string ROTA_RELATORIOS_ATAS_ATA_BIMESTRAL = "/relatorios/atas/ata-bimestral";
         public const string ROTA_RELATORIOS_ATAS_ATA_FINAL_RESULTADOS = "/relatorios/atas/ata-final-resultados";
@@ -240,7 +240,7 @@
         public const int ORDEM_MENU_EVENTOS = 7;
         public const int ORDEM_MENU_TIPO_DE_EVENTO = 8;
         public const int ORDEM_MENU_TIPO_DE_FERIADO = 9;
-        public const int ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR = 10;
+        public const int ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR = 10;
         public const int ORDEM_MENU_TIPO_DE_AVALIACAO = 11;
         public const int ORDEM_MENU_ATRIBUICAO_DE_RESPONSAVEIS = 12;
         public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 13;
@@ -308,7 +308,7 @@
         
         public const int ORDEM_SUB_MENU_RELATORIO_ENCAMINHAMENTO_NAAPA = 1;
         
-        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ANALITICO = 1;
+        public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
         

@@ -224,7 +224,7 @@ namespace SME.SGP.Infra
         L_A = 231,
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
-            Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
+            Menu = ConstantesMenuPermissao.MENU_AULAS_DADAS_X_PREVISTAS, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
@@ -233,7 +233,7 @@ namespace SME.SGP.Infra
         ADAP_I = 104,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
-            Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
+            Menu = ConstantesMenuPermissao.MENU_AULAS_DADAS_X_PREVISTAS, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
@@ -242,7 +242,7 @@ namespace SME.SGP.Infra
         ADAP_A = 105,
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
-            Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
+            Menu = ConstantesMenuPermissao.MENU_AULAS_DADAS_X_PREVISTAS, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
@@ -251,7 +251,7 @@ namespace SME.SGP.Infra
         ADAP_C = 106,  
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE, 
-            Menu = ConstantesMenuPermissao.MENU_AULA_PREVISTA_X_AULA_DADA, 
+            Menu = ConstantesMenuPermissao.MENU_AULAS_DADAS_X_PREVISTAS, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_DIARIO_DE_CLASSE,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_AULAS_DADAS_AULAS_PREVISTAS,
             Url = ConstantesMenuPermissao.ROTA_DIARIO_CLASSE_AULA_DADA_AULA_PREVISTA,
@@ -1047,37 +1047,37 @@ namespace SME.SGP.Infra
             TF_A = 83,
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
+            Menu = ConstantesMenuPermissao.MENU_TIPOS_DE_CALENDARIO_ESCOLAR, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
-            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR,
+            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPOS_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhConsulta = true)]
             TCE_C = 64,
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
+            Menu = ConstantesMenuPermissao.MENU_TIPOS_DE_CALENDARIO_ESCOLAR, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
-            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR,
+            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPOS_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhInclusao = true)]
             TCE_I = 65,
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
+            Menu = ConstantesMenuPermissao.MENU_TIPOS_DE_CALENDARIO_ESCOLAR, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
-            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR,
+            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPOS_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhExclusao = true)]
             TCE_E = 66,
              
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
-            Menu = ConstantesMenuPermissao.MENU_TIPO_DE_CALENDARIO_ESCOLAR, 
+            Menu = ConstantesMenuPermissao.MENU_TIPOS_DE_CALENDARIO_ESCOLAR, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPO_DE_CALENDARIO_ESCOLAR,
-            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPO_CALENDARIO_ESCOLAR,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_TIPOS_DE_CALENDARIO_ESCOLAR,
+            Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_TIPOS_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_CALENDAR_ALT,
             EhAlteracao = true)]
             TCE_A = 67,
@@ -1671,9 +1671,9 @@ namespace SME.SGP.Infra
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_SONDAGEM,
             EhSubMenu = true,
-            SubMenu = ConstantesMenuPermissao.MENU_RELATORIO_ANALITICO,
-            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_RELATORIO_ANALITICO,
-            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_SONDAGEM_ANALITICO,
+            SubMenu = ConstantesMenuPermissao.MENU_RELATORIOS_ANALITICOS,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIOS_SONDAGEM_ANALITICOS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = false,
             EhConsulta = true)]
