@@ -72,8 +72,8 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(t => t.CodigoAluno)
                 .ThenBy(t => t.DataAula)
                 .ThenBy(t => t.NumeroAula);
-        }
-
+        }       
+        
         private async Task<long> VerificarSeComponenteEhDeTerritorio(string turmaCodigo, long componenteCurricularId)
         {
             long codigoComponenteTerritorioCorrespondente = 0;

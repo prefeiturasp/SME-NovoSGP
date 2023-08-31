@@ -11,6 +11,9 @@ namespace SME.SGP.Dominio
         Nao = 2,
 
         [Display(Name = "Opcional")]
-        Opcional = 3
+        Opcional = 3,
+
+        [Display(Name = "Desativado")]
+        Desativado = 4
     }
 }

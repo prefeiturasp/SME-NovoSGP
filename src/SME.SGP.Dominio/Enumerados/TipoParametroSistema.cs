@@ -151,7 +151,6 @@ namespace SME.SGP.Dominio
         CJInfantilPodeEditarAulaTitular = 84,
 
         SepararDiarioBordoPorComponente = 85,       
-
         //PendenciasAula
         ExecutaPendenciaAulaDiarioBordo = 87,
         ExecutaPendenciaAulaAvaliacao = 88,
@@ -170,6 +169,7 @@ namespace SME.SGP.Dominio
         GerarConsolidadoEncaminhamentoNAAPA = 104,
         GerarConsolidadoAtendimentoNAAPA = 105,
         DiasAposInicioPeriodoLetivoComponenteSemAula = 106,
-        ExecutaPendenciaComponenteSemAula = 107
+        ExecutaPendenciaComponenteSemAula = 107,
+        ObjetivosAprendizagemOpcionaisPlanoAulaAnoComponente = 108
     }
 }

@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                     turmasPaginadas.Items = listRetorno;
                 }
             }
-            else
+            else if(!filtroTurmaDto.ConsideraHistorico)
             {
                 turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
                                                                                              filtroTurmaDto.DreCodigo,
@@ -117,17 +117,41 @@ namespace SME.SGP.Aplicacao
                                                                                                 periodoEscolar.FirstOrDefault().PeriodoInicio,
                                                                                              anosInfantilDesconsiderar != null ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
+            else
+            {
+                if (turmasAbrangencia.Any() || turmasAbrangencia != null)
+                    foreach (var turmaAbrangencia in turmasAbrangencia)
+                    {
+                        var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaAbrangencia.ToString()));
+                        var disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
+                        turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                        {
+                            TurmaCodigo = long.Parse(turmaAbrangencia.ToString()),
+                            Modalidade = filtroTurmaDto.Modalidade.Value,
+                            NomeTurma = turma.Nome,
+                            NomeFiltro = turma.NomeFiltro,
+                            Ano = turma.Ano,
+                            ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
+                            NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
+                            ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
+                            Turno = (TipoTurnoEOL)turma.TipoTurno,
+                        });
+
+                        listRetorno.AddRange(turmasPaginadas.Items);
+                    }
+                turmasPaginadas.Items = listRetorno;
+            }
 
             if (turmasPaginadas == null || turmasPaginadas?.Items == null || !turmasPaginadas.Items.Any())
                 return default;
 
             var codigosTurmaPaginada = turmasPaginadas.Items.Select(c => c.TurmaCodigo).Distinct().ToArray();
-            var componentesCodigos = usuario.EhAdmGestao() ? codigosTurmaPaginada
+            var codigosTurmasComponente = usuario.EhAdmGestao() ? codigosTurmaPaginada
                                      : turmasAbrangencia != null ? turmasAbrangencia.Select(c => c).ToArray().Intersect(codigosTurmaPaginada).ToArray()
                                      : codigosTurmaPaginada;
 
             var retornoComponentesTurma = from item in turmasPaginadas.Items.ToList()
-                                          join componenteCodigo in componentesCodigos on item.TurmaCodigo equals componenteCodigo
+                                          join componenteCodigo in codigosTurmasComponente on item.TurmaCodigo equals componenteCodigo
                                           select item.TerritorioSaber && item.Id.HasValue && item.Id.Value > 0 ? item.Id.Value : item.ComponenteCurricularCodigo;
 
             if (turmasAbrangencia != null)

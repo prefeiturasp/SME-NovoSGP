@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        turma_id = @turmaCodigo";
 
-            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            return (await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);

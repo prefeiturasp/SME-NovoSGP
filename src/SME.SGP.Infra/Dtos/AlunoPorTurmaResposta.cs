@@ -117,6 +117,10 @@ namespace SME.SGP.Infra
         {
             return string.IsNullOrEmpty(NomeSocialAluno) ? NomeAluno : NomeSocialAluno;
         }
+        public bool MostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
+        {
+            return EstaAtivo(dataAula, periodoInicio) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
+        }
 
         public bool PodeEditarNotaConceito()
         {
@@ -155,7 +159,7 @@ namespace SME.SGP.Infra
             => DataMatricula.Date > dataReferencia && DataMatricula.Date.Equals(DataSituacao.Date) && CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido);
 
         public bool VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(DateTime dataReferencia)
-            => DataMatricula.Date <= dataReferencia;
+            => DataMatricula.Date <= dataReferencia || Ano == dataReferencia.Year;
 
         public bool VerificaSePodeEditarAluno(PeriodoEscolar ultimoPeriodoEscolar)
         {

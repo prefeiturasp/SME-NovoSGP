@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Ativo = true,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = valorData.ToString("dd/MM/yyyy"),
+                Valor = valorData.ToString("yyyy/MM/dd"),
                 Nome = "DataInicioGeracaoPendencias",
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Descricao = "Data de início da geração de pendências"
@@ -193,7 +193,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
             await InserirNaBase("componente_curricular", "513", "512", "1", "1", "'ED.INF. EMEI 2 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 2H'");
 
 
-            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, USUARIO_LOGADO_RF, 1, TipoPendencia.PlanoAula, "111", 1));
+            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512.ToString(), USUARIO_LOGADO_RF, 1, TipoPendencia.PlanoAula, "111", 1));
 
             retorno.Any().ShouldBeTrue();
 
