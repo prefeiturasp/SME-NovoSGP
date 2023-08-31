@@ -1,7 +1,6 @@
 pipeline {
     environment {
-      //branchname =  env.BRANCH_NAME.toLowerCase()
-      branchname = 'master'
+      branchname =  env.BRANCH_NAME.toLowerCase()
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
       deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"           
@@ -310,7 +309,7 @@ pipeline {
                   defaultContainer 'flyway'
                 }
               }
-        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; branch 'cicd/fixesteira'; } }
+        when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
@@ -357,7 +356,7 @@ pipeline {
             try {
                 withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
                 checkout scm
-                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts registry.sme.prefeitura.sp.gov.br/devops/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                sh 'flyway -url=$url -locations="filesystem:scripts" -outOfOrder=true migrate'
                 }
             } 
             catch (err) {
