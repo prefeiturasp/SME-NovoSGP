@@ -40,7 +40,7 @@ pipeline {
         }
    
         stage('Build') {
-          when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; branch 'cicd/fixesteira'; } } 
+          when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
           parallel {
             stage('sme-sgp-backend') {
               agent { kubernetes { 
