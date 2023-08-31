@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosQuery request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
 
             FiltroFuncionarioDto filtro = new()
             {

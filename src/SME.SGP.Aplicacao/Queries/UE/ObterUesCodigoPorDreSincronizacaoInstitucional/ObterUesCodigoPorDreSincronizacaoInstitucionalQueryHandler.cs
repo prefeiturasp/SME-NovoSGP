@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -17,8 +18,8 @@ namespace SME.SGP.Aplicacao
         }
         async public Task<IEnumerable<string>> Handle(ObterUesCodigoPorDreSincronizacaoInstitucionalQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"dres/{request.DreCodigo}/ues");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_DRES_UES, request.DreCodigo));
 
             if (resposta.IsSuccessStatusCode)
             {

@@ -1,6 +1,5 @@
 ﻿using Elastic.Apm;
 using Elastic.Apm.Api;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
 using System;
@@ -11,28 +10,16 @@ namespace SME.SGP.Infra
 {
     public class ServicoTelemetria : IServicoTelemetria
     {
-        private readonly TelemetryClient insightsClient;
         private readonly TelemetriaOptions telemetriaOptions;
 
-        public ServicoTelemetria(TelemetryClient insightsClient, IOptions<TelemetriaOptions> telemetriaOptions)
+        public ServicoTelemetria(IOptions<TelemetriaOptions> telemetriaOptions)
         {
-            this.insightsClient = insightsClient;
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
         }
 
         public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            DateTime inicioOperacao = default;
-            Stopwatch temporizador = default;
-
             dynamic result = default;
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                inicioOperacao = DateTime.UtcNow;
-                temporizador = Stopwatch.StartNew();
-            }
-
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -48,30 +35,12 @@ namespace SME.SGP.Infra
             {
                 result = await acao() as dynamic;
             }
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                temporizador.Stop();
-
-                insightsClient?.TrackDependency(acaoNome, telemetriaNome, telemetriaValor, inicioOperacao, temporizador.Elapsed, true);
-            }
-
             return result;
         }
 
         public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            DateTime inicioOperacao = default;
-            Stopwatch temporizador = default;
-
             dynamic result = default;
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                inicioOperacao = DateTime.UtcNow;
-                temporizador = Stopwatch.StartNew();
-            }
-
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -87,28 +56,11 @@ namespace SME.SGP.Infra
             {
                 result = acao();
             }
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                temporizador.Stop();
-
-                insightsClient?.TrackDependency(acaoNome, telemetriaNome, telemetriaValor, inicioOperacao, temporizador.Elapsed, true);
-            }
-
             return result;
         }
 
         public void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor)
         {
-            DateTime inicioOperacao = default;
-            Stopwatch temporizador = default;           
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                inicioOperacao = DateTime.UtcNow;
-                temporizador = Stopwatch.StartNew();
-            }
-
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -122,26 +74,11 @@ namespace SME.SGP.Infra
             else
             {
                 acao();
-            }
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                temporizador.Stop();
-                insightsClient?.TrackDependency(acaoNome, telemetriaNome, telemetriaValor, inicioOperacao, temporizador.Elapsed, true);
-            }            
+            }         
         }
 
         public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            DateTime inicioOperacao = default;
-            Stopwatch temporizador = default;           
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                inicioOperacao = DateTime.UtcNow;
-                temporizador = Stopwatch.StartNew();
-            }
-
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -160,12 +97,6 @@ namespace SME.SGP.Infra
             }
             else
                 await acao();
-
-            if (telemetriaOptions.ApplicationInsights)
-            {
-                temporizador.Stop();
-                insightsClient?.TrackDependency(acaoNome, telemetriaNome, telemetriaValor, inicioOperacao, temporizador.Elapsed, true);
-            }            
         }
 
         public ITransaction Iniciar(string nome, string tipo)

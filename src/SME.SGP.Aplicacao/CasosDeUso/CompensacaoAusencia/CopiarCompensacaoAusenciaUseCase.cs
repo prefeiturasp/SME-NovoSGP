@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                     DisciplinaId = compensacaoOrigem.DisciplinaId,
                     Atividade = compensacaoOrigem.Nome,
                     Descricao = compensacaoOrigem.Descricao,
-                    DisciplinasRegenciaIds = new List<string>(),
+                    DisciplinasRegenciaIds = Enumerable.Empty<string>(),
                     Alunos = new List<CompensacaoAusenciaAlunoDto>()
                 };
 

@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 encaminhamentoAEEVigente
             };
 
-            _repositorioEncaminhamentoAEE.Setup(c => c.ObterEncaminhamentosVigentes())
+            _repositorioEncaminhamentoAEE.Setup(c => c.ObterEncaminhamentosVigentes(null))
                 .ReturnsAsync(listaRetorno);
 
             //-> Act

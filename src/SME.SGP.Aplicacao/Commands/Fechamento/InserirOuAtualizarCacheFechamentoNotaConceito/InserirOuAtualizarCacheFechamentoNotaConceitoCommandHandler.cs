@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(InserirOuAtualizarCacheFechamentoNotaConceitoCommand request,
             CancellationToken cancellationToken)
         {
-            var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA,
+            var nomeChaveCache = string.Format(NomeChaveCache.FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA,
                 request.ComponenteCurricularId, request.TurmaCodigo);
 
             var retornoCacheMapeado =

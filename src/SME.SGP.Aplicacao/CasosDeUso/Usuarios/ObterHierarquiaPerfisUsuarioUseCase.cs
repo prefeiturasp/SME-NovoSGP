@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<KeyValuePair<Guid, string>>> Executar()
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var perfilUsuario = usuarioLogado.PerfilAtual;
             if (usuarioLogado.EhPerfilProfessor())
             {

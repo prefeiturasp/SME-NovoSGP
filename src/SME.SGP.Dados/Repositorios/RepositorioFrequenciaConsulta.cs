@@ -266,6 +266,7 @@ namespace SME.SGP.Dados.Repositorios
 	                a.turma_id = @turma and
 	                tc.ano_letivo = @anoLetivo and 
 	                pe.bimestre = @bimestre
+                    and (a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim ) 
                 order by a.data_aula desc
                 limit 5
             ";
@@ -351,57 +352,6 @@ namespace SME.SGP.Dados.Repositorios
                            and a.turma_id = @turmaCodigo ";
 
             return await database.Conexao.QueryAsync<AulaComFrequenciaNaDataDto>(query, new { turmaCodigo });
-        }
-
-        public async Task<IEnumerable<TotalFrequenciaEAulasPorPeriodoDto>> ObterTotalFrequenciaEAulasPorPeriodo(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, DateTime dataInicio, DateTime datafim, int mes, int tipoPeriodoDashboard)
-        {
-            var query = new StringBuilder(@"select t.ano as DescricaoAnoTurma,
-                                                count(a.id) as TotalAulas,
-                                                count(rf.id) as TotalFrequencias
-                                            from 
-                                                aula a 
-                                            inner join turma t on a.turma_id = t.turma_id       
-                                                left join registro_frequencia rf on a.id = rf.aula_id
-                                            inner join componente_curricular cc on cc.id = cast(a.disciplina_id as bigint)
-                                            inner join ue on ue.id = t.ue_id 
-     	                                    inner join dre on dre.id = ue.dre_id
-                                            where 
-                                                not a.excluido
-                                                and cc.permite_registro_frequencia 
-                                                and t.ano_letivo = @anoLetivo
-                                                and t.modalidade_codigo = @modalidade ");
-
-            if (dreId != -99)
-                query.AppendLine("and dre.id = @dreId ");
-
-            if (ueId != -99)
-                query.AppendLine("and ue.id = @ueId ");
-
-            if (semestre > 0)
-                query.AppendLine("and t.semestre = @semestre ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Diario)
-                query.AppendLine("and a.data_aula = @dataInicio ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Semanal)
-                query.AppendLine("and a.data_aula between @dataInicio::date and @dataFim::date ");
-
-            if (tipoPeriodoDashboard == (int)TipoPeriodoDashboardFrequencia.Mensal)
-                query.AppendLine(@"and extract(month from a.data_aula) = @mes 
-                                   and extract(year from a.data_aula) = @anoLetivo ");
-            query.AppendLine(" group by t.ano ");
-
-            return await database.Conexao.QueryAsync<TotalFrequenciaEAulasPorPeriodoDto>(query.ToString(), new
-            {
-                dreId,
-                ueId,
-                anoLetivo,
-                modalidade,
-                semestre,
-                dataInicio,
-                datafim,
-                mes
-            });
         }
 
         public Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string[] componentesCurricularesId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim)
@@ -656,6 +606,49 @@ namespace SME.SGP.Dados.Repositorios
             resultado.ForEach(c => c.Descricao = string.Concat(modalidade.ShortName(), " - ", c.Descricao));
 
             return resultado;
+        }
+
+        public async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaPorTurmaPeriodo(string codigoTurma, DateTime dataInicio, DateTime dataFim)
+        {
+            var query = @"with totalAulas as (
+	                        select  t.id as TurmaId,
+		                            sum(a.quantidade) as TotalAulas
+	                        from aula a
+	                            join turma t on t.turma_id = a.turma_id
+	                        where
+		                        not a.excluido
+		                        and a.turma_id = @codigoTurma
+		                        and a.data_aula >= @dataInicio
+		                        and a.data_aula <= @dataFim
+	                        group by t.id
+                        ),
+                        totalFrequencia as (
+	                        select rfa.codigo_aluno as AlunoCodigo,
+		                           (count(distinct(a.id)) filter (	where rfa.valor = 1)* a.quantidade) as TotalPresencas,
+		                           (count(distinct(a.id)) filter (where rfa.valor = 2)* a.quantidade) as TotalAusencias,
+		                           (count(distinct(a.id)) filter (where rfa.valor = 3)* a.quantidade) as TotalRemotos
+	                        from registro_frequencia rf
+	                          join registro_frequencia_aluno rfa on rf.id = rfa.registro_frequencia_id
+	                          join aula a on a.id = rf.aula_id
+	                        where
+		                        not rfa.excluido
+		                        and not a.excluido
+		                        and a.turma_id = @codigoTurma
+		                        and a.data_aula >= @dataInicio
+		                        and a.data_aula <= @dataFim
+		                        and rfa.numero_aula <= a.quantidade
+	                        group by rfa.codigo_aluno, a.quantidade
+                        )
+                        select alunoCodigo, 
+                               totalPresencas, 
+                               totalAusencias,
+                               totalRemotos,
+                               totalAulas
+                        from totalAulas
+	                      left join totalFrequencia on 1 = 1
+                        order by AlunoCodigo ";
+
+            return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { codigoTurma, dataInicio, dataFim });
         }
     }
 }

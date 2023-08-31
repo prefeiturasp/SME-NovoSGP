@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
-            this.usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            this.usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             await CarreguarQuestoesAInserir(request.EncaminhamentoNAAPASecaoAlterado);
             await ExecuteValidacaoAlteracaoCamposDaSecao(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes);
 

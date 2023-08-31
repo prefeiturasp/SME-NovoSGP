@@ -44,13 +44,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 .ReturnsAsync(new Turma() { CodigoTurma = "123" });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterDatasEfetivasDiariosQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<Tuple<long, DateTime>> {
-                    new Tuple<long, DateTime>(1, DateTime.Today.AddDays(-15)),
-                    new Tuple<long, DateTime>(2, DateTime.Today.AddDays(-5)),
-                    new Tuple<long, DateTime>(3, DateTime.Today.AddDays(-10)),
-                    new Tuple<long, DateTime>(4, DateTime.Today.AddDays(5)),
-                    new Tuple<long, DateTime>(5, DateTime.Today.AddDays(10)),
-                    new Tuple<long, DateTime>(6, DateTime.Today.AddDays(15))
+                .ReturnsAsync(new List<(long Id, DateTime DataAula)> {
+                    (1, DateTime.Today.AddDays(-15)),
+                    (2, DateTime.Today.AddDays(-5)),
+                    (3, DateTime.Today.AddDays(-10)),
+                    (4, DateTime.Today.AddDays(5)),
+                    (5, DateTime.Today.AddDays(10)),
+                    (6, DateTime.Today.AddDays(15))
                 });
 
             //Act

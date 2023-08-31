@@ -41,20 +41,14 @@ namespace SME.SGP.Dados
 
         public async Task<long> SalvarAsync(ConselhoClasseConsolidadoTurmaAlunoNota consolidadoNota)
         {
-            try
+            
+            if (consolidadoNota.Id > 0)
             {
-                if (consolidadoNota.Id > 0)
-                {
-                    var sucesso = await database.Conexao.UpdateAsync(consolidadoNota);
-                    return sucesso ? consolidadoNota.Id : 0;
-                }
-                else
-                    return (long)(await database.Conexao.InsertAsync(consolidadoNota));
+                var sucesso = await database.Conexao.UpdateAsync(consolidadoNota);
+                return sucesso ? consolidadoNota.Id : 0;
             }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
+            else
+                return (long)(await database.Conexao.InsertAsync(consolidadoNota));
         }
 
         public async Task<bool> ExcluirConsolidacaoConselhoClasseNotaPorIdsConsolidacaoAlunoEBimestre(long[] idsConsolidacao)

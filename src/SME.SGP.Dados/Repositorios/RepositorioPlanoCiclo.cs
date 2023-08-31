@@ -21,8 +21,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	pc.descricao,");
             query.AppendLine("	pc.alterado_em as alteradoem,");
             query.AppendLine("	pc.alterado_por as alteradopor,");
+            query.AppendLine("	pc.alterado_rf as alteradorf,");
             query.AppendLine("	pc.criado_por as criadopor,");
             query.AppendLine("	pc.criado_em as criadoem,");
+            query.AppendLine("	pc.criado_rf as criadorf,");
             query.AppendLine("	pc.ciclo_id as CicloId,");
             query.AppendLine("	pc.ciclo_id as CicloId,");
             query.AppendLine("	pc.migrado as Migrado,");

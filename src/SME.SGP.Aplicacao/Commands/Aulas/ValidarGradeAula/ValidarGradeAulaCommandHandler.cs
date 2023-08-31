@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             if (request.EhRegencia)
             {
-                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 if (request.AulasExistentes != null && request.AulasExistentes.Any(c => c.TipoAula != TipoAula.Reposicao) && !(usuarioLogado.EhProfessorCj() || usuarioLogado.EhProfessorCjInfantil()))
                 {
                     if (request.TurmaModalidade == Modalidade.EJA)

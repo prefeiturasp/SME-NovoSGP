@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         IEnumerable<Dre> ListarPorCodigos(string[] dresCodigos);
 
-        Tuple<IEnumerable<Dre>, string[]> MaterializarCodigosDre(string[] idDres);
+        (IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres);
 
         Dre ObterPorCodigo(string codigo);
 

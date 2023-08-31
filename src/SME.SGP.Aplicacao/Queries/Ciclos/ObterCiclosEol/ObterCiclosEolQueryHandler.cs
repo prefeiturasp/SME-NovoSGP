@@ -18,8 +18,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<CicloRetornoDto>> Handle(ObterCiclosEolQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync("abrangencia/ciclo-ensino");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_ABRANGENCIA_CICLO_ENSINO);
 
             if (resposta.IsSuccessStatusCode)
             {

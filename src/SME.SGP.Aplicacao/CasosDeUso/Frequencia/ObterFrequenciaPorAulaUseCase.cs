@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
 
             var usuarioLogado = await mediator
-                .Send(new ObterUsuarioLogadoQuery());
+                .Send(ObterUsuarioLogadoQuery.Instance);
 
             var professorConsiderado = usuarioLogado.Login;
 
@@ -104,6 +104,7 @@ namespace SME.SGP.Aplicacao
             var turmaPossuiFrequenciaRegistrada = await mediator
                 .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), periodoEscolar.Id, professorConsiderado));
 
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosDaTurmaNaData, turma);
             foreach (var aluno in alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno))
             {
                 var tipoFrequenciaPreDefinida = await mediator
@@ -131,7 +132,8 @@ namespace SME.SGP.Aplicacao
                     CelularResponsavel = aluno.CelularResponsavel,
                     DataAtualizacaoContato = aluno.DataAtualizacaoContato,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
-                    TipoFrequenciaPreDefinido = tipoFrequenciaPreDefinida.ShortName()
+                    TipoFrequenciaPreDefinido = tipoFrequenciaPreDefinida.ShortName(),
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                 };
 
                 // Marcador visual da situação
@@ -166,6 +168,12 @@ namespace SME.SGP.Aplicacao
             registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura || !aula.PermiteRegistroFrequencia(turma);
 
             return registroFrequenciaDto;
+        }
+
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(IEnumerable<AlunoPorTurmaResposta> alunosDaTurmaNaData, Turma turma)
+        {
+            var alunosCodigos = alunosDaTurmaNaData.Select(x => x.CodigoAluno).ToArray();
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
 
         private string ObterFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciaAlunos, string codigoAluno, int numeroAula, TipoFrequencia tipoFrequenciaPreDefinida)

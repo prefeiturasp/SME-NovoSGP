@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             StringBuilder url = new StringBuilder();
 
-            url.Append($"professores/{request.CodigoTurma}/titulares/realizaAgrupamentoComponente/{request.RealizaAgrupamento}");
+            url.Append(string.Format(ServicosEolConstants.URL_PROFESSORES_TITULARES_TURMA, request.CodigoTurma, request.RealizaAgrupamento));
 
             //Ao passar o RF do professor, o endpoint retorna todas as disciplinas que o professor não é titular para evitar
             //que o professor se atribua como CJ da própria da turma que ele é titular da disciplina

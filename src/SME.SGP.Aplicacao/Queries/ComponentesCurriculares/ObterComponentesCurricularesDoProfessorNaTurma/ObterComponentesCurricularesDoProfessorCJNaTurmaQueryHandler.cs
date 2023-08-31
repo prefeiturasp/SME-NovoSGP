@@ -5,6 +5,7 @@ using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AtribuicaoCJ>> Handle(ObterComponentesCurricularesDoProfessorCJNaTurmaQuery request, CancellationToken cancellationToken)
         {
             return await repositorioCache.ObterAsync(
-                $"AtribuicaoAtiva-{request.Login}", 
+                string.Format(NomeChaveCache.ATRIBUICAO_CJ_PROFESSOR, request.Login),
                 async () => await repositorioAtribuicaoCJ.ObterAtribuicaoAtivaAsync(request.Login));
         }
     }

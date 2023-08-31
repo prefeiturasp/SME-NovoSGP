@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
-        public ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente, bool checaMotivoDisponibilizacao = true)
+        public ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false, bool checaMotivoDisponibilizacao = true)
         {
             CodigoTurma = codigoTurma;
             Login = login;

@@ -4,6 +4,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -22,21 +24,22 @@ namespace SME.SGP.Aplicacao
 
             var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
 
-            DiarioBordo diarioBordo = await mediator.Send(new ObterDiarioBordoPorAulaIdQuery(aulaId,componenteCurricularId));
-            if (diarioBordo == null || diarioBordo.Excluido)
-            {
-                diarioBordo = new DiarioBordo
-                {
-                    AulaId = aulaId
-                };
+            IEnumerable<DiarioBordo> diariosBordos = await mediator.Send(new ObterDiariosDeBordosPorAulaQuery(aulaId));
 
-                return MapearParaDto(diarioBordo, aberto);
-            }
+            var diarioBordo = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularId);
+            var diarioBordoIrmao = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularId);
+            
+            var codigosComponentes = diariosBordos.Select(diario => diario.ComponenteCurricularId).ToList();
+            codigosComponentes.Add(componenteCurricularId);
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentes.Distinct().ToArray()));
 
+            if (diarioBordo == null)
+                return MapearParaDto(new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = componenteCurricularId }, aberto, diarioBordoIrmao, componentes);
+            
             if (diarioBordo.DevolutivaId != null)
                 diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
 
-            var dto = MapearParaDto(diarioBordo, aberto);
+            var dto = MapearParaDto(diarioBordo, aberto, diarioBordoIrmao, componentes);
 
             return dto;
         }
@@ -53,10 +56,10 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
         }
 
-        private DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo, bool aberto)
+        private DiarioBordoDto MapearParaDto(DiarioBordo diarioBordo, bool aberto, DiarioBordo diarioBordoIrmao, IEnumerable<DisciplinaDto> disciplinas)
         {
             return new DiarioBordoDto
-            {
+        {
                 AulaId = diarioBordo.AulaId,
                 DevolutivaId = diarioBordo.DevolutivaId,
                 Devolutivas = diarioBordo.Devolutiva?.Descricao,
@@ -65,7 +68,10 @@ namespace SME.SGP.Aplicacao
                 Migrado = diarioBordo.Migrado,
                 TemPeriodoAberto = aberto,
                 Auditoria = (AuditoriaDto)diarioBordo,
-                InseridoCJ = diarioBordo.InseridoCJ
+                InseridoCJ = diarioBordo.InseridoCJ,
+                PlanejamentoIrmao = diarioBordoIrmao?.Planejamento,
+                NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordo.ComponenteCurricularId)?.NomeComponenteInfantil,
+                NomeComponenteIrmao = diarioBordoIrmao != null ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordoIrmao.ComponenteCurricularId)?.NomeComponenteInfantil : string.Empty
             };
         }
     }

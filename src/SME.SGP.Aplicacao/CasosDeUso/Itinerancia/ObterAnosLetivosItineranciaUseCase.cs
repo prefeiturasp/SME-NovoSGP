@@ -15,12 +15,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<int>> Executar()
         {
-            var anosLetivosDasItinerancias = await mediator.Send(new ObterAnosLetivosItineranciaQuery());
+            var anosLetivosDasItinerancias = await mediator.Send(ObterAnosLetivosItineranciaQuery.Instance);
 
             if (anosLetivosDasItinerancias.Count() == 1 && anosLetivosDasItinerancias.FirstOrDefault() == DateTime.Now.Year)
                 return anosLetivosDasItinerancias;
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var anosLetivosAbrangenciaHistorico = await mediator.Send(new ObterUsuarioAbrangenciaAnosLetivosQuery(usuarioLogado.Login, true, usuarioLogado.PerfilAtual, 0));
 

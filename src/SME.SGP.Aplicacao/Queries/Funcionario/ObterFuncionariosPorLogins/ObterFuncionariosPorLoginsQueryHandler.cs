@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterFuncionariosPorLoginsQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.PostAsync($"funcionarios/BuscarPorListaLogin", new StringContent(JsonConvert.SerializeObject(request.Logins),
+            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_FUNCIONARIOS_BUSCAR_LISTA_LOGIN, new StringContent(JsonConvert.SerializeObject(request.Logins),
                 Encoding.UTF8, "application/json-patch+json"), cancellationToken);
 
             if (resposta.IsSuccessStatusCode)

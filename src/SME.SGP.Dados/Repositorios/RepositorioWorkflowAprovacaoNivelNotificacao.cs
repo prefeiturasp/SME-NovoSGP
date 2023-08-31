@@ -16,12 +16,12 @@ namespace SME.SGP.Dados.Repositorios
             this.dataBase = dataBase ?? throw new System.ArgumentNullException(nameof(dataBase));
         }
 
-        public void ExcluirPorWorkflowNivelNotificacaoId(long workflowNivelId, long notificacaoId)
+        public async Task ExcluirPorWorkflowNivelNotificacaoId(long workflowNivelId, long notificacaoId)
         {
             var command = @"delete from wf_aprovacao_nivel_notificacao where wf_aprovacao_nivel_id = @workflowNivelId and
                             notificacao_id = @notificacaoId ";
 
-            dataBase.Conexao.Execute(command, new { workflowNivelId, notificacaoId });
+            await dataBase.Conexao.ExecuteAsync(command, new { workflowNivelId, notificacaoId });
         }
 
         public void Salvar(WorkflowAprovacaoNivelNotificacao workflowAprovaNivelNotificacao)

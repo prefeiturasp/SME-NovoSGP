@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(long cartaIntencoesObservacaoId, AlterarCartaIntencoesObservacaoDto dto)
         {            
-            var usuarioLogadoId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioLogadoId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             return await mediator.Send(new AlterarCartaIntencoesObservacaoCommand(dto.Observacao, cartaIntencoesObservacaoId, usuarioLogadoId));
         }
     }
