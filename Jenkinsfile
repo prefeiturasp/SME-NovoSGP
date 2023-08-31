@@ -268,6 +268,11 @@ pipeline {
           }
     }
         stage('Deploy'){
+             agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
             when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }        
             steps {
                 script{
