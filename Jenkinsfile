@@ -316,7 +316,7 @@ pipeline {
             checkout scm
             sh 'pwd'
             sh 'ls'
-            sh 'flyway -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+            sh 'flyway -url=$url -locations="filesystem:scripts" -outOfOrder=true migrate'
              }
         }       
       }
