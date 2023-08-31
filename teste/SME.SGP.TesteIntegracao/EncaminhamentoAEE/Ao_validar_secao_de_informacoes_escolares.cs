@@ -33,6 +33,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterNecessidadesEspeciaisAlunoEolQuery, InformacoesEscolaresAlunoDto>), typeof(ObterNecessidadesEspeciaisAlunoEolQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<EhGestorDaEscolaQuery, bool>), typeof(EhGestorDaEscolaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesDisciplinasEolQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosDreOuUePorPerfisQuery, IEnumerable<FuncionarioUnidadeDto>>), typeof(ObterFuncionariosDreOuUePorPerfisQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -114,6 +116,471 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             frenquenciaBimestre.Frequencia.ShouldBe(100);
             frenquenciaBimestre.QuantidadeCompensacoes.ShouldBe(1);
             frenquenciaBimestre.QuantidadeCompensacoes.ShouldBe(1);
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil professor")]
+        public async Task Deve_permitir_alterar_encaminhamento_devolvido_quando_perfil_professor()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Devolvido,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento rascunho quando perfil professor")]
+        public async Task Deve_permitir_alterar_encaminhamento_rascunho_quando_perfil_professor()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Rascunho,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de rascunho ou devolvido quando perfil professor")]
+        public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_rascunho_ou_devolvido_quando_perfil_professor()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Analise,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeFalse();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil professor infantil")]
+        public async Task Deve_permitir_alterar_encaminhamento_devolvido_quando_perfil_professor_infantil()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessorInfantil(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Devolvido,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento rascunho quando perfil professor infantil")]
+        public async Task Deve_permitir_alterar_encaminhamento_rascunho_quando_perfil_professor_infantil()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessorInfantil(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Rascunho,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de rascunho ou devolvido quando perfil professor infantil")]
+        public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_rascunho_ou_devolvido_quando_perfil_professor_infantil()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessorInfantil(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Analise,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeFalse();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando parecer da coordenação quando perfil gestor escolar")]
+        public async Task Deve_permitir_alterar_encaminhamento_aguardando_parecer_coordenacao_quando_perfil_gestor_escolar()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Encaminhado,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento devolvido quando perfil gestor escolar")]
+        public async Task Deve_permitir_alterar_encaminhamento_devolvido_quando_perfil_gestor_escolar()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+        
+            await CriarDadosBase(filtroAee);
+        
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Devolvido,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de encaminhado ou devolvido quando perfil gestor escolar")]
+        public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_encaminhado_ou_devolvido_quando_perfil_gestor_escolar()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessorInfantil(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+        
+            await CriarDadosBase(filtroAee);
+        
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Analise,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeFalse();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando atribuição de PAAI quando perfil coordenador CEFAI")]
+        public async Task Deve_permitir_alterar_encaminhamento_aguardando_atribuicao_paai_quando_perfil_cefai()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCEFAI(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.AtribuicaoPAAI,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando atribuição de PAAI quando perfil coordenador CEFAI")]
+        public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_aguardando_atribuicao_de_paai_quando_perfil_gestor_escolar()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCEFAI(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+        
+            await CriarDadosBase(filtroAee);
+        
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Analise,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeFalse();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando análise do AEE quando perfil PAEE")]
+        public async Task Deve_permitir_alterar_encaminhamento_aguardando_analise_do_aee_quando_perfil_paee()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilPaee(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Analise,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando análise do AEE quando perfil PAEE")]
+        public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_aguardando_analise_paee_quando_perfil_paee()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilPaee(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+        
+            await CriarDadosBase(filtroAee);
+        
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Devolvido,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeFalse();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Deve permitir alteração de encaminhamento aguardando análise do AEE quando perfil PAAI")]
+        public async Task Deve_permitir_alterar_encaminhamento_aguardando_analise_do_aee_quando_perfil_paai()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilPaai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Analise,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeTrue();
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Não deve permitir alteração de encaminhamento diferente de aguardando análise do AEE quando perfil PAAI")]
+        public async Task Nao_deve_permitir_alterar_encaminhamento_diferente_aguardando_analise_paee_quando_perfil_paai()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilPaai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+        
+            await CriarDadosBase(filtroAee);
+        
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Devolvido,
+                AlunoNome = "Nome do aluno 1",
+                ResponsavelId = 2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        
+            var useCase = ObterUseCaseObterEncaminhamentoPorId();
+            var informacoes = await useCase.Executar(1);
+            informacoes.ShouldNotBeNull();
+            informacoes.PodeEditar.ShouldBeFalse();
         }
     }
 }

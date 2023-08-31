@@ -116,7 +116,7 @@ namespace SME.SGP.Dominio
 
         public bool EhProfessorPaee()
          => PerfilAtual == Dominio.Perfis.PERFIL_PAEE;
-
+        
         public bool EhProfessorPap()
          => PerfilAtual == Dominio.Perfis.PERFIL_PAP;
 

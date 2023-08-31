@@ -1086,6 +1086,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     {
                         Perfis.PERFIL_ADMUE
                     }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "5555555",
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_PAEE,
+                    }
                 }
             };
             return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login.ToUpper()).FirstOrDefault());
