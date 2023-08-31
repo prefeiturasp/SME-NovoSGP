@@ -833,7 +833,44 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public Task<EstruturaInstitucionalRetornoEolDTO> ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
         {
-            return null;
+            return Task.FromResult(new EstruturaInstitucionalRetornoEolDTO()
+            {
+                Dres = new List<AbrangenciaDreRetornoEolDto>()
+                {
+                   new AbrangenciaDreRetornoEolDto()
+                   {
+                       Nome = "Dre 1",
+                       Codigo = "1",
+                       Abreviacao = "DRE1",
+                       Ues = new List<AbrangenciaUeRetornoEolDto>()
+                       {
+                           new AbrangenciaUeRetornoEolDto()
+                           {
+                               Codigo = "1",
+                               Nome = "Ue 1",
+                               CodTipoEscola = TipoEscola.EMEF,
+                               Turmas = new List<AbrangenciaTurmaRetornoEolDto>()
+                               {
+                                   new AbrangenciaTurmaRetornoEolDto()
+                                   {
+                                       Ano = "1",
+                                       AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                                       Codigo = "1",
+                                       SerieEnsino = "1",
+                                       TipoTurma = TipoTurma.Regular,
+                                       TipoTurno = 1,
+                                       NomeTurma = "Turma 1",
+                                       CodigoModalidade = "6",
+                                       DuracaoTurno = 10,
+                                       Semestre = 0,
+                                       EtapaEJA = 0
+                                   }
+                               }
+                           }
+                       }
+                   } 
+                }
+            });
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUe(string ueId, long cargoId)

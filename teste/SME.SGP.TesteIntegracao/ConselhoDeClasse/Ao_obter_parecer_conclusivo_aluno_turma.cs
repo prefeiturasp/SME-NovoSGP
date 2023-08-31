@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -77,18 +78,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
-            
-            await InserirNaBase(new ConselhoClasseNota()
-            {
-                ConselhoClasseAlunoId = CONSELHO_CLASSE_ALUNO_ID_1,
-                ComponenteCurricularCodigo = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                Nota = NOTA_8,
-                Justificativa = "Justificativa",
-                CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
 
+            var random = new Random();
+            foreach (var componente in new List<long>() { 139, 89, 6, 8, 7, 1060, 9, 1061, 138, 2} )
+            {
+                await InserirNaBase(new ConselhoClasseNota()
+                {
+                    ConselhoClasseAlunoId = CONSELHO_CLASSE_ALUNO_ID_1,
+                    ComponenteCurricularCodigo = componente,
+                    Nota = random.Next(8,10),
+                    Justificativa = "Justificativa",
+                    CriadoEm = DateTimeExtension.HorarioBrasilia().Date,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                });
+            }
+            
             var obterPareceresConclusivosUseCase = ServiceProvider.GetService<IObterParecerConclusivoAlunoTurmaUseCase>();
             
             var retorno = await obterPareceresConclusivosUseCase.Executar(TURMA_CODIGO_1,ALUNO_CODIGO_1);
