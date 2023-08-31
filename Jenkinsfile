@@ -314,8 +314,10 @@ pipeline {
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
-            sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts registry.sme.prefeitura.sp.gov.br/devops/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
-          }
+            sh 'pwd'
+            sh 'ls'
+            sh 'flyway -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+             }
         }       
       }
 
