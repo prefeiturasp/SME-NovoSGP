@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
-            var registroCadastradoEmOutraUE = await EncaminhamentoRegistradoEmOutraUE(encaminhamentoAee.Turma);
+            
+            var registroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEEncaminhamento(usuarioLogado, encaminhamentoAee.Turma);
             
             aluno.EhMatriculadoTurmaPAP = await BuscarAlunosTurmaPAP(aluno.CodigoAluno, encaminhamentoAee.Turma.AnoLetivo);
             return new EncaminhamentoAEERespostaDto()
@@ -62,14 +63,15 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<bool> EncaminhamentoRegistradoEmOutraUE(Turma turma)
+        private async Task<bool> VerificarUsuarioLogadoPertenceMesmaUEEncaminhamento(Usuario usuarioLogado, Turma turmaEncaminhamentoAee)
         {
-            var turmas = await mediator.Send(
-            new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(turma.Ue.CodigoUe, 
-                turma.ModalidadeCodigo, 0, turma.Historica, 
-                turma.AnoLetivo, null, true));
-
-            return turmas.All(a => a.Id != turma.Id);
+            return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(
+                usuarioLogado.Login, 
+                usuarioLogado.PerfilAtual,
+                turmaEncaminhamentoAee.Ue.CodigoUe,
+                turmaEncaminhamentoAee.ModalidadeCodigo,
+                turmaEncaminhamentoAee.Historica,
+                turmaEncaminhamentoAee.AnoLetivo));
         }
 
         private async Task<bool> BuscarAlunosTurmaPAP(string alunoCodigo, int anoLetivo)
