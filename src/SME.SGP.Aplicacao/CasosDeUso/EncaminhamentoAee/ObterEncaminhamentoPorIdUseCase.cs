@@ -33,8 +33,8 @@ namespace SME.SGP.Aplicacao
 
             var podeEditar = await VerificaPodeEditar(encaminhamentoAee, usuarioLogado);
             var podeAtribuirResponsavel = await VerificaPodeAtribuirResponsavel(encaminhamentoAee, usuarioLogado);
-            var registroCadastradoEmOutraUE = !(await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma)) && !(await EhProfessorDaTurma(usuarioLogado, encaminhamentoAee.Turma));
-            podeEditar = registroCadastradoEmOutraUE ? false : podeEditar;
+            var registroCadastradoEmOutraUE = await EncaminhamentoRegistradoEmOutraUE(encaminhamentoAee.Turma);
+            
             aluno.EhMatriculadoTurmaPAP = await BuscarAlunosTurmaPAP(aluno.CodigoAluno, encaminhamentoAee.Turma.AnoLetivo);
             return new EncaminhamentoAEERespostaDto()
             {
@@ -61,6 +61,17 @@ namespace SME.SGP.Aplicacao
                 RegistroCadastradoEmOutraUE = registroCadastradoEmOutraUE
             };
         }
+
+        private async Task<bool> EncaminhamentoRegistradoEmOutraUE(Turma turma)
+        {
+            var turmas = await mediator.Send(
+            new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(turma.Ue.CodigoUe, 
+                turma.ModalidadeCodigo, 0, turma.Historica, 
+                turma.AnoLetivo, null, true));
+
+            return turmas.All(a => a.Id != turma.Id);
+        }
+
         private async Task<bool> BuscarAlunosTurmaPAP(string alunoCodigo, int anoLetivo)
         {
             var consulta =  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, new []{alunoCodigo}));
@@ -100,23 +111,15 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)
         {
-            switch (encaminhamento.Situacao)
-            {
-                case SituacaoAEE.Rascunho:
-                case SituacaoAEE.Devolvido:
-                    return true;
-                case SituacaoAEE.Encaminhado:
-                    return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma);
-                case SituacaoAEE.Analise:
-                    return await EhUsuarioResponsavelPeloEncaminhamento(usuarioLogado, encaminhamento.ResponsavelId);
-                
-                default:
-                    return false;
-            }
+            return (await EhProfessorDaTurma(usuarioLogado, encaminhamento.Turma) &&
+                    (encaminhamento.Situacao == SituacaoAEE.Rascunho || 
+                     encaminhamento.Situacao == SituacaoAEE.Devolvido))
+                || (await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamento.Turma) && 
+                    (encaminhamento.Situacao == SituacaoAEE.Encaminhado || 
+                     encaminhamento.Situacao == SituacaoAEE.Devolvido))
+                || (usuarioLogado.EhCoordenadorCEFAI() && encaminhamento.Situacao == SituacaoAEE.AtribuicaoPAAI)
+                || ((usuarioLogado.EhProfessorPaee() || usuarioLogado.EhPerfilPaai()) && encaminhamento.Situacao == SituacaoAEE.Analise);
         }
-
-        private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
-            => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
 
         private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Turma turma)
         {
