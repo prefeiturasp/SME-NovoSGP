@@ -40,6 +40,7 @@ namespace SME.SGP.Dominio
         public long? TurmaId { get; set; }
         public long? QuantidadeAulas { get; set; }
         public long? QuantidadeDias { get; set; }
+        public long? DisciplinaId { get; set; }
 
         public TipoPendenciaAssunto PendenciaAssunto
         {

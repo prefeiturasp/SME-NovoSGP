@@ -74,6 +74,19 @@ namespace SME.SGP.Aplicacao
             
             foreach (var pendencia in pendenciaPaginada.Items)
             {
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery((long) pendencia.TurmaId));
+
+                if(turma != null && turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && pendencia.Tipo == TipoPendencia.Frequencia)
+                {
+                    var usuarioRF = await mediator.Send(new ObterUsuarioRfPorIdQuery(request.UsuarioId));
+                    var atribuicoesCJ = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(usuarioRF, false));
+
+                    if (atribuicoesCJ != null && atribuicoesCJ.Any(b => pendencia.DisciplinaId != b.DisciplinaId))
+                    {
+                        pendenciaPaginada.Items = pendenciaPaginada.Items.Where(b => b.Id != pendencia.Id);
+                    }
+                } 
+
                 if (!listaPendenciasUsuario.Any(c => c == pendencia.Id))
                     itensDaLista.Remove(pendencia);
             }

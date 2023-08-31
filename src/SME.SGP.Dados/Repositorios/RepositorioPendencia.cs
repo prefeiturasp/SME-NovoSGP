@@ -69,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const SituacaoPendencia situacao = SituacaoPendencia.Pendente;
 
-            const string query = @" select distinct * from (select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+            const string query = @" select distinct * from (select distinct p.id, p.titulo, p.turma_id, null as disciplina_id, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                                inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
 		                                inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id
@@ -77,15 +77,16 @@ namespace SME.SGP.Dados.Repositorios
 		                            and ppu.usuario_id = @usuarioId 
 		                            and situacao = @situacao
                                     union all 
-                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                    select distinct p.id, p.titulo, p.turma_id, a.disciplina_id, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                                inner join pendencia_aula pa on p.id = pa.pendencia_id
+                                        inner join aula a on a.id = pa.aula_id
 		                            where not p.excluido 
 		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao
                                     union all
-                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                    select distinct p.id, p.titulo, p.turma_id, null as disciplina_id, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                                inner join pendencia_professor pp on p.id = pp.pendencia_id
@@ -93,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
 		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao
                                     union all
-                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                    select distinct p.id, p.titulo, p.turma_id, null as disciplina_id, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                                inner join pendencia_fechamento pf on p.id = pf.pendencia_id
@@ -101,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
 		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao
 		                            union all
-                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                    select distinct p.id, p.titulo, p.turma_id, null as disciplina_id, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                                inner join pendencia_diario_bordo pdb on p.id = pdb.pendencia_id
@@ -109,7 +110,7 @@ namespace SME.SGP.Dados.Repositorios
 		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao 
 		                            union all
-		                            select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+		                            select distinct p.id, p.titulo, p.turma_id, null as disciplina_id, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                                inner join pendencia_devolutiva pd on p.id = pd.pendencia_id
@@ -117,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
 		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao 
                                     union all
-                                    select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                    select distinct p.id, p.titulo, p.turma_id, null as disciplina_id, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
                                     from pendencia p                                                      
                                         inner join pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id
                                         inner join encaminhamento_aee aee on eaee.encaminhamento_aee_id = aee.id
@@ -160,7 +161,7 @@ namespace SME.SGP.Dados.Repositorios
             
             var pendenciasRetorno = new List<Pendencia>();
             
-            const string query = @" select distinct * from (select distinct p.id, p.titulo, p.descricao, p.situacao,
+            const string query = @" select distinct * from (select distinct p.id, p.titulo, p.descricao, p.turma_id, p.situacao,
                                          p.tipo, p.criado_em as CriadoEm
                                         from pendencia p 
                                             inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
@@ -169,14 +170,14 @@ namespace SME.SGP.Dados.Repositorios
                                         and ppu.usuario_id = @usuarioId 
                                         and situacao = @situacao
                                         union all 
-                                        select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                        select distinct p.id, p.titulo, p.descricao, p.turma_id, p.situacao, p.tipo, p.criado_em as CriadoEm
                                         from pendencia p 
                                             inner join pendencia_usuario pu on pu.pendencia_id = p.id
                                         where not p.excluido 
                                         and pu.usuario_id = @usuarioId 
                                         and situacao = @situacao
                                         union all
-                                        select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+                                        select distinct p.id, p.titulo, p.descricao, p.turma_id, p.situacao, p.tipo, p.criado_em as CriadoEm
                                         from pendencia p                                                      
                                             inner join pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id
                                             inner join encaminhamento_aee aee on eaee.encaminhamento_aee_id = aee.id
