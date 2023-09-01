@@ -43,6 +43,8 @@ namespace SME.SGP.Aplicacao
             if (filtroTurmaDto.TurmaCodigo == null)
                 turmasAbrangencia = await mediator.Send(new ObterCodigosTurmasAbrangenciaPorUeModalidadeAnoQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.Modalidade.Value, periodo: 0, filtroTurmaDto.ConsideraHistorico,
                                                                                      filtroTurmaDto.AnoLetivo, new int[] { }, desconsideraNovosAnosInfantil: false));
+            else
+                turmasAbrangencia = new long[] { long.Parse(filtroTurmaDto.TurmaCodigo) };
 
             var anosInfantilDesconsiderar = filtroTurmaDto.Modalidade.Value == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(filtroTurmaDto.AnoLetivo, Modalidade.EducacaoInfantil)) : null;
 
