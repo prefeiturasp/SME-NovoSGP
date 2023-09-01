@@ -55,7 +55,7 @@ namespace SME.SGP.Dominio
                             from ccp in componentesUsuario
                             where ((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai ?? ccp.Codigo).ToString()) || 
                                    (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString()) && (professoresDesconsideradosTerritorio != null && !professoresDesconsideradosTerritorio.Contains(a.ProfessorRf)))) ||
-                                  a.ProfessorRf == CodigoRf
+                                  a.DisciplinaId == ccp.Codigo.ToString()
                             select a).Distinct();
                 }
             }
@@ -116,7 +116,7 @@ namespace SME.SGP.Dominio
 
         public bool EhProfessorPaee()
          => PerfilAtual == Dominio.Perfis.PERFIL_PAEE;
-
+        
         public bool EhProfessorPap()
          => PerfilAtual == Dominio.Perfis.PERFIL_PAP;
 
@@ -207,6 +207,10 @@ namespace SME.SGP.Dominio
             possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL && possuiTurmaAtiva);
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
+
+            possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && PossuiPerfilAD() && !possuiTurmaAtiva;
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_AD;
 
             possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && !possuiTurmaAtiva;
             if (possuiPerfilPrioritario)
@@ -322,6 +326,9 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilCJInfantil()
            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
+
+        public bool PossuiPerfilAD()
+           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
 
         public bool PossuiPerfilProfessor()
            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);

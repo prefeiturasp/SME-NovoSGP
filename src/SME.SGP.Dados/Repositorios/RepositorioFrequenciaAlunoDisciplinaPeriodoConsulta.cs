@@ -400,7 +400,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId)
         {
-            var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
+            var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre, fa.turma_id order by fa.id desc) sequencia
                             from frequencia_aluno fa
                             inner join turma t on fa.turma_id = t.turma_id ");
 

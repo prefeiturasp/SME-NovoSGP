@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                                                                request.Notificacao.Id,
                                                                request.Notificacao.Codigo,
                                                                request.Notificacao.Titulo,
-                                                               DateTimeExtension.HorarioBrasilia(),
+                                                               request.Notificacao.CriadoEm,
                                                                usuarioRf)));
         }
     }

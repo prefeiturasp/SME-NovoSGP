@@ -102,6 +102,7 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !consideraHistorico && !turma.EhAnoAnterior())
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
+
                 var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma, retornoConselhoBimestre.bimestre));
 
                 if (!retornoConselhoBimestre.possuiConselho || !alunoPossuiNotasTodosComponentesCurriculares)

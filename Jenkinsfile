@@ -21,7 +21,9 @@ pipeline {
            
     }
   
-      agent none
+      agent {
+      kubernetes { label 'builder' }
+    }
 
     options {
       timestamps ()
@@ -31,7 +33,11 @@ pipeline {
     }
   
     stages {
-  
+
+        stage('CheckOut') {            
+            steps { checkout scm }            
+        }
+   
         stage('Build') {
           when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
           parallel {

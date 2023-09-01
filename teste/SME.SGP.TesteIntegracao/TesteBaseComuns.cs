@@ -632,6 +632,11 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.CP.Name()).ToString();
         }
+        
+        protected string ObterPerfilCEFAI()
+        {
+            return Guid.Parse(PerfilUsuario.CEFAI.Name()).ToString();
+        }
 
         protected string ObterPerfilAD()
         {

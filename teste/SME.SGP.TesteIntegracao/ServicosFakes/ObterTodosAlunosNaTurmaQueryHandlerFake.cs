@@ -291,7 +291,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
-            return alunos.Where(x => x.CodigoTurma == request.CodigoTurma);
+            return alunos.Where(x => x.CodigoTurma == request.CodigoTurma && (!request.CodigoAluno.HasValue || (request.CodigoAluno.HasValue && request.CodigoAluno.ToString() == x.CodigoAluno)));
         }
     }
 }

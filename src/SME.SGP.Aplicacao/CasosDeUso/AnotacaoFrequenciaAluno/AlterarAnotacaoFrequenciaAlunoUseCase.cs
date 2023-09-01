@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 anotacaoAluno.Anotacao = moverArquivo;
             }
             if (!string.IsNullOrEmpty(anotacao.Anotacao?.Trim()))
-                  await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
+                 await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
         }
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)
         {

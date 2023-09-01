@@ -19,5 +19,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<QuantidadeTotalDevolutivasPorAnoDTO>> ObterDevolutivasPorAnoDre(int anoLetivo, int mes, long dreId);
 
         Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo, long ueId);
+        Task<IEnumerable<long>> ObterTurmasInfantilComDevolutivasPorTurmaIdAula(string turmaId);
     }
 }

@@ -18,7 +18,7 @@ namespace SME.SGP.Notificacoes.Hub
         public NotificacaoHub(
             IEventoNotificacaoCriada eventoCriada,
             IEventoNotificacaoLida eventoLida,
-            IEventoNotificacaoExcluida eventoExcluida, 
+            IEventoNotificacaoExcluida eventoExcluida,
             IRepositorioUsuario repositorioUsuario)
         {
             this.eventoCriada = eventoCriada ?? throw new System.ArgumentNullException(nameof(eventoCriada));
@@ -80,6 +80,5 @@ namespace SME.SGP.Notificacoes.Hub
                 UserId = Context.UserIdentifier,
                 Claims = Context.User.Claims.Select(x => new { x.Type, x.Value })
             };
-
     }
 }
