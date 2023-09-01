@@ -192,12 +192,24 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
-            plano.RegistroCadastradoEmOutraUE = !(await EhGestorDaEscolaDaTurma(usuarioLogado, turma)) && !(await EhProfessorDaTurma(usuarioLogado, turma));
+            plano.RegistroCadastradoEmOutraUE = !await VerificarUsuarioLogadoPertenceMesmaUEPlano(usuarioLogado, turma);
 
             await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
 
             return plano;
         }
+        
+        private async Task<bool> VerificarUsuarioLogadoPertenceMesmaUEPlano(Usuario usuarioLogado, Turma turmaEncaminhamentoAee)
+        {
+            return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(
+                usuarioLogado.Login, 
+                usuarioLogado.PerfilAtual,
+                turmaEncaminhamentoAee.Ue.CodigoUe,
+                turmaEncaminhamentoAee.ModalidadeCodigo,
+                turmaEncaminhamentoAee.Historica,
+                turmaEncaminhamentoAee.AnoLetivo));
+        }
+        
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
             return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
