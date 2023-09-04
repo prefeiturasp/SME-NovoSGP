@@ -218,10 +218,13 @@ namespace SME.SGP.Aplicacao
             if (disciplinasDaTurmaEol.Any(x => x.Regencia))
             {
                 var componenteRegenciaPai = disciplinasDaTurmaEol.FirstOrDefault(d => d.Regencia)?.CdComponenteCurricularPai.ToString();
-                frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == componenteRegenciaPai);
-                frequenciaAlunoRegenciaPai.TotalAulas = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAulas);
-                frequenciaAlunoRegenciaPai.TotalAusencias = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAusencias);
-                frequenciaAlunoRegenciaPai.TotalCompensacoes = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalCompensacoes);
+                if (frequenciasAluno.Any())
+                {
+                    frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == componenteRegenciaPai);
+                    frequenciaAlunoRegenciaPai.TotalAulas = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAulas);
+                    frequenciaAlunoRegenciaPai.TotalAusencias = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAusencias);
+                    frequenciaAlunoRegenciaPai.TotalCompensacoes = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalCompensacoes);
+                }
             }
 
             var registrosFrequencia = (turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma != null ?
