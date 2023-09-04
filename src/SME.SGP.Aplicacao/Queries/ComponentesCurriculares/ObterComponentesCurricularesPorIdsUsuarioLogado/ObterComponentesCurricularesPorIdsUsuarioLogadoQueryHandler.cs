@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var disciplinasUsuario = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
-            var disciplinasAgrupadas = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(request.Ids, request.CodigoTurma));
+            var disciplinasAgrupadas = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(request.Ids));
             
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                             Id = disciplinaCorrespondente.TerritorioSaber ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo,
                             CodigoComponenteCurricular = disciplinaCorrespondente.Codigo,
                             CdComponenteCurricularPai = disciplinaCorrespondente.CodigoComponenteCurricularPai,
-                            CodigoTerritorioSaber = disciplinaCorrespondente.CodigoComponenteTerritorioSaber,
+                            CodigoComponenteCurricularTerritorioSaber = disciplinaCorrespondente.CodigoComponenteTerritorioSaber,
                             Compartilhada = disciplinaCorrespondente.Compartilhada,
                             Nome = disciplinaCorrespondente.Descricao,
                             NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(id)) : disciplinaCorrespondente.Descricao,

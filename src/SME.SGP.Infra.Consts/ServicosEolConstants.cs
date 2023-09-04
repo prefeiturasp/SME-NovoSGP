@@ -172,5 +172,6 @@
 
         public const string URL_UES_TURMAS_SINCRONIZACOES = "ues/{0}/turmas/{1}/sincronizacoes-institucionais";
 
+        public const string URL_COMPONENTES_CURRICULARES_AGRUPAMENTO_TERRITORIO_SABER = "v1/componentes-curriculares/territorio-saber/agrupamentos";
     }
 }

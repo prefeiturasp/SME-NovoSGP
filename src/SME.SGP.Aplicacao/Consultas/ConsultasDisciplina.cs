@@ -208,7 +208,7 @@ namespace SME.SGP.Aplicacao
 
                     d.PossuiObjetivos = PossuiObjetivos(turma, Convert.ToInt32(dataInicioNovoSGP), componenteEOL, componentesCurricularesJurema);
                     d.CodigoComponenteCurricular = componenteEOL.Codigo;
-                    d.CodigoTerritorioSaber = componenteEOL.CodigoComponenteTerritorioSaber;
+                    d.CodigoComponenteCurricularTerritorioSaber = componenteEOL.CodigoComponenteTerritorioSaber;
                     d.Regencia = componenteEOL.Regencia;
 
                     if (d.TerritorioSaber)
@@ -303,7 +303,7 @@ namespace SME.SGP.Aplicacao
             foreach (var disciplina in disciplinasDto)
             {
                 var componenteCurricularCorrespondente = await mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(disciplina.CodigoComponenteCurricular, codigoTurma, string.Empty));
-                disciplina.CodigoTerritorioSaber = long.Parse(componenteCurricularCorrespondente.FirstOrDefault().codigoComponente);
+                disciplina.CodigoComponenteCurricularTerritorioSaber = long.Parse(componenteCurricularCorrespondente.FirstOrDefault().codigoComponente);
             }
 
         }
@@ -323,7 +323,7 @@ namespace SME.SGP.Aplicacao
             if (codigosDisciplinasAtribuicao.Any())
             {
                 idsDisciplinas = idsDisciplinas.Union(codigosDisciplinasAtribuicao).ToArray();
-                var componentesInclusao = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(codigosDisciplinasAtribuicao, codigoTurma));
+                var componentesInclusao = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosDisciplinasAtribuicao));
 
                 componentesInclusao.ToList().ForEach(ci =>
                 {
@@ -331,7 +331,7 @@ namespace SME.SGP.Aplicacao
                     {
                         Codigo = ci.CodigoComponenteCurricular,
                         CodigoComponenteCurricularPai = ci.CdComponenteCurricularPai,
-                        CodigoComponenteTerritorioSaber = ci.CodigoTerritorioSaber,
+                        CodigoComponenteTerritorioSaber = ci.CodigoComponenteCurricularTerritorioSaber,
                         Compartilhada = ci.Compartilhada,
                         Descricao = ci.NomeComponenteInfantil ?? ci.Nome,
                         LancaNota = ci.LancaNota,
@@ -539,13 +539,13 @@ namespace SME.SGP.Aplicacao
                     if (componenteCorrepondente != null)
                     {
                         d.CodigoComponenteCurricular = componenteCorrepondente.Codigo;
-                        d.CodigoTerritorioSaber = componenteCorrepondente.CodigoComponenteTerritorioSaber;
+                        d.CodigoComponenteCurricularTerritorioSaber = componenteCorrepondente.CodigoComponenteTerritorioSaber;
                         d.Nome = componenteCorrepondente.Descricao;
                     }
                 }
             });
 
-            var contemComponenteTerritorioSemCodigo = disciplinasEol.Any(d => d.TerritorioSaber && d.CodigoTerritorioSaber == 0);
+            var contemComponenteTerritorioSemCodigo = disciplinasEol.Any(d => d.TerritorioSaber && d.CodigoComponenteCurricularTerritorioSaber == 0);
             if (contemComponenteTerritorioSemCodigo)
             {
                 var componentesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
@@ -557,7 +557,7 @@ namespace SME.SGP.Aplicacao
                     if (componenteCorrespondente != null)
                     {
                         componente.CodigoComponenteCurricular = componenteCorrespondente.CodigoComponenteTerritorioSaber.Value;
-                        componente.CodigoTerritorioSaber = componenteCorrespondente.CodigoComponenteCurricular;
+                        componente.CodigoComponenteCurricularTerritorioSaber = componenteCorrespondente.CodigoComponenteCurricular;
                         componente.Nome = componenteCorrespondente.Nome;
                     }
                 }
@@ -698,7 +698,7 @@ namespace SME.SGP.Aplicacao
         {
             CodigoComponenteCurricular = disciplinaEol.CodigoComponenteCurricular,
             CodigoComponenteCurricularPai = disciplinaEol.CdComponenteCurricularPai,
-            CodigoComponenteTerritorioSaber = disciplinaEol.CodigoTerritorioSaber,
+            CodigoComponenteTerritorioSaber = disciplinaEol.CodigoComponenteCurricularTerritorioSaber,
             Nome = disciplinaEol.Nome,
             Regencia = disciplinaEol.Regencia,
             Compartilhada = disciplinaEol.Compartilhada,
@@ -727,7 +727,7 @@ namespace SME.SGP.Aplicacao
             Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue && disciplina.CodigoComponenteTerritorioSaber.Value > 0 ? disciplina.CodigoComponenteTerritorioSaber.Value : (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
-            CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
+            CodigoComponenteCurricularTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
             Nome = disciplina.Nome,
             NomeComponenteInfantil = disciplina.NomeComponenteInfantil,
             Regencia = disciplina.Regencia,
