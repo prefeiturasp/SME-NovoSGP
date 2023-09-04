@@ -102,9 +102,6 @@
 
         public const string URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS = "v1/componentes-curriculares/turmas/{0}/funcionarios/{1}/perfis/{2}/agrupaComponenteCurricular/{3}";
 
-        public const string URL_DISCIPLINAS_TURMA = "disciplinas/turma";
-
-        public const string URL_DISCIPLINAS_SEM_AGRUPAMENTO = "disciplinas/SemAgrupamento";
 
         public const string URL_MATRICULAS_ANOS_ANTERIORES = "matriculas/anos-anteriores";
 
