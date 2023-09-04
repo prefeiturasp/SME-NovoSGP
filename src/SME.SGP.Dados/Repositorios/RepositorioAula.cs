@@ -30,7 +30,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
 
-        public void SalvarVarias(IEnumerable<(Aula aula, long? planoAulaId)> aulas)
+        public async Task SalvarVarias(IEnumerable<(Aula aula, long? planoAulaId)> aulas)
         {
             var sql = @"copy aula ( 
                                         data_aula, 
@@ -86,8 +86,8 @@ namespace SME.SGP.Dados.Repositorios
 
                     unitOfWork.IniciarTransacao();
 
-                    database.Conexao
-                        .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+                    await database.Conexao
+                        .ExecuteAsync(sql, new { idsAulas = idsAulasAtualizacao });
 
                     sql = @"update registro_frequencia
                         set excluido = false,
@@ -97,8 +97,8 @@ namespace SME.SGP.Dados.Repositorios
                         where aula_id = any(@idsAulas) and
                               excluido;";
 
-                    database.Conexao
-                        .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+                    await database.Conexao
+                        .ExecuteAsync(sql, new { idsAulas = idsAulasAtualizacao });
 
                     sql = @"update registro_frequencia_aluno
                         set excluido = false,
@@ -107,13 +107,14 @@ namespace SME.SGP.Dados.Repositorios
                             alterado_rf = 'Sistema'
                         where aula_id = any(@idsAulas) and excluido;";
 
-                    database.Conexao
-                        .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+                    await database.Conexao
+                        .ExecuteAsync(sql, new { idsAulas = idsAulasAtualizacao });
 
                     sql = @"update plano_aula set aula_id = @aulaId where id = @planoAulaId;";
 
-                    aulas.Where(a => a.planoAulaId.HasValue).ToList()
-                        .ForEach(a => database.Conexao.Execute(sql, new { aulaId = a.aula.Id, planoAulaId = a.planoAulaId.Value }));
+                    var aulasPlano = aulas.Where(a => a.planoAulaId.HasValue).ToList();
+                    foreach (var aula in aulasPlano)
+                        await database.Conexao.ExecuteAsync(sql, new { aulaId = aula.aula.Id, planoAulaId = aula.planoAulaId.Value });
 
                     unitOfWork.PersistirTransacao();
                 }

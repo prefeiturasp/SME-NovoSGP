@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -9,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaSemestre(long turmaId, int semestre, string[] codigosAlunos);
         Task<int> ObterTotalAlunosTurmaSemestre(long turmaId,  int semestre);
         Task<int> ObterUltimoSemestreAcompanhamentoGerado(string alunoCodigo);
+        Task<IEnumerable<AcompanhamentoAluno>> ObterAlunosQueContemPercursoIndividalPreenchido(long turmaId, int semestre);
     }
 }

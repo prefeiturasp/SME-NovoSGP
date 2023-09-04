@@ -9,15 +9,15 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAbrangencia
     {
-        void AtualizaAbrangenciaHistorica(IEnumerable<long> paraAtualizar);
+        Task AtualizaAbrangenciaHistorica(IEnumerable<long> paraAtualizar);
 
-        void AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> paraAtualizar, int anoLetivo);
+        Task AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> paraAtualizar, int anoLetivo);
 
-        void ExcluirAbrangencias(IEnumerable<long> ids);
+        Task ExcluirAbrangencias(IEnumerable<long> ids);
 
-        void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);
+        Task ExcluirAbrangenciasHistoricas(IEnumerable<long> ids);
 
-        void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
+        Task InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login);
 
         Task<bool> JaExisteAbrangencia(string login, Guid perfil);
 
@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         bool PossuiAbrangenciaTurmaInfantilAtivaPorLogin(string login, bool cj = false);
 
-        void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
+        Task RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo);
 
         Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos);
 
@@ -68,5 +68,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false);
         Task<IEnumerable<string>> ObterProfessoresTurmaPorAbrangencia(string turmaCodigo);
         Task<IEnumerable<Turma>> ObterTurmasPorAbrangenciaCPParaCopiaAvaliacao(int anoLetivo, string codigoRf, int modalidadeTurma, string anoTurma, long turmaIdReferencia);
+        Task<bool> VerificarUsuarioLogadoPertenceMesmaUE(string codigoUe, string login, Guid perfil,Modalidade modalidade, int anoLetivo, int periodo, bool consideraHistorico = false);
     }
 }

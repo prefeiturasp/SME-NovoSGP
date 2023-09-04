@@ -112,8 +112,8 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
             }
             
-            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.Turma.CodigoTurma), cancellationToken);
-            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL, request.Turma.CodigoTurma, request.CodigoAluno), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, request.Turma.CodigoTurma, request.Bimestre, request.CodigoAluno), cancellationToken);
                         
             //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Aplicacao.Queries;
 
 namespace SME.SGP.Aplicacao
 {
@@ -31,9 +32,10 @@ namespace SME.SGP.Aplicacao
         public async Task Reprocessar(long fechamentoId, Usuario usuario = null)
             => await servicoFechamentoTurmaDisciplina.Reprocessar(fechamentoId, usuario);
 
-        public void Reprocessar(IEnumerable<long> fechamentoId, Usuario usuario = null)
+        public async Task Reprocessar(IEnumerable<long> fechamentoId, Usuario usuario = null)
         {
-            fechamentoId.ToList().ForEach(f => Reprocessar(f, usuario).Wait());
+            foreach (long id in fechamentoId)
+                await Reprocessar(id, usuario);
         }
 
         public async Task<IEnumerable<AuditoriaPersistenciaDto>> Salvar(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentosTurma, bool componenteSemNota = false)
@@ -46,7 +48,7 @@ namespace SME.SGP.Aplicacao
                 {
                     if (fechamentoTurma?.Justificativa != null)
                     {
-                        var tamanhoJustificativa = fechamentoTurma.Justificativa.Length;
+                        var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma.Justificativa));
                         var limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
                         
                         if (tamanhoJustificativa > limite)

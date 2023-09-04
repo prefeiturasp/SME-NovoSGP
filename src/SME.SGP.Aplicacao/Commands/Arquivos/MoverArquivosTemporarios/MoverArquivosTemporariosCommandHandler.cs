@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var imagensEditorNovo = regexImagensPasta.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
 
             novo = imagensEditorNovo.Any() ? RetornaImagensTemporariasParaMover(imagensEditorNovo) : novo;
-            var diferenca = novo.Any() ? novo.Except(atual) : new  List<string>();
+            var diferenca = novo.Any() ? novo.Except(atual) : Enumerable.Empty<string>();
 
             foreach (var item in diferenca)
             {

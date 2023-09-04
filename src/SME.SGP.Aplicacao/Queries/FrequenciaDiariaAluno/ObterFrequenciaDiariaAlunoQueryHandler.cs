@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var professorConsiderado = usuarioLogado.EhProfessor() ? usuarioLogado.Login : null;
 
             var componentesCurricularesTerritorioEquivalentes = await mediator

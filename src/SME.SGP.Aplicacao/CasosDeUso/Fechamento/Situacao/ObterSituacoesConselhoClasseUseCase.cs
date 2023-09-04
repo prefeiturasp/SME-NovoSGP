@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<List<SituacaoDto>> Executar()
         {
-            return await mediator.Send(new ObterSituacoesConselhoClasseQuery());
+            return await mediator.Send(ObterSituacoesConselhoClasseQuery.Instance);
         }
 
     }

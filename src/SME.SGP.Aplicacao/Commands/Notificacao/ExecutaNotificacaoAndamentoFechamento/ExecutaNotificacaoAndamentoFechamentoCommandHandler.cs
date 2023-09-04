@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                                                                                        request.PeriodoEncerrandoBimestre.PeriodoEscolarId,
                                                                                                        request.ModalidadeTipoCalendario.ObterModalidadesTurma(),
                                                                                                        DateTime.Now.Semestre()));
-            var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
+            var componentes = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             if (turmas != null && turmas.Any())
                 await EnviarNotificacaoTurmas(turmas, componentes, request.PeriodoEncerrandoBimestre.PeriodoEscolar, request.PeriodoEncerrandoBimestre.PeriodoFechamento.Ue);

@@ -12,7 +12,10 @@ namespace SME.SGP.Notificacoes.Hub
         {
         }
 
-        protected override Task Disparar(IHubCallerClients clients, MensagemExclusaoNotificacaoDto mensagem)
-            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoExcluida", mensagem.Codigo, mensagem.Status, mensagem.AnoAnterior);
+        protected override async Task DispararAsync(IHubCallerClients clients, MensagemExclusaoNotificacaoDto mensagem)
+        {
+            var iClientProxy = await clients.UsuarioAsync(mensagem.UsuarioRf);
+            await iClientProxy?.SendAsync("NotificacaoExcluida", mensagem.Codigo, mensagem.Status, mensagem.AnoAnterior);
+        }
     }
 }

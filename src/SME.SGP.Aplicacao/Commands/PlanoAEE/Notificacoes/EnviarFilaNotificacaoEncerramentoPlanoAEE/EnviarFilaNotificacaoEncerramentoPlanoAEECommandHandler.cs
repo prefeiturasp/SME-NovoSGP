@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(EnviarFilaNotificacaoEncerramentoPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var command = new NotificarEncerramentoPlanoAEECommand(request.PlanoAEEId, usuario);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.NotificarPlanoAEEEncerrado, command, Guid.NewGuid(), usuario));

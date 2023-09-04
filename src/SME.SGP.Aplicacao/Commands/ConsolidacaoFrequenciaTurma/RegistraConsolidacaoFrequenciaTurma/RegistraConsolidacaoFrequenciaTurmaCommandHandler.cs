@@ -25,9 +25,17 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.IniciarTransacao();
 
-                await repositorio.Excluir(request.TurmaId);
-                var id = await repositorio
-                    .Inserir(new ConsolidacaoFrequenciaTurma(request.TurmaId, request.QuantidadeAcimaMinimoFrequencia, request.QuantidadeAbaixoMinimoFrequencia));
+                var consolidacaoFrequenciaTurma = await repositorio.ObterConsolidacaoDashboardPorTurmaETipoPeriodo(request.TurmaId, request.TipoConsolidacao, request.PeriodoInicio, request.PeriodoFim) ?? new ConsolidacaoFrequenciaTurma();
+                consolidacaoFrequenciaTurma.QuantidadeAcimaMinimoFrequencia = request.QuantidadeAcimaMinimoFrequencia;
+                consolidacaoFrequenciaTurma.QuantidadeAbaixoMinimoFrequencia = request.QuantidadeAbaixoMinimoFrequencia;
+                consolidacaoFrequenciaTurma.PeriodoInicio = request.PeriodoInicio;
+                consolidacaoFrequenciaTurma.PeriodoFim = request.PeriodoFim;
+                consolidacaoFrequenciaTurma.TurmaId = request.TurmaId;
+                consolidacaoFrequenciaTurma.TipoConsolidacao = request.TipoConsolidacao;
+                consolidacaoFrequenciaTurma.TotalAulas = request.TotalAulas;
+                consolidacaoFrequenciaTurma.TotalFrequencias = request.TotalFrequencias;
+                
+                var id = await repositorio.SalvarConsolidacaoFrequenciaTurma(consolidacaoFrequenciaTurma);
 
                 unitOfWork.PersistirTransacao();
 

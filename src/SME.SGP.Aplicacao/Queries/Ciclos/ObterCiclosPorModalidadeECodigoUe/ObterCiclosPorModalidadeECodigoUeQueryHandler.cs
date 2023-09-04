@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             if (request.ConsideraAbrangencia && request.CodigoUe != "-99")
             {
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 if (usuario == null)
                     throw new NegocioException("Não foi possível obter o usuário logado.");
 

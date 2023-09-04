@@ -59,8 +59,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<long[]> ObterIdUesAbrangencia(ListarOcorrenciasQuery request)
         {
-            var login = await mediator.Send(new ObterLoginAtualQuery());
-            var perfil = await mediator.Send(new ObterPerfilAtualQuery());
+            var login = await mediator.Send(ObterLoginAtualQuery.Instance);
+            var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
             var dre = await mediator.Send(new ObterDREPorIdQuery(request.Filtro.DreId));
             var ues = await mediator.Send(new ObterUEsPorDREQuery(dre.CodigoDre, login, perfil, 0, 0, request.Filtro.ConsideraHistorico, request.Filtro.AnoLetivo));
 

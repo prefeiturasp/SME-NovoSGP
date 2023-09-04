@@ -3,6 +3,7 @@ using Polly;
 using Polly.Registry;
 using SME.SGP.Infra;
 using System;
+using System.Runtime.ConstrainedExecution;
 
 namespace SME.SGP.IoC
 {
@@ -10,22 +11,25 @@ namespace SME.SGP.IoC
     {
         public static void AddPolicies(this IServiceCollection services)
         {
-            IPolicyRegistry<string> registry = services.AddPolicyRegistry();
-
-            Random jitterer = new();
-            var policyFila = Policy.Handle<Exception>()
-              .WaitAndRetryAsync(3,
-                retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-                      + TimeSpan.FromMilliseconds(jitterer.Next(0, 30)));
-
-            registry.Add(PoliticaPolly.PublicaFila, policyFila);
-
-            var policySgp = Policy.Handle<Exception>()
-              .WaitAndRetryAsync(3,
-                retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-                      + TimeSpan.FromMilliseconds(jitterer.Next(0, 30)));
-
-            registry.Add(PoliticaPolly.SGP, policySgp);
+            var policyRegistry = services.AddPolicyRegistry();
+            var policy = Policy.Handle<Exception>()
+                .WaitAndRetryAsync(3, WithRetryAttempt);
+            policyRegistry.Add(PoliticaPolly.PublicaFila, policy);
+            policyRegistry.Add(PoliticaPolly.SGP, policy);
         }
+        
+        private static TimeSpan WithRetryAttempt(int retryAttempt)
+        {
+            var jitter = ConcurrentRandom.Next(0, 30);
+            var exponencialValue = Math.Pow(2, retryAttempt);
+            return TimeSpan.FromSeconds(exponencialValue) + TimeSpan.FromMilliseconds(jitter);
+        }
+    }
+
+    public static class ConcurrentRandom
+    {
+        [ThreadStatic] private static Random? _random;
+        private static Random Instance => _random ??= new Random();
+        public static int Next(int minValue, int maxValue) => Instance.Next(minValue, maxValue);
     }
 }

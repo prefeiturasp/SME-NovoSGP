@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public string Turma { get; set; }
         public bool PossuiEncaminhamentoAEE { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public bool EhMatriculadoTurmaPAP { get; set; }
         public string RfReponsavel { get; set; }
         public string NomeReponsavel { get; set; }
         public string RfPaaiReponsavel { get; set; }

@@ -508,7 +508,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, string[] anosEscolares, int anoLetivo)
+        public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo, string[] anosEscolares)
         {
             throw new NotImplementedException();
         }
@@ -1085,6 +1085,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     Perfis = new List<Guid>
                     {
                         Perfis.PERFIL_ADMUE
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "5555555",
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_PAEE,
                     }
                 }
             };

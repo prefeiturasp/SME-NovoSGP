@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -112,6 +113,9 @@ namespace SME.SGP.Aplicacao
 
                 if (disciplinasRegencia == null || !disciplinasRegencia.Any())
                     throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
+
+                if (turma.EhEJA())
+                    disciplinasRegencia = disciplinasRegencia.Where(a => a.CodigoComponenteCurricular != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
                 disciplinas.AddRange(disciplinasRegencia);
             }

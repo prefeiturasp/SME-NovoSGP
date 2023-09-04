@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar()
         {
-            var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
+            var usuarioId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             var usuarioAdm = await mediator.Send(new ObterUsuarioPossuiAbrangenciaAdmQuery(usuarioId));
 
             return usuarioAdm;

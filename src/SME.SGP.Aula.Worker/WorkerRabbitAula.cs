@@ -15,9 +15,10 @@ namespace SME.SGP.Aula.Worker
         public WorkerRabbitAula(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
+            IServicoMensageriaMetricas servicoMensageriaMetricas,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAula",
                 typeof(RotasRabbitSgpAula))
         {
@@ -44,6 +45,8 @@ namespace SME.SGP.Aula.Worker
             Comandos.Add(RotasRabbitSgpAula.PendenciasGeraisAulas, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisAulaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula, new ComandoRabbit("Executa exclusão de pendências da aula", typeof(IExecutarExclusaoPendenciasAulaUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula, new ComandoRabbit("Executa exclusão de pendencias de diário de bordo por aula", typeof(IExcluirPendenciaDiarioBordoPorAulaIdUseCase)));
+            Comandos.Add(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAulaUe, new ComandoRabbit("Verifica pendências de turmas e componentes sem aulas por ue", typeof(IPendenciaTurmaComponenteSemAulasPorUeUseCase), true));
+            Comandos.Add(RotasRabbitSgpAula.RotaExecutaPendenciasTurmasComponenteSemAula, new ComandoRabbit("Verifica pendências de turmas e componentes sem aulas", typeof(IPendenciaTurmaComponenteSemAulasUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaAlterarAulaFrequenciaTratar, new ComandoRabbit("Normaliza as frequências quando há uma alteração de aula única", typeof(IAlterarAulaFrequenciaTratarUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoAlunosFaltososDre, new ComandoRabbit("Notificação de alunos faltosos por DRE", typeof(INotificarAlunosFaltososDreUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoAlunosFaltososDreUe, new ComandoRabbit("Notificação de alunos faltosos da UE por DRE", typeof(INotificarAlunosFaltososDreUeUseCase), true));

@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<ComponenteCurricularDto>> VerificaComponentesUe(Ue ue)
         {
-            var componentesUe = await mediator.Send(new ObterComponentesCurricularesPorUeQuery(ue.CodigoUe));
+            var componentesUe = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(null, ue.CodigoUe));
             var componentesNotificacao = new[] { "1060", "1061", "1322" };
 
             return componentesUe.Where(a => componentesNotificacao.Contains(a.Codigo.ToString()));

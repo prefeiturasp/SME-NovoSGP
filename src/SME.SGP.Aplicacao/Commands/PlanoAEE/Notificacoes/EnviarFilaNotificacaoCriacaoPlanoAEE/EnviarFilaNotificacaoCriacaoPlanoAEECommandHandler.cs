@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(EnviarFilaNotificacaoCriacaoPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var command = new EnviarNotificacaoCriacaoPlanoAEECommand(request.PlanoAEEId, usuario);
 

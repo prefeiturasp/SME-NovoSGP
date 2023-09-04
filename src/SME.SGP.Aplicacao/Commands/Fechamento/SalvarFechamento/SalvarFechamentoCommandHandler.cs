@@ -13,6 +13,7 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Aplicacao.Queries;
 
 namespace SME.SGP.Aplicacao
 {
@@ -44,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
             var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
             var turma = await ObterTurma(fechamentoTurma.TurmaId);
 
             var fechamentoTurmaDisciplina = await MapearParaEntidade(fechamentoTurma.Id, fechamentoTurma, turma);
@@ -54,7 +55,7 @@ namespace SME.SGP.Aplicacao
             
             if (fechamentoTurma.Justificativa != null)
             {
-                var tamanhoJustificativa = fechamentoTurma.Justificativa.Length;
+                var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma.Justificativa));
                 var limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
 
                 if (tamanhoJustificativa > limite)
@@ -300,7 +301,7 @@ namespace SME.SGP.Aplicacao
                 throw e;
             }
         }
-        
+
         private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota, TipoNota tipoNota,string criadoRf, string criadoPor, double? notaAnterior, long? conceitoIdAnterior)
         {
             if (tipoNota == TipoNota.Nota)
@@ -508,7 +509,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento, string disciplinaId, Usuario usuario = null)
         {
             if (usuario == null)
-                usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var podePersistir = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, dataAula, usuario));
 

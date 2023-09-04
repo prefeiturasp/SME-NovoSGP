@@ -24,8 +24,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                                                                                              request.TurmaId,
                                                                                              request.Bimestre,
                                                                                              request.Inativo,
-                                                                                             request.Nota,
-                                                                                             request.ConceitoId,
                                                                                              request.ComponenteCurricularId);
 
 

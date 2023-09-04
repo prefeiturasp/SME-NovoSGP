@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
 
                     var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = ehHistorico } };
 
-                    repositorioAbrangencia.InserirAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
+                    await repositorioAbrangencia.InserirAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
             }
             else if (!atribuicaoCJ.Substituir)
