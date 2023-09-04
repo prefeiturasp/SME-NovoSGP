@@ -31,95 +31,50 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
 
-            var disciplinasUsuario = await mediator
-                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+            var componentesCurricularesUsuarioTurma = await mediator
+                                                            .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, 
+                                                                                                                          usuarioLogado.Login, 
+                                                                                                                          usuarioLogado.PerfilAtual));
+            var disciplinasPorIds = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(request.Ids));
 
-            var disciplinasAgrupadas = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(request.Ids));
-            
-            if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
+            IEnumerable<AtribuicaoCJ> componentesCurricularesDoProfessorCJInfantil = Enumerable.Empty<AtribuicaoCJ>();
+            if (usuarioLogado.EhProfessorCjInfantil())
+                componentesCurricularesDoProfessorCJInfantil = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+            foreach (var id in request.Ids)
             {
-                foreach (var disciplina in disciplinasAgrupadas)
+                var componenteUsuarioTurma = componentesCurricularesUsuarioTurma.FirstOrDefault(d => d.Codigo.Equals(id) || 
+                                                                                 d.CodigoComponenteTerritorioSaber.Equals(id));
+
+                if (componenteUsuarioTurma == null)
                 {
-                    var disciplinaCorrespondente = disciplinasUsuario
-                        .FirstOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
+                    if (usuarioLogado.EhProfessorCjInfantil())
+                        if (!componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
+                            continue;
 
-                    disciplina.RegistraFrequencia = await mediator
-                        .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
-
-                    disciplinasRetorno.Add(disciplina);
+                    disciplinasRetorno.Add(disciplinasPorIds.FirstOrDefault(d => d.CodigoComponenteCurricular.Equals(id)));
                 }
-            }
-            else
-            {
-                foreach (var id in request.Ids)
-                {
-                    var disciplinaCorrespondente = disciplinasUsuario
-                        .FirstOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));
-
-                    if (disciplinaCorrespondente != null)
+                else
+                    disciplinasRetorno.Add(new DisciplinaDto()
                     {
-                        var registraFrequencia = await mediator
-                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente != null && disciplinaCorrespondente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo));
-
-                        disciplinasRetorno.Add(new DisciplinaDto()
-                        {
-                            Id = disciplinaCorrespondente.TerritorioSaber ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo,
-                            CodigoComponenteCurricular = disciplinaCorrespondente.Codigo,
-                            CdComponenteCurricularPai = disciplinaCorrespondente.CodigoComponenteCurricularPai,
-                            CodigoComponenteCurricularTerritorioSaber = disciplinaCorrespondente.CodigoComponenteTerritorioSaber,
-                            Compartilhada = disciplinaCorrespondente.Compartilhada,
-                            Nome = disciplinaCorrespondente.Descricao,
-                            NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(id)) : disciplinaCorrespondente.Descricao,
-                            PossuiObjetivos = disciplinaCorrespondente.PossuiObjetivos,
-                            Regencia = disciplinaCorrespondente.Regencia,
-                            RegistraFrequencia = registraFrequencia,
-                            TerritorioSaber = disciplinaCorrespondente.TerritorioSaber,
-                            LancaNota = disciplinaCorrespondente.LancaNota,
-                            TurmaCodigo = disciplinaCorrespondente.TurmaCodigo,
-                            GrupoMatrizId = disciplinaCorrespondente.GrupoMatriz?.Id ?? 0,
-                            GrupoMatrizNome = disciplinaCorrespondente.GrupoMatriz?.Nome ?? ""
-                        });
-                    }
-                    else
-                    {
-                        if (usuarioLogado.EhProfessorCjInfantil())
-                        {
-                           var componentesCurricularesDoProfessorCJInfantil = await mediator
-                                .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
-
-                            if (!componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
-                                continue;
-                        }
-
-                        var disciplina = disciplinasAgrupadas.FirstOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
-                            .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
-
-                        if (disciplina != null)
-                        {
-                            disciplina.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
-
-                            disciplina.LancaNota = disciplina.TerritorioSaber ? false : disciplina.LancaNota;
-
-                            if (disciplina.GrupoMatrizId == 0 || String.IsNullOrEmpty(disciplina.GrupoMatrizNome))
-                            {
-                                var dadosGrupoMatriz = await mediator.Send(new ObterComponenteCurricularGrupoMatrizPorComponenteIdQuery() { ComponenteCurricularId = disciplina.CodigoComponenteCurricular });
-                                if (dadosGrupoMatriz != null)
-                                {
-                                    disciplina.GrupoMatrizId = dadosGrupoMatriz.GrupoMatrizId;
-                                    disciplina.GrupoMatrizNome = dadosGrupoMatriz.GrupoMatrizNome ?? "";
-                                }
-                            }
-
-                            if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
-                                disciplina.NomeComponenteInfantil = disciplina.Nome;
-
-                            disciplinasRetorno.Add(disciplina);
-                        }
-                    }
-                }
+                        Id = componenteUsuarioTurma.TerritorioSaber ? componenteUsuarioTurma.CodigoComponenteTerritorioSaber : componenteUsuarioTurma.Codigo,
+                        CodigoComponenteCurricular = componenteUsuarioTurma.Codigo,
+                        CdComponenteCurricularPai = componenteUsuarioTurma.CodigoComponenteCurricularPai,
+                        CodigoComponenteCurricularTerritorioSaber = componenteUsuarioTurma.CodigoComponenteTerritorioSaber,
+                        Compartilhada = componenteUsuarioTurma.Compartilhada,
+                        Nome = componenteUsuarioTurma.Descricao,
+                        NomeComponenteInfantil = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? componenteUsuarioTurma.DescricaoComponenteInfantil : componenteUsuarioTurma.Descricao,
+                        PossuiObjetivos = componenteUsuarioTurma.PossuiObjetivos,
+                        Regencia = componenteUsuarioTurma.Regencia,
+                        RegistraFrequencia = componenteUsuarioTurma.RegistraFrequencia,
+                        TerritorioSaber = componenteUsuarioTurma.TerritorioSaber,
+                        LancaNota = componenteUsuarioTurma.LancaNota,
+                        TurmaCodigo = componenteUsuarioTurma.TurmaCodigo,
+                        GrupoMatrizId = componenteUsuarioTurma.GrupoMatriz?.Id ?? 0,
+                        GrupoMatrizNome = componenteUsuarioTurma.GrupoMatriz?.Nome ?? ""
+                    });
             }
-
             return disciplinasRetorno;
         }
     }

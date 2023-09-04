@@ -64,13 +64,13 @@ namespace SME.SGP.Aplicacao
             
             return componentesCurricularesEol.Select(cc => new DisciplinaDto()
                     {
+                        Id = cc.TerritorioSaber ? cc.CodigoComponenteTerritorioSaber : cc.Codigo,
                         CodigoComponenteCurricular = cc.Codigo,
                         CodigoComponenteCurricularTerritorioSaber = cc.CodigoComponenteTerritorioSaber,
                         CdComponenteCurricularPai = cc.CodigoComponenteCurricularPai,
                         Compartilhada = cc.Compartilhada,
                         GrupoMatrizId = cc.GrupoMatriz?.Id ?? 0,
                         GrupoMatrizNome = cc.GrupoMatriz?.Nome ?? string.Empty,
-                        Id = cc.Codigo,
                         LancaNota = cc.LancaNota,
                         Nome = cc.Descricao,
                         NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
