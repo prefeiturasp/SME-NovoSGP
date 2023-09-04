@@ -34,8 +34,8 @@ namespace SME.SGP.Aplicacao.Queries
                 tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
                 tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c=> tiposTurmas.All(x=> x != c)));
                 
-                var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas
-                                                            , request.Historico), cancellationToken);
+                var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas,
+                    consideraHistorico:request.Historico,semestre:request.Turma.EhEJA() ? request.Turma.Semestre : null), cancellationToken);
 
                 if (request.Historico.HasValue && request.Historico.Value)
                 {
