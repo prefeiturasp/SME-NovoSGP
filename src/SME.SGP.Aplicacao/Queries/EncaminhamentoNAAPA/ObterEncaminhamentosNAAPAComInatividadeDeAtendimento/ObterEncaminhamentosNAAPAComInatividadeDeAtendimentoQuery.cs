@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.UeId)
                 .GreaterThan(0)
-                .WithMessage("O Id da unidade escolar deve ser informada para obter as informações de inatividade de atendimento do naapa.");
+                .WithMessage("O id da unidade escolar deve ser informado para obter as informações de inatividade do atendimento do naapa.");
 
         }
     }

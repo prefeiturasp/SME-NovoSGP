@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.EncaminhamentoId)
                 .NotEmpty()
-                .WithMessage("É id do encaminhamento naapa deve ser informado para atualização da última data de notificação de inatividade atendimento.");
+                .WithMessage("O id do encaminhamento naapa deve ser informado para atualização da última data de notificação de inatividade do atendimento.");
         }
     }
 }

@@ -445,8 +445,11 @@ namespace SME.SGP.Dados.Repositorios
                 where not exists(select 1
                                  from secao_encaminhamento_naapa sen
                                  where sen.nome_componente = '{SECAO_ITINERANCIA_NOME}'
+                                   and not sen.excluido 
                                    and sen.id = ens.secao_encaminhamento_id)
                 and en.situacao = any(@situacoes)
+                and not en.excluido
+                and not ens.excluido
                 and coalesce(en.data_ultima_notificacao_sem_atendimento, en.criado_em) + interval '30 day' <= now()");
             query.AppendLine(" union");
             query.AppendLine($@"select en.aluno_codigo AlunoCodigo, en.aluno_nome AlunoNome, en.turma_id TurmaId, en.id EncaminhamentoId
@@ -459,8 +462,15 @@ namespace SME.SGP.Dados.Repositorios
                            inner join encaminhamento_naapa_questao enq on enq.id = enr.questao_encaminhamento_id
                            inner join questao q on q.id = enq.questao_id
                            where q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
+                             and not enr.excluido
+                             and not enq.excluido
+                             and not q.excluido
                            group by enq.encaminhamento_naapa_secao_id) tab_dt_atendimento on tab_dt_atendimento.encaminhamento_naapa_secao_id = ens.id
                 where en.situacao = any(@situacoes)
+                  and not en.excluido
+                  and not ens.excluido
+                  and not sen.excluido 
+                  and not qto.excluido
                   and coalesce(en.data_ultima_notificacao_sem_atendimento, tab_dt_atendimento.dataAtendimento) + interval '30 day' <= now()");
             query.AppendLine(")");
             query.AppendLine($@"select ia.AlunoCodigo, ia.AlunoNome, ia.TurmaId, ia.EncaminhamentoId, t.nome TurmaNome, ue.nome UeNome, dre.abreviacao DreNome
