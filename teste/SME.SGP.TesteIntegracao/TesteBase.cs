@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao
                 typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakeServicoEol), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQueryHandlerFakeServicoEol), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorIdsQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesPorIdsQueryHandlerFakeServicoEol), ServiceLifetime.Scoped));
         }
 
         public Task InserirNaBase<T>(IEnumerable<T> objetos) where T : class, new()

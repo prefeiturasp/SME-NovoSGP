@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao
         {
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
-            CodigoTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
+            CodigoComponenteCurricularTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
             GrupoMatrizId = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Id : default,
             GrupoMatrizNome = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Nome : string.Empty,
             Nome = disciplina.Nome,

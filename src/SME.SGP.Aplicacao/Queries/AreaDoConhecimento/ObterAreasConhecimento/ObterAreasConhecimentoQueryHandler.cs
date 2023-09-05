@@ -25,7 +25,6 @@ namespace SME.SGP.Aplicacao
                 .Select(a => a.CodigoComponenteCurricular).ToList();
 
             TratarComponentesRegencia(request, listaCodigosComponentes);
-            TratarComponentesTerritorio(request, listaCodigosComponentes);
 
             if (listaCodigosComponentes == null || !listaCodigosComponentes.Any())
                 return default;
@@ -51,32 +50,6 @@ namespace SME.SGP.Aplicacao
 
                     if (componentesRegencia != null && componentesRegencia.Any())
                         listaCodigosComponentes.AddRange(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
-                });
-            }
-        }
-
-        private void TratarComponentesTerritorio(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
-        {
-            if (request.ComponentesCurriculares.Any(cc => cc.TerritorioSaber))
-            {
-                var componentesTerritorio = request.ComponentesCurriculares
-                    .Where(cc => cc.TerritorioSaber).ToList();
-
-                componentesTerritorio.ForEach(cc =>
-                {
-                    if(cc.CodigoComponenteCurricular > 0 && !string.IsNullOrEmpty(cc.TurmaCodigo))
-                    {
-                        var componenteTerritorioEquivalente = mediator
-                        .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(cc.CodigoComponenteCurricular, cc.TurmaCodigo, null)).Result;
-
-                        if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
-                        {
-                            var codigoConsiderado = componenteTerritorioEquivalente.Select(ct => ct.codigoComponente)
-                                .Except(new string[] { cc.CodigoComponenteCurricular.ToString() }).FirstOrDefault();
-                            if (codigoConsiderado != null && long.Parse(codigoConsiderado) < cc.CodigoComponenteCurricular)
-                                listaCodigosComponentes.Add(long.Parse(codigoConsiderado));
-                        }
-                    }
                 });
             }
         }

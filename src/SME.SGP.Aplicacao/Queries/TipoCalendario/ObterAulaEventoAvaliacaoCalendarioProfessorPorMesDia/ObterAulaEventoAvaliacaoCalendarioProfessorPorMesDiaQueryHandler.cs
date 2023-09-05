@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
                         .FirstOrDefault(a => a.CodigoComponenteCurricular == discplinaIdAula ||
                                              a.Id == discplinaIdAula ||
-                                             a.CodigoTerritorioSaber == discplinaIdAula ||
+                                             a.CodigoComponenteCurricularTerritorioSaber == discplinaIdAula ||
                                              (a.CdComponenteCurricularPai.HasValue && a.CdComponenteCurricularPai.Value == discplinaIdAula));
 
                     if (componenteCurricular != null && !componenteCurricular.RegistraFrequencia)
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
                     var professorTitular = professoresTitulares?
                         .FirstOrDefault(p => p.DisciplinasId.Contains(discplinaIdAula) ||
-                        (componenteCurricular != null && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoTerritorioSaber))));
+                        (componenteCurricular != null && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoComponenteCurricularTerritorioSaber))));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {

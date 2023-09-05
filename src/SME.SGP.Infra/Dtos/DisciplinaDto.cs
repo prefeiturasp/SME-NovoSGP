@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
     {
         public long Id { get; set; }
         public long CodigoComponenteCurricular { get; set; }
-        public long CodigoTerritorioSaber { get; set; }
+        public long CodigoComponenteCurricularTerritorioSaber { get; set; }
         [JsonProperty("codDisciplinaPai")]
         public long? CdComponenteCurricularPai { get; set; }
         public bool Compartilhada { get; set; }
@@ -32,7 +32,7 @@ namespace SME.SGP.Infra
         public static long[] ObterCodigos(this IEnumerable<DisciplinaDto> disciplinas)
         {
             var codigosComponentes = disciplinas.Select(cc => cc.CodigoComponenteCurricular).ToList();
-            codigosComponentes.AddRange(disciplinas.Select(cc => cc.CodigoTerritorioSaber).Where(cc => cc != 0).ToList());
+            codigosComponentes.AddRange(disciplinas.Select(cc => cc.CodigoComponenteCurricularTerritorioSaber).Where(cc => cc != 0).ToList());
             return codigosComponentes.ToArray();
         }
 
@@ -41,8 +41,8 @@ namespace SME.SGP.Infra
             disciplinas.ForEach(componenteCurricular =>
             {
                 var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.CodigoComponenteCurricular
-                                                                                    || (componenteCurricular.CodigoTerritorioSaber != 0 &&
-                                                                                        cc.Codigo == componenteCurricular.CodigoTerritorioSaber)).FirstOrDefault();
+                                                                                    || (componenteCurricular.CodigoComponenteCurricularTerritorioSaber != 0 &&
+                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteCurricularTerritorioSaber)).FirstOrDefault();
 
                 if (componenteCurricularSgp != null)
                 {
@@ -54,8 +54,8 @@ namespace SME.SGP.Infra
                     componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia;
                     componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
 
-                    var naoEhComponenteTerritorioExtenso = componenteCurricular.CodigoTerritorioSaber == 0 ||
-                                                            componenteCurricular.CodigoComponenteCurricular == componenteCurricular.CodigoTerritorioSaber;
+                    var naoEhComponenteTerritorioExtenso = componenteCurricular.CodigoComponenteCurricularTerritorioSaber == 0 ||
+                                                            componenteCurricular.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricularTerritorioSaber;
                     if (naoEhComponenteTerritorioExtenso)
                     {
                         componenteCurricular.Nome = componenteCurricularSgp.Nome;
