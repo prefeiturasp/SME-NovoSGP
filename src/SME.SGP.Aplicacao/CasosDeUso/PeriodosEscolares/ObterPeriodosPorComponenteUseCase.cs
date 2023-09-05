@@ -30,9 +30,6 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var codigosComponentesBusca = new List<long>() { componenteCodigo };
-                /*var componentesTerritorioEquivalentes = await mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCodigo, turmaCodigo, usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorCj() ? usuarioLogado.Login : null));
-                if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any())
-                    codigosComponentesBusca.AddRange(componentesTerritorioEquivalentes.Select(ct => long.Parse(ct.codigoComponente)));*/
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, codigosComponentesBusca.ToArray(), bimestre, usuarioLogado.EhSomenteProfessorCj()));
                 listaPeriodos = periodoEscolar.Any() ? SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura) : listaPeriodos;
             }
