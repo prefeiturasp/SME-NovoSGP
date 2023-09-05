@@ -52,24 +52,12 @@ namespace SME.SGP.Aplicacao
                         var componenteListaProfessor = componentesCurricularesEolProfessor
                             .Any(ccp => ccp.Codigo == ccj.DisciplinaId || ccp.CodigoComponenteTerritorioSaber == ccj.DisciplinaId);
 
-                        /*(string codigoComponente, string professor)[] codigosTerritorioEquivalentes = null;*/
                         var codigoComponenteEquivalente = (long?)null;
 
                         if (!componenteListaProfessor)
                         {
-                            /*codigosTerritorioEquivalentes = mediator
-                                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(ccj.DisciplinaId, turma.CodigoTurma, null)).Result;
-
-                            var componentesConsiderados = codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any() ? 
-                                codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(new string[] { ccj.DisciplinaId.ToString() }) : null;
-
-                            if (componentesConsiderados != null && componentesConsiderados.Any())
-                                codigoComponenteEquivalente = long.Parse(codigosTerritorioEquivalentes.First().codigoComponente);
-                            else*/
-                            {
-                                codigoComponenteEquivalente = ccj.Modalidade == Modalidade.EducacaoInfantil ?
-                                    (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;
-                            }                                
+                            codigoComponenteEquivalente = ccj.Modalidade == Modalidade.EducacaoInfantil ?
+                                    (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;                               
                         }
 
                         componentesCurricularesEolProfessor.Add(new ComponenteCurricularEol()

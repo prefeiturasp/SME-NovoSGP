@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
-            var idsComponentesCurricularesAgrupamentoTerritório = request.Ids.Where(id => id >= 800000);
+            var idsComponentesCurricularesAgrupamentoTerritório = request.Ids.Where(id => id >= TerritorioSaberConstants.COMPONENTE_AGRUPAMENTO_TERRITORIO_SABER_ID_INICIAL);
             var idsComponentesCurriculares = request.Ids.Where(id => !idsComponentesCurricularesAgrupamentoTerritório.Contains(id));
             List<DisciplinaDto> retorno = new List<DisciplinaDto>();
             if (idsComponentesCurriculares.Any())
