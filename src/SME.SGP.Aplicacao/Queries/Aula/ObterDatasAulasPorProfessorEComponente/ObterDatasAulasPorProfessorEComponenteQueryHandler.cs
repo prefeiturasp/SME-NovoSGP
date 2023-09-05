@@ -111,11 +111,8 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var codigosTerritorio = componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.Codigo);
-                /*var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
-                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login)) : null;*/
-
                 aulasPermitidas = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, null /*professoresDesconsiderados*/).Select(a => a.Id).ToList();
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor).Select(a => a.Id).ToList();
             }
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
