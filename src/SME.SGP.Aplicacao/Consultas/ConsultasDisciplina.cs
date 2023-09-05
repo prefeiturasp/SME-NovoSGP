@@ -304,17 +304,6 @@ namespace SME.SGP.Aplicacao
                     && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turma.ModalidadeCodigo);
         }
 
-
-        /*private async Task tratarDisciplinasTerritorioSaber(IEnumerable<DisciplinaDto> disciplinasDto, string codigoTurma)
-        {
-            foreach (var disciplina in disciplinasDto)
-            {
-                var componenteCurricularCorrespondente = await mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(disciplina.CodigoComponenteCurricular, codigoTurma, string.Empty));
-                disciplina.CodigoComponenteCurricularTerritorioSaber = long.Parse(componenteCurricularCorrespondente.FirstOrDefault().codigoComponente);
-            }
-
-        }*/
-
         private async Task<long[]> ObterDisciplinasAtribuicaoCJParaTurma(string codigoTurma, List<ComponenteCurricularEol> componentesCurriculares, long[] idsDisciplinas)
         {
             var atribuicoesCJTurma = await ObterDisciplinasPerfilCJ(codigoTurma, null);
