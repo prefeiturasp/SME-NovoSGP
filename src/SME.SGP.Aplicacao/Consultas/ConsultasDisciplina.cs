@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<List<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurma(string codigoTurma, bool turmaPrograma, bool realizarAgrupamentoComponente = false)
-        {//Aqui
+        {
             List<DisciplinaDto> disciplinasDto;
             var disciplinasEol = new List<DisciplinaResposta>();
 
