@@ -738,7 +738,7 @@ namespace SME.SGP.Aplicacao
             RegistraFrequencia = disciplina.RegistroFrequencia,
             LancaNota = disciplina.LancaNota,
             PossuiObjetivos = !turmaPrograma && !ehEnsinoMedio && consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular),
-            ObjetivosAprendizagemOpcionais = _componentesObjetivosAprendizagemParametros.Contains(disciplina.CodigoComponenteCurricular.ToString()) || consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial).Result,
+            ObjetivosAprendizagemOpcionais = _componentesObjetivosAprendizagemParametros != null ? _componentesObjetivosAprendizagemParametros.Contains(disciplina.CodigoComponenteCurricular.ToString()) || consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial).Result : false,
             Professor = disciplina.Professor
         };
 
