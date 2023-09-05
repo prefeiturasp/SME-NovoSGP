@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
 
-            await CarregueComponentesObjetivoApredizagemParametro();
+            await CarregueComponentesObjetivoApredizagemParametro(turma.AnoLetivo);
 
             if (usuarioLogado.EhProfessorCj())
             {
@@ -753,10 +753,9 @@ namespace SME.SGP.Aplicacao
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
         }
 
-        private async Task CarregueComponentesObjetivoApredizagemParametro()
+        private async Task CarregueComponentesObjetivoApredizagemParametro(int anoLetivo)
         {
-            const int ANO_LETIVO = 2023;
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ObjetivosAprendizagemOpcionaisPlanoAulaAnoComponente, ANO_LETIVO));
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ObjetivosAprendizagemOpcionaisPlanoAulaAnoComponente, anoLetivo));
 
             if (parametro != null)
             {
