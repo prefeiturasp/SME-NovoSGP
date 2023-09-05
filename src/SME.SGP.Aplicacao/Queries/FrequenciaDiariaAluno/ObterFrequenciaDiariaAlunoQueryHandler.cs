@@ -32,18 +32,12 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            var professorConsiderado = usuarioLogado.EhProfessor() ? usuarioLogado.Login : null;
 
-            /*var componentesCurricularesTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
-
-            if (componentesCurricularesTerritorioEquivalentes != default)
-            {
-                codigosComponentesConsiderados.AddRange(componentesCurricularesTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
-                professorConsiderado = componentesCurricularesTerritorioEquivalentes.First().professor;
-            }*/
-
-            var professorRfAula = turma.EhTurmaInfantil ? string.Empty : professorConsiderado;
+            var professorRfAula = turma.EhTurmaInfantil 
+                                    ? string.Empty 
+                                    : (usuarioLogado.EhProfessor() 
+                                        ? usuarioLogado.Login 
+                                        : null);
             
             var quantidadeDiasPorTipoFrequencia = await repositorioFrequenciaDiaria.ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao, bimestres, request.AlunoCodigo.ToString()
                 , request.TurmaId, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), professorRfAula);
