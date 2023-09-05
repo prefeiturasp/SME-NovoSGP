@@ -170,6 +170,6 @@ namespace SME.SGP.Dominio
         GerarConsolidadoAtendimentoNAAPA = 105,
         DiasAposInicioPeriodoLetivoComponenteSemAula = 106,
         ExecutaPendenciaComponenteSemAula = 107,
-        ObjetivosAprendizagemOpcionaisPlanoAulaAnoComponente = 108
+        ComponentesParaObjetivosAprendizagemOpcionais = 108
     }
 }
