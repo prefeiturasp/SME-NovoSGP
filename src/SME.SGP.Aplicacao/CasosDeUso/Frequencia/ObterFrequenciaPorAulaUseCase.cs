@@ -78,16 +78,16 @@ namespace SME.SGP.Aplicacao
 
             var professorConsiderado = usuarioLogado.Login;
 
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null,turma.Id));
+            /*var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null,turma.Id));*/
 
             var codigosComponentesConsiderados = new List<long>() { param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId) };
 
-            if (codigosTerritorioEquivalentes != default)
+            /*if (codigosTerritorioEquivalentes != default)
             {
                 codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
                 professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-            }
+            }*/
 
             var componenteCurricularAula = await mediator
                 .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), codigoTurma: turma.CodigoTurma));

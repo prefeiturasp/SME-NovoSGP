@@ -50,17 +50,17 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator
                 .Send(ObterUsuarioLogadoQuery.Instance);
 
-            var codigosTerritoriosEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
+            /*var codigosTerritoriosEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));*/
 
             var componentesCurricularesId = new List<long>() { long.Parse(request.DisciplinaId) };
 
             var professor = string.Empty;
-            if (codigosTerritoriosEquivalentes != null && codigosTerritoriosEquivalentes.Any())
+            /*if (codigosTerritoriosEquivalentes != null && codigosTerritoriosEquivalentes.Any())
             {
                 componentesCurricularesId.AddRange(codigosTerritoriosEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(componentesCurricularesId));
                 professor = codigosTerritoriosEquivalentes.First().professor;
-            }
+            }*/
 
             var disciplinasEOL = await repositorioComponenteCurricular
                 .ObterDisciplinasPorIds(componentesCurricularesId.ToArray()); 

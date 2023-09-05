@@ -27,14 +27,14 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { request.DisciplinaId };
-            var codigosTerritorioEquivalentes = await mediator
+            /*var codigosTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), request.TurmaCodigo, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
 
             if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
             {
                 codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
                 professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-            }
+            }*/
 
             var faltasNaoCompensadas = await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacao(
                 request.CompensacaoId,

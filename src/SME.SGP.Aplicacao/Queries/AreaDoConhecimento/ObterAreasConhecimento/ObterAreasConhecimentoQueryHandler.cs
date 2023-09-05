@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
         private void TratarComponentesTerritorio(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
         {
-            if (request.ComponentesCurriculares.Any(cc => cc.TerritorioSaber))
+            /*if (request.ComponentesCurriculares.Any(cc => cc.TerritorioSaber))
             {
                 var componentesTerritorio = request.ComponentesCurriculares
                     .Where(cc => cc.TerritorioSaber).ToList();
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                 });
-            }
+            }*/
         }
     }
 }

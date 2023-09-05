@@ -59,14 +59,14 @@ namespace SME.SGP.Aplicacao
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { disciplinaId };
 
-            var codigosTerritoEquivalentes = await
+            /*var codigosTerritoEquivalentes = await
                 mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(disciplinaId), turmaId, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
 
             if (codigosTerritoEquivalentes != null && codigosTerritoEquivalentes.Any())
             {
                 codigosComponentesConsiderados.AddRange(codigosTerritoEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
                 professorConsiderado = codigosTerritoEquivalentes.First().professor;
-            }
+            }*/
 
             var listaCompensacoes = await repositorioCompensacaoAusencia
                 .Listar(Paginacao, turmaId, codigosComponentesConsiderados.ToArray(), bimestre, nomeAtividade, professorConsiderado);
@@ -137,14 +137,14 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { compensacao.DisciplinaId };
-            var codigosTerritorioEquivalentes = await mediator
+            /*var codigosTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(compensacao.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
             
             if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
             {
                 codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
                 professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-            }
+            }*/
 
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(codigosComponentesConsiderados.Select(c => long.Parse(c)).ToArray());
             if (disciplinasEOL == null || !disciplinasEOL.Any())

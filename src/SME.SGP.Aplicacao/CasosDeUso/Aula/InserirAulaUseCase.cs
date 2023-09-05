@@ -26,13 +26,13 @@ namespace SME.SGP.Aplicacao
             if (inserirAulaDto.TipoAula == TipoAula.Reposicao && inserirAulaDto.RecorrenciaAula != RecorrenciaAula.AulaUnica)
                 throw new NegocioException("Não é possível cadastrar aula de reposição com recorrência!");
 
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
+            /*var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(inserirAulaDto.CodigoComponenteCurricular, inserirAulaDto.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));*/
 
             var codigosComponentesConsiderados = new List<long>() { inserirAulaDto.CodigoComponenteCurricular };
 
-            if (codigosTerritorioEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+            /*if (codigosTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));*/
 
             var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase
                 .Executar(new FiltroPodeCadastrarAulaDto(0, inserirAulaDto.CodigoTurma,
@@ -41,8 +41,8 @@ namespace SME.SGP.Aplicacao
                                                          inserirAulaDto.EhRegencia,
                                                          inserirAulaDto.TipoAula));
 
-            var professorConsiderado = codigosTerritorioEquivalentes != default && usuarioLogado.EhGestorEscolar() ?
-                                       codigosTerritorioEquivalentes.First().professor : usuarioLogado.Login;
+            /*var professorConsiderado = codigosTerritorioEquivalentes != default && usuarioLogado.EhGestorEscolar() ?
+                                       codigosTerritorioEquivalentes.First().professor : usuarioLogado.Login;*/
 
             // Para inserção considera o código extenso de território se for o caso
             var codigoComponente = codigosComponentesConsiderados.OrderBy(c => c).Last();
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                                                                            inserirAulaDto.CodigoUe,
                                                                            inserirAulaDto.EhRegencia,
                                                                            codigoTerritorioEquivalente,
-                                                                           professorConsiderado));
+                                                                            usuarioLogado.Login));
                 }
                 else
                 {

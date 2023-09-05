@@ -34,14 +34,14 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var professorConsiderado = usuarioLogado.EhProfessor() ? usuarioLogado.Login : null;
 
-            var componentesCurricularesTerritorioEquivalentes = await mediator
+            /*var componentesCurricularesTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
 
             if (componentesCurricularesTerritorioEquivalentes != default)
             {
                 codigosComponentesConsiderados.AddRange(componentesCurricularesTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
                 professorConsiderado = componentesCurricularesTerritorioEquivalentes.First().professor;
-            }
+            }*/
 
             var professorRfAula = turma.EhTurmaInfantil ? string.Empty : professorConsiderado;
             

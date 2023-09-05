@@ -234,7 +234,7 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(a => a.NomeAluno)
                     .ThenBy(a => a.NomeValido());
 
-                (string codigoComponente, string professor)[] codigosTerritoriosEquivalentes = null;
+                /*(string codigoComponente, string professor)[] codigosTerritoriosEquivalentes = null;
                 if (disciplina.TerritorioSaber)
                 {
                     codigosTerritoriosEquivalentes = await mediator
@@ -242,12 +242,12 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (codigosTerritoriosEquivalentes != null && codigosTerritoriosEquivalentes.Any())
-                    codigosDisciplinas.AddRange(codigosTerritoriosEquivalentes.Select(c => c.codigoComponente).Except(codigosDisciplinas));
+                    codigosDisciplinas.AddRange(codigosTerritoriosEquivalentes.Select(c => c.codigoComponente).Except(codigosDisciplinas));*/
 
                 var turmaPossuiFrequenciaRegistrada = await mediator
                     .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosDisciplinas.ToArray(), bimestreDoPeriodo.Id));
 
-                var professorConsiderado = codigosTerritoriosEquivalentes?.First().professor;
+                /*var professorConsiderado = codigosTerritoriosEquivalentes?.First().professor;*/
 
                 var codigosAlunos = alunosValidosComOrdenacao.Select(c => c.CodigoAluno).Distinct().ToArray();
 
@@ -292,7 +292,7 @@ namespace SME.SGP.Aplicacao
                         alunoDto.Informacao = marcador.Descricao;                    
 
                     var frequenciaAluno = await mediator
-                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId, professorConsiderado));
+                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId/*, professorConsiderado*/));
 
                     if (frequenciaAluno != null)
                     {

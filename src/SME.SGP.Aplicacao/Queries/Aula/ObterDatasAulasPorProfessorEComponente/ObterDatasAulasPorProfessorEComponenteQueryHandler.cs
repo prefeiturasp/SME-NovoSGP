@@ -52,12 +52,12 @@ namespace SME.SGP.Aplicacao
                         var componenteListaProfessor = componentesCurricularesEolProfessor
                             .Any(ccp => ccp.Codigo == ccj.DisciplinaId || ccp.CodigoComponenteTerritorioSaber == ccj.DisciplinaId);
 
-                        (string codigoComponente, string professor)[] codigosTerritorioEquivalentes = null;
+                        /*(string codigoComponente, string professor)[] codigosTerritorioEquivalentes = null;*/
                         var codigoComponenteEquivalente = (long?)null;
 
                         if (!componenteListaProfessor)
                         {
-                            codigosTerritorioEquivalentes = mediator
+                            /*codigosTerritorioEquivalentes = mediator
                                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(ccj.DisciplinaId, turma.CodigoTurma, null)).Result;
 
                             var componentesConsiderados = codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any() ? 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
 
                             if (componentesConsiderados != null && componentesConsiderados.Any())
                                 codigoComponenteEquivalente = long.Parse(codigosTerritorioEquivalentes.First().codigoComponente);
-                            else
+                            else*/
                             {
                                 codigoComponenteEquivalente = ccj.Modalidade == Modalidade.EducacaoInfantil ?
                                     (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;
@@ -111,11 +111,11 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var codigosTerritorio = componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.Codigo);
-                var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
-                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login)) : null;
+                /*var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
+                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login)) : null;*/
 
                 aulasPermitidas = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, professoresDesconsiderados).Select(a => a.Id).ToList();
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, null /*professoresDesconsiderados*/).Select(a => a.Id).ToList();
             }
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)

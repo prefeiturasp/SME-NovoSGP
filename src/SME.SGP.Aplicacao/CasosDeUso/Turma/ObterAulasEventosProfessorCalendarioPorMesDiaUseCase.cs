@@ -112,9 +112,9 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var codigosTerritorio = componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.Codigo);
-                var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
-                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login)) : null;
-                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor, professoresDesconsiderados?.ToArray());
+                /*var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
+                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login)) : null;*/
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor, null/*professoresDesconsiderados?.ToArray()*/);
                 atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
             }
 

@@ -84,11 +84,11 @@ namespace SME.SGP.Aplicacao
                     .Where(c => c.TerritorioSaber)
                     .Select(c => c.Codigo);
 
-                var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
-                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado.Login)) : null;
+                /*var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
+                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado.Login)) : null;*/
 
                 aulasParaVisualizar = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, professoresDesconsiderados);
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, null /*professoresDesconsiderados*/);
 
                 // códigos disciplinas normais + regência + território
                 var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())

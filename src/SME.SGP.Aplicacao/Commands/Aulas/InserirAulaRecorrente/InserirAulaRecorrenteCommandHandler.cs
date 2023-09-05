@@ -162,13 +162,13 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi possível obter a turma para inclusão de aulas recorrentes.");
 
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(aulaRecorrente.ComponenteCurricularId, turma.CodigoTurma, usuario.EhProfessor() ? usuario.Login : null));
+            /*var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(aulaRecorrente.ComponenteCurricularId, turma.CodigoTurma, usuario.EhProfessor() ? usuario.Login : null));*/
 
             var codigosComponentesConsiderados = new List<long>() { aulaRecorrente.ComponenteCurricularId };
 
-            if (codigosTerritorioEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+            /*if (codigosTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));*/
 
             var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma,
                 codigosComponentesConsiderados.ToArray(), aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia,
@@ -176,7 +176,7 @@ namespace SME.SGP.Aplicacao
             var datasPersistencia = validacaoDatas.datasPersistencia;
             var mensagensValidacao = validacaoDatas.mensagensValidacao;
 
-            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia, aulaRecorrente.EhRegencia, turma, codigosTerritorioEquivalentes);
+            var geracaoRecorrencia = await GerarAulaDeRecorrenciaParaDias(aulaRecorrente, usuario, datasPersistencia, aulaRecorrente.EhRegencia, turma/*, codigosTerritorioEquivalentes*/);
 
             // Notificar usuário da conclusão da geração de aulas
             await NotificarUsuario(geracaoRecorrencia.aula, geracaoRecorrencia.aulasQueDeramErro, mensagensValidacao, usuario, datasPersistencia.Count(), aulaRecorrente.NomeComponenteCurricular, turma);

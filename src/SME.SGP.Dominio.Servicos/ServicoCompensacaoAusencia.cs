@@ -71,14 +71,14 @@ namespace SME.SGP.Dominio.Servicos
 
                 var professorConsiderado = (string)null;
                 var codigosComponentesConsiderados = new List<string>() { compensacaoDto.DisciplinaId };
-                var codigosTerritorioEquivalentes = await
+                /*var codigosTerritorioEquivalentes = await
                     mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(compensacaoDto.DisciplinaId), turma.CodigoTurma, usuario.EhProfessor() ? usuario.Login : string.Empty));
 
                 if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
                 {
                     codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
                     professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-                }
+                }*/
 
                 // Valida mesma compensação no ano
                 var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray(), professorConsiderado));
@@ -103,9 +103,9 @@ namespace SME.SGP.Dominio.Servicos
                 var descricaoAtual = compensacaoBanco.Descricao;
 
                 // Persiste os dados
-                var componenteTerritorio = !string.IsNullOrWhiteSpace(professorConsiderado);
+                /*var componenteTerritorio = !string.IsNullOrWhiteSpace(professorConsiderado);
                 if (componenteTerritorio)
-                    compensacaoDto.DisciplinaId = codigosComponentesConsiderados.OrderBy(c => c.Length).Last();
+                    compensacaoDto.DisciplinaId = codigosComponentesConsiderados.OrderBy(c => c.Length).Last();*/
                 var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco, professorConsiderado);
                 compensacao.TurmaId = turma.Id;
                 compensacao.AnoLetivo = turma.AnoLetivo;

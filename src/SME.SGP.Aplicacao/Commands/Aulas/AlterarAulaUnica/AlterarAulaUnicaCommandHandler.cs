@@ -27,16 +27,19 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             var retorno = new RetornoBaseDto();
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
 
-            var componentesTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularCodigo, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
+            /*var componentesTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularCodigo, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));*/
 
-            var professorConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
-                                       componentesTerritorioEquivalentes.First().professor : request.Usuario.Login;
+            /*var professorConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
+                                       componentesTerritorioEquivalentes.First().professor : request.Usuario.Login;*/
+
+            var professorConsiderado = !request.Usuario.EhProfessor() ?
+                                       string.Empty : request.Usuario.Login;
 
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularCodigo };
 
-            if (componentesTerritorioEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ce => long.Parse(ce.codigoComponente)).Except(codigosComponentesConsiderados));
+            /*if (componentesTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ce => long.Parse(ce.codigoComponente)).Except(codigosComponentesConsiderados));*/
 
             var aulasExistentes = await mediator
                 .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), professorConsiderado));
@@ -56,10 +59,9 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
             await AplicarValidacoes(request, aula, turma, request.Usuario, aulasExistentes);
 
-            var codigoComponenteEquivalenteConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
-                                                         long.Parse(componentesTerritorioEquivalentes.First().codigoComponente) : (long?)null;
-
-            MapearEntidade(aula, request, codigoComponenteEquivalenteConsiderado, professorConsiderado);
+            /*var codigoComponenteEquivalenteConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
+                                                          long.Parse(componentesTerritorioEquivalentes.First().codigoComponente) : (long?)null;*/
+            MapearEntidade(aula, request, null/*codigoComponenteEquivalenteConsiderado*/, professorConsiderado);
 
             await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
 

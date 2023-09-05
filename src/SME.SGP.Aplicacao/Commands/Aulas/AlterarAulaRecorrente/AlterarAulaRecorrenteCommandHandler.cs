@@ -206,13 +206,13 @@ namespace SME.SGP.Aplicacao
         {
             await ValidarSeEhDiaLetivo(request.TipoCalendarioId, dataAula, turma);
 
-            var codigosComponentesEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
+            /*var codigosComponentesEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));*/
 
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
 
-            if (codigosComponentesEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(codigosComponentesEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+            /*if (codigosComponentesEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosComponentesEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));*/
 
             var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), request.Usuario.Login));
             aulasExistentes = aulasExistentes.Where(a => a.Id != request.AulaId);
@@ -239,13 +239,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)
         {
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, request.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
+            /*var codigosTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, request.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));*/
 
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
 
-            if (codigosTerritorioEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
+            /*if (codigosTerritorioEquivalentes != default)
+                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));*/
 
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,

@@ -32,15 +32,15 @@ namespace SME.SGP.Aplicacao
 
             var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
 
-            var codigosComponentesTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorCj() ? usuarioLogado.Login : null));
+            /*var codigosComponentesTerritorioEquivalentes = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorCj() ? usuarioLogado.Login : null));*/
 
             var professorConsiderado = (string)null;
-            if ((codigosComponentesTerritorioEquivalentes != null && codigosComponentesTerritorioEquivalentes.Any()) && componenteCurricular.TerritorioSaber)
+            /*if ((codigosComponentesTerritorioEquivalentes != null && codigosComponentesTerritorioEquivalentes.Any()) && componenteCurricular.TerritorioSaber)
             {
                 codigosComponentesBusca.AddRange(codigosComponentesTerritorioEquivalentes.Select(ct => ct.codigoComponente));
                 professorConsiderado = codigosComponentesTerritorioEquivalentes.First().professor;
-            }
+            }*/
 
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj(), professorConsiderado);
 
