@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQueryHandler : IRequestHandler<ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery, IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>>
     {
-        public ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQueryHandler()
+        private readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
+        public ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQueryHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA)
         {
+            this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
         }
 
         public Task<IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> Handle(ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return this.repositorioEncaminhamentoNAAPA.ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(request.UeId);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto
     {
-        public long encaminhamentoId { get; set; }
+        public long EncaminhamentoId { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
         public long TurmaId { get; set; }
