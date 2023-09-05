@@ -69,19 +69,10 @@ namespace SME.SGP.Dominio.Servicos
                 if (!usuario.EhGestorEscolar())
                     await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
-                var professorConsiderado = (string)null;
                 var codigosComponentesConsiderados = new List<string>() { compensacaoDto.DisciplinaId };
-                /*var codigosTerritorioEquivalentes = await
-                    mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(compensacaoDto.DisciplinaId), turma.CodigoTurma, usuario.EhProfessor() ? usuario.Login : string.Empty));
-
-                if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
-                {
-                    codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
-                    professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-                }*/
 
                 // Valida mesma compensação no ano
-                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray(), professorConsiderado));
+                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray()));
 
                 if (compensacaoExistente != null)
                     throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
@@ -103,10 +94,7 @@ namespace SME.SGP.Dominio.Servicos
                 var descricaoAtual = compensacaoBanco.Descricao;
 
                 // Persiste os dados
-                /*var componenteTerritorio = !string.IsNullOrWhiteSpace(professorConsiderado);
-                if (componenteTerritorio)
-                    compensacaoDto.DisciplinaId = codigosComponentesConsiderados.OrderBy(c => c.Length).Last();*/
-                var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco, professorConsiderado);
+                var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
                 compensacao.TurmaId = turma.Id;
                 compensacao.AnoLetivo = turma.AnoLetivo;
 
@@ -115,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
-                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, usuario, professorConsiderado);
+                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, usuario);
 
                 unitOfWork.PersistirTransacao();
 
