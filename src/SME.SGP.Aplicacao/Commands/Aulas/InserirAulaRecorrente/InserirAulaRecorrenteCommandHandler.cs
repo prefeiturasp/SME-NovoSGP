@@ -102,10 +102,6 @@ namespace SME.SGP.Aplicacao
 
             if (componente == null) return false;
 
-            if (!componente.TerritorioSaber && (componente.Codigo != aulaRecorrente.ComponenteCurricularId)
-                || componente.TerritorioSaber && (componente.CodigoComponenteTerritorioSaber != aulaRecorrente.CodigoTerritorioSaber))
-                return false;
-
             return true;
         }
 
@@ -115,7 +111,7 @@ namespace SME.SGP.Aplicacao
             var obterComponentesQuery = new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login);
             var componentes = await mediator.Send(obterComponentesQuery);
             bool FilterComponentesCompativeis(AtribuicaoCJ c) =>
-                c.TurmaId == aulaRecorrente.CodigoTurma && (c.DisciplinaId == aulaRecorrente.ComponenteCurricularId || (aulaRecorrente.CodigoTerritorioSaber.HasValue && aulaRecorrente.CodigoTerritorioSaber.Value > 0 && c.DisciplinaId.Equals(aulaRecorrente.CodigoTerritorioSaber.Value)));
+                c.TurmaId == aulaRecorrente.CodigoTurma && (c.DisciplinaId == aulaRecorrente.ComponenteCurricularId);
 
             var componentesAtribuicaoEol = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
