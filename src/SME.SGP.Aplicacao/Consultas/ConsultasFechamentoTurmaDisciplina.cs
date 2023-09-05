@@ -234,20 +234,8 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(a => a.NomeAluno)
                     .ThenBy(a => a.NomeValido());
 
-                /*(string codigoComponente, string professor)[] codigosTerritoriosEquivalentes = null;
-                if (disciplina.TerritorioSaber)
-                {
-                    codigosTerritoriosEquivalentes = await mediator
-                        .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(disciplinaId, turma.CodigoTurma, usuarioLogado.EhPerfilProfessor() ? usuarioLogado.Login : null));
-                }
-
-                if (codigosTerritoriosEquivalentes != null && codigosTerritoriosEquivalentes.Any())
-                    codigosDisciplinas.AddRange(codigosTerritoriosEquivalentes.Select(c => c.codigoComponente).Except(codigosDisciplinas));*/
-
                 var turmaPossuiFrequenciaRegistrada = await mediator
                     .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosDisciplinas.ToArray(), bimestreDoPeriodo.Id));
-
-                /*var professorConsiderado = codigosTerritoriosEquivalentes?.First().professor;*/
 
                 var codigosAlunos = alunosValidosComOrdenacao.Select(c => c.CodigoAluno).Distinct().ToArray();
 
@@ -292,7 +280,7 @@ namespace SME.SGP.Aplicacao
                         alunoDto.Informacao = marcador.Descricao;                    
 
                     var frequenciaAluno = await mediator
-                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId/*, professorConsiderado*/));
+                        .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId));
 
                     if (frequenciaAluno != null)
                     {
