@@ -13,6 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<PlanoAnualTerritorioSaberCompletoDto> ObterPlanoAnualTerritorioSaberCompletoPorAnoEscolaBimestreETurma(int ano, string escolaId, string turmaId, int bimestre, long territorioExperienciaId);
 
-        Task<IEnumerable<PlanoAnualTerritorioSaberCompletoDto>> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long[] componenteCurricularEolId, string professor = null);
+        Task<IEnumerable<PlanoAnualTerritorioSaberCompletoDto>> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long componenteCurricularEolId, string professor = null);
     }
 }
