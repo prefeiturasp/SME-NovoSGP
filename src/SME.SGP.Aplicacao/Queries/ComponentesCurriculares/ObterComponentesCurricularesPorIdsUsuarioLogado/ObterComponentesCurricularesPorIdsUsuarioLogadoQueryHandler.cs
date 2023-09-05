@@ -26,11 +26,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var disciplinasRetorno = new List<DisciplinaDto>();
-
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
-
             var componentesCurricularesUsuarioTurma = await mediator
                                                             .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, 
                                                                                                                           usuarioLogado.Login, 
@@ -58,7 +56,8 @@ namespace SME.SGP.Aplicacao
                 else
                     disciplinasRetorno.Add(new DisciplinaDto()
                     {
-                        Id = componenteUsuarioTurma.TerritorioSaber ? componenteUsuarioTurma.CodigoComponenteTerritorioSaber : componenteUsuarioTurma.Codigo,
+                        //Id = componenteUsuarioTurma.TerritorioSaber ? componenteUsuarioTurma.CodigoComponenteTerritorioSaber : componenteUsuarioTurma.Codigo,
+                        Id = componenteUsuarioTurma.Codigo,
                         CodigoComponenteCurricular = componenteUsuarioTurma.Codigo,
                         CdComponenteCurricularPai = componenteUsuarioTurma.CodigoComponenteCurricularPai,
                         CodigoComponenteCurricularTerritorioSaber = componenteUsuarioTurma.CodigoComponenteTerritorioSaber,

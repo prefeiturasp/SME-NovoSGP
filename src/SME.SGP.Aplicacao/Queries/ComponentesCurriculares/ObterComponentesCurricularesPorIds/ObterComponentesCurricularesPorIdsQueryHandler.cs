@@ -64,7 +64,8 @@ namespace SME.SGP.Aplicacao
             
             return componentesCurricularesEol.Select(cc => new DisciplinaDto()
                     {
-                        Id = cc.TerritorioSaber ? cc.CodigoComponenteTerritorioSaber : cc.Codigo,
+                //Id = cc.TerritorioSaber ? cc.CodigoComponenteTerritorioSaber : cc.Codigo,
+                        Id = cc.Codigo,
                         CodigoComponenteCurricular = cc.Codigo,
                         CodigoComponenteCurricularTerritorioSaber = cc.CodigoComponenteTerritorioSaber,
                         CdComponenteCurricularPai = cc.CodigoComponenteCurricularPai,
