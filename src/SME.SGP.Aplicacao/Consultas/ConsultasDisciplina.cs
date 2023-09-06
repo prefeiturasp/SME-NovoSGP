@@ -1,18 +1,15 @@
-﻿using MailKit.Security;
-using MediatR;
-using Minio.DataModel;
+﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -209,7 +206,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular || a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular);
 
-                    d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turma.ModalidadeCodigo);
+                    d.PossuiObjetivos = PossuiObjetivos(turma, Convert.ToInt32(dataInicioNovoSGP), componenteEOL, componentesCurricularesJurema);
                     d.CodigoComponenteCurricular = componenteEOL.Codigo;
                     d.CodigoTerritorioSaber = componenteEOL.CodigoComponenteTerritorioSaber;
                     d.Regencia = componenteEOL.Regencia;
@@ -283,6 +280,23 @@ namespace SME.SGP.Aplicacao
 
             return disciplinasDto;
         }
+
+        private bool PossuiObjetivos(
+                        Turma turma, 
+                        int anoInicioSgp, 
+                        ComponenteCurricularEol componenteEOL,
+                        IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema)
+        {
+            const long PAP_RECUPERACAO_APRENDIZAGENS = 1322;
+            const long PAP_PROJETO_COLABORATIVO = 1770;
+
+            var componentesPAPs = new long[] { PAP_RECUPERACAO_APRENDIZAGENS, PAP_PROJETO_COLABORATIVO };
+
+            return turma.AnoLetivo >= anoInicioSgp
+                    && (turma.TipoTurma != TipoTurma.Programa || componentesPAPs.Contains(componenteEOL.Codigo))
+                    && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turma.ModalidadeCodigo);
+        }
+
 
         private async Task tratarDisciplinasTerritorioSaber(IEnumerable<DisciplinaDto> disciplinasDto, string codigoTurma)
         {
@@ -511,7 +525,7 @@ namespace SME.SGP.Aplicacao
             var disciplinasEol = await repositorioComponenteCurricular
                 .ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
-            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
+            var professoresTitulares = !string.IsNullOrEmpty(codigoTurma) ? await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma)) : Enumerable.Empty<ProfessorTitularDisciplinaEol>();
 
             disciplinasEol.ToList().ForEach(d =>
             {
