@@ -38,13 +38,6 @@ namespace SME.SGP.Aplicacao
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
             {
                 var codigosComponentesConsiderados = new List<string>() { aulaComponenteTurma.ComponenteCurricularCodigo };
-
-                var componentesTerritorioEquivalentes = mediator
-                    .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(aulaComponenteTurma.ComponenteCurricularCodigo), aulaComponenteTurma.TurmaCodigo, null)).Result;
-
-                if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any())
-                    codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ct => ct.codigoComponente).Except(codigosComponentesConsiderados));
-
                 if (!frequenciaAlunoPeriodos.Any(a => a.TurmaId == aulaComponenteTurma.TurmaCodigo
                                                    && codigosComponentesConsiderados.Contains(a.DisciplinaId)
                                                    && a.Bimestre == aulaComponenteTurma.Bimestre))

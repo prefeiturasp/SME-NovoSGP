@@ -799,6 +799,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultadoFiltrado.DistinctBy(p => new {p.Codigo, p.Nome});
         }
+        
+         public async Task<bool> VerificarUsuarioLogadoPertenceMesmaUE(string codigoUe, string login, Guid perfil, Modalidade modalidade, int anoLetivo, int periodo, bool consideraHistorico = false)
+        {
+            var query = @"select 1  from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @periodo, @codigoUe, @anoLetivo) limit 1";
+
+            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { login, perfil, consideraHistorico, modalidade, periodo, codigoUe, anoLetivo});
+
+            return retorno;
+        }
 
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)
         {

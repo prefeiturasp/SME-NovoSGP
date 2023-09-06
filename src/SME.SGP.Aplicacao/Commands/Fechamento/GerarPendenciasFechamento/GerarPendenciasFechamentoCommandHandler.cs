@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
         private async Task GerarNotificacaoFechamento(long componenteCurricularId, string turmaCodigo, long usuarioLogadoId, int bimestre, IServicoPendenciaFechamento servicoPendenciaFechamento, string perfilUsuario)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turmaCodigo));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
             if (componentes == null || !componentes.Any())
             {
                 throw new NegocioException("Componente curricular não encontrado.");

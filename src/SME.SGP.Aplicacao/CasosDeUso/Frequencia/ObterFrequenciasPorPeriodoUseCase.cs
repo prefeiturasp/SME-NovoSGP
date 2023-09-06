@@ -31,18 +31,8 @@ namespace SME.SGP.Aplicacao
                 componenteCurricular.CodigoComponenteCurricular.ToString();
 
             var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
-
-            var codigosComponentesTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCurricularId, turma.CodigoTurma, usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorCj() ? usuarioLogado.Login : null));
-
-            var professorConsiderado = (string)null;
-            if ((codigosComponentesTerritorioEquivalentes != null && codigosComponentesTerritorioEquivalentes.Any()) && componenteCurricular.TerritorioSaber)
-            {
-                codigosComponentesBusca.AddRange(codigosComponentesTerritorioEquivalentes.Select(ct => ct.codigoComponente));
-                professorConsiderado = codigosComponentesTerritorioEquivalentes.First().professor;
-            }
-
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj(), professorConsiderado);
+          
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj());
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
@@ -51,8 +41,8 @@ namespace SME.SGP.Aplicacao
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
                         
             var registraFrequencia = await ObterComponenteRegistraFrequencia(codigosComponentesBusca.OrderBy(c => c.Length).Last(), componenteCurricular.TerritorioSaber ? long.Parse(codigosComponentesBusca.OrderBy(c => c.Length).First()) : null);
-            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id, professorConsiderado));
-            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id, professorConsiderado));
+            var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id));
+            var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id));
 
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
                                                                                                                   codigosComponentesBusca.ToArray(),
@@ -115,9 +105,9 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string[] disciplinasId, bool aulaCJ, string professor = null)
+        private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string[] disciplinasId, bool aulaCJ)
         {
-            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinasId, aulaCJ, professor));
+            var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinasId, aulaCJ));
             if (aulas == null || !aulas.Any())
                 throw new NegocioException("Aulas não encontradas para a turma no Período.");
 

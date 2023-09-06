@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,8 @@ namespace SME.SGP.Aplicacao
                                                                     request.Login, 
                                                                     request.Perfil, 
                                                                     request.RealizarAgrupamentoComponente) + $"?checaMotivoDisponibilizacao={request.ChecaMotivoDisponibilizacao}");
-            if (resposta.IsSuccessStatusCode)
+            
+            if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
                 componenteCurricularEol = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);

@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
             }
 
-            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(new long[] { request.CodigoComponenteBase }, request.CodigoTurma));
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.CodigoComponenteBase }));
                 
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                 var retorno = new List<(string, string)>();
 
                 retorno.AddRange(disciplinasEOL
-                    .Select(d => (d.CodigoTerritorioSaber.ToString(), d.Professor)));
+                    .Select(d => (d.CodigoComponenteCurricularTerritorioSaber.ToString(), d.Professor)));
 
                 retorno.AddRange(new List<(string, string)>() {
                     (request.CodigoComponenteBase.ToString(), disciplinasEOL.FirstOrDefault(d => d.CodigoComponenteCurricular == request.CodigoComponenteBase).Professor) }.Except(retorno));
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool PossuiTerritorioSaber(IEnumerable<DisciplinaDto> disciplinasEOL)
-            => disciplinasEOL.Any(d => d.CodigoTerritorioSaber != 0);
+            => disciplinasEOL.Any(d => d.CodigoComponenteCurricularTerritorioSaber != 0);
 
         private bool FiltrarProfessor(ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery request)
             => !string.IsNullOrEmpty(request.Professor);

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
-            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }, codigoTurma: turma.CodigoTurma));
+            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
 
             if (componenteCurricular == null || !componenteCurricular.Any())
                 throw new NegocioException(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_NAO_ENCONTRADO);
