@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(UsuarioEscolaAquiDto), 204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUsuarioPorCpf(string codigoDre, long codigoUe, string cpf, [FromServices] IObterUsuarioPorCpfUseCase obterUsuarioPorCpfUseCase)
+        public async Task<IActionResult> ObterUsuarioPorCpf(string codigoDre, string codigoUe, string cpf, [FromServices] IObterUsuarioPorCpfUseCase obterUsuarioPorCpfUseCase)
         {
             return Ok(await obterUsuarioPorCpfUseCase.Executar(codigoDre, codigoUe, cpf));
         }
