@@ -464,16 +464,15 @@ namespace SME.SGP.Dados.Repositorios
                            where q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
                              and not enr.excluido
                              and not enq.excluido
-                             and not q.excluido
                            group by enq.encaminhamento_naapa_secao_id) tab_dt_atendimento on tab_dt_atendimento.encaminhamento_naapa_secao_id = ens.id
                 where en.situacao = any(@situacoes)
                   and not en.excluido
                   and not ens.excluido
-                  and not sen.excluido 
-                  and not qto.excluido
+                  and not sen.excluido
                   and coalesce(en.data_ultima_notificacao_sem_atendimento, tab_dt_atendimento.dataAtendimento) + interval '30 day' <= now()");
             query.AppendLine(")");
-            query.AppendLine($@"select ia.AlunoCodigo, ia.AlunoNome, ia.TurmaId, ia.EncaminhamentoId, t.nome TurmaNome, ue.nome UeNome, dre.abreviacao DreNome
+            query.AppendLine($@"select ia.AlunoCodigo, ia.AlunoNome, ia.EncaminhamentoId, ia.TurmaId, t.nome TurmaNome, 
+                ue.nome UeNome, ue.ue_id UeCodigo, dre.abreviacao DreNome, dre.dre_id DreCodigo
                 from inatividade_atendimento ia
                 inner join turma t on t.id = ia.TurmaId
                 inner join ue on ue.id = t.ue_id
