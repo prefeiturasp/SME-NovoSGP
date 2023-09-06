@@ -78,6 +78,8 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Post([FromQuery] ListaNotasConceitosDto consultaListaNotasConceitosDto, [FromBody] NotaConceitoListaDto notaConceitoListaDto, [FromServices] IComandosNotasConceitos comandosNotasConceitos, [FromServices] IObterNotasParaAvaliacoesUseCase obterNotasParaAvaliacoesUseCase)
         {
             await comandosNotasConceitos.Salvar(notaConceitoListaDto, consultaListaNotasConceitosDto.TurmaHistorico);
+            if (string.IsNullOrEmpty(consultaListaNotasConceitosDto.TurmaCodigo))
+                return Ok();
             return Ok(await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto));
         }
         [HttpGet("conceitos")]

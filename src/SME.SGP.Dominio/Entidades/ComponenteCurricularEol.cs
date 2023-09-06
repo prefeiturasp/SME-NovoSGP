@@ -15,6 +15,7 @@ namespace SME.SGP.Dominio
         public bool LancaNota { get; set; }
         public bool PossuiObjetivos { get; set; }
         public bool Regencia { get; set; }
+        public bool PlanejamentoRegencia { get; set; }
         public bool RegistraFrequencia { get; set; }
         public bool TerritorioSaber { get; set; }
         public bool BaseNacional { get; set; }
@@ -62,7 +63,7 @@ namespace SME.SGP.Dominio
                     componenteCurricular.RegistraFrequencia = componenteCurricularSgp.RegistraFrequencia;
                     componenteCurricular.Compartilhada = componenteCurricularSgp.EhCompartilhada;
                     componenteCurricular.BaseNacional = componenteCurricularSgp.EhBaseNacional;
-                    componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia;
+                    componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia || componenteCurricular.PlanejamentoRegencia;
                     componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
 
                     var naoEhComponenteTerritorioExtenso = componenteCurricular.CodigoComponenteTerritorioSaber == 0 ||

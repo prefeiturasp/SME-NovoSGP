@@ -14,11 +14,9 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesDoProfessorNaTurmaQueryHandler : IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private readonly IRepositorioCache repositorioCache;
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
-        public ObterComponentesCurricularesDoProfessorNaTurmaQueryHandler(IServicoEol servicoEOL, IRepositorioCache repositorioCache, IMediator mediator)
+        public ObterComponentesCurricularesDoProfessorNaTurmaQueryHandler(IRepositorioCache repositorioCache, IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }

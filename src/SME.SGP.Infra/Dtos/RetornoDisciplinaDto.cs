@@ -30,7 +30,7 @@ namespace SME.SGP.Infra
             {
                 CodigoComponenteCurricular = x.CdComponenteCurricular,
                 CdComponenteCurricularPai = x.CdComponenteCurricularPai,
-                CodigoTerritorioSaber = x.CodigoTerritorioSaber,
+                CodigoComponenteCurricularTerritorioSaber = x.CodigoTerritorioSaber,
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,

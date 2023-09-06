@@ -50,7 +50,8 @@ namespace SME.SGP.Aplicacao
         {
             var componentesSgp = await mediator
                 .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol
-                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : (a.Regencia && !ehEducacaoInfatil && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray(), codigoTurma: codigoTurma));
+                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : 
+                                (a.Regencia && !ehEducacaoInfatil && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray()));
 
             return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol, ehEducacaoInfatil);
         }

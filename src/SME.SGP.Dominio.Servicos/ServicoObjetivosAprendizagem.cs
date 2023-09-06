@@ -49,13 +49,13 @@ namespace SME.SGP.Dominio.Servicos
 
                     var objetivosAIncluir = objetivosJuremaResposta?
                         .Where(c => !objetivosBase.Any(b => b.Id == c.Id));
-                    
+
                     var objetivosADesativar = objetivosBase?
                         .Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Id == c.Id));
-                    
+
                     var objetivosAReativar = objetivosJuremaResposta?
                         .Where(c => objetivosBase.Any(b => b.Id == c.Id && b.Excluido));
-                    
+
                     var objetivosAAtualizar = objetivosJuremaResposta?
                         .Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
                     

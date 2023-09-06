@@ -68,5 +68,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false);
         Task<IEnumerable<string>> ObterProfessoresTurmaPorAbrangencia(string turmaCodigo);
         Task<IEnumerable<Turma>> ObterTurmasPorAbrangenciaCPParaCopiaAvaliacao(int anoLetivo, string codigoRf, int modalidadeTurma, string anoTurma, long turmaIdReferencia);
+        Task<bool> VerificarUsuarioLogadoPertenceMesmaUE(string codigoUe, string login, Guid perfil,Modalidade modalidade, int anoLetivo, int periodo, bool consideraHistorico = false);
     }
 }

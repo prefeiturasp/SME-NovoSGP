@@ -29,16 +29,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCJQuery request, CancellationToken cancellationToken)
         {
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricular, request.TurmaCodigo, null));
-
-            var codigoTerritorioConsiderado = codigosTerritorioEquivalentes != null ?
-                codigosTerritorioEquivalentes.OrderBy(c => c.codigoComponente.Length).First().codigoComponente : null;
-
             var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(request.Modalidade,
                 request.TurmaCodigo,
                 request.UeCodigo,
-                !string.IsNullOrWhiteSpace(codigoTerritorioConsiderado) ? long.Parse(codigoTerritorioConsiderado) : request.ComponenteCurricular,
+                request.ComponenteCurricular,
                 request.ProfessorRf,
                 string.Empty,
                 true);
