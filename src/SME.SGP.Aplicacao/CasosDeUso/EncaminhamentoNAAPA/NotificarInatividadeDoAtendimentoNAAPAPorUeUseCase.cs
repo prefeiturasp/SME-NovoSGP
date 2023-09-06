@@ -17,10 +17,16 @@ namespace SME.SGP.Aplicacao
 
             if (ueId > 0)
             {
-                var informacoesInatividadeAtendimento = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(ueId));
-            
-                foreach(var informacao in informacoesInatividadeAtendimento)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoInformacaoNAAPA, informacao, Guid.NewGuid()));
+                try
+                {
+                    var informacoesInatividadeAtendimento = await mediator.Send(new ObterEncaminhamentosNAAPAComInatividadeDeAtendimentoQuery(ueId));
+
+                    foreach (var informacao in informacoesInatividadeAtendimento)
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoInformacaoNAAPA, informacao, Guid.NewGuid()));
+                } catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
 
             return true;
