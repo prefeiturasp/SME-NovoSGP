@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.WorkfflowAprovacaoNotaFechamento
         }
 
         [Fact]
-        public async Task Ao_aprovar_reposicao_aula_cj()
+        public async Task Ao_aprovar_reposicao_aula_verificar_valor_do_campo_aula_cj_como_verdadeiro()
         {
             var comandosWorkflow = ServiceProvider.GetService<IRepositorioAulaConsulta>();
 
