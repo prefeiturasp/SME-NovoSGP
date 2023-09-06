@@ -113,7 +113,12 @@ namespace SME.SGP.Aplicacao
                                 var agrupamentoAulasCJ = aulasCJ.Where(w => !string.IsNullOrEmpty(w.ProfessorRf)).GroupBy(x => new { x.ProfessorRf });
 
                                 foreach (var aulaCJ in agrupamentoAulasCJ)
-                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                {
+                                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aulaCJ.FirstOrDefault().TurmaId));
+
+                                    if(turma.ModalidadeCodigo != Modalidade.EducacaoInfantil)
+                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                }
                             }
                         }
                     }
