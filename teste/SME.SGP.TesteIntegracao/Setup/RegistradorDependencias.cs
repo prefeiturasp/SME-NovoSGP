@@ -54,6 +54,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
             services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamentoFake>();
             services.TryAddScoped<IServicoMensageriaLogs, ServicoMensageriaLogsFake>();
+            services.TryAddScoped<IServicoMensageriaMetricas, ServicoMensageriaMetricasFake>();
             services.TryAddScoped<IServicoTelemetria, TelemetriaFake>();
             services.TryAddScoped<IConexoesRabbitFilasLog, ConexoesRabbitFilasLogFake>();
             services.TryAddScoped<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicyFake>();

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PeriodoEscolarComponenteDto>> Executar(string turmaCodigo, long componenteCodigo, bool ehRegencia, int bimestre, bool exibirDataFutura = false)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             
             var listaPeriodos = new List<PeriodoEscolarComponenteDto>();
 

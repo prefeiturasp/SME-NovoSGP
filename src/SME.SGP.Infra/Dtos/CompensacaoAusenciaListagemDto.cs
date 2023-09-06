@@ -9,6 +9,6 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public int Bimestre { get; set; }
         public string AtividadeNome { get; set; }
-        public List<string> Alunos { get; set; }
+        public List<CompensacaoAusenciaListagemAlunosDto> Alunos { get; set; }
     }
 }

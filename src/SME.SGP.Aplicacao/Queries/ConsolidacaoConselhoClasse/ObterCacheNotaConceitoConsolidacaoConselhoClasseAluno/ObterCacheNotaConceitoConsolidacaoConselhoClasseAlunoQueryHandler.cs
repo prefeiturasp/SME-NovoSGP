@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConsolidadoConselhoClasseAlunoNotaCacheDto> Handle(ObterCacheNotaConceitoConsolidacaoConselhoClasseAlunoQuery request, CancellationToken cancellationToken)
         {
-            var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_NOTA_CONSOLIDACAO_CONSELHO_CLASSE_TURMA_COMPONENTE_BIMESTRE_ALUNO,
+            var nomeChaveCache = string.Format(NomeChaveCache.NOTA_CONSOLIDACAO_CONSELHO_CLASSE_TURMA_COMPONENTE_BIMESTRE_ALUNO,
                request.TurmaId, request.ComponenteCurricularId, request.Bimestre, request.AlunoCodigo);
 
             return (await repositorioCache.ObterObjetoAsync<ConsolidadoConselhoClasseAlunoNotaCacheDto>(nomeChaveCache,

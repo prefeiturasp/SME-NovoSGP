@@ -18,8 +18,8 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<TipoEscolaRetornoDto>> Handle(ObterTiposEscolaEolQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync("escolas/tiposEscolas");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_ESCOLAS_TIPOS_ESCOLAS);
 
             if (resposta.IsSuccessStatusCode)
             {

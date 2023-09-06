@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var aulaDto = await mediator.Send(new ObterAulaPorIdQuery(filtro.AulaId));
             
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             
             var planoAula = await mediator.Send(new ObterPlanoAulaEObjetivosAprendizagemQuery(filtro.AulaId));
             

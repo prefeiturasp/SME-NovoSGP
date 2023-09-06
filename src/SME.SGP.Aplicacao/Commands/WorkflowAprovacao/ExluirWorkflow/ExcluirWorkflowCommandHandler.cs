@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (Notificacao notificacao in wfNivel.Notificacoes)
                 {
-                    repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
+                    await repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
                     await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                 }
             }

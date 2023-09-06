@@ -32,21 +32,21 @@ namespace SME.SGP.Aplicacao.Servicos
             }
         }
 
-        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEol(string login, string senha)
+        public async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoEol(string login, string senha)
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
 
             return await ObterAutenticacao(retornoServicoEol);
         }
 
-        public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEolSemSenha(string login)
+        public async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoEolSemSenha(string login)
         {
             var retornoServicoEol = await servicoEOL.ObtenhaAutenticacaoSemSenha(login);
 
             return await ObterAutenticacao(retornoServicoEol);
         }
 
-        private async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> ObterAutenticacao(AutenticacaoApiEolDto retornoServicoEol)
+        private async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> ObterAutenticacao(AutenticacaoApiEolDto retornoServicoEol)
         {
             var retornoDto = new UsuarioAutenticacaoRetornoDto();
 

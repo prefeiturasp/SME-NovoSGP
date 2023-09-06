@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterModalidadesPorUeEAnoLetivo
         public async Task<IEnumerable<ModalidadeRetornoDto>> Handle(ObterModalidadesPorUeEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var listaModalidades = await repositorioUe.ObterModalidades(request.CodigoUe, request.AnoLetivo, request.ModadlidadesQueSeraoIgnoradas);
-            if (!listaModalidades?.Any() ?? true) return new List<ModalidadeRetornoDto>();
+            if (!listaModalidades?.Any() ?? true) return Enumerable.Empty<ModalidadeRetornoDto>();
 
             return from modalidade in listaModalidades
                    where Enum.IsDefined(typeof(Modalidade), modalidade)

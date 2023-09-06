@@ -108,7 +108,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = $@"select distinct * from (SELECT 0                AS ConselhoClasseAlunoId,
                                    fn.disciplina_id AS ComponenteCurricularCodigo,
                                    fn.conceito_id   AS ConceitoId,
-                                   fn.nota          AS Nota
+                                   fn.nota          AS Nota,
+                                   fn.id            AS fechamentoNotaId
                             FROM   fechamento_turma ft
                                    LEFT JOIN periodo_escolar pe
                                           ON pe.id = ft.periodo_escolar_id
@@ -129,7 +130,8 @@ namespace SME.SGP.Dados.Repositorios
                             SELECT cca.id                                    AS ConselhoClasseAlunoId,
                                    ccn.componente_curricular_codigo          AS ComponenteCurricularCodigo,
                                    ccn.conceito_id AS ConceitoId,
-                                   ccn.nota               AS Nota
+                                   ccn.nota               AS Nota,
+                                   fn.id AS fechamentoNotaId
                             FROM   fechamento_turma ft
                                    LEFT JOIN periodo_escolar pe
                                           ON pe.id = ft.periodo_escolar_id

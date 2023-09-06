@@ -19,9 +19,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ProfessorResumoDto> Handle(ObterResumoProfessorPorRFAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.GetAsync($"professores/{request.CodigoRF}/BuscarPorRf/{request.AnoLetivo}?buscarOutrosCargos={request.BuscarOutrosCargos}");
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_BUSCAR_RF, request.CodigoRF, request.AnoLetivo) + $"?buscarOutrosCargos={request.BuscarOutrosCargos}");
 
             if (resposta.IsSuccessStatusCode)
             {

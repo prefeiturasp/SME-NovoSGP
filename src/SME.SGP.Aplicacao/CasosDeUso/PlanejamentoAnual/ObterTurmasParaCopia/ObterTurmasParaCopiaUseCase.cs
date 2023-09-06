@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> Executar(int turmaId, long componenteCurricularId, bool ensinoEspecial, bool consideraHistorico)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (usuario.PerfilAtual == Dominio.Perfis.PERFIL_CP)
                 return await mediator.Send(new ObterTurmasParaCopiaPlanejamentoAnualUsuarioCPQuery(turmaId, ensinoEspecial, consideraHistorico));

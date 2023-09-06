@@ -421,5 +421,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return (database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoNAAPA>(query, new { id }));
         }
+
+        public async Task<bool> ExisteEncaminhamentoNAAPAAtivoParaAluno(string codigoAluno)
+        {
+            var query = @"SELECT 1 
+                          FROM encaminhamento_naapa 
+                         WHERE aluno_codigo = @codigoAluno 
+                           and situacao <> @situacao
+                           and not excluido";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { codigoAluno, situacao = (int)SituacaoNAAPA.Encerrado });
+        }
     }
 }

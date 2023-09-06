@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
             if (existeAula)
             {
-                var perfilAtual = await mediator.Send(new ObterPerfilAtualQuery());
+                var perfilAtual = await mediator.Send(ObterPerfilAtualQuery.Instance);
                 var aula = await mediator
                     .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponentesCurriculares, request.ProfessorRf));
 

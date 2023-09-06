@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                     {
                        new RegistroFrequenciaAlunoDto() {
                            Aulas = new List<FrequenciaAulaDto>() { new FrequenciaAulaDto() { NumeroAula = NUMERO_AULAS_1, TipoFrequencia = TIPO_FREQUENCIA_COMPARECEU}},
-                           CodigoAluno = CODIGO_ALUNO_99999,
+                           CodigoAluno = CODIGO_ALUNO_1,
                            TipoFrequenciaPreDefinido = TIPO_FREQUENCIA_COMPARECEU
                        },
                     }
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                     {
                        new RegistroFrequenciaAlunoDto() {
                            Aulas = new List<FrequenciaAulaDto>() { new FrequenciaAulaDto() { NumeroAula = NUMERO_AULAS_1, TipoFrequencia = TIPO_FREQUENCIA_REMOTO}},
-                           CodigoAluno = CODIGO_ALUNO_99999,
+                           CodigoAluno = CODIGO_ALUNO_1,
                            TipoFrequenciaPreDefinido = TIPO_FREQUENCIA_COMPARECEU
                        },
                     }

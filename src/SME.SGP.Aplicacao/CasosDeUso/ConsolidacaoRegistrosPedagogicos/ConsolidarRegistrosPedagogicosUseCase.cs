@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var parametrosConsolidacao = await mediator.Send(new ObterParametrosSistemaPorTiposQuery() { Tipos = new long[] { (long)TipoParametroSistema.ExecucaoConsolidacaoRegistrosPedagogicos } });
-            var ues = await mediator.Send(new ObterTodasUesIdsQuery());
+            var ues = await mediator.Send(ObterTodasUesIdsQuery.Instance);
 
             foreach (var parametro in parametrosConsolidacao)
             {

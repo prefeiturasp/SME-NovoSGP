@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -46,11 +47,18 @@ namespace SME.SGP.Dominio.Servicos
 
                     var objetivosJuremaResposta = objetivosJuremaRespostaApi.Where(c => c.Codigo.Length <= 20);
 
-                    var objetivosAIncluir = objetivosJuremaResposta?.Where(c => !objetivosBase.Any(b => b.CodigoCompleto == c.Codigo));
-                    var objetivosADesativar = objetivosBase?.Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Codigo == c.CodigoCompleto));
-                    var objetivosAReativar = objetivosJuremaResposta?.Where(c => objetivosBase.Any(b => b.CodigoCompleto == c.Codigo && b.Excluido));
-                    var objetivosAAtualizar = objetivosJuremaResposta?.Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
+                    var objetivosAIncluir = objetivosJuremaResposta?
+                        .Where(c => !objetivosBase.Any(b => b.Id == c.Id));
 
+                    var objetivosADesativar = objetivosBase?
+                        .Where(c => !c.Excluido)?.Where(c => !objetivosJuremaResposta.Any(b => b.Id == c.Id));
+
+                    var objetivosAReativar = objetivosJuremaResposta?
+                        .Where(c => objetivosBase.Any(b => b.Id == c.Id && b.Excluido));
+
+                    var objetivosAAtualizar = objetivosJuremaResposta?
+                        .Where(c => c.AtualizadoEm > dataUltimaAtualizacao);
+                    
                     var atualizarUltimaDataAtualizacao = false;
                     var houveAlteracaoNosDados = false;
 
@@ -66,7 +74,7 @@ namespace SME.SGP.Dominio.Servicos
                     if (objetivosAIncluir != null && objetivosAIncluir.Any())
                     {
                         foreach (var objetivo in objetivosAIncluir)
-                            await repositorioObjetivoAprendizagem.SalvarAsync(MapearObjetivoRespostaParaDominio(objetivo));
+                            await repositorioObjetivoAprendizagem.InserirAsync(MapearObjetivoRespostaParaDominio(objetivo));
 
                         houveAlteracaoNosDados = true;
                     }
@@ -96,7 +104,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                     if (houveAlteracaoNosDados)
-                        await repositorioCache.RemoverAsync("ObjetivosAprendizagem");
+                        await repositorioCache.RemoverAsync(NomeChaveCache.OBJETIVOS_APRENDIZAGEM);
                 }
             }
             else
@@ -107,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             objetivoBase.AnoTurma = objetivo.Ano;
             objetivoBase.AtualizadoEm = objetivo.AtualizadoEm;
-            objetivoBase.CodigoCompleto = objetivo.Codigo;
+            objetivoBase.CodigoCompleto = objetivo.Codigo.Trim();
             objetivoBase.ComponenteCurricularId = objetivo.ComponenteCurricularId;
             objetivoBase.CriadoEm = objetivo.CriadoEm;
             objetivoBase.Descricao = objetivo.Descricao;

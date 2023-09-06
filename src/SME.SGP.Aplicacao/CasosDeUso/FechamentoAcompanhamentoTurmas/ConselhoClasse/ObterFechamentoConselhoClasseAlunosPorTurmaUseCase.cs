@@ -44,7 +44,10 @@ namespace SME.SGP.Aplicacao
 
             return await MontarRetorno(alunosEol.DistinctBy(a => a.CodigoAluno), consolidadoConselhosClasses, turma.CodigoTurma, turma.Id, periodoEscolar, param.SituacaoConselhoClasse);
         }
-
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private async Task<IEnumerable<ConselhoClasseAlunoDto>> MontarRetorno(IEnumerable<AlunoPorTurmaResposta> alunos, IEnumerable<ConselhoClasseConsolidadoTurmaAluno> consolidadoConselhosClasses, string codigoTurma, long turmaId, PeriodoEscolar periodoEscolar, int situacaoConselhoClasse)
         {
             List<ConselhoClasseAlunoDto> lista = new List<ConselhoClasseAlunoDto>();
@@ -52,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var pareceresConclusivosDoPeriodoAnoAnterior = await mediator.Send(new ObterPareceresConclusivosQuery(new System.DateTime((periodoEscolar.PeriodoFim.Year - 1), periodoEscolar.PeriodoFim.Month, periodoEscolar.PeriodoFim.Day)));
 
             var dadosStatusAlunoConselhoConsolidado = await mediator.Send(new ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestreQuery(turmaId, periodoEscolar.Bimestre));
-
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), periodoEscolar.PeriodoFim.Year);
             foreach (var aluno in alunos)
             {
                 var consolidadoConselhoClasse = consolidadoConselhosClasses.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno.ToString());
@@ -73,7 +76,8 @@ namespace SME.SGP.Aplicacao
                     SituacaoFechamentoCodigo = situacaoConselhoClasseAlunoAjustada != null ? situacaoConselhoClasseAlunoAjustada.StatusConselhoClasseAluno : (int)consolidadoConselhoClasse.Status,
                     FrequenciaGlobal = frequenciaGlobal,
                     PodeExpandir = true,
-                    ParecerConclusivo = parecerConclusivo
+                    ParecerConclusivo = parecerConclusivo,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                 });
             }
 

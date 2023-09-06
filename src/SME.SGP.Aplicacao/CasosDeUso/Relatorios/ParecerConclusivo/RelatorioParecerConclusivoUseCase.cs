@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (filtroRelatorioParecerConclusivoDto.Modalidade.HasValue && filtroRelatorioParecerConclusivoDto.Modalidade.Value == Modalidade.EducacaoInfantil)
                 throw new NegocioException("Não é possível gerar este relatório para a modalidade infantil!");
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             filtroRelatorioParecerConclusivoDto.UsuarioNome = usuarioLogado.Nome;            
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.ParecerConclusivo, filtroRelatorioParecerConclusivoDto, usuarioLogado, formato: filtroRelatorioParecerConclusivoDto.TipoFormatoRelatorio, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosParecerConclusivo));

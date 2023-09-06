@@ -24,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
-        public void AtualizaAbrangenciaHistorica(IEnumerable<long> ids)
+        public async Task AtualizaAbrangenciaHistorica(IEnumerable<long> ids)
         {
             var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
 
@@ -39,11 +39,11 @@ namespace SME.SGP.Dados.Repositorios
             for (int i = 0; i < ids.Count(); i = i + 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> ids, int anoLetivo)
+        public async Task AtualizaAbrangenciaHistoricaAnosAnteriores(IEnumerable<long> ids, int anoLetivo)
         {
             var dtFimVinculo = DateTimeExtension.HorarioBrasilia().Date;
 
@@ -58,11 +58,11 @@ namespace SME.SGP.Dados.Repositorios
             for (int i = 0; i < ids.Count(); i += 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void ExcluirAbrangencias(IEnumerable<long> ids)
+        public async Task ExcluirAbrangencias(IEnumerable<long> ids)
         {
             const string comando = @"delete from public.abrangencia where id in (#ids) and historico = false";
 
@@ -70,11 +70,11 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = ids.Skip(i).Take(900);
 
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
+        public async Task ExcluirAbrangenciasHistoricas(IEnumerable<long> ids)
         {
             const string comando = @"delete from public.abrangencia where id in (#ids) and historico = true";
 
@@ -82,11 +82,11 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = ids.Skip(i).Take(900);
 
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
+                await database.Conexao.ExecuteAsync(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
-        public void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
+        public async Task InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
         {
             foreach (var item in abrangencias)
             {
@@ -94,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
                                         values ((select id from usuario where login = @login), @dreId, @ueId, @turmaId, @perfil, @historico)
                                         RETURNING id";
 
-                database.Conexao.Execute(comando,
+                await database.Conexao.ExecuteAsync(comando,
                     new
                     {
                         login,
@@ -153,7 +153,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by ue.nome");
             query.AppendLine("limit 10;");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar })).AsList();
+            return await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar });
         }
 
         public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false)
@@ -203,7 +203,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from");
             query.AppendLine("public.v_abrangencia_sintetica where login = @login and historico");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login })).AsList();
+            return await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login });
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false)
@@ -245,7 +245,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> ObterAnosLetivos(string login, Guid perfil, bool consideraHistorico, int anoMinimo)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var anos = (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
                                                              order by 1 desc", new { login, perfil, consideraHistorico }));
             return anos.Where(a => a >= anoMinimo);
@@ -341,7 +340,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = new StringBuilder();
             query.AppendLine("select distinct abreviacao, ");
             query.AppendLine("codigo,");
@@ -385,7 +383,6 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modalidadesQueSeraoIgnoradas) order by 1";
             var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var retorno = await database.Conexao
                 .QueryAsync<int>(query, new { login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray });
 
@@ -403,7 +400,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var parametros = new { login, perfil, consideraHistorico, modalidade, anoLetivo, dreCodigo, ueCodigo };
 
             var retorno = await database.Conexao
@@ -420,7 +416,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, string login, Guid perfil, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = @"select ano,
 	                             anoLetivo,
 	                             codigo,
@@ -435,9 +430,7 @@ namespace SME.SGP.Dados.Repositorios
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
-            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
-
-            return result;
+            return await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo });
         }
 
         public async Task<AbrangenciaUeRetorno> ObterUe(string codigo, string login, Guid perfil)
@@ -462,7 +455,6 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false)
         {
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var query = new StringBuilder();
 
             query.AppendLine("select distinct codigo,");
@@ -541,7 +533,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
 
-        public void RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo)
+        public async Task RemoverAbrangenciasForaEscopo(string login, Guid perfil, TipoAbrangenciaSincronizacao escopo)
         {
             var query = "delete from abrangencia where usuario_id = (select id from usuario where login = @login) and historico = false and perfil = @perfil and #escopo";
 
@@ -560,7 +552,7 @@ namespace SME.SGP.Dados.Repositorios
                     break;
             }
 
-            database.Execute(query, new { login, perfil });
+            await database.Conexao.ExecuteAsync(query, new { login, perfil });
         }
 
         public async Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId)
@@ -806,6 +798,15 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return resultadoFiltrado.DistinctBy(p => new {p.Codigo, p.Nome});
+        }
+        
+         public async Task<bool> VerificarUsuarioLogadoPertenceMesmaUE(string codigoUe, string login, Guid perfil, Modalidade modalidade, int anoLetivo, int periodo, bool consideraHistorico = false)
+        {
+            var query = @"select 1  from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @periodo, @codigoUe, @anoLetivo) limit 1";
+
+            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { login, perfil, consideraHistorico, modalidade, periodo, codigoUe, anoLetivo});
+
+            return retorno;
         }
 
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)

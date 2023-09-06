@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<EncaminhamentoAEEVigenteDto>> Handle(ObterEncaminhamentoAEEVigenteQuery request, CancellationToken cancellationToken)
         {
-            return await _repositorioEncaminhamentoAEE.ObterEncaminhamentosVigentes();
+            return await _repositorioEncaminhamentoAEE.ObterEncaminhamentosVigentes(request.AnoLetivo);
         }
     }
 }
