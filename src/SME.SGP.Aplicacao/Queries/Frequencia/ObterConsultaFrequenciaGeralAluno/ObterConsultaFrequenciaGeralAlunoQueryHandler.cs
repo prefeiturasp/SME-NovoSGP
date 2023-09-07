@@ -59,16 +59,18 @@ namespace SME.SGP.Aplicacao
         public async Task VerificaRegraRegularesAtivosEInativos(List<string> turmasDoAlunoNoAno, string codigoAluno)
         {
             var dadosTurmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasDoAlunoNoAno.ToArray()));
+            var turmasRegulares = dadosTurmas?.Where(d => d.TipoTurma == TipoTurma.Regular);
 
-            var turmasRegulares = dadosTurmas.Where(d => d.TipoTurma == TipoTurma.Regular);
-
-            foreach(var turma in turmasRegulares)
+            if (turmasRegulares.Any())
             {
-                var matriculaAlunoNaTurma = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, codigoAluno));
+                foreach (var turma in turmasRegulares)
+                {
+                    var matriculaAlunoNaTurma = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, codigoAluno));
 
-                if (matriculaAlunoNaTurma.Inativo)
-                    turmasDoAlunoNoAno.Remove(turma.CodigoTurma);
-            }
+                    if (matriculaAlunoNaTurma.Inativo)
+                        turmasDoAlunoNoAno.Remove(turma.CodigoTurma);
+                }
+            }   
         }
     }
 }
