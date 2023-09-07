@@ -613,14 +613,13 @@ namespace SME.SGP.Dados.Repositorios
                                                             a.professor_rf AS ProfessorRf,
                                                             a.criado_por AS CriadoPor, 
                                                             a.tipo_aula AS TipoAula,
-                                                            CASE WHEN rf.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
+                                                            CASE WHEN rfa.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
             query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
-            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
-            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
-            query.AppendLine(" LEFT JOIN registro_frequencia rf ON rf.aula_id = a.id ");
+            query.AppendLine("                and a.data_aula::date between pe.periodo_inicio and pe.periodo_fim");
+            query.AppendLine("LEFT JOIN registro_frequencia_aluno rfa ON rfa.aula_id = a.id and not rfa.excluido");
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
             query.AppendLine("and a.turma_id = @turmaCodigo ");
@@ -687,7 +686,7 @@ namespace SME.SGP.Dados.Repositorios
                 aulaFim
             });
         }
-        public Aula ObterPorWorkflowId(long workflowId)
+        public async Task<Aula> ObterPorWorkflowId(long workflowId)
         {
             var query = @"select a.id,
                                  a.ue_id,
@@ -709,14 +708,15 @@ namespace SME.SGP.Dados.Repositorios
                                  a.migrado,
                                  a.aula_pai_id,
                                  a.wf_aprovacao_id,
-                                 a.status
+                                 a.status,
+                                 a.aula_cj 
                              from  aula a
                             where a.excluido = false
                               and a.migrado = false
                               and tipo_aula = 2
                               and a.wf_aprovacao_id = @workflowId";
 
-            return database.Conexao.QueryFirst<Aula>(query.ToString(), new
+            return await database.Conexao.QueryFirstAsync<Aula>(query.ToString(), new
             {
                 workflowId
             });

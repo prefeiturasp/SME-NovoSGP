@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Período escolar do {bimestre}º Bimestre não localizado para a turma");
 
             return periodoEscolar;
-        }
+        }        
 
         private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
         {

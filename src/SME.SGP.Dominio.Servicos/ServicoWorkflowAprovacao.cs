@@ -324,7 +324,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
         {
 
-            Aula aula = repositorioAula.ObterPorWorkflowId(workflowId);
+            Aula aula = await repositorioAula.ObterPorWorkflowId(workflowId);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
 
@@ -1029,7 +1029,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task TrataReprovacaoReposicaoAula(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
 
-            Aula aula = repositorioAula.ObterPorWorkflowId(workflow.Id);
+            Aula aula = await repositorioAula.ObterPorWorkflowId(workflow.Id);
             if (aula == null)
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
 

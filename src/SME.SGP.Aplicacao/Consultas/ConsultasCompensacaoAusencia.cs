@@ -74,7 +74,8 @@ namespace SME.SGP.Aplicacao
             // Busca os nomes de alunos do EOL por turma
             var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), turma);
+            var matriculadosTurmaPAP = alunos.Any() ? await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), turma) : Enumerable.Empty<AlunosTurmaProgramaPapDto>();
+
             foreach (var compensacaoAusencia in listaCompensacoes.Items)
             {
                 var compensacaoDto = MapearParaDto(compensacaoAusencia);
@@ -155,9 +156,11 @@ namespace SME.SGP.Aplicacao
             var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
 
             var compensacoes =
-                (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma, professorConsiderado)) : null) ??
+                (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(id, alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma, professorConsiderado)) : null) ??
                 new List<CompensacaoDataAlunoDto>();
-            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosCodigos, turma);
+
+            var matriculadosTurmaPAP = alunosCodigos.Any() ? await BuscarAlunosTurmaPAP(alunosCodigos, turma) : Enumerable.Empty<AlunosTurmaProgramaPapDto>();
+
             foreach (var aluno in compensacao.Alunos)
             {
                 // Adiciona nome do aluno no Dto de retorno

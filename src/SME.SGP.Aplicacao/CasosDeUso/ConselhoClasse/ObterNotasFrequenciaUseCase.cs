@@ -238,8 +238,7 @@ namespace SME.SGP.Aplicacao
                 .GroupBy(c => c.GrupoMatrizId)
                 .ToList();
 
-            var permiteEdicao = dadosAluno.DataMatricula.Date <= periodoFim && (dadosAluno.EstaAtivo() ||
-                                dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date >= periodoInicio);
+            var permiteEdicao = dadosAluno.EstaAtivo() || await EstaInativoDentroPeriodoAberturaReabertura(dadosAluno.DataSituacao.Date, notasFrequenciaDto.Bimestre, tipoCalendario.Id, turma);
 
             var periodoMatricula = alunoNaTurma != null ? await mediator
                 .Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula)) : null;
@@ -379,6 +378,11 @@ namespace SME.SGP.Aplicacao
             return periodoEscolarUltimoBimestre;
         }
 
+        private async Task<bool> EstaInativoDentroPeriodoAberturaReabertura(DateTime dataSituacaoAluno, int bimestre, long tipoCalendarioId, Turma turma)
+        {
+            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataSituacaoAluno, bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendarioId));
+        }
+        
         private bool VerificarSePossuiRegistroFrequencia(string alunoCodigo, string turmaCodigo, long codigoComponenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<FrequenciaAluno> frequenciasAlunoParaTratar, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia)
         {
             return (frequenciasAlunoParaTratar != null && frequenciasAlunoParaTratar.Any()) ||

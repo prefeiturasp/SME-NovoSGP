@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Queries
         {
             RuleFor(x => x.Turma)
                 .NotNull().WithMessage("Informe a turma para verificar notas de todos os componentes curriculares");
-            
+
             RuleFor(x => x.AlunoCodigo)
                 .NotEmpty().WithMessage("Informe o código do aluno para verificar notas de todos os componentes curriculares");
         }
