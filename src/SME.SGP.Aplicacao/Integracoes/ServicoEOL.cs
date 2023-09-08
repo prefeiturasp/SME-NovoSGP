@@ -693,18 +693,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return turmas;
         }
 
-        public async Task<IEnumerable<TurmaPorUEResposta>> ObterTurmasPorUE(string ueId, string anoLetivo)
-        {
-            var resposta = await httpClient.GetAsync($"escolas/{ueId}/turmas/anos_letivos/{anoLetivo}");
-            var turmas = Enumerable.Empty<TurmaPorUEResposta>();
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                turmas = JsonConvert.DeserializeObject<List<TurmaPorUEResposta>>(json);
-            }
-            return turmas;
-        }
-
         public async Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             var dataString = data.ToString("s");
