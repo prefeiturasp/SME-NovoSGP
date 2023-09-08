@@ -52,7 +52,10 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(encaminhamentoNAAPAId));
 
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+
             encaminhamentoNAAPA.TurmaId = turmaId;
+            encaminhamentoNAAPA.Turma = turma;
 
             await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
         }
