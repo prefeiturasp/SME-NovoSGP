@@ -54,9 +54,7 @@ namespace SME.SGP.Infra
                     componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia;
                     componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
 
-                    var naoEhComponenteTerritorioExtenso = componenteCurricular.CodigoComponenteCurricularTerritorioSaber == 0 ||
-                                                            componenteCurricular.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricularTerritorioSaber;
-                    if (naoEhComponenteTerritorioExtenso)
+                    if (!componenteCurricular.TerritorioSaber)
                     {
                         componenteCurricular.Nome = componenteCurricularSgp.Nome;
                         componenteCurricular.NomeComponenteInfantil = componenteCurricularSgp.NomeComponenteInfantil;
