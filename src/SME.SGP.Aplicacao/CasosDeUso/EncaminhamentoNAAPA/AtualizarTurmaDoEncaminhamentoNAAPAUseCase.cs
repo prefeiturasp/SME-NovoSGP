@@ -17,47 +17,48 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
+            var situacaoMatriculaAtiva = 1;
             var encaminhamento = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamento.AlunoCodigo), true));
-            var alunosTurmas = alunosEol?.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
+            var alunoTurma = alunosEol?.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
-                                                      && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date); 
+                                                      && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date
+                                                      && turma.CodigoSituacaoMatricula == situacaoMatriculaAtiva).FirstOrDefault();
 
-            if (alunosTurmas != null) 
-               await AtualizarTurmaDoEncaminhamento(encaminhamento, alunosTurmas);
+            if (alunoTurma != null)
+                await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
 
             return true;
         }
 
-        private async Task AtualizarTurmaDoEncaminhamento(EncaminhamentoNAAPADto encaminhamento, IEnumerable<TurmasDoAlunoDto> alunosTurmas)
+        private async Task AtualizarTurmaDoEncaminhamento(EncaminhamentoNAAPADto encaminhamento, TurmasDoAlunoDto alunoTurma)
         {
-            foreach(var alunoTurma in alunosTurmas)
-            {
-                var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
+            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
 
-                if (turmaId != 0)
+            if (turmaId != 0)
+            {
+                if (turmaId != encaminhamento.TurmaId)
                 {
-                    if (turmaId != encaminhamento.TurmaId)
-                    {
-                        await AtualizarEncaminhamento(encaminhamento.Id.GetValueOrDefault(), turmaId);
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
-                    }
-                    if (alunoTurma.CodigoSituacaoMatricula != (int)(encaminhamento.SituacaoMatriculaAluno ?? 0))
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
+                    await AtualizarEncaminhamento(encaminhamento.Id.GetValueOrDefault(), turmaId);
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
                 }
+                if (alunoTurma.CodigoSituacaoMatricula != (int)(encaminhamento.SituacaoMatriculaAluno ?? 0))
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
             }
         }
 
         private async Task AtualizarEncaminhamento(long encaminhamentoNAAPAId, long turmaId)
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(encaminhamentoNAAPAId));
+            if(encaminhamentoNAAPA != null)
+            {
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+                encaminhamentoNAAPA.TurmaId = turmaId;
+                encaminhamentoNAAPA.Turma = turma;
 
-            encaminhamentoNAAPA.TurmaId = turmaId;
-            encaminhamentoNAAPA.Turma = turma;
-
-            await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+                await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+            }
         }
     }
 }
