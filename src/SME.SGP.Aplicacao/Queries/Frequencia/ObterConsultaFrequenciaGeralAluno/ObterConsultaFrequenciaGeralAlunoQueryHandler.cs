@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var matriculaAlunoNaTurma = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, codigoAluno));
 
-                    if (matriculaAlunoNaTurma.Inativo)
+                    if (matriculaAlunoNaTurma != null && matriculaAlunoNaTurma.Inativo)
                         turmasDoAlunoNoAno.Remove(turma.CodigoTurma);
                 }
             }   
