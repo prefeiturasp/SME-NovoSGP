@@ -22,6 +22,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase, ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IExecutarExcluirConsolidadoEncaminhamentoNAAPAUseCase, ExecutarExcluirConsolidadoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase, ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<INotificarInatividadeDoAtendimentoNAAPAUseCase, NotificarInatividadeDoAtendimentoNAAPAUseCase>();
+            services.TryAddScoped<INotificarInatividadeDoAtendimentoNAAPAPorUeUseCase, NotificarInatividadeDoAtendimentoNAAPAPorUeUseCase>();
+            services.TryAddScoped<INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase, NotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase>();
         }
     }
 }

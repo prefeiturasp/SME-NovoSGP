@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio.Enumerados;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dominio
@@ -19,6 +20,7 @@ namespace SME.SGP.Dominio
         public List<EncaminhamentoNAAPASecao> Secoes { get; set; }
         public SituacaoMatriculaAluno? SituacaoMatriculaAluno { get; set; }
         public string MotivoEncerramento { get; set; }
+        public DateTime? DataUltimaNotificacaoSemAtendimento { get; set; }
 
         public EncaminhamentoNAAPA Clone()
         {
