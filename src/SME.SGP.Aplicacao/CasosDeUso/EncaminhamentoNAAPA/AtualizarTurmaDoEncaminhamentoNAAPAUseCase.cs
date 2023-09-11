@@ -17,13 +17,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var situacaoMatriculaAtiva = 1;
+            var situacaoMatriculaAtiva = SituacaoMatriculaAluno.Ativo;
             var encaminhamento = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamento.AlunoCodigo), true));
             var alunoTurma = alunosEol?.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
                                                       && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date
-                                                      && turma.CodigoSituacaoMatricula == situacaoMatriculaAtiva).FirstOrDefault();
+                                                      && (int)situacaoMatriculaAtiva == turma.CodigoSituacaoMatricula).FirstOrDefault();
 
             if (alunoTurma != null)
                 await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
