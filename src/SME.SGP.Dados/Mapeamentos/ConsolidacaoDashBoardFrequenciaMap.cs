@@ -28,6 +28,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.semestre).ToColumn("semestre");
             Map(c => c.Mes).ToColumn("mes");
             Map(c => c.Tipo).ToColumn("tipo");
+            Map(c => c.TotalAulas).ToColumn("total_aulas");
+            Map(c => c.TotalFrequencias).ToColumn("total_frequencias");
         }
     }
 }

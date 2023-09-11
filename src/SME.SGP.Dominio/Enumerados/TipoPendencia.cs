@@ -61,5 +61,8 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "Pendências de Devolutivas", GroupName = "Diario de Classe")]
         Devolutiva = 19,
+
+        [Display(Name = "Pendências de turma/componente sem aula", GroupName = "Diario de Classe")]
+        ComponenteSemAula = 20,
     }
 }

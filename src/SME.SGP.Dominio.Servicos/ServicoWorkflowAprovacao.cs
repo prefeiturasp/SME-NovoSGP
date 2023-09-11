@@ -135,7 +135,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (Notificacao notificacao in wfNivel.Notificacoes)
                 {
-                    repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
+                    await repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
                     await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                 }
             }
@@ -244,7 +244,7 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
             
             // Resolve a pendencia de fechamento
-            repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
+            await repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
 
             foreach (var notaEmAprovacao in notasEmAprovacao)
             {
@@ -297,7 +297,7 @@ namespace SME.SGP.Dominio.Servicos
                                         await mediator.Send(new ObterTurmaCodigoPorIdQuery(notaEmAprovacao.TurmaId)),
                                         notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId));
 
-            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                                             notaEmAprovacao.TurmaId,
                                             notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId,
                                             notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId);
@@ -311,7 +311,7 @@ namespace SME.SGP.Dominio.Servicos
                                                                                    codigoTurma);
             await mediator.Send(new RemoverChaveCacheCommand(chaveCacheNotaFinal));
 
-            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                                             turmaId,
                                             periodoEscolarId,
                                             disciplinaId);
@@ -319,7 +319,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private string ObterChaveFechamentoNotaFinalComponenteTurma(string codigoDisciplina, string codigoTurma)
-            => string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma);
+            => string.Format(NomeChaveCache.FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma);
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
         {

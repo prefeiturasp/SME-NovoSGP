@@ -21,24 +21,22 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DadosTurmaAulasAutomaticaDto>> Handle(ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            var listaRetorno = new List<DadosTurmaAulasAutomaticaDto>();
+            var listaRetornoEOL = Enumerable.Empty<DadosTurmaAulasAutomaticaDto>();
 
-            using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
+            using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 var componentesCurriculares = String.Join("&componentesCurriculares=", request.ComponentesCurriculares);
-                var resposta = await httpClient.GetAsync($"/api/v1/componentes-curriculares/dados-aula-turma?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}");
+                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA + $"?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}");
 
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
-                    var listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<DadosTurmaAulasAutomaticaDto>>(json) as List<DadosTurmaAulasAutomaticaDto>;
-                    if (listaRetornoEOL.Any())
-                        listaRetorno.AddRange(listaRetornoEOL);
+                    listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<DadosTurmaAulasAutomaticaDto>>(json) as List<DadosTurmaAulasAutomaticaDto>;
                 }
 
             }
 
-            return listaRetorno;
+            return listaRetornoEOL;
         }
     }
 }

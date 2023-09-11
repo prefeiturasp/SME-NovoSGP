@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio
                 if (alunos == null || !alunos.Any())
                     throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-                var usuario = await  mediator.Send(new ObterUsuarioLogadoQuery());
+                var usuario = await  mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                 await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,usuario.EhGestorEscolar(), turma);
 
@@ -83,7 +83,7 @@ namespace SME.SGP.Dominio
                         disciplinaId, usuario, turma));
                 }
 
-                var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var criadoPor = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                 await SalvarNoBanco(entidadesSalvar, criadoPor, turma.CodigoTurma);
 
@@ -359,7 +359,7 @@ namespace SME.SGP.Dominio
             string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
             if (usuario == null)
-                usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var podePersistir =
                 await mediator.Send(new ObterPodePersistirTurmaDisciplinaQuery(codigoRf, turmaId, disciplinaId, dataAula));

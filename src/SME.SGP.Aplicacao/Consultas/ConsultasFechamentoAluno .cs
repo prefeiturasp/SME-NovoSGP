@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var dadosAluno = dadosAlunos.First(da => da.CodigoEOL.Equals(codigoAluno));
 
             dadosAluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(codigoAluno, anoLetivo));
-
+            dadosAluno.EhMatriculadoTurmaPAP = await BuscarAlunosTurmaPAP(dadosAluno.CodigoEOL, anoLetivo);
             var anotacaoDto = anotacaoAluno == null ?
                             new FechamentoAlunoCompletoDto() { Aluno = dadosAluno } :
                             MapearParaDto(anotacaoAluno, dadosAluno);
@@ -39,6 +39,11 @@ namespace SME.SGP.Aplicacao
             return anotacaoDto;
         }
 
+        private async Task<bool> BuscarAlunosTurmaPAP(string alunoCodigo, int anoLetivo)
+        {
+            var matriculadosTurmaPAP =  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, new []{alunoCodigo}));
+            return matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == alunoCodigo);
+        }
         public async Task<AnotacaoFechamentoAluno> ObterAnotacaoPorAlunoEFechamento(long fechamentoId, string codigoAluno)
             => await repositorioAnotacaoFechamentoAlunoConsulta.ObterPorFechamentoEAluno(fechamentoId, codigoAluno);
 

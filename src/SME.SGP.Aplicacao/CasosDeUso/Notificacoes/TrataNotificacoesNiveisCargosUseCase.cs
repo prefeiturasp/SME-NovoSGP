@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var listaDeNotificacoesParaTratar = await mediator.Send(new ObterNotificacoesNiveisCargosQuery());
+            var listaDeNotificacoesParaTratar = await mediator.Send(ObterNotificacoesNiveisCargosQuery.Instance);
             await mediator.Send(new TrataNotificacaoCargosNiveisCommand(listaDeNotificacoesParaTratar));
 
             return true;

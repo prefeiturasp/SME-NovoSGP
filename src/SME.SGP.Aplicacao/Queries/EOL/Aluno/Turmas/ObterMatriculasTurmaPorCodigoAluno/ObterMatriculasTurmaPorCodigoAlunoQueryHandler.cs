@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterMatriculasTurmaPorCodigoAlunoQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var queryParam = $"{(request.AnoLetivo.HasValue ? $"anoLetivo={request.AnoLetivo.Value}{(request.AnoLetivo.HasValue ? $"&" : string.Empty)}" : string.Empty)}";
             queryParam = queryParam + $"{(request.DataAula.HasValue ? $"dataAulaTicks={request.DataAula.Value.Ticks}" : string.Empty)}";
-            var url = $"/api/turmas/alunos/{request.CodigoAluno}{(!string.IsNullOrEmpty(queryParam) ? $"?{queryParam}" : string.Empty)}";
+            var url = string.Format(ServicosEolConstants.URL_TURMAS_ALUNOS, request.CodigoAluno) + $"{(!string.IsNullOrEmpty(queryParam) ? $"?{queryParam}" : string.Empty)}";
             try
             {
                 var resposta = await httpClient.GetAsync(url);

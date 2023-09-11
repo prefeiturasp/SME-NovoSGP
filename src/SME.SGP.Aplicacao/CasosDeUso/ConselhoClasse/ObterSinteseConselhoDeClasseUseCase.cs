@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using RespostasDto = SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
@@ -56,8 +55,6 @@ namespace SME.SGP.Aplicacao
             var disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
             if (disciplinas == null || !disciplinas.Any())
                 return null;
-
-            disciplinas = (await MapearLancaNotaFrequenciaSgp(disciplinas, conselhoClasseSinteseDto.CodigoTurma)).ToList();
 
             var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
                                             .GroupBy(c => new { Id = c.GrupoMatriz?.Id, Nome = c.GrupoMatriz?.Nome });
@@ -205,28 +202,7 @@ namespace SME.SGP.Aplicacao
                 TerritorioSaber = componenteCurricular.TerritorioSaber
             };
         }
-		
-		private async Task<IEnumerable<DisciplinaResposta>> MapearLancaNotaFrequenciaSgp(IEnumerable<DisciplinaResposta> disciplinasEol, string codigoTurma)
-        {
-            var disciplinasCodigo = disciplinasEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
-            var disciplinasSgp = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(disciplinasCodigo, codigoTurma: codigoTurma))).ToList();
-
-            return disciplinasEol.Select(disciplina => MapearLancaNotaFrequenciaSgp(disciplina, disciplinasSgp.FirstOrDefault(disciplinaSgp =>
-                disciplinaSgp.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular)));
-        }
-		
-		private DisciplinaResposta MapearLancaNotaFrequenciaSgp(DisciplinaResposta disciplinaEol, DisciplinaDto disciplinaSgp)
-        {
-            if (disciplinaSgp != null)
-            {
-                disciplinaEol.LancaNota = disciplinaSgp.LancaNota;
-                disciplinaEol.RegistroFrequencia = disciplinaSgp.RegistraFrequencia;
-                disciplinaEol.Nome = disciplinaSgp.Nome;
-                disciplinaEol.NomeComponenteInfantil = disciplinaSgp.NomeComponenteInfantil;
-            }
-            return disciplinaEol;
-        }
-        
+		        
         private ConselhoDeClasseComponenteSinteseDto MapearConselhoDeClasseComponenteSinteseDto(DisciplinaResposta componenteCurricular, FrequenciaAluno frequenciaDisciplina, string percentualFrequencia, SinteseDto parecerFinal, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoes, int bimestre)
         {
             var codigoComponenteCurricular = ObterCodigoComponenteCurricular(componenteCurricular);

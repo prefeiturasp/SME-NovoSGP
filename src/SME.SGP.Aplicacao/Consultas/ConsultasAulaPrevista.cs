@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(turmaId);
             var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
             var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var codigoTerritorioCorrespondente = (long?)null;
             bool componenteEhTerritorio = false;
 

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var guid = Guid.NewGuid();
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEolSemSenha(filtroSolicitacaoGuidAutenticacao.Rf);
-            if (!retornoAutenticacaoEol.Item1.Autenticado)
+            if (!retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Autenticado)
                 throw new NegocioException("", HttpStatusCode.Unauthorized);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(filtroSolicitacaoGuidAutenticacao.TurmaCodigo));
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                                                                                                         NomeTipoUeDre = turma.ObterEscola()
                                                                                   }, 
                                                                                   UsuarioAutenticacao = retornoAutenticacaoEol };
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.CHAVE_AUTENTICACAO_FREQUENCIA, guid), autenticacaoFrequenciaDto, 1));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.AUTENTICACAO_FREQUENCIA, guid), autenticacaoFrequenciaDto, 1));
             return guid;
         }
     }

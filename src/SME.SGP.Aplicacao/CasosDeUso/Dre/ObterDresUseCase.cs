@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<Dre>> Executar()
         {
-            return mediator.Send(new ObterTodasDresQuery());
+            return mediator.Send(ObterTodasDresQuery.Instance);
         }
     }
 }

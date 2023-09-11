@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<NotificacaoBasicaDto>> Executar(bool tituloReduzido)
         {
             //TODO: Utilizar query que retorna apenas o RF quando for feito merge com dev release
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             return await mediator.Send(new ObterUltimasNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogado.CodigoRf ?? usuarioLogado.Login, tituloReduzido));
         }
     }

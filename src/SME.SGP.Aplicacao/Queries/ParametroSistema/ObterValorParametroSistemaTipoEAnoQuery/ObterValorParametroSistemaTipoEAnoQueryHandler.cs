@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Handle(ObterValorParametroSistemaTipoEAnoQuery request, CancellationToken cancellationToken)
         {
-            var nomeCache = $"{request.Tipo}-{request.Ano}";
-            var parametrosNoCache = repositorioCache.Obter($"parametros-sistema-{request.Ano}");
-
+            var nomeCache = string.Format(NomeChaveCache.PARAMETROS_SISTEMA_ANO, request.Ano);
+            var parametrosNoCache = repositorioCache.Obter(nomeCache);
             IEnumerable<ParametrosSistema> parametrosDoSistema;
 
             if (string.IsNullOrEmpty(parametrosNoCache))

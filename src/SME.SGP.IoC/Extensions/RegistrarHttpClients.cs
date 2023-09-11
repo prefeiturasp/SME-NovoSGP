@@ -27,7 +27,7 @@ namespace SME.SGP.IoC
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
             });
 
-            services.AddHttpClient(name: "servicoEOL", c =>
+            services.AddHttpClient(name: ServicosEolConstants.SERVICO, c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");

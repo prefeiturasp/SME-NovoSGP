@@ -22,10 +22,10 @@ namespace SME.SGP.Aplicacao
         {
             var codigoTurma = long.Parse(request.Turma.CodigoTurma);
             var registrosFrequencias = new RegistroFrequenciaPorDataPeriodoDto();
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             registrosFrequencias.CarregarAulas(request.Aulas, request.RegistrosFrequenciaAlunos, usuarioLogado.EhSomenteProfessorCj(), usuarioLogado.EhGestorEscolar());
             registrosFrequencias.CarregarAuditoria(request.RegistrosFrequenciaAlunos);
-
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(request.AlunosDaTurma.Select(x => x.CodigoAluno).ToArray(), request.Turma.AnoLetivo);
             foreach (var aluno in request.AlunosDaTurma)
             {
                 var frequenciaPreDefinida = request.FrequenciasPreDefinidas
@@ -48,6 +48,7 @@ namespace SME.SGP.Aplicacao
                     CelularResponsavel = aluno.CelularResponsavel,
                     DataAtualizacaoContato = aluno.DataAtualizacaoContato,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
+                    EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                 };
 
                 var frequenciaAluno = request.FrequenciaAlunos
@@ -84,6 +85,10 @@ namespace SME.SGP.Aplicacao
             return registrosFrequencias.Aulas.Any() ? registrosFrequencias : null;
         }
 
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
         private bool RegistraFrequencia(bool registraFrequencia, IEnumerable<Aula> aulas, Turma turma)
         {
             var aula = aulas.First();

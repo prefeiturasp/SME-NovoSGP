@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar(int anoLetivo)
         {
-            var dres = await mediator.Send(new ObterIdsDresQuery());
+            var dres = await mediator.Send(ObterIdsDresQuery.Instance);
             foreach(var dreId in dres)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAlunoPorDre, new FiltroDreUeTurmaDto(anoLetivo, dreId), Guid.NewGuid(), null));

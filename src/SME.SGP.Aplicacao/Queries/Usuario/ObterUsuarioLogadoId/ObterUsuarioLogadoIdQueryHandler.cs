@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(ObterUsuarioLogadoIdQuery request, CancellationToken cancellationToken)
         {
-            var login = await mediator.Send(new ObterLoginAtualQuery());
+            var login = await mediator.Send(ObterLoginAtualQuery.Instance);
             if (string.IsNullOrWhiteSpace(login))
                 throw new NegocioException("Usuário não encontrado.");
 

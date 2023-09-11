@@ -17,12 +17,12 @@ pipeline {
       deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
       deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao-r2' : 'sme-worker-compressao' }"
       deployment14 = "${env.branchname == 'release-r2' ? 'sme-worker-naapa-r2' : 'sme-worker-naapa' }"
-      namespace = "${env.branchname == 'pre-prod' ? 'sme-novosgp-d1' : 'sme-novosgp' }"  
-        
+      namespace = "${env.branchname == 'pre-prod' ? 'sme-novosgp-d1' : env.branchname == 'development' ? 'novosgp-dev' : 'sme-novosgp' }"
+           
     }
   
-    agent {
-      node { label 'SME-AGENT-SGP' }
+      agent {
+      kubernetes { label 'builder' }
     }
 
     options {
@@ -38,191 +38,241 @@ pipeline {
             steps { checkout scm }            
         }
    
-        stage('Sonar & Build') {
+        stage('Build') {
           when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
           parallel {
-            stage('Sonar') {
-            agent { node { label 'SME-AGENT-SGP-SONAR' } }
-            when { anyOf { branch '_master'; branch 'main'; branch '_pre-prod'; branch "story/*"; branch '_development'; branch '_release'; branch '_release-r2'; branch 'infra/*'; } } 
-                steps {
-                  checkout scm
-                  script{
-                    withSonarQubeEnv('sonarqube-local'){
-                      sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                      sh 'dotnet build SME.SGP.sln'
-                      sh 'dotnet test teste/SME.SGP.TesteIntegracao --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-                      sh 'dotnet-sonarscanner'
-                    }
-                 }
-               }
-            }
             stage('sme-sgp-backend') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
                   dockerImage1 = docker.build(imagename, "-f src/SME.SGP.Api/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage1.push() } 
                 }
               }
             }
             stage('sme-worker-geral') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-geral"
                   dockerImage2 = docker.build(imagename, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage2.push() }   
                 }
               }
             }
             stage('sme-worker-fechamento') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"
                   dockerImage3 = docker.build(imagename, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage3.push() }   
                 }
               }
             }
             stage('sme-worker-aee') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aee"
                   dockerImage4 = docker.build(imagename, "-f src/SME.SGP.AEE.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage4.push() }  
                 }
               }
             }
             stage('sme-worker-aula') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aula"
                   dockerImage5 = docker.build(imagename, "-f src/SME.SGP.Aula.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage5.push() }   
                 }
               }
             }
             stage('sme-worker-frequencia') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-frequencia"
                   dockerImage6 = docker.build(imagename, "-f src/SME.SGP.Frequencia.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage6.push() }   
                 }
               }
             }
             stage('sme-worker-institucional') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-institucional"
                   dockerImage7 = docker.build(imagename, "-f src/SME.SGP.Institucional.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage7.push() }   
                 }
               }
             }
             stage('sme-worker-pendencias') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-pendencias"
                   dockerImage8 = docker.build(imagename, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage8.push() }  
                 }
               }
             }
             stage('sme-worker-avaliacao') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-avaliacao"
                   dockerImage9 = docker.build(imagename, "-f src/SME.SGP.Avaliacao.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage9.push() }  
                 }
               }
             }
             stage('sme-worker-auditoria') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-auditoria"
                   dockerImage10 = docker.build(imagename, "-f src/SME.SGP.Auditoria.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage10.push() }  
                 }
               }
             }
             stage('sme-worker-notificacoes') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-notificacoes"
                   dockerImage11 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage11.push() }  
                 }
               }
             }
             stage('sme-worker-notificacoes-hub') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-notificacoes-hub"
                   dockerImage12 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Hub/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage12.push() }   
                 }
               }
             }            
             stage('sme-worker-compressao') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-compressao"
                   dockerImage13 = docker.build(imagename, "-f src/SME.SGP.ComprimirArquivos.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage13.push() }  
                 }
               }
             }
             stage('sme-worker-naapa') {
-              agent { node { label 'SME-AGENT-SGP' } }
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
               steps{
                 checkout scm
                 script {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-naapa"
                   dockerImage14 = docker.build(imagename, "-f src/SME.SGP.NAAPA.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage14.push() }  
                 }
               }
             }   
           }
     }
-    stage('Push'){
-      agent { node { label 'SME-AGENT-SGP' } }
-      when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }       
-      steps {
-        script{
-              docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                dockerImage1.push()
-                dockerImage2.push()
-                dockerImage3.push()
-                dockerImage4.push()
-                dockerImage5.push()
-                dockerImage6.push()
-                dockerImage7.push()
-                dockerImage8.push()
-                dockerImage9.push()
-                dockerImage10.push()
-                dockerImage11.push()
-                dockerImage12.push()
-                dockerImage13.push()
-                dockerImage14.push()
-              }
-        }
-      }
-    }
         stage('Deploy'){
+             agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
             when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }        
             steps {
                 script{
@@ -259,17 +309,28 @@ pipeline {
         }
              
       stage('Flyway') {
-        agent { label 'master' }
+        agent { kubernetes { 
+                  label 'flyway'
+                  defaultContainer 'flyway'
+                }
+              }
         when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; branch 'pre-prod'; } }
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
-            sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts registry.sme.prefeitura.sp.gov.br/devops/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
-          }
+            sh 'pwd'
+            sh 'ls'
+            sh 'flyway -url=$url -locations="filesystem:scripts" -outOfOrder=true migrate'
+             }
         }       
       }
 
       stage('Deploy Treinamento'){
+          agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
           when { anyOf { branch 'release'; } }        
           steps {
               script{
@@ -289,14 +350,18 @@ pipeline {
       }
 
       stage('Treinamento Flyway') {
-        agent { label 'master' }
+        agent { kubernetes { 
+                  label 'flyway'
+                  defaultContainer 'flyway'
+                }
+              }
         when { anyOf {  branch 'release'; } }
         steps{
           script{
             try {
                 withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
                 checkout scm
-                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts registry.sme.prefeitura.sp.gov.br/devops/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                sh 'flyway -url=$url -locations="filesystem:scripts" -outOfOrder=true migrate'
                 }
             } 
             catch (err) {
@@ -333,6 +398,6 @@ def getKubeconf(branchName) {
     else if ("homolog".equals(branchName)) { return "config_hom"; }
     else if ("release".equals(branchName)) { return "config_hom"; }
     else if ("release-r2".equals(branchName)) { return "config_hom"; }
-    else if ("development".equals(branchName)) { return "config_dev"; }
-    else if ("develop".equals(branchName)) { return "config_dev"; }
+    else if ("development".equals(branchName)) { return "config_release"; }
+    else if ("develop".equals(branchName)) { return "config_release"; }
 }

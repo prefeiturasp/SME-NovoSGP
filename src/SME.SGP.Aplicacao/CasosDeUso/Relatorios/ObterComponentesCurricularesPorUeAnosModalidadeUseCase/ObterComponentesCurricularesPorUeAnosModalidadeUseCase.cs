@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter turmas para obter os componentes curriculares.");
 
             if (!string.IsNullOrEmpty(ueCodigo))
-                listaComponentes = (await mediator.Send(new ObterComponentesCurricularesPorUeAnosModalidadeQuery(turmaCodigos.ToArray(), anoLetivo, modalidade, anos))).ToList();
+                listaComponentes = (await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmaCodigos.Select(t => t.ToString()).ToArray()))).ToList();
             else
             {
                 ueCodigo = string.IsNullOrEmpty(ueCodigo) ? "-99" : ueCodigo;
@@ -39,11 +39,11 @@ namespace SME.SGP.Aplicacao
                 listaComponentes = (await mediator.Send(new ObterComponentesCurricularesPorAnosEModalidadeQuery(ueCodigo, modalidade, anos, anoLetivo))).ToList();
             }
                 
-
             if (listaComponentes != null && listaComponentes.Any())
                 await TratarNomeComponentes(listaComponentes);
 
-            listaComponentes.Insert(0, new ComponenteCurricularEol() { Codigo = -99, Descricao = "Todos" });
+            if(listaComponentes?.Count > 1)
+                listaComponentes.Insert(0, new ComponenteCurricularEol() { Codigo = -99, Descricao = "Todos" });
 
             return listaComponentes.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Descricao).Take(1));            
         }
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                 var componenteSgp = componentesSgp.FirstOrDefault(c => c.Id == componente.Codigo);
 
                 if (componenteSgp != null)
-                    componente.Descricao = componenteSgp.DescricaoInfantil ?? componenteSgp.Descricao;
+                    componente.Descricao = componenteSgp.Descricao;
             }
         }
     }

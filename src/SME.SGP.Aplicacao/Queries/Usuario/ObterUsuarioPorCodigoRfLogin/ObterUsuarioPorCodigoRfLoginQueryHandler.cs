@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var valorChave = !string.IsNullOrEmpty(request.CodigoRf) ? 
                                 request.CodigoRf : 
                                 request.Login;
-            var chaveCache = string.Format(NomeChaveCache.CHAVE_USUARIO, valorChave);
+            var chaveCache = string.Format(NomeChaveCache.USUARIO, valorChave);
 
             return await repositorioCache.ObterAsync<Usuario>(chaveCache, 
                 () => repositorioUsuarioConsulta.ObterPorCodigoRfLogin(request.CodigoRf, request.Login));

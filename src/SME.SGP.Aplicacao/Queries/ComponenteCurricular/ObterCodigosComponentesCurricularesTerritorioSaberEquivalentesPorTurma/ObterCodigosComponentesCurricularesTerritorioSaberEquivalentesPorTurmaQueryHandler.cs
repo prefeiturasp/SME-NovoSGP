@@ -13,13 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQueryHandler : IRequestHandler<ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery, (string codigoComponente, string professor)[]>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
-
-        public ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQueryHandler(IMediator mediator,
-                                                                                       IServicoEol servicoEol)
+        
+        public ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<(string codigoComponente, string professor)[]> Handle(ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery request, CancellationToken cancellationToken)
@@ -46,9 +43,8 @@ namespace SME.SGP.Aplicacao
 
             }
 
-            var disciplinasEOL = await servicoEol
-                    .ObterDisciplinasPorIdsAgrupadas(new long[] { request.CodigoComponenteBase }, request.CodigoTurma);
-
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(new long[] { request.CodigoComponenteBase }, request.CodigoTurma));
+                
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 

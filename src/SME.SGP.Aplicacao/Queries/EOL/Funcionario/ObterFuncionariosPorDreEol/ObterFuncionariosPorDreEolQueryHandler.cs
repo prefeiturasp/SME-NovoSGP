@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,10 +22,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorDreEolQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
             var resposta = await httpClient
-                .GetAsync($@"funcionarios/perfis/{request.Perfil}/dres/{request.DreCodigo}?CodigoUe={request.UeCodigo}&CodigoRf={request.RfCodigo}&NomeServidor={request.NomeServidor}", cancellationToken);
+                .GetAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_PERFIS_DRES, request.Perfil, request.DreCodigo) + $@"?CodigoUe={request.UeCodigo}&CodigoRf={request.RfCodigo}&NomeServidor={request.NomeServidor}", cancellationToken);
 
             if (resposta.IsSuccessStatusCode)
             {
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
 
-            return new List<UsuarioEolRetornoDto>();
+            return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
     }
 }

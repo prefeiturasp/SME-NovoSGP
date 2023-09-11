@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             observacaoPlano.Observacao = request.Observacao;
 
             var planoAEE = request.PossuiUsuarios ? await ObterPlanoAEE(request.PlanoAEEId) : null;
-            var usuarioAtual = request.PossuiUsuarios ? await mediator.Send(new ObterUsuarioLogadoQuery()) : null;
+            var usuarioAtual = request.PossuiUsuarios ? await mediator.Send(ObterUsuarioLogadoQuery.Instance) : null;
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
