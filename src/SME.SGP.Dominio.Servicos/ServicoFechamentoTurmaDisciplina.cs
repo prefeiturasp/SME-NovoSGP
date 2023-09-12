@@ -178,8 +178,8 @@ namespace SME.SGP.Dominio.Servicos
             if (turma == null)
                 throw new NegocioException("Turma não encontrada.");
 
-            var disciplina = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId })).ToList().FirstOrDefault();
-            if (disciplina == null)
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(fechamentoTurmaDisciplina.DisciplinaId));
+            if (disciplina is null)
                 throw new NegocioException("Componente Curricular não localizado.");
 
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId.Value);

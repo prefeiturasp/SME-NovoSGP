@@ -49,8 +49,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurricularesId = new List<long>() { long.Parse(request.DisciplinaId) };
 
-            var disciplinasEOL = await repositorioComponenteCurricular
-                .ObterDisciplinasPorIds(componentesCurricularesId.ToArray()); 
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesId.ToArray())); 
 
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Componente curricular informado não localizado.");

@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             var percentualCritico = await ObterParametro(TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo);
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
                         
-            var registraFrequencia = await ObterComponenteRegistraFrequencia(codigosComponentesBusca.OrderBy(c => c.Length).Last(), componenteCurricular.TerritorioSaber ? long.Parse(codigosComponentesBusca.OrderBy(c => c.Length).First()) : null);
+            var registraFrequencia = await ObterComponenteRegistraFrequencia(codigosComponentesBusca.OrderBy(c => c.Length).Last());
             var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesBusca.Select(c => long.Parse(c)).ToArray(), periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesBusca.ToArray(), periodoEscolar.Id));
 
@@ -75,8 +75,8 @@ namespace SME.SGP.Aplicacao
                                                                           percentualCritico));
         }
 
-        private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId, long? codigoTerritorioSaber = null)
-            => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId), codigoTerritorioSaber));
+        private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId)
+            => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId)));
 
         private async Task<int> ObterParametro(TipoParametroSistema parametro, int anoLetivo)
         {

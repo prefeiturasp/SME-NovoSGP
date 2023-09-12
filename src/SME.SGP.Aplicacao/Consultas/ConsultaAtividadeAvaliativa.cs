@@ -301,11 +301,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<DisciplinaDto> ObterDisciplina(long idDisciplina)
         {
-            long[] disciplinaId = { idDisciplina };
-            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
-            if (!disciplina.Any())
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(idDisciplina));
+            if (disciplina is null)
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
-            return disciplina.FirstOrDefault();
+            return disciplina;
         }
     }
 }

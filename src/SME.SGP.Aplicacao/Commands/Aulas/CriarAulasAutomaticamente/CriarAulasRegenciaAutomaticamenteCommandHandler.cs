@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                     idsDisciplinas = aulas.Select(a => Convert.ToInt64(a.DisciplinaId));
 
                 var componentesCurricularesAulas = idsDisciplinas != null && idsDisciplinas.Any() ? await mediator
-                    .Send(new ObterDisciplinasPorIdsQuery(idsDisciplinas.Distinct().ToArray())) : null;
+                    .Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas.Distinct().ToArray())) : null;
 
                 var datasDesconsideradas = componentesCurricularesAulas != null && componentesCurricularesAulas.Any() ? (from a in aulasCriadasPorUsuarios
                                             join cc in componentesCurricularesAulas
