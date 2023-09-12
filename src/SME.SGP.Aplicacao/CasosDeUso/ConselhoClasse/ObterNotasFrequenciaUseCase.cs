@@ -143,14 +143,7 @@ namespace SME.SGP.Aplicacao
             }
 
             if (turmasCodigos.Count > 0)
-            {
-                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-
-                if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 && turma.ModalidadeCodigo != Modalidade.Medio)
-                    turmasCodigos = new List<string>() { turma.CodigoTurma };
-                else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, turma))
-                    turmasCodigos = new List<string>() { turma.CodigoTurma };
-            }
+                turmasCodigos = await mediator.Send(new ObterTurmasConsideradasNoConselhoQuery(turmasCodigos, turma));
 
             //Verificar as notas finais
             var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
