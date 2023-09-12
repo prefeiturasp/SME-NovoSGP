@@ -38,8 +38,7 @@ namespace SME.SGP.Aplicacao
                     .ForEach(i => i.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), i.Situacao));
 
                 // Carrega nomes das disciplinas para o DTO de retorno
-                var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray());
-
+                var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(retornoConsultaPaginada.Items.Select(a => a.DisciplinaId).Distinct().ToArray()));
                 var componentesTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(filtro.TurmaCodigo));
 
                 foreach(var disciplinaEOL in disciplinasEOL)
@@ -65,13 +64,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Pendencia informada não localizada.");
 
             pendencia.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), pendencia.Situacao);
-            
-            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { pendencia.DisciplinaId });
 
-            if (disciplinasEOL == null || !disciplinasEOL.Any())
+            var disciplinaEOL = await mediator.Send(new ObterComponenteCurricularPorIdQuery(pendencia.DisciplinaId));
+            if (disciplinaEOL is null)
                 throw new NegocioException("Componente curricular informado não localizado.");
-
-            var disciplinaEOL = disciplinasEOL.First();
 
             var componentesTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(pendencia.CodigoTurma));
 

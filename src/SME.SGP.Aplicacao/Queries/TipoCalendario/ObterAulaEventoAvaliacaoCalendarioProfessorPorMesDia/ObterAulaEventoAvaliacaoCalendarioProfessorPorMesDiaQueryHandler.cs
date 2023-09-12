@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                         if (componenteVerificacao != default && componenteVerificacao.codigoTerritorio.HasValue && componenteVerificacao.codigoTerritorio.Value > 0)
                         {
                             componenteCurricular.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente, componenteVerificacao.codigoTerritorio), cancellationToken);
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente), cancellationToken);
                         }
                         else
                         {

@@ -40,10 +40,8 @@ namespace SME.SGP.Aplicacao
                 if (atribuicoes != null && atribuicoes.Any())
                 {
                     var atribuicoesIds = atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray();
-                    var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoesIds);
-
+                    var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoesIds));
                     disciplinasCJ = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
-
                     disciplinasCJ = await ObterDisciplinasCJRegencia(disciplinasCJ);
                 }
             }
@@ -109,10 +107,10 @@ namespace SME.SGP.Aplicacao
             if (disciplinas.Any(a => a.Regencia))
             {
                 var disciplinasRegenciaEolCodigos = disciplinas.Where(a => a.Regencia).Select(a => a.CodigoComponenteCurricular).Distinct().ToArray();
-                var disciplinasRegenciaEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasRegenciaEolCodigos);
+                var disciplinasRegenciaEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasRegenciaEolCodigos));
                 if (disciplinasRegenciaEol.Any())
                 {
-                    var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
+                    var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(IDS_COMPONENTES_REGENCIA));
                     var componentesRegenciaDto = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
                     disciplinas = disciplinas.Union(componentesRegenciaDto);
                 }
