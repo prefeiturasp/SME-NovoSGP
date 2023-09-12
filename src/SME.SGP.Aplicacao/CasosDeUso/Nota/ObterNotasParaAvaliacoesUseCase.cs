@@ -53,8 +53,7 @@ namespace SME.SGP.Aplicacao
             var atividadesAvaliativaEBimestres = await mediator
                 .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
 
-            var alunos = await mediator
-                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(filtro.TurmaCodigo)));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(filtro.TurmaCodigo));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -150,19 +149,27 @@ namespace SME.SGP.Aplicacao
 
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
 
-            //Obter alunos ativos            
-            var alunosAtivos = from a in alunos
-                               where a.DataMatricula.Date <= periodoFim.Date
-                               && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
-                               group a by new { a.CodigoAluno, a.NumeroAlunoChamada } into grupoAlunos
-                               orderby grupoAlunos.First().NomeValido(), grupoAlunos.First().NumeroAlunoChamada
-                               select grupoAlunos.OrderByDescending(a => a.DataSituacao).First();
+            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
+            if (filtro.TurmaHistorico)
+            {
+                alunosAtivos = from a in alunos
+                    where a.EstaAtivo(periodoFim) ||
+                          (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
+                          (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
+                    orderby a.NomeValido(), a.NumeroAlunoChamada
+                    select a;
+            }
+            else
+            {
+                alunosAtivos = from a in alunos
+                    where (a.EstaAtivo(periodoFim) ||
+                           (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
+                          a.DataMatricula.Date <= periodoFim.Date
+                    orderby a.NomeValido(), a.NumeroAlunoChamada
+                    select a;
+            }
 
-            alunosAtivos = alunosAtivos.OrderBy(a => a.NomeValido()).ThenBy(a => a.NumeroAlunoChamada);
-
-            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivosOrdenados = alunosAtivos.OrderBy(a => a.NomeValido()).ThenBy(a => a.NumeroAlunoChamada);
-
-            var alunosAtivosCodigos = alunosAtivosOrdenados
+            var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).ToArray();
 
             var frequenciasDosAlunos = await mediator

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -6,17 +7,18 @@ namespace SME.SGP.Infra
     {
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
-        public decimal Percentual
+        public double Percentual
         {
             get
             {
-                if (QuantidadeAulas == 0)
-                    return 0;
+                var frequenciaCalculo = new FrequenciaAluno()
+                {
+                    TotalAulas = QuantidadeAulas,
+                    TotalAusencias = QuantidadeAusencias,
+                    TotalCompensacoes = QuantidadeCompensacoes
+                };
 
-                var faltasNaoCompensadas = QuantidadeAusencias - QuantidadeCompensacoes;
-                var porcentagem = 100 - (Convert.ToDecimal(faltasNaoCompensadas) / QuantidadeAulas * 100);
-
-                return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
+                return frequenciaCalculo.PercentualFrequencia;
             }
         }
         public int QuantidadeAulas { get; set; }
