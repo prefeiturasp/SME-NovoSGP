@@ -263,8 +263,7 @@ namespace SME.SGP.Aplicacao
 
             var diasParaCriar = diasDoPeriodo
                 .Where(l => (diasLetivos != null && diasLetivos.Any(n => n.Data == l.Data) ||
-                             diasNaoLetivos == null || !diasNaoLetivos.Any(n => n.Data == l.Data)) &&
-                             !datasDesconsideradas.Contains(l.Data))?
+                            diasNaoLetivos == null || !diasNaoLetivos.Any(n => n.Data == l.Data)) && !datasDesconsideradas.Contains(l.Data))?
                 .ToList();
 
             return ObterListaDeAulas(diasParaCriar?.DistinctBy(c => c.Data)?.ToList(), tipoCalendarioId, turma, ueCodigo, modalidade, rfProfessor);
@@ -280,7 +279,8 @@ namespace SME.SGP.Aplicacao
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, string ueCodigo)
         {
-            return diasDoPeriodo.Where(c => (c.CriarAulaUe(ueCodigo) && c.EhLetivo) ||
+            return diasDoPeriodo.Where(c => c.Data.DayOfWeek != DayOfWeek.Saturday && c.Data.DayOfWeek != DayOfWeek.Sunday &&
+                                       (c.CriarAulaUe(ueCodigo) && c.EhLetivo) ||
                                        (!c.DreIds.Any() && !c.UesIds.Any() && c.EhLetivo) ||
                                        (!c.PossuiEvento && c.EhLetivo && !c.PossuiEventoSME && !c.PossuiEventoUe(ueCodigo)) ||
                                        c.CriarAulaSME)?.OrderBy(c => c.Data)?.ToList();
