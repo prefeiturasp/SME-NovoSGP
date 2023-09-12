@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesCurricularesDoProfessorCJ.Any())
                 {
-                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                    var dadosComponentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
                     if (dadosComponentes.Any())
                     {
                         componentesCurricularesDoProfessorCj = dadosComponentes

@@ -136,12 +136,10 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
-            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId)); 
 
-            if (!disciplinasEOL.Any())
+            if (disciplina is null)
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
-
-            var disciplina = disciplinasEOL.FirstOrDefault();
 
             if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
                 throw new NegocioException("Regência de classe deve informar o(s) componente(s) curricular(es) relacionados a esta atividade.");
