@@ -621,7 +621,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids)
         {
-            return await mediator.Send(new ObterDisciplinasPorIdsQuery(ids));
+            return await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(ids));
         }
     }
 }

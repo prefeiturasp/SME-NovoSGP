@@ -40,15 +40,14 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
-
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
             IEnumerable<ComponenteCurricularEol> componentes = null;
 
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
 
             if (request.ListarComponentesPlanejamento && componenteRegencia != null)
             {
-                var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
+                var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(IDS_COMPONENTES_REGENCIA));  
                 if (componentesRegencia != null)
                     componentes = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
             }

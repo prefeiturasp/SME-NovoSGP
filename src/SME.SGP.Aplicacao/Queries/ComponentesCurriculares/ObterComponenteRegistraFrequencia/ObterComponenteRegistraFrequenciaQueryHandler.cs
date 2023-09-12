@@ -8,14 +8,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponenteRegistraFrequenciaQueryHandler : IRequestHandler<ObterComponenteRegistraFrequenciaQuery, bool>
     {
-        private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
+        private readonly IMediator mediator;
 
-        public ObterComponenteRegistraFrequenciaQueryHandler(IRepositorioFrequenciaConsulta repositorioFrequencia)
+        public ObterComponenteRegistraFrequenciaQueryHandler(IMediator mediator)
         {
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ObterComponenteRegistraFrequenciaQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequencia.RegistraFrequencia(request.ComponenteCurricularId, request.CodigoTerritorioSaber);
+        {
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(request.ComponenteCurricularId));
+            return !(componenteCurricular is null) && componenteCurricular.RegistraFrequencia;
+        }
     }
 }

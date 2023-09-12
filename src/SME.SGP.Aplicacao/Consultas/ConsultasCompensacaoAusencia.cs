@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var codigosComponentesConsiderados = new List<string>() { compensacao.DisciplinaId };
 
-            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(codigosComponentesConsiderados.Select(c => long.Parse(c)).ToArray());
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentesConsiderados.Select(c => long.Parse(c)).ToArray()));
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 throw new NegocioException("Componente curricular informado na compensação não localizado.");
 
@@ -172,9 +172,8 @@ namespace SME.SGP.Aplicacao
 
                 if (!disciplinasIds.Any())
                     return compensacaoDto;
-
-                disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasIds.ToArray());
-
+                disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds.ToArray()));
+                    
                 foreach (var disciplinaEOL in disciplinasEOL)
                 {
                     compensacaoDto.DisciplinasRegencia.Add(new DisciplinaNomeDto()

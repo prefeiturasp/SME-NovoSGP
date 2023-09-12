@@ -66,13 +66,13 @@ namespace SME.SGP.Aplicacao
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
-
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
+            
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
             if (componenteRegencia == null || ignorarDeParaRegencia)
                 return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
 
-            var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
+            var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(IDS_COMPONENTES_REGENCIA));
             if (componentesRegencia != null)
                 return TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
 
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var registraFrequencia = await mediator
-                        .Send(new ObterComponenteRegistraFrequenciaQuery(componenteAtual.Codigo, componenteAtual.TerritorioSaber ? componenteAtual.CodigoComponenteTerritorioSaber : componenteAtual.Codigo));
+                        .Send(new ObterComponenteRegistraFrequenciaQuery(componenteAtual.Codigo));
 
                     disciplinasAtribuicaoCj = disciplinasAtribuicaoCj.Append(new DisciplinaResposta()
                     {
@@ -391,8 +391,8 @@ namespace SME.SGP.Aplicacao
                 if (turma.ModalidadeCodigo == Modalidade.EJA)
                     componentesCurriculares = RemoverEdFisicaEJA(componentesCurriculares);
 
-                disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(componentesCurriculares.Select(a => a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();
-
+                disciplinasDto = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(a => a.Codigo).ToArray())))?.OrderBy(c => c.Nome)?.ToList();
+                
                 disciplinasDto.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
@@ -413,11 +413,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
-            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
-            if (disciplinas == null || !disciplinas.Any())
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId));
+            if (disciplina is null)
                 throw new NegocioException($"Componente curricular não localizado no SGP [{disciplinaId}]");
 
-            return disciplinas.FirstOrDefault();
+            return disciplina;
         }
 
         private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
@@ -452,10 +452,8 @@ namespace SME.SGP.Aplicacao
 
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
-
-            var disciplinasEol = await repositorioComponenteCurricular
-                .ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
-
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
+                
             var professoresTitulares = !string.IsNullOrEmpty(codigoTurma) ? await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma)) : Enumerable.Empty<ProfessorTitularDisciplinaEol>();
 
             disciplinasEol.ToList().ForEach(d =>
@@ -561,8 +559,8 @@ namespace SME.SGP.Aplicacao
                     var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
                     if (atribuicoes != null && atribuicoes.Any())
                     {
-                        var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
-
+                        var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
+                            
                         disciplinasEol?.Where(disciplina => disciplina.TerritorioSaber)
                         .ToList()
                         .ForEach(disciplina =>

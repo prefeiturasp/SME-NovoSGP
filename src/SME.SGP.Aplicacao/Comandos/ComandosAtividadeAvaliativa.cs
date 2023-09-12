@@ -371,11 +371,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<DisciplinaDto> ObterDisciplina(string idDisciplina)
         {
-            long[] disciplinaId = { long.Parse(idDisciplina) };
-            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
-            if (!disciplina.Any())
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(idDisciplina)));
+            if (disciplina is null)
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
-            return disciplina.FirstOrDefault();
+            return disciplina;
         }
 
         private async Task ValidaCategoriaInterdisciplinar(AtividadeAvaliativaDto dto)
