@@ -10,20 +10,17 @@ namespace SME.SGP.Aplicacao
     public class BoletimEscolaAquiUseCase : IBoletimEscolaAquiUseCase
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioDreConsulta repositorioDre;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioUsuario repositorioUsuario;
         public BoletimEscolaAquiUseCase(IMediator mediator,
-                              IUnitOfWork unitOfWork,
                               IRepositorioUeConsulta repositorioUe,
                               IRepositorioDreConsulta repositorioDre,
                               IRepositorioTurmaConsulta repositorioTurma,
                               IRepositorioUsuario repositorioUsuario)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -47,11 +44,9 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
 
-            unitOfWork.IniciarTransacao();
             var usuarioLogado = repositorioUsuario.ObterPorId(usuarioLogadoId);
-            var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
-            unitOfWork.PersistirTransacao();
-            return retorno;
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
         }
     }
 }

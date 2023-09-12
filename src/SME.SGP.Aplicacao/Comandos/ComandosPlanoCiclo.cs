@@ -42,10 +42,17 @@ namespace SME.SGP.Aplicacao
             var planoCiclo = MapearParaDominio(planoCicloDto, out descricaoAtual);
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                planoCicloDto.Id = repositorioPlanoCiclo.Salvar(planoCiclo);
-                AjustarMatrizes(planoCiclo, planoCicloDto);
-                AjustarObjetivos(planoCiclo, planoCicloDto);
-                unitOfWork.PersistirTransacao();
+                try
+                {
+                    planoCicloDto.Id = repositorioPlanoCiclo.Salvar(planoCiclo);
+                    AjustarMatrizes(planoCiclo, planoCicloDto);
+                    AjustarObjetivos(planoCiclo, planoCicloDto);
+                    unitOfWork.PersistirTransacao();
+                } catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
                 await MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
             }
         }

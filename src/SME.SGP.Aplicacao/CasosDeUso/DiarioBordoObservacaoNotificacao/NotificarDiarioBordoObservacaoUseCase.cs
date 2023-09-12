@@ -16,17 +16,14 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
         private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
-        private readonly IUnitOfWork unitOfWork;
 
         public NotificarDiarioBordoObservacaoUseCase(IMediator mediator,
                                                       IConfiguration configuration,
-                                                      IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao,
-                                                      IUnitOfWork unitOfWork)
+                                                      IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioDiarioBordoObservacaoNotificacao = repositorioDiarioBordoObservacaoNotificacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacaoNotificacao));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
 
@@ -50,21 +47,16 @@ namespace SME.SGP.Aplicacao
                 {
                     if (usuarioRf != usuarioLogado.CodigoRf)
                     {
-                        //if (usuario != null)
-                        {
-                            unitOfWork.IniciarTransacao();
-                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
-                                                                             mensagem.ToString(),
-                                                                             usuarioRf,
-                                                                             NotificacaoCategoria.Aviso,
-                                                                             NotificacaoTipo.Planejamento));
+                        var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
+                                                                            mensagem.ToString(),
+                                                                            usuarioRf,
+                                                                            NotificacaoCategoria.Aviso,
+                                                                            NotificacaoTipo.Planejamento));
 
 
-                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
+                        var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
 
-                            await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
-                            unitOfWork.PersistirTransacao();
-                        }
+                        await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
                     }
                 }
                 return true;
@@ -86,21 +78,16 @@ namespace SME.SGP.Aplicacao
                     if (codigoRf != usuarioLogado.CodigoRf)
                     {
                         var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
-                        //if (usuario != null)
-                        {
-                            unitOfWork.IniciarTransacao();
-                            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
-                                                                             mensagem.ToString(),
-                                                                             codigoRf,
-                                                                             NotificacaoCategoria.Aviso,
-                                                                             NotificacaoTipo.Planejamento));
+                        var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
+                                                                            mensagem.ToString(),
+                                                                            codigoRf,
+                                                                            NotificacaoCategoria.Aviso,
+                                                                            NotificacaoTipo.Planejamento));
 
 
-                            var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
+                        var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
 
-                            await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
-                            unitOfWork.PersistirTransacao();
-                        }
+                        await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
                     }
                 }
                 return true;

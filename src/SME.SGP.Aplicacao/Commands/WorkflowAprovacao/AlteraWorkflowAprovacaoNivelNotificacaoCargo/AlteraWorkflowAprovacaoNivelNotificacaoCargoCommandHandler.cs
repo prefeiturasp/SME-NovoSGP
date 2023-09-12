@@ -14,18 +14,16 @@ namespace SME.SGP.Aplicacao.Commands
     {
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioNotificacao repositorioNotificacao;
 
         public AlteraWorkflowAprovacaoNivelNotificacaoCargoCommandHandler(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
-            IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel, IUnitOfWork unitOfWork, IMediator mediator,
+            IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel, IMediator mediator,
             IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao, IRepositorioNotificacao repositorioNotificacao)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioWorkflowAprovacaoNivel = repositorioWorkflowAprovacaoNivel ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivel));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));

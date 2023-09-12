@@ -52,8 +52,6 @@ namespace SME.SGP.Aplicacao
                 if (await ParametroGeracaoPendenciaAtivo())
                     await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoAee.Id, PerfilUsuario.CEFAI));
                 
-                unitOfWork.Rollback();
-                
                 unitOfWork.PersistirTransacao();
             }
             catch

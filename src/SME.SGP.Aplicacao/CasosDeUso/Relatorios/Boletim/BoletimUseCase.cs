@@ -50,40 +50,48 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
 
             unitOfWork.IniciarTransacao();
-
-            var usuarioLogado = await mediator
-                .Send(ObterUsuarioLogadoQuery.Instance);
-            
-
-            filtroRelatorioBoletimDto.Usuario = usuarioLogado;
-
-            if (filtroRelatorioBoletimDto.AlunosCodigo != null && !filtroRelatorioBoletimDto.AlunosCodigo.Any())
+            try
             {
-                filtroRelatorioBoletimDto.AlunosCodigo = (await mediator
-                    .Send(new ObterAlunosPorTurmaQuery(filtroRelatorioBoletimDto.TurmaCodigo, filtroRelatorioBoletimDto.ConsideraInativo)))
-                    .Select(a => a.CodigoAluno)
-                    .ToArray();
+                var usuarioLogado = await mediator
+                    .Send(ObterUsuarioLogadoQuery.Instance);
+
+
+                filtroRelatorioBoletimDto.Usuario = usuarioLogado;
+
+                if (filtroRelatorioBoletimDto.AlunosCodigo != null && !filtroRelatorioBoletimDto.AlunosCodigo.Any())
+                {
+                    filtroRelatorioBoletimDto.AlunosCodigo = (await mediator
+                        .Send(new ObterAlunosPorTurmaQuery(filtroRelatorioBoletimDto.TurmaCodigo, filtroRelatorioBoletimDto.ConsideraInativo)))
+                        .Select(a => a.CodigoAluno)
+                        .ToArray();
+                }
+
+                bool retorno;
+
+                if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= DOIS_BOLETIM)
+                {
+                    retorno = await mediator
+                        .Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
+                }
+                else
+                {
+                    var rotaBoletim = !string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) ?
+                        RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimTurma :
+                        RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletim;
+
+                    retorno = await mediator
+                        .Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, rotaBoletim));
+                }
+
+                unitOfWork.PersistirTransacao();
+
+                return retorno;
             }
-
-            bool retorno;
-
-            if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= DOIS_BOLETIM)
+            catch
             {
-                retorno = await mediator
-                    .Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
+                unitOfWork.Rollback();
+                throw;
             }
-            else
-            {
-                var rotaBoletim = !string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) ?
-                    RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimTurma :
-                    RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletim;
-
-                retorno = await mediator
-                    .Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, rotaBoletim));
-            }
-
-            unitOfWork.PersistirTransacao();
-            return retorno;
         }
     }
 }

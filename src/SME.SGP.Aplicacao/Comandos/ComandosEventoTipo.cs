@@ -35,30 +35,38 @@ namespace SME.SGP.Aplicacao
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                foreach (var codigo in idsRemover)
+                try
                 {
-                    try
+                    foreach (var codigo in idsRemover)
                     {
-                        var entidade = repositorioEventoTipo.ObterPorId(codigo);
-                        var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
-                        if (possuiEventos)
+                        try
                         {
-                            tiposEventoInvalidos.Add(entidade.Descricao);
-                        }
-                        else
-                        {
-                            entidade.Excluido = true;
+                            var entidade = repositorioEventoTipo.ObterPorId(codigo);
+                            var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
+                            if (possuiEventos)
+                            {
+                                tiposEventoInvalidos.Add(entidade.Descricao);
+                            }
+                            else
+                            {
+                                entidade.Excluido = true;
 
-                            repositorioEventoTipo.Salvar(entidade);
+                                repositorioEventoTipo.Salvar(entidade);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            idFalhaExclusao.Add(codigo);
                         }
                     }
-                    catch (Exception)
-                    {
-                        idFalhaExclusao.Add(codigo);
-                    }
+
+                    unitOfWork.PersistirTransacao();
                 }
-
-                unitOfWork.PersistirTransacao();
+                catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
             if (tiposEventoInvalidos.Any())
             {
