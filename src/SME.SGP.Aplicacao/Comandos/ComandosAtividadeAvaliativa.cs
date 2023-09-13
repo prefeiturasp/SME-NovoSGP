@@ -78,55 +78,62 @@ namespace SME.SGP.Aplicacao
                 await VerificaSeProfessorPodePersistirTurma(usuario.CodigoRf, atividadeAvaliativa.TurmaId, dto.DisciplinasId[0], atividadeAvaliativa.DataAvaliacao, usuario);
 
             unitOfWork.IniciarTransacao();
-
-            if (disciplina.Regencia)
+            try
             {
-                var regencias = await repositorioAtividadeAvaliativaRegencia.Listar(atividadeAvaliativa.Id);
-                foreach (var regencia in regencias)
-                    repositorioAtividadeAvaliativaRegencia.Remover(regencia);
-                foreach (string idRegencia in dto.DisciplinaContidaRegenciaId)
+                if (disciplina.Regencia)
                 {
-                    var ativRegencia = new AtividadeAvaliativaRegencia
+                    var regencias = await repositorioAtividadeAvaliativaRegencia.Listar(atividadeAvaliativa.Id);
+                    foreach (var regencia in regencias)
+                        repositorioAtividadeAvaliativaRegencia.Remover(regencia);
+                    foreach (string idRegencia in dto.DisciplinaContidaRegenciaId)
                     {
-                        AtividadeAvaliativaId = atividadeAvaliativa.Id,
-                        DisciplinaContidaRegenciaId = idRegencia
-                    };
-                    await repositorioAtividadeAvaliativaRegencia.SalvarAsync(ativRegencia);
+                        var ativRegencia = new AtividadeAvaliativaRegencia
+                        {
+                            AtividadeAvaliativaId = atividadeAvaliativa.Id,
+                            DisciplinaContidaRegenciaId = idRegencia
+                        };
+                        await repositorioAtividadeAvaliativaRegencia.SalvarAsync(ativRegencia);
+                    }
                 }
-            }
 
-            foreach (var atividadeDisciplina in atividadeDisciplinas)
-            {
-                atividadeDisciplina.Excluir();
-                var existeDisciplina = dto.DisciplinasId.Any(a => a == atividadeDisciplina.DisciplinaId);
-                if (existeDisciplina)
+                foreach (var atividadeDisciplina in atividadeDisciplinas)
                 {
-                    atividadeDisciplina.Excluido = false;
-                }
-                await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(atividadeDisciplina);
-            }
-
-            foreach (var disciplinaId in dto.DisciplinasId)
-            {
-                var existeDisciplina = atividadeDisciplinas.Any(a => a.DisciplinaId == disciplinaId);
-                if (!existeDisciplina)
-                {
-                    var novaDisciplina = new AtividadeAvaliativaDisciplina
+                    atividadeDisciplina.Excluir();
+                    var existeDisciplina = dto.DisciplinasId.Any(a => a == atividadeDisciplina.DisciplinaId);
+                    if (existeDisciplina)
                     {
-                        AtividadeAvaliativaId = atividadeAvaliativa.Id,
-                        DisciplinaId = disciplinaId
-                    };
-                    await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(novaDisciplina);
+                        atividadeDisciplina.Excluido = false;
+                    }
+                    await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(atividadeDisciplina);
                 }
+
+                foreach (var disciplinaId in dto.DisciplinasId)
+                {
+                    var existeDisciplina = atividadeDisciplinas.Any(a => a.DisciplinaId == disciplinaId);
+                    if (!existeDisciplina)
+                    {
+                        var novaDisciplina = new AtividadeAvaliativaDisciplina
+                        {
+                            AtividadeAvaliativaId = atividadeAvaliativa.Id,
+                            DisciplinaId = disciplinaId
+                        };
+                        await repositorioAtividadeAvaliativaDisciplina.SalvarAsync(novaDisciplina);
+                    }
+                }
+
+                await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
+                unitOfWork.PersistirTransacao();
+
+                mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa alterada com sucesso", true));
+                mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf));
+
+                return mensagens;
             }
-
-            await repositorioAtividadeAvaliativa.SalvarAsync(atividadeAvaliativa);
-            unitOfWork.PersistirTransacao();
-
-            mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Atividade Avaliativa alterada com sucesso", true));
-            mensagens.AddRange(await CopiarAtividadeAvaliativa(dto, atividadeAvaliativa.ProfessorRf));
-
-            return mensagens;
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private void ValidaDisciplinaNaAvaliacao(DisciplinaDto disciplina)

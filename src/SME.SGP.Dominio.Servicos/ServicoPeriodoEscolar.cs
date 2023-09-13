@@ -40,12 +40,19 @@ namespace SME.SGP.Dominio
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                foreach (var periodo in periodos)
+                try
                 {
-                    await repositorioPeriodoEscolar.SalvarAsync(periodo);
-                }
+                    foreach (var periodo in periodos)
+                    {
+                        await repositorioPeriodoEscolar.SalvarAsync(periodo);
+                    }
 
-                unitOfWork.PersistirTransacao();
+                    unitOfWork.PersistirTransacao();
+                } catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
         }
 

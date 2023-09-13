@@ -13,17 +13,15 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IUnitOfWork unitOfWork;
 
         public ServicoAtribuicaoEsporadica(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IUnitOfWork unitOfWork)
+            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoUsuario servicoUsuario, IServicoEol servicoEOL)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo, bool ehInfantil)
@@ -49,15 +47,11 @@ namespace SME.SGP.Dominio.Servicos
 
             atribuicaoEsporadica.Validar(ehPerfilSelecionadoSME, anoLetivo, periodosEscolares, modalidade);
 
-            unitOfWork.IniciarTransacao();
-
             repositorioAtribuicaoEsporadica.Salvar(atribuicaoEsporadica);
 
             Guid perfilAtribuicao = ehInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
             await AdicionarAtribuicaoEOL(atribuicaoEsporadica.ProfessorRf, perfilAtribuicao);
-
-            unitOfWork.PersistirTransacao();
         }
 
         private async Task AdicionarAtribuicaoEOL(string codigoRF, Guid perfil)

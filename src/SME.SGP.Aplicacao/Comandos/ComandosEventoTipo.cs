@@ -33,33 +33,29 @@ namespace SME.SGP.Aplicacao
             var idFalhaExclusao = new List<long>();
             var tiposEventoInvalidos = new List<string>();
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            foreach (var codigo in idsRemover)
             {
-                foreach (var codigo in idsRemover)
+                try
                 {
-                    try
+                    var entidade = repositorioEventoTipo.ObterPorId(codigo);
+                    var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
+                    if (possuiEventos)
                     {
-                        var entidade = repositorioEventoTipo.ObterPorId(codigo);
-                        var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
-                        if (possuiEventos)
-                        {
-                            tiposEventoInvalidos.Add(entidade.Descricao);
-                        }
-                        else
-                        {
-                            entidade.Excluido = true;
-
-                            repositorioEventoTipo.Salvar(entidade);
-                        }
+                        tiposEventoInvalidos.Add(entidade.Descricao);
                     }
-                    catch (Exception)
+                    else
                     {
-                        idFalhaExclusao.Add(codigo);
+                        entidade.Excluido = true;
+
+                        repositorioEventoTipo.Salvar(entidade);
                     }
                 }
-
-                unitOfWork.PersistirTransacao();
+                catch (Exception)
+                {
+                    idFalhaExclusao.Add(codigo);
+                }
             }
+
             if (tiposEventoInvalidos.Any())
             {
                 var erroMensagem = idFalhaExclusao.Count > 1 ?

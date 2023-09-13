@@ -29,7 +29,6 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<NotificarDiarioBordoObservacaoDto>();
@@ -50,20 +49,24 @@ namespace SME.SGP.Aplicacao
                 {
                     if (usuarioRf != usuarioLogado.CodigoRf)
                     {
-                        //if (usuario != null)
+                        unitOfWork.IniciarTransacao();
+                        try
                         {
-                            unitOfWork.IniciarTransacao();
                             var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
-                                                                             mensagem.ToString(),
-                                                                             usuarioRf,
-                                                                             NotificacaoCategoria.Aviso,
-                                                                             NotificacaoTipo.Planejamento));
+                                                                                mensagem.ToString(),
+                                                                                usuarioRf,
+                                                                                NotificacaoCategoria.Aviso,
+                                                                                NotificacaoTipo.Planejamento));
 
 
                             var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
 
                             await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
                             unitOfWork.PersistirTransacao();
+                        }
+                        catch
+                        {
+                            unitOfWork.Rollback();
                         }
                     }
                 }
@@ -85,21 +88,25 @@ namespace SME.SGP.Aplicacao
 
                     if (codigoRf != usuarioLogado.CodigoRf)
                     {
-                        var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
-                        //if (usuario != null)
+                        unitOfWork.IniciarTransacao();
+                        try
                         {
-                            unitOfWork.IniciarTransacao();
+                            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
                             var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(titulo,
-                                                                             mensagem.ToString(),
-                                                                             codigoRf,
-                                                                             NotificacaoCategoria.Aviso,
-                                                                             NotificacaoTipo.Planejamento));
+                                                                            mensagem.ToString(),
+                                                                            codigoRf,
+                                                                            NotificacaoCategoria.Aviso,
+                                                                            NotificacaoTipo.Planejamento));
 
 
                             var diarioBordoObservacaoNotificacao = new DiarioBordoObservacaoNotificacao(dadosMensagem.ObservacaoId, notificacaoId);
 
                             await repositorioDiarioBordoObservacaoNotificacao.Salvar(diarioBordoObservacaoNotificacao);
                             unitOfWork.PersistirTransacao();
+                        }
+                        catch
+                        {
+                            unitOfWork.Rollback();
                         }
                     }
                 }

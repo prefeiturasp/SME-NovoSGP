@@ -295,11 +295,8 @@ namespace SME.SGP.Aplicacao.Servicos
                     turmas = estrutura.Turmas;
 
                     // sincronizamos a abrangencia do login + perfil
-                    unitOfWork.IniciarTransacao();
 
                     await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
-
-                    unitOfWork.PersistirTransacao();
                 }
             }
         }
@@ -411,27 +408,37 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
-            if (ehSupervisor)
-                await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
-            else
+            unitOfWork.IniciarTransacao();
+            try
             {
-                switch (abrangencia)
+                if (ehSupervisor)
+                    await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
+                else
                 {
-                    case Infra.Enumerados.Abrangencia.Dre:
-                    case Infra.Enumerados.Abrangencia.SME:
-                        await SincronizarAbrangenciPorDres(abrangenciaSintetica, dres, login, perfil);
-                        break;
+                    switch (abrangencia)
+                    {
+                        case Infra.Enumerados.Abrangencia.Dre:
+                        case Infra.Enumerados.Abrangencia.SME:
+                            await SincronizarAbrangenciPorDres(abrangenciaSintetica, dres, login, perfil);
+                            break;
 
-                    case Infra.Enumerados.Abrangencia.DreEscolasAtribuidas:
-                    case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
-                    case Infra.Enumerados.Abrangencia.UE:
-                        await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
-                        break;
+                        case Infra.Enumerados.Abrangencia.DreEscolasAtribuidas:
+                        case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
+                        case Infra.Enumerados.Abrangencia.UE:
+                            await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
+                            break;
 
-                    case Infra.Enumerados.Abrangencia.Professor:
-                        await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil);
-                        break;
+                        case Infra.Enumerados.Abrangencia.Professor:
+                            await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil);
+                            break;
+                    }
                 }
+                unitOfWork.PersistirTransacao();
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
             }
         }
 

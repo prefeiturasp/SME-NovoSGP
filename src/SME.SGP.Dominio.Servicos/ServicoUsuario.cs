@@ -66,11 +66,17 @@ namespace SME.SGP.Dominio
         public async Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail)
         {
             unitOfWork.IniciarTransacao();
+            try
+            {
+                var usuario = await ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+                await AlterarEmail(usuario, novoEmail);
 
-            var usuario = await ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
-            await AlterarEmail(usuario, novoEmail);
-
-            unitOfWork.PersistirTransacao();
+                unitOfWork.PersistirTransacao();
+            } catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         public string ObterClaim(string nomeClaim)

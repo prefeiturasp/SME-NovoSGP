@@ -66,10 +66,16 @@ namespace SME.SGP.Dominio.Servicos
             var somenteUe = fechamento.DreId != null && fechamento.DreId > 0;
 
             unitOfWork.IniciarTransacao();
+            try
+            {
+                AlterarBimestresPeriodosComHierarquiaInferior(fechamento, somenteUe).Wait();
 
-            AlterarBimestresPeriodosComHierarquiaInferior(fechamento, somenteUe).Wait();
-
-            unitOfWork.PersistirTransacao();
+                unitOfWork.PersistirTransacao();
+            } catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private async Task AlterarBimestresPeriodosComHierarquiaInferior(PeriodoFechamento fechamento, bool somenteUe)

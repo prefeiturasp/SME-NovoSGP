@@ -38,21 +38,28 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<AulaPrevistaBimestre> aulasPrevistasBimestre = await repositorioAulaPrevistaBimestreConsulta.ObterBimestresAulasPrevistasPorId(id);
 
-            unitOfWork.IniciarTransacao();
-
             if (dto.BimestresQuantidade.Count() > 4)
                 throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
-
-            foreach (var bimestre in dto.BimestresQuantidade)
+            
+            unitOfWork.IniciarTransacao();
+            try
             {
-                AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.FirstOrDefault(b => b.Bimestre == bimestre.Bimestre);
-                aulaPrevistaBimestre = MapearParaDominio(id, bimestre, aulaPrevistaBimestre);
-                repositorioAulaPrevistaBimestre.Salvar(aulaPrevistaBimestre);
+                foreach (var bimestre in dto.BimestresQuantidade)
+                {
+                    AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.FirstOrDefault(b => b.Bimestre == bimestre.Bimestre);
+                    aulaPrevistaBimestre = MapearParaDominio(id, bimestre, aulaPrevistaBimestre);
+                    repositorioAulaPrevistaBimestre.Salvar(aulaPrevistaBimestre);
+                }
+
+                unitOfWork.PersistirTransacao();
+
+                return "Alteração realizada com sucesso";
             }
-
-            unitOfWork.PersistirTransacao();
-
-            return "Alteração realizada com sucesso";
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         public async Task<AulasPrevistasDadasAuditoriaDto> Inserir(AulaPrevistaDto dto)

@@ -49,11 +49,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
 
-            unitOfWork.IniciarTransacao();
-
             var usuarioLogado = await mediator
                 .Send(ObterUsuarioLogadoQuery.Instance);
-            
 
             filtroRelatorioBoletimDto.Usuario = usuarioLogado;
 
@@ -82,7 +79,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     .Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, rotaBoletim));
             }
 
-            unitOfWork.PersistirTransacao();
             return retorno;
         }
     }

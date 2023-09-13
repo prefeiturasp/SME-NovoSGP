@@ -405,18 +405,26 @@ namespace SME.SGP.Dominio.Servicos
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                if (!IgnorarExclusaoPendencia)
-                    await ExcluirPendencia(fechamentoId, tipoPendencia);
+                try
+                {
+                    if (!IgnorarExclusaoPendencia)
+                        await ExcluirPendencia(fechamentoId, tipoPendencia);
 
-                var tituloPendencia = $"{tipoPendencia.Name()} - {bimestre}º bimestre";
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, null, turmaId, mensagem, "", tituloPendencia, descricaoHtml));
-                var pendenciaFechamentoId = await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));                
+                    var tituloPendencia = $"{tipoPendencia.Name()} - {bimestre}º bimestre";
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(tipoPendencia, null, turmaId, mensagem, "", tituloPendencia, descricaoHtml));
+                    var pendenciaFechamentoId = await mediator.Send(new SalvarPendenciaFechamentoCommand(fechamentoId, pendenciaId));
 
-                await RelacionaPendenciaUsuario(pendenciaId, professorRf);
-                await GerarPendenciaFechamentoAula(pendenciaFechamentoId, idsAula);
-                await GerarPendenciaFechamentoAtividadeAvaliativa(pendenciaFechamentoId, idsAtividadeAvaliativa);
+                    await RelacionaPendenciaUsuario(pendenciaId, professorRf);
+                    await GerarPendenciaFechamentoAula(pendenciaFechamentoId, idsAula);
+                    await GerarPendenciaFechamentoAtividadeAvaliativa(pendenciaFechamentoId, idsAtividadeAvaliativa);
 
-                unitOfWork.PersistirTransacao();
+                    unitOfWork.PersistirTransacao();
+                }
+                catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
         }
 
