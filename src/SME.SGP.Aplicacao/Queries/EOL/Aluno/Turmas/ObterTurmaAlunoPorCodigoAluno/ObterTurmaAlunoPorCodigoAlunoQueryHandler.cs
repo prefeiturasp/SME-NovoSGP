@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
                     await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
                     var httpContentResult = (await resposta?.Content?.ReadAsStringAsync())?.ToString();
-                    var respostaErro = resposta?.Content != null ? httpContentResult : erro;
+                    var respostaErro = (resposta?.Content).NaoEhNulo() ? httpContentResult : erro;
                     throw new NegocioException(respostaErro);
                 }
             }

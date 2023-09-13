@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("O tipo de calendário da turma não foi encontrado.");
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             var bimestreAtual = dto.Bimestre;
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 bimestreAtual = ObterBimestreAtual(periodosEscolares);
 
             var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestreAtual);
-            if (periodoAtual == null)
+            if (periodoAtual.EhNulo())
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
 
                 var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId) || (cp.CodigoComponenteCurricularPai.HasValue && cp.CodigoComponenteCurricularPai.Value.Equals(componenteCurricularId)));
 
-                if (componenteCorrespondente != null)
+                if (componenteCorrespondente.NaoEhNulo())
                     codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
 
                 return codigoComponenteTerritorioCorrespondente;
@@ -115,11 +115,11 @@ namespace SME.SGP.Aplicacao
                 var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
 
                 var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor != null && !String.IsNullOrEmpty(professor.ProfessorRf))
+                if (professor.NaoEhNulo() && !String.IsNullOrEmpty(professor.ProfessorRf))
                 {
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
                     var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                    if (componenteProfessorRelacionado != null)
+                    if (componenteProfessorRelacionado.NaoEhNulo())
                         codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
                 }
                 return codigoComponenteTerritorioCorrespondente;
@@ -145,7 +145,7 @@ namespace SME.SGP.Aplicacao
 
                 var totalCompensacoes = frequenciaAlunoRegistrada?.TotalCompensacoes ?? default;
 
-                var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
+                var marcador = periodoEscolar.NaoEhNulo() ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
 
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
 
@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao
 
                 var percentualFrequencia = string.Empty;
 
-                if (frequenciaAlunoRegistrada != null)
+                if (frequenciaAlunoRegistrada.NaoEhNulo())
                     percentualFrequencia = frequenciaAlunoRegistrada.PercentualFrequenciaFormatado;
 
                 novaListaAlunos.Add(new AlunoFrequenciaDto
@@ -265,7 +265,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 
-            return periodoEscolar == null ? periodosEscolares.Select(p => p.Bimestre).Max() : periodoEscolar.Bimestre;
+            return periodoEscolar.EhNulo() ? periodosEscolares.Select(p => p.Bimestre).Max() : periodoEscolar.Bimestre;
         }
     }
 }

@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             mensagem.Append("</ul>");
 
             var adminsSme = await ObterUsuariosSme();
-            if (adminsSme != null && adminsSme.Any())
+            if (adminsSme.NaoEhNulo() && adminsSme.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, adminsSme));
         }
 
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
             mensagem.Append("</ul>");
 
             var adminsDre = await ObterUsuariosDre(dre.CodigoDre);
-            if (adminsDre != null && adminsDre.Any())
+            if (adminsDre.NaoEhNulo() && adminsDre.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, adminsDre, dre.CodigoDre));
         }
 

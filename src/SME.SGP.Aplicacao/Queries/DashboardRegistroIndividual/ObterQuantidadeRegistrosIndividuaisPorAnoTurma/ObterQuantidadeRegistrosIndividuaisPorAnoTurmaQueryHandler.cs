@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var retornoConsulta = await repositorio.ObterQuantidadeRegistrosIndividuaisPorAnoTurmaAsync(request.AnoLetivo, request.DreId, request.UeId, request.Modalidade);
 
-            if(retornoConsulta != null && retornoConsulta.Any())
+            if(retornoConsulta.NaoEhNulo() && retornoConsulta.Any())
                 return MontarDto(retornoConsulta, request);
 
             return default;

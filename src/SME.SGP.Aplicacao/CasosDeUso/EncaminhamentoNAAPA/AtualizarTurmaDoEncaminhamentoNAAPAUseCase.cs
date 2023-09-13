@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                                       .ThenByDescending(turma => turma.DataSituacao)
                                       .FirstOrDefault(); 
 
-            if (alunoTurma != null) 
+            if (alunoTurma.NaoEhNulo()) 
                await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
 
             return true;

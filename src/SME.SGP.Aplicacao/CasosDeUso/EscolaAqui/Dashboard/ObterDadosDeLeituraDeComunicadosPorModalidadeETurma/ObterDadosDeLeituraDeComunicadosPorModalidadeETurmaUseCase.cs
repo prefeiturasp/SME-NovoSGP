@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System;
@@ -39,7 +40,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
             foreach (var item in dadosLeituraComunicadoPorModalidadeETurma)
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(item.CodigoTurma));
-                if (turma == null)
+                if (turma.EhNulo())
                     throw new Exception("Não foi possível localizar a turma");
 
                 item.SiglaModalidade = turma.ModalidadeCodigo.ShortName();

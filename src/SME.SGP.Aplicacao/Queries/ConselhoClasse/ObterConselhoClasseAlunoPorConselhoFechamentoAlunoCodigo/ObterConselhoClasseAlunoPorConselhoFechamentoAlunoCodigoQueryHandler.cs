@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAluno> Handle(ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery request, CancellationToken cancellationToken)
         {
             ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(request.ConselhoClasseId, request.AlunoCodigo);
-            if (conselhoClasseAluno == null)
+            if (conselhoClasseAluno.EhNulo())
             {
                 ConselhoClasse conselhoClasse = null;
                 if (request.ConselhoClasseId == 0)

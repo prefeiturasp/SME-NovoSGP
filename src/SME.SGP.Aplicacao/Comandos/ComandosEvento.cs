@@ -45,12 +45,12 @@ namespace SME.SGP.Aplicacao
         {
             var evento = repositorioEvento.ObterPorId(id);
 
-            if (evento == null)
+            if (evento.EhNulo())
                 throw new NegocioException("Não foi possível obter o evento");
 
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
 
-            if (tipoEvento == null)
+            if (tipoEvento.EhNulo())
                 throw new NegocioException("Não foi possível obter o tipo do evento");
 
             try
@@ -124,7 +124,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task GravarRecorrencia(EventoDto eventoDto, Evento evento)
         {
-            if (eventoDto.RecorrenciaEventos != null)
+            if (eventoDto.RecorrenciaEventos.NaoEhNulo())
             {
                 var recorrencia = eventoDto.RecorrenciaEventos;
                 await servicoEvento.SalvarRecorrencia(evento,
@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<RetornoCopiarEventoDto>> CopiarEventos(EventoDto eventoDto)
         {
             var mensagens = new List<RetornoCopiarEventoDto>();
-            if (eventoDto.TiposCalendarioParaCopiar != null && eventoDto.TiposCalendarioParaCopiar.Any())
+            if (eventoDto.TiposCalendarioParaCopiar.NaoEhNulo() && eventoDto.TiposCalendarioParaCopiar.Any())
             {
                 foreach (var tipoCalendario in eventoDto.TiposCalendarioParaCopiar)
                 {

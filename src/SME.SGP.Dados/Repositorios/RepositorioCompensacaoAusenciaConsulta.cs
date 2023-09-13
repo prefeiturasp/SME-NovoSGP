@@ -49,7 +49,7 @@ namespace SME.SGP.Dados
                           where not c.excluido  
                             and t.turma_id = @turmaId ", select));
 
-            if (disciplinasId != null && disciplinasId.Any())
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Any())
                 query.AppendLine("and c.disciplina_id = any(@disciplinasId)");
             if (bimestre != 0)
                 query.AppendLine("and c.bimestre = @bimestre");

@@ -210,7 +210,7 @@ namespace SME.SGP.Dados.Repositorios
                                     descricao_infantil 
                                else 
            		                    case
-           		                     when descricao_sgp != null and descricao_sgp != '' and descricao_sgp != ' '
+           		                     when descricao_sgp.NaoEhNulo() and descricao_sgp != '' and descricao_sgp != ' '
            		                        then 
                                             descricao_sgp
            		                        else 

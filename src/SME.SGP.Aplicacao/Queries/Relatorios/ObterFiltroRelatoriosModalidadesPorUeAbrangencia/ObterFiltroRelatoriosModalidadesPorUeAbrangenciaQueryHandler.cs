@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             {
                 var todasAsModalidades = EnumExtensao.ListarDto<Modalidade>();
 
-                if (request.ModalidadesQueSeraoIgnoradas != null && request.ModalidadesQueSeraoIgnoradas.Any()) {
+                if (request.ModalidadesQueSeraoIgnoradas.NaoEhNulo() && request.ModalidadesQueSeraoIgnoradas.Any()) {
                     var idsIgnoradas = request.ModalidadesQueSeraoIgnoradas.Select(a => (int)a);
                     var listaTratada = todasAsModalidades.Where(m => !idsIgnoradas.Contains(m.Id));
                     return listaTratada.Select(c => new OpcaoDropdownDto(c.Id.ToString(), c.Descricao));
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             var dadosAbrangenciaSupervisor = await repositorioSupervisorEscolaDre
                 .ObterDadosAbrangenciaSupervisor(request.Login, request.ConsideraHistorico, request.AnoLetivo, request.CodigoUe);
 
-            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 lista = lista.Select(m => (int)m)
                 .Union(dadosAbrangenciaSupervisor

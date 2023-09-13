@@ -32,12 +32,12 @@ namespace SME.SGP.Aplicacao
         public async Task<ParecerConclusivoDto> Executar(ConselhoClasseParecerConclusivoConsultaDto parecerConclusivoConsultaDto)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(parecerConclusivoConsultaDto.CodigoTurma));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_OBTER_DADOS_TURMA);
             
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(parecerConclusivoConsultaDto.FechamentoTurmaId, parecerConclusivoConsultaDto.AlunoCodigo, turma.AnoLetivo != DateTime.Now.Year));
             
-            if (fechamentoTurma == null)
+            if (fechamentoTurma.EhNulo())
             {
                 if (!turma.EhAnoAnterior())
                     throw new NegocioException(MensagemNegocioFechamentoTurma.NAO_EXISTE_FECHAMENTO_TURMA);
@@ -50,12 +50,12 @@ namespace SME.SGP.Aplicacao
                 return new ParecerConclusivoDto() { EmAprovacao = false };
             
             var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(parecerConclusivoConsultaDto.ConselhoClasseId, parecerConclusivoConsultaDto.AlunoCodigo);
-            if (!turma.EhAnoAnterior() && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue) && fechamentoTurma.PeriodoEscolarId == null)
+            if (!turma.EhAnoAnterior() && (conselhoClasseAluno.EhNulo() || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue) && fechamentoTurma.PeriodoEscolarId.EhNulo())
                 return await mediator.Send(new GerarParecerConclusivoPorConselhoFechamentoAlunoCommand(parecerConclusivoConsultaDto.ConselhoClasseId, parecerConclusivoConsultaDto.FechamentoTurmaId, parecerConclusivoConsultaDto.AlunoCodigo));
             
             var parecerConclusivoDto = new ParecerConclusivoDto()
             {
-                Id = conselhoClasseAluno?.ConselhoClasseParecerId != null ? conselhoClasseAluno.ConselhoClasseParecerId.Value : 0,
+                Id = (conselhoClasseAluno?.ConselhoClasseParecerId).HasValue ? conselhoClasseAluno.ConselhoClasseParecerId.Value : 0,
                 Nome = conselhoClasseAluno?.ConselhoClasseParecer?.Nome,
                 EmAprovacao = false
             };
@@ -67,11 +67,11 @@ namespace SME.SGP.Aplicacao
         
         private async Task VerificaEmAprovacaoParecerConclusivo(long? conselhoClasseAlunoId, ParecerConclusivoDto parecerConclusivoDto)
         {
-            if (conselhoClasseAlunoId != null && conselhoClasseAlunoId > 0)
+            if (conselhoClasseAlunoId.NaoEhNulo() && conselhoClasseAlunoId > 0)
             {
                 var wfAprovacaoParecerConclusivo = await mediator.Send(new ObterSePossuiParecerEmAprovacaoQuery(conselhoClasseAlunoId));
 
-                if (wfAprovacaoParecerConclusivo != null)
+                if (wfAprovacaoParecerConclusivo.NaoEhNulo())
                 {
                     parecerConclusivoDto.Id = wfAprovacaoParecerConclusivo.ConselhoClasseParecerId.Value;
                     parecerConclusivoDto.Nome = wfAprovacaoParecerConclusivo.ConselhoClasseParecer.Nome;

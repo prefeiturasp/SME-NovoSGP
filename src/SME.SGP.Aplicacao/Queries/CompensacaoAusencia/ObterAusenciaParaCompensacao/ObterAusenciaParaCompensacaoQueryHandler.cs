@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var codigosTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), request.TurmaCodigo, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
 
-            if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
+            if (codigosTerritorioEquivalentes.NaoEhNulo() && codigosTerritorioEquivalentes.Any())
             {
                 codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
                 professorConsiderado = codigosTerritorioEquivalentes.First().professor;
@@ -83,18 +83,18 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual));
                 var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo);
+                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.NaoEhNulo() && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo);
             }
             else if (usuarioLogado.EhProfessorCj())
             {
                 var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaCodigo));
                 var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaId));
                 var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor != null)
+                if (professor.NaoEhNulo())
                 {
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaCodigo, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
                     var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                    if (componenteProfessorRelacionado != null)
+                    if (componenteProfessorRelacionado.NaoEhNulo())
                         codigoComponenteTerritorioCorrespondente = componenteProfessorRelacionado.Codigo;
                 }
             }

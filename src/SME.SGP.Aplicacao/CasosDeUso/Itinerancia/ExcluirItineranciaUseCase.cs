@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(id));
 
-            if (itinerancia == null)
+            if (itinerancia.EhNulo())
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
             using (var transacao = unitOfWork.IniciarTransacao())

@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var frequenciasParaConsolidar = await mediator.Send(new ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(anoLetivo,
                 filtro.TurmaId,turma.ModalidadeCodigo,filtro.DataAula));
             
-            if (frequenciasParaConsolidar == null)
+            if (frequenciasParaConsolidar.EhNulo())
                 return false;
             
             var alunos = await mediator

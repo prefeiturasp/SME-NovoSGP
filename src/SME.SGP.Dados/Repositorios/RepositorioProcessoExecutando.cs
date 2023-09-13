@@ -29,7 +29,7 @@ namespace SME.SGP.Dados
                            where tipo_processo = 2
                              and aula_id = @aulaId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new { aulaId }) != null;
+            return (await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new { aulaId })).NaoEhNulo();
         }
 
         public async Task<IEnumerable<long>> ObterIdsPorFiltrosAsync(int bimestre, string disciplinaId, string turmaId)

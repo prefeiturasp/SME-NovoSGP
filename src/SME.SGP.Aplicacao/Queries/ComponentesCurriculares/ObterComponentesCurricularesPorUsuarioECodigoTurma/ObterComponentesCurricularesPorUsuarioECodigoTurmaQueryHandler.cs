@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                                                                perfilAtual,
                                                                realizarAgrupamentoComponente));
 
-            if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
+            if (componentesCurricularesEol.EhNulo() || !componentesCurricularesEol.Any())
                 return null;
 
             return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol, obterTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil, codigoTurma: turmaCodigo))?
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
         {
             var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, turmaCodigo, string.Empty, 0, login, string.Empty, true));
 
-            if (atribuicoes == null || !atribuicoes.Any())
+            if (atribuicoes.EhNulo() || !atribuicoes.Any())
                 return null;
 
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                 var componenteEol = componentesCurricularesEol
                     .FirstOrDefault(c => componenteSgp.Id == (c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : (c.Regencia && !ehEducacaoInfatil && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0 ? c.CodigoComponenteCurricularPai.Value : c.Codigo)));
 
-                if (componenteEol != null)
+                if (componenteEol.NaoEhNulo())
                 {
                     if (componenteEol.TerritorioSaber)
                         yield return new DisciplinaNomeDto()

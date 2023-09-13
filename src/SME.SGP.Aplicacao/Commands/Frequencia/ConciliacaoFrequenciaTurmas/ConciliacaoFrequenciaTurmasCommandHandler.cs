@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var turmasDaModalidade = (await ObterTurmasPorModalidade(modalidade.Key, request.Data.Year, request.TurmaCodigo)).ToList();
 
-                    if (turmasDaModalidade != null && turmasDaModalidade.Any())
+                    if (turmasDaModalidade.NaoEhNulo() && turmasDaModalidade.Any())
                     {
                         if (request.Bimestral)
                         {

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
-            if (parametro == null)
+            if (parametro.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotafechamento' para o ano {anoLetivo}");
 
             return parametro.Ativo;

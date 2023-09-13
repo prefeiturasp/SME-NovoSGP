@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -40,11 +41,11 @@ namespace SME.SGP.Aplicacao
 
                 var turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaRegular.AnoLetivo, request.AlunoCodigo, tiposParaConsulta));
 
-                if (turmasCodigos != null && turmasCodigos.Any())
+                if (turmasCodigos.NaoEhNulo() && turmasCodigos.Any())
                 {
                     var turmasNaoRegulares = (await repositorioTurmaConsulta.ObterPorCodigosAsync(turmasCodigos))?.Where(t => !t.EhTurmaRegular());
 
-                    if (turmasNaoRegulares != null && turmasNaoRegulares.Any())
+                    if (turmasNaoRegulares.NaoEhNulo() && turmasNaoRegulares.Any())
                     {
                         foreach (var turma in turmasNaoRegulares)
                         {

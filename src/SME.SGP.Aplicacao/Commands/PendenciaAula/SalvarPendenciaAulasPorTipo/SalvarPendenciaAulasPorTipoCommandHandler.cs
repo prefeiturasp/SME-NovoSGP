@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(item.First().TipoCalendarioId, item.First().DataAula));
 
-                    if (periodoEscolar != null)
+                    if (periodoEscolar.NaoEhNulo())
                     {
                         var turmaComDreUe = turmasDreUe.FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
 
                         var descricaoUeDre = turmaComDreUe.ObterEscola();
 
-                        if (periodoEscolar != null)
+                        if (periodoEscolar.NaoEhNulo())
                         {
                             var aulasNormais = item.Where(w => !w.AulaCJ);
 
@@ -79,9 +79,9 @@ namespace SME.SGP.Aplicacao
                                 {
                                     var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, item.First().DisciplinaId));
 
-                                    if (professorTitularTurma != null)
+                                    if (professorTitularTurma.NaoEhNulo())
                                     {
-                                        if (periodoEscolar != null && !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
+                                        if (periodoEscolar.NaoEhNulo() && !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
                                             await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
                                     }
                                 }
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
                                     var professoresTitularesDaTurma =
                                         listaProfessoresTitularesDaTurma?.Select(x => x.ProfessorRf);
                                 
-                                    if (professoresTitularesDaTurma != null)
+                                    if (professoresTitularesDaTurma.NaoEhNulo())
                                     {
                                         string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');
 
@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao
         {
             var pendenciaAulaProfessor = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(long.Parse(disciplinaId), codigoRfProfessor, periodoEscolarId, tipoPendencia, turma.CodigoTurma, turma.UeId));
 
-            var pendenciaIdExistente = pendenciaAulaProfessor != null && pendenciaAulaProfessor.Any() ? pendenciaAulaProfessor.FirstOrDefault().PendenciaId : 0;
+            var pendenciaIdExistente = pendenciaAulaProfessor.NaoEhNulo() && pendenciaAulaProfessor.Any() ? pendenciaAulaProfessor.FirstOrDefault().PendenciaId : 0;
 
             var aulasParaInserir = aulasIds.Except(pendenciaAulaProfessor.Select(s => s.AulaId));
 

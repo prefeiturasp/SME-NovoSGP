@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             await CarregarInformacoesParaNotificacao(await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow());
 
-            if (WFAprovacoes == null || !WFAprovacoes.Any()) return false;
+            if (WFAprovacoes.EhNulo() || !WFAprovacoes.Any()) return false;
             var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => new { wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id, 
                                                                        wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar?.Bimestre } );
 
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
         protected override string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar)
         {
-            return $@"A alteração de notas/conceitos pós-conselho do bimestre { (periodoEscolar != null ? periodoEscolar.Bimestre : "final") } 
+            return $@"A alteração de notas/conceitos pós-conselho do bimestre { (periodoEscolar.NaoEhNulo() ? periodoEscolar.Bimestre : "final") } 
                       de { turma.AnoLetivo } da turma { turma.NomeFiltro } da { ue.Nome } ({ ue.Dre.Abreviacao }) foram alteradas.";
         }
 
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasseId;
             var periodo = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
 
-            Cargo[] cargosAprovacao  = (periodo != null) ? new Cargo[] { Cargo.CP } : new Cargo[] { Cargo.CP, Cargo.Supervisor };
+            Cargo[] cargosAprovacao  = (periodo.NaoEhNulo()) ? new Cargo[] { Cargo.CP } : new Cargo[] { Cargo.CP, Cargo.Supervisor };
             return await mediator.Send(new EnviarNotificacaoCommand(
                                                                     titulo,
                                                                     mensagem,

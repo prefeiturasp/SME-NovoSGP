@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             var funcionarios = await ObterFuncionarios(turma.Ue.CodigoUe);
 
-            if (funcionarios == null)
+            if (funcionarios.EhNulo())
                 return false;
 
             funcionarios.Add(encaminhamentoAEE.CriadoRF);

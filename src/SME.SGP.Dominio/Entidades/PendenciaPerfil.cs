@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionaPendenciaPerfilUsuario(PendenciaPerfilUsuario pendenciaPerfilUsuario)
         {
-            if (pendenciaPerfilUsuario != null)
+            if (pendenciaPerfilUsuario.NaoEhNulo())
                 PendenciasPerfilUsuarios.Add(pendenciaPerfilUsuario);
         }
     }

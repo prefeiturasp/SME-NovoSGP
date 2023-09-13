@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
             if (bimestreEdicao == 0)
                 bimestreEdicao = recuperacaoParalelaPeriodo?.BimestreEdicao ?? 0;
 
-            var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual == null || bimestreEdicao != periodoEscolarAtual.Bimestre);
+            var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual.EhNulo() || bimestreEdicao != periodoEscolarAtual.Bimestre);
 
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
@@ -221,7 +221,7 @@ namespace SME.SGP.Aplicacao
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aluno.CodigoTurma.ToString()));
 
                 var ehAtendidoAEE = false;
-                if (turma != null)
+                if (turma.NaoEhNulo())
                 {
                     ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
                 }

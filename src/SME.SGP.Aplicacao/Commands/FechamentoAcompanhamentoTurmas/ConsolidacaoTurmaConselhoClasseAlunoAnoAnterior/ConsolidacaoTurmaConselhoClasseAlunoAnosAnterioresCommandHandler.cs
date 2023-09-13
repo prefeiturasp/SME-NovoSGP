@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoAlunoNotaPorConsolidadoBimestreDisciplinaAsync(request.ConsolidacaoId, request.AlunoNota.Bimestre, request.AlunoNota.DisciplinaId);
-                if (consolidadoNota == null)
+                if (consolidadoNota.EhNulo())
                 {
                     var consolidadoAlunoNota = new ConselhoClasseConsolidadoTurmaAlunoNota()
                     {

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
 
-            if (devolutiva == null)
+            if (devolutiva.EhNulo())
                 throw new NegocioException("Devolutiva não localizada");
 
             return MapearParaDto(devolutiva);

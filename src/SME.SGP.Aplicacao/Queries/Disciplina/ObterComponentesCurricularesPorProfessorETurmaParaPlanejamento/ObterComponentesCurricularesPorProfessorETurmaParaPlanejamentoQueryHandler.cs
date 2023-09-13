@@ -60,13 +60,13 @@ namespace SME.SGP.Aplicacao
             }
 
             var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
-            if (componentesCurricularesJurema == null)
+            if (componentesCurricularesJurema.EhNulo())
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a turma");
 
             if (usuario.EhProfessorCj())
@@ -130,17 +130,17 @@ namespace SME.SGP.Aplicacao
                 rf,
                 string.Empty,
                 true);
-            if (atribuicoes == null || !atribuicoes.Any())
+            if (atribuicoes.EhNulo() || !atribuicoes.Any())
                 return null;
 
             var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
 
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
-            if (componenteRegencia == null || ignorarDeParaRegencia)
+            if (componenteRegencia.EhNulo() || ignorarDeParaRegencia)
                 return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
 
             var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
-            if (componentesRegencia != null)
+            if (componentesRegencia.NaoEhNulo())
                 return TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
 
             return componentes;
@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<DisciplinaDto>();
 
-            if (disciplinas != null)
+            if (disciplinas.NaoEhNulo())
             {
                 foreach (var disciplina in disciplinas)
                 {

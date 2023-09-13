@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Aprovar(long notificacaoId, [FromBody] WorkflowAprovacaoAprovacaoDto workflowAprovacaoAprovacaoDto)
         {            
             var retornoValidacao = await comandosWorkflowAprovacao.ValidarWorkflowAprovacao(notificacaoId);
-            if(retornoValidacao == null)
+            if(retornoValidacao.EhNulo())
             {
                 await comandosWorkflowAprovacao.Aprovar(workflowAprovacaoAprovacaoDto.Aprova, notificacaoId, workflowAprovacaoAprovacaoDto.Observacao);
                 return Ok();

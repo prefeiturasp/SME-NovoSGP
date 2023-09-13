@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             var aulasExistentes = await mediator
                 .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), professorConsiderado));
 
-            if (aulasExistentes != null && aulasExistentes.Any())
+            if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any())
             {
                 // Exclui a aula em alteração da lista
                 aulasExistentes = aulasExistentes.Where(a => a.Id != request.Id);

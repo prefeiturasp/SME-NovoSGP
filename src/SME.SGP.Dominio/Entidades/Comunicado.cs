@@ -81,19 +81,19 @@ namespace SME.SGP.Dominio
             if (AlunoEspecificado)
                 return TipoComunicado.ALUNO;
 
-            if (Turmas != null && Turmas.Any())
+            if (Turmas.NaoEhNulo() && Turmas.Any())
                 return TipoComunicado.TURMA;            
 
-            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "-99" && !string.IsNullOrEmpty(SeriesResumidas))
+            if (Modalidades.NaoEhNulo() && Modalidades.Length == 1 && CodigoUe.NaoEhNulo() && CodigoUe != "-99" && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.UEMOD;            
             
-            if (Modalidades != null && Modalidades.Length == 1 && CodigoUe != null && CodigoUe != "-99")
+            if (Modalidades.NaoEhNulo() && Modalidades.Length == 1 && CodigoUe.NaoEhNulo() && CodigoUe != "-99")
                 return TipoComunicado.UEMOD;
 
-            if (CodigoDre == null && CodigoUe == null && !string.IsNullOrEmpty(SeriesResumidas))
+            if (CodigoDre.EhNulo() && CodigoUe.EhNulo() && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.SME_ANO;
 
-            if (!string.IsNullOrWhiteSpace(CodigoDre) && CodigoUe == null && !string.IsNullOrEmpty(SeriesResumidas))
+            if (!string.IsNullOrWhiteSpace(CodigoDre) && CodigoUe.EhNulo() && !string.IsNullOrEmpty(SeriesResumidas))
                 return TipoComunicado.DRE_ANO;
 
             if (!string.IsNullOrWhiteSpace(CodigoUe))

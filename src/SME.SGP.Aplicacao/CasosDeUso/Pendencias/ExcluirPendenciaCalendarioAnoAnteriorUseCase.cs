@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             int anoLetivo;
             try
             {
-                anoLetivo = param.Mensagem != null ? JsonConvert.DeserializeObject<int>(param.Mensagem.ToString()!) : DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
+                anoLetivo = param.Mensagem.NaoEhNulo() ? JsonConvert.DeserializeObject<int>(param.Mensagem.ToString()!) : DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
                 pendencias = await mediator.Send(new ObterTodosUesIdsComPendenciaCalendarioQuery(anoLetivo));
                 
                 foreach (var ueId in pendencias.Select(p => p.UeId).Distinct())

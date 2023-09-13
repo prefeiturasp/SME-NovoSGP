@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<InconsistenciasAlunoFamiliaDto>> Executar(FiltroInconsistenciasAlunoFamiliaDto param)
         {
                 var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
-                if (turmaRegular == null)
+                if (turmaRegular.EhNulo())
                     throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
                 var retorno = new List<InconsistenciasAlunoFamiliaDto>();
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
                 var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
-                if (codigosItinerarioEnsinoMedio != null)
+                if (codigosItinerarioEnsinoMedio.NaoEhNulo())
                     turmasCodigo.AddRange(codigosItinerarioEnsinoMedio);
 
                 var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);

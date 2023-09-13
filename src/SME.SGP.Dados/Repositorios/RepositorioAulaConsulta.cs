@@ -856,7 +856,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND a.professor_rf = @codigoRf");
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("AND a.disciplina_id = @disciplinaId");
-            if (disciplinasId != null && disciplinasId.Length > 0)
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
                 query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
             if (ehCj)
                 query.AppendLine("AND a.aula_cj = true");
@@ -1210,7 +1210,7 @@ namespace SME.SGP.Dados.Repositorios
             var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
             await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query, (diarioBordoPorPeriodoDto, auditoriaDto) =>
                  {
-                     if (auditoriaDto != null)
+                     if (auditoriaDto.NaoEhNulo())
                          diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
 
                      lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);

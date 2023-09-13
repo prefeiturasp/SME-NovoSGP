@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var alunosEol = await mediator
                 .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(request.CodigoTurma)));
 
-            if (alunosEol == null || !alunosEol.Any())
+            if (alunosEol.EhNulo() || !alunosEol.Any())
                 throw new NegocioException("Não foram localizados alunos para a turma e data informados.");
 
             if (request.ConsideraSomenteAtivos)

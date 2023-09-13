@@ -73,15 +73,15 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoEscolar(Turma turma, int semestre)
         {
             var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo de Calendario não localizado para a turma!");
 
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não localizados periodos escolares para o calendario da turma!");
 
             var periodoAtual = periodosEscolares.FirstOrDefault(c => c.Bimestre == semestre * 2);
-            if (periodoAtual == null)
+            if (periodoAtual.EhNulo())
                 throw new NegocioException($"Não localizado periodo escolar para o semestre {semestre}!");
 
             return periodoAtual;

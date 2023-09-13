@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {            
             var comando = mensagemRabbit.ObterObjetoMensagem<CriarAulasInfantilAutomaticamenteCommand>();           
 
-            if (comando != null)
+            if (comando.NaoEhNulo())
             {
                 await mediator.Send(comando);
                 return true;

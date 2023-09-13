@@ -87,7 +87,7 @@ namespace SME.SGP.Dominio
         {
             var tipo = await repositorioTipoCalendario.ObterPorIdAsync(tipoCalendario);
 
-            if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendário informado não foi encontrado.");
+            if (tipo.EhNulo() || tipo.Id == 0) throw new NegocioException("O tipo de calendário informado não foi encontrado.");
             return tipo;
         }
 
@@ -122,7 +122,7 @@ namespace SME.SGP.Dominio
             {
                 var periodoEscolar = (await repositorioPeriodoEscolarConsulta.ObterPorTipoCalendario(tipo.Id)).ToList();
 
-                if (periodoEscolar != null && periodoEscolar.Any())
+                if (periodoEscolar.NaoEhNulo() && periodoEscolar.Any())
                     throw new NegocioException("Não é possível inserir mais de um período escolar para o tipo de calendário informado");
             }
         }

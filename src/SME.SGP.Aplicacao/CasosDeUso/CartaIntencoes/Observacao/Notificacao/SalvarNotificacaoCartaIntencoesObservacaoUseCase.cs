@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
             var titulares = professoresTitulares?.Select(x => x.ProfessorRf);
-            if (titulares != null)
+            if (titulares.NaoEhNulo())
             {
                 var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação na Carta de intenções da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao}).");
                                                 
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     if (codigoRf != usuarioLogado.CodigoRf)
                     {
                         var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRf));
-                        if (usuario != null)
+                        if (usuario.NaoEhNulo())
                         {
                             var notificacao = new Notificacao()
                             {

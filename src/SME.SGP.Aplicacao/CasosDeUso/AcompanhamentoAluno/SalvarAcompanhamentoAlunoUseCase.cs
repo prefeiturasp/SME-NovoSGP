@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
                 throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA, parametroQuantidadeImagens));
             
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
             
             var bimestre = acompanhamentoAlunoDto.Semestre == 1 ? 2 : 4;
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
             
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, turma.AnoLetivo, true,false, turma.CodigoTurma));
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
             
             if (aluno.EstaInativo(dataAtual))
@@ -61,14 +61,14 @@ namespace SME.SGP.Aplicacao
         private async Task<int> ObterQuantidadeLimiteImagens(int ano)
         {
             var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
-            return parametroQuantidade == null ?
+            return parametroQuantidade.EhNulo() ?
                 0 : int.Parse(parametroQuantidade.Valor);
         }
 
         private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
         {
             var imagens = UtilRegex.RegexTagsIMG.Matches(acompanhamentoAluno.PercursoIndividual);
-            if (imagens != null)
+            if (imagens.NaoEhNulo())
                 foreach (var imagem in imagens)
                 {
                     var nomeArquivo = UtilRegex.RegexNomesArquivosUUID.Match(imagem.ToString());

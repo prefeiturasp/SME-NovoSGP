@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
             var bimestreAtual = await consultasPeriodoEscolar.ObterBimestre(dataAula, turma.ModalidadeCodigo, turma.Semestre);
@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao
                                                                            t.Modalidade == turma.ModalidadeCodigo.ToString() &&
                                                                            t.CodTurma.ToString() != turma.CodigoTurma);
 
-                if (turmasTitular != null && turmasTitular.Any())
+                if (turmasTitular.NaoEhNulo() && turmasTitular.Any())
                 {
                     retorno.AddRange(turmasTitular
                            .Select(x => new TurmaRetornoDto() { Codigo = x.CodTurma.ToString(), Nome = x.NomeTurma })
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                                                       t.Turma.ModalidadeCodigo == turma.ModalidadeCodigo &&
                                                       t.TurmaId != turma.CodigoTurma);
 
-                if (turmasCJ != null && turmasCJ.Any())
+                if (turmasCJ.NaoEhNulo() && turmasCJ.Any())
                 {
                     retorno.AddRange(turmasCJ
                           .Select(x => new TurmaRetornoDto() { Codigo = x.TurmaId, Nome = x.Turma.Nome })
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
             {
                 var turmasAtribuidasCP = await mediator.Send(new ObterAbrangenciaTurmasCPParaCopiaAvaliacaoQuery(turma.AnoLetivo, usuario.CodigoRf, (int)turma.ModalidadeCodigo, turma.Ano, turma.Id));
 
-                if (turmasAtribuidasCP.Any() && turmasAtribuidasCP != null)
+                if (turmasAtribuidasCP.Any() && turmasAtribuidasCP.NaoEhNulo())
                     return turmasAtribuidasCP.Select(t => new TurmaRetornoDto()
                     {
                         Codigo = t.CodigoTurma,
@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<AtividadeAvaliativaExistenteRetornoDto>();
 
-            if (dto.AtividadeAvaliativaTurmaDatas != null && dto.AtividadeAvaliativaTurmaDatas.Any())
+            if (dto.AtividadeAvaliativaTurmaDatas.NaoEhNulo() && dto.AtividadeAvaliativaTurmaDatas.Any())
             {
                 foreach (var filtro in dto.AtividadeAvaliativaTurmaDatas)
                 {
@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
                         var perioEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
-                        if (perioEscolar == null)
+                        if (perioEscolar.EhNulo())
                         {
                             retorno.Add(new AtividadeAvaliativaExistenteRetornoDto()
                             {
@@ -253,7 +253,7 @@ namespace SME.SGP.Aplicacao
 
         private AtividadeAvaliativaCompletaDto MapearParaDto(AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AtividadeAvaliativaRegencia> regencias = null, IEnumerable<AtividadeAvaliativaDisciplina> disciplinas = null, bool dentroPeriodo = true, bool podeEditarAvaliacao = false)
         {
-            return atividadeAvaliativa == null ? null : new AtividadeAvaliativaCompletaDto
+            return atividadeAvaliativa.EhNulo() ? null : new AtividadeAvaliativaCompletaDto
             {
                 Id = atividadeAvaliativa.Id,
                 CategoriaId = atividadeAvaliativa.Categoria,
@@ -287,7 +287,7 @@ namespace SME.SGP.Aplicacao
 
         private PaginacaoResultadoDto<AtividadeAvaliativaCompletaDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<AtividadeAvaliativa> atividadeAvaliativaPaginado)
         {
-            if (atividadeAvaliativaPaginado == null)
+            if (atividadeAvaliativaPaginado.EhNulo())
             {
                 atividadeAvaliativaPaginado = new PaginacaoResultadoDto<AtividadeAvaliativa>();
             }

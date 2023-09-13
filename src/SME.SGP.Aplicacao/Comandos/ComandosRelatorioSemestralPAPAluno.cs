@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     // Relatorio Semestral
-                    if (relatorioSemestralAluno.RelatorioSemestralTurmaPAP != null)
+                    if (relatorioSemestralAluno.RelatorioSemestralTurmaPAP.NaoEhNulo())
                     {
                         await comandosRelatorioSemestral.SalvarAsync(relatorioSemestralAluno.RelatorioSemestralTurmaPAP);
                         relatorioSemestralAluno.RelatorioSemestralTurmaPAPId = relatorioSemestralAluno.RelatorioSemestralTurmaPAP.Id;
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                     foreach (var secaoRelatorio in relatorioSemestralAlunoDto.Secoes)
                     {
                         var secaoRelatorioAluno = relatorioSemestralAluno.Secoes.FirstOrDefault(c => c.SecaoRelatorioSemestralPAPId == secaoRelatorio.Id);
-                        if (secaoRelatorioAluno != null)
+                        if (secaoRelatorioAluno.NaoEhNulo())
                         {
                             secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
                             listaSecaoDto.Add(new RelatorioSemestralAlunoSecaoResumidaDto() { SecaoAtual = secaoRelatorioAluno.Valor,SecaoNovo = secaoRelatorio.Valor });
@@ -198,7 +198,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
             var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada!");
 
             return turma;

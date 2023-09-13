@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
         {
             var aluno = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault(w => w.CodAluno == item.CodAluno);
 
-            if (aluno == null || !aluno.Respostas.Any())
+            if (aluno.EhNulo() || !aluno.Respostas.Any())
                 return;
 
             var respostasFiltradas = aluno.Respostas.Where(x => x.RespostaId != 0);

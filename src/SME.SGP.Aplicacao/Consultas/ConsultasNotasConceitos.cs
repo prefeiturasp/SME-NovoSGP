@@ -95,11 +95,11 @@ namespace SME.SGP.Aplicacao
             var turma = await consultasTurma.ObterComUeDrePorCodigo(filtro.TurmaCodigo);
 
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(filtro.AnoLetivo, modalidadeTipoCalendario, filtro.Semestre);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
             var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             var bimestre = filtro.Bimestre;
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 bimestre = ObterBimestreAtual(periodosEscolares);
 
             var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestre);
-            if (periodoAtual == null)
+            if (periodoAtual.EhNulo())
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             List<AtividadeAvaliativa> atividadesAvaliativaEBimestres = new List<AtividadeAvaliativa>();
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
                 atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
 
             var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(filtro.TurmaCodigo));
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
             var retorno = new NotasConceitosRetornoDto();
@@ -172,7 +172,7 @@ namespace SME.SGP.Aplicacao
                     IEnumerable<long> atividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct();
                     IEnumerable<NotaConceito> notas = null;
 
-                    if (atividadesAvaliativaEBimestres != null && atividadesAvaliativaEBimestres.Any())
+                    if (atividadesAvaliativaEBimestres.NaoEhNulo() && atividadesAvaliativaEBimestres.Any())
                         notas = repositorioNotasConceitos
                             .ObterNotasPorAlunosAtividadesAvaliativas(atividadesAvaliativas, alunosIds, filtro.DisciplinaCodigo);
 
@@ -181,7 +181,7 @@ namespace SME.SGP.Aplicacao
 
                     var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
 
-                    if (consultaEOL == null || !consultaEOL.Any())
+                    if (consultaEOL.EhNulo() || !consultaEOL.Any())
                         throw new NegocioException("Componente curricular informado não encontrado no EOL");
                     var disciplinaEOL = consultaEOL.First();
 
@@ -191,14 +191,14 @@ namespace SME.SGP.Aplicacao
                         if (usuario.EhProfessorCj())
                         {
                             IEnumerable<DisciplinaDto> disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(long.Parse(filtro.DisciplinaCodigo), filtro.TurmaCodigo, false, disciplinaEOL.Regencia);
-                            if (disciplinasRegenciaCJ == null || !disciplinasRegenciaCJ.Any())
+                            if (disciplinasRegenciaCJ.EhNulo() || !disciplinasRegenciaCJ.Any())
                                 throw new NegocioException("Não foram encontradas as disciplinas de regência");
                             disciplinasRegencia = MapearParaDto(disciplinasRegenciaCJ);
                         }
                         else
                         {
                             IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
-                            if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Where(x => x.Regencia).Any())
+                            if (disciplinasRegenciaEol.EhNulo() || !disciplinasRegenciaEol.Where(x => x.Regencia).Any())
                                 throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
                             disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(x => x.Regencia));
                         }
@@ -230,7 +230,7 @@ namespace SME.SGP.Aplicacao
                             var notaDoAluno = ObterNotaParaVisualizacao(notas, aluno, atividadeAvaliativa);
                             var notaParaVisualizar = string.Empty;
 
-                            if (notaDoAluno != null)
+                            if (notaDoAluno.NaoEhNulo())
                             {
                                 notaParaVisualizar = notaDoAluno.ObterNota();
 
@@ -278,7 +278,7 @@ namespace SME.SGP.Aplicacao
                                                select ft).FirstOrDefault();
 
                         // Carrega Notas do Bimestre
-                        if (fechamentoTurma != null)
+                        if (fechamentoTurma.NaoEhNulo())
                         {
                             bimestreParaAdicionar.FechamentoTurmaId = fechamentoTurma.Id;
                             bimestreParaAdicionar.Situacao = fechamentoTurma.Situacao;
@@ -313,7 +313,7 @@ namespace SME.SGP.Aplicacao
                                         Disciplina = disciplinaRegencia.Nome,
                                     };
                                     var notaRegencia = notasConceitoBimestre?.FirstOrDefault(c => c.DisciplinaId == disciplinaRegencia.CodigoComponenteCurricular);
-                                    if (notaRegencia != null)
+                                    if (notaRegencia.NaoEhNulo())
                                     {
                                         nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
                                         nota.EhConceito = notaRegencia.ConceitoId.HasValue;
@@ -338,7 +338,7 @@ namespace SME.SGP.Aplicacao
                         if (disciplinaEOL.Regencia)
                         {
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            if (disciplinasRegencia != null)
+                            if (disciplinasRegencia.NaoEhNulo())
                             {
                                 foreach (var disciplinaRegencia in disciplinasRegencia)
                                 {
@@ -353,7 +353,7 @@ namespace SME.SGP.Aplicacao
 
                         // Carrega Frequencia Aluno
                         var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodoConsulta.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
-                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno == null ? null : frequenciaAluno.PercentualFrequenciaFormatado;
+                        notaConceitoAluno.PercentualFrequencia = frequenciaAluno.EhNulo() ? null : frequenciaAluno.PercentualFrequenciaFormatado;
 
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }
@@ -379,7 +379,7 @@ namespace SME.SGP.Aplicacao
                         }
                         bimestreParaAdicionar.Avaliacoes.Add(avaliacaoDoBimestre);
 
-                        if (atividadeAvaliativaParaObterTipoNota == null)
+                        if (atividadeAvaliativaParaObterTipoNota.EhNulo())
                             atividadeAvaliativaParaObterTipoNota = avaliacao;
                     }
                     bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
@@ -389,10 +389,10 @@ namespace SME.SGP.Aplicacao
                     // Valida Avaliações Bimestrais
                     await ValidaMinimoAvaliacoesBimestrais(disciplinaEOL, disciplinasRegencia, tipoCalendario.Id, filtro.TurmaCodigo, valorBimestreAtual, tipoAvaliacaoBimestral, bimestreParaAdicionar);
 
-                    if (atividadeAvaliativaParaObterTipoNota != null)
+                    if (atividadeAvaliativaParaObterTipoNota.NaoEhNulo())
                     {
                         var notaTipo = await servicoDeNotasConceitos.TipoNotaPorAvaliacao(atividadeAvaliativaParaObterTipoNota, filtro.TurmaHistorico);
-                        if (notaTipo == null)
+                        if (notaTipo.EhNulo())
                             throw new NegocioException("Não foi possível obter o tipo de nota desta avaliação.");
 
                         retorno.NotaTipo = notaTipo.TipoNota;
@@ -434,7 +434,7 @@ namespace SME.SGP.Aplicacao
         public async Task<double> ObterValorArredondado(long atividadeAvaliativaId, double nota)
         {
             var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorIdAsync(atividadeAvaliativaId);
-            if (atividadeAvaliativa == null)
+            if (atividadeAvaliativa.EhNulo())
                 throw new NegocioException("Não foi possível localizar a atividade avaliativa.");
 
             return await ObterValorArredondado(atividadeAvaliativa.DataAvaliacao, nota);
@@ -443,7 +443,7 @@ namespace SME.SGP.Aplicacao
         public async Task<double> ObterValorArredondado(DateTime data, double nota)
         {
             var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(data);
-            if (notaParametro == null)
+            if (notaParametro.EhNulo())
                 throw new NegocioException("Não foi possível localizar o parâmetro da nota.");
 
             return notaParametro.Arredondar(nota);
@@ -490,7 +490,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = disciplina.TerritorioSaber,
                     LancaNota = disciplina.LancaNota,
                     BaseNacional = disciplina.BaseNacional,
-                    GrupoMatriz = disciplina.GrupoMatriz != null ?
+                    GrupoMatriz = disciplina.GrupoMatriz.NaoEhNulo() ?
                         new Integracoes.Respostas.GrupoMatriz { Id = disciplina.GrupoMatriz.Id, Nome = disciplina.GrupoMatriz.Nome } :
                         new Integracoes.Respostas.GrupoMatriz()
                 };
@@ -522,7 +522,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return 1;
             else return periodoEscolar.Bimestre;
         }
@@ -571,7 +571,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplinaRegencia in disciplinasRegencia)
                 {
                     var avaliacoes = await repositorioAtividadeAvaliativaRegencia.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaRegencia.CodigoComponenteCurricular.ToString(), bimestre);
-                    if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                    if ((avaliacoes.EhNulo()) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                         disciplinasObservacao.Add(disciplinaRegencia.Nome);
                 }
                 if (disciplinasObservacao.Count > 0)
@@ -580,7 +580,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var avaliacoes = await repositorioAtividadeAvaliativaDisciplina.ObterAvaliacoesBimestrais(tipoCalendarioId, turmaCodigo, disciplinaEOL.CodigoComponenteCurricular.ToString(), bimestre);
-                if ((avaliacoes == null) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
+                if ((avaliacoes.EhNulo()) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                     bimestreDto.Observacoes.Add($"O componente curricular [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
         }

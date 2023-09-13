@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                      .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
             
 
-            var componenteCorrespondente = componentesCurricularesEolProfessor != null
+            var componenteCorrespondente = componentesCurricularesEolProfessor.NaoEhNulo()
                 ? componentesCurricularesEolProfessor.FirstOrDefault(cc => (!cc.TerritorioSaber && cc.Codigo.ToString() == aula.DisciplinaId) || 
                                                                            (cc.TerritorioSaber && cc.Codigo.ToString() == aula.DisciplinaId && cc.Professor == aula.ProfessorRf))
                 : usuarioLogado.EhSomenteProfessorCj() && componentesCurricularesDoProfessorCJ.Any() ?
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
             var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil, request.UsuarioLogado, (componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0) > 0 ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : null);
 
-            if (pendencias == null)
+            if (pendencias.EhNulo())
                 return null;
 
             pendencias = new PendenciaAulaDto

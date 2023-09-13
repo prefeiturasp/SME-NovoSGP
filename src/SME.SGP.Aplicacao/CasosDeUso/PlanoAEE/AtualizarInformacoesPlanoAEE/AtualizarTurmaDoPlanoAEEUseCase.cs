@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                                       .ThenByDescending(turma => turma.DataSituacao)
                                       .FirstOrDefault(); 
 
-            if (alunoTurma != null) 
+            if (alunoTurma.NaoEhNulo()) 
                return await AtualizarTurmaDoEncaminhamento(plano, alunoTurma);
             
             return false;
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmaNova = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
             var turmaAnterior = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(plano.TurmaId));
-            if (turmaNova != null && turmaAnterior.Id != turmaNova.Id && turmaAnterior.Ue.CodigoUe == turmaNova.Ue.CodigoUe)
+            if (turmaNova.NaoEhNulo() && turmaAnterior.Id != turmaNova.Id && turmaAnterior.Ue.CodigoUe == turmaNova.Ue.CodigoUe)
                 return await AtualizarPlano(plano.Id, turmaNova.Id);
             return false;
 

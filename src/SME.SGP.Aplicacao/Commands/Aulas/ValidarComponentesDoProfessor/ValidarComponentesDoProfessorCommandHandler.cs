@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 var componentesCurricularesDoProfessorCJ = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
 
-                if (componentesCurricularesDoProfessorCJ != null)
+                if (componentesCurricularesDoProfessorCJ.NaoEhNulo())
                 {
                     podeCriarAulasParaTurma =
                         componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && (c.DisciplinaId == request.ComponenteCurricularCodigo || (request.CodigoTerritorioSaber.HasValue && request.CodigoTerritorioSaber.Value > 0 && c.DisciplinaId.Equals(request.CodigoTerritorioSaber.Value)))) ||
@@ -53,10 +53,10 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (componentesCurricularesDoProfessor == null)
+                if (componentesCurricularesDoProfessor.EhNulo())
                     componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil());
 
-                podeCriarAulasParaTurma = componentesCurricularesDoProfessor != null &&
+                podeCriarAulasParaTurma = componentesCurricularesDoProfessor.NaoEhNulo() &&
                                           (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == request.ComponenteCurricularCodigo) ||
                                            componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo || c.Codigo == request.ComponenteCurricularCodigo)) ||
                                            componentesCurricularesDoProfessor.Any(r => r.Regencia && (r.CodigoComponenteCurricularPai == request.ComponenteCurricularCodigo || r.Codigo == request.ComponenteCurricularCodigo)));

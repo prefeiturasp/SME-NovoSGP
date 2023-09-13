@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEComTurmaUeEDrePorIdQuery(request.PlanoAEEId));
 
-            if (planoAEE == null)
+            if (planoAEE.EhNulo())
                 throw new NegocioException($"O PlanoAEE [{request.PlanoAEEId}] não foi localizado.");
 
             var ueDre = $"{planoAEE.Turma.Ue.TipoEscola.ShortName()} {planoAEE.Turma.Ue.Nome} ({planoAEE.Turma.Ue.Dre.Abreviacao})";

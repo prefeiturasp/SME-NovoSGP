@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado");
 
             var semestres = await mediator.Send(new ObterSemestresPorAnoLetivoModalidadeEUeCodigoQuery(usuario.Login,
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                                                                                                        consideraHistorico,
                                                                                                        anoLetivo,
                                                                                                        ueCodigo));
-            if (semestres == null || !semestres.Any())
+            if (semestres.EhNulo() || !semestres.Any())
                 return default;
 
             return semestres;

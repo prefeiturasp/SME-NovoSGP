@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
             var titulo = $"Nova observação no Diário de bordo da turma {diarioBordo.Aula.Turma.Nome} ({dataAtual})";
 
-            if (dadosMensagem.UsuariosNotificacao != null && dadosMensagem.UsuariosNotificacao.Any())
+            if (dadosMensagem.UsuariosNotificacao.NaoEhNulo() && dadosMensagem.UsuariosNotificacao.Any())
             {
                 foreach (var usuarioRf in dadosMensagem.UsuariosNotificacao)
                 {
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(diarioBordo.Aula.Turma.CodigoTurma));
             var titulares = professoresTitulares?.Select(x => x.ProfessorRf);
-            if (titulares != null)
+            if (titulares.NaoEhNulo())
             {
                 titulares = titulares.Where(t => !string.IsNullOrEmpty(t));
 

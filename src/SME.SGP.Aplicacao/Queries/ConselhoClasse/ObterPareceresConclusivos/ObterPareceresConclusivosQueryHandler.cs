@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var pareceresConclusivos = await repositorioConselhoClasseParecerConclusivo.ObterListaVigente(request.DataVigente);
 
-            if (pareceresConclusivos == null || !pareceresConclusivos.Any())
+            if (pareceresConclusivos.EhNulo() || !pareceresConclusivos.Any())
                 throw new NegocioException("Não foi possível obter os pareceres conclusivos");
 
             var listaPareceres =  MapearListaEntidadeParaDto(pareceresConclusivos);

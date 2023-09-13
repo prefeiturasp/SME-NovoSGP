@@ -30,14 +30,14 @@ namespace SME.SGP.Aplicacao
         private async Task ExecutarVerificacaoPendenciaProfessor(IEnumerable<ParametrosSistema> parametrosGeracaoPendenciaAvaliacao)
         {
             var parametroDiasProfessor = parametrosGeracaoPendenciaAvaliacao.FirstOrDefault(c => c.Ativo && c.Nome == "DiasGeracaoPendenciaAvaliacaoProfessor");
-            if (parametroDiasProfessor != null)
+            if (parametroDiasProfessor.NaoEhNulo())
                 await mediator.Send(new ExecutarVerificacaoPendenciaAvaliacaoProfessorCommand(int.Parse(parametroDiasProfessor.Valor)));
         }
 
         private async Task ExecutarVerificacaoPendenciaCP(IEnumerable<ParametrosSistema> parametrosGeracaoPendenciaAvaliacao)
         {
             var parametroDiasCP = parametrosGeracaoPendenciaAvaliacao.FirstOrDefault(c => c.Ativo && c.Nome == "DiasGeracaoPendenciaAvaliacaoCP");
-            if (parametroDiasCP != null)
+            if (parametroDiasCP.NaoEhNulo())
                 await mediator.Send(new ExecutarVerificacaoPendenciaAvaliacaoCPCommand(int.Parse(parametroDiasCP.Valor)));
         }
     }

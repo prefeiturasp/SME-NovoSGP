@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
         private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto,out string descricaoAtual)
         {
             descricaoAtual = string.Empty;
-            if (planoCicloDto == null)
+            if (planoCicloDto.EhNulo())
             {
                 throw new ArgumentNullException(nameof(planoCicloDto));
             }
@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var planoCiclo = repositorioPlanoCiclo.ObterPorId(planoCicloDto.Id);
-            if (planoCiclo == null)
+            if (planoCiclo.EhNulo())
             {
                 planoCiclo = new PlanoCiclo();
             }
@@ -126,11 +126,11 @@ namespace SME.SGP.Aplicacao
             }
             if (!planoCiclo.Migrado)
             {
-                if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
+                if (planoCicloDto.IdsMatrizesSaber.EhNulo() || !planoCicloDto.IdsMatrizesSaber.Any())
                 {
                     throw new NegocioException("A matriz de saberes deve conter ao menos 1 elemento.");
                 }
-                if (planoCicloDto.IdsObjetivosDesenvolvimento == null || !planoCicloDto.IdsObjetivosDesenvolvimento.Any())
+                if (planoCicloDto.IdsObjetivosDesenvolvimento.EhNulo() || !planoCicloDto.IdsObjetivosDesenvolvimento.Any())
                 {
                     throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
                 }
@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao
         }
         private void RemoverMatrizes(PlanoCicloDto planoCicloDto, IEnumerable<MatrizSaberPlano> matrizesPlanoCiclo)
         {
-            if (matrizesPlanoCiclo != null)
+            if (matrizesPlanoCiclo.NaoEhNulo())
             {
                 var matrizesRemover = matrizesPlanoCiclo.Where(c => !planoCicloDto.IdsMatrizesSaber.Contains(c.MatrizSaberId));
                 foreach (var matriz in matrizesRemover)
@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
 
         private void RemoverObjetivos(PlanoCicloDto planoCicloDto, IEnumerable<RecuperacaoParalelaObjetivoDesenvolvimentoPlano> objetivosPlanoCiclo)
         {
-            if (objetivosPlanoCiclo != null)
+            if (objetivosPlanoCiclo.NaoEhNulo())
             {
                 var objetivosRemover = objetivosPlanoCiclo.Where(c => !planoCicloDto.IdsObjetivosDesenvolvimento.Contains(c.ObjetivoDesenvolvimentoId));
 

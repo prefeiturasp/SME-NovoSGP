@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(x => x.Bimestre)
                 .NotEmpty()
-                .When(x => x.Bimestre != null)
+                .When(x => x.Bimestre.HasValue)
                 .WithMessage("O bimestre deve ser informado.");
         }
     }

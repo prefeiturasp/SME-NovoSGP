@@ -76,7 +76,7 @@ namespace SME.SGP.Dominio.Servicos
             WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
 
             var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId)?.Codigo;
-            if (codigoDaNotificacao == null)
+            if (codigoDaNotificacao.EhNulo())
                 throw new NegocioException("Não foi possível localizar a notificação.");
 
             nivel.PodeAprovar();
@@ -122,7 +122,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
 
-            if (workflow == null)
+            if (workflow.EhNulo())
                 throw new NegocioException("Não foi possível localizar o fluxo de aprovação.");
 
             if (workflow.Niveis.Any(n => n.Status == WorkflowAprovacaoNivelStatus.Reprovado))
@@ -147,7 +147,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarNivel(WorkflowAprovacaoNivel nivel, WorkflowAprovacao workflow, long codigoDaNotificacao)
         {
             var niveis = workflow.ObtemNiveisParaEnvioPosAprovacao();
-            if (niveis != null && niveis.Any())
+            if (niveis.NaoEhNulo() && niveis.Any())
                 await EnviaNotificacaoParaNiveis(niveis.ToList(), codigoDaNotificacao);
             else
             {
@@ -194,7 +194,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task ReprovarRegistroDeItinerancia(long workFlowId, string motivo)
         {
             var itineranciaReprovada = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
-            if (itineranciaReprovada != null)
+            if (itineranciaReprovada.NaoEhNulo())
             {
                 await mediator.Send(new AprovarItineranciaCommand(itineranciaReprovada.ItineranciaId, workFlowId, false));
 
@@ -205,7 +205,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarRegistroDeItinerancia(long codigoDaNotificacao, long workFlowId, string criadoRF, string criadoPor)
         {
             var itineranciaEmAprovacao = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
-            if (itineranciaEmAprovacao != null)
+            if (itineranciaEmAprovacao.NaoEhNulo())
             {
                 await mediator.Send(new AprovarItineranciaCommand(itineranciaEmAprovacao.ItineranciaId, workFlowId, true));
 
@@ -226,7 +226,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarAlteracaoNotaFechamento(long codigoDaNotificacao, long workFlowId, string turmaCodigo, string criadoRF, string criadoPor)
         {
             var notasEmAprovacao = await ObterNotasEmAprovacao(workFlowId);
-            if (notasEmAprovacao != null && notasEmAprovacao.Any())
+            if (notasEmAprovacao.NaoEhNulo() && notasEmAprovacao.Any())
             {
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
                 
@@ -325,7 +325,7 @@ namespace SME.SGP.Dominio.Servicos
         {
 
             Aula aula = repositorioAula.ObterPorWorkflowId(workflowId);
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
 
             aula.AprovaWorkflow();
@@ -337,7 +337,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarUltimoNivelDeEventoDataPassada(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
-            if (evento == null)
+            if (evento.EhNulo())
                 throw new NegocioException("Não foi possível localizar o evento deste fluxo de aprovação.");
 
             evento.AprovarWorkflow();
@@ -350,7 +350,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarUltimoNivelDeEventoFechamentoReabertura(long codigoDaNotificacao, long workflowId, long nivelId)
         {
             FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(0, workflowId);
-            if (fechamentoReabertura == null)
+            if (fechamentoReabertura.EhNulo())
                 throw new NegocioException("Não foi possível localizar a reabertura do fechamento do fluxo de aprovação.");
 
             fechamentoReabertura.AprovarWorkFlow();
@@ -370,13 +370,13 @@ namespace SME.SGP.Dominio.Servicos
 
         private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
         {
-            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
-                                                                fechamentoReabertura.Ue != null ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
+            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
+                                                                fechamentoReabertura.Ue.NaoEhNulo() ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
                                                                 fechamentoReabertura.Id,
                                                                 usuario.CodigoRf,
                                                                 fechamentoReabertura.TipoCalendario.Nome,
-                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Ue.Nome : string.Empty,
-                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
+                                                                fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Ue.Nome : string.Empty,
+                                                                fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
                                                                 fechamentoReabertura.Inicio,
                                                                 fechamentoReabertura.Fim,
                                                                 fechamentoReabertura.ObterBimestresNumeral().ToString(),
@@ -388,7 +388,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
-            if (evento == null)
+            if (evento.EhNulo())
                 throw new NegocioException("Não foi possível localizar o evento deste fluxo de aprovação.");
 
             evento.AprovarWorkflow();
@@ -587,7 +587,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var dadosUsuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
 
-                if (dadosUsuario != null)
+                if (dadosUsuario.NaoEhNulo())
                 {
                     await mediator.Send(new NotificarUsuarioCommand(
                         $"Alteração em {notaConceitoTitulo} final - {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - {turma.NomeComModalidade()} (ano anterior)",
@@ -638,9 +638,9 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == (notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo));
 
-                string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor == null ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
-                string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF == null ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
-                DateTime? dataUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoEm == null ? notaAprovacao.WfAprovacao.CriadoEm : notaAprovacao.WfAprovacao.AlteradoEm;
+                string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor.EhNulo() ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
+                string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF.EhNulo() ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
+                DateTime? dataUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoEm.EhNulo() ? notaAprovacao.WfAprovacao.CriadoEm : notaAprovacao.WfAprovacao.AlteradoEm;
                 var horaNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("HH:mm:ss");
                 var dataNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("dd/MM/yyyy");
                 if (notaAprovacao.WfAprovacao.AlteradoEm.HasValue)
@@ -759,7 +759,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task NotificarAulaReposicaoQueFoiReprovada(Aula aula, long codigoDaNotificacao, string motivo)
         {
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada.");
 
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
@@ -781,7 +781,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task NotificarCriadorDaAulaQueFoiAprovada(Aula aula, long codigoDaNotificacao)
         {
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(aula.TurmaId);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada.");
 
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
@@ -803,7 +803,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task NotificarCriadorEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
         {
             var escola = repositorioUe.ObterPorCodigo(evento.UeId);
-            if (escola == null)
+            if (escola.EhNulo())
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
             var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
@@ -975,7 +975,7 @@ namespace SME.SGP.Dominio.Servicos
         private void TrataReprovacaoEventoDataPassada(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflow.Id);
-            if (evento == null)
+            if (evento.EhNulo())
                 throw new NegocioException("Não foi possível localizar o evento deste fluxo de aprovação.");
 
             evento.ReprovarWorkflow();
@@ -987,7 +987,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task TrataReprovacaoEventoLiberacaoExcepcional(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflow.Id);
-            if (evento == null)
+            if (evento.EhNulo())
                 throw new NegocioException("Não foi possível localizar o evento deste fluxo de aprovação.");
 
             evento.ReprovarWorkflow();
@@ -995,7 +995,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var escola = repositorioUe.ObterPorCodigo(evento.UeId);
 
-            if (escola == null)
+            if (escola.EhNulo())
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
             if (cargoDoNivelQueRecusou == Cargo.Supervisor)
@@ -1016,7 +1016,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task TrataReprovacaoFechamentoReabertura(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, long nivelId)
         {
             FechamentoReabertura fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(0, workflow.Id);
-            if (fechamentoReabertura == null)
+            if (fechamentoReabertura.EhNulo())
                 throw new NegocioException("Não foi possível localizar a reabertura do fechamento do fluxo de aprovação.");
 
             fechamentoReabertura.ReprovarWorkFlow();
@@ -1030,7 +1030,7 @@ namespace SME.SGP.Dominio.Servicos
         {
 
             Aula aula = repositorioAula.ObterPorWorkflowId(workflow.Id);
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Não foi possível localizar a aula deste fluxo de aprovação.");
 
             aula.ReprovarWorkflow();

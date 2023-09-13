@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var dadosMensagem = mensagemRabbit.ObterObjetoMensagem<SalvarNotificacaoDevolutivaDto>();
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(dadosMensagem.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível obter a turma");
 
             var usuarioNome = dadosMensagem.UsuarioNome;
@@ -40,17 +40,17 @@ namespace SME.SGP.Aplicacao
 
             var devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(devolutivaId));
 
-            if (devolutiva == null)
+            if (devolutiva.EhNulo())
                 throw new NegocioException("Não foi possível obter a devolutiva");
 
             var professorTitularEol = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, devolutiva.CodigoComponenteCurricular.ToString()));
 
-            if (professorTitularEol == null)
+            if (professorTitularEol.EhNulo())
                 throw new NegocioException("Não foi possível obter o professor titular da turma");
 
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(devolutiva.CodigoComponenteCurricular));
 
-            if (componenteCurricular == null)
+            if (componenteCurricular.EhNulo())
                 throw new NegocioException("Não foi possível obter o componente curricular");
             
             var codigoRelatorio = await mediator.Send(new SolicitaRelatorioDevolutivasCommand(devolutiva.Id, usuarioNome, usuarioRf, turma.UeId, turma.Id));
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
 
             var botaoDownload = MontarBotaoDownload(codigoRelatorio);
 
-            if (professorTitularEol != null)
+            if (professorTitularEol.NaoEhNulo())
             {
                 var mensagem = new StringBuilder($"O usuário {usuarioNome} ({usuarioRf}) registrou a devolutiva dos diários de bordo de <strong>{componenteCurricular.NomeComponenteInfantil}</strong> da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> " +
                     $"<strong>({turma.Ue.Dre.Abreviacao})</strong>. Esta devolutiva contempla os diários de bordo do período de <strong>{devolutiva.PeriodoInicio:dd/MM/yyyy}</strong> à <strong>{devolutiva.PeriodoFim:dd/MM/yyyy}</strong>.");
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 if (professorTitularEol.ProfessorRf != usuarioRf)
                 {
                     var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(professorTitularEol.ProfessorRf));
-                    if (usuario != null)
+                    if (usuario.NaoEhNulo())
                     {
                         var notificacao = new Notificacao()
                         {

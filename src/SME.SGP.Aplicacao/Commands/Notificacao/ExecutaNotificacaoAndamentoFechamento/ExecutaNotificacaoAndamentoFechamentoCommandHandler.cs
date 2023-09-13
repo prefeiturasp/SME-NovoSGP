@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                                                                                                        DateTime.Now.Semestre()));
             var componentes = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
-            if (turmas != null && turmas.Any())
+            if (turmas.NaoEhNulo() && turmas.Any())
                 await EnviarNotificacaoTurmas(turmas, componentes, request.PeriodoEncerrandoBimestre.PeriodoEscolar, request.PeriodoEncerrandoBimestre.PeriodoFechamento.Ue);
 
             return true;
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         {
             var ues = new List<Ue>();
 
-            if (ue != null)
+            if (ue.NaoEhNulo())
                 ues.Add(ue);
             else
             {

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(relatorioPAPDto.AlunoCodigo, DateTime.Now.Year));
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
             await ValidarQuestoesObrigatorias(relatorioPAPDto, turmaCodigo);
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             {
                 var questaoExistente = relatorioSecao.Questoes.FirstOrDefault(q => q.QuestaoId == questaoRespostas.Key);
 
-                if (questaoExistente == null)
+                if (questaoExistente.EhNulo())
                     await SalvarQuestao(relatorioSecao.Id, questaoRespostas.Key, questaoRespostas);
                 else
                     await AlterarQuestao(questaoExistente, questaoRespostas);
@@ -225,7 +225,7 @@ namespace SME.SGP.Aplicacao
                 var secaoPresenteDto = relatorioPAPDto.Secoes.FirstOrDefault(secaoDto => secaoDto.SecaoId == secao.Id);
 
                 IEnumerable<RespostaQuestaoObrigatoriaDto> respostasSecao;
-                if (secaoPresenteDto != null && secaoPresenteDto.Respostas.Any())
+                if (secaoPresenteDto.NaoEhNulo() && secaoPresenteDto.Respostas.Any())
                 {
                     respostasSecao = secaoPresenteDto.Respostas
                         .Select(questao => new RespostaQuestaoObrigatoriaDto()
@@ -237,7 +237,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    if (respostasPersistidas == null)
+                    if (respostasPersistidas.EhNulo())
                         respostasPersistidas = await ObterRespostasPersistidas(secao.PAPSecaoId);
                     respostasSecao = respostasPersistidas;
                 }

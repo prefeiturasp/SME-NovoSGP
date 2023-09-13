@@ -200,7 +200,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
                         
-                        if (secao == null)
+                        if (secao.EhNulo())
                         {
                             encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
                             secao = encaminhamentoSecao;
@@ -209,7 +209,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
                         
-                        if (questaoEncaminhamento == null)
+                        if (questaoEncaminhamento.EhNulo())
                         {
                             questaoEncaminhamento = questaoEncaminhamentoNAAPA;
                             questaoEncaminhamento.Questao = questao;
@@ -218,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
                         
-                        if (resposta == null)
+                        if (resposta.EhNulo())
                         {
                             resposta = respostaEncaminhamento;
                             resposta.Resposta = opcaoResposta;
@@ -264,7 +264,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
                         
-                        if (secao == null)
+                        if (secao.EhNulo())
                         {
                             encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
                             secao = encaminhamentoSecao;
@@ -273,7 +273,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
                         
-                        if (questaoEncaminhamento == null)
+                        if (questaoEncaminhamento.EhNulo())
                         {
                             questaoEncaminhamento = questaoEncaminhamentoNAAPA;
                             questaoEncaminhamento.Questao = questao;
@@ -282,7 +282,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
 
-                        if (resposta != null) 
+                        if (resposta.NaoEhNulo()) 
                             return encaminhamento;
                         
                         resposta = respostaEncaminhamento;

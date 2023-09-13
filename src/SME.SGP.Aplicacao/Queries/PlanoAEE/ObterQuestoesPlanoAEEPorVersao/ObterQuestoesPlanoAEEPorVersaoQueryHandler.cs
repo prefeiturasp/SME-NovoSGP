@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
                 var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoPorModalidade(turma.ModalidadeCodigo, dataUltimaAtualizacaoVersaoSelecionada);
 
-                if (periodoEscolar == null)
+                if (periodoEscolar.EhNulo())
                     periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
 
                 if (listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Any())

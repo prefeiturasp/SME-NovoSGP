@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                             aula.DisciplinaId
                         ));
 
-                    if (aulaConsultaDto == null)
+                    if (aulaConsultaDto.EhNulo())
                         throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToString("dd/MM/yyyy")} neste componente curricular!");
 
                     var planoCopia = new PlanoAulaDto()
@@ -99,8 +99,8 @@ namespace SME.SGP.Aplicacao
             if (turmasSelecionadas.Any(t => t.TipoTurma == TipoTurma.Programa))
             {
                 var turmasPrograma = await consultasAbrangencia.ObterTurmasPrograma(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo);
-                if (turmasPrograma != null)
-                    turmasAbrangencia = turmasAbrangencia != null ? turmasAbrangencia.Concat(turmasPrograma) : turmasPrograma;
+                if (turmasPrograma.NaoEhNulo())
+                    turmasAbrangencia = turmasAbrangencia.NaoEhNulo() ? turmasAbrangencia.Concat(turmasPrograma) : turmasPrograma;
             }
 
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(codigoRf, string.Empty));
@@ -225,12 +225,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasProfessor == null ||
+                            idsTurmasProfessor.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
                         )
 
@@ -244,12 +244,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasAbrangencia == null ||
+                            idsTurmasAbrangencia.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasAbrangencia.Contains(c))
                         )
 
@@ -273,12 +273,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasProfessor == null ||
+                            idsTurmasProfessor.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
                         )
 
@@ -292,12 +292,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasAbrangencia == null ||
+                            idsTurmasAbrangencia.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasAbrangencia.Contains(c))
                         )
 

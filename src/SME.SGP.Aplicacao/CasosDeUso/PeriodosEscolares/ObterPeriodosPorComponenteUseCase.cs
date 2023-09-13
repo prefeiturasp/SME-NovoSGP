@@ -25,13 +25,13 @@ namespace SME.SGP.Aplicacao
             {
                 var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
                 var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre, usuarioLogado.EhSomenteProfessorCj()));
-                listaPeriodos = periodoBimestre != null ? SepararSemanasRegencia(periodoBimestre, exibirDataFutura) : listaPeriodos;
+                listaPeriodos = periodoBimestre.NaoEhNulo() ? SepararSemanasRegencia(periodoBimestre, exibirDataFutura) : listaPeriodos;
             }                
             else
             {
                 var codigosComponentesBusca = new List<long>() { componenteCodigo };
                 var componentesTerritorioEquivalentes = await mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(componenteCodigo, turmaCodigo, usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorCj() ? usuarioLogado.Login : null));
-                if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any())
+                if (componentesTerritorioEquivalentes.NaoEhNulo() && componentesTerritorioEquivalentes.Any())
                     codigosComponentesBusca.AddRange(componentesTerritorioEquivalentes.Select(ct => long.Parse(ct.codigoComponente)));
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(turmaCodigo, codigosComponentesBusca.ToArray(), bimestre, usuarioLogado.EhSomenteProfessorCj()));
                 listaPeriodos = periodoEscolar.Any() ? SepararPeriodosAulas(periodoEscolar.OrderBy(x => x.DataAula), exibirDataFutura) : listaPeriodos;
