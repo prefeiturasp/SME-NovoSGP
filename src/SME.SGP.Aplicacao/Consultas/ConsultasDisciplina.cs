@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
-
+        private string[] componentesParaObjetivosAprendizagemOpcionais = Array.Empty<string>();
         public ConsultasDisciplina(IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IServicoUsuario servicoUsuario,
@@ -98,6 +98,8 @@ namespace SME.SGP.Aplicacao
 
             if (turma == null)
                 throw new NegocioException("Não foi possível encontrar a turma");
+
+            await CarregueComponentesObjetivoApredizagemOpcionais(turma.AnoLetivo);
 
             if (usuarioLogado.EhProfessorCj())
             {
@@ -186,7 +188,13 @@ namespace SME.SGP.Aplicacao
                                 Regencia = c.Regencia
                             }).ToList();
                         }
-                    }
+                    }else
+                        componentesCurriculares.ForEach(c =>
+                        {
+                            var codigoTerritorio = c.Codigo;
+                            c.Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo;
+                            c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? codigoTerritorio : c.CodigoComponenteTerritorioSaber;
+                        });
                 }
 
                 var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();
@@ -214,7 +222,7 @@ namespace SME.SGP.Aplicacao
                     if (d.TerritorioSaber)
                         d.Nome = componenteEOL.Descricao;
 
-                    d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
+                    d.ObjetivosAprendizagemOpcionais = componentesParaObjetivosAprendizagemOpcionais.Contains(componenteEOL.Codigo.ToString()) || componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
                     d.CdComponenteCurricularPai = componenteEOL.CodigoComponenteCurricularPai;
                     d.NomeComponenteInfantil = componenteEOL.ExibirComponenteEOL && !string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.NomeComponenteInfantil : d.Nome;
                     d.Professor = componenteEOL.Professor;
@@ -736,7 +744,7 @@ namespace SME.SGP.Aplicacao
             RegistraFrequencia = disciplina.RegistroFrequencia,
             LancaNota = disciplina.LancaNota,
             PossuiObjetivos = !turmaPrograma && !ehEnsinoMedio && consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular),
-            ObjetivosAprendizagemOpcionais = consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial).Result,
+            ObjetivosAprendizagemOpcionais = componentesParaObjetivosAprendizagemOpcionais.Contains(disciplina.CodigoComponenteCurricular.ToString()) || consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial).Result,
             Professor = disciplina.Professor
         };
 
@@ -763,6 +771,16 @@ namespace SME.SGP.Aplicacao
             }
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
+        }
+
+        private async Task CarregueComponentesObjetivoApredizagemOpcionais(int anoLetivo)
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ComponentesParaObjetivosAprendizagemOpcionais, anoLetivo));
+
+            if (parametro != null)
+            {
+                componentesParaObjetivosAprendizagemOpcionais = parametro.Valor.Split(",");
+            }
         }
     }
 }

@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        turma_id = @turmaCodigo";
 
-            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            return (await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
@@ -149,7 +149,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
 	                        turma_id = @turmaCodigo";
 
-            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            return (await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);

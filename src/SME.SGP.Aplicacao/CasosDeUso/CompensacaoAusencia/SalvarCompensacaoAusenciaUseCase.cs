@@ -97,9 +97,16 @@ namespace SME.SGP.Aplicacao
 
                 IEnumerable<string> codigosAlunosCompensacao = new List<string>();
                 var ehAlteracao = id > 0;
-                if (compensacaoDto.Alunos.Any() || ehAlteracao)
+
+                IEnumerable<CompensacaoAusenciaAluno> compensacoesJaExistentes;
+                if (ehAlteracao)
+                    compensacoesJaExistentes = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(id));
+                else
+                    compensacoesJaExistentes = Enumerable.Empty<CompensacaoAusenciaAluno>();
+
+                if (compensacaoDto.Alunos.Any() || (ehAlteracao && compensacoesJaExistentes.Any()))
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, professorConsiderado);
+                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes, professorConsiderado);
                     codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
@@ -176,19 +183,13 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, Turma turma, string[] disciplinasId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolar periodo, string professor = null)
+        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, Turma turma, string[] disciplinasId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolar periodo, IEnumerable<CompensacaoAusenciaAluno> compensacoesJaExistentes, string professor = null)
         {
             var mensagensExcessao = new StringBuilder();
             var listaPersistencia = new List<CompensacaoAusenciaAluno>();
 
-            IEnumerable<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos;
-            if (alteracao)
-                compensacaoAusenciaAlunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
-            else
-                compensacaoAusenciaAlunos = new List<CompensacaoAusenciaAluno>();
-
             // excluir os removidos da lista
-            foreach (var alunoRemovido in compensacaoAusenciaAlunos.Where(a => !compensacaoAusenciaAlunoDtos.Any(d => d.Id == a.CodigoAluno)))
+            foreach (var alunoRemovido in compensacoesJaExistentes.Where(a => !compensacaoAusenciaAlunoDtos.Any(d => d.Id == a.CodigoAluno)))
             {
                 alunoRemovido.Excluir();
                 listaPersistencia.Add(alunoRemovido);
@@ -200,7 +201,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(compensacaoAusenciaAlunoDtos?.Select(x => x.Id).ToArray(), disciplinasId, periodo.Id, turma.CodigoTurma, professor));
 
                 // altera as faltas compensadas
-                var alunosAlterarFaltasCompensada = compensacaoAusenciaAlunos.Where(a => !a.Excluido);
+                var alunosAlterarFaltasCompensada = compensacoesJaExistentes.Where(a => !a.Excluido);
 
                 if (alunosAlterarFaltasCompensada.Any())
                 {
@@ -238,7 +239,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 // adiciona os alunos novos
-                var listaAlunosDto = compensacaoAusenciaAlunoDtos?.Where(d => !compensacaoAusenciaAlunos.Any(a => a.CodigoAluno == d.Id && !a.Excluido));
+                var listaAlunosDto = compensacaoAusenciaAlunoDtos?.Where(d => !compensacoesJaExistentes.Any(a => a.CodigoAluno == d.Id && !a.Excluido));
                 if (listaAlunosDto.Any())
                 {
                     var listaIdsAluno = listaAlunosDto.Select(x => x.Id);
