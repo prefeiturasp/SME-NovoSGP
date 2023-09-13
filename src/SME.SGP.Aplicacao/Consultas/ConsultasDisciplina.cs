@@ -156,13 +156,6 @@ namespace SME.SGP.Aplicacao
 
                     componentesCurriculares ??= (await mediator
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
-
-                    /*componentesCurriculares.ForEach(c =>
-                    {
-                        var codigoTerritorio = c.Codigo;
-                        c.Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo;
-                        c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? codigoTerritorio : c.CodigoComponenteTerritorioSaber;
-                    });*/
                 }
                 else
                 {
@@ -177,10 +170,8 @@ namespace SME.SGP.Aplicacao
                         {
                             componentesCurriculares = componentesCurricularesDaTurma.Select(c => new ComponenteCurricularEol()
                             {
-                                //Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber.Value : c.CodigoComponenteCurricular,
                                 Codigo = c.CodigoComponenteCurricular,
                                 TerritorioSaber = c.TerritorioSaber,
-                                //CodigoComponenteTerritorioSaber = c.TerritorioSaber ? c.CodigoComponenteCurricular : 0,
                                 CodigoComponenteTerritorioSaber = c.CodigoComponenteTerritorioSaber ?? 0,
                                 Descricao = c.Nome,
                                 GrupoMatriz = new Dominio.GrupoMatriz() { Id = c.GrupoMatriz.Id, Nome = c.GrupoMatriz.Nome },
@@ -192,12 +183,10 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();
-                //idsDisciplinas = idsDisciplinas.Concat(componentesCurriculares.Where(c => c.TerritorioSaber).Select(c => c.CodigoComponenteTerritorioSaber)).ToArray();
-
+                
                 if (usuarioLogado.TemPerfilAdmUE() || usuarioLogado.TemPerfilGestaoUes() && !usuarioLogado.EhCP())
                     idsDisciplinas = await ObterDisciplinasAtribuicaoCJParaTurma(codigoTurma, componentesCurriculares, idsDisciplinas);
 
-                //disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas))?.OrderBy(c => c.Nome)?.ToList();
                 disciplinasDto = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas)))?.OrderBy(c => c.Nome)?.ToList();
 
                 var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
@@ -205,23 +194,6 @@ namespace SME.SGP.Aplicacao
                 if (componentesCurricularesJurema == null)
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
 
-                /*disciplinasDto.ForEach(d =>
-                {
-                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular || a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular);
-
-                    d.PossuiObjetivos = PossuiObjetivos(turma, Convert.ToInt32(dataInicioNovoSGP), componenteEOL, componentesCurricularesJurema);
-                    d.CodigoComponenteCurricular = componenteEOL.Codigo;
-                    d.CodigoComponenteCurricularTerritorioSaber = componenteEOL.CodigoComponenteTerritorioSaber;
-                    d.Regencia = componenteEOL.Regencia;
-
-                    if (d.TerritorioSaber)
-                        d.Nome = componenteEOL.Descricao;
-
-                    d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
-                    d.CdComponenteCurricularPai = componenteEOL.CodigoComponenteCurricularPai;
-                    d.NomeComponenteInfantil = componenteEOL.ExibirComponenteEOL && !string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.NomeComponenteInfantil : d.Nome;
-                    d.Professor = componenteEOL.Professor;
-                });*/
                 disciplinasDto.ForEach(d =>
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
@@ -280,9 +252,6 @@ namespace SME.SGP.Aplicacao
                         disciplina.RegistraFrequencia = false;
                 }
             }
-
-            /*if (disciplinasDto.Any(x => x.TerritorioSaber))
-                await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);*/
 
             if (turma.ModalidadeCodigo == Modalidade.EducacaoInfantil)
                 disciplinasDto = disciplinasDto.DistinctBy(x => x.CodigoComponenteCurricular).ToList();
@@ -583,9 +552,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            /*if (disciplinasDto.Any(x => x.TerritorioSaber))
-                await tratarDisciplinasTerritorioSaber(disciplinasDto.Where(x => x.TerritorioSaber), turma.CodigoTurma);*/
-
             return disciplinasDto;
         }
 
@@ -635,7 +601,6 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool ehEnsinoMedio = false, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
-            //Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue && disciplina.CodigoComponenteTerritorioSaber.Value > 0 ? disciplina.CodigoComponenteTerritorioSaber.Value : (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
             Id = (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
