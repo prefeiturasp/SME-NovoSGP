@@ -32,10 +32,9 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FechamentoConsolidadoComponenteTurma>> ObterFechamentosConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int[] situacoesFechamento)
         {
-            var query = new StringBuilder(@" select * from (
-                                                select id, dt_atualizacao, status, componente_curricular_id, professor_nome, professor_rf, turma_id, bimestre, 
+            var query = new StringBuilder(@" select * from ( select id, dt_atualizacao, status, componente_curricular_id, professor_nome, professor_rf, turma_id, bimestre, 
                                                      criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido,
-                                                row_number() over (partition by professor_rf) sequencia
+                                                    row_number() over (partition by componente_curricular_id) sequencia
                                                 from consolidado_fechamento_componente_turma 
                                                where not excluido 
                                                  and turma_id = @turmaId
@@ -45,7 +44,7 @@ namespace SME.SGP.Dados
                                               where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento))");
 
             query.AppendLine(") x where x.sequencia = 1");
-            
+
             return await database.Conexao.QueryAsync<FechamentoConsolidadoComponenteTurma>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
         public async Task<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int[] situacoesFechamento)
@@ -62,12 +61,12 @@ namespace SME.SGP.Dados
                                                from consolidado_fechamento_componente_turma cfct   
                                                inner join componente_curricular cc on cc.id = cfct.componente_curricular_id           
                                                where cfct.turma_id = @turmaId
-                                                 and cfct.bimestre = @bimestre  ");                             
+                                                 and cfct.bimestre = @bimestre  ");
 
             if (!situacoesFechamento.Any(c => c == -99))
                 query.AppendLine(@"and EXISTS(select 1 from consolidado_fechamento_componente_turma 
                                               where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento)) ");
-            
+
             query.AppendLine(") x where x.sequencia = 1");
 
             return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
