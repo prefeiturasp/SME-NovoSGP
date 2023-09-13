@@ -224,7 +224,7 @@ namespace SME.SGP.Aplicacao
                 });*/
                 disciplinasDto.ForEach(d =>
                 {
-                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular || a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular);
+                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = PossuiObjetivos(turma, Convert.ToInt32(dataInicioNovoSGP), componenteEOL, componentesCurricularesJurema);
                     d.ObjetivosAprendizagemOpcionais = componenteEOL.PossuiObjetivosDeAprendizagemOpcionais(componentesCurricularesJurema, turma.EnsinoEspecial);
                     d.Nome = componenteEOL.Descricao;
