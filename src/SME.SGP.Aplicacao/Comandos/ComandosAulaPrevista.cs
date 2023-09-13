@@ -38,13 +38,12 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<AulaPrevistaBimestre> aulasPrevistasBimestre = await repositorioAulaPrevistaBimestreConsulta.ObterBimestresAulasPrevistasPorId(id);
 
+            if (dto.BimestresQuantidade.Count() > 4)
+                throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
+            
             unitOfWork.IniciarTransacao();
-
             try
             {
-                if (dto.BimestresQuantidade.Count() > 4)
-                    throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
-
                 foreach (var bimestre in dto.BimestresQuantidade)
                 {
                     AulaPrevistaBimestre aulaPrevistaBimestre = aulasPrevistasBimestre.FirstOrDefault(b => b.Bimestre == bimestre.Bimestre);

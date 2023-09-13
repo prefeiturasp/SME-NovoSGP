@@ -33,41 +33,29 @@ namespace SME.SGP.Aplicacao
             var idFalhaExclusao = new List<long>();
             var tiposEventoInvalidos = new List<string>();
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            foreach (var codigo in idsRemover)
             {
                 try
                 {
-                    foreach (var codigo in idsRemover)
+                    var entidade = repositorioEventoTipo.ObterPorId(codigo);
+                    var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
+                    if (possuiEventos)
                     {
-                        try
-                        {
-                            var entidade = repositorioEventoTipo.ObterPorId(codigo);
-                            var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
-                            if (possuiEventos)
-                            {
-                                tiposEventoInvalidos.Add(entidade.Descricao);
-                            }
-                            else
-                            {
-                                entidade.Excluido = true;
-
-                                repositorioEventoTipo.Salvar(entidade);
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            idFalhaExclusao.Add(codigo);
-                        }
+                        tiposEventoInvalidos.Add(entidade.Descricao);
                     }
+                    else
+                    {
+                        entidade.Excluido = true;
 
-                    unitOfWork.PersistirTransacao();
+                        repositorioEventoTipo.Salvar(entidade);
+                    }
                 }
-                catch
+                catch (Exception)
                 {
-                    unitOfWork.Rollback();
-                    throw;
+                    idFalhaExclusao.Add(codigo);
                 }
             }
+
             if (tiposEventoInvalidos.Any())
             {
                 var erroMensagem = idFalhaExclusao.Count > 1 ?
