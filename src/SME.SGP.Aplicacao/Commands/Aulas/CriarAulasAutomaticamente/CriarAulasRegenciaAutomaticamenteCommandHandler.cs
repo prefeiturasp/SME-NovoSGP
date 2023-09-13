@@ -279,7 +279,7 @@ namespace SME.SGP.Aplicacao
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, string ueCodigo)
         {
-            return diasDoPeriodo.Where(c => c.Data.DayOfWeek != DayOfWeek.Saturday && c.Data.DayOfWeek != DayOfWeek.Sunday &&
+            return diasDoPeriodo.Where(c => !c.Data.FimDeSemana() &&
                                        (c.CriarAulaUe(ueCodigo) && c.EhLetivo) ||
                                        (!c.DreIds.Any() && !c.UesIds.Any() && c.EhLetivo) ||
                                        (!c.PossuiEvento && c.EhLetivo && !c.PossuiEventoSME && !c.PossuiEventoUe(ueCodigo)) ||
