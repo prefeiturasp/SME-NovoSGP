@@ -109,7 +109,7 @@ namespace SME.SGP.Dominio.Servicos
             if (componenteCurricular == null)
                 throw new NegocioException("Componente curricular não encontrado.");
 
-            return componenteCurricular;
+            return componenteCurricular; //teste
         }
 
         public async Task GerarPendenciaAulasFechamento(TipoPendencia tipoPendencia, string msg, string msgHtml, IEnumerable<Aula> aulas, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDaTurma, long fechamentoId, long disciplinaId, int bimestre, long turmaId, bool aulasCJ = false)
