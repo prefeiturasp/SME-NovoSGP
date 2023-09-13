@@ -461,9 +461,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             else
                 resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}");                
             
-            if (!resposta.IsSuccessStatusCode) 
-                return null;
-            
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possivel obter os dados de acesso");
+
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<RetornoDadosAcessoUsuarioSgpDto>(json);
         }
