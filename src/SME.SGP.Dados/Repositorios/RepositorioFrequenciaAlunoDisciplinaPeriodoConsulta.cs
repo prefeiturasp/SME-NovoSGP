@@ -410,7 +410,7 @@ namespace SME.SGP.Dados
             query.AppendLine(@" where fa.tipo = 2 
                 and fa.codigo_aluno = @alunoCodigo 
                 and t.ano_letivo = @anoTurma 
-                and t.tipo_turma in(1,2) and not t.tipo_turma in(3) ");
+                and t.tipo_turma in(1,2,7) ");
 
             if (tipoCalendarioId > 0)
                 query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
