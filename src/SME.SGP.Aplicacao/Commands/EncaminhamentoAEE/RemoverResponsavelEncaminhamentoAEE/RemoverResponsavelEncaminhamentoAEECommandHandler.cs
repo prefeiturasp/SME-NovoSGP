@@ -23,17 +23,17 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(request.EncaminhamentoId));
 
-            if (encaminhamentoAEE == null)
+            if (encaminhamentoAEE.EhNulo())
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("turma não encontrada");
 
             var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI));
 
-            if(funcionarioPAAI != null && funcionarioPAAI.Any())
+            if(funcionarioPAAI.NaoEhNulo() && funcionarioPAAI.Any())
                 encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoPAAI;
             else
                 encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
             var pendenciaEncaminhamentoAEE = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(request.EncaminhamentoId));
-            if (pendenciaEncaminhamentoAEE != null)
+            if (pendenciaEncaminhamentoAEE.NaoEhNulo())
                 await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
 
             return idEntidadeEncaminhamento != 0;

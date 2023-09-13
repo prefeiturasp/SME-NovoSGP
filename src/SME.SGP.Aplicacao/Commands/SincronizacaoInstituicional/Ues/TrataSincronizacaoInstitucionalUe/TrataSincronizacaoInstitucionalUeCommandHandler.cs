@@ -22,11 +22,11 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(TrataSincronizacaoInstitucionalUeCommand request, CancellationToken cancellationToken)
         {
 
-            if (request.UeSGP == null)
+            if (request.UeSGP.EhNulo())
             {
                 var dreDaUe = repositorioDre.ObterPorCodigo(request.UeEOL.DreCodigo.ToString());
 
-                if (dreDaUe == null)
+                if (dreDaUe.EhNulo())
                     throw new NegocioException($"Não foi possível localizar a Dre da Ue {request.UeEOL.UeCodigo}");
 
                 var ueParaIncluir = new Ue()

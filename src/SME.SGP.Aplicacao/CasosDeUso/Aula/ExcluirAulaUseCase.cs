@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var aula = await mediator.Send(new ObterAulaPorIdQuery(excluirDto.AulaId));
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException($"Não foi possível localizar a aula de id : {excluirDto.AulaId}");
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
@@ -53,11 +53,11 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor.NaoEhNulo() && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
                     ? (from cp in componentesCurricularesEolProfessor
                        where cp.CodigoComponenteCurricularPai.ToString() == aula.DisciplinaId ||
                              cp.Codigo.ToString() == aula.DisciplinaId ||
-                             (componenteCurricular != null && (cp.Codigo == componenteCurricular.CdComponenteCurricularPai || cp.CodigoComponenteTerritorioSaber == componenteCurricular.CodigoComponenteCurricular))
+                             (componenteCurricular.NaoEhNulo() && (cp.Codigo == componenteCurricular.CdComponenteCurricularPai || cp.CodigoComponenteTerritorioSaber == componenteCurricular.CodigoComponenteCurricular))
                        select cp).FirstOrDefault()
                     : new ComponenteCurricularEol
                     {
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             if (componenteConsideradoEmCasoDeCJ != default && componenteConsideradoEmCasoDeCJ.codigoTerritorio.HasValue && componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value > 0)
                 codigoComponenteConsiderado = componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value.ToString();
 
-            var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ?
+            var componenteCurricularNome = componenteCorrespondente.NaoEhNulo() && componenteCorrespondente.TerritorioSaber ?
                 componenteCorrespondente.Descricao : await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(codigoComponenteConsiderado)));
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)

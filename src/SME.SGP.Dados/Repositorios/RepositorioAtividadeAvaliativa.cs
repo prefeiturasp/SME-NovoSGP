@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(nomeAvaliacao))
                 nomeAvaliacao = $"%{nomeAvaliacao.ToLowerInvariant()}%";
             StringBuilder query = new StringBuilder();
-            if (paginacao == null)
+            if (paginacao.EhNulo())
                 paginacao = new Paginacao(1, 10);
 
             MontaQueryCabecalho(query);
@@ -472,7 +472,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and date(a.data_avaliacao) >= @periodoInicio");
             if (periodoFim.HasValue)
                 query.AppendLine("and date(a.data_avaliacao) <= @periodoFim");
-            if (disciplinasId != null && disciplinasId.Length > 0)
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
             {
                 query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
                 query.AppendLine("and aad.excluido =  false");

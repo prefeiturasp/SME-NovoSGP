@@ -30,11 +30,11 @@ namespace SME.SGP.Aplicacao
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
             bool inseridoCJ = false;
             
-            if(aula == null)
+            if(aula.EhNulo())
                 throw new NegocioException("Aula informada não existe");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma informada não encontrada");
 
             var diarioAulaComponente = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, request.ComponenteCurricularId);
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             await MoverRemoverExcluidos(request);
             var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
 
-            if (diarioAulaComponente != null)
+            if (diarioAulaComponente.NaoEhNulo())
             {
                 diarioBordo.Id = diarioAulaComponente.Id;
                 diarioBordo.CriadoEm = diarioAulaComponente.CriadoEm;

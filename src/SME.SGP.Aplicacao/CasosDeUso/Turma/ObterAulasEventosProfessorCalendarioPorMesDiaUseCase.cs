@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
             var eventosDaUeSME = await mediator.Send(new ObterEventosCalendarioProfessorPorMesDiaQuery()
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
-            if (aulasParaVisualizar != null && aulasParaVisualizar.Any())
+            if (aulasParaVisualizar.NaoEhNulo() && aulasParaVisualizar.Any())
             {
                 var codigosComponentesConsiderados = new List<long>();
                 var possuiTerritorio = componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0");

@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
             
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado.");
 
             usuario.ValidarSenha(alterarSenhaDto.NovaSenha);
@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
 
         private AdministradorSuporteDto ObterAdministradorSuporte(SuporteUsuario suporte, Usuario usuarioSimulado)
         {
-            if (suporte != null && suporte.UsuarioPodeReceberSuporte(usuarioSimulado))
+            if (suporte.NaoEhNulo() && suporte.UsuarioPodeReceberSuporte(usuarioSimulado))
             {
                 return new AdministradorSuporteDto
                 {
@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
             var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(loginAtual, perfil, administradorSuporte);
             var permissionamentos = dadosAcesso.Permissoes.ToList();
 
-            if (permissionamentos == null || !permissionamentos.Any())
+            if (permissionamentos.EhNulo() || !permissionamentos.Any())
                 throw new NegocioException("Não foi possível obter os permissionamentos do perfil selecionado");
 
             await servicoAbrangencia.Salvar(loginAtual, perfil, false);
@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new UsuarioReinicioSenhaDto();
 
-            if (usuario != null && string.IsNullOrEmpty(usuario.Email))
+            if (usuario.NaoEhNulo() && string.IsNullOrEmpty(usuario.Email))
                 retorno.DeveAtualizarEmail = true;
             else
             {

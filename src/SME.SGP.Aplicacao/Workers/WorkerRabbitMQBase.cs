@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao.Workers
             this.servicoMensageriaMetricas = servicoMensageriaMetricas ?? throw new ArgumentNullException(nameof(servicoMensageriaMetricas));
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
 
-            if (consumoFilasOptions == null)
+            if (consumoFilasOptions.EhNulo())
                 throw new ArgumentNullException(nameof(consumoFilasOptions));
 
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao.Workers
 
         private ulong GetRetryCount(IBasicProperties properties)
         {
-            if (properties.Headers != null && properties.Headers.ContainsKey("x-death"))
+            if (properties.Headers.NaoEhNulo() && properties.Headers.ContainsKey("x-death"))
             {
                 var deathProperties = (List<object>)properties.Headers["x-death"];
                 var lastRetry = (Dictionary<string, object>)deathProperties[0];

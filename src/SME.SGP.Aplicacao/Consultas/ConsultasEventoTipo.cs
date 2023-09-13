@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 TotalRegistros = retornoQueryPaginada.TotalRegistros
             };
 
-            bool nenhumItemEncontrado = retornoQueryPaginada.Items == null ||
+            bool nenhumItemEncontrado = retornoQueryPaginada.Items.EhNulo() ||
                 !retornoQueryPaginada.Items.Any() ||
                 retornoQueryPaginada.Items.ElementAt(0).Id == 0;
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
         {
             var entidade = repositorioEventoTipo.ObterPorId(id);
 
-            if (entidade == null || entidade.Id == 0) return null;
+            if (entidade.EhNulo() || entidade.Id == 0) return null;
 
             if (entidade.Excluido) return null;
 
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
         private EventoTipoDto EntidadeParaDto(EventoTipo eventoTipo)
         {
-            if (eventoTipo == null || eventoTipo.Id == 0)
+            if (eventoTipo.EhNulo() || eventoTipo.Id == 0)
                 return null;
 
             var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(eventoTipo.Id);

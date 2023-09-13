@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             if (aulaPrevistaDto.BimestresQuantidade.Count() > 4)
                 throw new NegocioException("O número de bimestres passou do limite padrão. Favor entrar em contato com o suporte.");
 
-            if (aulaPrevistaDto.BimestresQuantidade != null)
+            if (aulaPrevistaDto.BimestresQuantidade.NaoEhNulo())
             {
                 var aulasPrevistasBimestres = await mediator.Send(new ObterAulaPrevistaBimestrePorAulaPrevistaIdBimestreQuery(aulaPrevista.Id, aulaPrevistaDto.BimestresQuantidade.Select(a => a.Bimestre).ToArray()));
                 foreach (var bimestreQuantidadeDto in aulaPrevistaDto.BimestresQuantidade)
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
         {
             var bimestre = bimestres.FirstOrDefault();
 
-            return aulaPrevista == null ? null : new AulasPrevistasDadasAuditoriaDto
+            return aulaPrevista.EhNulo() ? null : new AulasPrevistasDadasAuditoriaDto
             {
                 Id = aulaPrevista.Id,
                 AlteradoEm = bimestre?.AlteradoEm ?? DateTime.MinValue,
@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<string>();
 
-            if (aula != null)
+            if (aula.NaoEhNulo())
             {
                 if (aula.Previstas != (aula.CriadasCJ + aula.CriadasTitular) && aula.Fim.Date >= DateTime.Today)
                     mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada!");
 
             return turma;
@@ -189,7 +189,7 @@ namespace SME.SGP.Aplicacao
         {
             var tipoCalendario = await repositorioTipoCalendarioConsulta.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
 
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo calendário não encontrado!");
 
             return tipoCalendario;
@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
 
         private AulaPrevista MapearParaDominio(AulaPrevistaDto aulaPrevistaDto, AulaPrevista aulaPrevista, long tipoCalendarioId)
         {
-            if (aulaPrevista == null)
+            if (aulaPrevista.EhNulo())
             {
                 aulaPrevista = new AulaPrevista();
             }
@@ -211,7 +211,7 @@ namespace SME.SGP.Aplicacao
                                                AulaPrevistaBimestreQuantidadeDto bimestreQuantidadeDto,
                                                AulaPrevistaBimestre aulaPrevistaBimestre)
         {
-            if (aulaPrevistaBimestre == null)
+            if (aulaPrevistaBimestre.EhNulo())
             {
                 aulaPrevistaBimestre = new AulaPrevistaBimestre();
             }

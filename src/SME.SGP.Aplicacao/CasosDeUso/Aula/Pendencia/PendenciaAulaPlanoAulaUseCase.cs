@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                     filtro.DreId, filtro.UeId)));
 
                 aulas = await RemoverAulasComFechamentoTurmaDisciplinaProcessado(aulas);
-                if (aulas != null && aulas.Any())
+                if (aulas.NaoEhNulo() && aulas.Any())
                     await RegistraPendencia(aulas, TipoPendencia.PlanoAula);
              
                 await VerificaPendenciaAulaGeradaParaInfantil(filtro.DreId, filtro.UeId);
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<Aula>> RemoverAulasComFechamentoTurmaDisciplinaProcessado(IEnumerable<Aula> aulas)
         {
-            return aulas != null ? await mediator.Send(new ObterAulasPendenciaSemFechamentoTurmaDiscplinaProcessadoQuery(aulas)) : null;
+            return aulas.NaoEhNulo() ? await mediator.Send(new ObterAulasPendenciaSemFechamentoTurmaDiscplinaProcessadoQuery(aulas)) : null;
         }
 
         private async Task VerificaPendenciaAulaGeradaParaInfantil(long dreId, long ueId)

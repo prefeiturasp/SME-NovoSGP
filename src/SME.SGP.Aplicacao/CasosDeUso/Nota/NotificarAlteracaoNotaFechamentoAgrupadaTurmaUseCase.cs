@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
             int? bimestre = dados.FirstOrDefault().Bimestre;
 
-            if (bimestre != null)
+            if (bimestre.NaoEhNulo())
                 wfAprovacao.AdicionarNivel(Cargo.CP);
             else
             {

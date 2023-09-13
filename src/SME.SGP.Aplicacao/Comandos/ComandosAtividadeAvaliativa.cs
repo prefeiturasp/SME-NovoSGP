@@ -245,7 +245,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendarioId = aula.FirstOrDefault().TipoCalendarioId;
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAvaliacao);
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException("Não foi encontrado nenhum período escolar para essa data.");
 
             if (await AtividadeImportada(filtro.Id))
@@ -292,7 +292,7 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any())
+            if (atividadeAvaliativaDto.TurmasParaCopiar.NaoEhNulo() && atividadeAvaliativaDto.TurmasParaCopiar.Any())
             {
                 mensagens.AddRange(await ValidarCopias(atividadeAvaliativaDto, usuarioRf));
 
@@ -405,12 +405,12 @@ namespace SME.SGP.Aplicacao
 
             var turmasAtribuidasAoProfessor = new List<TurmaDto>();
 
-            if (turmasAtribuidasAoProfessorTitular != null && turmasAtribuidasAoProfessorTitular.Any())
+            if (turmasAtribuidasAoProfessorTitular.NaoEhNulo() && turmasAtribuidasAoProfessorTitular.Any())
                 turmasAtribuidasAoProfessor.AddRange(turmasAtribuidasAoProfessorTitular
                           .Select(x => new TurmaDto() { CodigoTurma = x.CodTurma, NomeTurma = x.NomeTurma, Ano = x.Ano })
                           .ToList());
 
-            if (turmasAtribuidasAoProfessorCJ != null && turmasAtribuidasAoProfessorCJ.Any())
+            if (turmasAtribuidasAoProfessorCJ.NaoEhNulo() && turmasAtribuidasAoProfessorCJ.Any())
                 turmasAtribuidasAoProfessor.AddRange(turmasAtribuidasAoProfessorCJ
                       .Select(x => new TurmaDto()
                       {
@@ -480,7 +480,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var turmasAtribuidasAoProfessor = await ObterTurmasAtribuidasAoProfessor(codigoRf, long.Parse(atividadeAvaliativaDto.DisciplinasId[0]));
 
-            if (atividadeAvaliativaDto.TurmasParaCopiar != null && atividadeAvaliativaDto.TurmasParaCopiar.Any() && usuario.EhProfessor())
+            if (atividadeAvaliativaDto.TurmasParaCopiar.NaoEhNulo() && atividadeAvaliativaDto.TurmasParaCopiar.Any() && usuario.EhProfessor())
             {
                 var idsTurmasSelecionadas = atividadeAvaliativaDto.TurmasParaCopiar.Select(x => x.TurmaId).ToList();
                 idsTurmasSelecionadas.Add(atividadeAvaliativaDto.TurmaId);
@@ -519,7 +519,7 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
 
-            if (turmasAtribuidasAoProfessor != null && idsTurmasSelecionadas.Any(c => !turmasAtribuidasAoProfessor.Select(t => t.CodigoTurma.ToString()).Contains(c)))
+            if (turmasAtribuidasAoProfessor.NaoEhNulo() && idsTurmasSelecionadas.Any(c => !turmasAtribuidasAoProfessor.Select(t => t.CodigoTurma.ToString()).Contains(c)))
                 mensagens.Add(new RetornoCopiarAtividadeAvaliativaDto("Somente é possível copiar a atividade avaliativa para turmas atribuidas ao professor"));
 
             return mensagens;

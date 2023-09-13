@@ -29,10 +29,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioEscolaAquiDto relatorioBoletimEscolaAquiDto)
         {
             int usuarioLogadoId = 1;
-            if (repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo) == null)
+            if (repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a DRE");
 
-            if (repositorioUe.ObterPorCodigo(relatorioBoletimEscolaAquiDto.UeCodigo) == null)
+            if (repositorioUe.ObterPorCodigo(relatorioBoletimEscolaAquiDto.UeCodigo).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE");
 
             if (!string.IsNullOrEmpty(relatorioBoletimEscolaAquiDto.TurmaCodigo))
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 int codigoTurma;
                 if (int.TryParse(relatorioBoletimEscolaAquiDto.TurmaCodigo, out codigoTurma) && codigoTurma <= 0)
                     relatorioBoletimEscolaAquiDto.TurmaCodigo = String.Empty;
-                else if (await repositorioTurma.ObterPorCodigo(relatorioBoletimEscolaAquiDto.TurmaCodigo) == null)
+                else if ((await repositorioTurma.ObterPorCodigo(relatorioBoletimEscolaAquiDto.TurmaCodigo)).EhNulo())
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
 

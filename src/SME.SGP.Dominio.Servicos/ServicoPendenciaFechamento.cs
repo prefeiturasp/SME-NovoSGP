@@ -59,7 +59,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<int> ValidarAulasReposicaoPendente(long fechamentoId, string turmaCodigo, string turmaNome, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre, long turmaId)
         {
             var aulasPendentes = repositorioAula.ObterAulasReposicaoPendentes(turmaCodigo, disciplinaId.ToString(), inicioPeriodo, fimPeriodo);
-            if (aulasPendentes != null && aulasPendentes.Any())
+            if (aulasPendentes.NaoEhNulo() && aulasPendentes.Any())
             {
                 var componenteCurricular = await BuscaInformacoesDaDisciplina(disciplinaId);
 
@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio.Servicos
             var professoresTitularesPorTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turmaCodigo));
             var professorTitularPorTurmaEDisciplina = professoresTitularesPorTurma.FirstOrDefault(o => o.DisciplinasId.Contains(disciplinaId));
 
-            if (professorTitularPorTurmaEDisciplina == null)
+            if (professorTitularPorTurmaEDisciplina.EhNulo())
                 throw new NegocioException($"Não existe professor titular para esta turma/disciplina {turmaCodigo}/{disciplinaId}");
 
             return professorTitularPorTurmaEDisciplina;
@@ -106,7 +106,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
 
-            if (componenteCurricular == null)
+            if (componenteCurricular.EhNulo())
                 throw new NegocioException("Componente curricular não encontrado.");
 
             return componenteCurricular;
@@ -145,7 +145,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     var professorTitularAtualDaTurma = professoresTitularesDaTurma.FirstOrDefault(p => p.DisciplinasId.Any(d => d == long.Parse(aula.DisciplinaId)));
 
-                    professor = professorTitularAtualDaTurma != null && professor.CodigoRf != professorTitularAtualDaTurma.ProfessorRf
+                    professor = professorTitularAtualDaTurma.NaoEhNulo() && professor.CodigoRf != professorTitularAtualDaTurma.ProfessorRf
                         ? new Usuario()
                         {
                             CodigoRf = professorTitularAtualDaTurma.ProfessorRf,
@@ -227,10 +227,10 @@ namespace SME.SGP.Dominio.Servicos
                 
             var registrosAulasSemFrequencia = (await ObterAulasValidasParaPendencia(registrosAulas, fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento)).ToList();
 
-            if (registrosAulasSemFrequencia != null && registrosAulasSemFrequencia.Any())
+            if (registrosAulasSemFrequencia.NaoEhNulo() && registrosAulasSemFrequencia.Any())
             {
                 var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
-                if (componenteCurricular == null)
+                if (componenteCurricular.EhNulo())
                     throw new NegocioException("Componente curricular não encontrado.");
 
                 var aulasNormais = registrosAulasSemFrequencia.Where(w => !w.AulaCJ);
@@ -266,11 +266,11 @@ namespace SME.SGP.Dominio.Servicos
 
             var registrosAulasSemPlanoAula = await ObterAulasValidasParaPendencia(registrosAulas, fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
 
-            if (registrosAulasSemPlanoAula != null && registrosAulasSemPlanoAula.Any())
+            if (registrosAulasSemPlanoAula.NaoEhNulo() && registrosAulasSemPlanoAula.Any())
             {
                 var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
 
-                if (componenteCurricular == null)
+                if (componenteCurricular.EhNulo())
                     throw new NegocioException("Componente curricular não encontrado.");
 
                 var mensagem = new StringBuilder($"A aulas de {componenteCurricular.Nome} da turma {turma.Nome} a seguir estão sem plano de aula registrado até a data do fechamento:<br>");
@@ -306,7 +306,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var registrosAvaliacoesSemNotaParaNenhumAluno = await ObterAtividadeesValidasParaPendencia(registrosAvaliacoes, fechamentoId, TipoPendencia.AvaliacaoSemNotaParaNenhumAluno);
 
-            if (registrosAvaliacoesSemNotaParaNenhumAluno != null && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
+            if (registrosAvaliacoesSemNotaParaNenhumAluno.NaoEhNulo() && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
                 var mensagemHtml = new StringBuilder($"<table><tr class=\"nao-exibir\"><td colspan=\"3\">As avaliações a seguir não tiveram notas lançadas para nenhum aluno:</td></tr>");
@@ -368,7 +368,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!string.IsNullOrWhiteSpace(rfConsiderado))
                 {
                     var professor = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rfConsiderado).Result;
-                    if (professor == null)
+                    if (professor.EhNulo())
                         throw new NegocioException($"Professor com RF {rfConsiderado} não encontrado.");
 
                     yield return (professorRF.codigoTurma, professor, professorRF.disciplnaId, false);
@@ -430,7 +430,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task GerarPendenciaFechamentoAula(long pendenciaFechamentoId, IEnumerable<long> idsAula)
         {
-            if (pendenciaFechamentoId > 0 && idsAula != null && idsAula.Any())
+            if (pendenciaFechamentoId > 0 && idsAula.NaoEhNulo() && idsAula.Any())
             {
                 foreach(var idAula in idsAula)
                 {
@@ -441,7 +441,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task GerarPendenciaFechamentoAtividadeAvaliativa(long pendenciaFechamentoId, IEnumerable<long> idsAtividadeAvaliativa)
         {
-            if (pendenciaFechamentoId > 0 && idsAtividadeAvaliativa != null && idsAtividadeAvaliativa.Any())
+            if (pendenciaFechamentoId > 0 && idsAtividadeAvaliativa.NaoEhNulo() && idsAtividadeAvaliativa.Any())
             {
                 foreach (var idAtividadeAvaliativa in idsAtividadeAvaliativa)
                 {
@@ -461,7 +461,7 @@ namespace SME.SGP.Dominio.Servicos
             var auditoriaDto = await AtualizarPendencia(pendenciaId, SituacaoPendencia.Aprovada);
 
             var pendenciaFechamento = await repositorioPendenciaFechamento.ObterPorPendenciaId(pendenciaId);
-            if (pendenciaFechamento == null)
+            if (pendenciaFechamento.EhNulo())
                 throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.VerificaPendenciasFechamentoTurma,
@@ -478,7 +478,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
         {
             var pendencia = repositorioPendencia.ObterPorId(pendenciaId);
-            if (pendencia == null)
+            if (pendencia.EhNulo())
                 throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
 
             pendencia.Situacao = situacaoPendencia;
@@ -516,7 +516,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var registrosNotasAlteradas = await repositorioFechamentoNota.ObterNotasEmAprovacaoPorFechamento(fechamentoId);
 
-            if (registrosNotasAlteradas != null && registrosNotasAlteradas.Any())
+            if (registrosNotasAlteradas.NaoEhNulo() && registrosNotasAlteradas.Any())
             {
                 var mensagem = $"Notas de fechamento alteradas fora do ano de vigência da turma {turmaCodigo}. Necessário aprovação do workflow";
 

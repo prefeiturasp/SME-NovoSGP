@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
             var diarioBordoTurma = await mediator.Send(new ObterDiariosDeBordoComDevolutivasPorAnoLetivoTurmaQuery(filtro.TurmaId, filtro.AnoLetivo));
                 
-            if (diarioBordoTurma != null)
+            if (diarioBordoTurma.NaoEhNulo())
             {
                 var consolidacaoDevolutiva = await mediator.Send(new ObterConsolidacaoDevolutivasPorTurmaIdQuery(filtro.TurmaId)) ?? new ConsolidacaoDevolutivas();
 
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 consolidacaoDevolutiva.TurmaId = diarioBordoTurma.TurmaId;
                 
                 var periodoDeDiasDevolutivas = await mediator.Send(new ObterParametroSistemaPorTipoQuery(Dominio.TipoParametroSistema.PeriodoDeDiasDevolutiva));
-                if (periodoDeDiasDevolutivas == null)
+                if (periodoDeDiasDevolutivas.EhNulo())
                     return false;
 
                 if (diarioBordoTurma.QtdeDiarioBordoRegistrados >= int.Parse(periodoDeDiasDevolutivas))

@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PeriodoEscolar> Handle(ObterPeriodoEscolarAtualQuery request, CancellationToken cancellationToken)
         {
             var turma = await _repositorioTurmaConsulta.ObterPorId(request.TurmaId);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             var nomeChave = $"periodo-escolar-atual-{turma.ModalidadeTipoCalendario}-{request.DataReferencia.Date}";

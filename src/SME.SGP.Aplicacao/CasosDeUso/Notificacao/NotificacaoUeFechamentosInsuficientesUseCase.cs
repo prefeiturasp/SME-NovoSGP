@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFechamentosInsuficientesNotificacao, anoAtual));
 
-            if (parametro == null)
+            if (parametro.EhNulo())
                 throw new NegocioException("Parâmetro de percentual de fechamentos insuficientes para notificação da UE não cadastrado.");
 
             return double.Parse(parametro.Valor);

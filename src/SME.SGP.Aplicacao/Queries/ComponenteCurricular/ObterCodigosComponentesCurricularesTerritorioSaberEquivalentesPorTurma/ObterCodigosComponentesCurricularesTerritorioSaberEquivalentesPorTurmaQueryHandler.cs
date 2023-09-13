@@ -30,10 +30,10 @@ namespace SME.SGP.Aplicacao
                     .FirstOrDefault(cp => cp.Codigo == request.CodigoComponenteBase ||
                                           cp.CodigoComponenteTerritorioSaber > 0 && cp.CodigoComponenteTerritorioSaber == request.CodigoComponenteBase);
 
-                if (componenteProfessorCorrespondente != null && !componenteProfessorCorrespondente.TerritorioSaber)
+                if (componenteProfessorCorrespondente.NaoEhNulo() && !componenteProfessorCorrespondente.TerritorioSaber)
                     return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
-                if (componenteProfessorCorrespondente == null)
+                if (componenteProfessorCorrespondente.EhNulo())
                     return new (string, string)[] { (request.CodigoComponenteBase.ToString(), request.Professor) };
 
                 return new (string, string)[] { (
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(new long[] { request.CodigoComponenteBase }, request.CodigoTurma));
                 
-            if (disciplinasEOL == null || !disciplinasEOL.Any())
+            if (disciplinasEOL.EhNulo() || !disciplinasEOL.Any())
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
             if (PossuiTerritorioSaber(disciplinasEOL))
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             var componentesTurmaCorrespondentes = componentesTurma
                 .Where(ct => ct.CodigoComponenteTerritorioSaber.Equals(request.CodigoComponenteBase));
 
-            if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
+            if (componentesTurmaCorrespondentes.EhNulo() || !componentesTurmaCorrespondentes.Any())
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
             long turmaid = request.TurmaId > 0 ? request.TurmaId : 0;
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaid));
-            bool existemProfessoresTitulares = professoresTitulares != null && professoresTitulares.Any(pt => !string.IsNullOrEmpty(pt.ProfessorRf));
+            bool existemProfessoresTitulares = professoresTitulares.NaoEhNulo() && professoresTitulares.Any(pt => !string.IsNullOrEmpty(pt.ProfessorRf));
 
             return componentesTurmaCorrespondentes
                 .Select(ct => (ct.Codigo.ToString(), ct.Professor ?? (existemProfessoresTitulares

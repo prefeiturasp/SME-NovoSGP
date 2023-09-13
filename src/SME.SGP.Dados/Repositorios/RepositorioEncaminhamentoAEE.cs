@@ -111,7 +111,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and ue.id = @ueId ");
             if (turmaId > 0)
                 sql.AppendLine(" and t.id = @turmaId ");
-            if (turmasCodigos != null && turmaId == 0)
+            if (turmasCodigos.NaoEhNulo() && turmaId == 0)
                 sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
 
             sql.AppendLine(" ) ");
@@ -129,7 +129,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("                and t2.ue_id = @ueId ");
             if (turmaId > 0)
                 sql.AppendLine("                and t2.id = @turmaId ");
-            if (turmasCodigos != null && turmaId == 0)
+            if (turmasCodigos.NaoEhNulo() && turmaId == 0)
                 sql.AppendLine("                and t2.turma_id = ANY(@turmasCodigos) ");
 
             sql.AppendLine("              limit 1)) ");
@@ -163,7 +163,7 @@ namespace SME.SGP.Dados.Repositorios
                     encaminhamento = encaminhamentoAEE;
 
                 var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
-                if (secao == null)
+                if (secao.EhNulo())
                 {
                     encaminhamentoSecao.SecaoEncaminhamentoAEE = secaoEncaminhamento;
                     secao = encaminhamentoSecao;
@@ -171,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
                 }
 
                 var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoAEE.Id);
-                if (questaoEncaminhamento == null)
+                if (questaoEncaminhamento.EhNulo())
                 {
                     questaoEncaminhamento = questaoEncaminhamentoAEE;
                     questaoEncaminhamento.Questao = questao;
@@ -179,7 +179,7 @@ namespace SME.SGP.Dados.Repositorios
                 }
 
                 var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
-                if (resposta == null)
+                if (resposta.EhNulo())
                 {
                     resposta = respostaEncaminhamento;
                     resposta.Resposta = opcaoResposta;

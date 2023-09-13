@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                                                                request.RealizarAgrupamentoComponente,
                                                                request.ChecaMotivoDisponibilizacao)));
 
-            if (resultado == null)
+            if (resultado.EhNulo())
                 return Enumerable.Empty<ComponenteCurricularEol>();
 
             return resultado;

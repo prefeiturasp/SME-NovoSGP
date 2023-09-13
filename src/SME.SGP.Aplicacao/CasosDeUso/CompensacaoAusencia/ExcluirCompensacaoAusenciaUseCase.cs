@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (listaCompensacaoDescricao != null && listaCompensacaoDescricao.Any())
+            if (listaCompensacaoDescricao.NaoEhNulo() && listaCompensacaoDescricao.Any())
             {
                 foreach (var item in listaCompensacaoDescricao)
                 {

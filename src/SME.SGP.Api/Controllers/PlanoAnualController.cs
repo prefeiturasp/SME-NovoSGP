@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterObjetivos(FiltroPlanoAnualDisciplinaDto filtro, [FromServices]IConsultasPlanoAnual consultasPlanoAnual)
         {
             var objetivosPlano = await consultasPlanoAnual.ObterObjetivosEscolaTurmaDisciplina(filtro);
-            if (objetivosPlano != null)
+            if (objetivosPlano.NaoEhNulo())
                 return Ok(objetivosPlano);
             else
                 return StatusCode(204);
@@ -74,7 +75,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultasPlanoAnual.ObterTurmasParaCopia(turmaId, componenteCurricular, consideraHistorico);
 
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);

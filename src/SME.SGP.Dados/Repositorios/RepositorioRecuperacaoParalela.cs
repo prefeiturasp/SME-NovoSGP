@@ -209,11 +209,11 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" and dre.dre_id = @dreId");
             if (!string.IsNullOrEmpty(ueId) && ueId != "0")
                 query.AppendLine(" and ue.ue_id = @ueId");
-            if (cicloId != null && cicloId != 0)
+            if (cicloId.NaoEhNulo() && cicloId != 0)
                 query.AppendLine(" and tca.tipo_ciclo_id = @cicloId");
             if (!string.IsNullOrEmpty(ano) && ano != "0")
                 query.AppendLine("and turma.ano = @ano");
-            if (periodoId != null && periodoId != 0)
+            if (periodoId.NaoEhNulo() && periodoId != 0)
                 query.AppendLine(" and rpp.periodo_recuperacao_paralela_id = @periodoId");
             if (!string.IsNullOrEmpty(turmaId) && turmaId != "0")
                 query.AppendLine(" and turma.turma_id = @turmaId");

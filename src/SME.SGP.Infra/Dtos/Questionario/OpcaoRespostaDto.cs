@@ -18,7 +18,7 @@ namespace SME.SGP.Infra
     {
         public static bool NaoNuloEContemRegistros(this IEnumerable<OpcaoRespostaDto> opcoes)
         {
-            return opcoes != null && opcoes.Any();
+            return opcoes.NaoEhNulo() && opcoes.Any();
         }
     }
 

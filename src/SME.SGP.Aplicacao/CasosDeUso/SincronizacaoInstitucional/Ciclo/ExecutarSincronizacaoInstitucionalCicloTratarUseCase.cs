@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             var cicloEOL = param.ObterObjetoMensagem<CicloRetornoDto>();
 
-            if (cicloEOL == null)
+            if (cicloEOL.EhNulo())
                 throw new NegocioException($"Não foi possível inserir o ciclo. A mensagem enviada é inválida.");
 
             var cicloSgp = await mediator.Send(new ObterCicloPorCodigoQuery(cicloEOL.Codigo));

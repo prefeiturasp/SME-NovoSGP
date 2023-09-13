@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public static async Task<List<SemestreAcompanhamentoDto>> Executar(IMediator mediator, string turmaCodigo)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("A turma informada não foi encontrada!");
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);

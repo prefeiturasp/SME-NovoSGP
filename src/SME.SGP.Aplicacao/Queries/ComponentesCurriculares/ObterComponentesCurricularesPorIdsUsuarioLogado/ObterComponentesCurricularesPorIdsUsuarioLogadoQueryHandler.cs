@@ -56,10 +56,10 @@ namespace SME.SGP.Aplicacao
                     var disciplinaCorrespondente = disciplinasUsuario
                         .FirstOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));
 
-                    if (disciplinaCorrespondente != null)
+                    if (disciplinaCorrespondente.NaoEhNulo())
                     {
                         var registraFrequencia = await mediator
-                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente != null && disciplinaCorrespondente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo));
+                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente.NaoEhNulo() && disciplinaCorrespondente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo));
 
                         disciplinasRetorno.Add(new DisciplinaDto()
                         {
@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
                         var disciplina = disciplinasAgrupadas.FirstOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
                             .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
 
-                        if (disciplina != null)
+                        if (disciplina.NaoEhNulo())
                         {
                             disciplina.RegistraFrequencia = await mediator
                                 .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
                             if (disciplina.GrupoMatrizId == 0 || String.IsNullOrEmpty(disciplina.GrupoMatrizNome))
                             {
                                 var dadosGrupoMatriz = await mediator.Send(new ObterComponenteCurricularGrupoMatrizPorComponenteIdQuery() { ComponenteCurricularId = disciplina.CodigoComponenteCurricular });
-                                if (dadosGrupoMatriz != null)
+                                if (dadosGrupoMatriz.NaoEhNulo())
                                 {
                                     disciplina.GrupoMatrizId = dadosGrupoMatriz.GrupoMatrizId;
                                     disciplina.GrupoMatrizNome = dadosGrupoMatriz.GrupoMatrizNome ?? "";

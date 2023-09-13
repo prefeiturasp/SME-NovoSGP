@@ -76,7 +76,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await servicoUsuario.ObterPerfisUsuario(login);
 
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
@@ -136,7 +136,7 @@ namespace SME.SGP.Api.Controllers
         {
             var tokenRetorno = await comandosUsuario.RevalidarLogin();
 
-            if (tokenRetorno == null)
+            if (tokenRetorno.EhNulo())
                 return StatusCode(401);
 
             return Ok(tokenRetorno);

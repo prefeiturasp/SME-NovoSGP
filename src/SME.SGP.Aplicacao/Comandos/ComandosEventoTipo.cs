@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
         {
             var eventoTipo = repositorioEventoTipo.ObterPorId(id);
 
-            if (eventoTipo == null || eventoTipo.Id == 0)
+            if (eventoTipo.EhNulo() || eventoTipo.Id == 0)
                 throw new NegocioException("Não é possivel editar um tipo de evento não cadastrado");
 
             var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(id);

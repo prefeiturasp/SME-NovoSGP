@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var retornoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache, "Obter fechamentos da turma");
 
-            if (retornoCache != null)
+            if (retornoCache.NaoEhNulo())
                 return retornoCache;
 
             var retornoDb = await repositorioFechamentoNota.ObterPorFechamentosTurma(request.Ids);

@@ -46,8 +46,8 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync< QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, QuestaoEncaminhamentoNAAPA> (query,
                                         (questaoNAAPA, respostaNAAPA) =>
                                         {
-                                            if (retorno == null) retorno = questaoNAAPA;
-                                            if (respostaNAAPA != null) retorno.Respostas.Add(respostaNAAPA);
+                                            if (retorno.EhNulo()) retorno = questaoNAAPA;
+                                            if (respostaNAAPA.NaoEhNulo()) retorno.Respostas.Add(respostaNAAPA);
                                             return retorno;
 
                                         },
@@ -73,8 +73,8 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, QuestaoEncaminhamentoNAAPA>(query,
                                         (questaoNAAPA, respostaNAAPA) =>
                                         {
-                                            if (retorno == null) retorno = questaoNAAPA;
-                                            if (respostaNAAPA != null) retorno.Respostas.Add(respostaNAAPA);
+                                            if (retorno.EhNulo()) retorno = questaoNAAPA;
+                                            if (respostaNAAPA.NaoEhNulo()) retorno.Respostas.Add(respostaNAAPA);
                                             return retorno;
 
                                         },

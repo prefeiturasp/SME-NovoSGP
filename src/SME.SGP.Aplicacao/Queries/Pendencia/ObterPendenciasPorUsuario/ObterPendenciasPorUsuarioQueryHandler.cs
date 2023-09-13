@@ -192,7 +192,7 @@ namespace SME.SGP.Aplicacao
 
             var pendenciaProfessor = pendenciasProfessorBimestre.FirstOrDefault();
 
-            if (pendenciaProfessor == null)
+            if (pendenciaProfessor.EhNulo())
                 return pendenciasProfessor;
 
             var pendenciaFormatada = new PendenciaDto
@@ -327,7 +327,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new ObterTurmaDaPendenciaDevolutivaQuery(pendencia.Id)) :
                 null;
 
-            if (turma == null)
+            if (turma.EhNulo())
                 return "";
             
             return await ObterDescricaoBimestrePendencia(pendencia.Id, turma.Id, pendencia.CriadoEm);
@@ -340,7 +340,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private static string ObterNomeTurma(Turma turma)
-            => turma != null ? $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}" : "";
+            => turma.NaoEhNulo() ? $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}" : "";
 
         private static string ObterNomeBimestre(int bimestre)
             => bimestre == 0 ? "Final" : $"{bimestre}º Bimestre";
@@ -356,7 +356,7 @@ namespace SME.SGP.Aplicacao
 
             var pendenciaProfessor = pendenciasProfessor.FirstOrDefault();
 
-            if (pendenciaProfessor == null)
+            if (pendenciaProfessor.EhNulo())
                 return pendenciasCP;
 
             var pendenciaFormatada = new PendenciaDto

@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
             {
                 var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.FechamentoTurma.Turma.CodigoTurma, request.CodigoAluno, consideraInativos: true), cancellationToken);
 
-                if (aluno == null)
+                if (aluno.EhNulo())
                     throw new NegocioException($"Não foram encontrados alunos para a turma {request.FechamentoTurma.Turma.CodigoTurma} no Eol");
 
                 var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()

@@ -54,9 +54,9 @@ namespace SME.SGP.Aplicacao
                 double? notaAnterior = null;
                 long? conceitoIdAnterior = null;
 
-                await MoverJustificativaConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseNota == null ? string.Empty : conselhoClasseNota.Justificativa);
+                await MoverJustificativaConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseNota.EhNulo() ? string.Empty : conselhoClasseNota.Justificativa);
 
-                if (conselhoClasseNota == null)
+                if (conselhoClasseNota.EhNulo())
                 {
                     conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAlunoId);
                 }
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
                     if (request.ConselhoClasseNotaDto.Nota.HasValue)
                     {
                         // Gera histórico de alteração
-                        if (conselhoClasseNota.Nota != null && conselhoClasseNota.Nota != request.ConselhoClasseNotaDto.Nota.Value)
+                        if (conselhoClasseNota.Nota.NaoEhNulo() && conselhoClasseNota.Nota != request.ConselhoClasseNotaDto.Nota.Value)
                             await mediator.Send(new SalvarHistoricoNotaConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.Nota.Value, request.ConselhoClasseNotaDto.Nota.Value), cancellationToken);
 
                         conselhoClasseNota.Nota = request.ConselhoClasseNotaDto.Nota.Value;
@@ -79,12 +79,12 @@ namespace SME.SGP.Aplicacao
                     // Gera histórico de alteração
                     if (request.ConselhoClasseNotaDto.Conceito.HasValue)
                     {
-                        if (conselhoClasseNota.ConceitoId != null && conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
+                        if (conselhoClasseNota.ConceitoId.NaoEhNulo() && conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, request.ConselhoClasseNotaDto.Conceito.Value), cancellationToken);
                     }
                     else
                     {
-                        if (conselhoClasseNota.ConceitoId != null && request.ConselhoClasseNotaDto.Conceito == null)
+                        if (conselhoClasseNota.ConceitoId.NaoEhNulo() && request.ConselhoClasseNotaDto.Conceito.EhNulo())
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, null), cancellationToken);
                     }
                     conselhoClasseNota.ConceitoId = request.ConselhoClasseNotaDto.Conceito.HasValue ? request.ConselhoClasseNotaDto.Conceito.Value : null;
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
             {
                 var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.Turma.CodigoTurma, request.CodigoAluno, consideraInativos: true), cancellationToken);
 
-                if (aluno == null)
+                if (aluno.EhNulo())
                     throw new NegocioException($"Não foram encontrados alunos para a turma {request.Turma.CodigoTurma} no Eol");
 
                 var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()

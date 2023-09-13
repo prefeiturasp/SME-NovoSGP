@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
                           where cca.aluno_codigo = @alunoCodigo
                             and cca.conselho_classe_id = @conselhoClasseId";
-            if (componenteCurricularId != null)
+            if (componenteCurricularId.NaoEhNulo())
                 query += @"  and ccn.componente_curricular_codigo = @componenteCurricularId";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { conselhoClasseId, alunoCodigo, componenteCurricularId });
@@ -251,7 +251,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var condicaoBimestre = string.Empty;
 
-            if (bimestres != null && bimestres.Any())
+            if (bimestres.NaoEhNulo() && bimestres.Any())
                 condicaoBimestre = $" and ({(bimestres.Contains(0) ? " bimestre is null or " : "")}  bimestre = any(@bimestres)) ";
 
             var query = $@"select distinct * from (

@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
 
         private IndicativoFrequenciaDto ObterIndicativoFrequencia(FrequenciaAluno frequenciaAluno, int percentualAlerta, int percentualCritico, bool turmaComFrequenciasRegistradas)
         {
-            var percentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : double.MinValue;
+            var percentualFrequencia = frequenciaAluno.NaoEhNulo() ? frequenciaAluno.PercentualFrequencia : double.MinValue;
 
             var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : FrequenciaAluno.FormatarPercentual(percentualFrequencia);
 

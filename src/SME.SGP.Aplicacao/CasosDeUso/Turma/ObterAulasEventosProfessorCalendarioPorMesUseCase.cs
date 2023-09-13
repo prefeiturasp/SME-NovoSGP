@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
             var aulas = await mediator.Send(new ObterAulasCalendarioProfessorPorMesQuery()

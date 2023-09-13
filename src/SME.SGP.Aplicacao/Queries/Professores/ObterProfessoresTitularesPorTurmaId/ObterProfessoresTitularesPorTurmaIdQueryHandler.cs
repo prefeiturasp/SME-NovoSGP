@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
             
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.TURMA_NAO_ENCONTRADA_POR_CODIGO);
 
             StringBuilder url = new StringBuilder();

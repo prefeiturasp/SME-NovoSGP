@@ -58,7 +58,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarUe(Ue ue)
         {
-            if (ue != null)
+            if (ue.NaoEhNulo())
             {
                 Ue = ue;
                 UeId = ue.Id;

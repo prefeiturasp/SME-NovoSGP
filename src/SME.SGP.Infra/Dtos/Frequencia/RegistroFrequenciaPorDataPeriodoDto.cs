@@ -40,7 +40,7 @@ namespace SME.SGP.Infra
                 .OrderByDescending(a => a.AlteradoEm > a.CriadoEm ? a.AlteradoEm : a.CriadoEm)
                 .FirstOrDefault();
 
-            if (ultimoRegistro != null)
+            if (ultimoRegistro.NaoEhNulo())
                 Auditoria = new AuditoriaDto()
                 {
                     Id = ultimoRegistro.RegistroFrequenciaId,

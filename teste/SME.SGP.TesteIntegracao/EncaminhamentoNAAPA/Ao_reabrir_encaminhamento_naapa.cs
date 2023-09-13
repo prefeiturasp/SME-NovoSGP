@@ -247,7 +247,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         private async Task CriarEncaminhamentoNAAPASecao(long[] secaoEncaminhamentoNAAPAIds = null)
         {
-            if (secaoEncaminhamentoNAAPAIds == null)
+            if (secaoEncaminhamentoNAAPAIds.EhNulo())
                 secaoEncaminhamentoNAAPAIds = new long[] { ID_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE };
             foreach (var secaoEncaminhamentoNAAPAId in secaoEncaminhamentoNAAPAIds)
             {

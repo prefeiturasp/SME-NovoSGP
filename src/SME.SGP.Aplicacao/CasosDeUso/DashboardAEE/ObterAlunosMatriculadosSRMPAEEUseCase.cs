@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var alunosMatriculadosEol = await mediator.Send(new ObterAlunosMatriculadosPorAnoLetivoECCEolQuery(param.AnoLetivo, param.DreCodigo, param.UeCodigo, new int[] { 1030, 1310 }));
             if(alunosMatriculadosEol.Any())
             {
-                return param.UeCodigo != null ? MapearParaDtoTurmas(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Turma}")) : MapearParaDto(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"));
+                return param.UeCodigo.NaoEhNulo() ? MapearParaDtoTurmas(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Turma}")) : MapearParaDto(alunosMatriculadosEol.GroupBy(a => $"{a.Modalidade} - {a.Ano}"));
             }
 
             return null;

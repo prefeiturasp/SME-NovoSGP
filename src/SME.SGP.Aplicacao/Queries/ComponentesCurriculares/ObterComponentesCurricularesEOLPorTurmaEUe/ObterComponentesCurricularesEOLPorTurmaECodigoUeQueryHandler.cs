@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var queryParamTurmas = string.Empty;
 
-            if (request.CodigosDeTurmas != null && request.CodigosDeTurmas.Any())
+            if (request.CodigosDeTurmas.NaoEhNulo() && request.CodigosDeTurmas.Any())
             {
                 var codigosTurmas = String.Join("&turmas=", request.CodigosDeTurmas);
                 queryParamTurmas = $"?turmas={codigosTurmas}";

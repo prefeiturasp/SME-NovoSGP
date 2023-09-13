@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, request.NotificacaoId);
             
-            if (workflow == null)
+            if (workflow.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o fluxo de aprovação da notificação {request.NotificacaoId}");
 
             return workflow;

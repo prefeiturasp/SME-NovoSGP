@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
         {
             var evento = await repositorioEvento.ObterEventoAtivoPorId(id);
 
-            if (evento == null)
+            if (evento.EhNulo())
                 return null;
 
             evento.TipoEvento = await repositorioEventoTipo.ObterPorIdAsync(evento.TipoEventoId);
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
 
         private bool EhEventoSME(Evento evento)
         {
-            return evento.UeId == null && evento.DreId == null;
+            return evento.UeId.EhNulo() && evento.DreId.EhNulo();
         }
 
         private IEnumerable<EventoCompletoDto> MapearEventosParaDto(IEnumerable<Evento> items)
@@ -145,7 +145,7 @@ namespace SME.SGP.Aplicacao
 
         private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null, bool? podeAlterarExcluirPorPerfilAbrangencia = null, int[] bimestres = null)
         {
-            return evento == null ? null : new EventoCompletoDto
+            return evento.EhNulo() ? null : new EventoCompletoDto
             {
                 DataFim = evento.DataFim,
                 DataInicio = evento.DataInicio,
@@ -166,8 +166,8 @@ namespace SME.SGP.Aplicacao
                 CriadoRF = evento.CriadoRF,
                 TipoEvento = MapearTipoEvento(evento.TipoEvento),
                 Migrado = evento.Migrado,
-                PodeAlterar = podeAlterar != null ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
-                PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia != null ? podeAlterarExcluirPorPerfilAbrangencia : false,
+                PodeAlterar = podeAlterar.NaoEhNulo() ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
+                PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia.NaoEhNulo() ? podeAlterarExcluirPorPerfilAbrangencia : false,
                 Status = evento.Status,
                 Bimestre = bimestres,
                 DescricaoDreUe = $"{MontarDescricaoDre(evento)} - {MontarDescricaoUe(evento)}"
@@ -177,7 +177,7 @@ namespace SME.SGP.Aplicacao
 
         private string MontarDescricaoDre(Evento evento)
         {
-            if (evento.Dre != null && !string.IsNullOrEmpty(evento.Dre.Abreviacao))
+            if (evento.Dre.NaoEhNulo() && !string.IsNullOrEmpty(evento.Dre.Abreviacao))
             {
                 return $"{evento.Dre.Abreviacao.Replace("-", ":")}";
             }
@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao
         
         private string MontarDescricaoUe(Evento evento)
         {
-            if (evento.Ue != null && !string.IsNullOrEmpty(evento.Ue.Nome))
+            if (evento.Ue.NaoEhNulo() && !string.IsNullOrEmpty(evento.Ue.Nome))
             {
                 return $"UE: {evento.Ue.Nome} ";
             }
@@ -196,7 +196,7 @@ namespace SME.SGP.Aplicacao
 
         private PaginacaoResultadoDto<EventoCompletoDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<Evento> eventosPaginados)
         {
-            if (eventosPaginados == null)
+            if (eventosPaginados.EhNulo())
             {
                 eventosPaginados = new PaginacaoResultadoDto<Evento>();
             }
@@ -210,7 +210,7 @@ namespace SME.SGP.Aplicacao
 
         private EventoTipoDto MapearTipoEvento(EventoTipo tipoEvento)
         {
-            return tipoEvento == null ? null : new EventoTipoDto
+            return tipoEvento.EhNulo() ? null : new EventoTipoDto
             {
                 Descricao = tipoEvento.Descricao,
                 Id = tipoEvento.Id,

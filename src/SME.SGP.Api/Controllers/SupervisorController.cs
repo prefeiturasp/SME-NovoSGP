@@ -98,7 +98,7 @@ namespace SME.SGP.Api.Controllers
         {
             var listaretorno = await consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId, tipoResponsavel);
 
-            if (listaretorno == null)
+            if (listaretorno.EhNulo())
                 return new StatusCodeResult(204);
             else
                 return Ok(listaretorno.OrderByDescending(c => c.CriadoEm));

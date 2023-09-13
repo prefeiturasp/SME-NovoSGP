@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var entidade = repositorio.ObterPorId(id);
             FeriadoCalendarioCompletoDto dto = new FeriadoCalendarioCompletoDto();
             bool possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
-            if (entidade != null)
+            if (entidade.NaoEhNulo())
             {
                 dto.Id = entidade.Id;
                 dto.Nome = entidade.Nome;

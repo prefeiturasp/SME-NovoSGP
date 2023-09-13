@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         public ObterTurmasConsolidacaoFechamentoGeralPorAnoLetivoTiposEscolaQuery(int anoLetivo,  int pagina = 1, int quantidadeRegistrosPorPagina = 1000, params TipoEscola[] tiposEscola)
         {
             AnoLetivo = anoLetivo == 0 ? DateTime.Today.Year : anoLetivo;
-            TiposEscola = tiposEscola == null || !tiposEscola.Any() ? new TipoEscola[] { TipoEscola.EMEF, TipoEscola.EMEFM, TipoEscola.EMEBS, TipoEscola.CEUEMEF } : tiposEscola;
+            TiposEscola = tiposEscola.EhNulo() || !tiposEscola.Any() ? new TipoEscola[] { TipoEscola.EMEF, TipoEscola.EMEFM, TipoEscola.EMEBS, TipoEscola.CEUEMEF } : tiposEscola;
             Pagina = pagina;
             QuantidadeRegistrosPorPagina = quantidadeRegistrosPorPagina;
         }

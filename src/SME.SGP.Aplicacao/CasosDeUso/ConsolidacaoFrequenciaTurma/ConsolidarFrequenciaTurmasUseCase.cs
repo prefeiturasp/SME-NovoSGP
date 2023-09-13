@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ExecutarConsolidacaoFrequencia()
         {
             var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, DateTime.Now.Year));
-            if (parametroExecucao != null)
+            if (parametroExecucao.NaoEhNulo())
                 return parametroExecucao.Ativo;
 
             return false;

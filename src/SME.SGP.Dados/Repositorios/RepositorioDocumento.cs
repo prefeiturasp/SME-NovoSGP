@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
                 .ToList();
 
             var retorno = new PaginacaoResultadoDto<DocumentoResumidoDto> { Items = documentosAgrupados };
-            retorno.TotalRegistros = retorno.Items != null && retorno.Items.Any() ? retorno.Items.Count() : 0;
+            retorno.TotalRegistros = retorno.Items.NaoEhNulo() && retorno.Items.Any() ? retorno.Items.Count() : 0;
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
             retorno.Items = retorno.Items.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
 
@@ -124,7 +124,7 @@ namespace SME.SGP.Dados.Repositorios
             if (classificacaoId > 0)
                 sql.AppendLine("and cd.id = @classificacaoId ");
 
-            if (anoLetivo != null)
+            if (anoLetivo.NaoEhNulo())
                 sql.AppendLine("and d.ano_letivo = @anoLetivo");
         }
 
@@ -198,7 +198,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var documentoCompleto = documentosCompleto.FirstOrDefault();
 
-            if (documentoCompleto == null)
+            if (documentoCompleto.EhNulo())
                 return new ObterDocumentoResumidoDto();
 
             var documentoResumido = new ObterDocumentoResumidoDto
@@ -226,7 +226,7 @@ namespace SME.SGP.Dados.Repositorios
                 TurmaCodigo = documentoCompleto.TurmaCodigo,
                 TurmaNome = documentoCompleto.TurmaNome,
                 Modalidade = documentoCompleto.Modalidade,
-                ModalidadeNome = documentoCompleto.Modalidade == null
+                ModalidadeNome = documentoCompleto.Modalidade.EhNulo()
                     ? null
                     : ((Modalidade)documentoCompleto.Modalidade).Name(),
                 Semestre = documentoCompleto.Semestre,

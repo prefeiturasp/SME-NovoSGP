@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                     FuncionarioCargoDTO funcionarioAtual = null;
                     if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CP || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.AD || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.DIRETOR)
                     {
-                        funcionarioAtual = (dicUePerfilCodigoFuncionarios != null && dicUePerfilCodigoFuncionarios.Any()) 
+                        funcionarioAtual = (dicUePerfilCodigoFuncionarios.NaoEhNulo() && dicUePerfilCodigoFuncionarios.Any()) 
                                             ? dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
                                                                                                     .Value
                                                                                                     .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf))
@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao
                     case PerfilUsuario.DIRETOR:
                         var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, EnumHelper.ObterCargoPorPerfil(uePerfilCodigo.PerfilCodigo)));
     
-                        if (funcionarios != null && funcionarios.Any())
+                        if (funcionarios.NaoEhNulo() && funcionarios.Any())
                             dicUePerfilCodigoFuncionarios.Add($"{uePerfilCodigo.UeId}_{uePerfilCodigo.PerfilCodigo}", funcionarios);
                         
                         break;
@@ -140,7 +140,7 @@ namespace SME.SGP.Aplicacao
                     case PerfilUsuario.CEFAI:
                         var cefais = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreUe.DreCodigo));
 
-                        if (cefais != null && cefais.Any())
+                        if (cefais.NaoEhNulo() && cefais.Any())
                             lstCefais.AddRange(cefais);
 
                         break;
@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
                     case PerfilUsuario.ADMUE:
                         var admUes = await ObterAdministradoresPorUE(dreUe.UeCodigo);
 
-                        if (admUes != null && admUes.Any())
+                        if (admUes.NaoEhNulo() && admUes.Any())
                             lstAdmUes.AddRange(admUes);
 
                         break;

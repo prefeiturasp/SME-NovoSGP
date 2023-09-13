@@ -90,7 +90,7 @@ namespace SME.SGP.Api.Controllers
         {
             var listaConceitos = await consultasNotasConceitos.ObterConceitos(data);
 
-            if (listaConceitos == null || !listaConceitos.Any())
+            if (listaConceitos.EhNulo() || !listaConceitos.Any())
                 return NoContent();
 
             return Ok(listaConceitos);

@@ -11,6 +11,7 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -99,7 +100,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = (await consultasConselhoClasse.ObterConselhoClasseTurmaFinal(turmaCodigo, alunoCodigo, consideraHistorico));
 
-            if (retorno == null)
+            if (retorno.EhNulo())
                 return NoContent();
 
             return Ok(retorno);
@@ -250,7 +251,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterRecomendacoes([FromServices] IObterRecomendacoesAlunoFamiliaUseCase useCase)
         {
             var recomendacoes = await useCase.Executar();
-            if (recomendacoes != null)
+            if (recomendacoes.NaoEhNulo())
                 return Ok(recomendacoes);
             else
                 return StatusCode(204);

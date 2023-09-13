@@ -70,8 +70,8 @@ namespace SME.SGP.Aplicacao
                 {
                     var planoAnualOrigem = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual);
 
-                    if (planoAnualOrigem == null)
-                        throw new NegocioException("Plano anual de origem não encontrado");
+                if (planoAnualOrigem.EhNulo())
+                    throw new NegocioException("Plano anual de origem não encontrado");
 
                     var bimestreAtual = planoAnualDto.Bimestres.FirstOrDefault(c => c.Bimestre == bimestrePlanoAnual);
                     foreach (var turmaId in migrarPlanoAnualDto.IdsTurmasDestino)
@@ -80,8 +80,8 @@ namespace SME.SGP.Aplicacao
 
                         var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
 
-                        if (planoAnual == null)
-                            planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
+                    if (planoAnual.EhNulo())
+                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
 
                         planoAnual.Descricao = planoAnualOrigem.Descricao;
                         await Salvar(planoCopia, planoAnual, bimestreAtual);
@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
         {
             var objetivosAprendizagemPlanoAnual = repositorioObjetivoAprendizagemPlano.ObterObjetivosAprendizagemPorIdPlano(planoAnualDto.Id);
 
-            if (objetivosAprendizagemPlanoAnual != null)
+            if (objetivosAprendizagemPlanoAnual.NaoEhNulo())
             {
                 RemoverObjetivos(objetivosAprendizagemPlanoAnual, bimestrePlanoAnualDto);
                 await InserirObjetivos(planoAnualDto, objetivosAprendizagemPlanoAnual, bimestrePlanoAnualDto);
@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task InserirObjetivos(PlanoAnualDto planoAnualDto, IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
-            if (bimestrePlanoAnualDto.ObjetivosAprendizagem != null && bimestrePlanoAnualDto.ObjetivosAprendizagem.Any())
+            if (bimestrePlanoAnualDto.ObjetivosAprendizagem.NaoEhNulo() && bimestrePlanoAnualDto.ObjetivosAprendizagem.Any())
             {
                 var idsObjetivos = objetivosAprendizagemPlanoAnual?.Select(c => c.ObjetivoAprendizagemJuremaId);
                 IEnumerable<ComponenteCurricularJurema> componentesCurriculares = await ObterComponentesCurriculares();
@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var objetivo in bimestrePlanoAnualDto.ObjetivosAprendizagem)
                 {
-                    if (idsObjetivos != null && !idsObjetivos.Contains(objetivo.Id))
+                    if (idsObjetivos.NaoEhNulo() && !idsObjetivos.Contains(objetivo.Id))
                     {
                         SalvarObjetivoAprendizagem(planoAnualDto, componentesCurriculares, objetivosAprendizagem, objetivo);
                     }
@@ -176,7 +176,7 @@ namespace SME.SGP.Aplicacao
 
         private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao, bool objetivosAprendizagemOpcionais)
         {
-            if (planoAnual == null)
+            if (planoAnual.EhNulo())
             {
                 planoAnual = new PlanoAnual();
             }
@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ComponenteCurricularJurema>> ObterComponentesCurriculares()
         {
             var componentesCurriculares = await repositorioComponenteCurricular.ListarAsync();
-            if (componentesCurriculares == null)
+            if (componentesCurriculares.EhNulo())
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }
@@ -204,7 +204,7 @@ namespace SME.SGP.Aplicacao
         private async Task <IEnumerable<ObjetivoAprendizagemDto>> ObterObjetivosDeAprendizagem()
         {
             var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
-            if (objetivosAprendizagem == null)
+            if (objetivosAprendizagem.EhNulo())
             {
                 throw new NegocioException("Não foi possível recuperar a lista de objetivos de aprendizagem.");
             }
@@ -223,7 +223,7 @@ namespace SME.SGP.Aplicacao
 
         private void RemoverObjetivos(IEnumerable<ObjetivoAprendizagemPlano> objetivosAprendizagemPlanoAnual, BimestrePlanoAnualDto bimestrePlanoAnualDto)
         {
-            if (objetivosAprendizagemPlanoAnual != null)
+            if (objetivosAprendizagemPlanoAnual.NaoEhNulo())
             {
                 var idsObjetivos = bimestrePlanoAnualDto.ObjetivosAprendizagem.Select(x => x.Id);
                 var objetivosRemover = objetivosAprendizagemPlanoAnual.Where(c => !idsObjetivos.Contains(c.ObjetivoAprendizagemJuremaId));

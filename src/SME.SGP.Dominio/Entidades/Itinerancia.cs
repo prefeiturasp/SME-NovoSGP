@@ -38,7 +38,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarAluno(ItineranciaAluno aluno)
         {
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException("Não é possível incluir um aluno sem informação");
 
             if (!alunos.Any(a => a.Id == aluno.Id))
@@ -48,7 +48,7 @@ namespace SME.SGP.Dominio
         public void AdicionarQuestaoAluno(long alunoId, ItineranciaAlunoQuestao itineranciaAlunoQuestao)
         {
             var aluno = alunos.FirstOrDefault(a => a.Id == alunoId);
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o nível de Id {alunoId}");
 
             if (!aluno.AlunosQuestoes.Any(q => q.Id == itineranciaAlunoQuestao.Id))
@@ -73,12 +73,12 @@ namespace SME.SGP.Dominio
         }
 
         public bool PossuiAlunos()
-            => Alunos != null && Alunos.Any();
+            => Alunos.NaoEhNulo() && Alunos.Any();
 
         public bool PossuiObjetivos()
-            => ObjetivosVisita != null && ObjetivosVisita.Any();
+            => ObjetivosVisita.NaoEhNulo() && ObjetivosVisita.Any();
 
         public bool PossuiQuestoes()
-            => Questoes == null && Questoes.Any();
+            => Questoes.EhNulo() && Questoes.Any();
     }
 }
