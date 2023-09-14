@@ -1281,5 +1281,25 @@ namespace SME.SGP.Dados.Repositorios
                 tipoAula
             })).Any();
         }
+
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasFuturasPorDataTurmaComponentesCurriculares(DateTime dataBase, string codigoTurma, string[] componentesCurricularesCodigo)
+        {
+            var query = @"select id, ue_id Ueid, disciplina_id DisciplinaId, turma_id TurmaId,
+                                 tipo_calendario_id TipoCalendarioId, professor_rf ProfessorRf, quantidade, 
+                                 data_aula DataAula, recorrencia_aula RecorrenciaAula, tipo_aula TipoAula, 
+                                 migrado, aula_cj AulaCj 
+                          from aula
+                          where not excluido
+                                and DATE(data_aula) >= @data
+                                and turma_id = @codigoTurma
+                                and disciplina_id = any(@componentesCurricularesCodigo) ";
+
+            return await database.Conexao.QueryAsync<AulaConsultaDto>(query, new
+            {
+                data = dataBase.Date,
+                codigoTurma,
+                componentesCurricularesCodigo
+            });
+        }
     }
 }
