@@ -64,8 +64,6 @@ namespace SME.SGP.Aplicacao
             retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
-            var componentesCurricularesDoProfessor = new List<(string codigo, string codigoTerritorioSaber)>();
-
             IEnumerable<Aula> aulasParaVisualizar = null;
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
             var componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
@@ -111,9 +109,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                var codigosTerritorio = componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.Codigo);
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor);
-                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
@@ -121,11 +117,8 @@ namespace SME.SGP.Aplicacao
             if (aulasParaVisualizar != null && aulasParaVisualizar.Any())
             {
                 var codigosComponentesConsiderados = new List<long>();
-
                 codigosComponentesConsiderados.AddRange(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)));
-                codigosComponentesConsiderados.AddRange(componentesCurricularesDoProfessor.Select(c => long.Parse(c.codigo)).Except(codigosComponentesConsiderados));
-                codigosComponentesConsiderados.AddRange(componentesCurricularesDoProfessor.Where(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0").Select(c => long.Parse(c.codigoTerritorioSaber)).Except(codigosComponentesConsiderados));
-
+                
                 if (usuarioLogado.EhProfessorCjInfantil())
                 {
                     var componentesCurricularesDoProfessorCJInfantil = await mediator

@@ -80,10 +80,6 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                var codigosTerritorio = componentesCurricularesEolProfessor
-                    .Where(c => c.TerritorioSaber)
-                    .Select(c => c.Codigo);
-
                 aulasParaVisualizar = usuarioLogado
                     .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor);
 
