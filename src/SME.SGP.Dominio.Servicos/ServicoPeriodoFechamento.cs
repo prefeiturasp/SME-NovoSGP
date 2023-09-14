@@ -107,7 +107,7 @@ namespace SME.SGP.Dominio.Servicos
                             await repositorioPeriodoFechamentoBimestre.SalvarAsync(periodoFechamentoBimestreUe);
 
                             EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(periodoFechamentoBimestreUe.Id));
-                            
+
                             if (fechamentoExistente != null)
                                 AtualizaEventoDeFechamento(periodoFechamentoBimestreUe, fechamentoExistente);
 
@@ -150,7 +150,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<FechamentoDto> ObterPorTipoCalendarioSme(long tipoCalendarioId)
         {
             var fechamentoSME = repositorioPeriodoFechamento.ObterPorFiltros(tipoCalendarioId, null);
-            DateTime periodoInicio, periodoFim;            
+            DateTime periodoInicio, periodoFim;
 
             if (fechamentoSME == null)
             {
@@ -217,13 +217,13 @@ namespace SME.SGP.Dominio.Servicos
         private static Notificacao MontaNotificacao(string nomeEntidade, string tipoEntidade, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, string codigoUe, string codigoDre)
         {
             var mensagem = new StringBuilder();
-            mensagem.AppendLine($"A { tipoEntidade} realizou alterações em datas de abertura do período de fechamento de bimestre e as datas definidas pela ");
+            mensagem.AppendLine($"A {tipoEntidade} realizou alterações em datas de abertura do período de fechamento de bimestre e as datas definidas pela ");
             mensagem.Append($"{nomeEntidade} foram ajustadas.");
             mensagem.AppendLine("<br> As novas datas são: <br><br>");
 
             foreach (var bimestre in fechamentosBimestre.OrderBy(a => a.PeriodoEscolar.Bimestre))
             {
-                mensagem.AppendLine($"{ bimestre.PeriodoEscolar.TipoCalendario.Nome } - { bimestre.PeriodoEscolar.TipoCalendario.AnoLetivo }");
+                mensagem.AppendLine($"{bimestre.PeriodoEscolar.TipoCalendario.Nome} - {bimestre.PeriodoEscolar.TipoCalendario.AnoLetivo}");
                 mensagem.Append($" {bimestre.PeriodoEscolar.Bimestre}º Bimestre - ");
                 mensagem.Append($"Início: {bimestre.InicioDoFechamento.ToString("dd/MM/yyyy")} - ");
                 mensagem.Append($"Fim: {bimestre.FinalDoFechamento.ToString("dd/MM/yyyy")}<br>");
@@ -277,17 +277,17 @@ namespace SME.SGP.Dominio.Servicos
         private async Task CriarEventoFechamento(PeriodoFechamento fechamento)
         {
             var tipoEvento = repositorioTipoEvento.ObterTipoEventoPorTipo(TipoEvento.FechamentoBimestre);
-        
+
             if (tipoEvento == null)
                 throw new NegocioException("Tipo de evento de fechamento de bimestre não encontrado na base de dados.");
 
-                foreach (var bimestre in fechamento.FechamentosBimestre)
-                {
-                    EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(bimestre.Id));
+            foreach (var bimestre in fechamento.FechamentosBimestre)
+            {
+                EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(bimestre.Id));
 
                 if (fechamentoExistente != null)
                     AtualizaEventoDeFechamento(bimestre, fechamentoExistente);
-                
+
                 else
                     CriaEventoDeFechamento(fechamento, tipoEvento, bimestre);
             }
@@ -374,7 +374,7 @@ namespace SME.SGP.Dominio.Servicos
                     PeriodoEscolar = fechamentoBimestre.PeriodoEscolar,
                     InicioMinimo = new DateTime(fechamentoBimestre.PeriodoEscolar.PeriodoInicio.Year, 01, 01),
                     FinalMaximo = new DateTime(fechamentoBimestre.PeriodoEscolar.PeriodoInicio.Year, 12, 31)
-            });
+                });
             }
             return listaFechamentoBimestre;
         }
@@ -430,21 +430,6 @@ namespace SME.SGP.Dominio.Servicos
                 CriadoRF = fechamento.CriadoRF,
                 Migrado = fechamento.Migrado
             };
-        }
-
-        private (Dre, Ue) ObterDreEUe(string codigoDre, string codigoUe)
-        {
-            Dre dre = null;
-            if (!string.IsNullOrWhiteSpace(codigoDre))
-            {
-                dre = repositorioDre.ObterPorCodigo(codigoDre.ToString());
-            }
-            Ue ue = null;
-            if (!string.IsNullOrWhiteSpace(codigoUe))
-            {
-                ue = repositorioUe.ObterPorCodigo(codigoUe.ToString());
-            }
-            return (dre, ue);
         }
     }
 }
