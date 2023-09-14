@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Elastic.Apm.Api;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -243,6 +244,16 @@ namespace SME.SGP.TesteIntegracao
             {
                 AulaId = 1,
                 RecorrenciaAula = recorrencia
+            };
+        }
+
+        protected ExcluirAulasRecorrentesComponenteTerritorioSaberDisponibilizadoFiltro ObterExcluirAularFuturaTerritorioSaberDto(DateTime dataReferencia, string codigoTurma, string codigoComponenteCurricular)
+        {
+            return new ExcluirAulasRecorrentesComponenteTerritorioSaberDisponibilizadoFiltro()
+            {
+                DataReferenciaAtribuicao = dataReferencia,
+                CodigosComponentesCurricularesDisponibilizados = new string[] {codigoComponenteCurricular},
+                CodigoTurma = codigoTurma
             };
         }
 
