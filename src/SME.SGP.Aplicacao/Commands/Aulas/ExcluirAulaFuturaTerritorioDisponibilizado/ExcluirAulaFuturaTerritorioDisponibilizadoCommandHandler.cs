@@ -26,10 +26,10 @@ namespace SME.SGP.Aplicacao
         {
             var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
             if (aula.WorkflowAprovacaoId.HasValue)
-                await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, null);
+                await PublicarFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, null);
 
             var filas = new [] { RotasRabbitSgpAula.PlanoAulaDaAulaExcluir };
-            await PulicaFilaSgp(filas, aula.Id, null);
+            await PublicarFilaSgp(filas, aula.Id, null);
 
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
@@ -39,12 +39,12 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task PulicaFilaSgp(string fila, long id, Usuario usuario)
+        private async Task PublicarFilaSgp(string fila, long id, Usuario usuario)
         {
             await mediator.Send(new PublicarFilaSgpCommand(fila, new FiltroIdDto(id), Guid.NewGuid(), usuario));
         }
 
-        private async Task PulicaFilaSgp(string[] filas, long id, Usuario usuario)
+        private async Task PublicarFilaSgp(string[] filas, long id, Usuario usuario)
         {
             var commands = new List<PublicarFilaSgpCommand>();
 
