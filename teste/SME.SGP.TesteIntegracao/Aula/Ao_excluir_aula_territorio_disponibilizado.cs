@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Infra;
 using Xunit;
-using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
 
 namespace SME.SGP.TesteIntegracao.AulaFuturaTerritorio
 {
