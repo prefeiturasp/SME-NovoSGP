@@ -39,19 +39,8 @@ namespace SME.SGP.Aplicacao
 
                     if (componenteCurricular != null && !componenteCurricular.RegistraFrequencia)
                     {
-                        var componenteVerificacao = await mediator
-                            .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, discplinaIdAula, usuarioLogado), cancellationToken);
-
-                        if (componenteVerificacao != default && componenteVerificacao.codigoTerritorio.HasValue && componenteVerificacao.codigoTerritorio.Value > 0)
-                        {
-                            componenteCurricular.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente), cancellationToken);
-                        }
-                        else
-                        {
-                            componenteCurricular.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular), cancellationToken);
-                        }
+                        componenteCurricular.RegistraFrequencia = await mediator
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.CodigoComponenteCurricular), cancellationToken);
                     }
 
                     var professorTitular = professoresTitulares?

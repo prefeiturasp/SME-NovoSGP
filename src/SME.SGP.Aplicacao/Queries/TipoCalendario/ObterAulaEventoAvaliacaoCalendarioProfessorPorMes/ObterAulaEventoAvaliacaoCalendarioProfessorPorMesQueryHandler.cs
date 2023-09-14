@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             var componentesCurricularesId = componentesCurriculares?.Where(b => b.RegistraFrequencia == true)
-                .Select(x => x.TerritorioSaber && x.CodigoComponenteTerritorioSaber > 0 ? x.CodigoComponenteTerritorioSaber : x.Codigo)
+                .Select(x => x.Codigo)
                 .ToArray();
 
             for (int i = 1; i < qntDiasMes + 1; i++)
