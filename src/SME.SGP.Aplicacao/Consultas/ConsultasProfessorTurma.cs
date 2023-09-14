@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
@@ -100,25 +99,13 @@ namespace SME.SGP.Aplicacao
 
             return professorResumo;
         }
-        public async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
+        public Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
         {
-            IEnumerable<TurmaDto> turmasDto = null;
             var chaveCache = string.Format(NomeChaveCache.TURMAS_PROFESSOR_ANO_ESCOLA, rfProfessor, anoLetivo, codigoEscola);
-            var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
-            if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-            {
-                turmasDto = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(disciplinasCacheString);
-            }
-            else
-            {
-                turmasDto = await servicoEOL.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(rfProfessor, codigoEscola, anoLetivo);
-                if (turmasDto.NaoEhNulo() && turmasDto.Any())
-                {
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(turmasDto));
-                }
-            }
-            return turmasDto;
+            return repositorioCache.ObterAsync(chaveCache,
+             async () => await servicoEOL.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(rfProfessor, codigoEscola, anoLetivo),
+             "Obter turmas atribuidas ao professor");
         }
 
         private IEnumerable<ProfessorTurmaDto> MapearParaDto(IEnumerable<ProfessorTurmaReposta> turmas)
