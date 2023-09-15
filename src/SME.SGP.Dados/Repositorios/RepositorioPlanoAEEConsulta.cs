@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
         {
-            ObtenhaCabecalho(sql, contador);
+            ObtenhaCabecalho(sql, contador, ueId, turmaId, turmasCodigos, ehAdmin, ehPAEE);
 
             ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE, exibirEncerrados, responsavelRf, responsavelRfPaai);
 
@@ -80,6 +80,8 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("       , ue.nome ");
                 sql.AppendLine("       , ue.tipo_escola ");
                 sql.AppendLine("       , te.descricao ");
+                sql.AppendLine("       , plano_transf.ueNome ");
+                sql.AppendLine("       , plano_transf.tipo_escola");
                 sql.AppendLine("        order by ueOrdem, pa.aluno_nome ");
             }
 
@@ -87,7 +89,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
-        private void ObtenhaCabecalho(StringBuilder sql, bool contador)
+        private void ObtenhaCabecalho(StringBuilder sql, bool contador, long ueId, long turmaId, string[] turmasCodigos, bool ehAdmin, bool ehPAEE)
         {
             sql.AppendLine("select ");
             if (contador)
@@ -115,9 +117,9 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", usu_paai_responsavel.rf_codigo RfPaaiReponsavel ");
                 sql.AppendLine(", usu_paai_responsavel.nome NomePaaiReponsavel ");
                 sql.AppendLine(", max(pav.id) as planoAeeVersaoId ");
-                sql.AppendLine(", ue.nome UeNome ");
-                sql.AppendLine(", ue.tipo_escola TipoEscola ");
-                sql.AppendLine(", te.descricao  || ' ' || ue.nome  ueOrdem");
+                sql.AppendLine(", coalesce(plano_transf.ueNome, ue.nome) UeNome ");
+                sql.AppendLine(", coalesce(plano_transf.tipo_escola, ue.tipo_escola) TipoEscola ");
+                sql.AppendLine(", te.descricao  || ' ' || coalesce(plano_transf.ueNome, ue.nome) ueOrdem");
             }
 
             sql.AppendLine(" from plano_aee pa ");
@@ -128,6 +130,19 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" inner join plano_aee_versao pav on pa.id = pav.plano_aee_id");
             sql.AppendLine(" left join usuario usu_responsavel on usu_responsavel.id = pa.responsavel_id");
             sql.AppendLine(" left join usuario usu_paai_responsavel on usu_paai_responsavel.id = pa.responsavel_paai_id");
+            sql.AppendLine($@" left join (select distinct plano_aee_id, u2.nome ueNome, u2.tipo_escola
+                                          from plano_aee_turma_aluno pta 
+                                          inner join turma t2 on t2.id = pta.turma_id 
+                                          inner join ue u2 on t2.ue_id = u2.id
+                                          where u2.dre_id = @dreId ");
+            if (ueId > 0)
+                sql.AppendLine("                    and u2.id = @ueId ");
+            if (turmaId > 0)
+                sql.AppendLine("                    and t2.id = @turmaId ");
+            if (turmasCodigos != null && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
+                sql.AppendLine("                    and t2.turma_id = ANY(@turmasCodigos) ");
+
+            sql.AppendLine(") plano_transf on plano_transf.plano_aee_id = pa.id ");
         }
 
         private void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
@@ -157,21 +172,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" ) ");
 
             //-> considerar turmas de srm e regular onde o aluno possui matricula
-            sql.AppendLine("        or exists(select 1 ");
-            sql.AppendLine("                  from plano_aee_turma_aluno pta ");
-            sql.AppendLine("                  inner join turma t2 on t2.id = pta.turma_id ");
-            sql.AppendLine("                  inner join ue u2 on t2.ue_id = u2.id");
-            sql.AppendLine("                  where pta.plano_aee_id = pa.id ");
-            sql.AppendLine("                    and u2.dre_id = @dreId ");
-
-            if (ueId > 0)
-                sql.AppendLine("                    and u2.id = @ueId ");
-            if (turmaId > 0)
-                sql.AppendLine("                    and t2.id = @turmaId ");
-            if (turmasCodigos != null && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
-                sql.AppendLine("                    and t2.turma_id = ANY(@turmasCodigos) ");
-
-            sql.AppendLine("                  limit 1)) ");
+            sql.AppendLine(" or not plano_transf.plano_aee_id is null) ");
         }
 
         public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante)
