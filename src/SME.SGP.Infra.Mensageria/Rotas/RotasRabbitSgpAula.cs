@@ -6,7 +6,7 @@
         public const string RotaInserirAulaRecorrencia = "sgp.aula.cadastrar.recorrencia";
         public const string RotaAlterarAulaRecorrencia = "sgp.aula.alterar.recorrencia";
         public const string RotaAlterarAulaFrequenciaTratar = "sgp.aula.alterar.frequencia.tratar";
-        public const string RotaCriarAulasInfatilAutomaticamente = "sgp.aulas.infantil.criar";
+        public const string RotaCriarAulasInfatilERegenciaAutomaticamente = "sgp.aulas.infantil.criar";
         public const string RotaSincronizarAulasInfatil = "sgp.aulas.infantil.sincronizar";
         public const string CarregarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.carregar";
         public const string SincronizarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.sync";

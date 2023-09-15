@@ -369,6 +369,7 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
 
         protected readonly DateTime DATA_25_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
+        protected readonly DateTime DATA_16_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 16);
         protected readonly DateTime DATA_30_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
 
         protected readonly DateTime DATA_03_10 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);

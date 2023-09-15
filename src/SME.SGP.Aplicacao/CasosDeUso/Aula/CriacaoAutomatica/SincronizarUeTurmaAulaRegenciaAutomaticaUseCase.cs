@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
                     var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadosTurma.TurmaCodigo, dadosTurma.ComponenteCurricularCodigo));
                     var dadosAulaCriada = new DadosAulaCriadaAutomaticamenteDto((dadosTurma.ComponenteCurricularCodigo, dadosTurma.ComponenteCurricularDescricao), dadosCriacao.Modalidade == Modalidade.EJA ? 5 : 1, professorTitular?.ProfessorRf);
                     var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(dadosTurma.TurmaCodigo));
-                    var comando = new CriarAulasInfantilAutomaticamenteCommand(dadosCriacao.DiasLetivosENaoLetivos, turma, dadosCriacao.TipoCalendarioId, dadosCriacao.DiasForaDoPeriodoEscolar, new string[] { dadosTurma.ComponenteCurricularCodigo }, dadosAulaCriada);
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
+                    var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(dadosCriacao.DiasLetivosENaoLetivos, turma, dadosCriacao.TipoCalendarioId, dadosCriacao.DiasForaDoPeriodoEscolar, new string[] { dadosTurma.ComponenteCurricularCodigo }, dadosAulaCriada);
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
                 }
                 return true;
             }
