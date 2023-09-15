@@ -15,6 +15,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
         #region Constantes
         const string DRE_CODIGO_1 = "1";
         const string DRE_CODIGO_2 = "2";
+        const string UE_CODIGO_1 = "1";
         const string SUPERVISOR_ID_1 = "1";
         const string SUPERVISOR_ID_2 = "2";
         const string SUPERVISOR_ID_3 = "3";
@@ -30,6 +31,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
         {
             //Arrange
             await InserirDre(DRE_CODIGO_1);
+            await InserirUe(UE_CODIGO_1, DRE_CODIGO_1);
             await InserirSupervisor(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
             await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
             await InserirSupervisor(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
@@ -37,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
 
             //Act
-            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+           var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
 
             var registrosAposuseCase = ObterTodos<SupervisorEscolaDre>();
 
@@ -51,6 +53,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
         {
             //Arrange
             await InserirDre(DRE_CODIGO_1);
+            await InserirUe(UE_CODIGO_1, DRE_CODIGO_1);
             await InserirSupervisor(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
 
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
@@ -69,15 +72,20 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
         public async Task Deve_retornar_true_quando_nao_excluir_supervisores()
         {
             //Arrange
-            await InserirDre(DRE_CODIGO_2);
-            await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_03);
+            await InserirDre(DRE_CODIGO_1);
+            await InserirUe(UE_CODIGO_1, DRE_CODIGO_1);
+            await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
 
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
-            //Act
-            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
-            //Assert
-            Assert.True(registrosAposUseCase.Count(x => x.Excluido) == 0);
 
+            //Act            
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+
+            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
+
+            //Assert
+            Assert.True(retorno);
+            Assert.True(registrosAposUseCase.Any());
         }
 
         [Fact]
@@ -85,12 +93,36 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
         {
             //Arrange
             await InserirDre(DRE_CODIGO_1);
+            await InserirUe(UE_CODIGO_1, DRE_CODIGO_1);
+            await InserirSupervisor(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
+            await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
 
             //Act
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
             //Assert
             Assert.True(retorno);
+            Assert.Equal(2, registrosAposUseCase.Count);
+        }
+
+        [Fact]
+        public async Task Deve_retornar_true_quando_excluir_pelo_remanejamento_de_ue_para_outra_dre()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_1);
+            await InserirDre(DRE_CODIGO_2);
+            await InserirUe(UE_CODIGO_1, DRE_CODIGO_2);
+            await InserirSupervisor(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
+            await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
+
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
+            //Assert
+            Assert.True(retorno);
+            Assert.Equal(2, registrosAposUseCase.Count(r => r.Excluido));
         }
 
         #region Cargas
@@ -105,6 +137,15 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
             });
         }
 
+        public async Task InserirUe(string codigoUe, string codigoDre)
+        {
+            await InserirNaBase(new Ue()
+            {
+                CodigoUe = codigoUe,
+                DreId = ObterTodos<Dre>().Single(d => d.CodigoDre == codigoDre).Id,
+                DataAtualizacao = DateTimeExtension.HorarioBrasilia()
+            });
+        }
 
         public async Task InserirSupervisor(string id, string rf)
         {
@@ -119,7 +160,6 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
                 CriadoRF = rf,
                 Excluido = false
             });
-
         }
         #endregion
     }
