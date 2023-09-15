@@ -70,22 +70,11 @@ namespace SME.SGP.Aplicacao
             if (componenteCorrespondente.CodigoComponenteTerritorioSaber > 0)
                 codigoComponentes = codigoComponentes.Append(componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString()).ToArray();
 
-            var codigoComponenteConsiderado = aula.DisciplinaId;
-            var componenteConsideradoEmCasoDeCJ = usuarioLogado.EhProfessorCj() ?
-                await mediator.Send(new DefinirComponenteCurricularParaAulaQuery(aula.TurmaId, long.Parse(codigoComponenteConsiderado), usuarioLogado)) :
-                default;
-
-            if (componenteConsideradoEmCasoDeCJ != default && componenteConsideradoEmCasoDeCJ.codigoTerritorio.HasValue && componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value > 0)
-                codigoComponenteConsiderado = componenteConsideradoEmCasoDeCJ.codigoTerritorio.Value.ToString();
-
-            var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ?
-                componenteCorrespondente.Descricao : await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(codigoComponenteConsiderado)));
-
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
                 return await mediator.Send(new ExcluirAulaUnicaCommand(usuarioLogado,
                                                                        excluirDto.AulaId,
-                                                                       componenteCurricularNome));
+                                                                       await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(aula.DisciplinaId)))));
             }
             else
             {
@@ -94,7 +83,7 @@ namespace SME.SGP.Aplicacao
                     // TODO alterar para fila do RabbitMQ
                     await mediator.Send(new IncluirFilaExclusaoAulaRecorrenteCommand(excluirDto.AulaId,
                                                                                      excluirDto.RecorrenciaAula,
-                                                                                     componenteCurricularNome,
+                                                                                     await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(aula.DisciplinaId))),
                                                                                      usuarioLogado));
 
                     return new RetornoBaseDto("Serão excluidas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
