@@ -202,7 +202,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from supervisor_escola_dre sed");
 
             query.AppendLine("where dre_id = @codigoDre " +
-                "and excluido = false and supervisor_id = '7472099' and escola_id = '019275' ");
+                "and excluido = false ");
 
             if (tipoResponsavelAtribuicao != null)
                 query.AppendLine("and tipo = @tipoResponsavelAtribuicao");
