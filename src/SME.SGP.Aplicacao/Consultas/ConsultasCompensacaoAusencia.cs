@@ -264,32 +264,5 @@ namespace SME.SGP.Aplicacao
                         Nome = t.Nome
                     });
         }
-
-        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
-        {
-            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-
-            if (usuarioLogado.EhProfessor())
-            {
-                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
-            }
-            else if (usuarioLogado.EhProfessorCj())
-            {
-                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor != null)
-                {
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                    if (componenteProfessorRelacionado != null)
-                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
-                }
-            }
-
-            return codigoComponenteTerritorioCorrespondente;
-        }
     }
 }

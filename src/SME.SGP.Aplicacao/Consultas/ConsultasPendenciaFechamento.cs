@@ -43,12 +43,6 @@ namespace SME.SGP.Aplicacao
 
                 foreach(var disciplinaEOL in disciplinasEOL)
                 {
-                    if (disciplinaEOL.TerritorioSaber)
-                    {
-                        disciplinaEOL.Nome = componentesTurma?.Where(b => b.TerritorioSaber == true && disciplinaEOL.CodigoComponenteCurricular == b.CodigoComponenteTerritorioSaber)
-                                                             .Select(b => b.Nome).FirstOrDefault();                     
-                    }
-
                     retornoConsultaPaginada.Items.Where(c => c.DisciplinaId == disciplinaEOL.CodigoComponenteCurricular).ToList()
                         .ForEach(d => d.ComponenteCurricular = disciplinaEOL.Nome);
                 }
@@ -69,22 +63,7 @@ namespace SME.SGP.Aplicacao
             if (disciplinaEOL is null)
                 throw new NegocioException("Componente curricular informado não localizado.");
 
-            var componentesTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(pendencia.CodigoTurma));
-
-            if (disciplinaEOL.TerritorioSaber)
-            {
-                var nomeComponenteTerritorioSaber = componentesTurma?.Where(b => b.TerritorioSaber == true && disciplinaEOL.CodigoComponenteCurricular == b.CodigoComponenteTerritorioSaber)
-                                     .Select(b => b.Nome).FirstOrDefault();
-
-                if (!String.IsNullOrEmpty(nomeComponenteTerritorioSaber))
-                {
-                    pendencia.DescricaoHtml = pendencia.DescricaoHtml.Replace(disciplinaEOL.Nome, nomeComponenteTerritorioSaber);
-                    disciplinaEOL.Nome = nomeComponenteTerritorioSaber;
-                }
-            }
-
             pendencia.ComponenteCurricular = disciplinaEOL.Nome;
-
             return pendencia;
         }
     }
