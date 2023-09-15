@@ -113,7 +113,7 @@
 
         public const string URL_FUNCIONARIOS_UE = "funcionarios/ue/{0}";
 
-        public const string URL_FUNCIONARIOS_SUPERVISORES = "funcionarios/supervisores";
+        public const string URL_FUNCIONARIOS_SUPERVISORES = "funcionarios/supervisores/{0}";
 
         public const string URL_FUNCIONARIOS_TURMAS_DISCIPLINAS = "funcionarios/turmas/{0}/disciplinas";
 

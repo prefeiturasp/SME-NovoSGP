@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<SupervisoresRetornoDto>> Handle(ObterSupervisorPorCodigoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var resposta = await httpClient.PostAsync(ServicosEolConstants.URL_FUNCIONARIOS_SUPERVISORES, new StringContent(JsonConvert.SerializeObject(request.SupervisorIds), Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_SUPERVISORES, request.CodigoDre), new StringContent(JsonConvert.SerializeObject(request.SupervisorIds), Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
             {
