@@ -56,7 +56,6 @@ namespace SME.SGP.Aplicacao
                 else
                     disciplinasRetorno.Add(new DisciplinaDto()
                     {
-                        //Id = componenteUsuarioTurma.TerritorioSaber ? componenteUsuarioTurma.CodigoComponenteTerritorioSaber : componenteUsuarioTurma.Codigo,
                         Id = componenteUsuarioTurma.Codigo,
                         CodigoComponenteCurricular = componenteUsuarioTurma.Codigo,
                         CdComponenteCurricularPai = componenteUsuarioTurma.CodigoComponenteCurricularPai,
