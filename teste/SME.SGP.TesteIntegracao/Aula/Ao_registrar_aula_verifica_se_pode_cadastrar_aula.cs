@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.TesteIntegracao.Aula.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -33,6 +35,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessorTitularPorTurmaEComponenteCurricularQuery, ProfessorTitularDisciplinaEol>), typeof(ObterProfessorTitularPorTurmaComponenteCurricularQueryFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -352,6 +355,28 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             var retorno = await PodeCadastrarAulaUseCase(TipoAula.Reposicao, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_19_06);
 
             retorno.PodeCadastrarAula.ShouldBeTrue();
+        }
+        [Fact]
+        public async Task Nao_Pode_Cadastrar_Aula_Infantil_E_Regencia_Automaticamente_Em_FimDeSemana()
+        {
+            var mensagemRabbit = await ObterMensagemRabbit();
+
+            await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
+
+            var mediator = ServiceProvider.GetService<ICriarAulasInfantilERegenciaUseCase>();
+            await mediator.Executar(mensagemRabbit);
+
+            var aulaCriada = ObterTodos<Dominio.Aula>();
+
+            aulaCriada.Count().ShouldBe(0);
+        }
+
+        private async Task<MensagemRabbit> ObterMensagemRabbit()
+        {
+            return new MensagemRabbit
+            {
+                Mensagem = "{\"UeCodigo\":\"093297\",\"TipoCalendarioId\":33,\"DiasLetivos\":[{\"Data\":\"2023-09-16T00:00:00\",\"Motivo\":\"REUNIAO PEDAGÓGICA\",\"EhLetivo\":true,\"EhNaoLetivo\":false,\"UesIds\":[\"017981\"],\"DreIds\":[],\"PossuiEvento\":false,\"PossuiEventoSME\":false,\"CriarAulaSME\":true,\"ExcluirAulaSME\":false,\"NaoPossuiDre\":true,\"NaoPossuiUe\":false}],\"DiasForaDoPeriodoEscolar\":[\"2023-07-20T00:00:00\",\"2023-07-21T00:00:00\",\"2023-07-22T00:00:00\",\"2023-07-23T00:00:00\",\"2023-10-01T00:00:00\"],\"DadosAulaCriadaAutomaticamente\":{\"ComponenteCurricular\":{\"codigo\":\"1105\",\"nome\":\"Regência de Classe Fund I - 5H\"}},\"Turma\":{\"Ano\":2023,\"AnoLetivo\":2023,\"CodigoTurma\":\"2505969\",\"TipoTurma\":1,\"UE\":{\"CodigoUe\":\"093297\",\"Dre\":{\"CodigoDre\":\"1\"}}},\"CodigosDisciplinasConsideradas\":[\"1105\"],\"Modalidade\":5,\"DadosTurmas\":[{\"TurmaCodigo\":\"2505969\",\"ComponenteCurricularCodigo\":\"1105\",\"ComponenteCurricularDescricao\":\"Regência de Classe Fund I - 5H\",\"DataInicioTurma\":\"2023-02-06T00:00:00\"}]}"
+            };
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
