@@ -89,7 +89,8 @@ namespace SME.SGP.Aplicacao
                                 Ano = turma.Ano,
                                 ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
                                 NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
-                                ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
+                                ComponenteCurricularCodigo = d.CodigoComponenteCurricular,
+                                ComponenteCurricularTerritorioSaberCodigo = d.CodigoComponenteTerritorioSaber ?? 0,
                                 Turno = (TipoTurnoEOL)turma.TipoTurno,
                             });
 
@@ -240,7 +241,7 @@ namespace SME.SGP.Aplicacao
                 Id = turmas.Id.GetValueOrDefault(),
                 NomeTurma = turmas.SerieEnsino == null && turmas.NomeFiltro == null ? turmas.NomeTurmaFormatado(nomeComponente) : turmas.NomeTurmaFiltroFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
-                ComponenteCurricularCodigo = turmas.TerritorioSaber ? turmas.ComponenteCurricularTerritorioSaberCodigo : turmas.ComponenteCurricularCodigo,
+                ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
                 Turno = turmas.Turno.ObterNome(),
                 LancaNota = componentePermiteLanctoNota
             };

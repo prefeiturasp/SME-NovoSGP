@@ -41,19 +41,13 @@ namespace SME.SGP.Aplicacao
             if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
                 return null;
 
-            return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol, obterTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil, codigoTurma: turmaCodigo))?
-                .OrderBy(c => c.Nome)?.ToList();
+            return componentesCurricularesEol.Select(cc => new DisciplinaNomeDto()
+            {
+                Codigo = cc.Codigo.ToString(),
+                Nome = cc.ExibirComponenteEOL && 
+                       obterTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? cc.DescricaoComponenteInfantil : cc.Descricao
+            }).OrderBy(c => c.Nome)?.ToList();
 
-        }
-
-        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil, string codigoTurma)
-        {
-            var componentesSgp = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol
-                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : 
-                                (a.Regencia && !ehEducacaoInfatil && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray()));
-
-            return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol, ehEducacaoInfatil);
         }
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesAtribuicaoCj(string turmaCodigo, string login)
@@ -65,42 +59,13 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
 
-            return MapearParaComponenteNomeDto(disciplinasEol);
-        }
-
-        private IEnumerable<DisciplinaNomeDto> MapearParaComponenteNomeDto(IEnumerable<DisciplinaDto> componentesSgp, IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil)
-        {
-            foreach (var componenteSgp in componentesSgp)
+            return disciplinasEol.Select(cc => new DisciplinaNomeDto()
             {
-                var componenteEol = componentesCurricularesEol
-                    .FirstOrDefault(c => componenteSgp.Id == (c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : (c.Regencia && !ehEducacaoInfatil && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0 ? c.CodigoComponenteCurricularPai.Value : c.Codigo)));
-
-                if (componenteEol != null)
-                {
-                    if (componenteEol.TerritorioSaber)
-                        yield return new DisciplinaNomeDto()
-                        {
-                            Codigo = componenteEol.CodigoComponenteTerritorioSaber.ToString(),
-                            Nome = componenteEol.Descricao
-                        };
-                    else
-                        yield return new DisciplinaNomeDto()
-                        {
-                            Codigo = componenteSgp.Id.ToString(),
-                            Nome = componenteEol.ExibirComponenteEOL && ehEducacaoInfatil ? componenteSgp.NomeComponenteInfantil : componenteSgp.Nome
-                        };
-                }
-            }
+                Codigo = cc.Id.ToString(),
+                Nome = cc.Nome
+            }).OrderBy(c => c.Nome)?.ToList();
         }
 
-        private IEnumerable<DisciplinaNomeDto> MapearParaComponenteNomeDto(IEnumerable<DisciplinaDto> disciplinasEol)
-        {
-            foreach (var disciplinaEol in disciplinasEol)
-                yield return new DisciplinaNomeDto()
-                {
-                    Codigo = disciplinaEol.Id.ToString(),
-                    Nome = disciplinaEol.Nome
-                };
-        }
+
     }
 }
