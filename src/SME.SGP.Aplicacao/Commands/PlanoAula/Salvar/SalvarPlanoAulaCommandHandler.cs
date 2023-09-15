@@ -73,10 +73,10 @@ namespace SME.SGP.Aplicacao
                     {
                         var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual, true, false));
                         if (componentesEol.Any())
-                            componentesCurriculares = componentesEol.Where(c=> c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber == componenteCurricularId : c.Codigo == componenteCurricularId).Select(c => new DisciplinaDto()
+                            componentesCurriculares = componentesEol.Where(c=> c.Codigo == componenteCurricularId).Select(c => new DisciplinaDto()
                             {
                                 CdComponenteCurricularPai = c.CodigoComponenteCurricularPai,
-                                CodigoComponenteCurricular = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo,
+                                CodigoComponenteCurricular = c.Codigo,
                                 Nome = c.Descricao,
                                 TerritorioSaber = c.TerritorioSaber,
                                 LancaNota = c.LancaNota,
