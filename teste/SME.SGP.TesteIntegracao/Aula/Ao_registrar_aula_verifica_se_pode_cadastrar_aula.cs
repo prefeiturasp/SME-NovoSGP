@@ -360,7 +360,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
         [Fact]
         public async Task Nao_Pode_Cadastrar_Aula_Infantil_E_Regencia_Automaticamente_Em_FimDeSemana()
         {
-            var mensagemRabbit = ObterMensagemRabbit();
+            var mensagemRabbit = await ObterMensagemRabbit();
 
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
 
