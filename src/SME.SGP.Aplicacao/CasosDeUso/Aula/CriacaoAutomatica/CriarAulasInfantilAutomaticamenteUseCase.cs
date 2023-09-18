@@ -19,6 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var regenciaClasseInfantilId = "512";
+
             var executarManutencao = await mediator.Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
             if (!executarManutencao)
             {
@@ -66,7 +68,8 @@ namespace SME.SGP.Aplicacao
             foreach (var turma in turmas)
             {
                 var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto(("512", "Regência de classe infantil"));
-                var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { "512" }, dadosAulaCriadaAutomaticamente);
+                
+                var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { regenciaClasseInfantilId }, dadosAulaCriadaAutomaticamente);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
             }
 
