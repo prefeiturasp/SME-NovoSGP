@@ -15,12 +15,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoEol servicoEol;
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario, IServicoEol servicoEol)
+
+        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
         public async Task<IEnumerable<EventoAulaDiaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
         {

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,11 @@ namespace SME.SGP.Aplicacao
                                                                                  usuarioLogado.Login,
                                                                                  usuarioLogado.PerfilAtual,
                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
+
+                var componentesCurricularesAgrupamentoTerritorioSaber = componentesCurricularesEolProfessor.Where(cc => cc.Codigo >= TerritorioSaberConstants.COMPONENTE_AGRUPAMENTO_TERRITORIO_SABER_ID_INICIAL);
+                if (componentesCurricularesAgrupamentoTerritorioSaber.Any())
+                    componentesCurricularesEolProfessor.AddRange(await mediator.Send(new ObterComponentesTerritorioAgrupamentoCorrelacionadosQuery(componentesCurricularesAgrupamentoTerritorioSaber.Select(cc => cc.Codigo).ToArray())));
+
 
                 if (usuarioLogado.EhSomenteProfessorCj())
                 {
