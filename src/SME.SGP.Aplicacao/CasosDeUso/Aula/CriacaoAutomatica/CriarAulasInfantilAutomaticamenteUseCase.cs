@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmas)
             {
-                var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto(("512", "Regência de classe infantil"));
+                var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto((regenciaClasseInfantilId, "Regência de classe infantil"));
                 
                 var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { regenciaClasseInfantilId }, dadosAulaCriadaAutomaticamente);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
