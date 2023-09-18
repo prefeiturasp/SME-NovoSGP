@@ -360,7 +360,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
         [Fact]
         public async Task Nao_Pode_Cadastrar_Aula_Infantil_E_Regencia_Automaticamente_Em_FimDeSemana()
         {
-            var mensagemRabbit = await ObterMensagemRabbit();
+            var mensagemRabbit = ObterMensagemRabbit();
 
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
 
@@ -410,10 +410,10 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
             var mensagemRabbitJson = JsonConvert.SerializeObject(mensagemRabbitObjeto);
 
-            return new MensagemRabbit
+            return await Task.FromResult(new MensagemRabbit
             {
                 Mensagem = mensagemRabbitJson
-            };
+            });
         }
 
         private class ObjetoRabbit
