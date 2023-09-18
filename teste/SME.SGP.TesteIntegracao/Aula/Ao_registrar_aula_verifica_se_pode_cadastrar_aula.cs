@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
@@ -373,10 +374,56 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
         private async Task<MensagemRabbit> ObterMensagemRabbit()
         {
+            var diasLetivos = new DiaLetivoDto
+            {
+                Data = DATA_16_09,
+                Motivo = "REUNIAO",
+                EhLetivo = true,
+                PossuiEvento = true,
+            };
+
+            var diasLetivosList = new List<DiaLetivoDto> { diasLetivos };
+
+            var dadosDisciplina = (codigo: COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), nome: COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105);
+
+            var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto(dadosDisciplina);
+            var diasForaPeriodoEscolar = new List<DateTime> { DATA_20_07, DATA_21_07, DATA_22_07, DATA_23_07, DATA_01_10 };
+            var codigoDisciplinaConsiderada = new List<string> { COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString() };
+            var turma = new Turma
+            {
+                Ano = ANO_9,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                CodigoTurma = TURMA_CODIGO_1,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
+                Ue = new Ue { CodigoUe = UE_CODIGO_1, Dre = new Dre { CodigoDre = DRE_CODIGO_1 } }
+            };
+
+            var mensagemRabbitObjeto = new ObjetoRabbit
+            {
+                DiasLetivos = diasLetivosList,
+                Turma = turma,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                DiasForaDoPeriodoEscolar = diasForaPeriodoEscolar,
+                CodigosDisciplinasConsideradas = codigoDisciplinaConsiderada,
+                DadosAulaCriadaAutomaticamente = dadosAulaCriadaAutomaticamente
+            };
+
+            var mensagemRabbitJson = JsonConvert.SerializeObject(mensagemRabbitObjeto);
+
             return new MensagemRabbit
             {
-                Mensagem = "{\"UeCodigo\":\"093297\",\"TipoCalendarioId\":33,\"DiasLetivos\":[{\"Data\":\"2023-09-16T00:00:00\",\"Motivo\":\"REUNIAO PEDAGÓGICA\",\"EhLetivo\":true,\"EhNaoLetivo\":false,\"UesIds\":[\"017981\"],\"DreIds\":[],\"PossuiEvento\":false,\"PossuiEventoSME\":false,\"CriarAulaSME\":true,\"ExcluirAulaSME\":false,\"NaoPossuiDre\":true,\"NaoPossuiUe\":false}],\"DiasForaDoPeriodoEscolar\":[\"2023-07-20T00:00:00\",\"2023-07-21T00:00:00\",\"2023-07-22T00:00:00\",\"2023-07-23T00:00:00\",\"2023-10-01T00:00:00\"],\"DadosAulaCriadaAutomaticamente\":{\"ComponenteCurricular\":{\"codigo\":\"1105\",\"nome\":\"Regência de Classe Fund I - 5H\"}},\"Turma\":{\"Ano\":2023,\"AnoLetivo\":2023,\"CodigoTurma\":\"2505969\",\"TipoTurma\":1,\"UE\":{\"CodigoUe\":\"093297\",\"Dre\":{\"CodigoDre\":\"1\"}}},\"CodigosDisciplinasConsideradas\":[\"1105\"],\"Modalidade\":5,\"DadosTurmas\":[{\"TurmaCodigo\":\"2505969\",\"ComponenteCurricularCodigo\":\"1105\",\"ComponenteCurricularDescricao\":\"Regência de Classe Fund I - 5H\",\"DataInicioTurma\":\"2023-02-06T00:00:00\"}]}"
+                Mensagem = mensagemRabbitJson
             };
+        }
+
+        private class ObjetoRabbit
+        {
+            public long TipoCalendarioId { get; set; }
+            public IEnumerable<DiaLetivoDto> DiasLetivos { get; set; }
+            public Turma Turma { get; set; }
+            public IEnumerable<DateTime> DiasForaDoPeriodoEscolar { get; set; }
+            public IEnumerable<string> CodigosDisciplinasConsideradas { get; set; }
+            public DadosAulaCriadaAutomaticamenteDto DadosAulaCriadaAutomaticamente { get; set; }
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
