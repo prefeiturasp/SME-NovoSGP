@@ -18,10 +18,10 @@ namespace SME.SGP.TesteIntegracao.Aula.ServicosFake
 
         public async Task<ProfessorTitularDisciplinaEol> Handle(ObterProfessorTitularPorTurmaEComponenteCurricularQuery request, CancellationToken cancellationToken)
         {
-            var dadosProfessor = new ProfessorTitularDisciplinaEol
+            var dadosProfessor = await Task.FromResult(new ProfessorTitularDisciplinaEol
             {
                 ProfessorRf = "123456"
-            };
+            });
             return dadosProfessor;
         }
     }
