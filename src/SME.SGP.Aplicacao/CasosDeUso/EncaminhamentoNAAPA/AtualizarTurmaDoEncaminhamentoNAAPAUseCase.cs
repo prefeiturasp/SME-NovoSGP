@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,17 +17,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
+            var situacaoMatriculaAtiva = SituacaoMatriculaAluno.Ativo;
             var encaminhamento = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamento.AlunoCodigo), true));
-            var alunoTurma = alunosEol.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
+            var alunoTurma = alunosEol?.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
-                                                      && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date)
-                                      .OrderByDescending(turma => turma.AnoLetivo)
-                                      .ThenByDescending(turma => turma.DataSituacao)
-                                      .FirstOrDefault(); 
+                                                      && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date
+                                                      && (int)situacaoMatriculaAtiva == turma.CodigoSituacaoMatricula).FirstOrDefault();
 
-            if (alunoTurma != null) 
-               await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
+            if (alunoTurma != null)
+                await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
 
             return true;
         }
@@ -45,16 +45,20 @@ namespace SME.SGP.Aplicacao
                 if (alunoTurma.CodigoSituacaoMatricula != (int)(encaminhamento.SituacaoMatriculaAluno ?? 0))
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNAAPA.ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
             }
-
         }
 
         private async Task AtualizarEncaminhamento(long encaminhamentoNAAPAId, long turmaId)
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(encaminhamentoNAAPAId));
+            if(encaminhamentoNAAPA != null)
+            {
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
-            encaminhamentoNAAPA.TurmaId = turmaId;
+                encaminhamentoNAAPA.TurmaId = turmaId;
+                encaminhamentoNAAPA.Turma = turma;
 
-            await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+                await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+            }
         }
     }
 }
