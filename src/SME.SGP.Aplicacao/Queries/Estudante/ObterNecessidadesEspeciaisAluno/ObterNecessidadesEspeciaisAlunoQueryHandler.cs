@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                     Frequencia = PercentualFrequencia(totalAulas, totalAusencias, totalCompensacoes).percentualFrequencia,
                     QuantidadeAusencias = totalAusencias,
                     QuantidadeCompensacoes = totalCompensacoes,
-                    TotalAulas = frequencia.Sum(f => f.TotalAulas)
+                    TotalAulas = totalAulas
                 };
 
                 frequenciaBimestreAlunoDto.Add(frequenciaBimestreAluno);
