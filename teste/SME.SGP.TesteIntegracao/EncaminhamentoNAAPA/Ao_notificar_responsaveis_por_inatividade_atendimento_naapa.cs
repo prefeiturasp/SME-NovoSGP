@@ -67,6 +67,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 TurmaNome = TURMA_NOME_1,
                 UeCodigo = UE_CODIGO_1,
                 UeNome = UE_NOME_1,
+                TipoEscola = TipoEscola.EMEF,
                 DreCodigo = DRE_CODIGO_1,
                 DreNome = DRE_NOME_1
             };
@@ -89,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             var mensagem = new StringBuilder();
             mensagem.Append($"O Encaminhamento do estudante {ALUNO_NOME_1}({ALUNO_CODIGO_1}) ");
-            mensagem.Append($"da turma {TURMA_NOME_1} da {UE_NOME_1}({DRE_NOME_1}) ");
+            mensagem.Append($"da turma {TURMA_NOME_1} da {TipoEscola.EMEF.ShortName()} {UE_NOME_1}({DRE_NOME_1}) ");
             mensagem.Append($"está há 30 dias sem registro de atendimento. ");
             mensagem.Append($"Caso não seja mais necessário acompanhamento do estudante então o encaminhamento deve ser encerrado ou deve ser registrado o acompanhamento. ");
             mensagem.Append("Clique aqui para consultar o encaminhamento.");
