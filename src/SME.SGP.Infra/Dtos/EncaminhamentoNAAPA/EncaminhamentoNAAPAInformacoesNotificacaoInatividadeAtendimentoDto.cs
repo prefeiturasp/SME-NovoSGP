@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto
     {
@@ -9,6 +11,7 @@
         public string TurmaNome { get; set; }
         public string UeNome { get; set; }
         public string UeCodigo { get; set; }
+        public TipoEscola TipoEscola { get; set; }
         public string DreNome { get; set; }
         public string DreCodigo { get; set; }
     }
