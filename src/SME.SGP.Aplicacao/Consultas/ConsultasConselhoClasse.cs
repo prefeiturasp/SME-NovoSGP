@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
                 var tiposParaConsulta = new List<int>();
                 tiposParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
 
-                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposParaConsulta));
+                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposParaConsulta, semestre: turma.Semestre != 0 ? turma.Semestre : null));
                 
                 var turmaRegularCodigo = turmasRegularesDoAluno.FirstOrDefault();
                 var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo));
@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
                 var turmasCodigosParaConsulta = new List<int>();
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
 
-                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
