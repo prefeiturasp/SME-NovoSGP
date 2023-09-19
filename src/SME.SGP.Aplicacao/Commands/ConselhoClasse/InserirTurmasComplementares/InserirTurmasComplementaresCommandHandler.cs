@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,11 +33,11 @@ namespace SME.SGP.Aplicacao
             {
                 var tiposParaConsulta = new List<int> { (int)turmaRegular.TipoTurma };
                 var tiposRegularesDiferentes = turmaRegular.ObterTiposRegularesDiferentes();
-                    
+
                 tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
                 tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
-                var turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaRegular.AnoLetivo, request.AlunoCodigo, tiposParaConsulta));
+                var turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaRegular.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, semestre: turmaRegular.Semestre != 0 ? turmaRegular.Semestre : null));
 
                 if (turmasCodigos != null && turmasCodigos.Any())
                 {
