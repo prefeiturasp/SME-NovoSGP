@@ -5,14 +5,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponenteRegistraFrequenciaQuery : IRequest<bool>
     {
-        public ObterComponenteRegistraFrequenciaQuery(long componenteCurricularId, long? codigoTerritorioSaber = null)
+        public ObterComponenteRegistraFrequenciaQuery(long componenteCurricularId)
         {
             ComponenteCurricularId = componenteCurricularId;
-            CodigoTerritorioSaber = codigoTerritorioSaber;
         }
 
         public long ComponenteCurricularId { get; }
-        public long? CodigoTerritorioSaber { get; set; }
     }
 
     public class ObterComponenteRegistraFrequenciaQueryValidator : AbstractValidator<ObterComponenteRegistraFrequenciaQuery>

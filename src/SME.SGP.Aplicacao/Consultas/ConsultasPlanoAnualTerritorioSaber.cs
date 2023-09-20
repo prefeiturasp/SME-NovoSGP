@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesCurricularesDoProfessorCJ.Any())
                 {
-                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                    var dadosComponentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
                     if (dadosComponentes.Any())
                     {
                         componentesCurricularesDoProfessorCj = dadosComponentes
@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
                     };
 
-            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
+            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.Codigo ?? 0, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
             if (listaPlanoAnual.NaoEhNulo() && listaPlanoAnual.Any())
             {
                 if (listaPlanoAnual.Count() != periodos.Count())

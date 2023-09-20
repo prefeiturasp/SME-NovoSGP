@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<FechamentoAluno> fechamentoAlunos;
 
-            var disciplinasEol = await mediator.Send(new ObterDisciplinasPorIdsQuery(new[] { fechamentoTurmaDisciplina.DisciplinaId }), cancellationToken);
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { fechamentoTurmaDisciplina.DisciplinaId }), cancellationToken);
 
             var disciplina = disciplinasEol is null
                 ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")

@@ -109,10 +109,10 @@ namespace SME.SGP.Aplicacao
         {
             if (componentesQueNaoPodemSerSubstituidos.Any(a => a == atribuicaoCJ.DisciplinaId))
             {
-                var nomeComponenteCurricular = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { atribuicaoCJ.DisciplinaId });
+                var nomeComponenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
                 if (nomeComponenteCurricular.NaoEhNulo() && nomeComponenteCurricular.Any())
                 {
-                    throw new NegocioException($"O componente curricular {nomeComponenteCurricular.FirstOrDefault().Nome} não pode ser substituido.");
+                    throw new NegocioException($"O componente curricular {nomeComponenteCurricular.Nome} não pode ser substituido.");
                 }
                 else throw new NegocioException($"Não foi possível localizar o nome do componente curricular de identificador {atribuicaoCJ.DisciplinaId} no EOL.");
             }
@@ -134,8 +134,8 @@ namespace SME.SGP.Aplicacao
                 var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
                 if (aulas.NaoEhNulo() && aulas.Any())
                 {
-                    var componenteCurricular = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { atribuicaoCJ.DisciplinaId });
-                    var nomeComponenteCurricular = componenteCurricular?.FirstOrDefault()?.Nome ?? atribuicaoCJ.DisciplinaId.ToString();
+                    var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
+                    var nomeComponenteCurricular = componenteCurricular?.Nome ?? atribuicaoCJ.DisciplinaId.ToString();
                     throw new NegocioException($"Não é possível remover a substituição da turma {atribuicaoCJ.Turma.Nome} no componente curricular {nomeComponenteCurricular} porque existem aulas cadastradas.");
                 }
             }

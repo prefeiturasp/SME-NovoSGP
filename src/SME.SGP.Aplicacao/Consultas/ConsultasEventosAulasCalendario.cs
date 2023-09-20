@@ -110,9 +110,9 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<DisciplinaDto> disciplinasEol = new List<DisciplinaDto>();
             if (idsDisciplinasAulas.NaoEhNulo() && idsDisciplinasAulas.Any())
-                disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
-
-            foreach (var x in aulas.ToList())
+                disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinasAulas.ToArray()));
+                    
+            foreach(var x in aulas)
             {
                 bool podeCriarAtividade = true;
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId
@@ -126,9 +126,10 @@ namespace SME.SGP.Aplicacao
                         if (disciplina.Regencia)
                         {
                             var disciplinasRegenciasComAtividades = (await repositorioAtividadeAvaliativaRegencia.Listar(item.Id)).ToList();
-                            foreach (var disciplinaRegencia in disciplinasRegenciasComAtividades)
-                                disciplinaRegencia.DisciplinaContidaRegenciaNome = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(disciplinaRegencia.DisciplinaContidaRegenciaId) })).FirstOrDefault()?.Nome;
-
+                            foreach(var disciplinaRegencia in disciplinasRegenciasComAtividades)
+                            {
+                                disciplinaRegencia.DisciplinaContidaRegenciaNome = (await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(disciplinaRegencia.DisciplinaContidaRegenciaId))))?.Nome;
+                            }
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
                             podeCriarAtividade = true;

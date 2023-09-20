@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             return await Task.FromResult(request.ComponentesCurricularesTurma
                 .Where(c => (!c.Regencia && request.AreasConhecimento.Select(a => a.CodigoComponenteCurricular).Contains(c.CodigoComponenteCurricular)) ||
-                            (!c.Regencia && request.AreasConhecimento.Select(a => a.CodigoComponenteCurricular).Contains(c.CodigoTerritorioSaber)) ||
+                            (!c.Regencia && request.AreasConhecimento.Select(a => a.CodigoComponenteCurricular).Contains(c.CodigoComponenteCurricularTerritorioSaber)) ||
                             (c.Regencia && request.AreasConhecimento.Select(a => a.CodigoComponenteCurricular).Any(cr =>
                               c.CodigoComponenteCurricular == cr)))
                 .OrderBy(cc => cc.Nome));

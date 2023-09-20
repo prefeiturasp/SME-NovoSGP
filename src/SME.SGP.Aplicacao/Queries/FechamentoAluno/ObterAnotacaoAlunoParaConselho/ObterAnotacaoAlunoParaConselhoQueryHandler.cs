@@ -14,12 +14,12 @@ namespace SME.SGP.Aplicacao
     public class ObterAnotacaoAlunoParaConselhoQueryHandler : IRequestHandler<ObterAnotacaoAlunoParaConselhoQuery, IEnumerable<FechamentoAlunoAnotacaoConselhoDto>>
     {
         private readonly IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricularConsulta;
+        private readonly IMediator mediator;
 
-        public ObterAnotacaoAlunoParaConselhoQueryHandler(IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta,IRepositorioComponenteCurricularConsulta repositorioComponenteCurricularConsulta)
+        public ObterAnotacaoAlunoParaConselhoQueryHandler(IRepositorioAnotacaoFechamentoAlunoConsulta repositorioAnotacaoFechamentoAlunoConsulta, IMediator mediator)
         {
             this.repositorioAnotacaoFechamentoAlunoConsulta = repositorioAnotacaoFechamentoAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFechamentoAlunoConsulta));
-            this.repositorioComponenteCurricularConsulta = repositorioComponenteCurricularConsulta ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricularConsulta));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> Handle(ObterAnotacaoAlunoParaConselhoQuery request, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasIds = anotacoesDto.Select(a => long.Parse(a.DisciplinaId)).ToArray();
 
-            var disciplinas = await repositorioComponenteCurricularConsulta.ObterDisciplinasPorIds(disciplinasIds);
+            var disciplinas = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds));  
 
             foreach (var anotacao in anotacoesDto)
             {

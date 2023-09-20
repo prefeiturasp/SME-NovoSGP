@@ -511,11 +511,10 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
-            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) });
-            if (disciplinas.NaoEhNulo() && disciplinas.Any() && disciplinas.FirstOrDefault().RegistraFrequencia)
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(turmaSemRegistro.DisciplinaId)));
+            if (disciplina.NaoEhNulo() && disciplina.RegistraFrequencia)
             {
-                var disciplina = disciplinas.FirstOrDefault();
-
+            
                 if (disciplina.RegistraFrequencia)
                 {
                     var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
@@ -571,13 +570,11 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<string> ObterNomeDisciplina(string codigoDisciplina)
         {
-            long[] disciplinaId = { long.Parse(codigoDisciplina) };
-            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
-
-            if (!disciplina.Any())
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoDisciplina)));
+            if (disciplina is null)
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
 
-            return disciplina.FirstOrDefault().Nome;
+            return disciplina.Nome;
         }
 
         private async Task<int?> QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
