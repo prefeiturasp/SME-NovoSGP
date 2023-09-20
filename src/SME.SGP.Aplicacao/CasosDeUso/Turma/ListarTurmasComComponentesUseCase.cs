@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao
                 return default;
 
             var codigosTurmaPaginada = turmasPaginadas.Items.Select(c => c.TurmaCodigo).Distinct().ToArray();
-            var componentesCodigos = usuario.EhAdmGestao() ? codigosTurmaPaginada
+            var codigosTurmasComponente = usuario.EhAdmGestao() ? codigosTurmaPaginada
                                      : turmasAbrangencia.NaoEhNulo() ? turmasAbrangencia.Select(c => c).ToArray().Intersect(codigosTurmaPaginada).ToArray()
                                      : codigosTurmaPaginada;
 
