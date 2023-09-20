@@ -385,7 +385,7 @@ namespace SME.SGP.Aplicacao
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
             var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId));
-            if (disciplina.EhNulo())
+            if (disciplina.EhNulo()) 
                 throw new NegocioException($"Componente curricular não localizado no SGP [{disciplinaId}]");
 
             return disciplina;

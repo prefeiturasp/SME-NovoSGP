@@ -101,8 +101,8 @@ namespace SME.SGP.Aplicacao
                             excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos
                                 .Where(w => w.Tipo == TipoFrequenciaAluno.Geral && w.CodigoAluno.Equals(codigoAluno))
                                 .Select(s => s.Id));
-
-                        TrataFrequenciaPorDisciplinaAluno(codigoAluno, totalAulasNaDisciplinaParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, turma, request.DisciplinaId, periodoConsiderado, null, null /*componenteTerritorioEquivalente.professor, new string[] { componenteTerritorioEquivalente.codigoComponente }*/, excluirFrequenciaAlunoIds);
+                        
+                        TrataFrequenciaPorDisciplinaAluno(codigoAluno, totalAulasNaDisciplinaParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, turma, request.DisciplinaId, periodoConsiderado, null, excluirFrequenciaAlunoIds);
                         TrataFrequenciaGlobalAluno(codigoAluno, totalAulasParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
                     }
 
@@ -247,11 +247,10 @@ namespace SME.SGP.Aplicacao
                                                        List<FrequenciaAluno> frequenciaDosAlunos,
                                                        IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
                                                        Turma turma, string componenteCurricularId, PeriodoEscolar periodoEscolar, string professor,
-                                                       string[] codigosTerritorioConsiderados, List<long> excluirFrequenciaAlunoIds)
+                                                       List<long> excluirFrequenciaAlunoIds)
         {
             var registrosFrequenciaDisciplina = from rf in registroFrequenciaAlunos
-                                                where rf.ComponenteCurricularId == componenteCurricularId ||
-                                                      (codigosTerritorioConsiderados.NaoEhNulo() && codigosTerritorioConsiderados.Contains(rf.ComponenteCurricularId))
+                                                where rf.ComponenteCurricularId == componenteCurricularId 
                                                 select rf;
 
             if (registrosFrequenciaDisciplina.Any() || totalAulasNaDisciplina > 0)
@@ -261,8 +260,7 @@ namespace SME.SGP.Aplicacao
 
                 var frequenciasAluno = from f in frequenciaDosAlunos
                                        where f.CodigoAluno == alunoCodigo &&
-                                             (f.DisciplinaId == componenteCurricularId ||
-                                             (codigosTerritorioConsiderados.NaoEhNulo() && codigosTerritorioConsiderados.Contains(f.DisciplinaId))) &&
+                                             (f.DisciplinaId == componenteCurricularId) &&
                                              f.Tipo == TipoFrequenciaAluno.PorDisciplina
                                              && f.Bimestre == periodoEscolar.Bimestre
                                        orderby f.Id
@@ -272,8 +270,7 @@ namespace SME.SGP.Aplicacao
                 var totalCompensacoes = 0;
                 var totalCompensacoesDisciplinaAluno = (from c in compensacoesDisciplinasAlunos
                                                         where c.AlunoCodigo == alunoCodigo &&
-                                                              (c.ComponenteCurricularId == componenteCurricularId ||
-                                                               (codigosTerritorioConsiderados.NaoEhNulo() && codigosTerritorioConsiderados.Contains(c.ComponenteCurricularId)))
+                                                              (c.ComponenteCurricularId == componenteCurricularId)
                                                               && c.Bimestre == periodoEscolar.Bimestre
                                                         select c).FirstOrDefault();
 
