@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
             if (componentesQueNaoPodemSerSubstituidos.Any(a => a == atribuicaoCJ.DisciplinaId))
             {
                 var nomeComponenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
-                if (nomeComponenteCurricular.NaoEhNulo() && nomeComponenteCurricular.Any())
+                if (nomeComponenteCurricular.NaoEhNulo())
                 {
                     throw new NegocioException($"O componente curricular {nomeComponenteCurricular.Nome} não pode ser substituido.");
                 }
