@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var cartaIntencoesObservacao = await repositorioCartaIntencoesObservacao.ObterPorIdAsync(request.ObservacaoId);
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            if (cartaIntencoesObservacao == null)
+            if (cartaIntencoesObservacao.EhNulo())
                 throw new NegocioException("Observação da carta de intenção não encontrada.");
 
             var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(cartaIntencoesObservacao.TurmaId);

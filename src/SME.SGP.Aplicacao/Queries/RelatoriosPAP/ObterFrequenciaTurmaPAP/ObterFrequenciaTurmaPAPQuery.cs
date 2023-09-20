@@ -37,8 +37,8 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O período do relatório pap deve ser informado para frequência turma pap.");
 
             RuleFor(x => x.PeriodoRelatorio.PeriodosEscolaresRelatorio)
-                .Must(x => x != null && x.Any())
-                .When(x => x.PeriodoRelatorio != null )
+                .Must(x => x.NaoEhNulo() && x.Any())
+                .When(x => x.PeriodoRelatorio.NaoEhNulo() )
                 .WithMessage("A lista de períodos escolares do período do relatório pap deve ser informada.");
         }
     }

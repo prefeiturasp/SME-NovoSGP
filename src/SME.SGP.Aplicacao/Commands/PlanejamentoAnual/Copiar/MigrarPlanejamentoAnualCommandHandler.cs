@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                     else
                         checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turma.ToString()));
 
-                    if (checarTurma == null)
+                    if (checarTurma.EhNulo())
                         throw new NegocioException($"Turma não encontrada");
 
                     foreach (var periodoOrigem in periodosOrigem)

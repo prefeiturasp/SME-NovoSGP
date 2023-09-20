@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         private TipoAvaliacaoCompletaDto MapearParaDto(TipoAvaliacao tipoAvaliacao, bool? possuiAvaliacaoVinculada)
         {
-            return tipoAvaliacao == null ? null : new TipoAvaliacaoCompletaDto
+            return tipoAvaliacao.EhNulo() ? null : new TipoAvaliacaoCompletaDto
             {
                 Id = tipoAvaliacao.Id,
                 Nome = tipoAvaliacao.Nome,
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
         private PaginacaoResultadoDto<TipoAvaliacaoCompletaDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<TipoAvaliacao> tipoAvaliacaoPaginado)
         {
-            if (tipoAvaliacaoPaginado == null)
+            if (tipoAvaliacaoPaginado.EhNulo())
             {
                 tipoAvaliacaoPaginado = new PaginacaoResultadoDto<TipoAvaliacao>();
             }

@@ -67,15 +67,15 @@ namespace SME.SGP.Aplicacao
             var retorno = new FechamentoFinalConsultaRetornoDto();
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(filtros.TurmaCodigo);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível localizar a turma.");
 
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), filtros.Semestre);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
             var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             if (turma.AnoLetivo != 2020)
@@ -87,17 +87,17 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoDoUltimoBimestre = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { filtros.DisciplinaCodigo }, ultimoPeriodoEscolar.Bimestre, tipoCalendario.Id));
 
-            if (fechamentoDoUltimoBimestre == null || !fechamentoDoUltimoBimestre.Any())
+            if (fechamentoDoUltimoBimestre.EhNulo() || !fechamentoDoUltimoBimestre.Any())
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoPeriodoEscolar.Bimestre}º  bimestre.");
             
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, turma.AnoLetivo));
             
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
+            if (alunosDaTurma.EhNulo() || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
             var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(turma.CodigoTurma));
             var tipoNota = repositorioNotaTipoValor.ObterPorTurmaId(turma.Id, turmaEOL.TipoTurma);
-            if (tipoNota == null)
+            if (tipoNota.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
 
             retorno.EhNota = tipoNota.EhNota();
@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
             {
                 var disciplinasRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
-                if (disciplinasRegencia == null || !disciplinasRegencia.Any())
+                if (disciplinasRegencia.EhNulo() || !disciplinasRegencia.Any())
                     throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
                 if (turma.EhEJA())
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
             var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { filtros.DisciplinaCodigo });
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNotaAlunoAprovacaoDto>();
 
-            if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
+            if (fechamentosTurmaDisciplina.NaoEhNulo() && fechamentosTurmaDisciplina.Any())
                 notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
 
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
@@ -152,7 +152,7 @@ namespace SME.SGP.Aplicacao
                 FechamentoFinalConsultaRetornoAlunoDto fechamentoFinalAluno = await TrataFrequenciaAluno(filtros, periodosEscolares, aluno, turma);
 
                 var marcador = servicoAluno.ObterMarcadorAluno(aluno, new PeriodoEscolar() { PeriodoFim = retorno.EventoData });
-                if (marcador != null)
+                if (marcador.NaoEhNulo())
                     fechamentoFinalAluno.Informacao = marcador.Descricao;
 
                 if (retorno.EhSintese)
@@ -191,7 +191,7 @@ namespace SME.SGP.Aplicacao
                         var nota = notasFechamentosFinais?.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
                                                                         && a.AlunoCodigo == aluno.CodigoAluno && (a.Bimestre is null || a.Bimestre == (int)Bimestre.Final));
 
-                        string notaParaAdicionar = nota == null ? string.Empty :
+                        string notaParaAdicionar = nota.EhNulo() ? string.Empty :
                                                    tipoNota.EhNota() ? nota.Nota.HasValue ? nota.Nota.Value.ToString() : ""
                                                                      : nota.ConceitoId.HasValue ? nota.ConceitoId.Value.ToString() : "";
 
@@ -266,7 +266,7 @@ namespace SME.SGP.Aplicacao
 
             var percentualFrequencia = frequenciaAluno?.PercentualFrequencia;
 
-            if (frequenciaAluno != null && turma.AnoLetivo.Equals(2020))
+            if (frequenciaAluno.NaoEhNulo() && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
 
             var percentualFrequenciaFormatado = percentualFrequencia.HasValue ? FrequenciaAluno.FormatarPercentual(percentualFrequencia.GetValueOrDefault()) : string.Empty;
@@ -286,7 +286,7 @@ namespace SME.SGP.Aplicacao
         private void TrataPeriodosEscolaresParaAluno(FechamentoFinalConsultaFiltroDto filtros, AlunoPorTurmaResposta aluno, ref int totalAusencias, ref int totalAusenciasCompensadas, ref int totalDeAulas, PeriodoEscolar periodo)
         {
             var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(aluno.CodigoAluno, periodo.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtros.DisciplinaCodigo.ToString());
-            if (frequenciaAluno != null)
+            if (frequenciaAluno.NaoEhNulo())
             {
                 totalAusencias += frequenciaAluno.TotalAusencias;
                 totalAusenciasCompensadas += frequenciaAluno.TotalCompensacoes;
@@ -300,7 +300,7 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoDoUltimoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, null, ultimoBimestre, tipoCalendario);
 
-            if (fechamentoDoUltimoBimestre == null || !fechamentoDoUltimoBimestre.Any())
+            if (fechamentoDoUltimoBimestre.EhNulo() || !fechamentoDoUltimoBimestre.Any())
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoBimestre}º  bimestre.");
         }
     }

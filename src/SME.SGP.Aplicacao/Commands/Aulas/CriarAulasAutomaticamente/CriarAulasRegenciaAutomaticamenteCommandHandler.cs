@@ -61,13 +61,13 @@ namespace SME.SGP.Aplicacao
 
                 var idsDisciplinas = aulasCriadas?.Select(idAula => Convert.ToInt64(idAula));
 
-                if (idsDisciplinas == null || !idsDisciplinas.Any())
+                if (idsDisciplinas.EhNulo() || !idsDisciplinas.Any())
                     idsDisciplinas = aulas.Select(a => Convert.ToInt64(a.DisciplinaId));
 
-                var componentesCurricularesAulas = idsDisciplinas != null && idsDisciplinas.Any() ? await mediator
+                var componentesCurricularesAulas = idsDisciplinas.NaoEhNulo() && idsDisciplinas.Any() ? await mediator
                     .Send(new ObterDisciplinasPorIdsQuery(idsDisciplinas.Distinct().ToArray())) : null;
 
-                var datasDesconsideradas = componentesCurricularesAulas != null && componentesCurricularesAulas.Any() ? (from a in aulasCriadasPorUsuarios
+                var datasDesconsideradas = componentesCurricularesAulas.NaoEhNulo() && componentesCurricularesAulas.Any() ? (from a in aulasCriadasPorUsuarios
                                             join cc in componentesCurricularesAulas
                                             on a.DisciplinaId equals cc.CodigoComponenteCurricular.ToString()
                                             where cc.Regencia && 
@@ -78,18 +78,18 @@ namespace SME.SGP.Aplicacao
                 var professorTitular = await mediator
                     .Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadoTurma.TurmaCodigo, dadoTurma.ComponenteCurricularCodigo));
 
-                var professorRf = professorTitular != null ? professorTitular.ProfessorRf : "";
+                var professorRf = professorTitular.NaoEhNulo() ? professorTitular.ProfessorRf : "";
 
                 var aulasCriarComDataInicio = diasParaCriarAula
-                    .Where(c => dadoTurma.DataInicioTurma != null && c.Data.Date >= dadoTurma.DataInicioTurma)?.ToList();
+                    .Where(c => dadoTurma.DataInicioTurma.NaoEhNulo() && c.Data.Date >= dadoTurma.DataInicioTurma)?.ToList();
 
-                if (aulas == null || !aulas.Any())
+                if (aulas.EhNulo() || !aulas.Any())
                     aulasACriar.AddRange(ObterAulasParaCriacao(tipoCalendarioId, aulasCriarComDataInicio, dadoTurma, ueCodigo, modalidade, professorRf, datasDesconsideradas));
                 else
                 {
                     var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, request.UeCodigo);
                     var diasSemAula = diasLetivos
-                        .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (dadoTurma.DataInicioTurma != null &&
+                        .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (dadoTurma.DataInicioTurma.NaoEhNulo() &&
                                                                               c.Data.Date >= dadoTurma.DataInicioTurma))
                         ?
                         .OrderBy(a => a.Data)?
@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
                     var aulasParaCriacao = ObterAulasParaCriacao(tipoCalendarioId, diasSemAula, dadoTurma, ueCodigo,
                         modalidade, professorRf, datasDesconsideradas)?.ToList();
 
-                    if (aulasParaCriacao != null)
+                    if (aulasParaCriacao.NaoEhNulo())
                     {
                         for (int a = 0; a < aulasParaCriacao.Count; a++)
                             aulasACriar.Add(aulasParaCriacao[a]);
@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
                         aulasDaTurmaParaExcluir.ToList());
 
                     var aulasForaDoPeriodo = aulas.Where(c => diasForaDoPeriodo.Contains(c.DataAula));
-                    if (aulasForaDoPeriodo != null && aulasForaDoPeriodo.Any())
+                    if (aulasForaDoPeriodo.NaoEhNulo() && aulasForaDoPeriodo.Any())
                         await ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir,
                             aulasForaDoPeriodo.ToList());
                     
@@ -165,11 +165,11 @@ namespace SME.SGP.Aplicacao
                 var frequenciaAulaUsuario = await mediator
                     .Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id));
 
-                if (frequenciaAulaUsuario == null)
+                if (frequenciaAulaUsuario.EhNulo())
                 {
                     var frequencia = await mediator
                         .Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id));
-                    if (frequencia != null)
+                    if (frequencia.NaoEhNulo())
                     {
                         frequencia.AulaId = aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id;
                         await repositorioFrequencia.SalvarAsync(frequencia);
@@ -178,7 +178,7 @@ namespace SME.SGP.Aplicacao
                     var planoAulaCriadaPeloUsuario = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id));
                     var planoAulaSistema = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id));
 
-                    if (planoAulaCriadaPeloUsuario == null && planoAulaSistema != null)
+                    if (planoAulaCriadaPeloUsuario.EhNulo() && planoAulaSistema.NaoEhNulo())
                     {
                         planoAulaSistema.AulaId = aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id;
                         await repositorioPlanoAula.SalvarAsync(planoAulaSistema);
@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ExcluirAulas(List<(long, DateTime)> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<Aula> aulasDaTurmaParaExcluir)
         {
-            if (aulasDaTurmaParaExcluir != null)
+            if (aulasDaTurmaParaExcluir.NaoEhNulo())
             {
                 foreach (var aula in aulasDaTurmaParaExcluir)
                 {
@@ -227,15 +227,15 @@ namespace SME.SGP.Aplicacao
             var diasLetivos = DeterminaDiasLetivos(diasDoPeriodo, ueCodigo);
             var diasNaoLetivos = DeterminaDiasNaoLetivos(diasDoPeriodo, ueCodigo);
 
-            var diasParaExcluir = diasDoPeriodo.Where(l => (diasLetivos != null && !diasLetivos.Any(n => n.Data == l.Data) &&
-                                                            diasNaoLetivos != null && diasNaoLetivos.Any(n => n.Data == l.Data)) ||
+            var diasParaExcluir = diasDoPeriodo.Where(l => (diasLetivos.NaoEhNulo() && !diasLetivos.Any(n => n.Data == l.Data) &&
+                                                            diasNaoLetivos.NaoEhNulo() && diasNaoLetivos.Any(n => n.Data == l.Data)) ||
                                                             datasDesconsideradas.Contains(l.Data))?
                                                .OrderBy(c => c.Data)?
                                                .ToList();
 
             var aulasExcluir = new List<Aula>();
 
-            aulasExcluir.AddRange(aulas.Where(c => (diasParaExcluir != null && diasParaExcluir.Any(a => a.Data == c.DataAula && !c.Excluido)) ||
+            aulasExcluir.AddRange(aulas.Where(c => (diasParaExcluir.NaoEhNulo() && diasParaExcluir.Any(a => a.Data == c.DataAula && !c.Excluido)) ||
                                                    (turma.DataInicioTurma.HasValue && c.DataAula.Date < turma.DataInicioTurma.Value.Date) ||
                                                    datasDesconsideradas.Contains(c.DataAula)));
 
@@ -262,8 +262,8 @@ namespace SME.SGP.Aplicacao
             var diasNaoLetivos = DeterminaDiasNaoLetivos(diasDoPeriodo, ueCodigo);
 
             var diasParaCriar = diasDoPeriodo
-                .Where(l => (diasLetivos != null && diasLetivos.Any(n => n.Data == l.Data) ||
-                             diasNaoLetivos == null || !diasNaoLetivos.Any(n => n.Data == l.Data)) &&
+                .Where(l => (diasLetivos.NaoEhNulo() && diasLetivos.Any(n => n.Data == l.Data) ||
+                             diasNaoLetivos.EhNulo() || !diasNaoLetivos.Any(n => n.Data == l.Data)) &&
                              !datasDesconsideradas.Contains(l.Data))?
                 .ToList();
 
@@ -289,7 +289,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<Aula> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, DadosTurmaAulasAutomaticaDto turma, string ueCodigo, Modalidade modalidade, string rfProfessor)
         {
             var lista = new List<Aula>();
-            if (diasLetivos != null)
+            if (diasLetivos.NaoEhNulo())
             {
                 for (int d = 0; d < diasLetivos.Count; d++)
                 {

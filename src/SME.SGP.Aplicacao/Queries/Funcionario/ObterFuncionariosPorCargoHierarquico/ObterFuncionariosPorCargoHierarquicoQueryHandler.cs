@@ -37,8 +37,8 @@ namespace SME.SGP.Aplicacao
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 
             if (request.Cargo == Cargo.Supervisor ?
-                supervisoresEscola == null || !supervisoresEscola.Any() :
-                funcionarios == null || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && request.NotificacaoExigeAcao))
+                supervisoresEscola.EhNulo() || !supervisoresEscola.Any() :
+                funcionarios.EhNulo() || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && request.NotificacaoExigeAcao))
             {
                 Cargo? cargoProximoNivel = ObterProximoNivel(request.Cargo, request.PrimeiroNivel);
 

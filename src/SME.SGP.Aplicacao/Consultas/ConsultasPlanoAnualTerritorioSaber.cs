@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long> ObterIdPlanoAnualTerritorioSaberPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId)
         {
             var plano = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, territorioExperienciaId);
-            return plano != null ? plano.Id : 0;
+            return plano.NaoEhNulo() ? plano.Id : 0;
         }
 
         public async Task<PlanoAnualTerritorioSaberCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto)
@@ -86,8 +86,8 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
-                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId || (componenteCurricular != null && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) || cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId)
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor.NaoEhNulo() && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
+                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId || (componenteCurricular.NaoEhNulo() && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) || cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId)
                     : new ComponenteCurricularEol
                     {
                         Codigo = territorioExperienciaId > 0 ? territorioExperienciaId : 0,
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
                     };
 
             var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
-            if (listaPlanoAnual != null && listaPlanoAnual.Any())
+            if (listaPlanoAnual.NaoEhNulo() && listaPlanoAnual.Any())
             {
                 if (listaPlanoAnual.Count() != periodos.Count())
                 {
@@ -130,19 +130,19 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodoEscolar(string turmaId, int anoLetivo)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-            if (turma == null)
+            if (turma.EhNulo())
             {
                 throw new NegocioException("Turma não encontrada.");
             }
             var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");
             }
 
             var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            if (periodos == null)
+            if (periodos.EhNulo())
             {
                 throw new NegocioException("Período escolar não encontrado.");
             }

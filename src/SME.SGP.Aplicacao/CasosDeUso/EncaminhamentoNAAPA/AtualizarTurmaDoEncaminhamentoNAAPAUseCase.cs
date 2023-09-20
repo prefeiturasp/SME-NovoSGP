@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
                                                       && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date
                                                       && (int)situacaoMatriculaAtiva == turma.CodigoSituacaoMatricula).FirstOrDefault();
 
-            if (alunoTurma != null)
-                await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
+            if (alunoTurma.NaoEhNulo()) 
+               await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
 
             return true;
         }

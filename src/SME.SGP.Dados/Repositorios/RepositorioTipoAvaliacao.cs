@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
             MontaCabecalho(query, false);
             MontaFromWhere(query, nome, descricao, situacao, 0);
 
-            if (paginacao == null)
+            if (paginacao.EhNulo())
                 paginacao = new Paginacao(1, 10);
             if (paginacao.QuantidadeRegistros != 0)
                 query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", paginacao.QuantidadeRegistrosIgnorados, paginacao.QuantidadeRegistros);

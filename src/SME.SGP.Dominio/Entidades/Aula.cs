@@ -108,13 +108,13 @@ namespace SME.SGP.Dominio
 
         public void AtualizaComponenteCurricularEol(ComponenteCurricularEol componenteCurricularEol)
         {
-            if (componenteCurricularEol != null)
+            if (componenteCurricularEol.NaoEhNulo())
                 ComponenteCurricularEol = componenteCurricularEol;
         }
 
         public void AtualizaTipoCalendario(TipoCalendario tipoCalendario)
         {
-            if (tipoCalendario != null)
+            if (tipoCalendario.NaoEhNulo())
             {
                 TipoCalendarioId = tipoCalendario.Id;
                 TipoCalendario = tipoCalendario;
@@ -123,7 +123,7 @@ namespace SME.SGP.Dominio
 
         public void AtualizaTurma(Turma turma)
         {
-            if (turma != null)
+            if (turma.NaoEhNulo())
             {
                 Turma = turma;
                 TurmaId = turma.CodigoTurma;
@@ -167,7 +167,7 @@ namespace SME.SGP.Dominio
 
         public bool PermiteRegistroFrequencia(Turma turma)
         {
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("A turma deve ser informada.");
 
             return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA) 
@@ -176,7 +176,7 @@ namespace SME.SGP.Dominio
 
         public bool PermiteRegistroFrequencia()
         {
-            if (Turma == null)
+            if (Turma.EhNulo())
                 throw new NegocioException("A turma não foi preenchida.");
 
             return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && Turma.ModalidadeCodigo == Modalidade.EJA));

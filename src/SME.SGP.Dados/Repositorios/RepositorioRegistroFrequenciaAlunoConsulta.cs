@@ -198,7 +198,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and @dataAula::date between p.periodo_inicio and p.periodo_fim");
             query.AppendLine("and a.data_aula::date between p.periodo_inicio and p.periodo_fim");
 
-            if (disciplinaIdsConsideradas != null && disciplinaIdsConsideradas.Any())
+            if (disciplinaIdsConsideradas.NaoEhNulo() && disciplinaIdsConsideradas.Any())
                 query.AppendLine("and a.disciplina_id = any(@disciplinaIdsConsideradas)");
 
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)

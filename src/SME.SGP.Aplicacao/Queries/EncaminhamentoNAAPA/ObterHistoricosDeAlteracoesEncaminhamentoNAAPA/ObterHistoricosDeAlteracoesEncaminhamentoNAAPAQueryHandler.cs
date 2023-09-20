@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
         {
             var novasRespostas = respostas.ToList().Find(c => c.RespostaEncaminhamentoId == 0);
 
-            if (novasRespostas != null)
+            if (novasRespostas.NaoEhNulo())
             {
                 var questao = questaoExistente?.Questao ?? Questoes?.FirstOrDefault(questao => questao.Id == novasRespostas.QuestaoId);
 
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
             var idsQuestaoAlterado = encaminhamentoNAAPASecaoAlterado.Questoes.Select(questao => questao.QuestaoId);
             var idsQuestaoRemovidas = idsQuestaoExistente?.Except(idsQuestaoAlterado);
 
-            if (idsQuestaoRemovidas != null && idsQuestaoRemovidas.Any())
+            if (idsQuestaoRemovidas.NaoEhNulo() && idsQuestaoRemovidas.Any())
             {
                 var questoes = secaoExistente?.Questoes?.FindAll(questao => idsQuestaoRemovidas.Contains(questao.QuestaoId));
                 var nomeQuestoes = questoes.Select(questao => questao.Questao.Nome).ToList();
@@ -167,11 +167,11 @@ namespace SME.SGP.Aplicacao
                             EncaminhamentoNAAPASecaoQuestaoDto respostasEncaminhamento)
         {
             if (EhCampoLista(respostasEncaminhamento))
-                return ((questaoExistente == null && respostasEncaminhamento.Resposta != "[]") ||
+                return ((questaoExistente.EhNulo() && respostasEncaminhamento.Resposta != "[]") ||
                         (!string.IsNullOrEmpty(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) && UtilRegex.ObterJsonSemAtributoId(questaoExistente?.Respostas?.FirstOrDefault()?.Texto) != UtilRegex.ObterJsonSemAtributoId(respostasEncaminhamento.Resposta)));
 
             if (EnumExtension.EhUmDosValores(respostasEncaminhamento.TipoQuestao, new Enum[] { TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha, TipoQuestao.Upload }))
-                return questaoExistente == null || questaoExistente.Respostas.Any();
+                return questaoExistente.EhNulo() || questaoExistente.Respostas.Any();
 
             return false;
         }
@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao
             {
                 var respostasExistentes = questaoExistente?.Respostas?.Where(s => respostasEncaminhamento.Any(c => c.RespostaEncaminhamentoId == s.Id));
 
-                if (respostasExistentes != null)
+                if (respostasExistentes.NaoEhNulo())
                 {
                     foreach (var respostaExistente in respostasExistentes)
                     {
@@ -280,7 +280,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterNomeQuestaoObservacao(Questao questaoFilha)
         {
-            if ((questaoFilha != null) && (questaoFilha.NomeComponente?.StartsWith("OBS_") == true))
+            if ((questaoFilha.NaoEhNulo()) && (questaoFilha.NomeComponente?.StartsWith("OBS_") == true))
             {
                 var nomeComponentePai = questaoFilha.NomeComponente.Substring(4);
                 var questaoPai = await repositorioQuestao.ObterPorNomeComponente(nomeComponentePai);

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 TotalRegistros = retornoConsultaPaginada.TotalRegistros
             };
 
-            bool nenhumItemEncontrado = retornoConsultaPaginada.Items == null ||
+            bool nenhumItemEncontrado = retornoConsultaPaginada.Items.EhNulo() ||
                !retornoConsultaPaginada.Items.Any() ||
                retornoConsultaPaginada.Items.ElementAt(0).Id == 0;
 
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Consultas
             if (buscarNome)
             {
                 var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year);
-                nomeProfessor = professorResumo != null ? professorResumo.Nome : "Professor não encontrado";
+                nomeProfessor = professorResumo.NaoEhNulo() ? professorResumo.Nome : "Professor não encontrado";
             }
 
             return new AtribuicaoEsporadicaDto
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 Excluido = entidade.Excluido,
                 Id = entidade.Id,
                 Migrado = entidade.Migrado,
-                ProfessorNome = professorResumo != null ? professorResumo.Nome : "Professor não encontrado",
+                ProfessorNome = professorResumo.NaoEhNulo() ? professorResumo.Nome : "Professor não encontrado",
                 ProfessorRf = entidade.ProfessorRf,
                 UeId = entidade.UeId,
                 AlteradoEm = entidade.AlteradoEm,
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             var professor = professores.FirstOrDefault(p => p.CodigoRF == codigoRF);
 
-            if (professor == null)
+            if (professor.EhNulo())
                 return "Professor não encontrado";
 
             return professor.Nome;

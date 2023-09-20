@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 throw new NegocioException($"Erro ao obter estrutura organizacional vigente no EOL. Detalhe: {ex}");
             }
 
-            if (estruturaInstitucionalVigente != null && estruturaInstitucionalVigente.Dres != null && estruturaInstitucionalVigente.Dres.Count > 0)
+            if (estruturaInstitucionalVigente.NaoEhNulo() && estruturaInstitucionalVigente.Dres.NaoEhNulo() && estruturaInstitucionalVigente.Dres.Count > 0)
                 await SincronizarEstruturaInstitucional(estruturaInstitucionalVigente);
             else
             {
@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
                 var usuario = await repositorioUsuario.ObterUsuarioPorCodigoRfAsync(professorRf);
 
-                if (usuario == null)
+                if (usuario.EhNulo())
                     throw new NegocioException("Usuário não encontrado no SGP");
 
                 var abrangenciaGeralSGP = await repositorioAbrangencia.ObterAbrangenciaGeralPorUsuarioId(usuario.Id);
@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         Abrangencia abrangencia = new Abrangencia();
 
                         var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(turma.Codigo));
-                        if (turmaSGP == null)
+                        if (turmaSGP.EhNulo())
                             throw new NegocioException($"Turma não encontrada no SGP - [{turma.Codigo} - {turma.NomeTurma}]");
 
                         abrangencia.DreId = turmaSGP.Ue.DreId;
@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao.Servicos
                     if (turmaId > 0)
                     {
                         var abragenciaSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico).FirstOrDefault();
-                        if (abragenciaSGP != null)
+                        if (abragenciaSGP.NaoEhNulo())
                         {
                             var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));
                             if (virouHistorica && !abragenciaSGP.Historico)
@@ -240,7 +240,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
 
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("UE não localizada.");
 
             return await repositorioAbrangencia
@@ -272,16 +272,16 @@ namespace SME.SGP.Aplicacao.Servicos
             else
                 consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
 
-            if (consultaEol != null || abrangenciaEol != null)
+            if (consultaEol.NaoEhNulo() || abrangenciaEol.NaoEhNulo())
             {
                 // Enquanto o EOl consulta, tentamos ganhar tempo obtendo a consulta sintetica
                 var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
 
-                if (abrangenciaEol == null)
+                if (abrangenciaEol.EhNulo())
                     abrangenciaEol = await consultaEol;
                 var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
-                if (abrangenciaEol != null)
+                if (abrangenciaEol.NaoEhNulo())
                 {
                     IEnumerable<Dre> dres = Enumerable.Empty<Dre>();
                     IEnumerable<Ue> ues = Enumerable.Empty<Ue>();
@@ -295,21 +295,18 @@ namespace SME.SGP.Aplicacao.Servicos
                     turmas = estrutura.Turmas;
 
                     // sincronizamos a abrangencia do login + perfil
-                    unitOfWork.IniciarTransacao();
 
                     await SincronizarAbrangencia(abrangenciaSintetica, abrangenciaEol.Abrangencia?.Abrangencia, ehSupervisor, dres, ues, turmas, login, perfil);
-
-                    unitOfWork.PersistirTransacao();
                 }
             }
         }
 
         private async Task<IEnumerable<Turma>> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
         {
-            if (codigosNaoEncontrados != null && codigosNaoEncontrados.Length > 0)
+            if (codigosNaoEncontrados.NaoEhNulo() && codigosNaoEncontrados.Length > 0)
             {
                 var turmasEol = await servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
-                if (turmasEol != null)
+                if (turmasEol.NaoEhNulo())
                     await SincronizarEstruturaInstitucional(turmasEol);
             }
 
@@ -320,21 +317,21 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             string[] codigosNaoEncontrados;
 
-            if (abrangenciaEol.IdDres != null && abrangenciaEol.IdDres.Length > 0)
+            if (abrangenciaEol.IdDres.NaoEhNulo() && abrangenciaEol.IdDres.Length > 0)
             {
                 var retorno = await mediator.Send(new ObterDreMaterializarCodigosQuery(abrangenciaEol.IdDres));
                 dres = retorno.Dres;
                 codigosNaoEncontrados = retorno.CodigosDresNaoEncontrados;
             }
 
-            if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
+            if (abrangenciaEol.IdUes.NaoEhNulo() && abrangenciaEol.IdUes.Length > 0)
             {
                 var retorno = await mediator.Send(new ObterUeMaterializarCodigosQuery(abrangenciaEol.IdUes));
                 ues = retorno.Ues;
                 codigosNaoEncontrados = retorno.CodigosUesNaoEncontradas;
             }
 
-            if (abrangenciaEol.IdTurmas != null && abrangenciaEol.IdTurmas.Length > 0)
+            if (abrangenciaEol.IdTurmas.NaoEhNulo() && abrangenciaEol.IdTurmas.Length > 0)
             {
                 turmas = repositorioTurma.MaterializarCodigosTurma(abrangenciaEol.IdTurmas, out codigosNaoEncontrados)
                     .Union(await ImportarTurmasNaoEncontradas(codigosNaoEncontrados));
@@ -411,27 +408,37 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
-            if (ehSupervisor)
-                await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
-            else
+            unitOfWork.IniciarTransacao();
+            try
             {
-                switch (abrangencia)
+                if (ehSupervisor)
+                    await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
+                else
                 {
-                    case Infra.Enumerados.Abrangencia.Dre:
-                    case Infra.Enumerados.Abrangencia.SME:
-                        await SincronizarAbrangenciPorDres(abrangenciaSintetica, dres, login, perfil);
-                        break;
+                    switch (abrangencia)
+                    {
+                        case Infra.Enumerados.Abrangencia.Dre:
+                        case Infra.Enumerados.Abrangencia.SME:
+                            await SincronizarAbrangenciPorDres(abrangenciaSintetica, dres, login, perfil);
+                            break;
 
-                    case Infra.Enumerados.Abrangencia.DreEscolasAtribuidas:
-                    case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
-                    case Infra.Enumerados.Abrangencia.UE:
-                        await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
-                        break;
+                        case Infra.Enumerados.Abrangencia.DreEscolasAtribuidas:
+                        case Infra.Enumerados.Abrangencia.UeTurmasDisciplinas:
+                        case Infra.Enumerados.Abrangencia.UE:
+                            await SincronizarAbrangenciaPorUes(abrangenciaSintetica, ues, login, perfil);
+                            break;
 
-                    case Infra.Enumerados.Abrangencia.Professor:
-                        await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil);
-                        break;
+                        case Infra.Enumerados.Abrangencia.Professor:
+                            await SincronizarAbragenciaPorTurmas(abrangenciaSintetica, turmas, login, perfil);
+                            break;
+                    }
                 }
+                unitOfWork.PersistirTransacao();
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
             }
         }
 

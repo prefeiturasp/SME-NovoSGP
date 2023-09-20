@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                                                                                        request.RealizarAgrupamentoComponente,
                                                                                                        true);
 
-            if (componentesCurricularesUsuarioLogado == null)
+            if (componentesCurricularesUsuarioLogado.EhNulo())
                 componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo,
                                                                                                        request.RfLogado,
                                                                                                        request.PerfilAtual,

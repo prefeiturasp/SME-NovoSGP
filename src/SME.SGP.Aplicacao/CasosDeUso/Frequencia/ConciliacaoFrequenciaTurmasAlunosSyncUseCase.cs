@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var turmasComponentesDoAnoLetivo = await repositorioTurmaConsulta.ObterTurmasComponentesPorAnoLetivo(filtro.DataReferencia);
 
-            if (turmasComponentesDoAnoLetivo != null && turmasComponentesDoAnoLetivo.Any())
+            if (turmasComponentesDoAnoLetivo.NaoEhNulo() && turmasComponentesDoAnoLetivo.Any())
             {
                 var turmasComponentesDoAnoLetivoAgrupados = turmasComponentesDoAnoLetivo.GroupBy(a => a.TurmaCodigo).ToList();
 

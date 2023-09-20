@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries
 
         public async Task<bool> Handle(ValidaSeExisteUePorCodigoQuery request, CancellationToken cancellationToken)
         {
-            if (repositorioUe.ObterPorCodigo(request.CodigoUe) == null)
+            if (repositorioUe.ObterPorCodigo(request.CodigoUe).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE");
 
             return true;

@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                                                                request.ChecaMotivoDisponibilizacao))
                 , minutosParaExpirar: 240);
 
-            if (resultado == null)
+            if (resultado.EhNulo())
                 return Enumerable.Empty<ComponenteCurricularEol>();
 
             return resultado;

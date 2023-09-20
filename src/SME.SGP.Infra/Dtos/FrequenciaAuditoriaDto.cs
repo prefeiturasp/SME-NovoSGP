@@ -15,7 +15,7 @@ namespace SME.SGP.Infra
 
         public void TratarRetornoAuditoria(FrequenciaAuditoriaAulaDto frequenciaAuditoriaAulaDto)
         {
-            if (frequenciaAuditoriaAulaDto.Auditoria != null)
+            if (frequenciaAuditoriaAulaDto.Auditoria.NaoEhNulo())
                 Auditoria = frequenciaAuditoriaAulaDto.Auditoria;
             
             if (frequenciaAuditoriaAulaDto.AulaIdComErro.HasValue)

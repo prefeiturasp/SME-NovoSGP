@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new ObterTurmaPorCodigoQuery(Filtro.TurmaCodigo)) :
                     await mediator.Send(new ObterTurmaPorIdQuery(Filtro.TurmaId));
 
-                if (turma != null)
+                if (turma.NaoEhNulo())
                 {
                     var dataAtual = DateTimeExtension.HorarioBrasilia();
                     AnoAnterior = turma.AnoLetivo < dataAtual.Year;

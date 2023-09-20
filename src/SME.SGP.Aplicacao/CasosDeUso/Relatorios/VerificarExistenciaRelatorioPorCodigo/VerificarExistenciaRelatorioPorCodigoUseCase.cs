@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -15,7 +16,7 @@ namespace SME.SGP.Aplicacao
             const int tempoParaExclusaoDoRelatorio = 24;
             var dataCriacaoRelatorio = await mediator.Send(new ObterDataCriacaoRelatorioPorCodigoQuery(codigoRelatorio));
 
-            if (dataCriacaoRelatorio != null)
+            if (dataCriacaoRelatorio.NaoEhNulo())
             {
                 var tempoEmHorasDaCriacao = CalcularTempoEmHoras(dataCriacaoRelatorio.CriadoEm);
 

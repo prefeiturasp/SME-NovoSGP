@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
                 var professorDisciplina = profDisciplina.FirstOrDefault();
 
-                var exibeNomeTurmaNovoInfantil = professorDisciplina != null && professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;
+                var exibeNomeTurmaNovoInfantil = professorDisciplina.NaoEhNulo() && professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;
 
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
                 {

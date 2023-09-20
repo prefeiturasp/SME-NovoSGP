@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(TrataSincronizacaoInstitucionalTipoEscolaCommand request, CancellationToken cancellationToken)
         {
 
-            if (request.TipoEscolaSGP == null)
+            if (request.TipoEscolaSGP.EhNulo())
             {
                 var tipoEscolaParaAdicionar = new TipoEscolaEol()
                 {

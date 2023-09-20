@@ -68,9 +68,8 @@ namespace SME.SGP.Aplicacao
         {
             var responsavelSupervisor = responsaveisSGP;
 
-            if (responsaveisEOL != null)
-                responsavelSupervisor = responsavelSupervisor
-                    .Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
+            if (responsaveisEOL.NaoEhNulo())
+                responsavelSupervisor = responsavelSupervisor.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
 
             foreach (var supervisor in responsavelSupervisor)
                 await RemoverAtribuicaoSupervisor(supervisor);

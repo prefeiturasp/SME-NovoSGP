@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaAlunoMensal>();
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível localizar a turma informada!");
 
             var frequenciasAlunosTurmaEMes = await mediator.Send(new ObterFrequenciaAlunosPorTurmaEMesQuery(turma.CodigoTurma, filtro.Mes));
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                     (a.QuantidadeAulas != frequencia.QuantidadeAulas || a.QuantidadeAusencias != frequencia.QuantidadeAusencias || a.QuantidadeCompensacoes != frequencia.QuantidadeCompensacoes)
                 );
 
-                if (dadosAlteradosAluno != null)
+                if (dadosAlteradosAluno.NaoEhNulo())
                 {
                     await mediator.Send(new AlterarConsolidacaoFrequenciaAlunoMensalCommand(dadosAlteradosAluno.Id, frequencia.Percentual, frequencia.QuantidadeAulas,
                         frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));

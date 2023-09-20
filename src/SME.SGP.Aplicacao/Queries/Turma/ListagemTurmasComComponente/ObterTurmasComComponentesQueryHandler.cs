@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmas = new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>();
 
-            var turmaCodigo = request.TurmaCodigo == null ? 0 : long.Parse(request.TurmaCodigo);
+            var turmaCodigo = request.TurmaCodigo.EhNulo() ? 0 : long.Parse(request.TurmaCodigo);
 
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_UES_MODALIDADE_ANOS_COMPONENTES, request.UeCodigo, (int)request.Modalidade, request.AnoLetivo) + $"?codigoTurma={turmaCodigo}&ehProfessor={request.EhProfessor}&codigoRf={request.CodigoRf}&qtdeRegistros={request.QtdeRegistros}&qtdeRegistrosIgnorados={request.QtdeRegistrosIgnorados}&consideraHistorico={request.ConsideraHistorico}&periodoEscolarInicio={request.PeriodoEscolarInicio.Ticks}&anosInfantilDesconsiderar={request.AnosInfantilDesconsiderar}");

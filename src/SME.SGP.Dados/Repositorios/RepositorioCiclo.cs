@@ -74,7 +74,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("WHERE ");
             query.AppendLine($"  tca.Ano = ANY(@anos)");
             query.AppendLine($"  AND modalidade = @modalidade");
-            if (cicloSelecionado != null)
+            if (cicloSelecionado.NaoEhNulo())
                 query.AppendLine($"  AND tc.id <> @cicloSelecionadoId");
 
             var ciclosNaoSelecionados = database.Conexao
@@ -87,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var ciclosRetorno = new List<CicloDto>();
 
-            if (cicloSelecionado != null)
+            if (cicloSelecionado.NaoEhNulo())
                 ciclosRetorno.Add(cicloSelecionado);
 
             if (ciclosNaoSelecionados.Any())

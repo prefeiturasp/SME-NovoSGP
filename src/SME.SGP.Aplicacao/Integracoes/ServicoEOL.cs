@@ -237,7 +237,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var url = $"alunos/ues/{codigoUe}/anosLetivos/{anoLetivo}/autocomplete"
                 + (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
                 + (codigoEol.HasValue ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
-                + (nome != null ? $"{(codigoEol != null || codigoTurma > 0 ? "&" : "?") + $"nomeAluno={nome}"}" : "")
+                + (nome.NaoEhNulo() ? $"{(codigoEol.NaoEhNulo() || codigoTurma > 0 ? "&" : "?") + $"nomeAluno={nome}"}" : "")
                 + (somenteAtivos == true ? $"&somenteAtivos={somenteAtivos}" : "");
 
             var resposta = await httpClient.GetAsync(url);
@@ -306,7 +306,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var codigosDres = await ObterCodigosDres();
             string url = $"abrangencia/estrutura-vigente";
 
-            if (codigosDres != null && codigosDres.Length > 0)
+            if (codigosDres.NaoEhNulo() && codigosDres.Length > 0)
             {
                 resultado = new EstruturaInstitucionalRetornoEolDTO();
                 foreach (var item in codigosDres)
@@ -318,7 +318,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                         var json = await resposta.Content.ReadAsStringAsync();
                         var parcial = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
 
-                        if (parcial != null)
+                        if (parcial.NaoEhNulo())
                             resultado.Dres.AddRange(parcial.Dres);
                     }
                     else
@@ -456,14 +456,14 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             HttpResponseMessage resposta;
             
-            if (administradorSuporte != null)
+            if (administradorSuporte.NaoEhNulo())
                 resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}?loginAdm={administradorSuporte.Login}&nomeAdm={administradorSuporte.Nome}");
             else
                 resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}");                
             
-            if (!resposta.IsSuccessStatusCode) 
-                return null;
-            
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Não foi possivel obter os dados de acesso");
+
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<RetornoDadosAcessoUsuarioSgpDto>(json);
         }
@@ -634,7 +634,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(retorno.CodigoRF));
 
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Usuário não localizado.");
 
             retorno.UsuarioId = usuario.Id;
@@ -882,7 +882,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorAnosEModalidade(string codigoUe, Modalidade modalidade, int anoLetivo, string[] anosEscolares)
         {
             var url = string.Empty;
-            if (anosEscolares == null || !anosEscolares.Any())
+            if (anosEscolares.EhNulo() || !anosEscolares.Any())
                 url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{(int)modalidade}/anos/{anoLetivo}";
             else
               url = $@"v1/componentes-curriculares/ues/{codigoUe}/modalidades/{(int)modalidade}/anos/{anoLetivo}/anos-escolares?anosEscolares={string.Join("&anosEscolares=", anosEscolares)}";

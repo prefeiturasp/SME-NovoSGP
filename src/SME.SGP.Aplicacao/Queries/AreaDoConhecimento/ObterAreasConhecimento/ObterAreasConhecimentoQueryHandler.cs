@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace SME.SGP.Aplicacao
             await TratarComponentesRegencia(request, listaCodigosComponentes);
             await TratarComponentesTerritorio(request, listaCodigosComponentes);
 
-            if (listaCodigosComponentes == null || !listaCodigosComponentes.Any())
+            if (listaCodigosComponentes.EhNulo() || !listaCodigosComponentes.Any())
                 return default;
 
             return await mediator
@@ -40,14 +41,14 @@ namespace SME.SGP.Aplicacao
             {
                 var codigosTurmas = request.ComponentesCurriculares.Where(c => !string.IsNullOrEmpty(c.TurmaCodigo))
                     .Select(cc => cc.TurmaCodigo)
-                    .Where(codigoTurma => codigoTurma != null)
+                    .Where(codigoTurma => codigoTurma.NaoEhNulo())
                     .Distinct();
                 foreach (var ct in codigosTurmas)
                 {
                     var componentesRegencia = await mediator
                         .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho: true));
 
-                    if (componentesRegencia != null && componentesRegencia.Any())
+                    if (componentesRegencia.NaoEhNulo() && componentesRegencia.Any())
                         listaCodigosComponentes.AddRange(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
                 }
                 
@@ -68,11 +69,11 @@ namespace SME.SGP.Aplicacao
                         var componenteTerritorioEquivalente = await mediator
                         .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(cc.CodigoComponenteCurricular, cc.TurmaCodigo, null));
 
-                        if (componenteTerritorioEquivalente != null && componenteTerritorioEquivalente.Any())
+                        if (componenteTerritorioEquivalente.NaoEhNulo() && componenteTerritorioEquivalente.Any())
                         {
                             var codigoConsiderado = componenteTerritorioEquivalente.Select(ct => ct.codigoComponente)
                                 .Except(new string[] { cc.CodigoComponenteCurricular.ToString() }).FirstOrDefault();
-                            if (codigoConsiderado != null && long.Parse(codigoConsiderado) < cc.CodigoComponenteCurricular)
+                            if (codigoConsiderado.NaoEhNulo() && long.Parse(codigoConsiderado) < cc.CodigoComponenteCurricular)
                                 listaCodigosComponentes.Add(long.Parse(codigoConsiderado));
                         }
                     }

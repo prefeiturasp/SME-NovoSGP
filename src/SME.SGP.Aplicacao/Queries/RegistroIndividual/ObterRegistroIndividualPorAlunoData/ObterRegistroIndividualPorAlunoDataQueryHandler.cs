@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
             RegistroIndividualDto dto = null;
 
-            if (registroIndividual != null)
+            if (registroIndividual.NaoEhNulo())
                 dto = MapearParaDto(registroIndividual);
 
             return dto;

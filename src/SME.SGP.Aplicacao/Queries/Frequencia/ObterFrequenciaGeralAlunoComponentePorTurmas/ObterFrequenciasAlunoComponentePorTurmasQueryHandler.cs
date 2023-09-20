@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 var componentesTerritorioEquivalentes = await mediator
                     .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(aulaComponenteTurma.ComponenteCurricularCodigo), aulaComponenteTurma.TurmaCodigo, null));
 
-                if (componentesTerritorioEquivalentes != null && componentesTerritorioEquivalentes.Any())
+                if (componentesTerritorioEquivalentes.NaoEhNulo() && componentesTerritorioEquivalentes.Any())
                     codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ct => ct.codigoComponente).Except(codigosComponentesConsiderados));
 
                 if (!frequenciaAlunoPeriodos.Any(a => a.TurmaId == aulaComponenteTurma.TurmaCodigo

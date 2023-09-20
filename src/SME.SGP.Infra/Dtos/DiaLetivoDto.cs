@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,9 +29,9 @@ namespace SME.SGP.Infra
         public bool ExcluirAulaDre(string codigoDre) => PossuiEventoDre(codigoDre) && !EhLetivo;
         public bool ExcluirAulaUe(string codigoUe) => PossuiEventoUe(codigoUe) && !EhLetivo;
         public bool ExcluirAulaSME => NaoPossuiDre && NaoPossuiUe && !EhLetivo;
-        public bool NaoPossuiDre => (DreIds == null || !DreIds.Any());
-        public bool NaoPossuiUe => (UesIds == null || !UesIds.Any());
-        public bool PossuiUe(string codigoUe) => UesIds != null && UesIds.Any(c => c == codigoUe);
-        public bool PossuiDre(string codigoDre) => DreIds != null && DreIds.Any(c => c == codigoDre);
+        public bool NaoPossuiDre => (DreIds.EhNulo() || !DreIds.Any());
+        public bool NaoPossuiUe => (UesIds.EhNulo() || !UesIds.Any());
+        public bool PossuiUe(string codigoUe) => UesIds.NaoEhNulo() && UesIds.Any(c => c == codigoUe);
+        public bool PossuiDre(string codigoDre) => DreIds.NaoEhNulo() && DreIds.Any(c => c == codigoDre);
     }
 }

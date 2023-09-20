@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                                             request.CodigoComponenteCurricular,
                                                                             request.Usuario.EhProfessorCj()));
 
-            if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
+            if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
                 if (request.Usuario.EhProfessorCj())
                 {

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioCache.ObterObjetoAsync<ConsolidadoConselhoClasseAlunoNotaCacheDto>(nomeChaveCache,
                     "Obter nota/conceito cache consolidação conselho classe turma/componente/bimestre/aluno");
 
-            if (retornoCacheMapeado == null)
+            if (retornoCacheMapeado.EhNulo())
                 retornoCacheMapeado = new ConsolidadoConselhoClasseAlunoNotaCacheDto() { AlunoCodigo = request.AlunoCodigo,
                                                                                     TurmaId = request.TurmaId,
                                                                                     ComponenteCurricularId = request.ComponenteCurricularId,

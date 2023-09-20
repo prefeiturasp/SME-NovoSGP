@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
             
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível localizar a turma.");
             
             return turma;
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
             
-            if (parametro == null)
+            if (parametro.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotaFechamento' para o ano {anoLetivo}");
 
             return parametro.Ativo;
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoFinalTurma = await repositorioFechamentoTurma.ObterPorTurmaPeriodo(turma.Id);
 
-            if (fechamentoFinalTurma == null)
+            if (fechamentoFinalTurma.EhNulo())
                 fechamentoFinalTurma = new FechamentoTurma(0, turma.Id);
             else
                 fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(fechamentoFinalSalvarDto.TurmaCodigo, disciplinaId);

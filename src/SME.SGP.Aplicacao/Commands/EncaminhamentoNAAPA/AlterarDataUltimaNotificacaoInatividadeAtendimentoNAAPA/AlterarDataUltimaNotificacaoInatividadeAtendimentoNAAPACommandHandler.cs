@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamento = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(request.EncaminhamentoId));
 
-            if (encaminhamento != null) 
+            if (encaminhamento.NaoEhNulo()) 
             {
                 encaminhamento.DataUltimaNotificacaoSemAtendimento = DateTimeExtension.HorarioBrasilia();
                 await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamento);

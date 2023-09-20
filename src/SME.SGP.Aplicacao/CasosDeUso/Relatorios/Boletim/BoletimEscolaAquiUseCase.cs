@@ -10,20 +10,17 @@ namespace SME.SGP.Aplicacao
     public class BoletimEscolaAquiUseCase : IBoletimEscolaAquiUseCase
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioDreConsulta repositorioDre;
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioUsuario repositorioUsuario;
         public BoletimEscolaAquiUseCase(IMediator mediator,
-                              IUnitOfWork unitOfWork,
                               IRepositorioUeConsulta repositorioUe,
                               IRepositorioDreConsulta repositorioDre,
                               IRepositorioTurmaConsulta repositorioTurma,
                               IRepositorioUsuario repositorioUsuario)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -32,10 +29,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioEscolaAquiDto relatorioBoletimEscolaAquiDto)
         {
             int usuarioLogadoId = 1;
-            if (repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo) == null)
+            if (repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a DRE");
 
-            if (repositorioUe.ObterPorCodigo(relatorioBoletimEscolaAquiDto.UeCodigo) == null)
+            if (repositorioUe.ObterPorCodigo(relatorioBoletimEscolaAquiDto.UeCodigo).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE");
 
             if (!string.IsNullOrEmpty(relatorioBoletimEscolaAquiDto.TurmaCodigo))
@@ -43,15 +40,13 @@ namespace SME.SGP.Aplicacao
                 int codigoTurma;
                 if (int.TryParse(relatorioBoletimEscolaAquiDto.TurmaCodigo, out codigoTurma) && codigoTurma <= 0)
                     relatorioBoletimEscolaAquiDto.TurmaCodigo = String.Empty;
-                else if (await repositorioTurma.ObterPorCodigo(relatorioBoletimEscolaAquiDto.TurmaCodigo) == null)
+                else if ((await repositorioTurma.ObterPorCodigo(relatorioBoletimEscolaAquiDto.TurmaCodigo)).EhNulo())
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
 
-            unitOfWork.IniciarTransacao();
             var usuarioLogado = repositorioUsuario.ObterPorId(usuarioLogadoId);
-            var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
-            unitOfWork.PersistirTransacao();
-            return retorno;
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
         }
     }
 }

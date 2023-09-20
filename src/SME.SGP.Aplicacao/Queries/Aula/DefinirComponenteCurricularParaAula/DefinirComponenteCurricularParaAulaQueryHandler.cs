@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             var componenteCorrespondente = componentesProfessor
                 .FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(request.CodigoComponenteCurricular));
 
-            if (componenteCorrespondente != null)
+            if (componenteCorrespondente.NaoEhNulo())
                 return (componenteCorrespondente.Codigo, request.CodigoComponenteCurricular);
             else if (request.Usuario.EhProfessorCj())
             {
@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 var atribuicaoDisciplinaCorrespondente = atribuicoesCjProfessor?
                     .FirstOrDefault(a => a.DisciplinaId.Equals(request.CodigoComponenteCurricular));
 
-                if (atribuicaoDisciplinaCorrespondente == null)
+                if (atribuicaoDisciplinaCorrespondente.EhNulo())
                 {
                     var componentesTurma = await mediator
                         .Send(new ObterDisciplinasPorCodigoTurmaQuery(request.CodigoTurma));
@@ -45,12 +45,12 @@ namespace SME.SGP.Aplicacao
                     var componenteTurmaCorrespondente = componentesTurma?
                         .FirstOrDefault(ct => ct.CodigoComponenteCurricular.Equals(request.CodigoComponenteCurricular));
 
-                    if (componenteTurmaCorrespondente != null)
+                    if (componenteTurmaCorrespondente.NaoEhNulo())
                     {
                         atribuicaoDisciplinaCorrespondente = atribuicoesCjProfessor?
                             .FirstOrDefault(a => a.DisciplinaId.Equals(componenteTurmaCorrespondente.CodigoComponenteTerritorioSaber));
 
-                        return atribuicoesCjProfessor != null ? (request.CodigoComponenteCurricular, componenteTurmaCorrespondente.CodigoComponenteTerritorioSaber) : default;
+                        return atribuicoesCjProfessor.NaoEhNulo() ? (request.CodigoComponenteCurricular, componenteTurmaCorrespondente.CodigoComponenteTerritorioSaber) : default;
                     }
                 }
                 else

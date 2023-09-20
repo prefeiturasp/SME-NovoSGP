@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
-                if (periodoEscolar == null)
+                if (periodoEscolar.EhNulo())
                     throw new NegocioException(MensagemNegocioPlanoAula.NAO_FOI_LOCALIZADO_BIMESTRE_DA_AULA);
                 
                 var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre,
@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
                 if (ValidarSeNaoExistePlanoAnualCadastrado(planejamentoAnual, periodoEscolar, usuario, disciplinaDto))
                     throw new NegocioException(MensagemNegocioPlanoAula.NAO_EXISTE_PLANO_ANUAL_CADASTRADO);
 
-                if (planoAulaDto.ObjetivosAprendizagemComponente == null || !planoAulaDto.ObjetivosAprendizagemComponente.Any() && !planoAula.Migrado)
+                if (planoAulaDto.ObjetivosAprendizagemComponente.EhNulo() || !planoAulaDto.ObjetivosAprendizagemComponente.Any() && !planoAula.Migrado)
                 {
                     var permitePlanoSemObjetivos = false;
 
@@ -144,7 +144,7 @@ namespace SME.SGP.Aplicacao
                 var objetivosAtuais =  (await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id))).ToList();
                 var objetivosPropostos = planoAulaDto.ObjetivosAprendizagemComponente;
                 
-                if (objetivosPropostos != null && objetivosPropostos.Any())
+                if (objetivosPropostos.NaoEhNulo() && objetivosPropostos.Any())
                 {
                     var objetivosIdParaIncluir = objetivosPropostos.Select(s => s.Id).Except(objetivosAtuais.Select(s => s.ObjetivoAprendizagemId));
                     
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
                 planoAulaDto.LicaoCasa = licaoCasa;
 
                 //Se houver plano para copiar
-                if (planoAulaDto.CopiarConteudo != null)
+                if (planoAulaDto.CopiarConteudo.NaoEhNulo())
                 {
                     var migrarPlanoAula = planoAulaDto.CopiarConteudo;
 
@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
 
         private static bool ValidarSeNaoExistePlanoAnualCadastrado(PlanejamentoAnual planejamentoAnual, PeriodoEscolar periodoEscolar, Usuario usuario, DisciplinaDto disciplinaDto)
         {
-            return (planejamentoAnual?.Id <= 0 || planejamentoAnual == null) && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) && !(disciplinaDto != null && disciplinaDto.TerritorioSaber);
+            return (planejamentoAnual?.Id <= 0 || planejamentoAnual.EhNulo()) && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) && !(disciplinaDto.NaoEhNulo() && disciplinaDto.TerritorioSaber);
         }
 
 
@@ -219,13 +219,13 @@ namespace SME.SGP.Aplicacao
             var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turmaCodigo, usuario.Login,
                 usuario.PerfilAtual, ehTurmaHistorica, ehAbrangenciaUeOuDreOuSme));
 
-            if (abrangenciaTurmas == null)
+            if (abrangenciaTurmas.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.USUARIO_SEM_ACESSO_TURMA_RESPECTIVA_AULA);
         }
 
         private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
         {
-            if (planoAula == null)
+            if (planoAula.EhNulo())
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;

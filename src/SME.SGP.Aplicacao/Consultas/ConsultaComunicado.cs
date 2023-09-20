@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
             {
                 var comunicadoDto = itens.FirstOrDefault(x => x.Id == item.Id);
 
-                if (comunicadoDto == null)
+                if (comunicadoDto.EhNulo())
                     itens.Add((ComunicadoDto)item);
                 else
                     comunicadoDto.Grupos.AddRange(item.GruposComunicacao.Select(x => new GrupoComunicacaoDto
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
             {
                 var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma));
 
-                if (abrangenciaTurmas == null)
+                if (abrangenciaTurmas.EhNulo())
                     throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da Turma com codigo {turma.CodigoTurma}");
             }
         }
@@ -124,10 +124,10 @@ namespace SME.SGP.Aplicacao
 
             var ue = abrangenciaUes.FirstOrDefault(x => x.Codigo.Equals(filtroDto.CodigoUe));
 
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da UE com codigo {filtroDto.CodigoUe}");
 
-            if (filtroDto.Turmas != null && filtroDto.Turmas.Any())
+            if (filtroDto.Turmas.NaoEhNulo() && filtroDto.Turmas.Any())
                 await ValidarAbrangenciaTurma(filtroDto);
         }
 
@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
 
             var dre = abrangenciaDres.FirstOrDefault(x => x.Codigo.Equals(filtroDto.CodigoDre));
 
-            if (dre == null)
+            if (dre.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da DRE com codigo {filtroDto.CodigoDre}");
         }
     }

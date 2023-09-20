@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 {
                     DateTime? dataReferencia = !aluno.PossuiSituacaoAtiva() && aluno.DataSituacao.Year == dadosTurma.AnoLetivo ? aluno.DataSituacao : null;
 
-                    if(dataReferencia != null)
+                    if(dataReferencia.NaoEhNulo())
                     {
                         var registroFrequenciasAExcluir = registroFrequenciaAluno.Where(f => f.DataAula.Date > dataReferencia.Value.Date).Select(r => r.RegistroFrequenciaAlunoId);
 
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
                     var quantidade = frequencias.Count(f => f.DataAula >= periodo.PeriodoInicio && f.DataAula <= periodo.PeriodoFim && f.Valor == (int)TipoFrequencia.F);
                     var compensacaoAluno = await mediator.Send(new ObterCompensacoesPorAlunoETurmaQuery(periodo.Bimestre, codigoAluno, frequencias.Key, turmaCodigo));
 
-                    if(compensacaoAluno != null)
+                    if(compensacaoAluno.NaoEhNulo())
                     {
                         if (compensacaoAluno.Quantidade > quantidade && quantidade > 0)
                             await mediator.Send(new AlterarTotalCompensacoesPorCompensacaoAlunoIdCommand() { CompensacaoAlunoId = compensacaoAluno.CompensacaoAlunoId, Quantidade = quantidade });

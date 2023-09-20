@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var ordenacoes = await repositorioCCGrupoAreaOrdenacao.ObterOrdenacaoPorGruposAreas(request.GrupoMatrizIds, request.AreaDoConhecimentoIds);
 
-            if (ordenacoes == null || !ordenacoes.Any())
+            if (ordenacoes.EhNulo() || !ordenacoes.Any())
                 throw new NegocioException("Não foi possível obter as ordenações dos grupos e areas dos componentes informados");
 
             return ordenacoes;

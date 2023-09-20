@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(request.Usuario.CodigoRf, request.Historico);
 
-            return atribuicaoCj != null && atribuicaoCj.Any();
+            return atribuicaoCj.NaoEhNulo() && atribuicaoCj.Any();
         }
     }
 }

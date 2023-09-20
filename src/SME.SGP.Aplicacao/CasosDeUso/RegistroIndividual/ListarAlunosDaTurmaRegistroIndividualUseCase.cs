@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi encontrado turma com o id informado");
 
             var alunosParaRegistroIndividual = await mediator.Send(new ListarAlunosDaTurmaPorComponenteRegistroIndividualQuery(turma, filtro.ComponenteCurricularId));
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
         private async Task<int> ObterDiasDeAusenciaParaPendenciaRegistroIndividualAsync()
         {
             var parametroDiasSemRegistroIndividual = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.PendenciaPorAusenciaDeRegistroIndividual));
-            return parametroDiasSemRegistroIndividual != null ? int.Parse(parametroDiasSemRegistroIndividual) : 0;
+            return parametroDiasSemRegistroIndividual.NaoEhNulo() ? int.Parse(parametroDiasSemRegistroIndividual) : 0;
         }
     }
 

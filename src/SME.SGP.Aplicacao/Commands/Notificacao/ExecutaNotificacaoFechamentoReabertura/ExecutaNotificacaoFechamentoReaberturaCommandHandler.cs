@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoReabertura = request.FechamentoReabertura;
 
             var adminsSgpUe = await servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.UeCodigo);
-            if (adminsSgpUe != null && adminsSgpUe.Any())
+            if (adminsSgpUe.NaoEhNulo() && adminsSgpUe.Any())
             {
                 foreach (var adminSgpUe in adminsSgpUe)
                 {
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             var diretores =
                 await mediator.Send(
                     new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long) Cargo.Diretor));
-            if (diretores != null && diretores.Any())
+            if (diretores.NaoEhNulo() && diretores.Any())
             {
                 foreach (var diretor in diretores)
                 {
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             }
             var ads = await mediator.Send(
                 new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.AD));
-            if (ads != null && ads.Any())
+            if (ads.NaoEhNulo() && ads.Any())
             {
                 foreach (var ad in ads)
                 {
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             }
             var cps = await mediator.Send(
                 new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.CP));
-            if (cps != null && cps.Any())
+            if (cps.NaoEhNulo() && cps.Any())
             {
                 foreach (var cp in cps)
                 {

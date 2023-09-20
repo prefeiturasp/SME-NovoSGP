@@ -159,7 +159,7 @@ namespace SME.SGP.Infra
 
         public bool VerificaSePodeEditarAluno(PeriodoEscolar ultimoPeriodoEscolar)
         {
-            if (!PodeEditarNotaConceito() && ultimoPeriodoEscolar != null)
+            if (!PodeEditarNotaConceito() && ultimoPeriodoEscolar.NaoEhNulo())
                 return EstaAtivo(ultimoPeriodoEscolar.PeriodoFim);
 
             return PodeEditarNotaConceito();

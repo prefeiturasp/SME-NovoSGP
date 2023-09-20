@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoInicio,
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoFim));
 
-                    if (turmasSemAvaliacao != null && turmasSemAvaliacao.Any())
+                    if (turmasSemAvaliacao.NaoEhNulo() && turmasSemAvaliacao.Any())
                     {
                         var componentesCurriculares = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
                         foreach (var turmaSemAvaliacao in turmasSemAvaliacao.GroupBy(a => (a.TurmaCodigo, a.TurmaId)))
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
 
                 if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
                 {
-                    if (professorComponente != null && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
+                    if (professorComponente.NaoEhNulo() && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
                         gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
                 }
             }

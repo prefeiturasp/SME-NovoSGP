@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
 
-            if (aula == null || aula.Excluido)
+            if (aula.EhNulo() || aula.Excluido)
                 throw new NegocioException($"Aula de id {aulaId} não encontrada");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             });
             bool temEventoDeRecesso = false;
             eventosDaUeSME = eventosDaUeSME.Where(x => x.TipoEvento.Id == 11);
-            if (eventosDaUeSME != null && eventosDaUeSME.Any())
+            if (eventosDaUeSME.NaoEhNulo() && eventosDaUeSME.Any())
                 temEventoDeRecesso = true;
 
             var aberto = await AulaDentroDoPeriodo(aula.TurmaId, aula.DataAula);
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             bool temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
 
             var compensacoesAusenciasAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id));
-            if (compensacoesAusenciasAulas == null)
+            if (compensacoesAusenciasAulas.EhNulo())
                 compensacoesAusenciasAulas = new List<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
 
             return await MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto, temEventoDeRecesso, compensacoesAusenciasAulas.Any());
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> AulaDentroDoPeriodo(string turmaCodigo, DateTime dataAula)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de codigo [{turmaCodigo}] não localizada!");
 
             var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(dataAula, turma));
@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
 
-                if (turma == null)
+                if (turma.EhNulo())
                     throw new NegocioException($"Turma de codigo [{aula.TurmaId}] não localizada!");
 
                 var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(aula.TurmaId, turma.TipoTurma == TipoTurma.Programa);
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
 
-            return disciplina != null;
+            return disciplina.NaoEhNulo();
         }
 
         private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto, bool temEventoDeRecesso, bool possuiCompensacao)

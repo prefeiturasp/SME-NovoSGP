@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             if (turma.EhTurmaInfantil)
             {
                 var periodosFechamento = await mediator.Send(new ObterPeriodosFechamentoTurmaInfantilCalendarioIdBimestreQuery(tipoCalendarioId, bimestre));
-                if (periodosFechamento == null || !periodosFechamento.Any())
+                if (periodosFechamento.EhNulo() || !periodosFechamento.Any())
                     throw new NegocioException($"Não foi possível obter os periodos de fechamento do bimestre : {bimestre}");
 
                 return (dataReferencia >= periodosFechamento.LastOrDefault().InicioDoFechamento.Date &&
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, anoLetivo));
 
-            acompanhamentoAlunoTurmaSemestre.QuantidadeFotos = parametroQuantidade == null ? 3 :
+            acompanhamentoAlunoTurmaSemestre.QuantidadeFotos = parametroQuantidade.EhNulo() ? 3 :
                 int.Parse(parametroQuantidade.Valor);
         }
 
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
         {            
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível localizar a turma informada!");
 
             return turma;

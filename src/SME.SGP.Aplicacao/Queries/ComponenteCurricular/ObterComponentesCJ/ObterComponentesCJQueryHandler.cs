@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var codigosTerritorioEquivalentes = await mediator
                 .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricular, request.TurmaCodigo, null));
 
-            var codigoTerritorioConsiderado = codigosTerritorioEquivalentes != null ?
+            var codigoTerritorioConsiderado = codigosTerritorioEquivalentes.NaoEhNulo() ?
                 codigosTerritorioEquivalentes.OrderBy(c => c.codigoComponente.Length).First().codigoComponente : null;
 
             var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(request.Modalidade,
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 string.Empty,
                 true);
 
-            if (atribuicoes == null || !atribuicoes.Any())
+            if (atribuicoes.EhNulo() || !atribuicoes.Any())
                 return null;
 
             var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
@@ -52,10 +52,10 @@ namespace SME.SGP.Aplicacao
 
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
 
-            if (request.ListarComponentesPlanejamento && componenteRegencia != null)
+            if (request.ListarComponentesPlanejamento && componenteRegencia.NaoEhNulo())
             {
                 var componentesRegencia = await repositorioComponenteCurricular.ObterDisciplinasPorIds(IDS_COMPONENTES_REGENCIA);
-                if (componentesRegencia != null)
+                if (componentesRegencia.NaoEhNulo())
                     componentes = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
             }
             else

@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar
                     .ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnualId, periodo.PeriodoEscolarId, true);
 
-                if (planejamentoAnualPeriodoEscolar == null)
+                if (planejamentoAnualPeriodoEscolar.EhNulo())
                     planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId, planejamentoAnualId);
                 else
                     planejamentoAnualPeriodoEscolar.Excluido = false;
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                     var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente
                         .ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolarId, true);
 
-                    if (planejamentoAnualComponente == null)
+                    if (planejamentoAnualComponente.EhNulo())
                         planejamentoAnualComponente = new PlanejamentoAnualComponente(componente.ComponenteCurricularId, componente.Descricao, planejamentoAnualPeriodoEscolarId);
                     else
                     {
@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
                         var planejamentoAnualObjetivoAprendizagem = listaPlanejamentoAnualObjetivoAprendizagemExistente
                               .FirstOrDefault(oa => oa.ObjetivoAprendizagemId.Equals(objetivo.ObjetivoAprendizagemId));
 
-                        if (planejamentoAnualObjetivoAprendizagem == null)
+                        if (planejamentoAnualObjetivoAprendizagem.EhNulo())
                             planejamentoAnualObjetivoAprendizagem = new PlanejamentoAnualObjetivoAprendizagem(planejamentoAnualComponenteId, objetivo.ObjetivoAprendizagemId);
                         else
                             planejamentoAnualObjetivoAprendizagem.Excluido = false;

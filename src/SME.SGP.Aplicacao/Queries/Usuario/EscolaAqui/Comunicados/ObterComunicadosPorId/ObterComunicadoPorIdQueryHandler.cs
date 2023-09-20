@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
             var anosEscolares = (await repositorioComunicadoAnoEscolar.ObterAnosEscolaresPorComunicadoId(comunicado.Id)).ToArray();
 
-            comunicado.AnosEscolares = anosEscolares == null || !anosEscolares.Any() ? new string[] { "-99" } : anosEscolares;
+            comunicado.AnosEscolares = anosEscolares.EhNulo() || !anosEscolares.Any() ? new string[] { "-99" } : anosEscolares;
 
             comunicado.Modalidades = (await repositorioComunicadoModalidade.ObterModalidadesPorComunicadoId(comunicado.Id)).ToArray();
 

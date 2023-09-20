@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public override void Remover(Notificacao entidade)
         {
-            if (entidade != null)
+            if (entidade.NaoEhNulo())
             {
                 entidade.Excluida = true;
                 Salvar(entidade);

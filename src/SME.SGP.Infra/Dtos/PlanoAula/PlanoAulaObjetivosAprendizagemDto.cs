@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
@@ -36,7 +37,7 @@ namespace SME.SGP.Infra
 
         public void Adicionar(ObjetivosAprendizagemPorComponenteDto objetivoAprendizagemComponente)
         {
-            if (objetivoAprendizagemComponente != null)
+            if (objetivoAprendizagemComponente.NaoEhNulo())
                 ObjetivosAprendizagemComponente.Add(objetivoAprendizagemComponente);
         } 
     }

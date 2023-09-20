@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             if (!request.SemAgrupamentoTurma)
             {
                 url = ServicosEolConstants.URL_DISCIPLINAS_TURMA;
-                if (request.CodigoTurma != null)
+                if (request.CodigoTurma.NaoEhNulo())
                     url += $"?codigoTurma={request.CodigoTurma}";
             }
             else

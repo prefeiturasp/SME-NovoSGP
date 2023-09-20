@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("", HttpStatusCode.Unauthorized);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(filtroSolicitacaoGuidAutenticacao.TurmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var autenticacaoFrequenciaDto = new AutenticacaoFrequenciaDto { Rf = filtroSolicitacaoGuidAutenticacao.Rf, 

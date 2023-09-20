@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodoFechamentoReaberturaVigente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = request.DataReferencia, TipoCalendarioId = request.TipoCalendarioId, UeId = request.UeId });
 
-            if (periodoFechamentoReaberturaVigente != null)
+            if (periodoFechamentoReaberturaVigente.NaoEhNulo())
             {
                 var bimestresComReabertura = await mediator.Send(new ObterFechamentoReaberturaBimestrePorFechamentoReaberturaIdQuery(periodoFechamentoReaberturaVigente.Id));
 

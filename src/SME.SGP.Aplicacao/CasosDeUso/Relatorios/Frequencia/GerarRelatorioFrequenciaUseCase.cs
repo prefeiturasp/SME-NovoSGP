@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
             filtro.NomeUsuario = usuario.Nome;

@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 return await CalculoFrequenciaGlobal2020(request.AlunoCodigo, turma);
 
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO_OBTENCAO_FREQUENCIA_GERAL);
 
             var aluno = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(request.AlunoCodigo)));
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmaCodigo = turmasCodigos.First();
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada.");
 
             return turma;
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
             var periodos = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
             var disciplinasDaTurmaEol = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
             var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.RegistraFrequencia && c.GrupoMatrizNome != null).GroupBy(c => c.GrupoMatrizNome).ToList();
+            var gruposMatrizes = disciplinasDaTurma.Where(c => c.RegistraFrequencia && c.GrupoMatrizNome.NaoEhNulo()).GroupBy(c => c.GrupoMatrizNome).ToList();
             var somaFrequenciaFinal = 0.0;
             var totalDisciplinas = 0;
 

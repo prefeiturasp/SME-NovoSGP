@@ -147,19 +147,19 @@ namespace SME.SGP.Dados.Repositorios
                         lookup.Add(registroItinerancia.Id, itinerancia);
                     }
 
-                    if (itineranciaAluno != null)
+                    if (itineranciaAluno.NaoEhNulo())
                         itinerancia.AdicionarAluno(itineranciaAluno);
 
-                    if (itineranciaAlunoquestao != null)
+                    if (itineranciaAlunoquestao.NaoEhNulo())
                         itinerancia.AdicionarQuestaoAluno(itineranciaAluno.Id, itineranciaAlunoquestao);
 
-                    if (itineranciaQuestao != null)
+                    if (itineranciaQuestao.NaoEhNulo())
                         itinerancia.AdicionarQuestao(itineranciaQuestao);
 
-                    if (itineranciaObjetivo != null)
+                    if (itineranciaObjetivo.NaoEhNulo())
                         itinerancia.AdicionarObjetivo(itineranciaObjetivo);
 
-                    if (itineranciaObjetivoBase != null)
+                    if (itineranciaObjetivoBase.NaoEhNulo())
                         itinerancia.AdicionarObjetivoBase(itineranciaObjetivoBase);
 
                     return itinerancia;
@@ -257,7 +257,7 @@ namespace SME.SGP.Dados.Repositorios
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and i.situacao = @situacao ");
 
-            if (dataInicio != null && dataFim != null)
+            if (dataInicio.NaoEhNulo() && dataFim.NaoEhNulo())
                 sql.AppendLine("and i.data_visita::date between @dataInicio and @dataFim");
 
             if (turmaId > 0)
@@ -350,7 +350,7 @@ namespace SME.SGP.Dados.Repositorios
             if (mes > 0)
                 where.AppendLine(" and extract(month from i.data_visita) = @mes");
 
-            if (codigoRF != null)
+            if (codigoRF.NaoEhNulo())
                 where.AppendLine(" and i.criado_rf = @codigoRF");
 
             sql.AppendLine(where.ToString());
@@ -375,7 +375,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<Itinerancia, Ue, Dre, Itinerancia>(query,
                 (itinerancia, ue, dre) =>
                 {
-                    if (registroItinerancia == null)
+                    if (registroItinerancia.EhNulo())
                         registroItinerancia = itinerancia;
 
                     registroItinerancia.Ue = ue;

@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var filtro = param.ObterObjetoMensagem<TurmaDTO>();
 
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(filtro.TurmaId, DateTimeExtension.HorarioBrasilia()));
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return false;
 
             var diasAposInicioPeriodo = await mediator.Send(DiasAposInicioPeriodoLetivoComponenteSemAulaQuery.Instance);
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 if (!possuiAulaNoPeriodo)
                 {
                     var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmaDreUe.CodigoTurma, componente.Codigo.ToString()));
-                    if (professorTitular == null)
+                    if (professorTitular.EhNulo())
                         continue;
 
                     //-> TODO caso não tenha o professor titular gerar a pendencia para o CP? 
