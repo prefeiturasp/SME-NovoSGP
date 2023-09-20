@@ -30,8 +30,11 @@ namespace SME.SGP.Aplicacao
                 var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo));
                 if (matriculasAluno.NaoEhNulo() || matriculasAluno.Any())
                 {
-                    if ((matriculasAluno.NaoEhNulo() || matriculasAluno.Any()) && matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim)))
-                        turmasCodigosComMatriculasValidas.Add(codTurma);
+                    if (matriculasAluno.Any(m => m.CodigoTurma.ToString() == codTurma &&
+                       ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) 
+                       || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 
+                       || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim))))
+                            turmasCodigosComMatriculasValidas.Add(codTurma);
                 }
             }
             return turmasCodigosComMatriculasValidas;

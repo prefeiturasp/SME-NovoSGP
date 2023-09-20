@@ -1,24 +1,20 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Interfaces;
-using System.Linq;
-using SME.SGP.Dominio.Constantes;
-using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesDoProfessorNaTurmaQueryHandler : IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>
     {
         private readonly IRepositorioCache repositorioCache;
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
-        public ObterComponentesCurricularesDoProfessorNaTurmaQueryHandler(IServicoEol servicoEOL, IRepositorioCache repositorioCache, IMediator mediator)
+        public ObterComponentesCurricularesDoProfessorNaTurmaQueryHandler(IRepositorioCache repositorioCache, IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
@@ -35,7 +31,8 @@ namespace SME.SGP.Aplicacao
                 async () => await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(request.CodigoTurma, request.Login,
                                                                request.PerfilUsuario,
                                                                request.RealizarAgrupamentoComponente,
-                                                               request.ChecaMotivoDisponibilizacao)));
+                                                               request.ChecaMotivoDisponibilizacao))
+                , minutosParaExpirar: 240);
 
             if (resultado.EhNulo())
                 return Enumerable.Empty<ComponenteCurricularEol>();

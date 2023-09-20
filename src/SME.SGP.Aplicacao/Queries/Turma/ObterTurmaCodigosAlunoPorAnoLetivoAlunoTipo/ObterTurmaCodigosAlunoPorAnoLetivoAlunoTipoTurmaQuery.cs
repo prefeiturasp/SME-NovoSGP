@@ -7,13 +7,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery : IRequest<string[]>
     {
-        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas, bool? consideraHistorico = null, DateTime? dataReferencia = null, string ueCodigo = null, int? semestre = null)
+        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas, DateTime? dataReferencia = null, string ueCodigo = null, int? semestre = null)
         {
             AnoLetivo = anoLetivo;
             CodigoAluno = codigoAluno;
             TiposTurmas = tiposTurmas;
             DataReferencia = dataReferencia;
-            ConsideraHistorico = VerificaConsideraHistorico(consideraHistorico);
             UeCodigo = ueCodigo;      
             Semestre = semestre;
         }
@@ -21,15 +20,8 @@ namespace SME.SGP.Aplicacao
         public string CodigoAluno { get; set; }
         public IEnumerable<int> TiposTurmas { get; set; }
         public DateTime? DataReferencia { get; }
-        public bool ConsideraHistorico { get; set; }
         public string UeCodigo { get; set; }
         public int? Semestre { get; set; }
-
-        private bool VerificaConsideraHistorico(bool? consideraHistorico)
-        {
-            if (!consideraHistorico.HasValue) return AnoLetivo < DateTime.Today.Year;
-            else return consideraHistorico.Value;
-        }
     }
 
     public class ObterCodigoTurmaRegularPorAnoLetivoAlunoQueryValidator : AbstractValidator<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery>

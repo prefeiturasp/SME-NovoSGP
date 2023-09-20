@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             var mensagem = new StringBuilder();
 
             mensagem.Append($"O Encaminhamento do estudante {informacaoNotificacao.AlunoNome}({informacaoNotificacao.AlunoCodigo}) ");
-            mensagem.Append($"da turma {informacaoNotificacao.TurmaNome} da {informacaoNotificacao.UeNome}({informacaoNotificacao.DreNome}) ");
+            mensagem.Append($"da turma {informacaoNotificacao.TurmaNome} da {informacaoNotificacao.TipoEscola.ShortName()} {informacaoNotificacao.UeNome}({informacaoNotificacao.DreNome}) ");
             mensagem.Append($"está há 30 dias sem registro de atendimento. ");
             mensagem.Append($"Caso não seja mais necessário acompanhamento do estudante então o encaminhamento deve ser encerrado ou deve ser registrado o acompanhamento.");
 

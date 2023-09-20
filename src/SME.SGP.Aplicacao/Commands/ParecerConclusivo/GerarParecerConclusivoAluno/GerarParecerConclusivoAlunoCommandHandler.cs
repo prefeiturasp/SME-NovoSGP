@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                     Bimestre = bimestre,
                     AnoLetivo = turma.AnoLetivo
                 };
-                await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto)); 
+                await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto));
             }
 
             return new ParecerConclusivoDto()
@@ -143,7 +143,7 @@ namespace SME.SGP.Aplicacao
                 tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
 
                 var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, historico, ueCodigo: turma.Ue.CodigoUe));
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
                 if (turma.Historica == true)
                 {

@@ -43,6 +43,8 @@ namespace SME.SGP.Aplicacao
             if (filtroTurmaDto.TurmaCodigo.EhNulo())
                 turmasAbrangencia = await mediator.Send(new ObterCodigosTurmasAbrangenciaPorUeModalidadeAnoQuery(filtroTurmaDto.UeCodigo, filtroTurmaDto.Modalidade.Value, periodo: 0, filtroTurmaDto.ConsideraHistorico,
                                                                                      filtroTurmaDto.AnoLetivo, new int[] { }, desconsideraNovosAnosInfantil: false));
+            else
+                turmasAbrangencia = new long[] { long.Parse(filtroTurmaDto.TurmaCodigo) };
 
             var anosInfantilDesconsiderar = filtroTurmaDto.Modalidade.Value == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(filtroTurmaDto.AnoLetivo, Modalidade.EducacaoInfantil)) : null;
 
@@ -98,7 +100,7 @@ namespace SME.SGP.Aplicacao
                     turmasPaginadas.Items = listRetorno;
                 }
             }
-            else
+            else if(!filtroTurmaDto.ConsideraHistorico)
             {
                 turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
                                                                                              filtroTurmaDto.DreCodigo,
@@ -117,6 +119,30 @@ namespace SME.SGP.Aplicacao
                                                                                                 periodoEscolar.FirstOrDefault().PeriodoInicio,
                                                                                              anosInfantilDesconsiderar.NaoEhNulo() ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
+            else
+            {
+                if (turmasAbrangencia.Any() || turmasAbrangencia != null)
+                    foreach (var turmaAbrangencia in turmasAbrangencia)
+                    {
+                        var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaAbrangencia.ToString()));
+                        var disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
+                        turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                        {
+                            TurmaCodigo = long.Parse(turmaAbrangencia.ToString()),
+                            Modalidade = filtroTurmaDto.Modalidade.Value,
+                            NomeTurma = turma.Nome,
+                            NomeFiltro = turma.NomeFiltro,
+                            Ano = turma.Ano,
+                            ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
+                            NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
+                            ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
+                            Turno = (TipoTurnoEOL)turma.TipoTurno,
+                        });
+
+                        listRetorno.AddRange(turmasPaginadas.Items);
+                    }
+                turmasPaginadas.Items = listRetorno;
+            }
 
             if (turmasPaginadas.EhNulo() || (turmasPaginadas?.Items).EhNulo() || !turmasPaginadas.Items.Any())
                 return default;
@@ -127,7 +153,7 @@ namespace SME.SGP.Aplicacao
                                      : codigosTurmaPaginada;
 
             var retornoComponentesTurma = from item in turmasPaginadas.Items.ToList()
-                                          join componenteCodigo in componentesCodigos on item.TurmaCodigo equals componenteCodigo
+                                          join componenteCodigo in codigosTurmasComponente on item.TurmaCodigo equals componenteCodigo
                                           select item.TerritorioSaber && item.Id.HasValue && item.Id.Value > 0 ? item.Id.Value : item.ComponenteCurricularCodigo;
 
             if (turmasAbrangencia.NaoEhNulo())

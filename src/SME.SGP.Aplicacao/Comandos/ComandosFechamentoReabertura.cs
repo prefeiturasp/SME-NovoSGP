@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoReabertura.EhNulo())
                 throw new NegocioException("Não foi possível localizar esta Reabertura de Fechamento.");
 
-            fechamentoReabertura = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, fechamentoReabertura);
+            fechamentoReabertura = await TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, fechamentoReabertura);
 
             return await servicoFechamentoReabertura.AlterarAsync(fechamentoReabertura, fechamentoReaberturaPersistenciaDto.Bimestres);
         }
@@ -60,19 +60,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
-            FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, null);
+            FechamentoReabertura entidade = await TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, null);
             return await servicoFechamentoReabertura.SalvarAsync(entidade);
         }
 
-
-        private FechamentoReabertura TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, FechamentoReabertura fechamentoReaberturaExistenteDto)
+        private async Task<FechamentoReabertura> TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, FechamentoReabertura fechamentoReaberturaExistenteDto)
         {
             Dre dre = null;
             Ue ue = null;
 
             if (!string.IsNullOrEmpty(fechamentoReaberturaPersistenciaDto.DreCodigo))
             {
-                dre = repositorioDre.ObterPorCodigo(fechamentoReaberturaPersistenciaDto.DreCodigo);
+                dre = await repositorioDre.ObterPorCodigo(fechamentoReaberturaPersistenciaDto.DreCodigo);
                 if (dre.EhNulo())
                     throw new NegocioException("Não foi possível localizar a Dre.");
             }

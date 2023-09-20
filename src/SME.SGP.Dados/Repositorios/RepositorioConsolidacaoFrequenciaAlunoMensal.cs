@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<ConsolidacaoFrequenciaAlunoMensalDto>(query, new { turmaId, mes });
         }
 
-        public async Task AlterarConsolidacaoAluno(long consolidacaoId, decimal percentual, int quantidadeAulas, int quantidadeAusencias, int quantidadeCompensacoes)
+        public async Task AlterarConsolidacaoAluno(long consolidacaoId, double percentual, int quantidadeAulas, int quantidadeAusencias, int quantidadeCompensacoes)
         {
             string query = @"update consolidacao_frequencia_aluno_mensal 
                                     set percentual = @percentual, 

@@ -269,7 +269,7 @@ namespace SME.SGP.Aplicacao
                 if (turmasItinerarioEnsinoMedio.NaoEhNulo())
                     tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
-                var turmasCodigosComplementares = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, codigoAluno, tiposParaConsulta, null, null, null, (turma.Semestre != 0 ? turma.Semestre : null)));
+                var turmasCodigosComplementares = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, codigoAluno, tiposParaConsulta, null, null, (turma.Semestre != 0 ? turma.Semestre : null)));
 
                 if (turmasCodigosComplementares.Any())
                 {

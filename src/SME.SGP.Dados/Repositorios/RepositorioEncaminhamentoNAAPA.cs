@@ -472,7 +472,7 @@ namespace SME.SGP.Dados.Repositorios
                   and coalesce(en.data_ultima_notificacao_sem_atendimento, tab_dt_atendimento.dataAtendimento) + interval '30 day' <= now()");
             query.AppendLine(")");
             query.AppendLine($@"select ia.AlunoCodigo, ia.AlunoNome, ia.EncaminhamentoId, ia.TurmaId, t.nome TurmaNome, 
-                ue.nome UeNome, ue.ue_id UeCodigo, dre.abreviacao DreNome, dre.dre_id DreCodigo
+                ue.nome UeNome, ue.ue_id UeCodigo, ue.tipo_escola TipoEscola, dre.abreviacao DreNome, dre.dre_id DreCodigo
                 from inatividade_atendimento ia
                 inner join turma t on t.id = ia.TurmaId
                 inner join ue on ue.id = t.ue_id
