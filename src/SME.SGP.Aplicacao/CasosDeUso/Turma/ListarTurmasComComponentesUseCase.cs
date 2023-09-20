@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (turmasAbrangencia.Any() || turmasAbrangencia != null)
+                if (turmasAbrangencia.NaoEhNulo() && turmasAbrangencia.Any())
                     foreach (var turmaAbrangencia in turmasAbrangencia)
                     {
                         var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaAbrangencia.ToString()));

@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
 
             var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(IDS_COMPONENTES_REGENCIA));
-            if (componentesRegencia != null)
+            if (componentesRegencia.NaoEhNulo())
                 return TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
 
             return componentes;
@@ -649,7 +649,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ComponentesParaObjetivosAprendizagemOpcionais, anoLetivo));
 
-            if (parametro != null)
+            if (parametro.NaoEhNulo())
             {
                 componentesParaObjetivosAprendizagemOpcionais = parametro.Valor.Split(",");
             }
