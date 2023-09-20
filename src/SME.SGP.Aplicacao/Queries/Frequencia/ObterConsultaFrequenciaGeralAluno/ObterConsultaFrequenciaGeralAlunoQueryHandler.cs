@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance, cancellationToken);
 
             var turmasCodigos = new List<string>();
-            var matriculaAlunoNaTurma = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.TurmaCodigo, request.AlunoCodigo));
+            var matriculaAlunoNaTurma = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(request.TurmaCodigo, request.AlunoCodigo, true));
             bool alunoEstaAtivoNaTurma = !matriculaAlunoNaTurma?.Inativo ?? true;
 
             if (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
