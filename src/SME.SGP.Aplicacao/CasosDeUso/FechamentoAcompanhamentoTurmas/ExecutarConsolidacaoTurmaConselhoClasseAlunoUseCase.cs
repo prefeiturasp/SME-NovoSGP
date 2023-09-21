@@ -85,10 +85,12 @@ namespace SME.SGP.Aplicacao
 
             if (!filtro.Inativo)
             {
-                var componentesDoAluno = await mediator
-                    .Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(filtro.AlunoCodigo, filtro.Bimestre, filtro.TurmaId));
+                
+                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+                turmasCodigos.AddRange(codigosComplementares);
+                var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
-                if (componentesDoAluno != null && componentesDoAluno.Any())
+                if (componentesDaTurmaES != null && componentesDaTurmaES.Any())
                 {
                     if (!filtro.Bimestre.HasValue || filtro.Bimestre == 0)
                     {
@@ -97,18 +99,13 @@ namespace SME.SGP.Aplicacao
                         var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
-
-                    var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
-                    turmasCodigos.AddRange(codigosComplementares);
-                    var componentesDaTurmaEol = await mediator
-                        .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos.ToArray()));
-
+                 
                     //Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
-                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != 6);
+                        componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != 6);
 
-                    var possuiComponentesSemNotaConceito = componentesDaTurmaEol
-                        .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
+                    var possuiComponentesSemNotaConceito = componentesDaTurmaES
+                        .Where(ct => ct.LancaNota && !ct.EhTerritorioSaber)
                         .Select(ct => ct.Codigo.ToString())
                         .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
                         .Any();
