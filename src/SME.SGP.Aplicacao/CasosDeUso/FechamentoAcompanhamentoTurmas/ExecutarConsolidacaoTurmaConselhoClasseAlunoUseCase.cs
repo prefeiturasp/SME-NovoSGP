@@ -87,7 +87,8 @@ namespace SME.SGP.Aplicacao
             {
                 
                 var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
-                turmasCodigos.AddRange(codigosComplementares);
+                if(codigosComplementares.Any())
+                    turmasCodigos.AddRange(codigosComplementares);
                 var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
                 if (componentesDaTurmaES != null && componentesDaTurmaES.Any())
