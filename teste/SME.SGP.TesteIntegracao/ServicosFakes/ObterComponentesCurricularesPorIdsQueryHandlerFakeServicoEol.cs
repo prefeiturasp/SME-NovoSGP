@@ -244,7 +244,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     Regencia = false,
                     RegistraFrequencia = false,
                     TerritorioSaber = false,
-                    LancaNota = false,
+                    LancaNota = true,
                     ObjetivosAprendizagemOpcionais = false,
                     GrupoMatrizNome = "Teste 8",
                     TurmaCodigo = "1"
