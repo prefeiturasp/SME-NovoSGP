@@ -116,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             await InserirNaBase(new RegistroFrequenciaAluno
             {
-                Id = 1,
+                Id = 2,
                 CodigoAluno = "1",
                 RegistroFrequenciaId = 1,
                 CriadoPor = "",
