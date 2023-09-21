@@ -113,7 +113,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 {
                     Bimestre = BIMESTRE_4,
                     DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                    Justificativa = "",
+                    Justificativa = "Teste",
                     TurmaId = TURMA_CODIGO_1,
                     NotaConceitoAlunos = fechamentoNotaDto
                 }
