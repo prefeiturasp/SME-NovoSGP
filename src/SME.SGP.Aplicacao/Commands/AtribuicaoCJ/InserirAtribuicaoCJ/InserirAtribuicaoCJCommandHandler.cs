@@ -36,6 +36,7 @@ namespace SME.SGP.Aplicacao
         {
             var atribuicaoCJ = request.AtribuicaoCJ;
             var atribuicoesAtuais = request.AtribuicoesAtuais;
+            var excluiAbrangencia = request.ExcluiAbrangencia;
 
             await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
@@ -54,7 +55,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (atribuicaoCJ.Substituir == atribuicaoJaCadastrada.Substituir)
                 {
-                    await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico);
+                    await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
                     return Unit.Value;
                 }
 
@@ -68,12 +69,12 @@ namespace SME.SGP.Aplicacao
             ValidaSePerfilPodeIncluir(request.Usuario);
 
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
-            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico);
+            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
 
             return Unit.Value;
         }
 
-        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico)
+        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico, bool excluiAbrangencia)
         {
             var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
@@ -96,7 +97,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (ehHistorico)
                     await repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
-                else if(!atribuicoesAtuais.Any(a => a.Substituir == true))
+                else if (excluiAbrangencia)
                     await repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
 
                 if(!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
