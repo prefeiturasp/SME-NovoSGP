@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake
+namespace SME.SGP.TesteIntegracao.ServicosFake
 {
     public class ObterProfessoresTitularesPorTurmaIdQueryHandlerFake : IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
