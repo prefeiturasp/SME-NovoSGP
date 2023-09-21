@@ -51,9 +51,17 @@ namespace SME.SGP.Aplicacao
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
 
             var ehBimestreFinal = BimestreFinal == dto.Bimestre;
+            var periodoInicio = bimestreDoPeriodo.PeriodoInicio;
+            var periodoFim = bimestreDoPeriodo.PeriodoFim;
+
+            if (ehBimestreFinal)
+            {
+                periodoInicio = periodosEscolares.FirstOrDefault(p => p.Bimestre == 1).PeriodoInicio;
+                periodoFim = periodosEscolares.FirstOrDefault(p => turma.EhEJA() ? p.Bimestre == 2 : p.Bimestre == 4).PeriodoFim;
+            }
 
             var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma,
-                    (bimestreDoPeriodo.PeriodoInicio, bimestreDoPeriodo.PeriodoFim), ehBimestreFinal)))
+                    (periodoInicio, periodoFim))))
                 .DistinctBy(a => a.CodigoAluno)
                 .OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno);
 
@@ -213,7 +221,8 @@ namespace SME.SGP.Aplicacao
             var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componentesCurricularesId.ToArray(), tipoCalendarioId, professor: professorRf);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, componentesCurricularesId.ToArray(), tipoCalendarioId, periodosEscolaresIds, professorRf));
             var frequenciaAlunosComTotalizadores = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componentesCurricularesId.ToArray(), periodosEscolaresIds, alunos);
-            var frequenciaAlunos = await ObterListagemFrequenciaAluno(alunos, turma, frequenciaAlunosComTotalizadores, null, frequenciaAlunosComTotalizadores.Any());
+            var periodoEscolar = MontaPeriodoEscolarFinalParaMarcador(periodosEscolares, turma.ModalidadeCodigo);
+            var frequenciaAlunos = await ObterListagemFrequenciaAluno(alunos, turma, frequenciaAlunosComTotalizadores, periodoEscolar, frequenciaAlunosComTotalizadores.Any());
 
             return new FrequenciaAlunosPorBimestreDto
             {
@@ -225,6 +234,13 @@ namespace SME.SGP.Aplicacao
                 MostraLabelAulasPrevistas = turma.ModalidadeCodigo != Modalidade.EducacaoInfantil
             };
         }
+
+        private PeriodoEscolar MontaPeriodoEscolarFinalParaMarcador(IEnumerable<PeriodoEscolar> periodos, Modalidade modalidadeTurma)
+         => new PeriodoEscolar()
+         {
+             PeriodoInicio = periodos.FirstOrDefault(p=> p.Bimestre == 1).PeriodoInicio,
+             PeriodoFim = periodos.FirstOrDefault(p => modalidadeTurma == Modalidade.EJA ? p.Bimestre == 2 : p.Bimestre == 4).PeriodoFim
+         };
 
         private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosRegistradaFinalAsync(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, IEnumerable<AlunoPorTurmaResposta> alunos, string professor = null)
         {
