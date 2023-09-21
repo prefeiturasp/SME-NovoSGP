@@ -314,7 +314,7 @@ namespace SME.SGP.Aplicacao
                 var pendenciaCompleto =
                     await mediator.Send(new ObterTurmaDaPendenciaFechamentoCompletoQuery(pendencia.Id));
                 
-               return pendenciaCompleto !=null ? ObterNomeBimestre(pendenciaCompleto.Bimestre) : string.Empty;
+               return pendenciaCompleto.NaoEhNulo() ? ObterNomeBimestre(pendenciaCompleto.Bimestre) : string.Empty;
             }
 
             var turma = pendencia.EhPendenciaAula() ? 

@@ -99,7 +99,7 @@ namespace SME.SGP.Dominio
 
         public void SetTurma(Turma turma)
         {
-            if (turma !=null)
+            if (turma.NaoEhNulo())
             {
                 Turma = turma;
                 TurmaId = turma.Id;    

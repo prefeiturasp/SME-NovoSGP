@@ -25,8 +25,7 @@ namespace SME.SGP.Aplicacao
                 .Where(cc => request.ConsideraRegencia || (!request.ConsideraRegencia && !cc.Regencia))
                 .Select(a => a.CodigoComponenteCurricular).ToList();
 
-            await TratarComponentesRegencia(request, listaCodigosComponentes);
-            await TratarComponentesTerritorio(request, listaCodigosComponentes);
+            TratarComponentesRegencia(request, listaCodigosComponentes);
 
             if (listaCodigosComponentes.EhNulo() || !listaCodigosComponentes.Any())
                 return default;
@@ -52,32 +51,6 @@ namespace SME.SGP.Aplicacao
                         listaCodigosComponentes.AddRange(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
                 }
                 
-            }
-        }
-
-        private async Task TratarComponentesTerritorio(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
-        {
-            if (request.ComponentesCurriculares.Any(cc => cc.TerritorioSaber))
-            {
-                var componentesTerritorio = request.ComponentesCurriculares
-                    .Where(cc => cc.TerritorioSaber).ToList();
-
-                foreach (var cc in componentesTerritorio)
-                {
-                    if (cc.CodigoComponenteCurricular > 0 && !string.IsNullOrEmpty(cc.TurmaCodigo))
-                    {
-                        var componenteTerritorioEquivalente = await mediator
-                        .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(cc.CodigoComponenteCurricular, cc.TurmaCodigo, null));
-
-                        if (componenteTerritorioEquivalente.NaoEhNulo() && componenteTerritorioEquivalente.Any())
-                        {
-                            var codigoConsiderado = componenteTerritorioEquivalente.Select(ct => ct.codigoComponente)
-                                .Except(new string[] { cc.CodigoComponenteCurricular.ToString() }).FirstOrDefault();
-                            if (codigoConsiderado.NaoEhNulo() && long.Parse(codigoConsiderado) < cc.CodigoComponenteCurricular)
-                                listaCodigosComponentes.Add(long.Parse(codigoConsiderado));
-                        }
-                    }
-                }
             }
         }
     }

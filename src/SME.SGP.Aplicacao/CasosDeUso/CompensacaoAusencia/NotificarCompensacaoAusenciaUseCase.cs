@@ -135,13 +135,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterNomeDisciplina(string codigoDisciplina)
         {
-            long[] disciplinaId = { long.Parse(codigoDisciplina) };
-            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
-
-            if (!disciplina.Any())
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoDisciplina)));
+            if (disciplina is null)
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
-
-            return disciplina.FirstOrDefault().Nome;
+            return disciplina.Nome;
         }
 
         private bool GerarNotificacaoExtemporanea(bool periodoAberto, bool parametroAtivo)

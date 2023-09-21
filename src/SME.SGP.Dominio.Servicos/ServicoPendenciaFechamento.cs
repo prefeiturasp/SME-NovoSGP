@@ -114,8 +114,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<DisciplinaDto> BuscaInformacoesDaDisciplina(long disciplinaId)
         {
-            var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
-
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId));
             if (componenteCurricular.EhNulo())
                 throw new NegocioException("Componente curricular não encontrado.");
 
@@ -239,7 +238,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (registrosAulasSemFrequencia.NaoEhNulo() && registrosAulasSemFrequencia.Any())
             {
-                var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
+                var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId));
                 if (componenteCurricular.EhNulo())
                     throw new NegocioException("Componente curricular não encontrado.");
 
@@ -278,8 +277,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (registrosAulasSemPlanoAula.NaoEhNulo() && registrosAulasSemPlanoAula.Any())
             {
-                var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
-
+                var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId));
                 if (componenteCurricular.EhNulo())
                     throw new NegocioException("Componente curricular não encontrado.");
 

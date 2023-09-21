@@ -34,11 +34,10 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhSomenteProfessorCj())
                 componentesCurricularesDoProfessorCJ = await mediator
                      .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
-            
+
 
             var componenteCorrespondente = componentesCurricularesEolProfessor.NaoEhNulo()
-                ? componentesCurricularesEolProfessor.FirstOrDefault(cc => (!cc.TerritorioSaber && cc.Codigo.ToString() == aula.DisciplinaId) || 
-                                                                           (cc.TerritorioSaber && cc.Codigo.ToString() == aula.DisciplinaId && cc.Professor == aula.ProfessorRf))
+                ? componentesCurricularesEolProfessor.FirstOrDefault(cc => cc.Codigo.ToString() == aula.DisciplinaId)
                 : usuarioLogado.EhSomenteProfessorCj() && componentesCurricularesDoProfessorCJ.Any() ?
                                                         componentesCurricularesDoProfessorCJ.Select(c => new ComponenteCurricularEol()
                                                         {

@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao.Commands
         private async Task ExcluirArquivos(long encaminhamentoNAAPAId)
         {
             var codigos = await repositorioEncaminhamentoNAAPA.ObterCodigoArquivoPorEncaminhamentoNAAPAId(encaminhamentoNAAPAId);
-            if (codigos !=null && codigos.Any())
+            if (codigos.NaoEhNulo() && codigos.Any())
             {
                 foreach (var item in codigos)
                 {

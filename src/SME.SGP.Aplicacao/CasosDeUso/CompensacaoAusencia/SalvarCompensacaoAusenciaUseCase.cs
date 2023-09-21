@@ -53,19 +53,10 @@ namespace SME.SGP.Aplicacao
                 if (!usuario.EhGestorEscolar())
                     await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
-                var professorConsiderado = (string)null;
                 var codigosComponentesConsiderados = new List<string>() { compensacaoDto.DisciplinaId };
-                var codigosTerritorioEquivalentes = await mediator
-                    .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(compensacaoDto.DisciplinaId), turma.CodigoTurma, usuario.EhProfessor() ? usuario.Login : null));
-
-                if (codigosTerritorioEquivalentes.NaoEhNulo() && codigosTerritorioEquivalentes.Any())
-                {
-                    codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
-                    professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-                }
 
                 // Valida mesma compensação no ano                
-                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray(), professorConsiderado));
+                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray()));
                 if (compensacaoExistente.NaoEhNulo())
                     throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
 
@@ -83,10 +74,7 @@ namespace SME.SGP.Aplicacao
                 var descricaoAtual = compensacaoBanco.Descricao;
 
                 // Persiste os dados
-                var componenteTerritorio = !string.IsNullOrWhiteSpace(professorConsiderado);
-                if (componenteTerritorio)
-                    compensacaoDto.DisciplinaId = codigosComponentesConsiderados.OrderBy(c => c.Length).Last();
-                var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco, professorConsiderado);
+                var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
                 compensacao.TurmaId = turma.Id;
                 compensacao.AnoLetivo = turma.AnoLetivo;
 
@@ -106,7 +94,7 @@ namespace SME.SGP.Aplicacao
 
                 if (compensacaoDto.Alunos.Any() || (ehAlteracao && compensacoesJaExistentes.Any()))
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes, professorConsiderado);
+                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes);
                     codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
@@ -183,7 +171,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, Turma turma, string[] disciplinasId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolar periodo, IEnumerable<CompensacaoAusenciaAluno> compensacoesJaExistentes, string professor = null)
+        private async Task<IEnumerable<CompensacaoAusenciaAluno>> GravarCompensacaoAlunos(bool alteracao, long compensacaoId, Turma turma, string[] disciplinasId, IEnumerable<CompensacaoAusenciaAlunoDto> compensacaoAusenciaAlunoDtos, PeriodoEscolar periodo, IEnumerable<CompensacaoAusenciaAluno> compensacoesJaExistentes)
         {
             var mensagensExcessao = new StringBuilder();
             var listaPersistencia = new List<CompensacaoAusenciaAluno>();
@@ -198,7 +186,7 @@ namespace SME.SGP.Aplicacao
             if (compensacaoAusenciaAlunoDtos.Any())
             {
                 var obterFrequenciaPorListaDeAlunosDisciplinaData = await mediator
-                    .Send(new ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(compensacaoAusenciaAlunoDtos?.Select(x => x.Id).ToArray(), disciplinasId, periodo.Id, turma.CodigoTurma, professor));
+                    .Send(new ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(compensacaoAusenciaAlunoDtos?.Select(x => x.Id).ToArray(), disciplinasId, periodo.Id, turma.CodigoTurma));
 
                 // altera as faltas compensadas
                 var alunosAlterarFaltasCompensada = compensacoesJaExistentes.Where(a => !a.Excluido);
@@ -425,20 +413,18 @@ namespace SME.SGP.Aplicacao
             Excluido = false
         };
 
-        private CompensacaoAusencia MapearEntidade(CompensacaoAusenciaDto compensacaoDto, CompensacaoAusencia compensacao, string professor = null)
+        private CompensacaoAusencia MapearEntidade(CompensacaoAusenciaDto compensacaoDto, CompensacaoAusencia compensacao)
         {
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
             compensacao.Descricao = compensacaoDto.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
-            compensacao.ProfessorRf = professor;
-
             return compensacao;
         }
 
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
-            var disciplinasEOL = await mediator.Send(new ObterDisciplinasPorIdsQuery(new long[] { disciplinaId }));
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { disciplinaId }));
 
             if (!disciplinasEOL.Any())
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
@@ -470,31 +456,5 @@ namespace SME.SGP.Aplicacao
             return componentes.NaoEhNulo() && componentes.Any();
         }
 
-        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
-        {
-            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-
-            if (usuarioLogado.EhProfessor())
-            {
-                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente.NaoEhNulo() && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
-            }
-            else if (usuarioLogado.EhProfessorCj())
-            {
-                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor.NaoEhNulo())
-                {
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                    if (componenteProfessorRelacionado.NaoEhNulo())
-                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
-                }
-            }
-
-            return codigoComponenteTerritorioCorrespondente;
-        }
     }
 }

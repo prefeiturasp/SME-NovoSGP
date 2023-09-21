@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                 }
                 listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto() { DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
-                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber!= null ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
+                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
                                                                                 ReflexaoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Reflexao : string.Empty,
                                                                                 ReflexaoNovo = bimestrePlanoAnual.Reflexao});
 

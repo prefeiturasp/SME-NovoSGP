@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
             if (componentesCurricularesCompletos.EhNulo() || !componentesCurricularesCompletos.Any())
                 throw new NegocioException("Componente curricular informado não encontrado no EOL");
 
-            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo || a.CodigoTerritorioSaber == filtro.DisciplinaCodigo);
+            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo || a.CodigoComponenteCurricularTerritorioSaber == filtro.DisciplinaCodigo);
 
             IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
             if (componenteReferencia.Regencia)
@@ -385,7 +385,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIds(long[] ids)
         {
-            return await mediator.Send(new ObterDisciplinasPorIdsQuery(ids));
+            return await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(ids));
         }
     }
 }

@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var bimestrePlanoAnual in planoAnualDto.Bimestres)
                 {
                     PlanoAnual planoAnual = ObterPlanoAnualSimplificado(planoAnualDto, bimestrePlanoAnual.Bimestre.Value);
-                    if (planoAnual != null)
+                    if (planoAnual.NaoEhNulo())
                     {
                         var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(), DateTime.Now);
                         if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)

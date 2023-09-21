@@ -179,12 +179,10 @@ namespace SME.SGP.Aplicacao
                     var ausenciasAtividadesAvaliativas = await repositorioFrequencia
                         .ObterAusencias(filtro.TurmaCodigo, filtro.DisciplinaCodigo, atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray(), alunosIds.ToArray());
 
-                    var consultaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(filtro.DisciplinaCodigo) });
-
-                    if (consultaEOL.EhNulo() || !consultaEOL.Any())
+                    var disciplinaEOL = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(filtro.DisciplinaCodigo)));
+                    if (disciplinaEOL.EhNulo())
                         throw new NegocioException("Componente curricular informado não encontrado no EOL");
-                    var disciplinaEOL = consultaEOL.First();
-
+                    
                     IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
                     if (disciplinaEOL.Regencia)
                     {
@@ -373,7 +371,7 @@ namespace SME.SGP.Aplicacao
                             avaliacaoDoBimestre.EhInterdisciplinar = true;
                             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(avaliacao.Id);
                             var idsDisciplinas = atividadeDisciplinas.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas);
+                            var disciplinas = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas));
                             var nomesDisciplinas = disciplinas.Select(d => d.Nome).ToArray();
                             avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                         }

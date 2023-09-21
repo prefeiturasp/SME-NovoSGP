@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
                 var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(aula.TurmaId, turma.TipoTurma == TipoTurma.Programa);
 
                 return disciplinas.Any(d => d.CodigoComponenteCurricular == long.Parse(aula.DisciplinaId)) ||
-                       disciplinas.Any(d => d.CodigoTerritorioSaber == long.Parse(aula.DisciplinaId)) ||
+                       disciplinas.Any(d => d.CodigoComponenteCurricularTerritorioSaber == long.Parse(aula.DisciplinaId)) ||
                        disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId));                
             }
 

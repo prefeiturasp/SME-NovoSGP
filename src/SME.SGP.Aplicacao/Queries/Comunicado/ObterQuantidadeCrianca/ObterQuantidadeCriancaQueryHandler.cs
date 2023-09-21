@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (request.Turma !=null  && !request.Turma.Contains("-99"))
+            if (request.Turma.NaoEhNulo() && !request.Turma.Contains("-99"))
             {
                 foreach (var item in request.Turma)
                 {

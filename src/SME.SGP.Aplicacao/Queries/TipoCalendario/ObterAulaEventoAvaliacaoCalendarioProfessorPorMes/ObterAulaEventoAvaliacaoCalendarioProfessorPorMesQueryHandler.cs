@@ -15,12 +15,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoEol servicoEol;
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario, IServicoEol servicoEol)
+
+        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
         public async Task<IEnumerable<EventoAulaDiaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
         {
@@ -35,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             var componentesCurricularesId = componentesCurriculares?.Where(b => b.RegistraFrequencia == true)
-                .Select(x => x.TerritorioSaber && x.CodigoComponenteTerritorioSaber > 0 ? x.CodigoComponenteTerritorioSaber : x.Codigo)
+                .Select(x => x.Codigo)
                 .ToArray();
 
             for (int i = 1; i < qntDiasMes + 1; i++)
