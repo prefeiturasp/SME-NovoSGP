@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             var command = new DreUeDto(1, 1, UE_CODIGO_1);
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
 
-            var pendeciasSemFrequencia = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
+            var pendeciasSemFrequencia = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
             pendeciasSemFrequencia.ShouldNotBeNull();
             var pendeciasFechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendeciasSemFrequencia.FirstOrDefault().Id);
             pendeciasFechamento.ShouldNotBeNull();
@@ -59,6 +59,5 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             pendencias.Count(pendencia => pendencia.Excluido && pendencia.Tipo == TipoPendencia.Frequencia).ShouldBe(1);
             pendencias.Any(pendencia => pendencia.Excluido).ShouldBeTrue();
         }
-
     }
 }
