@@ -33,7 +33,6 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> Executar(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(notasFrequenciaDto.CodigoTurma));
-            bool turmaInicialEhEdFisica = turma.EhTurmaEdFisica();
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
@@ -193,8 +192,8 @@ namespace SME.SGP.Aplicacao
                 (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos.ToArray(), usuarioAtual.PerfilAtual,
                     usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, true))).ToList();
 
-            if (notasFechamentoAluno.Any(x => x.Nota != null && turma.EhEJA() && turmaInicialEhEdFisica))
-                ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno, turmaTipoNotaConceito);
+            if (turmaTipoNotaConceito && turma.EhEJA() && notasFechamentoAluno.Any(x => x.Nota != null))
+                ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
             var disciplinasDaTurma = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(disciplinasCodigo, codigoTurma: turma.CodigoTurma))).ToList();
@@ -625,11 +624,11 @@ namespace SME.SGP.Aplicacao
             return 0;
         }
         
-        private void ConverterNotaFechamentoAlunoNumerica(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno,bool turmaTipoNotaConceito)
+        private void ConverterNotaFechamentoAlunoNumerica(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
         {
             foreach (var notaFechamento in notasFechamentoAluno)
             {
-                if (turmaTipoNotaConceito && MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(notaFechamento.ComponenteCurricularCodigo))
+                if (MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(notaFechamento.ComponenteCurricularCodigo))
                 {
                     if (notaFechamento.Nota != null)
                         if (notaFechamento.Nota >= 7)
