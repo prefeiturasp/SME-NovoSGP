@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IConsolidarFrequenciaTurmasMensalUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IConsolidarFrequenciaTurmasMensalUseCase : IRabbitUseCase
     {
     }
 }
