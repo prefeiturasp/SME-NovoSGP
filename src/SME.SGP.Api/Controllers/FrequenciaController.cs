@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    // [Authorize("Bearer")]
+    [Authorize("Bearer")]
     [Route("api/v1/calendarios")]
     public class FrequenciaController : ControllerBase
     {
@@ -250,24 +250,6 @@ namespace SME.SGP.Api.Controllers
         {
             await salvarLogUseCase.SalvarInformacao(dadosLogDto.Mensagem, LogContexto.Frequencia);
             return Ok();
-        }
-        
-        [HttpPost("testeservicoeol")]
-        public async Task<IActionResult> TesteServicoEOL()
-        {
-            var filtro = new FiltroFuncionarioDto();
-            filtro.CodigoDRE = "108800";
-            filtro.CodigoUE = "094765";
-            filtro.CodigoRF = "6769195";
-            filtro.NomeServidor = "ADALGISA GONCALVES";
-
-            return Ok(await mediator.Send(new ObterEstruturaInstuticionalVigentePorTurmaQuery(new [] {"2507115"})));
-
-            //"6769195")));
-
-            // "097645", DateTime.Now)));
-
-            // new [] {"2507115"})));
         }
     }
 }
