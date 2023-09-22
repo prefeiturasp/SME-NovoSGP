@@ -23,7 +23,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasFeriadoCalendario consultasFeriadoCalendario;
@@ -39,7 +38,6 @@ namespace SME.SGP.Dominio.Servicos
                                             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                             IServicoNotificacao servicoNotificacao,
                                             IServicoUsuario servicoUsuario,
-                                            IServicoEol servicoEOL,
                                             IConfiguration configuration,
                                             IMediator mediator, IConsultasFeriadoCalendario consultasFeriadoCalendario)
         {
@@ -52,7 +50,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
@@ -118,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Dados da Aula
             var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
-            MeusDadosDto professor = await servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf);
+            MeusDadosDto professor = await mediator.Send(new ObterUsuarioCoreSSOQuery(registroFrequencia.ProfessorRf));
 
             // Gestores
             var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);

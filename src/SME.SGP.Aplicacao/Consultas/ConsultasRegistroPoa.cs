@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using System;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -7,18 +8,19 @@ using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasRegistroPoa : ConsultasBase, IConsultasRegistroPoa
     {
         private readonly IRepositorioRegistroPoa repositorioRegistroPoa;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao, IServicoEol servicoEOL) : base(contextoAplicacao)
+        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioRegistroPoa = repositorioRegistroPoa ?? throw new System.ArgumentNullException(nameof(repositorioRegistroPoa));
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<RegistroPoaDto>> ListarPaginado(RegistroPoaFiltroDto registroPoaFiltroDto)
@@ -49,8 +51,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
             var listaRf = retornoquery.Items.Select(x => x.CodigoRf);
 
-            var nomes = await servicoEOL.ObterListaNomePorListaRF(listaRf);
-
+            var nomes = await mediator.Send(new ObterFuncionariosPorRFsQuery(listaRf));
             return MapearListagem(retornoquery, retornoPaginado, nenhumItemEncontrado, nomes);
         }
 
@@ -61,7 +62,7 @@ namespace SME.SGP.Aplicacao.Consultas
             if (registro.EhNulo())
                 return null;
 
-            var professor = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(registro.CodigoRf, registro.AnoLetivo);
+            var professor = await mediator.Send(new ObterResumoProfessorPorRFAnoLetivoQuery(registro.CodigoRf, registro.AnoLetivo));
 
             return MapearParaDtoCompleto(registro, professor.EhNulo() ? "Professor não encontrado" : professor.Nome);
         }

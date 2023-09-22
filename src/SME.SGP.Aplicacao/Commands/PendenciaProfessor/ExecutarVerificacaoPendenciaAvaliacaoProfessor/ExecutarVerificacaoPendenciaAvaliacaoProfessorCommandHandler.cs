@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler : IRequestHandler<ExecutarVerificacaoPendenciaAvaliacaoProfessorCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
 
-        public ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
 

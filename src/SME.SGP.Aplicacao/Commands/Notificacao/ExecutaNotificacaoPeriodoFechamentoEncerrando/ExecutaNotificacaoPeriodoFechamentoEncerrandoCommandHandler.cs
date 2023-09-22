@@ -64,8 +64,13 @@ namespace SME.SGP.Aplicacao
         {
             var listaUsuarios = new List<long>();
             var professores = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(turmas.Select(a => a.CodigoTurma)));
+            
+            var professoresDaTurma = professores
+                .SelectMany(c => c.ProfessorRf.Split(',').AsEnumerable())
+                .Where(c => !string.IsNullOrEmpty(c))
+                .Select(a => a.Trim());
 
-            foreach (var professor in professores)
+            foreach (var professor in professoresDaTurma)
             {
                 if (professor != "")
                     listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));

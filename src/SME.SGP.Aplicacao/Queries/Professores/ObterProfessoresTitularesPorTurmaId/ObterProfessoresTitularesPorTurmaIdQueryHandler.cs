@@ -17,13 +17,11 @@ namespace SME.SGP.Aplicacao
 {
     public  class ObterProfessoresTitularesPorTurmaIdQueryHandler: IRequestHandler<ObterProfessoresTitularesPorTurmaIdQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
-        private readonly IServicoEol servicoEol;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterProfessoresTitularesPorTurmaIdQueryHandler(IServicoEol servicoEol, IRepositorioTurmaConsulta repositorioTurmaConsulta, IHttpClientFactory httpClientFactory)
+        public ObterProfessoresTitularesPorTurmaIdQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta, IHttpClientFactory httpClientFactory)
         {
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }

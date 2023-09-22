@@ -35,7 +35,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
@@ -61,7 +60,6 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                                 IConsultasDisciplina consultasDisciplina,
                                                 IServicoNotificacao servicoNotificacao,
-                                                IServicoEol servicoEOL,
                                                 IServicoUsuario servicoUsuario,
                                                 IUnitOfWork unitOfWork,
                                                 IConsultasSupervisor consultasSupervisor,
@@ -83,7 +81,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));

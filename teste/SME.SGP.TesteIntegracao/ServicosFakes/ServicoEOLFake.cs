@@ -14,7 +14,7 @@ using GrupoMatriz = SME.SGP.Dominio.GrupoMatriz;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
-    public class ServicoEOLFake : IServicoEol
+    public class ServicoEOLFake 
     {
         private readonly string ALUNO_CODIGO_1 = "1";
         private readonly string ALUNO_CODIGO_2 = "2";

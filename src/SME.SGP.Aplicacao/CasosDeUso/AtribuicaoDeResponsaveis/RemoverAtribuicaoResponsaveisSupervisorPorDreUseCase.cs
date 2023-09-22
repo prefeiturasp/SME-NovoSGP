@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
                     if (supervisoresSGPIds.Any())
                     {
-                        var responsaveisEOL = await mediator.Send(new ObterSupervisorPorCodigoQuery(supervisoresSGPIds.ToArray(), codigoDre));
+                        var responsaveisEOL = await mediator.Send(new ObterSupervisorPorCodigoDreQuery(supervisoresSGPIds.ToArray(), codigoDre));
                         await RemoverSupervisorSemAtribuicao(responsaveisSGP, responsaveisEOL);
                     }                    
                 }

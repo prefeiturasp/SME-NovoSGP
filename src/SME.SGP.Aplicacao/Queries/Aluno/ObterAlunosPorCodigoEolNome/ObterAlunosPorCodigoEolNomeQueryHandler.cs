@@ -5,19 +5,23 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 {
     public class ObterAlunosPorCodigoEolNomeQueryHandler : IRequestHandler<ObterAlunosPorCodigoEolNomeQuery, IEnumerable<AlunoSimplesDto>>
     {
-        private readonly IServicoEol servicoEOL;
+        private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
 
-        public ObterAlunosPorCodigoEolNomeQueryHandler(IServicoEol servicoEOL, IMediator mediator)
+        public ObterAlunosPorCodigoEolNomeQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -25,7 +29,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
         {
             try
             {
-                var alunosEOL = await servicoEOL.ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL, request.SomenteAtivos);
+                var alunosEOL = await ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL, request.SomenteAtivos);
 
                 var alunoSimplesDto = new List<AlunoSimplesDto>();
 
@@ -66,6 +70,31 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
 
             return turmaNome;
+        }
+        
+        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
+        {
+            var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
+            var url = string.Format(ServicosEolConstants.URL_ALUNOS_UES_ANOS_LETIVOS_AUTOCOMPLETE, codigoUe, anoLetivo);
+
+            var urlComplementar = (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
+                                      + (codigoEol.HasValue ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
+                                      + (nome.NaoEhNulo() ? $"{(codigoEol.NaoEhNulo() || codigoTurma > 0 ? "&" : "?") + $"nomeAluno={nome}"}" : "")
+                                      + (somenteAtivos == true ? $"&somenteAtivos={somenteAtivos}" : "");
+
+            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+            
+            var resposta = await httpClient.GetAsync(string.Concat(url,urlComplementar));
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException(string.Format(MensagemNegocioComuns.NAO_FOI_ENCONTRADO_ALUNOS_ATIVOS_PARA_UE ,codigoUe));
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return alunos;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
         }
     }
 }

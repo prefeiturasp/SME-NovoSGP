@@ -20,7 +20,7 @@
 
         public const string URL_ABRANGENCIA_CODIGOS_DRES = "abrangencia/codigos-dres";
 
-        public const string URL_ABRANGENCIA_ESTRUTRURA_VIGENTE = "abrangencia/estrutura-vigente";
+        public const string URL_ABRANGENCIA_ESTRUTURA_VIGENTE = "abrangencia/estrutura-vigente";
 
         public const string URL_AJUDA_DO_SISTEMA_SGP = "ajudadosistema/sgp";
 
@@ -113,7 +113,7 @@
 
         public const string URL_FUNCIONARIOS_UE = "funcionarios/ue/{0}";
 
-        public const string URL_FUNCIONARIOS_SUPERVISORES = "funcionarios/supervisores/{0}";
+        public const string URL_FUNCIONARIOS_SUPERVISORES_POR_DRE = "funcionarios/supervisores/{0}";
 
         public const string URL_FUNCIONARIOS_TURMAS_DISCIPLINAS = "funcionarios/turmas/{0}/disciplinas";
 
@@ -172,5 +172,65 @@
         public const string URL_COMPONENTES_CURRICULARES_AGRUPAMENTO_TERRITORIO_SABER = "v1/componentes-curriculares/territorio-saber/agrupamentos";
 
         public const string URL_COMPONENTES_CURRICULARES_AGRUPAMENTOS_TERRITORIO_SABER_CORRELACIONADOS = "v1/componentes-curriculares/territorio-saber/agrupamentos-correlacionados";
+        
+        public const string URL_AUTENTICACAO_SGP_ALTERAR_EMAIL = "AutenticacaoSgp/AlterarEmail";
+        
+        public const string URL_AUTENTICACAO_SGP_ALTERAR_SENHA = "AutenticacaoSgp/AlterarSenha";
+        
+        public const string URL_COMPONENTES_CURRICULARES = "v1/componentes-curriculares";
+        
+        public const string URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS_VALIDAR_PAP = "v1/componentes-curriculares/turmas/{0}/funcionarios/{1}/perfis/{2}/validar/pap";
+        
+        public const string URL_AUTENTICACAO = "v1/autenticacao";
+        
+        public const string URL_AUTENTICACAO_SGP_VALIDA_EMAIL_EXISTENTE = "autenticacaoSgp/{0}/ValidarEmailExistente/{1}";
+        
+        public const string URL_FUNCIONARIOS_PERFIS_TURMAS = "funcionarios/{0}/perfis/{1}/turmas";
+        
+        public const string URL_FUNCIONARIOS_TURMAS = "funcionarios/turmas";
+        
+        public const string URL_ESCOLAS_ADMINISTRADOR_SGP = "escolas/{0}/administrador-sgp";
+        
+        public const string URL_ALUNOS_UES_ANOS_LETIVOS_AUTOCOMPLETE = "alunos/ues/{0}/anosLetivos/{1}/autocomplete";
+        
+        public const string URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO_TIPO_TURMA = "alunos/{0}/turmas/anosLetivos/{1}/historico/{2}/filtrar-situacao/{3}/tipo-turma/{4}";
+        
+        public const string URL_DRES = "dres";
+        
+        public const string URL_FUNCIONARIOS = "funcionarios";
+        
+        public const string URL_PROFESSORES_BUSCAR_POR_LISTA_RF = "professores/{0}/BuscarPorListaRF";
+        
+        public const string URL_AUTENTICACAO_SGP_CARREGAR_PERFIS_POR_LOGIN = "autenticacaoSgp/CarregarPerfisPorLogin/{0}";
+        
+        public const string URL_PROFESSORES_AUTOCOMPLETE = "professores/{0}/AutoComplete/{1}";
+        
+        public const string URL_PROFESSORES = "professores/{0}";
+        
+        public const string URL_FUNCIONARIOS_SUPERVISORES = "funcionarios/supervisores";
+        
+        public const string URL_PROFESSORES_BUSCAR_POR_RF_DRE_UE = "professores/{0}/BuscarPorRfDreUe/{1}";
+
+        public const string URL_PROFESSORES_ESCOLAS_TURMAS_ANOS_LETIVOS = "professores/{0}/escolas/{1}/turmas/anos_letivos/{2}";
+
+        public const string URL_FUNCIONARIOS_BURCAR_TURMAS_ELEGIVEIS = "funcionarios/BuscarTurmasElegiveis";
+        
+        public const string URL_AUTENTICACAO_SGP_REINICIAR_SENHA = "AutenticacaoSgp/ReiniciarSenha";
+        
+        public const string URL_PROFESSORES_TURMAS_COMPONENTES_ATRIBUICAO_PERIODO_INICIO_FIM = "professores/{0}/turmas/{1}/componentes/{2}/atribuicao/periodo/inicio/{3}/fim/{4}";
+        
+        public const string URL_TURMAS_REGULARES = "turmas/turmas-regulares";
+        
+        public const string URL_PROFESSORES_TITULARES_UE = "professores/titulares/ue/{0}/{1}";
+        
+        public const string URL_AUTENTICACAO_AUTENTICAR_SEM_SENHA = "v1/autenticacao/AutenticarSemSenha/{0}";
+        
+        public const string URL_FUNCIONARIOS_PERFIS = "funcionarios/perfis/{0}";
+        
+        public const string URL_COMPONENTES_CURRICULARES_UES_MODALIDADES_ANOS = "v1/componentes-curriculares/ues/{0}/modalidades/{1}/anos/{2}";
+        
+        public const string URL_COMPONENTES_CURRICULARES_UES_MODALIDADES_ANOS_ANOS_ESCOLARES = "v1/componentes-curriculares/ues/{0}/modalidades/{1}/anos/{2}/anos-escolares";
+        
+        public const string URL_AUTENTICACAO_SGP_CARREGAR_DADOS_ACESSO_USUARIOS_PERFIS = "AutenticacaoSgp/CarregarDadosAcesso/usuarios/{0}/perfis/{1}";
     }
 }

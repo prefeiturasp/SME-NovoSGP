@@ -19,7 +19,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -27,14 +26,13 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IMediator mediator;
 
         public ServicoFechamentoReabertura(IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IUnitOfWork unitOfWork,
-            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IServicoNotificacao servicoNotificacao,
+            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoNotificacao servicoNotificacao,
             IRepositorioEventoTipo repositorioEventoTipo, IServicoEvento servicoEvento, IRepositorioEvento repositorioEvento, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IMediator mediator)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));

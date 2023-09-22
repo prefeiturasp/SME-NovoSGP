@@ -10,30 +10,28 @@ namespace SME.SGP.Aplicacao
 {
     public class ReiniciarSenhaCommandHandler : IRequestHandler<ReiniciarSenhaCommand, UsuarioReinicioSenhaDto>
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
-        public ReiniciarSenhaCommandHandler(IMediator mediator, IServicoEol servicoEOL)
+        public ReiniciarSenhaCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<UsuarioReinicioSenhaDto> Handle(ReiniciarSenhaCommand request, CancellationToken cancellationToken)
         {
-            var usuario = await servicoEOL.ObterMeusDados(request.CodigoRf);
+            var usuario = await mediator.Send(new ObterUsuarioCoreSSOQuery(request.CodigoRf));
 
             var retorno = new UsuarioReinicioSenhaDto();
 
             if (usuario.NaoEhNulo() && String.IsNullOrEmpty(usuario.Email))
             {
-                await servicoEOL.ReiniciarSenha(request.CodigoRf);
+                await mediator.Send(new ReiniciarSenhaEolCommand(request.CodigoRf));
                 retorno.DeveAtualizarEmail = true;
                 retorno.Mensagem = $"Usuário {request.CodigoRf} - {usuario.Nome} não possui email cadastrado!";
             }
             else
             {
-                await servicoEOL.ReiniciarSenha(request.CodigoRf);
+                await mediator.Send(new ReiniciarSenhaEolCommand(request.CodigoRf));
 
                 await GravarHistoricoReinicioSenha(request.CodigoRf, request.DreCodigo, request.UeCodigo);
 
