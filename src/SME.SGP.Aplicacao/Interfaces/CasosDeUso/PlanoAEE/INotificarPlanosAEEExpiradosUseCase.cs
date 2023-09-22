@@ -1,11 +1,6 @@
-﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Aplicacao.Interfaces
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface INotificarPlanosAEEExpiradosUseCase : IUseCase<MensagemRabbit, bool>
+    public interface INotificarPlanosAEEExpiradosUseCase : IRabbitUseCase
     {
     }
 }
