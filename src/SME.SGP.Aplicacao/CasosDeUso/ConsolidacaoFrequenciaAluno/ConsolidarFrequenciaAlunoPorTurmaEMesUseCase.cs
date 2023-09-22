@@ -28,9 +28,9 @@ namespace SME.SGP.Aplicacao
             var consolidacoesExistentesDaTurma = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMesQuery(turma.Id, filtro.Mes));
 
             unitOfWork.IniciarTransacao();
-            try 
-            {            
-                await AtualizaAlunos(consolidacoesExistentesDaTurma, frequenciasAlunosTurmaEMes, filtro.Mes);
+            try
+            {
+                await AtualizaAlunos(consolidacoesExistentesDaTurma, frequenciasAlunosTurmaEMes, filtro.Mes, turma.Id);
 
                 unitOfWork.PersistirTransacao();
             }
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task AtualizaAlunos(IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto> consolidacoesExistentes, IEnumerable<RegistroFrequenciaAlunoPorTurmaEMesDto> frequenciasAtuais, int mes)
+        private async Task AtualizaAlunos(IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto> consolidacoesExistentes, IEnumerable<RegistroFrequenciaAlunoPorTurmaEMesDto> frequenciasAtuais, int mes, long turmaId)
         {
             foreach (var frequencia in frequenciasAtuais)
             {
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else if (!consolidacoesExistentes.Any(a => a.AlunoCodigo.Contains(frequencia.AlunoCodigo)) || !consolidacoesExistentes.Any())
                 {
-                    await mediator.Send(new RegistrarConsolidacaoFrequenciaAlunoMensalCommand(frequencia.TurmaId, frequencia.AlunoCodigo, mes, frequencia.Percentual, frequencia.QuantidadeAulas,
+                    await mediator.Send(new RegistrarConsolidacaoFrequenciaAlunoMensalCommand(turmaId, frequencia.AlunoCodigo, mes, frequencia.Percentual, frequencia.QuantidadeAulas,
                         frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
                 }
             }
