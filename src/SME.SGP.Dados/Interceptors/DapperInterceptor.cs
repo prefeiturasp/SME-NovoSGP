@@ -22,17 +22,12 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<T> Query<T>(this IDbConnection Connection, string sql, object param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null, string queryName = "")
         {
-            var result = servicoTelemetria.RegistrarComRetorno<T>(() => SqlMapper.Query<T>(Connection, sql, param, transaction, buffered, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<T, IEnumerable<T>>(() => SqlMapper.Query<T>(Connection, sql, param, transaction, buffered, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
 
-        public static async Task<IEnumerable<T>> QueryAsync<T>(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null, string queryName = "")
+        public static Task<IEnumerable<T>> QueryAsync<T>(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null, string queryName = "")
         {
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<T>(async () => await SqlMapper.QueryAsync<T>(cnn, sql, param, transaction, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
-
+            return servicoTelemetria.RegistrarComRetornoAsync<T, IEnumerable<T>>(async () => await SqlMapper.QueryAsync<T>(cnn, sql, param, transaction, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
 
         public static async Task<T> QueryFirstOrDefaultAsync<T>(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
@@ -44,75 +39,51 @@ namespace SME.SGP.Dados
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = servicoTelemetria.RegistrarComRetorno<TReturn>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TReturn, IEnumerable<TReturn>>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = servicoTelemetria.RegistrarComRetorno<TReturn>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TReturn, IEnumerable<TReturn>>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = servicoTelemetria.RegistrarComRetorno<TReturn>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TReturn, IEnumerable<TReturn>>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = servicoTelemetria.RegistrarComRetorno<TReturn>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TReturn, IEnumerable<TReturn>>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = servicoTelemetria.RegistrarComRetorno<TReturn>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TReturn, IEnumerable<TReturn>>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
         public static IEnumerable<TReturn> Query<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = servicoTelemetria.RegistrarComRetorno<TReturn>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TReturn, IEnumerable<TReturn>>(() => SqlMapper.Query(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
         public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TReturn>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return await servicoTelemetria.RegistrarComRetornoAsync<TReturn, IEnumerable<TReturn>>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
-        public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
+        public static Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TReturn>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetornoAsync<TReturn, IEnumerable<TReturn>>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
-        public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
+        public static Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TReturn>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetornoAsync<TReturn, IEnumerable<TReturn>>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
-        public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
+        public static Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TReturn>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetornoAsync<TReturn, IEnumerable<TReturn>>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
-        public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
+        public static Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TReturn>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetornoAsync<TReturn, IEnumerable<TReturn>>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
-        public static async Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
+        public static Task<IEnumerable<TReturn>> QueryAsync<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn>(this IDbConnection cnn, string sql, Func<TFirst, TSecond, TThird, TFourth, TFifth, TSixth, TSeventh, TReturn> map, object param = null, IDbTransaction transaction = null, bool buffered = true, string splitOn = "Id", int? commandTimeout = null, CommandType? commandType = null, string queryName = "Query Postgres")
         {
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TReturn>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
-
-            return result;
+            return servicoTelemetria.RegistrarComRetornoAsync<TReturn, IEnumerable<TReturn>>(async () => await SqlMapper.QueryAsync(cnn, sql, map, param, transaction, buffered, splitOn, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
         }
         public static int Execute(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null, string queryName = "Command Postgres")
         {
@@ -146,29 +117,20 @@ namespace SME.SGP.Dados
 
         public static IEnumerable<TEntity> GetAll<TEntity>(this IDbConnection connection, bool buffered = true) where TEntity : class
         {
-            //Descobrir como obter a classe;;
-            //var entidade = this. TEntity?.GetType()?.Name;
-
-            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.GetAll<TEntity>(connection, buffered: buffered), "Postgres", $"GetAll Entidade ??", "GetAll");
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TEntity, IEnumerable<TEntity>>(() => Dommel.DommelMapper.GetAll<TEntity>(connection, buffered: buffered), "Postgres", $"GetAll Entidade ??", "GetAll");
         }
         public static object Insert<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
         {
             var entidade = entity?.GetType()?.Name;
 
-            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Insert<TEntity>(connection, entity, transaction), "Postgres", $"Insert Entidade {entidade}", "Insert");
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TEntity, object>(() => Dommel.DommelMapper.Insert<TEntity>(connection, entity, transaction), "Postgres", $"Insert Entidade {entidade}", "Insert");
         }
 
         public static bool Update<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
             var entidade = entity?.GetType()?.Name;
 
-            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Update<TEntity>(connection, entity, transaction), "Postgres", $"Update Entidade {entidade}", "Insert");
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TEntity, bool>(() => Dommel.DommelMapper.Update<TEntity>(connection, entity, transaction), "Postgres", $"Update Entidade {entidade}", "Insert");
         }
         public static TEntity Get<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
@@ -182,9 +144,7 @@ namespace SME.SGP.Dados
         {
             var entidade = entity?.GetType()?.Name;
 
-            var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Delete<TEntity>(connection, entity, transaction), "Postgres", $"Get Entidade {entidade}", "Get");
-
-            return result;
+            return servicoTelemetria.RegistrarComRetorno<TEntity, bool>(() => Dommel.DommelMapper.Delete<TEntity>(connection, entity, transaction), "Postgres", $"Get Entidade {entidade}", "Get");
         }
         public static async Task<TEntity> GetAsync<TEntity>(this IDbConnection connection, object id) where TEntity : class
         {
@@ -195,22 +155,17 @@ namespace SME.SGP.Dados
             return result;
 
         }
-        public static async Task<bool> UpdateAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
+        public static Task<bool> UpdateAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
             var entidade = entity?.GetType()?.Name;
 
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await Dommel.DommelMapper.UpdateAsync<TEntity>(connection, entity, transaction), "Postgres", $"UpdateAsync Entidade {entidade}", "UpdateAsync");
-
-            return result;
+            return servicoTelemetria.RegistrarComRetornoAsync<TEntity, bool>(async () => await Dommel.DommelMapper.UpdateAsync<TEntity>(connection, entity, transaction), "Postgres", $"UpdateAsync Entidade {entidade}", "UpdateAsync");
         }
-        public static async Task<object> InsertAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
+        public static Task<object> InsertAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
         {
             var entidade = entity?.GetType()?.Name;
 
-            var result = await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await Dommel.DommelMapper.InsertAsync<TEntity>(connection, entity, transaction), "Postgres", $"UpdateAsync Entidade {entidade}", "UpdateAsync");
-
-            return result;
-
+            return servicoTelemetria.RegistrarComRetornoAsync<TEntity, object>(async () => await Dommel.DommelMapper.InsertAsync<TEntity>(connection, entity, transaction), "Postgres", $"UpdateAsync Entidade {entidade}", "UpdateAsync");
         }
         #endregion
     }
