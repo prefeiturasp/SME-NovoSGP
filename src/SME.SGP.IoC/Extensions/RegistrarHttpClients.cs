@@ -27,8 +27,8 @@ namespace SME.SGP.IoC
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
                 
-                if (configuration.GetSection("HttpClientTimeout").Value.NaoEhNulo())
-                    c.Timeout.Add(TimeSpan.FromMinutes(double.Parse(configuration.GetSection("HttpClientTimeout").Value)));
+                if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
+                    c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
 
             }).AddPolicyHandler(GetRetryPolicy());
 
@@ -88,7 +88,7 @@ namespace SME.SGP.IoC
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)));
+                .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
     }
 }
