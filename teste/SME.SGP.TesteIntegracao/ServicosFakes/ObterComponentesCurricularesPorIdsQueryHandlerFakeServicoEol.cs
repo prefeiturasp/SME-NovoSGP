@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeComponenteInfantil = null,
                     PossuiObjetivos = false,
                     Regencia = true,
-                    RegistraFrequencia = false,
+                    RegistraFrequencia = true,
                     TerritorioSaber = false,
                     LancaNota = true,
                     ObjetivosAprendizagemOpcionais = false,
