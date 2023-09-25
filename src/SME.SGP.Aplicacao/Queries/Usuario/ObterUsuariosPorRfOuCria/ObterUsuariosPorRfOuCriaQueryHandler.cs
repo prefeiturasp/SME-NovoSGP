@@ -14,14 +14,12 @@ namespace SME.SGP.Aplicacao
     public class ObterUsuariosPorRfOuCriaQueryHandler : IRequestHandler<ObterUsuariosPorRfOuCriaQuery, IEnumerable<Usuario>>
     {
         private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IMediator mediator;
 
-        public ObterUsuariosPorRfOuCriaQueryHandler(IRepositorioUsuario repositorioUsuario, IServicoEol servicoEOL, IRepositorioPrioridadePerfil repositorioPrioridadePerfil, IMediator mediator)
+        public ObterUsuariosPorRfOuCriaQueryHandler(IRepositorioUsuario repositorioUsuario,IRepositorioPrioridadePerfil repositorioPrioridadePerfil, IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new System.ArgumentNullException(nameof(repositorioUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil ?? throw new ArgumentNullException(nameof(repositorioPrioridadePerfil));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -59,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PrioridadePerfil>> ObterPerfisUsuario(string login)
         {
-            var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
+            var perfisPorLogin = await mediator.Send(new ObterPerfisPorLoginQuery(login));
 
             if (perfisPorLogin.EhNulo())
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");

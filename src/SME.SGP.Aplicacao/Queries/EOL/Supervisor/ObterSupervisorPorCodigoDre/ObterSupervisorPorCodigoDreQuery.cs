@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterSupervisorPorCodigoQuery : IRequest<IEnumerable<SupervisoresRetornoDto>>
+    public class ObterSupervisorPorCodigoDreQuery : IRequest<IEnumerable<SupervisoresRetornoDto>>
     {
-        public ObterSupervisorPorCodigoQuery(string[] supervisorIds, string codigoDre)
+        public ObterSupervisorPorCodigoDreQuery(string[] supervisorIds, string codigoDre)
         {
             SupervisorIds = supervisorIds;
             CodigoDre = codigoDre;
@@ -21,9 +21,9 @@ namespace SME.SGP.Aplicacao
         public string CodigoDre { get; set; }
     }
 
-    public class ObterSupervisorPorCodigoQueryValidator : AbstractValidator<ObterSupervisorPorCodigoQuery>
+    public class ObterSupervisorPorCodigoDreQueryValidator : AbstractValidator<ObterSupervisorPorCodigoDreQuery>
     {
-        public ObterSupervisorPorCodigoQueryValidator()
+        public ObterSupervisorPorCodigoDreQueryValidator()
         {
             RuleFor(x => x.SupervisorIds)
                 .NotEmpty().WithMessage("O código do supervisor precisa ser informado para obter um supervisor por código.");

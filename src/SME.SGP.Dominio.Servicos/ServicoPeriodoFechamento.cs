@@ -24,7 +24,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEventoTipo repositorioTipoEvento;
         private readonly IRepositorioUeConsulta repositorioUe;
-        private readonly IServicoEol servicoEol;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
@@ -41,7 +40,6 @@ namespace SME.SGP.Dominio.Servicos
                                  IRepositorioEventoFechamento repositorioEventoFechamento,
                                  IRepositorioEvento repositorioEvento,
                                  IRepositorioEventoTipo repositorioTipoEvento,
-                                 IServicoEol servicoEol,
                                  IServicoNotificacao servicoNotificacao,
                                  IUnitOfWork unitOfWork, IMediator mediator)
         {
@@ -55,7 +53,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioEventoFechamento = repositorioEventoFechamento ?? throw new ArgumentNullException(nameof(repositorioEventoFechamento));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioTipoEvento = repositorioTipoEvento ?? throw new ArgumentNullException(nameof(repositorioTipoEvento));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -306,7 +303,7 @@ namespace SME.SGP.Dominio.Servicos
             {
 
                 Notificacao notificacao = MontaNotificacao(dre.Nome, "SME", fechamentosBimestre, null, dre.CodigoDre);
-                var adminsSgpDre = servicoEol.ObterAdministradoresSGPParaNotificar(dre.CodigoDre).Result;
+                var adminsSgpDre = await mediator.Send(new ObterAdministradoresPorUEQuery(dre.CodigoDre));
                 if (adminsSgpDre.NaoEhNulo() && adminsSgpDre.Any())
                 {
                     foreach (var adminSgpUe in adminsSgpDre)
@@ -346,7 +343,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                 }
 
-                var admsUe = await servicoEol.ObterAdministradoresSGPParaNotificar(ue.CodigoUe);
+                var admsUe = await mediator.Send(new ObterAdministradoresPorUEQuery(ue.CodigoUe));
 
                 if (admsUe.EhNulo() || !admsUe.Any())
                     await mediator.Send(new SalvarLogViaRabbitCommand($"Não foram localizados os ADMs para Ue {ue.CodigoUe}.", LogNivel.Negocio, LogContexto.Fechamento));

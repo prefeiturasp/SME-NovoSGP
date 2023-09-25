@@ -3,6 +3,8 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using SME.SGP.Aplicacao;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -11,17 +13,17 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
 
         public ServicoAtribuicaoEsporadica(IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoUsuario servicoUsuario, IServicoEol servicoEOL)
+            IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Salvar(AtribuicaoEsporadica atribuicaoEsporadica, int anoLetivo, bool ehInfantil)
@@ -56,7 +58,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task AdicionarAtribuicaoEOL(string codigoRF, Guid perfil)
         {
-            await servicoEOL.AtribuirPerfil(codigoRF, perfil);
+            await mediator.Send(new AtribuirPerfilCommand(codigoRF, perfil));
         }
     }
 }

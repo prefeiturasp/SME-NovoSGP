@@ -2,30 +2,31 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
     public class ConsultasUsuario : IConsultasUsuario
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
-        public ConsultasUsuario(IServicoEol servicoEOL, IServicoUsuario servicoUsuario)
+        public ConsultasUsuario(IServicoUsuario servicoUsuario,IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<MeusDadosDto> BuscarMeusDados()
         {
             var login = servicoUsuario.ObterLoginAtual();
-            var meusDados = await servicoEOL.ObterMeusDados(login);
+            var meusDados = await mediator.Send(new ObterUsuarioCoreSSOQuery(login));
             return meusDados;
         }
 
         public async Task<PerfisApiEolDto> ObterPerfilsUsuarioPorLogin(string login)
         {
-            return await servicoEOL.ObterPerfisPorLogin(login);
+            return await mediator.Send(new ObterPerfisPorLoginQuery(login));
         }
     }
 }

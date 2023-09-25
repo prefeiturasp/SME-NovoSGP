@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
-        private readonly IServicoEol servicoEol;
         private readonly IMediator mediator;
         private const string Todas = "todas";
 
@@ -30,8 +29,7 @@ namespace SME.SGP.Aplicacao
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
             IRepositorioComunicadoAluno repositorioComunicadoAluno,
-            IMediator mediator,
-            IServicoEol servicoEol) : base(contextoAplicacao)
+            IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -39,7 +37,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<ComunicadoCompletoDto> BuscarPorIdAsync(long id)

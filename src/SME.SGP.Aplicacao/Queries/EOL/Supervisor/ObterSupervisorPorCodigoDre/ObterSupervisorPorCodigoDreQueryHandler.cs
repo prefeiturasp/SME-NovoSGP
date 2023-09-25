@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterSupervisorPorCodigoQueryHandler : IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>
+    public class ObterSupervisorPorCodigoDreQueryHandler : IRequestHandler<ObterSupervisorPorCodigoDreQuery, IEnumerable<SupervisoresRetornoDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterSupervisorPorCodigoQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterSupervisorPorCodigoDreQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
-        public async Task<IEnumerable<SupervisoresRetornoDto>> Handle(ObterSupervisorPorCodigoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SupervisoresRetornoDto>> Handle(ObterSupervisorPorCodigoDreQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_SUPERVISORES, request.CodigoDre), new StringContent(JsonConvert.SerializeObject(request.SupervisorIds), Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_SUPERVISORES_POR_DRE, request.CodigoDre), new StringContent(JsonConvert.SerializeObject(request.SupervisorIds), Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
             {

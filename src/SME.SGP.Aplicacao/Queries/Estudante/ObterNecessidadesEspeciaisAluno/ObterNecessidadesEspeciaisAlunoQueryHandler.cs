@@ -11,12 +11,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNecessidadesEspeciaisAlunoQueryHandler : IRequestHandler<ObterNecessidadesEspeciaisAlunoQuery, InformacoesEscolaresAlunoDto>
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
-        public ObterNecessidadesEspeciaisAlunoQueryHandler(IServicoEol servicoEOL, IMediator mediator)
+        public ObterNecessidadesEspeciaisAlunoQueryHandler(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 

@@ -14,12 +14,10 @@ namespace SME.SGP.Aplicacao
     public class ExecutarVerificacaoPendenciaAvaliacaoCPCommandHandler : IRequestHandler<ExecutarVerificacaoPendenciaAvaliacaoCPCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
 
-        public ExecutarVerificacaoPendenciaAvaliacaoCPCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public ExecutarVerificacaoPendenciaAvaliacaoCPCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAvaliacaoCPCommand request, CancellationToken cancellationToken)

@@ -184,7 +184,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultaDres, ConsultaDres>();
             services.TryAddScoped<IConsultasNotificacao, ConsultasNotificacao>();
             services.TryAddScoped<IConsultasWorkflowAprovacao, ConsultasWorkflowAprovacao>();
-            services.TryAddScoped<IConsultasUnidadesEscolares, ConsultasUnidadesEscolares>();
             services.TryAddScoped<IConsultasTipoCalendario, ConsultasTipoCalendario>();
             services.TryAddScoped<IConsultasFeriadoCalendario, ConsultasFeriadoCalendario>();
             services.TryAddScoped<IConsultasPeriodoEscolar, ConsultasPeriodoEscolar>();
