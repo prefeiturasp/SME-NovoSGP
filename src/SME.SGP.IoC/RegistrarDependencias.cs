@@ -85,7 +85,6 @@ namespace SME.SGP.IoC
             services.AddHttpContextAccessor();
             services.AdicionarMediatr();
             services.AdicionarValidadoresFluentValidation();
-            services.AddMemoryCache();
 
             RegistrarHttpClients(services, configuration);
             RegistrarPolicies(services);
