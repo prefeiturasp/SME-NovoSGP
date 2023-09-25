@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao
             if (componentesRegencia == null || !componentesRegencia.Any())
                 throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
-            var percentualFrequenciaFormatado = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequenciaFormatado : string.Empty;
+            var percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado;
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
@@ -233,7 +233,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int bimestre, int anoLetivo)
         {
             var percentualFrequencia = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequencia : 0;
-            var percentualFrequenciaFormatado = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequenciaFormatado : string.Empty;
+            var percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado;
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))

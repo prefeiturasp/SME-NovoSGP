@@ -68,7 +68,7 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public string PercentualFrequenciaFormatado => FormatarPercentual(PercentualFrequencia);
+        public string PercentualFrequenciaFormatado => TotalAulas > 0 ? FormatarPercentual(PercentualFrequencia) : string.Empty;
 
         public long? PeriodoEscolarId { get; set; }
         public DateTime PeriodoFim { get; set; }
