@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             var turmaPap = await mediator.Send(new TurmaPossuiComponenteCurricularPAPQuery(turmaRecuperacaoParalela.Codigo, usuarioLogin, usuarioPerfil));
 
             if (!turmaPap)
-                throw new NegocioException(MensagemNegocioComuns.SOMENTE_EH_POSSIVEL_REALIZAR_ACOMAPNHAMENTO_PARA_TURMAS_PAP);
+                throw new NegocioException(MensagemNegocioComuns.SOMENTE_EH_POSSIVEL_REALIZAR_ACOMPANHAMENTO_PARA_TURMAS_PAP);
 
             var turmasCodigo = recuperacaoParalelaDto.Periodo.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToArray();
 

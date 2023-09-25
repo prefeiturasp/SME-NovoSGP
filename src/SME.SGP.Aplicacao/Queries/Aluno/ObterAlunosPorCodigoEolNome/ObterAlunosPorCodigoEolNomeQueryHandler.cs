@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
             var resposta = await httpClient.GetAsync(string.Concat(url,urlComplementar));
 
             if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException(string.Format(MensagemNegocioComuns.NAO_FOI_ENCONTRADO_ALUNOS_ATIVOS_PARA_UE ,codigoUe));
+                throw new NegocioException(string.Format(MensagemNegocioComuns.NAO_FORAM_ENCONTRADOS_ALUNOS_ATIVOS_PARA_UE ,codigoUe));
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
                 return alunos;

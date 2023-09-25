@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO = "Não foi possível localizar o usuário.";
         public const string ACESSO_SUPORTE_INDISPONIVEL = "Acesso de suporte indisponível para este usuário por conta de informações sigilosas";
         public const string SENHA_ATUAL_INCORRETA = "Senha atual incorreta.";
-        public const string SOMENTE_EH_POSSIVEL_REALIZAR_ACOMAPNHAMENTO_PARA_TURMAS_PAP = "Somente é possivel realizar acompanhamento para turmas PAP";
-        public const string NAO_FOI_ENCONTRADO_ALUNOS_ATIVOS_PARA_UE = "Não foi encontrado alunos ativos para UE {0}";
+        public const string SOMENTE_EH_POSSIVEL_REALIZAR_ACOMPANHAMENTO_PARA_TURMAS_PAP = "Somente é possivel realizar acompanhamento para turmas PAP";
+        public const string NAO_FORAM_ENCONTRADOS_ALUNOS_ATIVOS_PARA_UE = "Não foram encontrados alunos ativos para UE {0}";
     }
 }
