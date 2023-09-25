@@ -26,9 +26,9 @@ namespace SME.SGP.IoC
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
-                c.Timeout.Add(configuration.GetSection("HttpClientTimeout").Value.NaoEhNulo() 
-                                ? TimeSpan.FromMinutes(double.Parse(configuration.GetSection("HttpClientTimeout").Value)) 
-                                : TimeSpan.FromMinutes(2));
+                
+                if (configuration.GetSection("HttpClientTimeout").Value.NaoEhNulo())
+                    c.Timeout.Add(TimeSpan.FromMinutes(double.Parse(configuration.GetSection("HttpClientTimeout").Value)));
 
             }).AddPolicyHandler(GetRetryPolicy());
 
