@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -15,6 +16,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             MontaBaseDados(connection);
             RemoverTodasForeingKey(connection);
+            RemoverSequencesNaoUsadas(connection);
         }
 
         private void MontaBaseDados(NpgsqlConnection connection)
@@ -174,6 +176,20 @@ namespace SME.SGP.TesteIntegracao.Setup
             builder.Append(" END $$; ");
 
             using (var cmd = new NpgsqlCommand(builder.ToString(), connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void RemoverSequencesNaoUsadas(NpgsqlConnection connection)
+        {
+            var sql = @"ALTER TABLE tipo_ciclo ALTER COLUMN id DROP IDENTITY;
+                        ALTER TABLE componente_curricular_jurema ALTER COLUMN id DROP IDENTITY;
+                        ALTER TABLE tipo_escola ALTER COLUMN id DROP IDENTITY;
+                        ALTER TABLE tipo_ciclo_ano ALTER COLUMN id DROP IDENTITY;
+                        ALTER TABLE pendencia_registro_individual ALTER COLUMN id DROP IDENTITY;";
+
+            using (var cmd = new NpgsqlCommand(sql, connection))
             {
                 cmd.ExecuteNonQuery();
             }
