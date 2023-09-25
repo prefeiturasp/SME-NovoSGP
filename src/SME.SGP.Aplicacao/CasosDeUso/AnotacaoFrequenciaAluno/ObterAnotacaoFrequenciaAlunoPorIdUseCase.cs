@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoPorIdQuery(id));
 
-            if (anotacao == null || anotacao.Excluido)
+            if (anotacao.EhNulo() || anotacao.Excluido)
                 throw new NegocioException("Anotação não encontrada!");
 
             MotivoAusencia motivoAusencia = null;
@@ -24,22 +24,22 @@ namespace SME.SGP.Aplicacao
 
             var aula = await mediator.Send(new ObterAulaPorIdQuery(anotacao.AulaId));
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Aula vinculada a anotação não encontrada");
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
 
-            if (alunos == null && !alunos.Any())
+            if (alunos.EhNulo() && !alunos.Any())
                 throw new NegocioException("Alunos da turma não encontrado");
 
             var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(anotacao.CodigoAluno));
 
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException("Aluno não encontrado");
 
             var frequencia = await mediator.Send(new ObterFrequenciaGeralAlunoQuery(aluno.CodigoAluno, turma.CodigoTurma));
@@ -72,13 +72,13 @@ namespace SME.SGP.Aplicacao
                 AulaId = anotacao.AulaId,
                 CodigoAluno = anotacao.CodigoAluno,
                 Id = anotacao.Id,
-                MotivoAusencia = motivoAusencia == null ? null :
+                MotivoAusencia = motivoAusencia.EhNulo() ? null :
                     new MotivoAusenciaDto()
                     {
                         Id = motivoAusencia.Id,
                         Descricao = motivoAusencia.Descricao
                     },
-                MotivoAusenciaId = anotacao.MotivoAusenciaId != null ? anotacao.MotivoAusenciaId.Value : 0,
+                MotivoAusenciaId = anotacao.MotivoAusenciaId.NaoEhNulo() ? anotacao.MotivoAusenciaId.Value : 0,
             };
         }
 

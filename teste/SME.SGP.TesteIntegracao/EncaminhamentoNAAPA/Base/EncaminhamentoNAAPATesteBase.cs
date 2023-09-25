@@ -50,7 +50,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL = 2;
         protected const long ID_QUESTIONARIO_NAAPA_ITINERANCIA = 3;
 
-        
+        protected const long ID_ATENDIMENTO_NAO_PRESENCIAL = 12;
+        protected const long ID_GRUPO_DE_TRABALHO_NAAPA = 13;
+        protected const long ID_ACOES_LUDICAS = 14;
 
         protected const string NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
         protected const string NOME_COMPONENTE_QUESTAO_ENDERECO_RESIDENCIAL = "ENDERECO_RESIDENCIAL";
@@ -224,6 +226,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoAtualizacaoMatriculaAlunoDoEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
+        }
+
+        protected INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase ObterServicoNotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase()
+        {
+            return ServiceProvider.GetService<INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase>();
         }
 
         protected IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase ObterServicoExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase()
@@ -698,7 +705,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             public bool CriarPeriodoEscolar { get; set; }
             public string AnoTurma { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
-            public int DreId { get; set; }
+            public long DreId { get; set; }
             public string CodigoUe { get; set; }
             public long TurmaId { get; set; }
             public int Situacao { get; set; }

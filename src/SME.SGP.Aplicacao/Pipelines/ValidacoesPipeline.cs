@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Excecoes;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,10 +26,10 @@ namespace SME.SGP.Aplicacao.Pipelines
 
                 var erros = validadores.Select(v => v.Validate(context))
                                        .SelectMany(result => result.Errors)
-                                       .Where(f => f != null)
+                                       .Where(f => !(f is null))
                                        .ToList();
 
-                if (erros != null && erros.Any())
+                if (erros.NaoEhNulo() && erros.Any())
                     throw new ValidacaoException(erros);
             }
 

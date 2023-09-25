@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries.MotivosAusencia.ObterMotivosAusencia
         public async Task<IEnumerable<MotivoAusencia>> Handle(ObterMotivosAusenciaQuery request, CancellationToken cancellationToken)
         {
             var motivoAusencia = await repositorioCache.ObterAsync(NomeChaveCache.MOTIVOS_AUSENCIA , async () => await repositorioMotivoAusencia.ListarAsync());
-            if (motivoAusencia == null)
+            if (motivoAusencia.EhNulo())
             {
                 throw new NegocioException("Não foi possível recuperar a lista de motivo ausência.");
             }

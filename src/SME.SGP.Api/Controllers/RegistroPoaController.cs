@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
@@ -31,11 +32,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.RPOA_C, Policy = "Bearer")]
-        public IActionResult Get(long id, [FromServices]IConsultasRegistroPoa consultasRegistroPoa)
+        public async Task<IActionResult> Get(long id, [FromServices]IConsultasRegistroPoa consultasRegistroPoa)
         {
-            var retorno = consultasRegistroPoa.ObterPorId(id);
+            var retorno = await consultasRegistroPoa.ObterPorId(id);
 
-            if (retorno != null)
+            if (retorno.NaoEhNulo())
                 return Ok(retorno);
 
             return NoContent();

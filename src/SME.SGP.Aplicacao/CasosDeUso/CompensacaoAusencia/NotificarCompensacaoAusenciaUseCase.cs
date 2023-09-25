@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
             // Verifica se compensação possui alunos vinculados
             var alunos = await repositorioCompensacaoAusenciaAlunoConsulta.ObterPorCompensacao(compensacaoId);
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 return true;
 
             // Verifica se possui aluno não notificado na compensação
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoId));
 
             var cargos = new Cargo[] { Cargo.CP };
-            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? parametroAtivo.Ativo : false))
+            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo.NaoEhNulo() ? parametroAtivo.Ativo : false))
             {
 
                 await NotificarCompensacaoExtemporanea(
@@ -135,13 +135,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterNomeDisciplina(string codigoDisciplina)
         {
-            long[] disciplinaId = { long.Parse(codigoDisciplina) };
-            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
-
-            if (!disciplina.Any())
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoDisciplina)));
+            if (disciplina is null)
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
-
-            return disciplina.FirstOrDefault().Nome;
+            return disciplina.Nome;
         }
 
         private bool GerarNotificacaoExtemporanea(bool periodoAberto, bool parametroAtivo)

@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var necessidadesEspeciaisAluno = await mediator.Send(new ObterNecessidadesEspeciaisAlunoEolQuery(request.CodigoAluno));
 
-            if (necessidadesEspeciaisAluno != null)
+            if (necessidadesEspeciaisAluno.NaoEhNulo())
                 informacoesEscolaresAluno = necessidadesEspeciaisAluno;
 
             var frequenciasAluno = await mediator.Send(new ObterFrequenciasGeralAlunoPorCodigoAnoSemestreQuery(request.CodigoAluno, turma.AnoLetivo, tipoCalendarioId));
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
 
             informacoesEscolaresAluno.FrequenciaAlunoPorBimestres = frequenciaBimestreAlunoDto;
 
-            if (frequenciasAluno == null || !frequenciasAluno.Any())
+            if (frequenciasAluno.EhNulo() || !frequenciasAluno.Any())
             {
                 informacoesEscolaresAluno.FrequenciaGlobal = "";
                 return informacoesEscolaresAluno;

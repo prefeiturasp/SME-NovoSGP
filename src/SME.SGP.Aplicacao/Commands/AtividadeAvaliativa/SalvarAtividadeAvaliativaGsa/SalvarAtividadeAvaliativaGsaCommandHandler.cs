@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var atividadeAvaliativa = await repositorioAtividadeAvaliativa.ObterPorAtividadeClassroomId(request.AtividadeClassroomId);
 
-            if (atividadeAvaliativa != null)
+            if (atividadeAvaliativa.NaoEhNulo())
                 await AlterarAtividade(atividadeAvaliativa, request);
             else
                 await InserirAtividade(request);

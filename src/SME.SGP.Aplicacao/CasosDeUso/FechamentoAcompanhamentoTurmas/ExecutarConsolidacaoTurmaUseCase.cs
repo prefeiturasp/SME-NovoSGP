@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var consolidacaoTurma = mensagemRabbit.ObterObjetoMensagem<ConsolidacaoTurmaDto>();
 
-            if (consolidacaoTurma == null)
+            if (consolidacaoTurma.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação das turmas. O id da turma e o bimestre não foram informados.", LogNivel.Negocio, LogContexto.Turma));
                 return false;

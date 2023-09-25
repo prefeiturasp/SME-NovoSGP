@@ -122,12 +122,12 @@ namespace SME.SGP.Dominio.Servicos
 
             // Gestores
             var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
-            if (usuarios != null)
+            if (usuarios.NaoEhNulo())
                 usuariosNotificacao.AddRange(usuarios);
 
             // Supervisores
             usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Cargo));
-            if (usuarios != null)
+            if (usuarios.NaoEhNulo())
                 usuariosNotificacao.AddRange(usuarios);
 
             foreach (var usuario in usuariosNotificacao)
@@ -267,7 +267,7 @@ namespace SME.SGP.Dominio.Servicos
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
                 var funcionariosEol = await servicoNotificacao.ObterFuncionariosPorNivelAsync(turma.Ue.CodigoUe, cargo);
 
-                if (funcionariosEol != null)
+                if (funcionariosEol.NaoEhNulo())
                 {
                     foreach (var funcionarioEol in funcionariosEol)
                         await NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma,
@@ -333,7 +333,7 @@ namespace SME.SGP.Dominio.Servicos
             // Buscar gestor da Ue
             var funcionariosRetornoEol = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, cargo);
 
-            if (funcionariosRetornoEol == null)
+            if (funcionariosRetornoEol.EhNulo())
                 return Enumerable.Empty<(Cargo? Cargo, Usuario Usuario)>();
 
             var usuarios = new List<(Cargo? Cargo, Usuario Usuario)>();
@@ -345,10 +345,10 @@ namespace SME.SGP.Dominio.Servicos
             if (!new[] { Cargo.Diretor, Cargo.Supervisor, Cargo.SupervisorTecnico }.Contains(cargoNotificacao.Value))
             {
                 Cargo? proximoNivel = servicoNotificacao.ObterProximoNivel(cargoNotificacao, false);
-                if (proximoNivel != null)
+                if (proximoNivel.NaoEhNulo())
                 {
                     var usuariosProximoNivel = BuscaGestoresUe(codigoUe, proximoNivel.Value);
-                    if (usuariosProximoNivel != null && usuariosProximoNivel.Any())
+                    if (usuariosProximoNivel.NaoEhNulo() && usuariosProximoNivel.Any())
                         usuarios.AddRange(usuariosProximoNivel);
                 }
             }
@@ -361,7 +361,7 @@ namespace SME.SGP.Dominio.Servicos
             if (turma.ModalidadeTurma == Modalidade.EducacaoInfantil)
             {
                 var disciplinaEols = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
-                if (disciplinaEols != null)
+                if (disciplinaEols.NaoEhNulo())
                     foreach (var disciplina in disciplinaEols)
                     {
                         return await RetornaUsuarios(disciplina.ProfessorRf);
@@ -389,7 +389,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var rf in rfs)
             {
                 var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(rf.Trim());
-                if (usuario != null)
+                if (usuario.NaoEhNulo())
                     usuarios.Add((null, usuario));
             }
 
@@ -400,7 +400,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var funcionariosRetorno = servicoNotificacao.ObterFuncionariosPorNivel(codigoUe, Cargo.Supervisor);
 
-            if (funcionariosRetorno == null || cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
+            if (funcionariosRetorno.EhNulo() || cargosNotificados.Any(c => funcionariosRetorno.Any(f => f.Cargo == c)))
                 return Enumerable.Empty<(Cargo? Cargo, Usuario Usuario)>();
 
             var usuarios = new List<(Cargo? Cargo, Usuario Usuario)>();
@@ -468,7 +468,7 @@ namespace SME.SGP.Dominio.Servicos
             IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
             turmasSemRegistro = await mediator.Send(new ObterNotificacaoFrequenciaTurmasSemRegistroDeFrequenciaQuery(tipo));
 
-            if (turmasSemRegistro != null)
+            if (turmasSemRegistro.NaoEhNulo())
             {
                 // Busca parametro do sistema de quantidade de aulas sem frequencia para notificação
                 var qtdAulasNotificacao = QuantidadeAulasParaNotificacao(tipo).Result;
@@ -479,12 +479,12 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
                         turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId, tipo);
-                        if (turma.Aulas != null && turma.Aulas.Count() >= qtdAulasNotificacao)
+                        if (turma.Aulas.NaoEhNulo() && turma.Aulas.Count() >= qtdAulasNotificacao)
                         {
                             // Busca Professor/Gestor/Supervisor da Turma ou Ue
                             var usuarios = await BuscaUsuarioNotificacao(turma, tipo);
 
-                            if (usuarios != null)
+                            if (usuarios.NaoEhNulo())
                             {
                                 var cargosLinq = cargosNotificados;
                                 var cargosNaoNotificados = usuarios.Select(u => u.Cargo)
@@ -511,11 +511,10 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
         {
-            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(turmaSemRegistro.DisciplinaId) });
-            if (disciplinas != null && disciplinas.Any() && disciplinas.FirstOrDefault().RegistraFrequencia)
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(turmaSemRegistro.DisciplinaId)));
+            if (disciplina.NaoEhNulo() && disciplina.RegistraFrequencia)
             {
-                var disciplina = disciplinas.FirstOrDefault();
-
+            
                 if (disciplina.RegistraFrequencia)
                 {
                     var tituloMensagem = $"Frequência da turma {turmaSemRegistro.NomeTurma} - {turmaSemRegistro.DisciplinaId} ({turmaSemRegistro.NomeUe})";
@@ -571,13 +570,11 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task<string> ObterNomeDisciplina(string codigoDisciplina)
         {
-            long[] disciplinaId = { long.Parse(codigoDisciplina) };
-            var disciplina = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinaId);
-
-            if (!disciplina.Any())
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoDisciplina)));
+            if (disciplina is null)
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
 
-            return disciplina.FirstOrDefault().Nome;
+            return disciplina.Nome;
         }
 
         private async Task<int?> QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)

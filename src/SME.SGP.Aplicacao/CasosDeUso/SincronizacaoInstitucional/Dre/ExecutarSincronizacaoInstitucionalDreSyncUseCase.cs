@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var codigosDre = await mediator.Send(ObterCodigosDresQuery.Instance);
 
-            if (codigosDre == null || !codigosDre.Any())
+            if (codigosDre.EhNulo() || !codigosDre.Any())
             {
                 throw new NegocioException("Não foi possível localizar as Dres no EOL para a sincronização instituicional");
             }

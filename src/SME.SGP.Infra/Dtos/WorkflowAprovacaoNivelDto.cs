@@ -16,10 +16,10 @@ namespace SME.SGP.Infra
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (UsuariosRf != null && (UsuariosRf.Count() > 0 && Cargo.HasValue))
+            if (UsuariosRf.NaoEhNulo() && (UsuariosRf.Count() > 0 && Cargo.HasValue))
                 yield return new ValidationResult($"O nível {this.Nivel} deve conter apenas Cargo ou Usuários");
 
-            if (UsuariosRf != null && (UsuariosRf.Count() == 0 && !Cargo.HasValue))
+            if (UsuariosRf.NaoEhNulo() && (UsuariosRf.Count() == 0 && !Cargo.HasValue))
                 yield return new ValidationResult($"O nível {this.Nivel} deve conter Cargo ou Usuários");
         }
     }

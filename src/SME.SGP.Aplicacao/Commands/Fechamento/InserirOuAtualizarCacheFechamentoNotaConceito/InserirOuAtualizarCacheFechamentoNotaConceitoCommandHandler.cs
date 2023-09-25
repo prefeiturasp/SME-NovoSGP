@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache,
                     "Obter fechamento nota final");
 
-            if (retornoCacheMapeado == null)
+            if (retornoCacheMapeado.EhNulo())
                 return false;
 
             foreach (var fechamentoNotaConceito in request.FechamentosNotasConceitos)
@@ -42,7 +43,7 @@ namespace SME.SGP.Aplicacao
                     (c.Bimestre == request.Bimestre || (request.Bimestre is 0 or null && c.Bimestre is 0 or null))
                     );
 
-                if (cacheAluno == null)
+                if (cacheAluno.EhNulo())
                 {
                     retornoCacheMapeado.Add(new FechamentoNotaAlunoAprovacaoDto
                     {

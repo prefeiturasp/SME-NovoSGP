@@ -29,11 +29,11 @@ namespace SME.SGP.Aplicacao
         {
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
 
-            if (tipoCalendario != null)
+            if (tipoCalendario.NaoEhNulo())
             {
                 var periodos = (await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id))).ToList();
 
-                if (periodos != null || periodos.Any())
+                if (periodos.NaoEhNulo() || periodos.Any())
                 {
                     return periodos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
                 }

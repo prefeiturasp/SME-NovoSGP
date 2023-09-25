@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                 Planejamento = diarioBordo.Planejamento,
                 InseridoCJ = diarioBordo.InseridoCJ,
                 NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordo.ComponenteCurricularId)?.NomeComponenteInfantil,
-                NomeComponenteIrmao = diarioBordoIrmao != null ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordoIrmao.ComponenteCurricularId)?.NomeComponenteInfantil : string.Empty,
+                NomeComponenteIrmao = diarioBordoIrmao.NaoEhNulo() ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordoIrmao.ComponenteCurricularId)?.NomeComponenteInfantil : string.Empty,
                 PlanejamentoIrmao = diarioBordoIrmao?.Planejamento,
                 Observacoes = observacoes.Select(obs =>
                 {

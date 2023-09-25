@@ -31,12 +31,12 @@ namespace SME.SGP.Aplicacao
 
                 var abrangencia = await mediator.Send(new ObterAbrangenciaPorFiltroQuery(string.Empty, false, usuario));
 
-                if (abrangencia != null && abrangencia.Any())
+                if (abrangencia.NaoEhNulo() && abrangencia.Any())
                     lstAbrangencia.AddRange(abrangencia);
 
                 var abrangenciaHistorica = await mediator.Send(new ObterAbrangenciaPorFiltroQuery(string.Empty, true, usuario));
 
-                if (abrangenciaHistorica != null && abrangenciaHistorica.Any())
+                if (abrangenciaHistorica.NaoEhNulo() && abrangenciaHistorica.Any())
                     lstAbrangencia.AddRange(abrangenciaHistorica);
 
                 //TODO: MELHORAR ISSO AQUI

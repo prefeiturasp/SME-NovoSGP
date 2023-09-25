@@ -10,6 +10,7 @@ using SME.SGP.Infra.Utilitarios;
 using System;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Dados.Cache;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.IoC
 {
@@ -17,7 +18,7 @@ namespace SME.SGP.IoC
     {
         public static void ConfigurarCache(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
+            if (configuration.EhNulo())
                 return;
 
             services.AddOptions<ConfiguracaoCacheOptions>()

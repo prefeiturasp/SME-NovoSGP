@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroNotificacaoFechamentoReaberturaDREDto>();
 
-            if (filtro == null)
+            if (filtro.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível gerar as notificações, pois o fechamento reabertura não possui dados", LogNivel.Informacao, LogContexto.Fechamento));
                 return false;
             }
 
             var adminsSgpDre = await servicoEOL.ObterAdministradoresSGP(filtro.Dre);
-            if (adminsSgpDre != null && adminsSgpDre.Any())
+            if (adminsSgpDre.NaoEhNulo() && adminsSgpDre.Any())
             {
                 foreach (var adminSgpUe in adminsSgpDre)
                 {

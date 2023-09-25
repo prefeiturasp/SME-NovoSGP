@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
         {
             var entidade = await repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, semestre);
 
-            if (entidade != null)
+            if (entidade.NaoEhNulo())
                 return EntidadeParaDtoCompleto(entidade);
 
             return null;
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             TipoCalendarioCompletoDto dto = new TipoCalendarioCompletoDto();
 
-            if (entidade != null)
+            if (entidade.NaoEhNulo())
                 dto = EntidadeParaDtoCompleto(entidade);
 
             return dto;
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
         {
             int[] modalidades;
             
-            if(modalidade == null || !modalidade.HasValue){
+            if(modalidade.EhNulo() || !modalidade.HasValue){
                 var login = servicoUsuario.ObterLoginAtual();
                 var perfil = servicoUsuario.ObterPerfilAtual();
 
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaPeriodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(tipoCalendarioId);
 
-            if (listaPeriodoEscolar == null || !listaPeriodoEscolar.Any())
+            if (listaPeriodoEscolar.EhNulo() || !listaPeriodoEscolar.Any())
                 throw new NegocioException("Não foi possível obter os bimestres deste tipo de calendário.");
 
             return MapeiaParaDtoTipoCalendarioBimestre(listaPeriodoEscolar);

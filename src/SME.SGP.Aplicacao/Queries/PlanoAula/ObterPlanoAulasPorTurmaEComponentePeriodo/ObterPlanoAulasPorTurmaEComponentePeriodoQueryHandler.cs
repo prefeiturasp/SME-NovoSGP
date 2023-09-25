@@ -68,14 +68,14 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
-                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular : long.Parse(ComponenteCurricularId)));
+                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto.NaoEhNulo() ? disciplinaDto.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular : long.Parse(ComponenteCurricularId)));
 
                 temPlanoAnual.Add(planejamentoAnualPeriodoId);
 
                 if (planejamentoAnualPeriodoId == 0
                     && turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year
                     && !usuarioLogado.PerfilAtual.Equals(Perfis.PERFIL_CJ)
-                    && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
+                    && !(disciplinaDto.NaoEhNulo() && disciplinaDto.TerritorioSaber))
                     throw new NegocioException("Não foi possível carregar o plano de aula porque não há plano anual cadastrado");
             }
             return temPlanoAnual.Any(s => s > 0);
@@ -88,14 +88,14 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
             var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;
 
-            var disciplinaId = (planoAulas != null && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
+            var disciplinaId = (planoAulas.NaoEhNulo() && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
             var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,
                                                                                                                            turmaId,
                                                                                                                            componenteCurricularId,
                                                                                                                            disciplinaId,
                                                                                                                            ehRegencia)) : null;
 
-            var temObjetivosAprendizagemOpcionais = objetivosAprendizagemComponente == null || objetivosAprendizagemComponente.Count() == 0;
+            var temObjetivosAprendizagemOpcionais = objetivosAprendizagemComponente.EhNulo() || objetivosAprendizagemComponente.Count() == 0;
 
             foreach (var plano in planoAulas)
             {
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
                     ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente,
                     ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
                     IdAtividadeAvaliativa = atividadeAvaliativa?.Id,
-                    PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,
+                    PodeLancarNota = atividadeAvaliativa.NaoEhNulo() && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,
                     EhReposicao = plano.TipoAula == (int)TipoAula.Reposicao
                 });
             }
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
         {
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Períodos escolares não localizados para o tipo de calendário da turma");
 
             return periodosEscolares;
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             return turma;

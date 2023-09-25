@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             if (comunicado.CodigoUe == TODAS && !comunicado.Turmas.Any(a => a == TODAS))
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if ((comunicado.Turmas == null || comunicado.Turmas.Any(a => a == TODAS)) && (comunicado.AlunoEspecificado || (comunicado.Alunos?.Any() ?? false)))
+            if ((comunicado.Turmas.EhNulo() || comunicado.Turmas.Any(a => a == TODAS)) && (comunicado.AlunoEspecificado || (comunicado.Alunos?.Any() ?? false)))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
@@ -93,10 +93,10 @@ namespace SME.SGP.Aplicacao
 
             var ue = abrangenciaUes.FirstOrDefault(x => x.Codigo.Equals(comunicado.CodigoUe));
 
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a UE com codigo {comunicado.CodigoUe}");
 
-            if (comunicado.Turmas != null && comunicado.Turmas.Any() && !comunicado.Turmas.Any(a => a == TODAS))
+            if (comunicado.Turmas.NaoEhNulo() && comunicado.Turmas.Any() && !comunicado.Turmas.Any(a => a == TODAS))
                 await ValidarAbrangenciaTurma(comunicado, usuarioLogado);
         }
 
@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
 
             var dre = abrangenciaDres.FirstOrDefault(x => x.Codigo.Equals(comunicado.CodigoDre));
 
-            if (dre == null)
+            if (dre.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a DRE com codigo {comunicado.CodigoDre}");
         }
 
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
             {
                 var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turma, usuarioLogado.Login, usuarioLogado.PerfilAtual, false, abrangenciaPermitida));
 
-                if (abrangenciaTurmas == null)
+                if (abrangenciaTurmas.EhNulo())
                     throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");
             }
         }

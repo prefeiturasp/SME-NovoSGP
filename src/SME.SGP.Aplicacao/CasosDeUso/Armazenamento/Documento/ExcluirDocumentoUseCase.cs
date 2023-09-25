@@ -25,12 +25,12 @@ namespace SME.SGP.Aplicacao
             {
                 var entidadeDocumento = await mediator.Send(new ObterDocumentoPorIdQuery(documentoId));
 
-                if (entidadeDocumento == null)
+                if (entidadeDocumento.EhNulo())
                     throw new NegocioException(MensagemNegocioDocumento.DOCUMENTO_INFORMADO_NAO_EXISTE);
 
                 var documentosArquivos = await mediator.Send(new ObterDocumentosArquivosPorDocumentoIdQuery(documentoId));
 
-                if (documentosArquivos != null)
+                if (documentosArquivos.NaoEhNulo())
                 {
                     var arquivosAntigos =
                         await mediator.Send(

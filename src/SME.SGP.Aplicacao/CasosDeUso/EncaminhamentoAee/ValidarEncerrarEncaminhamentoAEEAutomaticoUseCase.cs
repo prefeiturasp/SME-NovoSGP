@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
             var matriculasTurmaAlunoEol = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(filtro.UeCodigo, filtro.AlunoCodigo));
 
-            if (matriculasTurmaAlunoEol == null || !matriculasTurmaAlunoEol.Any())
+            if (matriculasTurmaAlunoEol.EhNulo() || !matriculasTurmaAlunoEol.Any())
                 return false;
 
             var estaAtivo = matriculasTurmaAlunoEol.Any(c => SituacoesAtivas.Contains(c.CodigoSituacaoMatricula) && c.DataSituacao <= DateTime.Today);

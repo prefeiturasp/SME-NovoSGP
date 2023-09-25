@@ -33,19 +33,19 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 
                 foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
                 {
-                    var turmaAluno = turmas != null && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()) : null;
-                    var turmaAlunoDescricao = turmaAluno == null ? string.Empty : $"- {turmaAluno.Nome}";
+                    var turmaAluno = turmas.NaoEhNulo() && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()) : null;
+                    var turmaAlunoDescricao = turmaAluno.EhNulo() ? string.Empty : $"- {turmaAluno.Nome}";
 
                     var alunoSimples = new AlunoSimplesDto()
                     {
                         Codigo = alunoEOL.CodigoAluno,
                         Nome = $"{alunoEOL.NomeAluno} {turmaAlunoDescricao}",
                         CodigoTurma = alunoEOL.CodigoTurma.ToString(),
-                        TurmaId = turmaAluno != null ? turmaAluno.Id : 0,
-                        NomeComModalidadeTurma = turmas != null && turmas.Any() ?
+                        TurmaId = turmaAluno.NaoEhNulo() ? turmaAluno.Id : 0,
+                        NomeComModalidadeTurma = turmas.NaoEhNulo() && turmas.Any() ?
                         $"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : "",
-                        Semestre = turmaAluno != null ? turmaAluno.Semestre : 0,
-                        ModalidadeCodigo = turmaAluno != null ? turmaAluno.ModalidadeCodigo : 0,
+                        Semestre = turmaAluno.NaoEhNulo() ? turmaAluno.Semestre : 0,
+                        ModalidadeCodigo = turmaAluno.NaoEhNulo() ? turmaAluno.ModalidadeCodigo : 0,
                     };
                     alunoSimplesDto.Add(alunoSimples);
                 }
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
         {
             var turmaNome = "";
 
-            if (turma != null)
+            if (turma.NaoEhNulo())
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
 
             return turmaNome;

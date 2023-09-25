@@ -82,12 +82,12 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public IEnumerable<CicloRetornoDto> BuscarCiclos()
+        public Task<IEnumerable<CicloRetornoDto>> BuscarCiclos()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TipoEscolaRetornoDto> BuscarTiposEscola()
+        public Task<IEnumerable<TipoEscolaRetornoDto>> BuscarTiposEscola()
         {
             throw new NotImplementedException();
         }
@@ -811,27 +811,27 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public IEnumerable<DreRespostaEolDto> ObterDres()
+        public Task<IEnumerable<DreRespostaEolDto>> ObterDres()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<EscolasRetornoDto> ObterEscolasPorCodigo(string[] codigoUes)
+        public Task<IEnumerable<EscolasRetornoDto>> ObterEscolasPorCodigo(string[] codigoUes)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<EscolasRetornoDto> ObterEscolasPorDre(string dreId)
+        public Task<IEnumerable<EscolasRetornoDto>> ObterEscolasPorDre(string dreId)
         {
             throw new NotImplementedException();
         }
 
-        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorDre()
+        public Task<EstruturaInstitucionalRetornoEolDTO> ObterEstruturaInstuticionalVigentePorDre()
         {
             throw new NotImplementedException();
         }
 
-        public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
+        public Task<EstruturaInstitucionalRetornoEolDTO> ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
         {
             return null;
         }
@@ -929,9 +929,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ProfessorTurmaReposta> ObterListaTurmasPorProfessor(string codigoRf)
+        public Task<IEnumerable<ProfessorTurmaReposta>> ObterListaTurmasPorProfessor(string codigoRf)
         {
-            return new List<ProfessorTurmaReposta>()
+            return  Task.FromResult<IEnumerable<ProfessorTurmaReposta>>(new List<ProfessorTurmaReposta>()
             {
                 new ProfessorTurmaReposta(){
                     CodEscola = ESCOLA_CODIGO_1,
@@ -971,7 +971,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     TipoEscola = TIPO_ESCOLA_CEU_EMEF,
                     CodTipoEscola = TIPO_ESCOLA_CODIGO_16,
                 }
-            };
+            });
         }
 
         public async Task<MeusDadosDto> ObterMeusDados(string login)
@@ -1184,16 +1184,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
+        public Task<IEnumerable<SupervisoresRetornoDto>> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
-            return new List<SupervisoresRetornoDto>()
+            return Task.FromResult<IEnumerable<SupervisoresRetornoDto>>( new List<SupervisoresRetornoDto>()
             {
                 new SupervisoresRetornoDto()
                 {
                     CodigoRf = "1",
                     NomeServidor = "Teste da silva"
                 }
-            };
+            });
         }
 
         public Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)

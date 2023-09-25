@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -94,7 +95,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultaRecuperacaoParalelaPeriodo.BuscarListaPeriodos(codigoTurma);
 
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
@@ -110,7 +111,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await obterAnosLetivosPAPUseCase.Executar();
 
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);

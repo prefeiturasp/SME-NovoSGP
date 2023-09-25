@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                                                                                  new string[] { },
                                                                                  bimestres.ToArray(),
                                                                                  matricula.dataMatricula,
-                                                                                 !matricula.inativo && periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
+                                                                                 !matricula.inativo && periodoEscolarAtual.NaoEhNulo() && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
             }
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
-            if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
+            if (frequenciaAluno.EhNulo() && aulasComponentesTurmas.EhNulo() || aulasComponentesTurmas.Count() == 0)
                 return FrequenciaAluno.FormatarPercentual(0);
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequenciaFormatado;

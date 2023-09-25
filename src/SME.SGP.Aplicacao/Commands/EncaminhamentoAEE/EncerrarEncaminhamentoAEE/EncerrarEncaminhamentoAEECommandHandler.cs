@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(request.EncaminhamentoId));
 
-            if (encaminhamentoAEE == null)
+            if (encaminhamentoAEE.EhNulo())
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);

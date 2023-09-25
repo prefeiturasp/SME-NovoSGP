@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             {
                 var ueLocalizada = await mediator.Send(new ObterUeComDrePorCodigoQuery(ue));
 
-                if (ueLocalizada == null)
+                if (ueLocalizada.EhNulo())
                     retorno = $"A UE {ue} não foi localizada.";
 
                 if (!ueLocalizada.Dre.CodigoDre.Equals(atribuicaoSupervisorEscolaDto.DreId))
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task AtribuirEscolas(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
         {
-            if (atribuicaoSupervisorEscolaDto.UesIds != null)
+            if (atribuicaoSupervisorEscolaDto.UesIds.NaoEhNulo())
             {
                 foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.UesIds)
                 {                   
@@ -112,11 +112,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task AjustarRegistrosExistentes(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto, IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
         {
-            if (escolasAtribuidas != null)
+            if (escolasAtribuidas.NaoEhNulo())
             {
                 foreach (var atribuicao in escolasAtribuidas)
                 {
-                    if (atribuicaoSupervisorEscolaDto.UesIds == null || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
+                    if (atribuicaoSupervisorEscolaDto.UesIds.EhNulo() || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
                         repositorioSupervisorEscolaDre.Remover(atribuicao.AtribuicaoSupervisorId);
 
                     else if (atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && atribuicao.AtribuicaoExcluida)

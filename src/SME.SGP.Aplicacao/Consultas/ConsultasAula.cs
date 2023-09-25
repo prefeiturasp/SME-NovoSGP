@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Não foi possivel obter a turma da aula");
 
             var bimestreAtual = await consultasPeriodoEscolar.ObterBimestre(DateTime.Now, turma.ModalidadeCodigo, turma.Semestre);
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
         {
             var aula = repositorioConsulta.ObterPorId(id);
 
-            if (aula == null || aula.Excluido)
+            if (aula.EhNulo() || aula.Excluido)
                 throw new NegocioException($"Aula de id {id} não encontrada");
 
             if (aula.AulaPaiId.HasValue)
@@ -113,35 +113,31 @@ namespace SME.SGP.Aplicacao
             var usuarioRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo de calendário não existe para turma selecionada");
 
             var periodosEscolares = await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
 
-            if (componentesCurriculares == null)
+            if (componentesCurriculares.EhNulo())
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
 
             var dadosDisciplina = componentesCurriculares
-                                .Where(c => (c.TerritorioSaber && c.Codigo.ToString() == disciplinaCodigo) || c.Codigo.ToString() == disciplinaCodigo)
+                                .Where(c => c.Codigo.ToString() == disciplinaCodigo)
                                 .Select(c => new ComponenteCurricularTipoDto()
                                 {
-                                    CodigoComponenteCurricular = !c.TerritorioSaber ? c.Codigo.ToString() : c.CodigoComponenteTerritorioSaber.ToString(),
-                                    CodigoComponenteCurricularTerritorio = !c.TerritorioSaber && c.CodigoComponenteTerritorioSaber == 0 
-                                                                            ? c.CodigoComponenteTerritorioSaber.ToString() 
-                                                                            : c.Codigo > 0 
-                                                                                       ? c.Codigo.ToString() 
-                                                                                       : "",
+                                    CodigoComponenteCurricular = c.Codigo.ToString(),
+                                    CodigoComponenteCurricularTerritorio = c.CodigoComponenteTerritorioSaber.ToString(),
                                     EhTerritorio = c.TerritorioSaber
                                 })
                                 .FirstOrDefault();
 
-            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina.CodigoComponenteCurricular, usuarioLogado, usuarioRF, dadosDisciplina.CodigoComponenteCurricularTerritorio);
+            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina.CodigoComponenteCurricular, usuarioLogado, usuarioRF);
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
@@ -149,7 +145,7 @@ namespace SME.SGP.Aplicacao
             var aulaInicioRecorrencia = repositorioConsulta.ObterPorId(aulaInicialId);
             var fimRecorrencia = await consultasPeriodoEscolar.ObterFimPeriodoRecorrencia(aulaInicioRecorrencia.TipoCalendarioId, aulaInicioRecorrencia.DataAula, recorrencia);
 
-            var aulaIdOrigemRecorrencia = aulaInicioRecorrencia.AulaPaiId != null ? aulaInicioRecorrencia.AulaPaiId.Value
+            var aulaIdOrigemRecorrencia = aulaInicioRecorrencia.AulaPaiId.NaoEhNulo() ? aulaInicioRecorrencia.AulaPaiId.Value
                                             : aulaInicialId;
             var aulasRecorrentes = await repositorioConsulta.ObterAulasRecorrencia(aulaIdOrigemRecorrencia, aulaInicioRecorrencia.Id, fimRecorrencia);
             return aulasRecorrentes.Count() + 1;
@@ -183,7 +179,7 @@ namespace SME.SGP.Aplicacao
         {
             var aula = repositorioConsulta.ObterPorId(aulaId);
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Aula não encontrada");
 
             // se não possui aula pai é a propria origem da recorrencia
@@ -231,13 +227,13 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF, string disciplinaTerritorio)
+        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF)
         {
             if (disciplinaCodigo.ToCharArray().Any(a => !char.IsDigit(a)))
                 throw new NegocioException("Código do componente curricular inválido");
 
             var disciplina = await consultasDisciplina.ObterDisciplina(Convert.ToInt64(disciplinaCodigo));
-            if (disciplina == null)
+            if (disciplina.EhNulo())
                 throw new NegocioException("Componente curricular não encontrado");
 
             var aulasRetorno = new List<DataAulasProfessorDto>();
@@ -250,16 +246,6 @@ namespace SME.SGP.Aplicacao
                                                                                     null,
                                                                                     null,
                                                                                     usuarioLogado.EhProfessorCj());
-
-            if(!aulas.Any() && disciplina.TerritorioSaber && !String.IsNullOrEmpty(disciplinaTerritorio))
-                aulas = repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Periodos.Select(p => p.Id).Distinct(),
-                                                                               anoLetivo,
-                                                                               turmaCodigo,
-                                                                               disciplinaTerritorio,
-                                                                               string.Empty,
-                                                                               null,
-                                                                               null,
-                                                                               usuarioLogado.EhProfessorCj());
 
             aulas.ToList().ForEach(aula =>
             {
@@ -305,7 +291,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var disciplina = disciplinasUsuario?.FirstOrDefault(x => x.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
-            var disciplinaId = disciplina == null ? null : disciplina.CodigoComponenteCurricular.ToString();
+            var disciplinaId = disciplina.EhNulo() ? null : disciplina.CodigoComponenteCurricular.ToString();
             return disciplinaId;
         }
 

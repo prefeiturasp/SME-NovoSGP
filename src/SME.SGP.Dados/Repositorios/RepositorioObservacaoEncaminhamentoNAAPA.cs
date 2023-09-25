@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
             var observacoesConsulta = await database.Conexao.QueryAsync<EncaminhamentoNAAPAObservacoesConsultaDto>(sql,new { encaminhamentoNAAPAId, usuarioId = usuarioLogadoRf },commandTimeout: 300);
             var observacoes = MapearAuditoria(observacoesConsulta);
 
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
 

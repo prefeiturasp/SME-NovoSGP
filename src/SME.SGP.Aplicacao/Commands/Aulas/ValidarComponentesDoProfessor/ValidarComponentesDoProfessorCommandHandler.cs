@@ -30,33 +30,22 @@ namespace SME.SGP.Aplicacao
                 var componentesCurricularesDoProfessorCJ = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
 
-                if (componentesCurricularesDoProfessorCJ != null)
+                if (componentesCurricularesDoProfessorCJ.NaoEhNulo())
                 {
                     podeCriarAulasParaTurma =
                         componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && (c.DisciplinaId == request.ComponenteCurricularCodigo || (request.CodigoTerritorioSaber.HasValue && request.CodigoTerritorioSaber.Value > 0 && c.DisciplinaId.Equals(request.CodigoTerritorioSaber.Value)))) ||
                         componentesCurricularesDoProfessor.Any(c => c.Codigo.Equals(request.ComponenteCurricularCodigo) || c.CodigoComponenteTerritorioSaber.Equals(request.ComponenteCurricularCodigo));
-                }                
-
-                if (!podeCriarAulasParaTurma)
-                {
-                    var componenteTerritorioDefinidoParaAula = await mediator
-                        .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.Usuario));
-
-                    podeCriarAulasParaTurma = componenteTerritorioDefinidoParaAula != default &&
-                                              componenteTerritorioDefinidoParaAula.codigoTerritorio.HasValue &&
-                                              componenteTerritorioDefinidoParaAula.codigoTerritorio.Value > 0 &&
-                                              componentesCurricularesDoProfessorCJ.Select(cc => cc.DisciplinaId).Contains(componenteTerritorioDefinidoParaAula.codigoTerritorio.Value);
-                }                
+                }                         
 
                 if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
             }
             else
             {
-                if (componentesCurricularesDoProfessor == null)
+                if (componentesCurricularesDoProfessor.EhNulo())
                     componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil());
 
-                podeCriarAulasParaTurma = componentesCurricularesDoProfessor != null &&
+                podeCriarAulasParaTurma = componentesCurricularesDoProfessor.NaoEhNulo() &&
                                           (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == request.ComponenteCurricularCodigo) ||
                                            componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo || c.Codigo == request.ComponenteCurricularCodigo)) ||
                                            componentesCurricularesDoProfessor.Any(r => r.Regencia && (r.CodigoComponenteCurricularPai == request.ComponenteCurricularCodigo || r.Codigo == request.ComponenteCurricularCodigo)));

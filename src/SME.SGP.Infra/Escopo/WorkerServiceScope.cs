@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra.Contexto;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra.Contexto;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace SME.SGP.Infra.Escopo
 
         public static IDisposable AddTransientDisposableServices(IDisposable service)
         {
-            if (service != null)
+            if (service.NaoEhNulo())
                 if (TransientServices.ContainsKey(WorkerContext.ContextIdentifier))
                 {
                     List<IDisposable> services = null;
@@ -42,10 +43,10 @@ namespace SME.SGP.Infra.Escopo
 
             if (TransientServices.TryRemove(WorkerContext.ContextIdentifier, out services))
             {
-                if (services != null)
+                if (services.NaoEhNulo())
                 {
                     foreach (var item in services)
-                        if (item != null)
+                        if (item.NaoEhNulo())
                             item.Dispose();
                 }
             }

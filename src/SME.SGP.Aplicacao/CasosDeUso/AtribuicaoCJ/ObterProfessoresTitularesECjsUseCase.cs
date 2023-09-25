@@ -12,13 +12,8 @@ namespace SME.SGP.Aplicacao
     public class ObterProfessoresTitularesECjsUseCase : AbstractUseCase, IObterProfessoresTitularesECjsUseCase
     {
 
-        private readonly IServicoEol servicoEOL;
-        private readonly IConsultasDisciplina consultasDisciplina;
-        public ObterProfessoresTitularesECjsUseCase(IMediator mediator, IServicoEol servicoEOL, IConsultasDisciplina consultasDisciplina) : base(mediator)
-        {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
-        }
+        public ObterProfessoresTitularesECjsUseCase(IMediator mediator) : base(mediator)
+        {}
 
         public async Task<AtribuicaoCJTitularesRetornoDto> Executar(string ueId, string turmaId,
                     string professorRf, Modalidade modalidadeId, int anoLetivo)
@@ -95,7 +90,7 @@ namespace SME.SGP.Aplicacao
                     ? listaAtribuicoes.OrderByDescending(u => u.AlteradoEm).FirstOrDefault()
                     : listaAtribuicoes.OrderByDescending(u => u.CriadoEm).FirstOrDefault();
 
-                if (primeiroRegistroCriado != null)
+                if (primeiroRegistroCriado.NaoEhNulo())
                 {
                     listaRetorno.CriadoEm = primeiroRegistroCriado.CriadoEm;
                     listaRetorno.CriadoPor = primeiroRegistroCriado.CriadoPor;

@@ -17,13 +17,13 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ConselhoClasseAlunoDto>> Executar(FiltroConselhoClasseConsolidadoTurmaBimestreDto param)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             var alunosTurmaEol = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma, true));
 
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, param.Bimestre));
-            if (periodoEscolar == null && param.Bimestre != 0)
+            if (periodoEscolar.EhNulo() && param.Bimestre != 0)
                 throw new NegocioException("Periodo escolar não encontrado");
 
             if (param.Bimestre == 0)
@@ -34,11 +34,11 @@ namespace SME.SGP.Aplicacao
             var codigosAlunos = consolidadoConselhosClasses.Select(c => c.AlunoCodigo).ToArray();
             var alunosEol = alunosTurmaEol.Where(a => codigosAlunos.Contains(a.CodigoAluno));
             
-            if(periodoEscolar != null)
+            if(periodoEscolar.NaoEhNulo())
             {
                 var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(periodoEscolar.TipoCalendarioId, turma.EhTurmaInfantil, periodoEscolar.Bimestre));
 
-                if(periodoFechamento != null)
+                if(periodoFechamento.NaoEhNulo())
                     alunosEol = alunosEol.Where(a => !a.Inativo || a.Inativo && a.DataSituacao >= periodoFechamento.InicioDoFechamento);
             }
 
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 var consolidadoConselhoClasse = consolidadoConselhosClasses.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno.ToString());
                 var situacaoConselhoClasseAlunoAjustada = dadosStatusAlunoConselhoConsolidado.FirstOrDefault(s => s.AlunoCodigo == aluno.CodigoAluno.ToString());
 
-                if (consolidadoConselhoClasse == null)
+                if (consolidadoConselhoClasse.EhNulo())
                     continue;
 
                 var frequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), codigoTurma));
@@ -72,8 +72,8 @@ namespace SME.SGP.Aplicacao
                     NumeroChamada = aluno.NumeroAlunoChamada ?? 0,
                     AlunoCodigo = aluno.CodigoAluno.ToString(),
                     NomeAluno = aluno.NomeAluno,
-                    SituacaoFechamento = situacaoConselhoClasseAlunoAjustada != null ? ((SituacaoConselhoClasse)situacaoConselhoClasseAlunoAjustada.StatusConselhoClasseAluno).Name() : consolidadoConselhoClasse.Status.Name(),
-                    SituacaoFechamentoCodigo = situacaoConselhoClasseAlunoAjustada != null ? situacaoConselhoClasseAlunoAjustada.StatusConselhoClasseAluno : (int)consolidadoConselhoClasse.Status,
+                    SituacaoFechamento = situacaoConselhoClasseAlunoAjustada.NaoEhNulo() ? ((SituacaoConselhoClasse)situacaoConselhoClasseAlunoAjustada.StatusConselhoClasseAluno).Name() : consolidadoConselhoClasse.Status.Name(),
+                    SituacaoFechamentoCodigo = situacaoConselhoClasseAlunoAjustada.NaoEhNulo() ? situacaoConselhoClasseAlunoAjustada.StatusConselhoClasseAluno : (int)consolidadoConselhoClasse.Status,
                     FrequenciaGlobal = frequenciaGlobal,
                     PodeExpandir = true,
                     ParecerConclusivo = parecerConclusivo,
@@ -89,11 +89,11 @@ namespace SME.SGP.Aplicacao
 
         public string RetornaNomeParecerConclusivoAluno(IEnumerable<ConselhoClasseParecerConclusivoDto> pareceresAtivosDoPeriodo, IEnumerable<ConselhoClasseParecerConclusivoDto> pareceresConclusivosDoPeriodoAnoAnterior, long? parecerConclusivoAlunoId)
         {
-            if (parecerConclusivoAlunoId == null)
+            if (parecerConclusivoAlunoId.EhNulo())
                 return "Sem parecer";
             else
             {
-                if (pareceresAtivosDoPeriodo.FirstOrDefault(a => a.Id == parecerConclusivoAlunoId) != null)
+                if (pareceresAtivosDoPeriodo.FirstOrDefault(a => a.Id == parecerConclusivoAlunoId).NaoEhNulo())
                     return pareceresAtivosDoPeriodo.FirstOrDefault(a => a.Id == parecerConclusivoAlunoId).Nome;
                 else
                     return pareceresConclusivosDoPeriodoAnoAnterior.FirstOrDefault(a => a.Id == parecerConclusivoAlunoId)?.Nome ?? "Sem parecer";

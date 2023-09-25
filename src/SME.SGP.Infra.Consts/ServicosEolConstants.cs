@@ -102,9 +102,6 @@
 
         public const string URL_COMPONENTES_CURRICULARES_TURMAS_FUNCIONARIOS_PERFIS = "v1/componentes-curriculares/turmas/{0}/funcionarios/{1}/perfis/{2}/agrupaComponenteCurricular/{3}";
 
-        public const string URL_DISCIPLINAS_TURMA = "disciplinas/turma";
-
-        public const string URL_DISCIPLINAS_SEM_AGRUPAMENTO = "disciplinas/SemAgrupamento";
 
         public const string URL_MATRICULAS_ANOS_ANTERIORES = "matriculas/anos-anteriores";
 
@@ -116,7 +113,7 @@
 
         public const string URL_FUNCIONARIOS_UE = "funcionarios/ue/{0}";
 
-        public const string URL_FUNCIONARIOS_SUPERVISORES = "funcionarios/supervisores";
+        public const string URL_FUNCIONARIOS_SUPERVISORES = "funcionarios/supervisores/{0}";
 
         public const string URL_FUNCIONARIOS_TURMAS_DISCIPLINAS = "funcionarios/turmas/{0}/disciplinas";
 
@@ -172,5 +169,8 @@
 
         public const string URL_UES_TURMAS_SINCRONIZACOES = "ues/{0}/turmas/{1}/sincronizacoes-institucionais";
 
+        public const string URL_COMPONENTES_CURRICULARES_AGRUPAMENTO_TERRITORIO_SABER = "v1/componentes-curriculares/territorio-saber/agrupamentos";
+
+        public const string URL_COMPONENTES_CURRICULARES_AGRUPAMENTOS_TERRITORIO_SABER_CORRELACIONADOS = "v1/componentes-curriculares/territorio-saber/agrupamentos-correlacionados";
     }
 }

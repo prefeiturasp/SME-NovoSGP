@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FechamentoConsolidacaoTurmaComponenteBimestreDto>();
 
-            if (filtro == null)
+            if (filtro.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados.", LogNivel.Negocio, LogContexto.Turma));                
                 return false;
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
             var atualizarConsolidado = false;
 
-            if (fechamento != null && consolidadoTurmaComponente != null)
+            if (fechamento.NaoEhNulo() && consolidadoTurmaComponente.NaoEhNulo())
                 atualizarConsolidado = consolidadoTurmaComponente.Status != fechamento.Situacao;
 
             consolidadoTurmaComponente = MapearFechamentoConsolidado(filtro, consolidadoTurmaComponente, fechamento, professoresDaTurma);
@@ -53,9 +53,9 @@ namespace SME.SGP.Aplicacao
 
         private FechamentoConsolidadoComponenteTurma MapearFechamentoConsolidado(FechamentoConsolidacaoTurmaComponenteBimestreDto filtro, FechamentoConsolidadoComponenteTurma consolidadoTurmaComponente, FechamentoTurmaDisciplina fechamento, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma)
         {
-            var statusFechamento = fechamento != null ? fechamento.Situacao : SituacaoFechamento.NaoIniciado;
+            var statusFechamento = fechamento.NaoEhNulo() ? fechamento.Situacao : SituacaoFechamento.NaoIniciado;
 
-            if (consolidadoTurmaComponente == null)
+            if (consolidadoTurmaComponente.EhNulo())
             {
                 var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinasId.Contains(filtro.ComponenteCurricularId));
 
@@ -64,8 +64,8 @@ namespace SME.SGP.Aplicacao
                     Bimestre = filtro.Bimestre,
                     ComponenteCurricularCodigo = filtro.ComponenteCurricularId,
                     TurmaId = filtro.TurmaId,
-                    ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular",
-                    ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty,                    
+                    ProfessorNome = professorComponente.NaoEhNulo() ? professorComponente.ProfessorNome : "Sem professor titular",
+                    ProfessorRf = professorComponente.NaoEhNulo() ? professorComponente.ProfessorRf : String.Empty,                    
                 };
             }
 

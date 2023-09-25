@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao
             {
                 var aulaAtual = repositorioAula.ObterPorId(request.AulaId);
                 var aulasRecorrentes = await repositorioAula.ObterAulasRecorrencia(aulaAtual.AulaPaiId ?? aulaAtual.Id, request.AulaId);
-                if (aulasRecorrentes != null)
+                if (aulasRecorrentes.NaoEhNulo())
                 {
                     foreach (var aula in aulasRecorrentes)
                     {

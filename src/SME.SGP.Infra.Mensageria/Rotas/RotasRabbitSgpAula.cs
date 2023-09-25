@@ -35,5 +35,6 @@
         public const string RotaMuralAvisosSync = "sgp.mural.avisos.sync";
         public const string NotificacoesDaAulaExcluir = "sgp.notificacoes.aula.excluir";
         public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
+        public const string RotaExcluirAulasRecorrentesComponentesCurricularesTerritorioSaberDisponibilizado = "sgp.aulas.componentes.curriculares.territorio.saber.disponibilizados.excluir";
     }
 }

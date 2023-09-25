@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var retorno = response
                 .Where(da => da.CodigoTurma.ToString().Equals(codigoTurma));
 
-            if (retorno == null)
+            if (retorno.EhNulo())
                 return null;
 
             return retorno.FirstOrDefault(a => a.EstaAtivo(DateTime.Today.Date));

@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoFechamentoBimestre = await repositorioEventoFechamento.UeEmFechamentoBimestre(tipoCalendario.Id, turma.EhTurmaInfantil, bimestre);
 
-            if (periodoFechamentoBimestre != null)
+            if (periodoFechamentoBimestre.NaoEhNulo())
                 return new PeriodoFechamentoVigenteDto() { PeriodoFechamentoInicio = periodoFechamentoBimestre.InicioDoFechamento, PeriodoFechamentoFim = periodoFechamentoBimestre.FinalDoFechamento };
 
             return null;
@@ -71,12 +71,12 @@ namespace SME.SGP.Aplicacao
         {
             var periodoFechamentoBimestre = await UeEmFechamentoVigente(tipoCalendario, turma.EhTurmaInfantil, bimestre, dataReferencia);
 
-            if (periodoFechamentoBimestre != null)
+            if (periodoFechamentoBimestre.NaoEhNulo())
                 return new PeriodoFechamentoVigenteDto() { PeriodoFechamentoInicio = periodoFechamentoBimestre.InicioDoFechamento, PeriodoFechamentoFim = periodoFechamentoBimestre.FinalDoFechamento };
 
             var periodoReabertura = await UeEmReaberturaDeFechamentoVigente(tipoCalendario, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, bimestre, dataReferencia);
 
-            if (periodoReabertura != null)
+            if (periodoReabertura.NaoEhNulo())
                 return new PeriodoFechamentoVigenteDto() { PeriodoFechamentoInicio = periodoReabertura.Inicio, PeriodoFechamentoFim = periodoReabertura.Fim };
 
             return null;
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> UeEmReaberturaDeFechamento(TipoCalendario tipoCalendario, string ueCodigo, string dreCodigo, int bimestre, DateTime dataReferencia)
         {
             var reaberturaPeriodo = await UeEmReaberturaDeFechamentoVigente(tipoCalendario, ueCodigo, dreCodigo, bimestre, dataReferencia);
-            return reaberturaPeriodo != null;
+            return reaberturaPeriodo.NaoEhNulo();
         }
     }
 }

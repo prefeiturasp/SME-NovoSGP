@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             var comunicados = request.Ids.Select(id =>
             {
                 var comunicado = _repositorioComunicado.ObterPorId(id);
-                if (comunicado == null)
+                if (comunicado.EhNulo())
                 {
                     erros.Append($"<li>{id} - comunicado não encontrado</li>");
                 }

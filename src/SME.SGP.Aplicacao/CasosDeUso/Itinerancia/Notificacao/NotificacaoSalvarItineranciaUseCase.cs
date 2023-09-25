@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             var notificacao = JsonConvert.DeserializeObject<NotificacaoSalvarItineranciaDto>(mensagemRabbit.Mensagem.ToString());
 
-            if (notificacao == null)
+            if (notificacao.EhNulo())
                 throw new NegocioException("Não foi possível obter os dados do registro de itinerância, para criar a notificação.");
 
             await mediator.Send(new NotificacaoSalvarItineranciaAlunosCommand(notificacao.UeId, notificacao.CriadoRF, notificacao.CriadoPor, notificacao.DataVisita, notificacao.Estudantes, notificacao.ItineranciaId));

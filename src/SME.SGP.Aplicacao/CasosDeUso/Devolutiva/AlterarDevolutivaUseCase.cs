@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Executar(AlterarDevolutivaDto param)
         {
             Devolutiva devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(param.Id));
-            if (devolutiva == null)
+            if (devolutiva.EhNulo())
                 throw new NegocioException("Devolutiva informada não existe");
 
             var turma = await ObterTurma(param.TurmaCodigo);
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma informada não localizada!");
 
             return turma;

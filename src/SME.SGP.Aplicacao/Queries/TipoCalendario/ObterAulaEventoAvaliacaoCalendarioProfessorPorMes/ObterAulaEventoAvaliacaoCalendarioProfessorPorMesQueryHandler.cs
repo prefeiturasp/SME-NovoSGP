@@ -15,12 +15,11 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoEol servicoEol;
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario, IServicoEol servicoEol)
+
+        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
         public async Task<IEnumerable<EventoAulaDiaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
         {
@@ -35,7 +34,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             var componentesCurricularesId = componentesCurriculares?.Where(b => b.RegistraFrequencia == true)
-                .Select(x => x.TerritorioSaber && x.CodigoComponenteTerritorioSaber > 0 ? x.CodigoComponenteTerritorioSaber : x.Codigo)
+                .Select(x => x.Codigo)
                 .ToArray();
 
             for (int i = 1; i < qntDiasMes + 1; i++)
@@ -46,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var dataMes = Convert.ToDateTime($"{i}/{request.Mes}/{request.AnoLetivo}");
 
-                    if (periodoFechamento == null)
+                    if (periodoFechamento.EhNulo())
                     {
                         if (request.EventosDaUeSME.Any(a => i >= a.DataInicio.Day && i <= a.DataFim.Day))
                         {
@@ -91,10 +90,10 @@ namespace SME.SGP.Aplicacao
                     if (turma.ModalidadeCodigo == Modalidade.EJA)
                     {
                         var aulas = aulasDoDia.Where(a => !a.EhTecnologiaAprendizagem);
-                        aulasId = aulas != null && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
+                        aulasId = aulas.NaoEhNulo() && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
                     }
 
-                    if (aulasId != null && aulasId.Any() && componentesCurricularesId != null)
+                    if (aulasId.NaoEhNulo() && aulasId.Any() && componentesCurricularesId.NaoEhNulo())
                         eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, componentesCurricularesId.Union(aulasDoDia.Select(a => long.Parse(a.DisciplinaId))).ToArray()));
                     else
                         eventoAula.PossuiPendencia = false;

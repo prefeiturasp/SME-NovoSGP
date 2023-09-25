@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System.Threading.Tasks;
@@ -16,12 +17,12 @@ namespace SME.SGP.Aplicacao
         {
             var detalhamentoPendencia = await mediator.Send(new ObterDetalhamentoPendenciaFechamentoConsolidadoQuery(param));
 
-            if (detalhamentoPendencia == null)
+            if (detalhamentoPendencia.EhNulo())
                 return null;
 
             var descricao = UtilRegex.RemoverTagsHtml(detalhamentoPendencia.Descricao);
 
-            var justificativa = detalhamentoPendencia.Justificativa == null ?
+            var justificativa = detalhamentoPendencia.Justificativa.EhNulo() ?
                 "" :
                 $" Justificativa : {UtilRegex.RemoverTagsHtml(detalhamentoPendencia.Justificativa)}";
 

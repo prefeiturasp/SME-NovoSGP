@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var fotoAluno = await mediator.Send(new ObterMiniaturaFotoEstudantePorAlunoCodigoQuery(request.AlunoCodigo));
 
-            if (fotoAluno == null)
+            if (fotoAluno.EhNulo())
                 throw new NegocioException("Não foi encontrada nenhuma foto para o aluno");
 
             using (var transacao = unitOfWork.IniciarTransacao())

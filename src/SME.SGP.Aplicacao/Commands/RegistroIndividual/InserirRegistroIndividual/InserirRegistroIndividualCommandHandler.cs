@@ -27,14 +27,14 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
-            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }, codigoTurma: turma.CodigoTurma));
+            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
 
-            if (componenteCurricular == null || !componenteCurricular.Any())
+            if (componenteCurricular.EhNulo() || !componenteCurricular.Any())
                 throw new NegocioException(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_NAO_ENCONTRADO);
             
             var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
 
-            if (registroExistente != null)
+            if (registroExistente.NaoEhNulo())
                 throw new NegocioException(MensagemNegocioRegistroIndividual.JA_EXISTE_REGISTRO_PARA_ALUNO_DA_TURMA_NESTA_DATA);
             
             await MoverArquivos(request);

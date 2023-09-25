@@ -119,13 +119,13 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuariosNotificacao = new List<UsuarioEolRetornoDto>();
 
-            if (listaCPs != null)
+            if (listaCPs.NaoEhNulo())
                 usuariosNotificacao.AddRange(listaCPs);
 
-            if (listaDiretores != null)
+            if (listaDiretores.NaoEhNulo())
                 usuariosNotificacao.AddRange(listaDiretores);
 
-            if (listaSupervisores != null)
+            if (listaSupervisores.NaoEhNulo())
                 usuariosNotificacao.Add(new UsuarioEolRetornoDto() { CodigoRf = listaSupervisores.FirstOrDefault().ResponsavelId, NomeServidor = listaSupervisores.FirstOrDefault().Responsavel });
 
             foreach (var usuarioNotificacaoo in usuariosNotificacao)
@@ -171,19 +171,19 @@ namespace SME.SGP.Dominio.Servicos
         {
             var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorIdQuery(fechamentoTurmaDisciplinaId));
 
-            if (fechamentoTurmaDisciplina == null)
+            if (fechamentoTurmaDisciplina.EhNulo())
                 throw new NegocioException("Fechamento ainda não realizado para essa turma.");
 
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada.");
 
-            var disciplina = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId })).ToList().FirstOrDefault();
-            if (disciplina == null)
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(fechamentoTurmaDisciplina.DisciplinaId));
+            if (disciplina.EhNulo())
                 throw new NegocioException("Componente Curricular não localizado.");
 
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId.Value);
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException("Período escolar não encontrado.");
 
             fechamentoTurmaDisciplina.AdicionarPeriodoEscolar(periodoEscolar);
@@ -233,7 +233,7 @@ namespace SME.SGP.Dominio.Servicos
 
             PeriodoEscolar periodoEscolar = periodos.periodoEscolar;
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
@@ -258,7 +258,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
 
-            if (disciplinaEOL == null)
+            if (disciplinaEOL.EhNulo())
                 throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
             var tipoNotaOuConceito = await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turmaFechamento.Id, turmaFechamento.TipoTurma);
@@ -284,7 +284,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
-            var acimaDiasPermitidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
+            var acimaDiasPermitidosAlteracao = parametroDiasAlteracao.NaoEhNulo() && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
             
             
@@ -331,13 +331,13 @@ namespace SME.SGP.Dominio.Servicos
                             fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                             await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
-                            if (fechamentoNotaClone != null)
+                            if (fechamentoNotaClone.NaoEhNulo())
                             {
                                 fechamentoNotaClone.Id = fechamentoNota.Id;
                                 notasEnvioWfAprovacao.Add(MapearParaEntidade(fechamentoNotaClone));
                             }
 
-                            if (!emAprovacao && semFechamentoNota && tipoNotaOuConceito != null)
+                            if (!emAprovacao && semFechamentoNota && tipoNotaOuConceito.NaoEhNulo())
                             {
                                 await SalvarHistoricoNotaFechamento(fechamentoNota.Id, tipoNotaOuConceito.TipoNota,null,fechamentoNota.Nota, null,fechamentoNota.ConceitoId,usuarioLogado.CodigoRf, usuarioLogado.Nome);
                             }
@@ -353,11 +353,11 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         var notaAlunoAlterada = entidadeDto.NotaConceitoAlunos.FirstOrDefault(n => n.CodigoAluno.Equals(fechamentoAluno.AlunoCodigo));
 
-                        if (id > 0 && acimaDiasPermitidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
+                        if (id > 0 && acimaDiasPermitidosAlteracao && notaAlunoAlterada.NaoEhNulo() && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
                         {
                             var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
 
-                            if (aluno != null)
+                            if (aluno.NaoEhNulo())
                                 alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
                         }
                     }
@@ -431,7 +431,7 @@ namespace SME.SGP.Dominio.Servicos
                 var nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma,fechamentoAluno.AlunoCodigo);
                 notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
 
-                if (notasFechamentoFinaisNoCache != null)
+                if (notasFechamentoFinaisNoCache.NaoEhNulo())
                 {
                     foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
@@ -456,7 +456,7 @@ namespace SME.SGP.Dominio.Servicos
                                                                  c.ComponenteCurricularCodigo == fechamentoNota.DisciplinaId &&
                                                                  c.Bimestre == bimestre);
 
-            if (notaFinalAluno == null)
+            if (notaFinalAluno.EhNulo())
             {
                 notasFinais.Add(new NotaConceitoBimestreComponenteDto
                 {
@@ -510,7 +510,7 @@ namespace SME.SGP.Dominio.Servicos
                     var frequencia = frequencias.Where(c => c.CodigoAluno == fechamentoAluno.AlunoCodigo &&
                         c.DisciplinaId == fechamentoNota.DisciplinaId.ToString()).FirstOrDefault();
 
-                    var percentualFrequencia = frequencia == null ? 0 : frequencia.PercentualFrequencia;
+                    var percentualFrequencia = frequencia.EhNulo() ? 0 : frequencia.PercentualFrequencia;
                     var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, anoLetivo));
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;
@@ -530,7 +530,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
-            if (parametro == null)
+            if (parametro.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotafechamento' para o ano {anoLetivo}");
 
             return parametro.Ativo;
@@ -552,7 +552,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 // Busca registro existente de fechamento da turma
                 var fechamentoTurma = await repositorioFechamentoTurmaConsulta.ObterPorTurmaPeriodo(turma.Id, periodoEscolar.Id);
-                if (fechamentoTurma == null)
+                if (fechamentoTurma.EhNulo())
                     fechamentoTurma = new FechamentoTurma(turma, periodoEscolar);
 
                 fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
@@ -573,7 +573,7 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
             {
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
-                if (fechamentoAluno == null)
+                if (fechamentoAluno.EhNulo())
                 {
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
                     indiceFechamentoAntigo = -1;
@@ -585,7 +585,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var notaFechamento = fechamentoAluno.FechamentoNotas.FirstOrDefault(x => x.DisciplinaId == fechamentoNotaDto.DisciplinaId);
                     
-                    if (notaFechamento != null)
+                    if (notaFechamento.NaoEhNulo())
                     {
                         if (EnviarWfAprovacao(usuarioLogado) && parametroAlteracaoNotaFechamento.Ativo)
                         {
@@ -637,7 +637,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task CarregarTurma(string turmaCodigo)
         {
             turmaFechamento = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-            if (turmaFechamento == null)
+            if (turmaFechamento.EhNulo())
                 throw new NegocioException($"Turma com código [{turmaCodigo}] não localizada!");
         }
 
@@ -671,7 +671,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private FechamentoNota MapearParaEntidade(FechamentoNotaDto fechamentoNotaDto)
-            => fechamentoNotaDto == null ? null :
+            => fechamentoNotaDto.EhNulo() ? null :
               new FechamentoNota()
               {
                   DisciplinaId = fechamentoNotaDto.DisciplinaId,
@@ -681,7 +681,7 @@ namespace SME.SGP.Dominio.Servicos
               };
 
         private FechamentoNotaDto MapearParaEntidade(FechamentoNota fechamentoNota)
-            => fechamentoNota == null ? null :
+            => fechamentoNota.EhNulo() ? null :
               new FechamentoNotaDto()
               {
                   Id = fechamentoNota.Id,
@@ -713,7 +713,7 @@ namespace SME.SGP.Dominio.Servicos
             var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioSme(tipoCalendarioId);
             var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == bimestre);
 
-            if (periodoFechamento == null || periodoFechamentoBimestre == null)
+            if (periodoFechamento.EhNulo() || periodoFechamentoBimestre.EhNulo())
             {
                 var hoje = DateTime.Today;
                 var tipodeEventoReabertura = ObterTipoEventoFechamentoBimestre();
@@ -721,7 +721,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (await repositorioEvento.TemEventoNosDiasETipo(hoje, hoje, (TipoEvento)tipodeEventoReabertura.Codigo, tipoCalendarioId, ue.CodigoUe, ue.Dre.CodigoDre))
                 {
                     var fechamentoReabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(bimestre, hoje, tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe);
-                    if (fechamentoReabertura == null)
+                    if (fechamentoReabertura.EhNulo())
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {bimestre}º Bimestre");
 
                     return ((await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendarioId)).FirstOrDefault(a => a.Bimestre == bimestre)
@@ -738,14 +738,14 @@ namespace SME.SGP.Dominio.Servicos
         private EventoTipo ObterTipoEventoFechamentoBimestre()
         {
             EventoTipo tipoEvento = repositorioEventoTipo.ObterPorCodigo((int)TipoEvento.FechamentoBimestre);
-            if (tipoEvento == null)
+            if (tipoEvento.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.ObterAtributo<DisplayAttribute>().Name}.");
             return tipoEvento;
         }
 
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento, string disciplinaId, Usuario usuario = null)
         {
-            if (usuario == null)
+            if (usuario.EhNulo())
                 usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
