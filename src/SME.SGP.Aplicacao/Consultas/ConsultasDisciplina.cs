@@ -64,11 +64,11 @@ namespace SME.SGP.Aplicacao
             
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
             if (componenteRegencia.EhNulo() || ignorarDeParaRegencia)
-                return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+                return MapearDisciplinaResposta(disciplinasEol);
 
             var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(IDS_COMPONENTES_REGENCIA));
             if (componentesRegencia.NaoEhNulo())
-                return TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
+                return MapearDisciplinaResposta(componentesRegencia);
 
             return componentes;
         }
@@ -464,7 +464,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
+            return MapearDisciplinaResposta(disciplinasEol);
         }
 
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
@@ -504,12 +504,8 @@ namespace SME.SGP.Aplicacao
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorTurma(string codigoTurma, bool turmaPrograma)
         {
             var disciplinasDto = new List<DisciplinaDto>();
-
             var login = servicoUsuario.ObterLoginAtual();
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-
-            var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA, codigoTurma);
-            var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma.EhNulo())
@@ -517,44 +513,38 @@ namespace SME.SGP.Aplicacao
 
             bool ehEnsinoMedio = turma.ModalidadeCodigo == Modalidade.Medio;
 
-            if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+            if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
-                disciplinasDto = JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                var disciplinasAtribuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, login);
+                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+                if (atribuicoes.NaoEhNulo() && atribuicoes.Any())
+                {
+                    var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
+
+                    disciplinasEol?.Where(disciplina => disciplina.TerritorioSaber)
+                    .ToList()
+                    .ForEach(disciplina =>
+                    {
+                        disciplina.Nome = disciplinasAtribuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular || d.CodigoComponenteTerritorioSaber == disciplina.CodigoComponenteCurricular).Nome;
+                    });
+
+                    var disciplinasResposta = MapearDisciplinaResposta(disciplinasEol);
+                    disciplinasDto = await MapearParaDto(disciplinasResposta, ehEnsinoMedio, turmaPrograma);
+                }
             }
             else
             {
-                IEnumerable<DisciplinaResposta> disciplinas;
-
-                if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
+                var chaveCache = string.Format(NomeChaveCache.COMPONENTES_TURMA, codigoTurma);
+                var disciplinasCacheString = repositorioCache.Obter(chaveCache);
+                if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
+                    return JsonConvert.DeserializeObject<List<DisciplinaDto>>(disciplinasCacheString);
+                var disciplinasResposta = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+                if (disciplinasResposta.NaoEhNulo() && disciplinasResposta.Any())
                 {
-                    var disciplinasAtribuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, login);
-                    var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
-                    if (atribuicoes.NaoEhNulo() && atribuicoes.Any())
-                    {
-                        var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
-                            
-                        disciplinasEol?.Where(disciplina => disciplina.TerritorioSaber)
-                        .ToList()
-                        .ForEach(disciplina =>
-                        {
-                            disciplina.Nome = disciplinasAtribuicaoCj.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular || d.CodigoComponenteTerritorioSaber == disciplina.CodigoComponenteCurricular).Nome;
-                        });
-
-                        disciplinas = TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
-                    }
-                    else disciplinas = null;
-                }
-                else
-                    disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
-
-                if (disciplinas.NaoEhNulo() && disciplinas.Any())
-                {
-                    disciplinasDto = await MapearParaDto(disciplinas, ehEnsinoMedio, turmaPrograma);
-
+                    disciplinasDto = await MapearParaDto(disciplinasResposta, ehEnsinoMedio, turmaPrograma);
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
                 }
             }
-
             return disciplinasDto;
         }
 
@@ -620,7 +610,7 @@ namespace SME.SGP.Aplicacao
             Professor = disciplina.Professor
         };
 
-        private IEnumerable<DisciplinaResposta> TransformarListaDisciplinaEolParaRetornoDto(IEnumerable<DisciplinaDto> disciplinasEol)
+        private IEnumerable<DisciplinaResposta> MapearDisciplinaResposta(IEnumerable<DisciplinaDto> disciplinasEol)
         {
             foreach (var disciplinaEol in disciplinasEol)
                 yield return MapearDisciplinaResposta(disciplinaEol);
