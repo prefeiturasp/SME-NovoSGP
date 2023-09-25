@@ -1,12 +1,11 @@
+using Microsoft.Extensions.PlatformAbstractions;
+using Npgsql;
+using SME.SGP.Dominio;
 using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Extensions.PlatformAbstractions;
-using Npgsql;
-using Postgres2Go;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -15,6 +14,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         public void Construir(NpgsqlConnection connection)
         {
             MontaBaseDados(connection);
+            RemoverTodasForeingKey(connection);
         }
 
         private void MontaBaseDados(NpgsqlConnection connection)
@@ -155,6 +155,24 @@ namespace SME.SGP.TesteIntegracao.Setup
             var builder = new StringBuilder();
             builder.Append("CREATE USER postgres;");
             builder.Append("SET client_encoding TO 'UTF8';");
+            using (var cmd = new NpgsqlCommand(builder.ToString(), connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void RemoverTodasForeingKey(NpgsqlConnection connection)
+        {
+            var builder = new StringBuilder();
+            builder.Append(" DO $$ DECLARE ");
+            builder.Append(" r RECORD; ");
+            builder.Append(" BEGIN ");
+            builder.Append(" for r in (select table_name, constraint_name from information_schema.table_constraints where table_schema = 'public'and constraint_type = 'FOREIGN KEY'");
+            builder.Append(" ) loop");
+            builder.Append(" execute CONCAT('ALTER TABLE ' || r.table_name || ' DROP CONSTRAINT ' || r.constraint_name);");
+            builder.Append(" END LOOP; ");
+            builder.Append(" END $$; ");
+
             using (var cmd = new NpgsqlCommand(builder.ToString(), connection))
             {
                 cmd.ExecuteNonQuery();

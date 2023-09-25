@@ -62,17 +62,14 @@ namespace SME.SGP.TesteIntegracao.Setup
             builder.Append(" DO $$ DECLARE ");
             builder.Append(" r RECORD; ");
             builder.Append(" BEGIN ");
-            builder.Append("     FOR r IN ( with tab_pk as (");
-            builder.Append("                select tab.tablename");
+            builder.Append("     FOR r IN ( ");
+            builder.Append("                select tab.tablename, seq.sequencename");
             builder.Append("                from pg_tables tab ");
             builder.Append("                left join pg_sequences seq on REPLACE(seq.sequencename,'_id_seq', '') = tab.tablename");
-            builder.Append("                where tab.tableowner = 'Test' and tab.schemaname = 'public' and (last_value > 0 or seq.sequencename is null))");
-            builder.Append("                select tab_pk.tablename from tab_pk");
-            builder.Append("                union");
-            builder.Append("                select const.confrelid::regclass::text AS tablename from tab_pk");
-            builder.Append("                inner join pg_constraint const on const.contype = 'f' and const.conrelid = tab_pk.tablename::regclass");
+            builder.Append("                where tab.tableowner = 'Test' and tab.schemaname = 'public' ");
             builder.Append("                ) LOOP");
-            builder.Append("     EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' RESTART IDENTITY CASCADE '; ");
+            builder.Append("     EXECUTE 'DELETE FROM ' || quote_ident(r.tablename); ");
+            builder.Append(" IF not r.sequencename is null THEN EXECUTE 'ALTER SEQUENCE ' || quote_ident(r.sequencename) || ' restart'; END IF;");
             builder.Append(" END LOOP; ");
             builder.Append(" END $$; ");
 
