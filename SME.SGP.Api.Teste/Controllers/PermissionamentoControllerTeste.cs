@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Controllers;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -28,7 +29,7 @@ namespace SME.SGP.Api.Teste.Controllers
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
             var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize ==false);
+            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize ==false && x.ControllerName != "AutenticacaoIntegracaoController");
             var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 
@@ -45,7 +46,7 @@ namespace SME.SGP.Api.Teste.Controllers
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
             var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize == false);
+            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize == false && x.ControllerName != "CacheController");
             var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 
