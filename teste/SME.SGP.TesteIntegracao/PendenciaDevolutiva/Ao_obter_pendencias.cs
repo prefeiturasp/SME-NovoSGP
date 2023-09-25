@@ -218,7 +218,17 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             });
 
             var dataPendencia = $"'{new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 07).ToString("yyyy-MM-dd")}'";
-            await InserirNaBase("pendencia_registro_individual", "default", "''", "'0'", dataPendencia, "'Sistema'", "'0'", "'2022-06-07'", "1", "1");
+            //await InserirNaBase("pendencia_registro_individual", "default", "''", "'0'", dataPendencia, "'Sistema'", "'0'", "'2022-06-07'", "1", "1");
+
+            await InserirNaBase(new PendenciaRegistroIndividual()
+            {
+                Id = 1,
+                PendenciaId = 1,
+                TurmaId = 1,
+                CriadoPor = "Sistema",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 07)
+            });
         }
     }
 }
