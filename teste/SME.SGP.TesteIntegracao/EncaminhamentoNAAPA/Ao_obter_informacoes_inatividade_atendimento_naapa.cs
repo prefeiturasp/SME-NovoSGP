@@ -318,7 +318,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = questaoId,
-                Texto = dataAtendimento.ToString("dd/MM/yyyy"),
+                Texto = dataAtendimento.ToString("yyyy/MM/dd"),
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -384,7 +384,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = questaoEncaminhamentoId,
-                Texto = dataQueixa.ToString("dd/MM/yyyy"),
+                Texto = dataQueixa.ToString("yyyy/MM/dd"),
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
