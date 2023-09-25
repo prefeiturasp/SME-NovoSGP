@@ -87,38 +87,72 @@ namespace SME.SGP.Auditoria.Worker
             canalRabbit.BasicConsume(RotasRabbitAuditoria.PersistirAuditoriaDB, false, consumer);
         }
 
-        private Task TratarMensagem(BasicDeliverEventArgs ea)
+        private async Task TratarMensagem(BasicDeliverEventArgs basicDeliverEventArgs)
         {
-            var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
-            var rota = ea.RoutingKey;
-
-            var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-            var transacao = telemetriaOptions.Apm ? Agent.Tracer.StartTransaction(rota, "WorkerRabbitAuditoria") : null;
-            try
+            Func<BasicDeliverEventArgs, Task> fnTaskAuditoria = async (basicDeliverEventArg) =>
             {
                 using var scope = serviceScopeFactory.CreateScope();
-                var registrarAuditoriaUseCase = scope.ServiceProvider.GetService<IRegistrarAuditoriaUseCase>();
+                
+                var mensagem = Encoding.UTF8.GetString(basicDeliverEventArgs.Body.Span);
+                
+                var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                
+                var registrarAuditoriaUseCase = scope.ServiceProvider.GetService<IRegistrarAuditoriaUseCase>()!;
+                
+                await registrarAuditoriaUseCase.Executar(mensagemRabbit);
+                
+                var deliveryTag = basicDeliverEventArg.DeliveryTag;
+                
+                canalRabbit.BasicAck(deliveryTag, false);
+            };
 
-                if (telemetriaOptions.Apm)
-                    transacao.CaptureSpan("RegistrarAuditoriaDB", "RabbitMQ", () =>
-                        registrarAuditoriaUseCase.Executar(mensagemRabbit)).Wait();
+            Action<BasicDeliverEventArgs, Exception> fnTaskAuditoriaException = (basicDeliverEventArg, _) =>
+            {
+                var deliveryTag = basicDeliverEventArg.DeliveryTag;
+                canalRabbit.BasicReject(deliveryTag, false);
+            };
+            
+            var rota = basicDeliverEventArgs.RoutingKey;
+            
+            await Apm.RunConditionalityWithSingleTransactionSpanAsync(telemetriaOptions.Apm, rota,
+                "WorkerRabbitAuditoria", "RegistrarAuditoriaDB", "RabbitMQ",
+                basicDeliverEventArgs, fnTaskAuditoria, fnTaskAuditoriaException);
+        }
+
+        private sealed class Apm
+        {
+            public static async Task RunConditionalityWithSingleTransactionSpanAsync<T1>(bool useApm, string transactionName,
+                string transactionType, string spanName, string spanType, T1 t1, Func<T1, Task> handler,
+                Action<T1, Exception> exceptionHandler)
+            {
+                if (useApm)
+                {
+                    var transaction = Agent.Tracer.StartTransaction(transactionName, transactionType);
+                    try
+                    {
+                        await transaction.CaptureSpan(spanName, spanType, async () => await handler(t1));
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptionHandler(t1, ex);
+                    }
+                    finally
+                    {
+                        transaction.End();
+                    }
+                }
                 else
-                    registrarAuditoriaUseCase.Executar(mensagemRabbit).Wait();
-
-                canalRabbit.BasicAck(ea.DeliveryTag, false);
+                {
+                    try
+                    {
+                        await handler(t1);
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptionHandler(t1, ex);
+                    }
+                }
             }
-            catch (Exception ex)
-            {
-                transacao?.CaptureException(ex);
-
-                canalRabbit.BasicReject(ea.DeliveryTag, false);
-            }
-            finally
-            {
-                transacao?.End();
-            }
-
-            return Task.CompletedTask;
         }
     }
 }
