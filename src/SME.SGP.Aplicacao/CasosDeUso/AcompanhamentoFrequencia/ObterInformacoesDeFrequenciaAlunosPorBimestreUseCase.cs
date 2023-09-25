@@ -56,8 +56,13 @@ namespace SME.SGP.Aplicacao
 
             if (ehBimestreFinal)
             {
-                periodoInicio = periodosEscolares.FirstOrDefault(p => p.Bimestre == 1).PeriodoInicio;
-                periodoFim = periodosEscolares.FirstOrDefault(p => turma.EhEJA() ? p.Bimestre == 2 : p.Bimestre == 4).PeriodoFim;
+                var periodoFinal = MontaPeriodoEscolarFinalParaMarcador(periodosEscolares, turma.ModalidadeCodigo);
+
+                if(periodoFinal != null)
+                {
+                    periodoInicio = periodoFinal.PeriodoInicio;
+                    periodoFim = periodoFinal.PeriodoFim;
+                }
             }
 
             var alunos = (await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma,
