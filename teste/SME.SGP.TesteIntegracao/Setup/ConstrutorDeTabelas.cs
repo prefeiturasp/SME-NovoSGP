@@ -182,10 +182,8 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         private void RemoverSequencesNaoUsadas(NpgsqlConnection connection)
         {
-            var sql = @"ALTER TABLE tipo_ciclo ALTER COLUMN id DROP IDENTITY;
-                        ALTER TABLE componente_curricular_jurema ALTER COLUMN id DROP IDENTITY;
-                        ALTER TABLE tipo_escola ALTER COLUMN id DROP IDENTITY;
-                        ALTER TABLE tipo_ciclo_ano ALTER COLUMN id DROP IDENTITY;";
+            var sql = @"ALTER TABLE componente_curricular_jurema ALTER COLUMN id DROP IDENTITY;
+                        ALTER TABLE tipo_escola ALTER COLUMN id DROP IDENTITY;";
 
             using (var cmd = new NpgsqlCommand(sql, connection))
             {

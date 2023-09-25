@@ -74,10 +74,36 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
                 UeId = DRE_ID_1
             });
 
-            await InserirNaBase("tipo_ciclo", new string[5] { "id", "descricao", "criado_em", "criado_por", "criado_rf" }, new string[5] { "1", "'Alfabetização'", "'2022-06-07'", "'1'", "'1'" });
-            await InserirNaBase("tipo_ciclo", new string[5] { "id", "descricao", "criado_em", "criado_por", "criado_rf" }, new string[5] { "2", "'Interdiciplinar'", "'2022-06-07'", "'1'", "'1'" });
-            await InserirNaBase("tipo_ciclo_ano", new string[4] { "id", "tipo_ciclo_id", "modalidade", "ano" }, new string[4] { "1", "1", "5", "'1'" });
-            await InserirNaBase("tipo_ciclo_ano", new string[4] { "id", "tipo_ciclo_id", "modalidade", "ano" }, new string[4] { "2", "2", "5", "'6'" });
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = ALFABETIZACAO,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 1,
+                Ano = ANO_1,
+                Modalidade = Modalidade.Fundamental
+            });
+
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = INTERDISCIPLINAR,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 2,
+                Ano = ANO_6,
+                Modalidade = Modalidade.Fundamental
+            });
 
             return await pendenciaTurmaComponenteSemAulasPorUeUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(new DreUeDto(DRE_ID_1, UE_ID_1))));
         }
