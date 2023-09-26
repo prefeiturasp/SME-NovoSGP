@@ -8,6 +8,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -69,6 +70,9 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PodePersistirTurmaDisciplinaQuery, bool>), typeof(PodePersistirTurmaDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioCoreSSOQuery, MeusDadosDto>), typeof(ObterUsuarioCoreSSOQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioFuncionarioQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterUsuarioFuncionarioQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasDoProfessorQuery, IEnumerable<ProfessorTurmaReposta>>), typeof(ObterTurmasDoProfessorQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<CarregarDadosAcessoPorLoginPerfilQuery, RetornoDadosAcessoUsuarioSgpDto>), typeof(CarregarDadosAcessoPorLoginPerfilQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterEstruturaInstuticionalVigentePorTurmaQuery, EstruturaInstitucionalRetornoEolDTO>), typeof(ObterEstruturaInstuticionalVigentePorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected virtual void RegistrarQueryFakes(IServiceCollection services)

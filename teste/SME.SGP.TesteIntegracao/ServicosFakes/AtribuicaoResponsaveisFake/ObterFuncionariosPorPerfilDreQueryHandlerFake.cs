@@ -32,9 +32,9 @@ namespace SME.SGP.TesteIntegracao
                     UsuarioId = 2
                 },
                 new UsuarioEolRetornoDto()
-                {   UsuarioId = 1,
+                {   UsuarioId = 3,
                     CodigoFuncaoAtividade = 0,
-                    CodigoRf = "1",
+                    CodigoRf = "3",
                     EstaAfastado = false,
                     NomeServidor = "Jose Teste" 
                 }
