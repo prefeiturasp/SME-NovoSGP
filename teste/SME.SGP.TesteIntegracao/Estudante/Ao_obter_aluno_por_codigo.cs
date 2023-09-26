@@ -57,7 +57,6 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
             _builder = new ItensBasicosBuilder(this);
             
             await _builder.CriaItensComunsEja();
-            await CriaTurma2();
 
             var useCase = ServiceProvider.GetService<IObterAlunoPorCodigoEolEAnoLetivoUseCase>();
 
@@ -65,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
             retorno.ShouldNotBeNull();
 
-            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_2, TIPO_TURNO_INTERMEDIARIO));
+            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_1, TIPO_TURNO_INTERMEDIARIO));
         }
 
         private async Task CriaTurma2()
