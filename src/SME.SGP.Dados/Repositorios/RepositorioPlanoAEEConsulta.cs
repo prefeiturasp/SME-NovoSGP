@@ -94,7 +94,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" count(distinct pa.id) ");
             else
             {
-                sql.AppendLine("  pa.id ");
+                sql.AppendLine("  distinct pa.id ");
                 sql.AppendLine(", pa.aluno_codigo as AlunoCodigo ");
                 sql.AppendLine(", pa.aluno_numero as AlunoNumero ");
                 sql.AppendLine(", pa.aluno_nome as AlunoNome ");

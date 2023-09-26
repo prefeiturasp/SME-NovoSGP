@@ -223,7 +223,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RegistroFrequenciaAlunoPorTurmaEMesDto>> ObterRegistroFrequenciaAlunosPorTurmaEMes(string turmaCodigo, int mes)
         {
-            const string query = @"select count(distinct(rfa.aula_id*rfa.numero_aula)) as QuantidadeAulas,
+            const string query = @"select a.turma_id TurmaId,
+                                          count(distinct(rfa.aula_id*rfa.numero_aula)) as QuantidadeAulas,
 	                                      count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
                                           count(caaa.id) as QuantidadeCompensacoes,
                                           rfa.codigo_aluno as AlunoCodigo,
@@ -239,7 +240,8 @@ namespace SME.SGP.Dados.Repositorios
                                        and rfa.numero_aula <= a.quantidade
                                        and not rfa.excluido
                                    group by
-                                       rfa.codigo_aluno, a.turma_id;";
+                                       a.turma_id,
+                                       rfa.codigo_aluno;";
 
             var parametros = new { turmaCodigo, mes };
 
