@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
         public Modalidade ModalidadeCodigo { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario
         {
-                get => ObterTipoCalendarioEja();
+                get => ObterTipoCalendario();
         }
 
         public string Nome { get; set; }
@@ -151,7 +151,7 @@ namespace SME.SGP.Dominio
             return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ObterNomeCurto()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
         }
 
-        private ModalidadeTipoCalendario ObterTipoCalendarioEja()
+        private ModalidadeTipoCalendario ObterTipoCalendario()
             => ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ObterTipoCalendarioInfantil();
 
         private ModalidadeTipoCalendario ObterTipoCalendarioInfantil()
