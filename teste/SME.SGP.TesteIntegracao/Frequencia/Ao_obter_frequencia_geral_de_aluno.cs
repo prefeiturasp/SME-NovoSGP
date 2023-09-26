@@ -9,6 +9,7 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,6 +20,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
     {
         private const string VALOR_8333 = "83,33";
         private const string VALOR_100 = "100,00";
+        private const string VALOR_0 = "0,00";
         public Ao_obter_frequencia_geral_de_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -60,6 +62,20 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             valor.ShouldNotBeEmpty();
             valor.ShouldBe(VALOR_100);
+        }
+
+
+        [Fact(DisplayName = "Frequência - Deve obter frequencia geral vazia, na situação onde não há freq. consolidada no período ativo na turma")]
+        public async Task Deve_obter_frequencia_geral_de_aluno_sem_frequencia_consolidada()
+        {
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, NUMERO_AULAS_1);
+            await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_2, TipoFrequenciaAluno.Geral, 0);
+
+            var mediator = ServiceProvider.GetService<IMediator>();
+            var valor = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(CODIGO_ALUNO_2, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()));
+            var valorFormatado = Convert.ToDouble(valor != null ? valor : "0");
+
+            valorFormatado.ShouldBe(0);
         }
     }
 }
