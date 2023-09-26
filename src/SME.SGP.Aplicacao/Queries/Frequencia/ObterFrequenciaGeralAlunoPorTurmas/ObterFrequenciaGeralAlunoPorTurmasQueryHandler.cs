@@ -47,23 +47,6 @@ namespace SME.SGP.Aplicacao
                                                                                  !matricula.inativo && periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
             }
 
-            foreach (var aulaComponenteTurma in aulasComponentesTurmas)
-            {
-                if (!frequenciaAlunoPeriodos.Any(a => a.TurmaId == aulaComponenteTurma.TurmaCodigo                                                   
-                                                   && a.Bimestre == aulaComponenteTurma.Bimestre))
-                {
-                    frequenciaAlunoPeriodos.Add(new FrequenciaAluno()
-                    {
-                        CodigoAluno = request.CodigoAluno,
-                        DisciplinaId = aulaComponenteTurma.ComponenteCurricularCodigo,
-                        TurmaId = aulaComponenteTurma.TurmaCodigo,
-                        TotalAulas = aulaComponenteTurma.AulasQuantidade,
-                        Bimestre = aulaComponenteTurma.Bimestre,
-                        PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId
-                    });
-                }
-            }
-
             var frequenciaAluno = new FrequenciaAluno()
             {
                 TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
