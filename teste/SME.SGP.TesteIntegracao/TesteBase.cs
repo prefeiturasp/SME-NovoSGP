@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using Xunit;
 
@@ -56,6 +57,8 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRepositorioFrequenciaPreDefinida),typeof(RepositorioFrequenciaPreDefinidaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosTurmaProgramaPapEolQuery, IEnumerable<AlunosTurmaProgramaPapDto>>), typeof(ObterAlunosAtivosTurmaProgramaPapEolQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPerfisPorLoginQuery, PerfisApiEolDto>), typeof(ObterPerfisPorLoginQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorCargoUeQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorCargoUeQueryHandlerFake), ServiceLifetime.Scoped));
+            
             
         }
 
