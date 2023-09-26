@@ -69,13 +69,34 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Deve_obter_frequencia_geral_de_aluno_sem_frequencia_consolidada()
         {
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, NUMERO_AULAS_1);
-            await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_2, TipoFrequenciaAluno.Geral, 0);
+
+            await InserirNaBase(new Dominio.FrequenciaAluno
+            {
+                PeriodoInicio = DATA_02_05,
+                PeriodoFim = DATA_07_08,
+                Bimestre = 2,
+                TotalAulas = 0,
+                TotalAusencias = 0,
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 21, 12, 46, 29),
+                CriadoPor = "Sistema",
+                AlteradoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 23, 21, 52, 51),
+                AlteradoPor = "Sistema",
+                CriadoRF = "0",
+                AlteradoRF = "0",
+                TotalCompensacoes = 0,
+                PeriodoEscolarId = 2,
+                TotalPresencas = 0,
+                TotalRemotos = 0,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                CodigoAluno = CODIGO_ALUNO_1,
+                TurmaId = TURMA_CODIGO_1,
+                Tipo = TipoFrequenciaAluno.Geral
+            });
 
             var mediator = ServiceProvider.GetService<IMediator>();
             var valor = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(CODIGO_ALUNO_2, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()));
-            var valorFormatado = Convert.ToDouble(valor != null ? valor : "0");
 
-            valorFormatado.ShouldBe(0);
+            valor.ShouldBe(string.Empty);
         }
     }
 }
