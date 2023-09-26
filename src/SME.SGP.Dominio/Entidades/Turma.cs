@@ -152,12 +152,18 @@ namespace SME.SGP.Dominio
         }
 
         private ModalidadeTipoCalendario ObterTipoCalendario()
-            => ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ObterTipoCalendarioInfantil();
-
-        private ModalidadeTipoCalendario ObterTipoCalendarioInfantil()
-            => ModalidadeCodigo == Modalidade.EducacaoInfantil ? ModalidadeTipoCalendario.Infantil : ObterTipoCalendarioCELP();
-
-        private ModalidadeTipoCalendario ObterTipoCalendarioCELP()
-            => ModalidadeCodigo == Modalidade.CELP ? ModalidadeTipoCalendario.CELP : ModalidadeTipoCalendario.FundamentalMedio;
+        {
+            switch (ModalidadeCodigo)
+            {
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+                case Modalidade.EducacaoInfantil:
+                    return ModalidadeTipoCalendario.Infantil;
+                case Modalidade.CELP:
+                    return ModalidadeTipoCalendario.CELP;
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
+        }
     }
 }
