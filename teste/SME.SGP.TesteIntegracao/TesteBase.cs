@@ -55,6 +55,8 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRepositorioRegistroFrequenciaAluno),typeof(RepositorioRegistroFrequenciaAlunoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRepositorioFrequenciaPreDefinida),typeof(RepositorioFrequenciaPreDefinidaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosTurmaProgramaPapEolQuery, IEnumerable<AlunosTurmaProgramaPapDto>>), typeof(ObterAlunosAtivosTurmaProgramaPapEolQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPerfisPorLoginQuery, PerfisApiEolDto>), typeof(ObterPerfisPorLoginQueryHandlerFake), ServiceLifetime.Scoped));
+            
         }
 
         protected virtual void RegistrarQueryFakes(IServiceCollection services)
