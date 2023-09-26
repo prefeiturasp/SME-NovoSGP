@@ -321,15 +321,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             });
         }
 
-        public async Task<MeusDadosDto> ObterMeusDados(string login)
-        {
-            return new MeusDadosDto()
-            {
-                Nome = "João Usuário",
-                Email = String.Empty
-            };
-        }
-
         public async Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
         {
             return new RetornoDadosAcessoUsuarioSgpDto()
@@ -385,23 +376,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeServidor = "Teste da silva"
                 }
             });
-        }
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
-        {
-            return new List<UsuarioEolRetornoDto>()
-            {
-                new UsuarioEolRetornoDto()
-                {
-                    CodigoRf = "2222222"
-                }
-            };
-        }
-
-        public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
-        {
-            if (disciplinaId == "139")
-                return false;
-            return true;
         }
     }
 }
