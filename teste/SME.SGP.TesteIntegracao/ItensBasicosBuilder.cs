@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             _teste = teste;
         }
 
-        public async Task CriaItensComuns()
+        public async Task CriaItensComuns(Modalidade modalidade = Modalidade.Fundamental)
         {
             await _teste.InserirNaBase(new Dre
             {
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Ano = "5",
                 CodigoTurma = "1",
                 Historica = false,
-                ModalidadeCodigo = Modalidade.Fundamental,
+                ModalidadeCodigo = modalidade,
                 TipoTurma = TipoTurma.Regular,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "Turma Teste 1",
@@ -92,7 +92,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             CriarClaimRegenciaEja(incluirAdm);
 
-            await CriaItensComuns();
+            await CriaItensComuns(Modalidade.EJA);
             await CriarPeriodoEscolar();
             await CriaAtribuicaoCJ();
 

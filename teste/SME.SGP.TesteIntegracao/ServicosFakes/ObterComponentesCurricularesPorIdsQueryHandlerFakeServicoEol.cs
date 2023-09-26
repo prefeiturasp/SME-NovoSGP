@@ -197,6 +197,20 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 },
                 new DisciplinaDto
                 {
+                    Id = 513,
+                    CodigoComponenteCurricular = 513,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Regência de Classe Infantil",
+                    NomeComponenteInfantil = "REGÊNCIA INFANTIL EMEI 2H",
+                    Regencia = true,
+                    RegistraFrequencia = true,
+                    GrupoMatrizNome = "Base Nacional Comum",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
                     Id = 1214,
                     CodigoComponenteCurricular = 1214,
                     GrupoMatrizId = 4,

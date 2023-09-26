@@ -94,6 +94,20 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 Quantidade = 2
             });
 
+            await InserirNaBase(new Dominio.Aula
+            {
+                Id = 2,
+                CriadoPor = "",
+                CriadoRF = "",
+                UeId = "1",
+                DisciplinaId = "1",
+                TurmaId = "1",
+                ProfessorRf = "",
+                TipoCalendarioId = 1,
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 27),
+                Quantidade = 2
+            });
+
             await InserirNaBase(new RegistroFrequencia
             {
                 Id = 1,
@@ -123,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 1,
-                AulaId = 1
+                AulaId = 2
             });
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -196,6 +210,20 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 Quantidade = 2
             });
 
+            await InserirNaBase(new Dominio.Aula
+            {
+                Id = 2,
+                CriadoPor = "",
+                CriadoRF = "",
+                UeId = "1",
+                DisciplinaId = "1",
+                TurmaId = "1",
+                ProfessorRf = "",
+                TipoCalendarioId = 1,
+                DataAula = new DateTime(2022, 04, 27),
+                Quantidade = 2
+            });
+
             await InserirNaBase(new RegistroFrequencia
             {
                 Id = 1,
@@ -252,7 +280,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 1,
-                AulaId = 1
+                AulaId = 2
             });
 
             useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
