@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using System;
 using System.Net;
 using System.Net.Http;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.IoC
 {
@@ -25,6 +26,9 @@ namespace SME.SGP.IoC
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
+                
+                if (configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
+                    c.Timeout = TimeSpan.FromSeconds(double.Parse(configuration.GetSection("HttpClientTimeoutSecond").Value));
 
             }).AddPolicyHandler(GetRetryPolicy());
 
@@ -84,7 +88,7 @@ namespace SME.SGP.IoC
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)));
+                .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
     }
 }
