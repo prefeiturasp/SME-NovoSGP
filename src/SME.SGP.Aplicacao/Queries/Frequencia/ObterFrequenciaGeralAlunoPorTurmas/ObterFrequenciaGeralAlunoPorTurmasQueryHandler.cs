@@ -75,14 +75,14 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
-            if (frequenciaAluno == null && (aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0))
-                return FrequenciaAluno.FormatarPercentual(0);
+            if (frequenciaAluno?.TotalAulas == 0)
+                return string.Empty;
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequenciaFormatado;
             else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
                 return FrequenciaAluno.FormatarPercentual(0);
 
-            return FrequenciaAluno.FormatarPercentual(0);
+            return string.Empty;
         }
 
         private async Task<FrequenciaAluno> ObterTotalSomadoIndividualmente(string[] turmasCodigo, long tipoCalendarioId, string codigoAluno, FrequenciaAluno frequenciaGeralObtida, string[] disciplinasAluno, DateTime? dataMatriculaTurmaFiltro)
