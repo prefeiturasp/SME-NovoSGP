@@ -15,7 +15,6 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             MontaBaseDados(connection);
             RemoverTodasForeingKey(connection);
-            RemoverSequencesNaoUsadas(connection);
         }
 
         private void MontaBaseDados(NpgsqlConnection connection)
@@ -175,17 +174,6 @@ namespace SME.SGP.TesteIntegracao.Setup
             builder.Append(" END $$; ");
 
             using (var cmd = new NpgsqlCommand(builder.ToString(), connection))
-            {
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        private void RemoverSequencesNaoUsadas(NpgsqlConnection connection)
-        {
-            var sql = @"ALTER TABLE componente_curricular_jurema ALTER COLUMN id DROP IDENTITY;
-                        ALTER TABLE tipo_escola ALTER COLUMN id DROP IDENTITY;";
-
-            using (var cmd = new NpgsqlCommand(sql, connection))
             {
                 cmd.ExecuteNonQuery();
             }
