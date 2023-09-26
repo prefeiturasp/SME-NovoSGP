@@ -8,14 +8,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciaIdPorComponenteProfessorBimestreQuery : IRequest<IEnumerable<PendenciaAulaProfessorDto>>
     {
-        public long ComponenteCurricularId { get; set; }
+        public string ComponenteCurricularId { get; set; }
         public string CodigoRf { get; set; }
         public long PeriodoEscolarId { get; set; }
         public TipoPendencia TipoPendencia { get; set; }
         public string TurmaCodigo { get; set; }
         public long UeId { get; set; }
 
-        public ObterPendenciaIdPorComponenteProfessorBimestreQuery(long componenteId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
+        public ObterPendenciaIdPorComponenteProfessorBimestreQuery(string componenteId, string codigoRf, long periodoEscolarId, TipoPendencia tipoPendencia, string turmaCodigo, long ueId)
         {
             ComponenteCurricularId = componenteId;
             CodigoRf = codigoRf;

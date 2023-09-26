@@ -32,7 +32,7 @@ namespace SME.SGP.Dados
             var query = new StringBuilder(@"select 1
                          from pendencia_professor pp
                         inner join pendencia p on p.id = pp.pendencia_id
-                        where pp.turma_id = @turmaId
+                        where pp.turma_id = @turmaId and not p.excluido  
                           and pp.componente_curricular_id = @componenteCurricularId
                           and pp.professor_rf = @professorRf
                           and p.tipo = @tipoPendencia ");
