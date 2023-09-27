@@ -938,7 +938,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarTurma(Modalidade modalidade, bool turmaHistorica = false, bool turmasMesmaUe = false)
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = TURMA_ANO_2,
@@ -951,7 +951,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoTurma = TipoTurma.Regular
             });
             
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = turmasMesmaUe ? 1 : 2,
                 Ano = TURMA_ANO_2,
@@ -964,7 +964,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoTurma = TipoTurma.Regular
             });
             
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = turmasMesmaUe ? 1 : 3,
                 Ano = TURMA_ANO_3,
@@ -981,7 +981,7 @@ namespace SME.SGP.TesteIntegracao
         protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false, 
             TipoTurma tipoTurma = TipoTurma.Regular, int tipoTurno = 0)
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = anoTurma,
@@ -998,7 +998,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, bool turmaHistorica = false)
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = anoTurma,
@@ -1012,7 +1012,7 @@ namespace SME.SGP.TesteIntegracao
         }
         protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, bool turmaHistorica = false )
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = anoTurma,
@@ -1027,7 +1027,7 @@ namespace SME.SGP.TesteIntegracao
         }
         protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, long ueId,int anoLetivo,bool turmaHistorica = false )
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = ueId,
                 Ano = anoTurma,

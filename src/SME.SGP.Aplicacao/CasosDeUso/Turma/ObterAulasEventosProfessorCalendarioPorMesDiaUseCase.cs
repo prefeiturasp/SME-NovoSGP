@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
                                                                                  usuarioLogado.Login,
                                                                                  usuarioLogado.PerfilAtual,
-                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
+                                                                                 turma.EhTurmaInfantil))).ToList();
 
                 if (usuarioLogado.EhSomenteProfessorCj())
                 {

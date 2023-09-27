@@ -3,9 +3,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.Query
     {
         public async Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            return new Usuario()
+            return await Task.FromResult(new Usuario()
             {
                 Id = 1,
                 CodigoRf = "7111111",
@@ -24,8 +21,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.Query
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-            };
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01)
+            });
         }
     }
 }

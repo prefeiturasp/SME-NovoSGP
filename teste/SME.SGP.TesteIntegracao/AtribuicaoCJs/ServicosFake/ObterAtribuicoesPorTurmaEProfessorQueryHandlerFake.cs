@@ -16,8 +16,8 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoCJs.ServicosFake
         public async Task<IEnumerable<AtribuicaoCJ>> Handle(ObterAtribuicoesPorTurmaEProfessorQuery request, CancellationToken cancellationToken)
         {
             var atribuicoesCJ = new List<AtribuicaoCJ>(){
-                new AtribuicaoCJ() { DisciplinaId = 1, ProfessorRf = "2222222", DreId ="1", UeId="1", TurmaId = "1",Modalidade = Modalidade.EducacaoInfantil, Turma = new Turma(), Migrado = false, Substituir = true},
-                new AtribuicaoCJ() { DisciplinaId = 2, ProfessorRf = "2222222", DreId ="1", UeId="1", TurmaId = "1",Modalidade = Modalidade.EducacaoInfantil, Turma = new Turma(), Migrado = false, Substituir = true}
+                new AtribuicaoCJ() { DisciplinaId = 1, ProfessorRf = "2222222", DreId ="1", UeId="1", TurmaId = "1",Modalidade = Modalidade.EducacaoInfantil, Turma = new Dominio.Turma(), Migrado = false, Substituir = true},
+                new AtribuicaoCJ() { DisciplinaId = 2, ProfessorRf = "2222222", DreId ="1", UeId="1", TurmaId = "1",Modalidade = Modalidade.EducacaoInfantil, Turma = new Dominio.Turma(), Migrado = false, Substituir = true}
             };
             return atribuicoesCJ;
         }
