@@ -227,7 +227,8 @@ namespace SME.SGP.Dados.Repositorios
                                           count(distinct(rfa.aula_id*rfa.numero_aula)) as QuantidadeAulas,
 	                                      count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
                                           count(caaa.id) as QuantidadeCompensacoes,
-                                          rfa.codigo_aluno as AlunoCodigo
+                                          rfa.codigo_aluno as AlunoCodigo,
+                                          a.turma_id as TurmaId
                                    from registro_frequencia_aluno rfa
                                        inner join aula a 
                                           on rfa.aula_id = a.id and not a.excluido   
