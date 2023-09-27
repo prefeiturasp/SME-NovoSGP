@@ -118,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-2).Year, 1, 1),
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Id = 1,
                 DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1),

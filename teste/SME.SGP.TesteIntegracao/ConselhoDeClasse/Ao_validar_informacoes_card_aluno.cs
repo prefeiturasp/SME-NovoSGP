@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var consulta = ServiceProvider.GetService<IConsultasFechamentoTurmaDisciplina>();
             consulta.ShouldNotBeNull();
             
-            var turmas = ObterTodos<Turma>();
+            var turmas = ObterTodos<Dominio.Turma>();
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
             
             var obterDadosAlunos = await consulta!.ObterDadosAlunos(turma.CodigoTurma, turma.AnoLetivo, turma.Semestre);

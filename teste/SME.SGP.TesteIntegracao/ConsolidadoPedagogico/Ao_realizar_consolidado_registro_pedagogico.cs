@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidadoPedagogico
                 DreId = 1
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Id = 1,
                 Nome = "1A",
