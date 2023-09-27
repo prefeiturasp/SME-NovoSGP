@@ -132,7 +132,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 {
                     Bimestre = 1 ,
                     DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                    Justificativa = "" ,
+                    Justificativa = "Teste" ,
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = fechamentoNotaDto
                 }
@@ -203,7 +203,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 {
                     Bimestre = 1 ,
                     DisciplinaId = COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105,
-                    Justificativa = "" ,
+                    Justificativa = "teste" ,
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = fechamentoNotaDto
                 }

@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interfaces;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
@@ -30,23 +31,24 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         {
             //ARRANGE
             var atribuicaoEsporadica = new AtribuicaoEsporadica() { Id = 1, Excluido = false };
-            repositorioAtribuicaoEsporadica.Setup(a => a.ObterPorId(atribuicaoEsporadica.Id)).Returns(atribuicaoEsporadica);
+            repositorioAtribuicaoEsporadica.Setup(a => a.ObterPorIdAsync(atribuicaoEsporadica.Id)).Returns(Task.FromResult(atribuicaoEsporadica));
 
             //ASSERT && //ACT
             Assert.NotNull(consultasAtribuicaoEsporadica.ObterPorId(1));
-            repositorioAtribuicaoEsporadica.Verify(c => c.ObterPorId(1), Times.Once);
+            repositorioAtribuicaoEsporadica.Verify(c => c.ObterPorIdAsync(1), Times.Once);
         }
 
         [Fact(DisplayName = "Não Deve Consultar Atribuição não existe")]
-        public void Nao_Deve_Consultar_Atribuicao_Nao_Existe()
+        public async Task Nao_Deve_Consultar_Atribuicao_Nao_Existe()
         {
             //ARRANGE
             var atribuicaoEsporadica = new AtribuicaoEsporadica() { Id = 1, Excluido = false };
-            repositorioAtribuicaoEsporadica.Setup(a => a.ObterPorId(atribuicaoEsporadica.Id)).Returns(atribuicaoEsporadica);
+            repositorioAtribuicaoEsporadica.Setup(a => a.ObterPorIdAsync(atribuicaoEsporadica.Id)).Returns(Task.FromResult(atribuicaoEsporadica));
 
             //ASSERT && //ACT
-            Assert.Null(consultasAtribuicaoEsporadica.ObterPorId(2));
-            repositorioAtribuicaoEsporadica.Verify(c => c.ObterPorId(2), Times.Once);
+            var resultado = consultasAtribuicaoEsporadica.ObterPorId(2);
+            Assert.Null(resultado);
+            repositorioAtribuicaoEsporadica.Verify(c => c.ObterPorIdAsync(2).Result, Times.Once);
         }
     }
 }
