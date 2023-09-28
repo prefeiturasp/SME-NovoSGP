@@ -20,8 +20,8 @@ pipeline {
       namespace = "${env.branchname == 'pre-prod' ? 'sme-novosgp-d1' : env.branchname == 'development' ? 'novosgp-dev' : 'sme-novosgp' }"
            
     }
-  
-      agent {
+
+    agent {
       kubernetes { label 'builder' }
     }
 
