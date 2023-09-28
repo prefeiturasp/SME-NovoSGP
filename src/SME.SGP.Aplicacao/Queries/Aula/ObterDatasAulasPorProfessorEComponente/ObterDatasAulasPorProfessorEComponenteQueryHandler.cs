@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using MailKit;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -30,24 +31,24 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(request.TurmaCodigo);
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
             var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
 
             var componentesCurricularesEolProfessor = (await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
                                                                               usuarioLogado.Login,
                                                                               usuarioLogado.PerfilAtual,
-                                                                              usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
+                                                                              turma.EhTurmaInfantil), cancellationToken)).ToList();
 
             if (usuarioLogado.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = (await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login)))
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login), cancellationToken))
                     .Where(cc => cc.TurmaId == turma.CodigoTurma);
 
                 if (componentesCurricularesDoProfessorCJ.Any())
-                {
-                    componentesCurricularesDoProfessorCJ.ToList().ForEach(ccj =>
+                {                    
+                    foreach (var ccj in componentesCurricularesDoProfessorCJ)
                     {
                         var componenteListaProfessor = componentesCurricularesEolProfessor
                             .Any(ccp => ccp.Codigo == ccj.DisciplinaId || ccp.CodigoComponenteTerritorioSaber == ccj.DisciplinaId);
@@ -57,8 +58,8 @@ namespace SME.SGP.Aplicacao
 
                         if (!componenteListaProfessor)
                         {
-                            codigosTerritorioEquivalentes = mediator
-                                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(ccj.DisciplinaId, turma.CodigoTurma, null)).Result;
+                            codigosTerritorioEquivalentes = await mediator
+                                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(ccj.DisciplinaId, turma.CodigoTurma, null), cancellationToken);
 
                             var componentesConsiderados = codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any() ? 
                                 codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(new string[] { ccj.DisciplinaId.ToString() }) : null;
@@ -68,7 +69,7 @@ namespace SME.SGP.Aplicacao
                             else
                             {
                                 codigoComponenteEquivalente = ccj.Modalidade == Modalidade.EducacaoInfantil ?
-                                    (mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId)).Result)?.CdComponenteCurricularPai : null;
+                                    (await mediator.Send(new ObterComponenteCurricularPorIdQuery(ccj.DisciplinaId), cancellationToken))?.CdComponenteCurricularPai : null;
                             }                                
                         }
 
@@ -78,7 +79,7 @@ namespace SME.SGP.Aplicacao
                             CodigoComponenteTerritorioSaber = codigoComponenteEquivalente.HasValue ? ccj.DisciplinaId : 0,
                             Professor = ccj.ProfessorRf
                         });
-                    });
+                    };
                 }
             }
 
@@ -112,7 +113,7 @@ namespace SME.SGP.Aplicacao
             {
                 var codigosTerritorio = componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.Codigo);
                 var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
-                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login)) : null;
+                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login), cancellationToken) : null;
 
                 aulasPermitidas = usuarioLogado
                     .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, professoresDesconsiderados).Select(a => a.Id).ToList();
@@ -156,8 +157,8 @@ namespace SME.SGP.Aplicacao
                         var professor = dc.TerritorioSaber ? professores.FirstOrDefault(p => p.DisciplinasId.Contains(dc.CodigoComponenteCurricular)) : null;
                         if (professor != null && !String.IsNullOrEmpty(professor.ProfessorRf))
                         {
-                            var componentesProfessorAtrelado = mediator
-                                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR)).Result;
+                            var componentesProfessorAtrelado = await mediator
+                                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR, turma.EhTurmaInfantil));
 
                             var componenteProfessorAtreladoEquivalente = componentesProfessorAtrelado
                                 .FirstOrDefault(c => c.CodigoComponenteTerritorioSaber.Equals(dc.CodigoComponenteCurricular));
