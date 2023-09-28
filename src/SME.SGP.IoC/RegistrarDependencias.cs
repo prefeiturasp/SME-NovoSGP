@@ -47,7 +47,7 @@ namespace SME.SGP.IoC
         {
             services.AdicionarMediatr();
             services.AdicionarValidadoresFluentValidation();
-
+            
             RegistrarRepositorios(services);
             RegistrarContextos(services);
             RegistrarComandos(services);
@@ -85,6 +85,8 @@ namespace SME.SGP.IoC
             services.AddHttpContextAccessor();
             services.AdicionarMediatr();
             services.AdicionarValidadoresFluentValidation();
+            services.AddMemoryCache();
+
             RegistrarHttpClients(services, configuration);
             RegistrarPolicies(services);
             RegistrarGoogleClassroomSync(services, configuration);
