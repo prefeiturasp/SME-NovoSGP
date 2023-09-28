@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
 
             await CriarDreUe(DRE_CODIGO_1, UE_CODIGO_1);
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 Nome = "Turma teste",
                 CodigoTurma = TURMA_CODIGO_1,
@@ -111,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
 
             await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO, PERIODO_INICIO, PERIODO_FIM);
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 Nome = TURMA_ANO_3,
                 CodigoTurma = TURMA_CODIGO_2,
@@ -133,7 +133,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
 
             await CriarDadosBasicos(DIAS_APOS_INICIO_PERIODO, PERIODO_INICIO, PERIODO_FIM);
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 Nome = TURMA_ANO_4,
                 CodigoTurma = TURMA_CODIGO_3,
@@ -183,7 +183,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaComponenteSemAula
         {
             await CriarDreUe(DRE_CODIGO_1, UE_CODIGO_1);
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 Nome = TURMA_ANO_2,
                 CodigoTurma = TURMA_CODIGO_1,
