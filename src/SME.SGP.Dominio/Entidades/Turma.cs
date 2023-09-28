@@ -18,12 +18,9 @@ namespace SME.SGP.Dominio
         public Modalidade ModalidadeCodigo { get; set; }
         public ModalidadeTipoCalendario ModalidadeTipoCalendario
         {
-                get => ModalidadeCodigo == Modalidade.EJA ?
-                ModalidadeTipoCalendario.EJA :
-                ModalidadeCodigo == Modalidade.EducacaoInfantil ?
-                    ModalidadeTipoCalendario.Infantil :
-                    ModalidadeTipoCalendario.FundamentalMedio;
+                get => ObterTipoCalendario();
         }
+
         public string Nome { get; set; }
         public int QuantidadeDuracaoAula { get; set; }
         public int Semestre { get; set; }
@@ -82,6 +79,9 @@ namespace SME.SGP.Dominio
 
         public bool EhEJA()
             => ModalidadeCodigo == Modalidade.EJA;
+
+        public bool EhCELP()
+            => ModalidadeCodigo == Modalidade.CELP;
 
         public int ObterHorasGradeRegencia()
             => EhEJA() ? 5 : 1;
@@ -149,6 +149,21 @@ namespace SME.SGP.Dominio
             var ueNome = Ue.Nome;
 
             return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ObterNomeCurto()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
+        }
+
+        private ModalidadeTipoCalendario ObterTipoCalendario()
+        {
+            switch (ModalidadeCodigo)
+            {
+                case Modalidade.EJA:
+                    return ModalidadeTipoCalendario.EJA;
+                case Modalidade.EducacaoInfantil:
+                    return ModalidadeTipoCalendario.Infantil;
+                case Modalidade.CELP:
+                    return ModalidadeTipoCalendario.CELP;
+                default:
+                    return ModalidadeTipoCalendario.FundamentalMedio;
+            }
         }
     }
 }
