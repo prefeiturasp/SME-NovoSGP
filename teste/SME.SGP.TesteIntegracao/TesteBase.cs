@@ -13,14 +13,18 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interface;
 using Xunit;
+using System;
+using Elastic.Apm.Api;
+using System.Linq;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace SME.SGP.TesteIntegracao
 {
     [Collection("TesteIntegradoSGP")]
-    public class TesteBase : IClassFixture<TestFixture>
+    public class TesteBase : IDisposable, IClassFixture<TestFixture>
     {
         protected readonly CollectionFixture _collectionFixture;
+        private IDictionary<Type, Type> ServicePadrao;
 
         public ServiceProvider ServiceProvider => _collectionFixture.ServiceProvider;
 
@@ -29,6 +33,7 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture = collectionFixture;
             _collectionFixture.Database.LimparBase();
             _collectionFixture.IniciarServicos();
+            ServicePadrao = new Dictionary<Type, Type>();
 
             RegistrarFakes(_collectionFixture.Services);
             _collectionFixture.BuildServiceProvider();
@@ -106,6 +111,35 @@ namespace SME.SGP.TesteIntegracao
             where K : struct
         {
             return _collectionFixture.Database.ObterPorId<T, K>(id);
+        }
+
+        public void RegistraFake(Type typeService, Type tipoFake)
+        {
+            var services = _collectionFixture.Services;
+
+            var tipoImplementado = services.Where(service => service.ServiceType == typeService).FirstOrDefault()?.ImplementationType;
+        
+            if (!ServicePadrao.ContainsKey(typeService))
+            {
+                ServicePadrao.Add(typeService, tipoImplementado);
+            }
+
+            services.Replace(new ServiceDescriptor(typeService, tipoFake, ServiceLifetime.Scoped));
+        }
+
+        private void RetornaServicePadrao()
+        {
+            var services = _collectionFixture.Services;
+
+            foreach (var typeService in ServicePadrao.Keys)
+            {
+                services.Replace(new ServiceDescriptor(typeService, ServicePadrao[typeService], ServiceLifetime.Scoped));
+            }
+        }
+
+        public void Dispose()
+        {
+            RetornaServicePadrao();
         }
     }
 }
