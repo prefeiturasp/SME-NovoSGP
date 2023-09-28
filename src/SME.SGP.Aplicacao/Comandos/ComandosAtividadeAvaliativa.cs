@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
@@ -32,7 +31,6 @@ namespace SME.SGP.Aplicacao
             IConsultasProfessor consultasProfessor,
             IRepositorioAulaConsulta repositorioAula,
             IServicoUsuario servicoUsuario,
-            IServicoEol servicoEOL,
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IUnitOfWork unitOfWork,
@@ -46,7 +44,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentException(nameof(consultasProfessor));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentException(nameof(servicoEOL));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentException(nameof(repositorioComponenteCurricular));
             this.unitOfWork = unitOfWork ?? throw new ArgumentException(nameof(unitOfWork));
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));

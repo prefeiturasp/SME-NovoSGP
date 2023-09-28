@@ -19,14 +19,12 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioDiarioBordo> repositorioDiarioBordo;
         private readonly InserirDiarioBordoCommandHandler inserirDiarioBordoCommandHandler;
-        private readonly Mock<IServicoEol> servicoEol;
 
         public InserirDiarioBordoCommandHandlerTeste()
         {
             mediator = new Mock<IMediator>();
             repositorioDiarioBordo = new Mock<IRepositorioDiarioBordo>();
-            servicoEol = new Mock<IServicoEol>();
-            inserirDiarioBordoCommandHandler = new InserirDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object, servicoEol.Object);
+            inserirDiarioBordoCommandHandler = new InserirDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object);
         }
 
         [Fact]

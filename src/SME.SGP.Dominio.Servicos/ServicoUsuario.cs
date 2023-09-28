@@ -25,13 +25,11 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
         private Usuario usuarioLogado { get; set; }
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
-                              IServicoEol servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
@@ -40,7 +38,6 @@ namespace SME.SGP.Dominio
                               IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
@@ -113,7 +110,7 @@ namespace SME.SGP.Dominio
         {
             var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
 
-            var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
+            var perfisPorLogin = await mediator.Send(new ObterPerfisPorLoginQuery(login));
 
             if (perfisPorLogin.EhNulo())
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
@@ -213,7 +210,7 @@ namespace SME.SGP.Dominio
 
         public async Task PodeModificarPerfil(Guid perfilParaModificar, string login)
         {
-            var perfisDoUsuario = await servicoEOL.ObterPerfisPorLogin(login);
+            var perfisDoUsuario = await mediator.Send(new ObterPerfisPorLoginQuery(login));
             if (perfisDoUsuario.EhNulo())
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
 
@@ -292,12 +289,12 @@ namespace SME.SGP.Dominio
 
         private async Task AlterarEmail(Usuario usuario, string novoEmail)
         {
-            var outrosUsuariosComMesmoEmail = await servicoEOL.ExisteUsuarioComMesmoEmail(usuario.Login, novoEmail);
+            var outrosUsuariosComMesmoEmail = await mediator.Send(new ExisteUsuarioComMesmoEmailQuery(usuario.Login, novoEmail));
 
             if (outrosUsuariosComMesmoEmail)
                 throw new NegocioException("Já existe outro usuário com o e-mail informado.");
 
-            var retornoEol = await servicoEOL.ObterPerfisPorLogin(usuario.Login);
+            var retornoEol = await mediator.Send(new ObterPerfisPorLoginQuery(usuario.Login));
             if (retornoEol.EhNulo())
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
@@ -306,7 +303,7 @@ namespace SME.SGP.Dominio
             usuario.DefinirPerfis(perfisUsuario);
             usuario.DefinirEmail(novoEmail);
             repositorioUsuario.Salvar(usuario);
-            await servicoEOL.AlterarEmail(usuario.Login, novoEmail);
+            await mediator.Send(new AlterarEmailUsuarioCommand(usuario.Login, novoEmail));
         }
 
         public async Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado)
@@ -320,7 +317,7 @@ namespace SME.SGP.Dominio
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
             {
-                if (await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje))
+                if (await mediator.Send(new PodePersistirTurmaDisciplinaQuery(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje.Ticks)))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
             }
 

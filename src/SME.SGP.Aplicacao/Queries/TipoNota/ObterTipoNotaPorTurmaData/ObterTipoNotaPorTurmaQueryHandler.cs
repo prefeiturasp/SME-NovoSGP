@@ -12,13 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTipoNotaPorTurmaQueryHandler : IRequestHandler<ObterTipoNotaPorTurmaQuery, TipoNota>
     {
-        private readonly IServicoEol servicoEol;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IMediator mediator;
 
-        public ObterTipoNotaPorTurmaQueryHandler(IServicoEol  servicoEol, IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IMediator mediator)
+        public ObterTipoNotaPorTurmaQueryHandler(IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IMediator mediator)
         {
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

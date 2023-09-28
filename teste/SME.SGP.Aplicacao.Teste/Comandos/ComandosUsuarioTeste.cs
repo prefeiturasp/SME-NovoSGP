@@ -16,7 +16,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IRepositorioSuporteUsuario> repositorioSuporteUsuario;
         private readonly Mock<IServicoAbrangencia> servicoAbrangencia;
         private readonly Mock<IServicoAutenticacao> servicoAutenticacao;
-        private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoPerfil> servicoPerfil;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IMediator> mediator;
@@ -27,7 +26,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoAutenticacao = new Mock<IServicoAutenticacao>();
             servicoUsuario = new Mock<IServicoUsuario>();
             servicoPerfil = new Mock<IServicoPerfil>();
-            servicoEOL = new Mock<IServicoEol>();
             var repositorioCache = new Mock<IRepositorioCache>();
             servicoAbrangencia = new Mock<IServicoAbrangencia>();
             repositorioAtribuicaoEsporadica = new Mock<IRepositorioAtribuicaoEsporadica>();
@@ -36,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioSuporteUsuario = new Mock<IRepositorioSuporteUsuario>();
             mediator = new Mock<IMediator>();
 
-            comandosUsuario = new ComandosUsuario(servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object,
+            comandosUsuario = new ComandosUsuario(servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object,
                 repositorioCache.Object, servicoAbrangencia.Object, repositorioHistoricoEmailUsuario.Object, 
                 repositorioSuporteUsuario.Object, mediator.Object);
         }

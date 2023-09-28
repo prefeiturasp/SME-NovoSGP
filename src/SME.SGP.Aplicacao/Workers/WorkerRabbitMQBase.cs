@@ -15,9 +15,7 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -184,12 +182,10 @@ namespace SME.SGP.Aplicacao.Workers
                     using var scope = serviceScopeFactory.CreateScope();
                     AtribuirContextoAplicacao(mensagemRabbit, scope);
 
-                    var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
+                    IRabbitUseCase casoDeUso = (IRabbitUseCase)scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
-                    var metodo = UtilMethod.ObterMetodo(comandoRabbit.TipoCasoUso, "Executar");
-
-                    await servicoTelemetria.RegistrarAsync(async () =>
-                        await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
+                    await servicoTelemetria.RegistrarAsync(
+                            async () => await casoDeUso.Executar(mensagemRabbit),
                             "RabbitMQ",
                             rota,
                             rota,

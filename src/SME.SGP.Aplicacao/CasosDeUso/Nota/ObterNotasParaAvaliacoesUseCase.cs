@@ -18,14 +18,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IServicoEol servicoEOL;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
-        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
+        public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasDisciplina = consultasDisciplina;
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
         }
 

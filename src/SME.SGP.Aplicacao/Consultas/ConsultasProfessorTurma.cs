@@ -15,24 +15,22 @@ namespace SME.SGP.Aplicacao
     public class ConsultasProfessor : AbstractUseCase, IConsultasProfessor
     {
         private readonly IRepositorioCache repositorioCache;
-        private readonly IServicoEol servicoEOL;
 
-        public ConsultasProfessor(IServicoEol servicoEOL, IRepositorioCache repositorioCache, IMediator mediator) : base(mediator)
+        public ConsultasProfessor(IRepositorioCache repositorioCache, IMediator mediator) : base(mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<IEnumerable<ProfessorTurmaDto>> Listar(string codigoRf)
         {
-            return MapearParaDto(await servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
+            return MapearParaDto(await mediator.Send(new ObterTurmasDoProfessorQuery(codigoRf)));
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
         {
             if (String.IsNullOrEmpty(nomeProfessor) && nomeProfessor.Length < 2)
                 return null;
-            var retornoProfessores = await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, ueId, nomeProfessor);
+            var retornoProfessores = await mediator.Send(new ObterProfessoresAutoCompleteQuery(anoLetivo, dreId, ueId, nomeProfessor));
             for (int i = 0; i < retornoProfessores.Count(); i++)
             {
                 var professorSgp = await ObterProfessorSGPConsultaPorNome(retornoProfessores.ToList()[i].CodigoRF);
@@ -42,25 +40,6 @@ namespace SME.SGP.Aplicacao
             return retornoProfessores.Where(x => x.UsuarioId > 0);
         }
 
-        public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string nomeProfessor, bool incluirEmei)
-        {
-            if (nomeProfessor.Length < 2)
-                return null;
-
-            return await servicoEOL.ObterProfessoresAutoComplete(anoLetivo, dreId, nomeProfessor, incluirEmei);
-        }
-
-        public async Task<ProfessorResumoDto> ObterResumoPorRFAnoLetivo(string codigoRF, int anoLetivo, bool buscarOutrosCargos = false)
-        {
-            var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, buscarOutrosCargos);
-            var professorSgp = await ObterProfessorSGP(codigoRF);
-
-            if (professorResumo.NaoEhNulo())
-                professorResumo.UsuarioId = professorSgp.Id;
-
-            return professorResumo;
-        }
-        
         public async Task<ProfessorResumoDto> ObterResumoPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
             var professorResumo = await ObterProfessorUeRFEOL(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre);
@@ -68,32 +47,15 @@ namespace SME.SGP.Aplicacao
             return professorResumo;
         }
         
-        private async Task<Usuario> ObterProfessorSGP(string codigoRF)
-        {
-            var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
-            if (usuarioSgp.EhNulo())
-                throw new NegocioException("RF não localizado no SGP");
-
-            return usuarioSgp;
-        }
-
         private async Task<Usuario> ObterProfessorSGPConsultaPorNome(string codigoRF)
         {
             var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
             return usuarioSgp;
         }
-
-        private async Task<ProfessorResumoDto> ObterProfessorEOL(string codigoRF, int anoLetivo, bool buscarOutrosCargos)
-        {
-            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
-            if (professorResumo.EhNulo())
-                throw new NegocioException("RF não localizado do EOL");
-
-            return professorResumo;
-        }
+        
         private async Task<ProfessorResumoDto> ObterProfessorUeRFEOL(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
-            var professorResumo = await servicoEOL.ObterProfessorPorRFUeDreAnoLetivo(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre);
+            var professorResumo = await mediator.Send(new ObterProfessorPorRFUeDreAnoLetivoQuery(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre));
             if (professorResumo.EhNulo())
                 throw new NegocioException("RF não localizado do EOL");
 
@@ -104,7 +66,7 @@ namespace SME.SGP.Aplicacao
             var chaveCache = string.Format(NomeChaveCache.TURMAS_PROFESSOR_ANO_ESCOLA, rfProfessor, anoLetivo, codigoEscola);
 
             return repositorioCache.ObterAsync(chaveCache,
-             async () => await servicoEOL.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(rfProfessor, codigoEscola, anoLetivo),
+             async () => await mediator.Send(new ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivoQuery(rfProfessor, codigoEscola, anoLetivo)),
              "Obter turmas atribuidas ao professor");
         }
 

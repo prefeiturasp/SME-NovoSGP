@@ -11,15 +11,13 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
 {
     public class ReiniciarSenhaCommandHandlerTeste
     {
-        private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IMediator> mediator;
         private readonly ReiniciarSenhaCommandHandler reiniciarSenhaCommandHandler;
 
         public ReiniciarSenhaCommandHandlerTeste()
         {
-            servicoEOL = new Mock<IServicoEol>();
             mediator = new Mock<IMediator>();
-            reiniciarSenhaCommandHandler = new ReiniciarSenhaCommandHandler(mediator.Object, servicoEOL.Object);
+            reiniciarSenhaCommandHandler = new ReiniciarSenhaCommandHandler(mediator.Object);
         }
 
         [Theory]
@@ -30,9 +28,9 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         public async Task Deve_Reiniciar_A_Senha(string codigoRf, string dreCodigo, string ueCodigo, string resultadoSenha)
         {
             //Arrange
-            servicoEOL.Setup(a => a.ObterMeusDados(codigoRf)).ReturnsAsync(new MeusDadosDto() { CodigoRf = codigoRf, Email = "teste@teste.com.br" });
-            servicoEOL.Setup(a => a.ReiniciarSenha(codigoRf));
-
+            mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioCoreSSOQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new MeusDadosDto() { CodigoRf = codigoRf, Email = "teste@teste.com.br" });
+            mediator.Setup(a => a.Send(It.IsAny<ReiniciarSenhaEolCommand>(), It.IsAny<CancellationToken>()));
+            
             mediator.Setup(a => a.Send(It.IsAny<GravarHistoricoReinicioSenhaCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 

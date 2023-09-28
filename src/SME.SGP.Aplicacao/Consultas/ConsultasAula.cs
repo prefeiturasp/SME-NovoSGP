@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAulaConsulta repositorioConsulta;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
         private IRepositorioAula object1;
@@ -30,7 +29,6 @@ namespace SME.SGP.Aplicacao
         private IRepositorioPlanoAula object5;
         private IRepositorioTurmaConsulta object6;
         private IServicoUsuario object7;
-        private IServicoEol object8;
         private IConsultasDisciplina object9;
         private IConsultasTurma object10;
         private IConsultasPeriodoFechamento object11;
@@ -41,7 +39,6 @@ namespace SME.SGP.Aplicacao
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IRepositorioTurmaConsulta repositorioTurma,
                              IServicoUsuario servicoUsuario,
-                             IServicoEol servicoEol,
                              IConsultasDisciplina consultasDisciplina,
                              IConsultasTurma consultasTurma,
                              IConsultasPeriodoFechamento consultasPeriodoFechamento,
@@ -49,7 +46,6 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioConsulta = repositorioConsulta ?? throw new ArgumentNullException(nameof(repositorioConsulta));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));

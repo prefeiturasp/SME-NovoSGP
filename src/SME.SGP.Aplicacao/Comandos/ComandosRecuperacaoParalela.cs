@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,7 +18,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta repositorioRecuperacaoParalelaPeriodoObjetivoResposta;
         private readonly IUnitOfWork unitOfWork;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
         public ComandosRecuperacaoParalela(IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela,
@@ -25,7 +25,6 @@ namespace SME.SGP.Aplicacao
             IConsultaRecuperacaoParalela consultaRecuperacaoParalela,
             IUnitOfWork unitOfWork,
             IServicoUsuario servicoUsuario,
-            IServicoEol servicoEOL,
             IMediator mediator
             )
         {
@@ -34,28 +33,21 @@ namespace SME.SGP.Aplicacao
             this.consultaRecuperacaoParalela = consultaRecuperacaoParalela ?? throw new ArgumentNullException(nameof(consultaRecuperacaoParalela));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<RecuperacaoParalelaListagemDto> Salvar(RecuperacaoParalelaDto recuperacaoParalelaDto)
         {
-            var list = new List<RecuperacaoParalelaListagemDto>();
-
-            //var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioLogin =  servicoUsuario.ObterLoginAtual();
             var usuarioPerfil = servicoUsuario.ObterPerfilAtual();
-
 
             var turmaRecuperacaoParalelaId = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
             var turmaRecuperacaoParalela = await mediator.Send(new ObterTurmaSimplesPorIdQuery(turmaRecuperacaoParalelaId));
 
-            //var turmaCodigo = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault().TurmaRecuperacaoParalelaId;
-
-            var turmaPap = await servicoEOL.TurmaPossuiComponenteCurricularPAP(turmaRecuperacaoParalela.Codigo, usuarioLogin, usuarioPerfil);
+            var turmaPap = await mediator.Send(new TurmaPossuiComponenteCurricularPAPQuery(turmaRecuperacaoParalela.Codigo, usuarioLogin, usuarioPerfil));
 
             if (!turmaPap)
-                throw new NegocioException("Somente é possivel realizar acompanhamento para turmas PAP");
+                throw new NegocioException(MensagemNegocioComuns.SOMENTE_EH_POSSIVEL_REALIZAR_ACOMPANHAMENTO_PARA_TURMAS_PAP);
 
             var turmasCodigo = recuperacaoParalelaDto.Periodo.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToArray();
 

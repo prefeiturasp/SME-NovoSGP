@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoAluno servicoAluno;
         private readonly IMediator mediator;
 
@@ -25,7 +24,6 @@ namespace SME.SGP.Aplicacao
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                IServicoEol servicoEOL,
                                 IServicoAluno servicoAluno,
                                 IMediator mediator,
                                 IContextoAplicacao contextoAplicacao
@@ -35,7 +33,6 @@ namespace SME.SGP.Aplicacao
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
