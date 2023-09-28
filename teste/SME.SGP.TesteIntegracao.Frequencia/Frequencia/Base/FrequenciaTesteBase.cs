@@ -51,8 +51,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected const int ZERO = 0;
 
-        protected const decimal PERCENTUAL_100 = 100.0M;
-        protected const decimal PERCENTUAL_ZERO = 0.00M;
+        protected const double PERCENTUAL_100 = 100.0;
+        protected const double PERCENTUAL_ZERO = 0.00;
 
         protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year - 6, 03, 07);
 
@@ -466,7 +466,7 @@ namespace SME.SGP.TesteIntegracao
             return lista;
         }
 
-        protected async Task InserirFrequenciaUseCaseComValidacaoCompleta(FrequenciaDto frequencia, TipoFrequencia tipoFrequenciaPreDefinida, TipoFrequencia tipoFrequenciaRegistrada, decimal percentualFrequencia, int numeroAulas, int qtdeAusencias, int qtdeCompensacoes)
+        protected async Task InserirFrequenciaUseCaseComValidacaoCompleta(FrequenciaDto frequencia, TipoFrequencia tipoFrequenciaPreDefinida, TipoFrequencia tipoFrequenciaRegistrada, double percentualFrequencia, int numeroAulas, int qtdeAusencias, int qtdeCompensacoes)
         {
             await ExecutarInserirFrequenciaUseCaseSemValidacaoBasica(frequencia);
 

@@ -6,6 +6,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake;
+using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;

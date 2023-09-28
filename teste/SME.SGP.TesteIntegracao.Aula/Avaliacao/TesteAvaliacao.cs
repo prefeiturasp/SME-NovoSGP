@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
-        protected const string COMPONENTE_INVALIDO = "0";
+        protected const string COMPONENTE_INVALIDO = "-999";
 
         protected const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
 

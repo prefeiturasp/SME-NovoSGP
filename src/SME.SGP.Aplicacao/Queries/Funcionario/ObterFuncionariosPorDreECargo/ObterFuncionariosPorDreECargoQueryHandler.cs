@@ -27,7 +27,11 @@ namespace SME.SGP.Aplicacao
 
             using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
-                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_FUNCIONARIOS_PERFIS_DRES, usuario.PerfilAtual, request.CodigoDRE) + $@"{(request.CodigoCargo > 0 ? $"&codigoFuncaoAtividade={request.CodigoCargo}" : string.Empty)}", cancellationToken);
+                var url = string.Format(ServicosEolConstants.URL_FUNCIONARIOS_PERFIS_DRES, usuario.PerfilAtual, request.CodigoDRE);
+                if (request.CodigoCargo > 0)
+                    url += $"?codigoFuncaoAtividade={request.CodigoCargo}";
+
+                var resposta = await httpClient.GetAsync(url, cancellationToken);
 
                 if (resposta.IsSuccessStatusCode)
                 {
@@ -36,7 +40,6 @@ namespace SME.SGP.Aplicacao
                     return listaRetorno.Where(c => c.CodigoFuncaoAtividade == request.CodigoCargo).OrderBy(a => a.NomeServidor);
                 }
             }
-
             return null;
         }
     }

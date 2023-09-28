@@ -13,6 +13,7 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Aplicacao.Queries;
 
 namespace SME.SGP.Aplicacao
 {
@@ -54,7 +55,7 @@ namespace SME.SGP.Aplicacao
             
             if (fechamentoTurma.Justificativa != null)
             {
-                var tamanhoJustificativa = fechamentoTurma.Justificativa.Length;
+                var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma.Justificativa));
                 var limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
 
                 if (tamanhoJustificativa > limite)
@@ -300,7 +301,7 @@ namespace SME.SGP.Aplicacao
                 throw e;
             }
         }
-        
+
         private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota, TipoNota tipoNota,string criadoRf, string criadoPor, double? notaAnterior, long? conceitoIdAnterior)
         {
             if (tipoNota == TipoNota.Nota)

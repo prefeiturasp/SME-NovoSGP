@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string DOCUMENTO_ARQUIVO = "documento_arquivo";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
-        protected const string COMPONENTE_CIENCIAS_NOME = "'CIENCIA'";
+        protected const string COMPONENTE_CIENCIAS_NOME = "'Ciências'";
 
         protected const string COMPONENTE_EDUCACAO_FISICA_ID_6 = "6";
         protected const string COMPONENTE_EDUCACAO_FISICA_NOME = "'ED. FISICA'";
@@ -631,6 +631,11 @@ namespace SME.SGP.TesteIntegracao
         protected string ObterPerfilCP()
         {
             return Guid.Parse(PerfilUsuario.CP.Name()).ToString();
+        }
+        
+        protected string ObterPerfilCEFAI()
+        {
+            return Guid.Parse(PerfilUsuario.CEFAI.Name()).ToString();
         }
 
         protected string ObterPerfilAD()

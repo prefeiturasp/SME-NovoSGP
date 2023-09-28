@@ -116,13 +116,13 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             await InserirNaBase(new RegistroFrequenciaAluno
             {
-                Id = 1,
+                Id = 2,
                 CodigoAluno = "1",
                 RegistroFrequenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
+                NumeroAula = 2,
                 AulaId = 1
             });
 
@@ -242,7 +242,6 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-
             await InserirNaBase(new RegistroFrequenciaAluno
             {
                 Id = 2,
@@ -251,7 +250,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
+                NumeroAula = 2,
                 AulaId = 1
             });
 

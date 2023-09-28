@@ -266,6 +266,7 @@ namespace SME.SGP.Dados.Repositorios
 	                a.turma_id = @turma and
 	                tc.ano_letivo = @anoLetivo and 
 	                pe.bimestre = @bimestre
+                    and (a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim ) 
                 order by a.data_aula desc
                 limit 5
             ";
