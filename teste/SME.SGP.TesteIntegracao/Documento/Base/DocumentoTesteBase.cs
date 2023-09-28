@@ -1,22 +1,11 @@
-﻿using System;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Extensions;
 using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.OpenApi.Extensions;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.TesteIntegracao.PlanoAula.Base;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Dominio.Enumerados;
-using ClassificacaoDocumento = SME.SGP.Dominio.ClassificacaoDocumento;
-using TipoDocumento = SME.SGP.Dominio.Enumerados.TipoDocumento;
 
 namespace SME.SGP.TesteIntegracao.Documento
 {
