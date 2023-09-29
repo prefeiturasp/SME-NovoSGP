@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.ElasticSearch
 
         public async Task<bool> ExisteAsync(string indice, string id, string nomeConsulta, object parametro = null)
         {
-            ExistsResponse response = await servicoTelemetria.RegistrarComRetornoAsync<ExistsResponse>(async () => 
+            ExistsResponse response = await servicoTelemetria.RegistrarComRetornoAsync<ExistsResponse>(async () =>
                                                                                         await _elasticClient.DocumentExistsAsync(DocumentPath<TEntidade>.Id(id).Index(indice)),
                                                                                         "Elastic",
                                                                                         nomeConsulta,
@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.ElasticSearch
 
         public async Task<TEntidade> ObterAsync(string indice, string id, string nomeConsulta, object parametro = null)
         {
-            GetResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<GetResponse<TEntidade>>(async () => 
+            GetResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<GetResponse<TEntidade>>(async () =>
                                                                                         await _elasticClient.GetAsync(DocumentPath<TEntidade>.Id(id).Index(indice)),
                                                                                         "Elastic",
                                                                                         nomeConsulta,
@@ -59,7 +59,7 @@ namespace SME.SGP.Dados.ElasticSearch
 
         public async Task<IEnumerable<TEntidade>> ObterListaAsync(string indice, IEnumerable<string> ids, string nomeConsulta, object parametro = null)
         {
-            IEnumerable<IMultiGetHit<TEntidade>> response = await servicoTelemetria.RegistrarComRetornoAsync<IEnumerable<IMultiGetHit<TEntidade>>>(async () => 
+            IEnumerable<IMultiGetHit<TEntidade>> response = await servicoTelemetria.RegistrarComRetornoAsync<IEnumerable<IMultiGetHit<TEntidade>>>(async () =>
                                                                                         await _elasticClient.GetManyAsync<TEntidade>(ids, indice),
                                                                                         "Elastic",
                                                                                         nomeConsulta,
@@ -77,9 +77,9 @@ namespace SME.SGP.Dados.ElasticSearch
                                                                                        await _elasticClient.SearchAsync<TEntidade>(s => s.Index(indice)
                                                                                                                                 .Query(request)
                                                                                                                                 .Scroll("10s")
-                                                                                                                                .Size(QUANTIDADE_RETORNO)), 
+                                                                                                                                .Size(QUANTIDADE_RETORNO)),
                                                                                        "Elastic",
-                                                                                       nomeConsulta, 
+                                                                                       nomeConsulta,
                                                                                        indice,
                                                                                        parametro?.ToString());
 
@@ -90,8 +90,8 @@ namespace SME.SGP.Dados.ElasticSearch
 
             while (response.Documents.Any() && response.Documents.Count == QUANTIDADE_RETORNO)
             {
-                response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () => 
-                                                                                        await _elasticClient.ScrollAsync <TEntidade>("10s", response.ScrollId),
+                response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () =>
+                                                                                        await _elasticClient.ScrollAsync<TEntidade>("10s", response.ScrollId),
                                                                                         "Elastic",
                                                                                         nomeConsulta + " scroll",
                                                                                         indice,
@@ -107,7 +107,7 @@ namespace SME.SGP.Dados.ElasticSearch
         public async Task<IEnumerable<TEntidade>> ObterTodosAsync(string indice, string nomeConsulta, object parametro = null)
         {
             var search = new SearchDescriptor<TEntidade>(indice).MatchAll();
-            ISearchResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () => 
+            ISearchResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () =>
                                                                                 await _elasticClient.SearchAsync<TEntidade>(search),
                                                                                 "Elastic",
                                                                                 nomeConsulta,
@@ -123,7 +123,7 @@ namespace SME.SGP.Dados.ElasticSearch
         public async Task<long> ObterTotalDeRegistroAsync(string indice, string nomeConsulta, object parametro = null)
         {
             var search = new SearchDescriptor<TEntidade>(indice).MatchAll();
-            ISearchResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () => 
+            ISearchResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () =>
                                                                                 await _elasticClient.SearchAsync<TEntidade>(search),
                                                                                 "Elastic",
                                                                                 nomeConsulta,
@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.ElasticSearch
 
             if (!string.IsNullOrEmpty(nomeIndice))
             {
-                var response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>, IndexResponse>(async () => 
+                var response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () =>
                          await _elasticClient.IndexAsync(entidade, descriptor => descriptor.Index(nomeIndice)),
                     "Elastic",
                     $"Insert {entidade.GetType().Name}",
@@ -158,8 +158,8 @@ namespace SME.SGP.Dados.ElasticSearch
 
         private string ObterNomeIndice(string indice = "")
         {
-            var nomeIndice = string.IsNullOrEmpty(indice) ? 
-                elasticOptions.IndicePadrao : 
+            var nomeIndice = string.IsNullOrEmpty(indice) ?
+                elasticOptions.IndicePadrao :
                 indice;
 
             return $"{elasticOptions.Prefixo}{nomeIndice}";

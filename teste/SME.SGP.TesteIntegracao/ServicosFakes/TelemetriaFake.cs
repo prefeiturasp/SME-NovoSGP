@@ -12,12 +12,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             acao();
         }
 
-        public K RegistrarComRetorno<T,K>(Func<K> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
-        {
-            return acao();
-        }
-
-        public Task<K> RegistrarComRetornoAsync<K>(Func<Task<K>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
+        public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             return acao();
         }
@@ -27,12 +22,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return acao();
         }
 
-        public Task<K> RegistrarComRetornoAsync<T,K>(Func<Task<K>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
-        {
-            return acao();
-        }
-
-        public K RegistrarComRetorno<K>(Func<K> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
+        public Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             return acao();
         }
@@ -41,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             => null;
 
         public void Finalizar(ITransaction transacao)
-        { 
+        {
         }
     }
 }
