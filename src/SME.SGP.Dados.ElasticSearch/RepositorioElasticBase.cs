@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.ElasticSearch
 
             if (!string.IsNullOrEmpty(nomeIndice))
             {
-                var response = await servicoTelemetria.RegistrarComRetornoAsync(async () =>
+                var response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () =>
                          await _elasticClient.IndexAsync(entidade, descriptor => descriptor.Index(nomeIndice)),
                     "Elastic",
                     $"Insert {entidade.GetType().Name}",
