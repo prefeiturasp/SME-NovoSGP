@@ -30,10 +30,10 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Alterar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, long id)
         {
             var fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(id, 0);
-            if (fechamentoReabertura == null)
+            if (fechamentoReabertura.EhNulo())
                 throw new NegocioException("Não foi possível localizar esta Reabertura de Fechamento.");
 
-            fechamentoReabertura = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, fechamentoReabertura);
+            fechamentoReabertura = await TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, fechamentoReabertura);
 
             return await servicoFechamentoReabertura.AlterarAsync(fechamentoReabertura, fechamentoReaberturaPersistenciaDto.Bimestres);
         }
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             var Mensagens = new List<string>();
 
             var fechamentos = await repositorioFechamentoReabertura.ObterPorIds(ids);
-            if (fechamentos == null || !fechamentos.Any())
+            if (fechamentos.EhNulo() || !fechamentos.Any())
                 throw new NegocioException("Não foram localizados fechamento(s) válido(s) para exclusão.");
             else
             {
@@ -60,37 +60,36 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Salvar(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto)
         {
-            FechamentoReabertura entidade = TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, null);
+            FechamentoReabertura entidade = await TransformarDtoEmEntidadeParaPersistencia(fechamentoReaberturaPersistenciaDto, null);
             return await servicoFechamentoReabertura.SalvarAsync(entidade);
         }
 
-
-        private FechamentoReabertura TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, FechamentoReabertura fechamentoReaberturaExistenteDto)
+        private async Task<FechamentoReabertura> TransformarDtoEmEntidadeParaPersistencia(FechamentoReaberturaPersistenciaDto fechamentoReaberturaPersistenciaDto, FechamentoReabertura fechamentoReaberturaExistenteDto)
         {
             Dre dre = null;
             Ue ue = null;
 
             if (!string.IsNullOrEmpty(fechamentoReaberturaPersistenciaDto.DreCodigo))
             {
-                dre = repositorioDre.ObterPorCodigo(fechamentoReaberturaPersistenciaDto.DreCodigo);
-                if (dre == null)
+                dre = await repositorioDre.ObterPorCodigo(fechamentoReaberturaPersistenciaDto.DreCodigo);
+                if (dre.EhNulo())
                     throw new NegocioException("Não foi possível localizar a Dre.");
             }
 
             if (!string.IsNullOrEmpty(fechamentoReaberturaPersistenciaDto.UeCodigo))
             {
                 ue = repositorioUe.ObterPorCodigo(fechamentoReaberturaPersistenciaDto.UeCodigo);
-                if (ue == null)
+                if (ue.EhNulo())
                     throw new NegocioException("Não foi possível localizar a UE.");
             }
 
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoReaberturaPersistenciaDto.TipoCalendarioId);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o Tipo de Calendário.");
 
             FechamentoReabertura fechamentoReabertura;          
 
-            if (fechamentoReaberturaExistenteDto != null)
+            if (fechamentoReaberturaExistenteDto.NaoEhNulo())
                 fechamentoReabertura = fechamentoReaberturaExistenteDto;
             else
             {

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Servicos
         public async Task AlterarSenha(string login, string senhaAtual, string novaSenha)
         {
             var autenticacao = await servicoEOL.Autenticar(login, senhaAtual);
-            if (autenticacao == null || autenticacao.Status != AutenticacaoStatusEol.Ok)
+            if (autenticacao.EhNulo() || autenticacao.Status != AutenticacaoStatusEol.Ok)
             {
                 throw new NegocioException("Senha atual incorreta.", HttpStatusCode.Unauthorized);
             }
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var retornoDto = new UsuarioAutenticacaoRetornoDto();
 
-            if (retornoServicoEol == null) 
+            if (retornoServicoEol.EhNulo()) 
                 return (retornoDto, "", null, false, false);
             
             retornoDto.Autenticado = retornoServicoEol.Status is AutenticacaoStatusEol.Ok or AutenticacaoStatusEol.SenhaPadrao;
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             var perfis = await servicoEOL.ObterPerfisPorLogin(retornoServicoEol.CodigoRf);
 
-            if (perfis == null)
+            if (perfis.EhNulo())
                 throw new NegocioException("Usuário sem perfis de acesso.");
 
             return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ, perfis.PossuiPerfilCJ);

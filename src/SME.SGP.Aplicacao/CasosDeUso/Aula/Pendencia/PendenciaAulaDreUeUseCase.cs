@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<Ue>();
 
-            if (filtro != null)
+            if (filtro.NaoEhNulo())
             {
                 var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
                 if (!ignorarGeracaoPendencia)

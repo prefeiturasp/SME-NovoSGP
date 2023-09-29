@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -36,15 +37,16 @@ namespace SME.SGP.Aplicacao
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 var parcial = JsonConvert.DeserializeObject<EstruturaInstitucionalRetornoEolDTO>(json);
 
-                if (parcial != null)
+                if (parcial.NaoEhNulo())
                     resultado.Dres.AddRange(parcial.Dres);
             }
             else
             {
-                var erro = $"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {request.CodigoDre} - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
+                var httpContentResult = await resposta.Content?.ReadAsStringAsync();
+                var erro = $"Ocorreu um erro na tentativa de buscar os dados de Estrutura Institucional Vigente por Dre: {request.CodigoDre} - HttpCode {resposta.StatusCode} - Body {httpContentResult ?? string.Empty} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
                 await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
             }
 

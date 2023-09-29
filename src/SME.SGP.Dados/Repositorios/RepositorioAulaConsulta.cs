@@ -687,7 +687,7 @@ namespace SME.SGP.Dados.Repositorios
                 aulaFim
             });
         }
-        public Aula ObterPorWorkflowId(long workflowId)
+        public async Task<Aula> ObterPorWorkflowId(long workflowId)
         {
             var query = @"select a.id,
                                  a.ue_id,
@@ -709,14 +709,15 @@ namespace SME.SGP.Dados.Repositorios
                                  a.migrado,
                                  a.aula_pai_id,
                                  a.wf_aprovacao_id,
-                                 a.status
+                                 a.status,
+                                 a.aula_cj 
                              from  aula a
                             where a.excluido = false
                               and a.migrado = false
                               and tipo_aula = 2
                               and a.wf_aprovacao_id = @workflowId";
 
-            return database.Conexao.QueryFirst<Aula>(query.ToString(), new
+            return await database.Conexao.QueryFirstAsync<Aula>(query.ToString(), new
             {
                 workflowId
             });
@@ -856,7 +857,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND a.professor_rf = @codigoRf");
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("AND a.disciplina_id = @disciplinaId");
-            if (disciplinasId != null && disciplinasId.Length > 0)
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
                 query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
             if (ehCj)
                 query.AppendLine("AND a.aula_cj = true");
@@ -1210,7 +1211,7 @@ namespace SME.SGP.Dados.Repositorios
             var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
             await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query, (diarioBordoPorPeriodoDto, auditoriaDto) =>
                  {
-                     if (auditoriaDto != null)
+                     if (auditoriaDto.NaoEhNulo())
                          diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
 
                      lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);

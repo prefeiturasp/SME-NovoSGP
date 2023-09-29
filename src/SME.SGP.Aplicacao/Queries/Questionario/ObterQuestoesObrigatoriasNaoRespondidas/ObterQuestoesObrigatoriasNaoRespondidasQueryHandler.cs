@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                                  Arquivo = null
                              })));
 
-            if (request.AddQuestoesObrigatoriasNaoPreenchidas != null)
+            if (request.AddQuestoesObrigatoriasNaoPreenchidas.NaoEhNulo())
                 await request.AddQuestoesObrigatoriasNaoPreenchidas(request.Secao, questoes, questoesObrigatoriasAConsistir);
 
             ValidaRecursivo(request.Secao, "", questoes, questoesObrigatoriasAConsistir);
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var opcao = questao.OpcaoResposta.FirstOrDefault(opcao => opcao.Id == Convert.ToInt64(resposta.Texto));
 
-                        if (opcao != null && opcao.QuestoesComplementares.Any())
+                        if (opcao.NaoEhNulo() && opcao.QuestoesComplementares.Any())
                         {
                             ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasAConsistir);
                         }

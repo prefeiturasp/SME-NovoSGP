@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             if (request.MotivoAusenciaId.HasValue)
             {
                 var motivoAusencia = await repositorioMotivoAusencia.ObterPorIdAsync(request.MotivoAusenciaId.Value);
-                if (motivoAusencia == null)
+                if (motivoAusencia.EhNulo())
                 {
                     throw new NegocioException("O motivo de ausência informado não foi localizado.");
                 }

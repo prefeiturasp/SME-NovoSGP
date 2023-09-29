@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 string.Empty,
                 true);
 
-            if (atribuicoes == null || !atribuicoes.Any())
+            if (atribuicoes.EhNulo() || !atribuicoes.Any())
                 return null;
 
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
@@ -45,10 +45,10 @@ namespace SME.SGP.Aplicacao
 
             var componenteRegencia = disciplinasEol?.FirstOrDefault(c => c.Regencia);
 
-            if (request.ListarComponentesPlanejamento && componenteRegencia != null)
+            if (request.ListarComponentesPlanejamento && componenteRegencia.NaoEhNulo())
             {
-                var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(IDS_COMPONENTES_REGENCIA));  
-                if (componentesRegencia != null)
+                var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(IDS_COMPONENTES_REGENCIA));
+                if (componentesRegencia.NaoEhNulo())
                     componentes = TransformarListaDisciplinaEolParaRetornoDto(componentesRegencia);
             }
             else

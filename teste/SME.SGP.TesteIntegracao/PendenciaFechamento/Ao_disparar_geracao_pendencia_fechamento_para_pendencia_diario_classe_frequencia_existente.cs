@@ -59,6 +59,5 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             pendencias.Count(pendencia => pendencia.Excluido && pendencia.Tipo == TipoPendencia.Frequencia).ShouldBe(1);
             pendencias.Any(pendencia => pendencia.Excluido).ShouldBeTrue();
         }
-
     }
 }

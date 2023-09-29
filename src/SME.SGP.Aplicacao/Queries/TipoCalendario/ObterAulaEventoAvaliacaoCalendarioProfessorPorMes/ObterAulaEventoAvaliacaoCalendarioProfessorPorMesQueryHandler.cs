@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var dataMes = Convert.ToDateTime($"{i}/{request.Mes}/{request.AnoLetivo}");
 
-                    if (periodoFechamento == null)
+                    if (periodoFechamento.EhNulo())
                     {
                         if (request.EventosDaUeSME.Any(a => i >= a.DataInicio.Day && i <= a.DataFim.Day))
                         {
@@ -90,10 +90,10 @@ namespace SME.SGP.Aplicacao
                     if (turma.ModalidadeCodigo == Modalidade.EJA)
                     {
                         var aulas = aulasDoDia.Where(a => !a.EhTecnologiaAprendizagem);
-                        aulasId = aulas != null && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
+                        aulasId = aulas.NaoEhNulo() && aulas.Any() ? aulas.Select(a => a.Id).ToArray() : null;
                     }
 
-                    if (aulasId != null && aulasId.Any() && componentesCurricularesId != null)
+                    if (aulasId.NaoEhNulo() && aulasId.Any() && componentesCurricularesId.NaoEhNulo())
                         eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, componentesCurricularesId.Union(aulasDoDia.Select(a => long.Parse(a.DisciplinaId))).ToArray()));
                     else
                         eventoAula.PossuiPendencia = false;

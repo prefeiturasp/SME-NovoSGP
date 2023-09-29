@@ -21,12 +21,12 @@ namespace SME.SGP.Aplicacao
                         .Select(d => new TipoFrequenciaDto() { Valor = d.ShortName(), Descricao = d.ShortName() })
                         .ToList();
 
-            if (filtro.Modalidade != null)
+            if (filtro.Modalidade.NaoEhNulo())
             {
                 var tipoParametroSistema = ObterTipoParametroPorModalidade((Modalidade)filtro.Modalidade);
-                var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(tipoParametroSistema, filtro.AnoLetivo != null ? filtro.AnoLetivo.Value : DateTime.Now.Year));;
+                var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(tipoParametroSistema, filtro.AnoLetivo.NaoEhNulo() ? filtro.AnoLetivo.Value : DateTime.Now.Year));;
 
-                if (parametro == null || parametro.Valor == "0")
+                if (parametro.EhNulo() || parametro.Valor == "0")
                     return retorno.Where(a => a.Valor != TipoFrequencia.R.ShortName());
 
             }

@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task PublicarMensagemConsolidarMediaRegistrosIndividuaisPorAnoETurma(IEnumerable<RegistroIndividualDTO> turmasInfantil, int anoLetivo)
         {
-            if (turmasInfantil == null && !turmasInfantil.Any())
+            if (turmasInfantil.EhNulo() && !turmasInfantil.Any())
                 throw new NegocioException("Não foi possível localizar turmas para consolidar dados de Média de Registros Individuais");
 
             foreach (var turma in turmasInfantil)
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task<bool> ExecutarConsolidacao()
         {
             var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoMediaRegistrosIndividuaisTurma, DateTime.Now.Year));
-            if (parametroExecucao != null)
+            if (parametroExecucao.NaoEhNulo())
                 return parametroExecucao.Ativo;
 
             return false;
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task AtualizarDataExecucao(int ano)
         {
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoMediaRegistrosIndividuaisTurma, ano));
-            if (parametroSistema != null)
+            if (parametroSistema.NaoEhNulo())
             {
                 parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
                 await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));

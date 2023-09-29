@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Linq;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long[]> Handle(ObterConselhoClasseIdsPorTurmaEPeriodoQuery request, CancellationToken cancellationToken)
         {
             var ids = await repositorioConselhoClasseConsulta.ObterConselhoClasseIdsPorTurmaEPeriodoAsync(request.TurmasCodigos, request.PeriodoEscolarId);
-            if (ids != null && ids.Any())
+            if (ids.NaoEhNulo() && ids.Any())
                 return ids.ToArray();
             return default;
         }

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> Handle(ObterAnotacaoAlunoParaConselhoQuery request, CancellationToken cancellationToken)
         {
             var anotacoesDto = await repositorioAnotacaoFechamentoAlunoConsulta.ObterAnotacoesTurmaAlunoBimestreAsync(request.AlunoCodigo, request.TurmasCodigos, request.PeriodoId);
-            if (anotacoesDto == null || !anotacoesDto.Any())
+            if (anotacoesDto.EhNulo() || !anotacoesDto.Any())
                 return default;
 
             var disciplinasIds = anotacoesDto.Select(a => long.Parse(a.DisciplinaId)).ToArray();
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             foreach (var anotacao in anotacoesDto)
             {
                 var disciplina = disciplinas.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(anotacao.DisciplinaId));
-                if (disciplina != null)
+                if (disciplina.NaoEhNulo())
                     anotacao.Disciplina = disciplina.Nome;
             }
 

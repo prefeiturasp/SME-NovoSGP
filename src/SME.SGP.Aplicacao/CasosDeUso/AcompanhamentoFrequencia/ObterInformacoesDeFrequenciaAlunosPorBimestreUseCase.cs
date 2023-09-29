@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("O tipo de calendário da turma não foi encontrado.");
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             var bimestreAtual = dto.Bimestre;
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 bimestreAtual = ObterBimestreAtual(periodosEscolares);
 
             var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestreAtual);
-            if (periodoAtual == null)
+            if (periodoAtual.EhNulo())
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
 
                 var totalCompensacoes = frequenciaAlunoRegistrada?.TotalCompensacoes ?? default;
 
-                var marcador = periodoEscolar != null ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
+                var marcador = periodoEscolar.NaoEhNulo() ? await mediator.Send(new ObterMarcadorFrequenciaAlunoQuery(aluno, periodoEscolar, turma.ModalidadeCodigo)) : null;
 
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
 
@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
 
                 var percentualFrequencia = string.Empty;
 
-                if (frequenciaAlunoRegistrada != null)
+                if (frequenciaAlunoRegistrada.NaoEhNulo())
                     percentualFrequencia = frequenciaAlunoRegistrada.PercentualFrequenciaFormatado;
 
                 novaListaAlunos.Add(new AlunoFrequenciaDto
@@ -184,11 +184,11 @@ namespace SME.SGP.Aplicacao
 
             return frequenciaAlunosRegistrada
                 .GroupBy(x => x.CodigoAluno)
-                .Select(x => ObterFrequenciaAluno(x, alunosPorTurma).Result)
+                .Select(x => ObterFrequenciaAluno(x, alunosPorTurma))
                 .ToList();
         }
 
-        private async Task<FrequenciaAluno> ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<AlunoPorTurmaResposta> alunos)
+        private FrequenciaAluno ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<AlunoPorTurmaResposta> alunos)
         {
             var frequenciasAluno = agrupamentoAluno.ToList();
 
@@ -214,7 +214,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 
-            return periodoEscolar == null ? periodosEscolares.Select(p => p.Bimestre).Max() : periodoEscolar.Bimestre;
+            return periodoEscolar.EhNulo() ? periodosEscolares.Select(p => p.Bimestre).Max() : periodoEscolar.Bimestre;
         }
     }
 }

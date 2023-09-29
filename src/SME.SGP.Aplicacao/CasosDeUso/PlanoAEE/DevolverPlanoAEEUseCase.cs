@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(param.PlanoAEEId));
 
-            if (planoAEE == null)
+            if (planoAEE.EhNulo())
                 throw new NegocioException("Plano AEE não encontrado.");
 
             planoAEE.Situacao = SituacaoPlanoAEE.Devolvido;
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

@@ -17,10 +17,10 @@ namespace SME.SGP.Aplicacao
 
             filtro.NomeUsuario = usuarioLogado.Nome;
 
-            if (filtro.DataInicio == null)
+            if (filtro.DataInicio.EhNulo())
                 filtro.DataInicio = new DateTime(filtro.Ano, 1, 1);
 
-            if (filtro.DataFim == null)
+            if (filtro.DataFim.EhNulo())
                 filtro.DataFim = new DateTime(filtro.Ano, 12, 31);
 
             if (filtro.DataInicio.GetValueOrDefault().Date > filtro.DataFim.GetValueOrDefault().Date)

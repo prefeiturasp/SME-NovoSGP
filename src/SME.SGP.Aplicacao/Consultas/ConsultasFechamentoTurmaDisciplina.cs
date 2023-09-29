@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
         {
             get
             {
-                if (_sinteses == null)
+                if (_sinteses.EhNulo())
                     _sinteses = repositorioSintese.Listar();
 
                 return _sinteses;
@@ -95,19 +95,19 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendario = await mediator.Send(new ObterTipoDeCalendarioDaTurmaQuery { Turma = turma });
 
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
-            if (periodosEscolares == null)
+            if (periodosEscolares.EhNulo())
                 throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
             DateTime primeiroPeriodoDoCalendario = periodosEscolares.Where(p => p.Bimestre == PRIMEIRO_BIMESTRE).Select(pe => pe.PeriodoInicio).FirstOrDefault();
 
 
             PeriodoEscolar periodoEscolar;
-            if (periodosAberto != null && periodosAberto.Any())
+            if (periodosAberto.NaoEhNulo() && periodosAberto.Any())
             {
                 // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
                 periodoEscolar = periodosAberto.OrderBy(c => c.Bimestre).Last();
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                 periodoEscolar = consultasPeriodoEscolar
                     .ObterPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
 
-                if (periodoEscolar == null)
+                if (periodoEscolar.EhNulo())
                     periodoEscolar = consultasPeriodoEscolar.ObterUltimoPeriodoPorData(periodosEscolares, DateTimeExtension.HorarioBrasilia().Date);
             }
 
@@ -166,11 +166,11 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, ModalidadeParaModalidadeTipoCalendario(turma.ModalidadeCodigo), semestre);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
             var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             var bimestreAtual = bimestre;
@@ -178,11 +178,11 @@ namespace SME.SGP.Aplicacao
                 bimestreAtual = ObterBimestreAtual(periodosEscolares);
 
             var periodoAtual = periodosEscolares.FirstOrDefault(x => x.Bimestre == bimestreAtual);
-            if (periodoAtual == null)
+            if (periodoAtual.EhNulo())
                 throw new NegocioException("Não foi encontrado período escolar para o bimestre solicitado.");
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaId, turma.AnoLetivo));
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
             var fechamentoBimestre = new FechamentoTurmaDisciplinaBimestreDto()
@@ -210,9 +210,9 @@ namespace SME.SGP.Aplicacao
             // Carrega fechamento da Turma x Disciplina x Bimestre  
             var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaId, disciplinaId.ToString(), bimestreAtual.Value, tipoCalendario.Id);
 
-            if ((fechamentosTurma != null && fechamentosTurma.Any()) || fechamentoBimestre.EhSintese)
+            if ((fechamentosTurma.NaoEhNulo() && fechamentosTurma.Any()) || fechamentoBimestre.EhSintese)
             {
-                if (fechamentosTurma != null && fechamentosTurma.Any())
+                if (fechamentosTurma.NaoEhNulo() && fechamentosTurma.Any())
                 {
                     fechamentoBimestre.Situacao = fechamentosTurma.First().Situacao;
                     fechamentoBimestre.SituacaoNome = fechamentosTurma.First().Situacao.Name();
@@ -271,18 +271,18 @@ namespace SME.SGP.Aplicacao
                     var anotacaoAluno = anotacoesAlunos.Where(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
                         c.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
 
-                    alunoDto.TemAnotacao = anotacaoAluno != null && anotacaoAluno.Anotacao != null &&
+                    alunoDto.TemAnotacao = anotacaoAluno.NaoEhNulo() && anotacaoAluno.Anotacao.NaoEhNulo() &&
                         !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());
 
                     var marcador = servicoAluno.ObterMarcadorAluno(aluno, bimestreDoPeriodo);
 
-                    if (marcador != null)
+                    if (marcador.NaoEhNulo())
                         alunoDto.Informacao = marcador.Descricao;                    
 
                     var frequenciaAluno = await mediator
                         .Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, codigosDisciplinas.ToArray(), periodoAtual.PeriodoFim, turmaId));
 
-                    if (frequenciaAluno != null)
+                    if (frequenciaAluno.NaoEhNulo())
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
                         alunoDto.QuantidadeCompensacoes = frequenciaAluno.TotalCompensacoes;
@@ -296,14 +296,14 @@ namespace SME.SGP.Aplicacao
                     }
 
                     // Carrega Frequencia do aluno
-                    if (aluno.CodigoAluno != null)
+                    if (aluno.CodigoAluno.NaoEhNulo())
                     {
-                        if (fechamentoBimestre.EhSintese && fechamentoTurma == null)
+                        if (fechamentoBimestre.EhSintese && fechamentoTurma.EhNulo())
                         {
                             if (!turmaPossuiFrequenciaRegistrada)
                                 throw new NegocioException("Não é possível registrar fechamento pois não há registros de frequência no bimestre.");
 
-                            if(frequenciaAluno != null)
+                            if(frequenciaAluno.NaoEhNulo())
                             {
                                 var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(frequenciaAluno.PercentualFrequencia, disciplina, turma.AnoLetivo));
 
@@ -325,14 +325,14 @@ namespace SME.SGP.Aplicacao
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
 
                             // Excessão de disciplina ED. Fisica para modalidade EJA
-                            if (turma.EhEJA() && notasConceitoBimestre != null && !turma.EhTurmaEdFisica())
+                            if (turma.EhEJA() && notasConceitoBimestre.NaoEhNulo() && !turma.EhTurmaEdFisica())
                                 notasConceitoBimestre = notasConceitoBimestre.Where(n => n.DisciplinaId != MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA);
 
                             if (fechamentoBimestre.EhSintese)
                             {
                                 var notaConceitoBimestre = notasConceitoBimestre.FirstOrDefault();
 
-                                if (notaConceitoBimestre != null && (notaConceitoBimestre.SinteseId.HasValue && frequenciaAluno != null))
+                                if (notaConceitoBimestre.NaoEhNulo() && (notaConceitoBimestre.SinteseId.HasValue && frequenciaAluno.NaoEhNulo()))
                                 {
                                     alunoDto.SinteseId = (SinteseEnum)notaConceitoBimestre.SinteseId.Value;
                                     alunoDto.Sintese = ObterSintese(notaConceitoBimestre.SinteseId.Value);
@@ -420,7 +420,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return 1;
             else return periodoEscolar.Bimestre;
         }
@@ -428,19 +428,19 @@ namespace SME.SGP.Aplicacao
         private double ObterConceito(long id)
         {
             var conceito = repositorioConceito.ObterPorId(id);
-            return conceito != null ? conceito.Id : 0;
+            return conceito.NaoEhNulo() ? conceito.Id : 0;
         }
 
         private string ObterConceitoDescricao(long id)
         {
             var conceito = repositorioConceito.ObterPorId(id);
-            return conceito != null ? conceito.Valor : "";
+            return conceito.NaoEhNulo() ? conceito.Valor : "";
         }
 
         private string ObterSintese(long id)
         {
             var sintese = Sinteses.FirstOrDefault(c => c.Id == id);
-            return sintese != null ? sintese.Descricao : "";
+            return sintese.NaoEhNulo() ? sintese.Descricao : "";
         }
 
         private bool UsuarioPossuiPermissaoNaTelaParaReprocessar()

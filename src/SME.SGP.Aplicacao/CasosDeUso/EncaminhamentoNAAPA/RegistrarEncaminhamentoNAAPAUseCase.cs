@@ -31,11 +31,11 @@ namespace SME.SGP.Aplicacao
         public async Task<ResultadoEncaminhamentoNAAPADto> Executar(EncaminhamentoNAAPADto encaminhamentoNAAPADto)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(encaminhamentoNAAPADto.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoNAAPADto.AlunoCodigo, DateTime.Now.Year));
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto, (int)turma.ModalidadeCodigo);
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             {
                 var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.GetValueOrDefault()));
 
-                if (encaminhamentoNAAPA != null)
+                if (encaminhamentoNAAPA.NaoEhNulo())
                 {
                     await AlterarEncaminhamento(encaminhamentoNAAPADto, encaminhamentoNAAPA);
                     await RemoverArquivosNaoUtilizados(encaminhamentoNAAPADto.Secoes);
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var item in resposta)
                 {
                     var entidadeResposta = await mediator.Send(new ObterRespostaEncaminhamentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
-                    if (entidadeResposta != null)
+                    if (entidadeResposta.NaoEhNulo())
                         await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(entidadeResposta));
                 }
             }
@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
                 var secaoExistente = encaminhamentoNAAPA.Secoes.FirstOrDefault(s => s.SecaoEncaminhamentoNAAPAId == secao.SecaoId);
                 var tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Alteracao;
 
-                if (secaoExistente == null)
+                if (secaoExistente.EhNulo())
                 {
                     secaoExistente = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(encaminhamentoNAAPA.Id, secao.SecaoId, secao.Concluido));
                     tipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Inserido;
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var questaoExistente = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
 
-                    if (questaoExistente == null)
+                    if (questaoExistente.EhNulo())
                     {
                         var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
                         await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
@@ -224,21 +224,21 @@ namespace SME.SGP.Aplicacao
                 return;
 
                 var questaoObservacoes = ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(questoes);
-            if (questaoObservacoes != null)
+            if (questaoObservacoes.NaoEhNulo())
             {
                 var questaoAgrupamentoPromocaoCuidados = ObterQuestaoAgrupamentoPromocaoCuidados(questoes);
                 var questoesComplementares = ObterQuestoesComplementaresAgrupamentoPromocaoCuidados(questaoAgrupamentoPromocaoCuidados);
                 var questaoAdoeceComFrequencia = ObterQuestaoComplementarTipoAdoeceComFrequenciaSemCuidadosMedicos(questoesComplementares);
                 var questaoDoencaCronica = ObterQuestaoComplementarTipoDoencaCronicaTratamentoLongaDuracao(questoesComplementares);
 
-                if (questaoAdoeceComFrequencia != null)
+                if (questaoAdoeceComFrequencia.NaoEhNulo())
                 {
                     var opcaoOutras_QuestaoAdoeceComFrequencia = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoAdoeceComFrequencia.Id))).FirstOrDefault(opcao => opcao.Nome == "Outras");
                     if (questaoAdoeceComFrequencia.Resposta.Any(resposta => resposta.Texto == opcaoOutras_QuestaoAdoeceComFrequencia.Id.ToString()))
                         questoesObrigatoriasNaoRespondidas.Add(new QuestaoObrigatoriaNaoRespondidaDto(secaoAValidar.Id, secaoAValidar.Nome, questaoObservacoes.Ordem.ToString()));
                 }
 
-                if (questaoDoencaCronica != null)
+                if (questaoDoencaCronica.NaoEhNulo())
                 { 
                     var opcaoOutras_QuestaoDoencaCronica = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoDoencaCronica.Id))).FirstOrDefault(opcao => opcao.Nome == "Outras");
                     if (questaoDoencaCronica.Resposta.Any(resposta => resposta.Texto == opcaoOutras_QuestaoDoencaCronica.Id.ToString()))
@@ -299,7 +299,7 @@ namespace SME.SGP.Aplicacao
                 var secaoPresenteDto = encaminhamentoNAAPADto.Secoes.FirstOrDefault(secaoDto => secaoDto.SecaoId == secao.Id);
 
                 IEnumerable<RespostaQuestaoObrigatoriaDto> respostasEncaminhamento;
-                if (secaoPresenteDto != null && secaoPresenteDto.Questoes.Any())
+                if (secaoPresenteDto.NaoEhNulo() && secaoPresenteDto.Questoes.Any())
                 {
                     respostasEncaminhamento = secaoPresenteDto.Questoes
                         .Select(questao => new RespostaQuestaoObrigatoriaDto()
@@ -311,7 +311,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    if (respostasPersistidas == null)
+                    if (respostasPersistidas.EhNulo())
                         respostasPersistidas = await ObterRespostasEncaminhamentoNAAPA(encaminhamentoNAAPADto.Id);
                     respostasEncaminhamento = respostasPersistidas;
                 }

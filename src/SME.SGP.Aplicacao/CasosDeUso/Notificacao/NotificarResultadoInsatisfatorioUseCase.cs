@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         private async Task NotificarResultadoInsatisfatorio(IEnumerable<ParametrosSistema> parametro, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var parametroPendenciaAusencia = parametro.FirstOrDefault(c => c.Ativo && c.Nome == "DiasNotificacaoResultadoInsatisfatorio");
-            if (parametroPendenciaAusencia != null)
+            if (parametroPendenciaAusencia.NaoEhNulo())
             {
                 await mediator.Send(new NotificarResultadoInsatisfatorioCommand(int.Parse(parametroPendenciaAusencia.Valor), (long)modalidadeTipoCalendario));
             }

@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 if (itineranciaAlunoId < 0)
                     throw new NegocioException($"Não foi possível salvar a itinerância do aluno");
 
-                if (request.Aluno.Questoes == null || request.Aluno.Questoes.Any())
+                if (request.Aluno.Questoes.EhNulo() || request.Aluno.Questoes.Any())
                     foreach (var questao in request.Aluno.Questoes)
                     {
                         if (questao.Obrigatorio && string.IsNullOrEmpty(questao.Resposta))

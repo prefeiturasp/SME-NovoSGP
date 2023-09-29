@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var dre = await mediator.Send(new ObterDREPorIdQuery(dreId));
 
-            if (dre == null)
+            if (dre.EhNulo())
                 throw new NegocioException("A DRE informada não foi encontrada");
 
             return await mediator.Send(new ObterFuncionariosPorDreECargoQuery(dre.CodigoDre, 29));

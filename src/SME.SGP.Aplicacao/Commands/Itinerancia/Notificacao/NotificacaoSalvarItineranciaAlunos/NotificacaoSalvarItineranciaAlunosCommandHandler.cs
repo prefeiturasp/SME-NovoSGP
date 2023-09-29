@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(NotificacaoSalvarItineranciaAlunosCommand request, CancellationToken cancellationToken)
         {
             var ue = await mediator.Send(new ObterUeComDrePorIdQuery(request.UeId));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE informada");
             await NotificarItinerancia(ue, request.CriadoRF, request.CriadoPor, request.DataVisita, request.Estudantes, request.ItineranciaId);
 
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
         private static StringBuilder MontarMensagemComOuSemEstudantes(string criadoRF, string criadoPor, DateTime dataVisita, IEnumerable<ItineranciaAlunoDto> estudantes, string descricaoUe)
         {
             StringBuilder mensagem = new StringBuilder();
-            if (estudantes != null && estudantes.Any())
+            if (estudantes.NaoEhNulo() && estudantes.Any())
             {
                 mensagem.AppendLine($"O usuário {criadoPor} ({criadoRF}) inseriu um novo registro de itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os seguintes estudantes:");
             }
@@ -100,13 +100,13 @@ namespace SME.SGP.Aplicacao
         }
         private async Task MontarTabelaEstudantes(IEnumerable<ItineranciaAlunoDto> estudantes, StringBuilder mensagem, List<Turma> turmas)
         {
-            if (estudantes != null && estudantes.Any())
+            if (estudantes.NaoEhNulo() && estudantes.Any())
             {
                 mensagem.AppendLine("<br/><br/><table border=2><tr style='font-weight: bold'><td>Estudante</td><td>Turma Regular</td></tr>");
                 foreach (var estudante in estudantes.OrderBy(a => a.AlunoNome))
                 {
                     var turma = turmas.FirstOrDefault(a => a.Id == estudante.TurmaId);
-                    if (turma == null)
+                    if (turma.EhNulo())
                     {
                         turma = await mediator.Send(new ObterTurmaPorIdQuery(estudante.TurmaId));
                         turmas.Add(turma);

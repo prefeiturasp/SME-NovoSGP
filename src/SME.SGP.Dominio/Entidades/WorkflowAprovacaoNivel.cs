@@ -26,12 +26,12 @@ namespace SME.SGP.Dominio
 
         public void Adicionar(Notificacao notificacao)
         {
-            if (notificacao != null && !notificacoes.Any(a => a.Id == notificacao.Id))
+            if (notificacao.NaoEhNulo() && !notificacoes.Any(a => a.Id == notificacao.Id))
                 notificacoes.Add(notificacao);
         }        
         public void Adicionar(Usuario usuario)
         {
-            if (usuario != null)
+            if (usuario.NaoEhNulo())
                 usuarios.Add(usuario);
         }
 

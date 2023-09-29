@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var tiposQuestionario = new long[] { (int)TipoQuestionario.RegistroItinerancia, (int)TipoQuestionario.RegistroItineranciaAluno };
             var questoesBase = await repositorioItinerancia.ObterItineranciaQuestaoBase(tiposQuestionario);
 
-            if (questoesBase == null || !questoesBase.Any())
+            if (questoesBase.EhNulo() || !questoesBase.Any())
                 throw new NegocioException("Não foi possível obter as questões base da itinerância");
 
 

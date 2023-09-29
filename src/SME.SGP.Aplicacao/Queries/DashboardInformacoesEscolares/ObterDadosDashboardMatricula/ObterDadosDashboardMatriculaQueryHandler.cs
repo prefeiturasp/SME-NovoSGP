@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var total in totalMatriculaPorDreEAnoDtos)
                 {
                     var descricao = "";
-                    if (ueId > 0 && anos != null && anos.Count() == 1)
+                    if (ueId > 0 && anos.NaoEhNulo() && anos.Count() == 1)
                         descricao = total.TurmaDescricao;
                     else if (dreId > 0)
                         descricao = total.AnoDescricao;

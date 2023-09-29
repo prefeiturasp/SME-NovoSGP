@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunosAnoAnterior), ServiceLifetime.Scoped));
+                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFakeAlunoCodigo1), ServiceLifetime.Scoped));
@@ -254,7 +254,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
 
-            if (useCase != null)
+            if (useCase.NaoEhNulo())
                 resultado = await useCase.Executar(listaNotasConceitos);
 
             return await Task.FromResult(resultado);
@@ -311,7 +311,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 {
                     Bimestre = BIMESTRE_3,
                     DisciplinaId = disciplinaId,
-                    Justificativa = "",
+                    Justificativa = "Teste",
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = fechamentosNotas
                 }

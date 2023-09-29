@@ -39,16 +39,16 @@ namespace SME.SGP.Aplicacao
             var alunosAtivos = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
             
-            if (alunosAtivos != null && alunosAtivos.Any())
+            if (alunosAtivos.NaoEhNulo() && alunosAtivos.Any())
                 alunosAtivos = alunosAtivos.OrderByDescending(a => a.DataSituacao).ToList().DistinctBy(a => a.CodigoAluno);
             else
                 throw new NegocioException("Não foram localizados alunos com matrícula ativa na turma, no período escolar selecionado.");
 
             var componentesCurricularesId = new List<long>() { long.Parse(request.DisciplinaId) };
 
-            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesId.ToArray())); 
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesId.ToArray()));
 
-            if (disciplinasEOL == null || !disciplinasEOL.Any())
+            if (disciplinasEOL.EhNulo() || !disciplinasEOL.Any())
                 throw new NegocioException("Componente curricular informado não localizado.");
 
             var quantidadeMaximaCompensacoes = int.Parse(await mediator
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo
                     .ObterPorAlunoDisciplinaPeriodo(alunoEOL.CodigoAluno, componentesCurricularesId.Select(cc => cc.ToString()).ToArray(), periodo.Id, turma.CodigoTurma);
 
-                if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas <= 0 || frequenciaAluno.PercentualFrequencia == 100)
+                if (frequenciaAluno.EhNulo() || frequenciaAluno.NumeroFaltasNaoCompensadas <= 0 || frequenciaAluno.PercentualFrequencia == 100)
                     continue;
 
                 var faltasNaoCompensadas = int.Parse(frequenciaAluno.NumeroFaltasNaoCompensadas.ToString());
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> BuscaTurma(string turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada!");
 
             return turma;
@@ -99,15 +99,15 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> BuscaPeriodo(Turma turma, int bimestre)
         {
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de calendário da turma");
 
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não foi possível localizar os períodos escolares da turma");
 
             var periodoEscolar = periodosEscolares?.FirstOrDefault(p => p.Bimestre == bimestre);
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException($"Período escolar do {bimestre}º Bimestre não localizado para a turma");
 
             return periodoEscolar;

@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                     foreach (var professorTurma in professoresTurma)
                     {
                         var obterComponenteCurricular = componentes.FirstOrDefault(c => professorTurma.DisciplinasId.Contains(long.Parse(c.Codigo)));
-                        if (obterComponenteCurricular != null)
+                        if (obterComponenteCurricular.NaoEhNulo())
                         {
                             if (professorTurma.ProfessorRf != "")
                             {

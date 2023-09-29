@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -41,7 +42,7 @@ namespace SME.SGP.Aplicacao
             {
                 var comunicadoDto = itens.FirstOrDefault(x => x.DocumentoId == item.DocumentoId);
 
-                if (comunicadoDto == null)
+                if (comunicadoDto.EhNulo())
                     itens.Add(item);
             }
 

@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
             // Verifica se compensação possui alunos vinculados
             var alunos = await repositorioCompensacaoAusenciaAlunoConsulta.ObterPorCompensacao(compensacaoId);
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 return true;
 
             // Verifica se possui aluno não notificado na compensação
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoId));
 
             var cargos = new Cargo[] { Cargo.CP };
-            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? parametroAtivo.Ativo : false))
+            if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo.NaoEhNulo() ? parametroAtivo.Ativo : false))
             {
 
                 await NotificarCompensacaoExtemporanea(

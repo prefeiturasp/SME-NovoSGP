@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var notificacao =
                 await mediator.Send(new ObterNotificacaoPorIdQuery(request.NotificacaoId), cancellationToken);
 
-            if (notificacao == null)
+            if (notificacao.EhNulo())
                 return string.Empty;
             
             var mensagem = notificacao.Mensagem;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
             var parecerConclusivo = pareceresConclusivos.FirstOrDefault();
 
-            if (parecerConclusivo == null)
+            if (parecerConclusivo.EhNulo())
                 return mensagem;
 
             var ehMensagemDinamica = mensagem.Contains(MENSAGEM_DINAMICA_TABELA_POR_ALUNO);

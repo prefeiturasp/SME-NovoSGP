@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             {
                 var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
                 var periodoBimestre = await mediator.Send(new ObterPeriodoEscolaresPorTurmaBimestresAulaCjQuery(dadosTurma, bimestre, usuarioLogado.EhSomenteProfessorCj()));
-                listaPeriodos = periodoBimestre != null ? SepararSemanasRegencia(periodoBimestre, exibirDataFutura) : listaPeriodos;
+                listaPeriodos = periodoBimestre.NaoEhNulo() ? SepararSemanasRegencia(periodoBimestre, exibirDataFutura) : listaPeriodos;
             }                
             else
             {

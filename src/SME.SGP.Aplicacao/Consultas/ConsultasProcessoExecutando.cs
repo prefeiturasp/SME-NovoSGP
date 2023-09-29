@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> ExecutandoCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
-            => (await repositorio.ObterProcessoCalculoFrequenciaAsync(turmaId, disciplinaId, bimestre, Dominio.TipoProcesso.CalculoFrequencia)) != null;
+            => (await repositorio.ObterProcessoCalculoFrequenciaAsync(turmaId, disciplinaId, bimestre, Dominio.TipoProcesso.CalculoFrequencia)).NaoEhNulo();
 
         public async Task<ProcessoExecutando> ObterProcessosEmExecucaoAsync(string turmaId, string disciplinaId, int bimestre, TipoProcesso tipoProcesso)
             => (await repositorio.ObterProcessoCalculoFrequenciaAsync(turmaId, disciplinaId, bimestre, TipoProcesso.CalculoFrequencia));

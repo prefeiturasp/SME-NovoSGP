@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
         private static async Task<List<FechamentoPorTurmaPeriodoCCDto>> MapearDadosDbParaCache(IEnumerable<FechamentoTurmaDisciplina> dadosBd)
         {
-            if (dadosBd == null)
+            if (dadosBd.EhNulo())
                 return null;
 
             var dadosCache = new List<FechamentoPorTurmaPeriodoCCDto>();
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
             var retornoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoPorTurmaPeriodoCCDto>>(nomeChave,
                 "Obter fechamento por turma, período e conselho de classe");
             
-            if (retornoCache != null) 
+            if (retornoCache.NaoEhNulo()) 
                 return retornoCache;
             
             var dadosBd = await repositorioFechamentoTurma.ObterPorTurmaPeriodoCCAsync(request.TurmaId,

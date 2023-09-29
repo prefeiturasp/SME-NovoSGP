@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RecomendacaoConselhoClasseAlunoDTO>> Handle(ObterRecomendacoesPorAlunosTurmasQuery request, CancellationToken cancellationToken)
         {
             var recomendacoes = await recomendacaoAlunoRepositorio.ObterRecomendacoesPorAlunoTurma(request.CodigoAluno, request.CodigoTurma, request.AnoLetivo, request.Modalidade, request.Semestre);
-            if (recomendacoes != null && recomendacoes.Any())
+            if (recomendacoes.NaoEhNulo() && recomendacoes.Any())
             {
                 var recomendacoesGeral = await mediator.Send(ObterRecomendacoesAlunoFamiliaQuery.Instance);
                 foreach (var recomendacao in recomendacoes)

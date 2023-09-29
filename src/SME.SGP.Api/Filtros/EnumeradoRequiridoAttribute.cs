@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Api.Filtros
@@ -7,7 +8,7 @@ namespace SME.SGP.Api.Filtros
     {
         public override bool IsValid(object value)
         {
-            if (value == null) return false;
+            if (value.EhNulo()) return false;
             var type = value.GetType();
             return type.IsEnum && Enum.IsDefined(type, value);
         }

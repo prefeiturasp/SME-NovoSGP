@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
         {
             Turma turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
 
             return await consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<ComponenteCurricularJurema> ObterComponentesCurriculares()
         {
             IEnumerable<ComponenteCurricularJurema> componentesCurriculares = repositorioComponenteCurricular.Listar();
-            if (componentesCurriculares == null)
+            if (componentesCurriculares.EhNulo())
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }

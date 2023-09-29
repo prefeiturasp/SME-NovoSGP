@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
 
             var entidade = repositorioAtribuicaoEsporadica.ObterPorId(atribuicaoEsporadicaDto.Id);
 
-            if (entidade == null || string.IsNullOrWhiteSpace(entidade.ProfessorRf))
+            if (entidade.EhNulo() || string.IsNullOrWhiteSpace(entidade.ProfessorRf))
                 throw new NegocioException($"Não foi encontrado atribuição de codigo {atribuicaoEsporadicaDto.Id}");
 
             entidade.DataFim = atribuicaoEsporadicaDto.DataFim.Local();

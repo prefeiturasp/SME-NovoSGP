@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                         var dre = await ObterCodigoDREUE(filtro.UeId);
                         var CEFAIs = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dre.DreCodigo));
 
-                        if (CEFAIs != null && CEFAIs.Any())
+                        if (CEFAIs.NaoEhNulo() && CEFAIs.Any())
                         {
                             foreach (var cefai in CEFAIs)
                                 await AtribuirPerfilUsuario(cefai, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                         var ue = await ObterCodigoDREUE(filtro.UeId);
                         var admsUE = await ObterAdministradoresPorUE(ue.UeCodigo);
 
-                        if (admsUE != null && admsUE.Any())
+                        if (admsUE.NaoEhNulo() && admsUE.Any())
                         {
                             foreach (var adm in admsUE)
                                 await AtribuirPerfilUsuario(adm, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
         {
             var funcionariosCargo = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(ueCodigo, perfilUsuario.ObterCargoPorPerfil()));
 
-            if (funcionariosCargo != null && funcionariosCargo.Any())
+            if (funcionariosCargo.NaoEhNulo() && funcionariosCargo.Any())
             {
                 foreach (var funcionario in funcionariosCargo)
                 {
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> AtribuirPerfisUsuarioPorFuncaoExterna(string ueCodigo, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
         {
             var funcionariosFuncaoExterna = await mediator.Send(new ObterFuncionariosPorFuncaoExternaHierarquicoQuery(ueCodigo, perfilUsuario.ObterFuncaoExternaPorPerfil()));
-            if (funcionariosFuncaoExterna != null && funcionariosFuncaoExterna.Any())
+            if (funcionariosFuncaoExterna.NaoEhNulo() && funcionariosFuncaoExterna.Any())
             {
                 foreach (var funcionario in funcionariosFuncaoExterna)
                 {

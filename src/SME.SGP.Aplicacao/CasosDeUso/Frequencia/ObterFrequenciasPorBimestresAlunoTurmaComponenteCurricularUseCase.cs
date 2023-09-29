@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(dto.TurmaCodigo));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada!");
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
             var aulasComponentesTurmas = await mediator.Send(new ObterAulasDadasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, componentesCurriculares, dto.Bimestres));
 
-            if (frequenciasAluno != null && frequenciasAluno.Any())
+            if (frequenciasAluno.NaoEhNulo() && frequenciasAluno.Any())
                 frequenciasAlunoRetorno.AddRange(frequenciasAluno);
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             this.pareceresDoServico = pareceresDoServico;
 
             // Verifica se retornou 1 verdadeiro e 1 falso
-            if (pareceresDoServico == null || !pareceresDoServico.Any())
+            if (pareceresDoServico.EhNulo() || !pareceresDoServico.Any())
                 return false;
 
             if (!pareceresDoServico.Where(c => c.Aprovado).Any())
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                 tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
                 tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));                
                 
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, turma.Historica, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre));
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre));
             }
             else
                 turmasCodigos = new string[1] { turma.CodigoTurma };
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao
 
             var frequencias = frequenciasAluno.Where(a => componentesCurricularesCodigos.Contains(a.DisciplinaId));            
 
-            if (informacoesAluno != null && informacoesAluno.Any())
+            if (informacoesAluno.NaoEhNulo() && informacoesAluno.Any())
             {
                 frequencias = from f in frequencias
                               from dm in informacoesAluno.Select(ia => ia.DataMatricula)
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciasAjustadasParaParecerConclusivo = new List<FrequenciaAluno>();
 
-            var periodosEscolaresFrequentadosPeloEstudante = informacoesAluno != null && informacoesAluno.Any() ?
+            var periodosEscolaresFrequentadosPeloEstudante = informacoesAluno.NaoEhNulo() && informacoesAluno.Any() ?
                                                              from p in periodosEscolares
                                                              from ia in informacoesAluno
                                                              where ia.DataMatricula < p.PeriodoFim.Date
@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
                         if (!possuiFrequenciaConsolidada)
                         {
                             var valorAulaRegistrada = aulasComponentesTurmas.FirstOrDefault(a => a.Bimestre == aula.Bimestre && a.ComponenteCurricularCodigo == aula.ComponenteCurricularCodigo);
-                            if (valorAulaRegistrada != null)
+                            if (valorAulaRegistrada.NaoEhNulo())
                             {
                                 frequenciasAjustadasParaParecerConclusivo.Add(new FrequenciaAluno()
                                 {
@@ -243,7 +243,7 @@ namespace SME.SGP.Aplicacao
         {
             var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
 
-            if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
+            if (notasFechamentoAluno.EhNulo() || !notasFechamentoAluno.Any())
                 return true;
 
             var tipoNota = notasFechamentoAluno.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
@@ -268,7 +268,7 @@ namespace SME.SGP.Aplicacao
             foreach (var conceitoFechamentoAluno in conceitosFechamentoAluno)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoFechamentoAluno.ConceitoId);
-                if (conceitoAluno != null && !conceitoAluno.Aprovado)
+                if (conceitoAluno.NaoEhNulo() && !conceitoAluno.Aprovado)
                     return false;
             }
 
@@ -280,7 +280,7 @@ namespace SME.SGP.Aplicacao
         private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
-            if (notasConselhoClasse == null || !notasConselhoClasse.Any())
+            if (notasConselhoClasse.EhNulo() || !notasConselhoClasse.Any())
                 return (false, false);
             else
                 notasConselhoClasse = notasConselhoClasse.Any(x=>x.ConselhoClasseAlunoId != 0) ? 
@@ -300,7 +300,7 @@ namespace SME.SGP.Aplicacao
             {
                 var nota = notaConcelhoClasse.Nota;
                 var notaPosConselho = notasConselhoClasse.FirstOrDefault(n => n.ComponenteCurricularCodigo == notaConcelhoClasse.ComponenteCurricularCodigo && n.ConselhoClasseAlunoId > 0);
-                if (notaPosConselho != null)
+                if (notaPosConselho.NaoEhNulo())
                 {
                     nota = notaPosConselho.Nota;
                 }
@@ -319,13 +319,13 @@ namespace SME.SGP.Aplicacao
                 var conceitoId = conceitoConselhoClasseAluno.ConceitoId;
 
                 var conceitoPosConselho = notasConselhoClasse.FirstOrDefault(n => n.ComponenteCurricularCodigo == conceitoConselhoClasseAluno.ComponenteCurricularCodigo && n.ConselhoClasseAlunoId > 0);
-                if (conceitoPosConselho != null)
+                if (conceitoPosConselho.NaoEhNulo())
                 {
                     conceitoId = conceitoPosConselho.ConceitoId;
                 }
 
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoId);
-                if (conceitoAluno != null && !conceitoAluno.Aprovado)
+                if (conceitoAluno.NaoEhNulo() && !conceitoAluno.Aprovado)
                     return false;
             }
 

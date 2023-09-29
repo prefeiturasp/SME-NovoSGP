@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException(
                     "Não foi possível localizar o usuário para realizar a impressão do Encaminhamento AEE.");
 

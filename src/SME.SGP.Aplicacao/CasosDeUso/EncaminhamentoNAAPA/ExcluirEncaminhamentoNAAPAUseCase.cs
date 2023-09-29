@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
 
-            if (encaminhamentoNAAPA == null)
+            if (encaminhamentoNAAPA.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
             
             if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Rascunho && encaminhamentoNAAPA.Situacao != SituacaoNAAPA.AguardandoAtendimento)

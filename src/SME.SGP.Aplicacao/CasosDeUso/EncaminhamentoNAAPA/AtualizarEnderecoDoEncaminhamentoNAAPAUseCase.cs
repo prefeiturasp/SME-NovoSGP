@@ -23,14 +23,14 @@ namespace SME.SGP.Aplicacao
             var encaminhamentoNAAPADto = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
 
             var alunoEol = (await mediator.Send(new ObterAlunoEnderecoEolQuery(encaminhamentoNAAPADto.AlunoCodigo)));
-            if (alunoEol == null) return false;
+            if (alunoEol.EhNulo()) return false;
             var enderecoResidencialAluno = MapearDTO(alunoEol.Endereco);
 
             var questaoEnderecoResidencialNAAPA = (await mediator.Send(new ObterQuestaoEnderecoAlunoEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
-            if (questaoEnderecoResidencialNAAPA == null) return false;
+            if (questaoEnderecoResidencialNAAPA.EhNulo()) return false;
 
             var respostaEnderecoResidencialNAAPA = questaoEnderecoResidencialNAAPA.Respostas?.FirstOrDefault();
-            if (respostaEnderecoResidencialNAAPA != null)
+            if (respostaEnderecoResidencialNAAPA.NaoEhNulo())
             {
                 var enderecoResidencialNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostaEnderecoResidencialNAAPA.Texto);
                 if (enderecoResidencialAluno.Equals(enderecoResidencialNAAPA?.FirstOrDefault())) return false;

@@ -33,10 +33,10 @@ namespace SME.SGP.Aplicacao
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 
-                    if(request.Perfil != null)
+                    if(request.Perfil.NaoEhNulo())
                         await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<PerfilUsuario> { request.Perfil.Value }));
 
-                    if(request.UsuariosIds != null)
+                    if(request.UsuariosIds.NaoEhNulo())
                     {
                         foreach (var usuarioId in request.UsuariosIds)
                             await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
         
                     unitOfWork.PersistirTransacao();
 
-                    if (request.Perfil != null)
+                    if (request.Perfil.NaoEhNulo())
                         await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.UeId), Guid.NewGuid()));
                 }
                 catch (Exception e)

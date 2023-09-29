@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                         s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.PendenteRematricula ||
                                         s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.SemContinuidade ||
                                         s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
-                if (alunos == null || !alunos.Any())
+                if (alunos.EhNulo() || !alunos.Any())
                     throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
                 string[] codigosAlunos = alunos.Select(a => a.CodigoAluno).ToArray();

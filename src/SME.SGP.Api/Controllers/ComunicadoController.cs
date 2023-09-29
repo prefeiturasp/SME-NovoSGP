@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui.Anos;
@@ -74,7 +75,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> BuscarAlunos(string codigoTurma, int anoLetivo, [FromServices] IObterAlunosPorTurmaEAnoLetivoEscolaAquiUseCase obterAlunosPorTurmaEscolaAquiUseCase)
         {
             var retorno = await obterAlunosPorTurmaEscolaAquiUseCase.Executar(codigoTurma, anoLetivo);
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);

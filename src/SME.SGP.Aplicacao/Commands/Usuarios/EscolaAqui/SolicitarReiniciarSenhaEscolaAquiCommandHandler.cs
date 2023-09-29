@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 var json = await resposta.Content.ReadAsStringAsync();
                 var respostaApi = JsonConvert.DeserializeObject<RespostaApi>(json);
 
-                if (respostaApi.Erros != null && respostaApi.Erros.Any())
+                if (respostaApi.Erros.NaoEhNulo() && respostaApi.Erros.Any())
                     throw new NegocioException(respostaApi.Erros[0].ToString(), HttpStatusCode.BadRequest);
 
                 throw new NegocioException("Não foi possível reiniciar a senha");

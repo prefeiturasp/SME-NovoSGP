@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var observacaoId = await repositorioDiarioBordoObservacao.SalvarAsync(diarioBordoObservacao);
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
+            if (request.UsuariosIdNotificacao.NaoEhNulo() && request.UsuariosIdNotificacao.Any())
             {
                 var usuariosNotificacao = new List<Usuario>();
                 foreach (var item in request.UsuariosIdNotificacao?.Select(a => a))

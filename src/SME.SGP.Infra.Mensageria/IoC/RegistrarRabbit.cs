@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
@@ -31,7 +32,7 @@ namespace SME.SGP.IoC
 
         public static void ConfigurarRabbit(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
+            if (configuration.EhNulo())
                 return;
 
             services.AddOptions<ConfiguracaoRabbitOptions>()
