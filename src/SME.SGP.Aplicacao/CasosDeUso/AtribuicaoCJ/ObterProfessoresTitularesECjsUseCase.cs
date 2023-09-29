@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                     ? listaAtribuicoes.OrderByDescending(u => u.AlteradoEm).FirstOrDefault()
                     : listaAtribuicoes.OrderByDescending(u => u.CriadoEm).FirstOrDefault();
 
-                if (primeiroRegistroCriado != null)
+                if (primeiroRegistroCriado.NaoEhNulo())
                 {
                     listaRetorno.CriadoEm = primeiroRegistroCriado.CriadoEm;
                     listaRetorno.CriadoPor = primeiroRegistroCriado.CriadoPor;

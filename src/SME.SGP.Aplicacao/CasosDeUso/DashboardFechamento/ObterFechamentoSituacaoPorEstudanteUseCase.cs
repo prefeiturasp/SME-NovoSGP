@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
             foreach (FechamentoAlunoStatusDto aluno in alunoFechamento)
             {
                 aluno.Situacao = Dominio.SituacaoFechamentoAluno.Parcial;
-                if (totalDisciplinasNaTurma != null)
+                if (totalDisciplinasNaTurma.NaoEhNulo())
                 {
                     aluno.Situacao = aluno.QuantidadeDisciplinasFechadas == totalDisciplinasNaTurma.QuantidadeDisciplinas ?
                         Dominio.SituacaoFechamentoAluno.Completo :
@@ -122,14 +122,14 @@ namespace SME.SGP.Aplicacao
             var turmas = await mediator.Send(new ObterTurmasPorIdsQuery(turmaIds));
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turmas.FirstOrDefault(), bimestre));
 
-            if (periodoEscolar != null)
+            if (periodoEscolar.NaoEhNulo())
             {
                 if (ueId == 0)
                 {
                     if (dreId > 0)
                     {
                         var dadosDre = await mediator.Send(new ObterDREPorIdQuery(dreId));
-                        if (dadosDre != null)
+                        if (dadosDre.NaoEhNulo())
                             dreId = Convert.ToInt64(dadosDre.CodigoDre);
                     }
                       
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
                     foreach(var turma in turmas)
                     {
                         var alunosDaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
-                        if (alunosDaTurma.Any() && alunosDaTurma != null)
+                        if (alunosDaTurma.Any() && alunosDaTurma.NaoEhNulo())
                             totalAlunosSemRegistro += RetornaAlunosAtivos(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim, alunosDaTurma).Count();
                     }
                 }

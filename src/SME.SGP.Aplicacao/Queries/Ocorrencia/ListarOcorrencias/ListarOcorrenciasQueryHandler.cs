@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var dtoue in dtoUes)
                 {
                     var funcionarios = await mediator.Send(new ObterFuncionariosPorUeQuery(dtoue.CodigoUe, codigosServidores));
-                    if (funcionarios != null)
+                    if (funcionarios.NaoEhNulo())
                         servidores.AddRange(funcionarios);
                 }
 

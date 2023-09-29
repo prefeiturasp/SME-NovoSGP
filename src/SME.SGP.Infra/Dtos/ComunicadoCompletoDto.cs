@@ -16,7 +16,7 @@ namespace SME.SGP.Dto
         public string CriadoRF { get; set; }
 
         public static explicit operator ComunicadoCompletoDto(Comunicado comunicado)
-             => comunicado == null ? null : new ComunicadoCompletoDto
+             => comunicado.EhNulo() ? null : new ComunicadoCompletoDto
              {
                  DataEnvio = comunicado.DataEnvio,
                  Alunos = comunicado.Alunos.Select(x => (ComunicadoAlunoDto)x),

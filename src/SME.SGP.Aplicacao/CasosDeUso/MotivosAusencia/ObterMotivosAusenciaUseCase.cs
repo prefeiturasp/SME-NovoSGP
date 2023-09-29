@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private OpcaoDropdownDto MapearParaDto(MotivoAusencia motivoAusencia)
-            => motivoAusencia == null ? null :
+            => motivoAusencia.EhNulo() ? null :
             new OpcaoDropdownDto(motivoAusencia.Id.ToString(), motivoAusencia.Descricao);            
     }
 }

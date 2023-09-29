@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new UsuarioReinicioSenhaDto();
 
-            if (usuario != null && String.IsNullOrEmpty(usuario.Email))
+            if (usuario.NaoEhNulo() && String.IsNullOrEmpty(usuario.Email))
             {
                 await servicoEOL.ReiniciarSenha(request.CodigoRf);
                 retorno.DeveAtualizarEmail = true;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
                 await GravarHistoricoReinicioSenha(request.CodigoRf, request.DreCodigo, request.UeCodigo);
 
-                retorno.Mensagem = $"Senha do usuário {request.CodigoRf}{(usuario != null ? string.Concat(" - ", usuario.Nome) : string.Empty)} reiniciada com sucesso. O usuário deverá informar a senha {FormatarSenha(request.CodigoRf)} no seu próximo acesso.";
+                retorno.Mensagem = $"Senha do usuário {request.CodigoRf}{(usuario.NaoEhNulo() ? string.Concat(" - ", usuario.Nome) : string.Empty)} reiniciada com sucesso. O usuário deverá informar a senha {FormatarSenha(request.CodigoRf)} no seu próximo acesso.";
                 retorno.DeveAtualizarEmail = false;
             }
 

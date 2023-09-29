@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         {
             var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
 
-            if (perfisPorLogin == null)
+            if (perfisPorLogin.EhNulo())
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
 
             var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);

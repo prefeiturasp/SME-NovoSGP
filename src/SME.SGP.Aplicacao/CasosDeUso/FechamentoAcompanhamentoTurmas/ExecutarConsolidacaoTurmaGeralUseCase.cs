@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ObterTurmasConsolidacaoFechamentoGeralPorAnoLetivoTiposEscolaQuery(filtro.AnoLetivo, filtro.Pagina, QUANTIDADE_REGISTROS_POR_PAGINA, null)) :
                 await mediator.Send(new ObterTurmasConsolidacaoFechamentoGeralQuery(filtro.TurmaCodigo));
 
-            if (turmasEModalidadesParaConsolidar == null || !turmasEModalidadesParaConsolidar.Any())
+            if (turmasEModalidadesParaConsolidar.EhNulo() || !turmasEModalidadesParaConsolidar.Any())
                 return true;
 
             foreach (var turmaEModalidadesParaConsolidar in turmasEModalidadesParaConsolidar)

@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio.Servicos
                 // Valida mesma compensação no ano
                 var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray()));
 
-                if (compensacaoExistente != null)
+                if (compensacaoExistente.NaoEhNulo())
                     throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
 
                 var compensacaoBanco = new CompensacaoAusencia();
@@ -138,10 +138,10 @@ namespace SME.SGP.Dominio.Servicos
         {
             var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId)); 
 
-            if (disciplina is null)
+            if (disciplina.EhNulo())
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
 
-            if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
+            if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds.EhNulo()) || !disciplinasRegenciaIds.Any()))
                 throw new NegocioException("Regência de classe deve informar o(s) componente(s) curricular(es) relacionados a esta atividade.");
         }
 
@@ -179,7 +179,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<Turma> BuscaTurma(string turmaId)
         {
             var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaId);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada!");
 
             return turma;
@@ -187,7 +187,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task GravarDisciplinasRegencia(bool alteracao, long compensacaoId, IEnumerable<string> disciplinasRegenciaIds, Usuario usuarioLogado)
         {
-            if (disciplinasRegenciaIds == null)
+            if (disciplinasRegenciaIds.EhNulo())
                 return;
 
             var listaPersistencia = new List<CompensacaoAusenciaDisciplinaRegencia>();
@@ -262,7 +262,7 @@ namespace SME.SGP.Dominio.Servicos
                         var frequenciaAluno = consultaAlunosAlterarFaltasCompensada
                             .FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && disciplinasId.Contains(x.DisciplinaId) && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
 
-                        if (frequenciaAluno == null)
+                        if (frequenciaAluno.EhNulo())
                         {
                             mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
                             continue;
@@ -294,7 +294,7 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var alunoDto in listaAlunosDto)
                     {
                         var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && disciplinasId.Contains(x.DisciplinaId) && x.TurmaId == turmaId);
-                        if (frequenciaAluno == null)
+                        if (frequenciaAluno.EhNulo())
                         {
                             mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
                             continue;
@@ -371,7 +371,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<bool> PossuiAtribuicaoCJ(string turmaId, string codigoRf)
         {
             var componentes = await consultasDisciplina.ObterDisciplinasPerfilCJ(turmaId, codigoRf);
-            return componentes != null && componentes.Any();
+            return componentes.NaoEhNulo() && componentes.Any();
         }
 
         private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
@@ -383,17 +383,17 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
                 var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
+                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente.NaoEhNulo() && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
             }
             else if (usuarioLogado.EhProfessorCj())
             {
                 var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
                 var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor != null)
+                if (professor.NaoEhNulo())
                 {
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
                     var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                    if (componenteProfessorRelacionado != null)
+                    if (componenteProfessorRelacionado.NaoEhNulo())
                         codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
                 }
             }

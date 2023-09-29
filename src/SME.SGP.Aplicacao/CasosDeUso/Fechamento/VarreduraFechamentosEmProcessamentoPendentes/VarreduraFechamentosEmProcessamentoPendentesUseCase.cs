@@ -24,14 +24,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
+            var listaFechamentoTurmaDisciplinaExpiradosReprocessar = await mediator
+                        .Send(new ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery(null, null));
+
+            unitOfWork.IniciarTransacao();
             try
             {
-                var listaFechamentoTurmaDisciplinaExpiradosReprocessar = await mediator
-                    .Send(new ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery(null, null));
-
-                unitOfWork
-                    .IniciarTransacao();
-
                 foreach (var fechamentoAtual in listaFechamentoTurmaDisciplinaExpiradosReprocessar)
                 {
                     var usuario = await mediator
@@ -39,19 +37,17 @@ namespace SME.SGP.Aplicacao
 
                     await comandosFechamentoTurmaDisciplina
                         .Reprocessar(fechamentoAtual.fechamentoTurmaDisciplinaId, usuario);
-
-                    unitOfWork
-                        .PersistirTransacao();
                 }
+
+                unitOfWork.PersistirTransacao();
 
                 return true;
             }
-            catch (Exception ex)
+            catch 
             {
                 unitOfWork.Rollback();
+                throw;
             }
-
-            return false;
         }
     }
 }

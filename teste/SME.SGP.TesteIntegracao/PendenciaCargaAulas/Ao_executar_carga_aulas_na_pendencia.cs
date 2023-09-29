@@ -72,14 +72,14 @@ namespace SME.SGP.TesteIntegracao.PendenciaCargaAulas
             var useCase = ServiceProvider.GetService<ICargaQuantidadeAulaDiaPendenciaUseCase>();
             
             var pendenciasExistentesNaBase = ObterTodos<Pendencia>();
-            pendenciasExistentesNaBase.Count(x => x.QuantidadeDias == null && x.QuantidadeAulas == null).ShouldBeEquivalentTo(2);
+            pendenciasExistentesNaBase.Count(x => x.QuantidadeDias.EhNulo() && x.QuantidadeAulas.EhNulo()).ShouldBeEquivalentTo(2);
             
             var carga = new AulasDiasPendenciaDto {PendenciaId = 1, QuantidadeAulas = 1, QuantidadeDias = 1};
             var retornoUsecase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(carga)));
             retornoUsecase.ShouldBeTrue();
             
             var pendenciasNaBaseAposAtualizacao = ObterTodos<Pendencia>();
-            pendenciasNaBaseAposAtualizacao.Count(x => x.QuantidadeDias == null && x.QuantidadeAulas == null).ShouldBeEquivalentTo(1);
+            pendenciasNaBaseAposAtualizacao.Count(x => x.QuantidadeDias.EhNulo() && x.QuantidadeAulas.EhNulo()).ShouldBeEquivalentTo(1);
             pendenciasNaBaseAposAtualizacao.Count(x => x.QuantidadeDias == 1 && x.QuantidadeAulas == 1).ShouldBeEquivalentTo(1);
         }
 

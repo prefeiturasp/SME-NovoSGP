@@ -198,7 +198,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and @dataAula::date between p.periodo_inicio and p.periodo_fim");
             query.AppendLine("and a.data_aula::date between p.periodo_inicio and p.periodo_fim");
 
-            if (disciplinaIdsConsideradas != null && disciplinaIdsConsideradas.Any())
+            if (disciplinaIdsConsideradas.NaoEhNulo() && disciplinaIdsConsideradas.Any())
                 query.AppendLine("and a.disciplina_id = any(@disciplinaIdsConsideradas)");
 
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
@@ -223,35 +223,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RegistroFrequenciaAlunoPorTurmaEMesDto>> ObterRegistroFrequenciaAlunosPorTurmaEMes(string turmaCodigo, int mes)
         {
-            const string query = @"
-                                with totalAulas as (
-	                                select t.id as TurmaId,
-		                                   sum(a.quantidade) as QuantidadeAulas
-	                                from aula a
-                                    INNER JOIN turma t ON t.turma_id = a.turma_id
-	                                where
-		                                not a.excluido
-		                                and a.turma_id = @turmaCodigo
-		                                and extract(month from a.data_aula) = @mes
-	                                group by t.id
-                                ), totalFrequencia as (
-	                                select rfa.codigo_aluno as AlunoCodigo,
-		                                   count(rfa.id) filter (where rfa.valor = 2) as QuantidadeAusencias,
-	  	                                   count(caaa.id) as QuantidadeCompensacoes
-	                                from aula a
-	                                inner join registro_frequencia_aluno rfa on rfa.aula_id = a.id and not rfa.excluido
-	                                left join compensacao_ausencia_aluno_aula caaa on caaa.registro_frequencia_aluno_id = rfa.id and not caaa.excluido
-	                                where
-		                                not a.excluido
-		                                and a.turma_id = @turmaCodigo
-		                                and extract(month from a.data_aula) = @mes
-	                                group by rfa.codigo_aluno
-                                )
-
-                                select *
-                                from totalFrequencia
-                                left join totalAulas on 1 = 1
-                                order by AlunoCodigo";
+            const string query = @"select a.turma_id TurmaId,
+                                          count(distinct(rfa.aula_id*rfa.numero_aula)) as QuantidadeAulas,
+	                                      count(distinct(rfa.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as QuantidadeAusencias,
+                                          count(caaa.id) as QuantidadeCompensacoes,
+                                          rfa.codigo_aluno as AlunoCodigo,
+                                          a.turma_id as TurmaId
+                                   from registro_frequencia_aluno rfa
+                                       inner join aula a 
+                                          on rfa.aula_id = a.id and not a.excluido   
+                                       left join compensacao_ausencia_aluno_aula caaa 
+                                          on caaa.registro_frequencia_aluno_id = rfa.id and not caaa.excluido
+                                   where
+                                       a.turma_id = @turmaCodigo
+                                       and extract(month from a.data_aula) = @mes                    
+                                       and rfa.numero_aula <= a.quantidade
+                                       and not rfa.excluido
+                                   group by
+                                       a.turma_id,
+                                       rfa.codigo_aluno;";
 
             var parametros = new { turmaCodigo, mes };
 

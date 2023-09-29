@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -23,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodo = await repositorioDiarioBordo.ObterListagemDiarioBordoPorPeriodoPaginado(request.TurmaId, request.ComponenteCurricularPaiId, request.ComponenteCurricularFilhoId, request.DataInicio, request.DataFim, Paginacao);
 
-            if (periodo == null && !periodo.Items.Any())
+            if (periodo.EhNulo() && !periodo.Items.Any())
                 return null;
             else
                 return MapearParaDto(periodo);

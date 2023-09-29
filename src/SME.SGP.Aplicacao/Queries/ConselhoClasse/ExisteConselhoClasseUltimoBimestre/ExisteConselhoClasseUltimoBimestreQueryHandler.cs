@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseUltimoBimestre = await repositorioConselhoClasseAlunoConsulta.ObterPorPeriodoAsync(request.AlunoCodigo, request.Turma.Id, periodoEscolar.Id);
 
-            if (conselhoClasseUltimoBimestre == null)
+            if (conselhoClasseUltimoBimestre.EhNulo())
                 return false;
 
             return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(request.AlunoCodigo, request.Turma, periodoEscolar.Bimestre, request.Turma.Historica));
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
         {
             var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (periodoEscolarUltimoBimestre == null)
+            if (periodoEscolarUltimoBimestre.EhNulo())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FOI_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
 
             return periodoEscolarUltimoBimestre;

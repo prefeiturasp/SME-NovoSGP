@@ -38,6 +38,9 @@ namespace SME.SGP.NAAPA.Worker
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarBuscarAtendimentosProfissionalConsolidadoEncaminhamentoNAAPA, new ComandoRabbit("Executar Carga Consolidado Encaminhamento NAAPA Por Profissionais", typeof(IExecutarBuscarConsolidadoAtendimentosProfissionalEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, new ComandoRabbit("Executar Inserir Consolidado Encaminhamento NAAPA Profissional", typeof(IExecutarInserirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgpNAAPA.ExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPA, new ComandoRabbit("Executar Excluir Consolidado Encaminhamento NAAPA Profissional", typeof(IExecutarExcluirConsolidadoAtendimentoProfissionalEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoNAAPA, new ComandoRabbit("Executar notificação de inatividade do atendimento NAAPA", typeof(INotificarInatividadeDoAtendimentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoPorUeNAAPA, new ComandoRabbit("Executar notificação de inatividade do atendimento NAAPA por ue", typeof(INotificarInatividadeDoAtendimentoNAAPAPorUeUseCase), true));
+            Comandos.Add(RotasRabbitSgpNAAPA.ExecutarNotificacaoInatividadeAtendimentoInformacaoNAAPA, new ComandoRabbit("Executar notificação de inatividade do atendimento informação NAAPA", typeof(INotificarInatividadeDoAtendimentoNAAPAInformacaoUseCase), true));
         }
     }
 }

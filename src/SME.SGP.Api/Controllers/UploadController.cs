@@ -36,7 +36,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Editor([FromServices] IUploadArquivoEditorUseCase useCase)
         {
             var files = Request.Form.Files;
-            if (files != null)
+            if (files.NaoEhNulo())
             {
                 //Foi adicionado fixo o valor https pois será discutido com a infra o problema de SSL
                 //Depois que corrigir, colocar: {Request.Protocol.Split('/')[0].ToLower()}
@@ -65,7 +65,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ArmazenarTemporarioServicoArmazenamento(IFormFile iFromFile)
         {
-            if (iFromFile != null) 
+            if (iFromFile.NaoEhNulo()) 
                 return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,Guid.NewGuid().ToString(),TipoArquivo.temp)));
                 
             return BadRequest();
@@ -77,7 +77,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ArmazenarServicoArmazenamento(IFormFile iFromFile)
         {
-            if (iFromFile != null) 
+            if (iFromFile.NaoEhNulo()) 
                 return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,iFromFile.FileName,TipoArquivo.Geral)));
                 
             return BadRequest();

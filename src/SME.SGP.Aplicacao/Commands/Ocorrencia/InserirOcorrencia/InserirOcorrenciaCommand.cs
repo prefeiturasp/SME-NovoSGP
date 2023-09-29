@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("A descrição da ocorrência deve ser informada.");
 
             RuleFor(x => x.HoraOcorrencia)
-                .Matches("^([01][0-9]|2[0-3]):([0-5][0-9])$")
+                .Matches(RegexConstants.EXPRESSAO_HORA)
                 .When(x => !string.IsNullOrWhiteSpace(x.HoraOcorrencia))
                 .WithMessage("A hora da ocorrência informada é inválida.");
 

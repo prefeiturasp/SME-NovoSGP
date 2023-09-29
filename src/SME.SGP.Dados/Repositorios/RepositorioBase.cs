@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var entidade = database.Conexao.Get<T>(id);
             database.Conexao.Delete(entidade);
-            if (entidade != null)
+            if (entidade.NaoEhNulo())
                 AuditarAsync(entidade.Id, "E").Wait();
         }
 

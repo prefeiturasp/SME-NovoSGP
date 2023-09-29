@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao
                 TipoId = (int)retorno.Tipo,
                 StatusId = (int)retorno.Status,
                 Codigo = retorno.Codigo,
-                Observacao = retorno.WorkflowAprovacaoNivel == null ? string.Empty : retorno.WorkflowAprovacaoNivel.Observacao
+                Observacao = retorno.WorkflowAprovacaoNivel.EhNulo() ? string.Empty : retorno.WorkflowAprovacaoNivel.Observacao
             };
         }
 

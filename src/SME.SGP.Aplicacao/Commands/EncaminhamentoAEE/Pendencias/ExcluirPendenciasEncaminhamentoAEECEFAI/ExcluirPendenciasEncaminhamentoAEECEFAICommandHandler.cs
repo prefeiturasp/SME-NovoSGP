@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirPendenciasEncaminhamentoAEECEFAICommand request, CancellationToken cancellationToken)
         {
             var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(request.EncaminhamentoAEEId));
-            if (pendencia != null)
+            if (pendencia.NaoEhNulo())
                 await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
 
             return true;

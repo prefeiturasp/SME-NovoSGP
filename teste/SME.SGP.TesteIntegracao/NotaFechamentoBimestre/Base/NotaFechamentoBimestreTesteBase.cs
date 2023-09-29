@@ -266,7 +266,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
 
-            if (useCase != null)
+            if (useCase.NaoEhNulo())
                 retorno = await useCase.Executar(filtroListaNotasConceitos);
 
             retorno.ShouldNotBeNull();
@@ -377,7 +377,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 {
                     Bimestre = BIMESTRE_3,
                     DisciplinaId = disciplina,
-                    Justificativa = "" ,
+                    Justificativa = "teste" ,
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = listaDeNota
                 }

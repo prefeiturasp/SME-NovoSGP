@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasDoProfessorLogado = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(notaConceitoLista.TurmaId, usuario.Login, usuario.PerfilAtual, true));
 
-            if ((disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any()) && !usuario.EhProfessorCj())
+            if ((disciplinasDoProfessorLogado.EhNulo() || !disciplinasDoProfessorLogado.Any()) && !usuario.EhProfessorCj())
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
 
             var notasBanco = repositorioNotasConceitos
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
 
             var professorRf = servicoUsuario.ObterRf();
 
-            if (notasBanco == null || !notasBanco.Any())
+            if (notasBanco.EhNulo() || !notasBanco.Any())
                 await IncluirTodasNotas(notasConceitosDto, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId, consideraHistorico);
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId, consideraHistorico);
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             foreach (var item in atividades)
             {
                 var aulaId = await mediator.Send(new ObterAulaIdPorComponenteCurricularIdTurmaIdEDataProfessorQuery(notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId, item.DataAvaliacao, professorRf));
-                if (aulaId != null)
+                if (aulaId.NaoEhNulo())
                     await mediator.Send(new ExcluirPendenciaAulaCommand((long)aulaId, TipoPendencia.Avaliacao));
             }
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SME.SGP.Api.Controllers;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -28,7 +29,7 @@ namespace SME.SGP.Api.Teste.Controllers
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
             var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize ==false);
+            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize ==false && x.ControllerName != "AutenticacaoIntegracaoController");
             var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 
@@ -45,7 +46,7 @@ namespace SME.SGP.Api.Teste.Controllers
             ObterDadosControllers(listaApiMethod, apiControllers, AssemblyName);
 
             var listMetodos = listaApiMethod.Where(x => x.CustomAttributeName.Count == 0);
-            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize == false);
+            var semAuthorizeAttribute = listaApiMethod.Where(x => x.Authorize == false && x.ControllerName != "CacheController");
             var listAutorizecontrollerName = semAuthorizeAttribute.GroupBy(x => x.ControllerName).ToList();
             var listcontrollerName = listMetodos.GroupBy(c => c.ControllerName).ToList();
 
@@ -121,11 +122,11 @@ namespace SME.SGP.Api.Teste.Controllers
             var deleteAttrib = metodo.GetCustomAttributes(typeof(HttpDeleteAttribute)).FirstOrDefault();
             var acceptVerbsAttrib = metodo.GetCustomAttributes(typeof(AcceptVerbsAttribute)).FirstOrDefault() as AcceptVerbsAttribute;
 
-            var verbo = acceptVerbsAttrib == null || acceptVerbsAttrib.HttpMethods.Count() == 0 ? HttpVerbo.GET
+            var verbo = acceptVerbsAttrib.EhNulo() || acceptVerbsAttrib.HttpMethods.Count() == 0 ? HttpVerbo.GET
                                     : (HttpVerbo)Enum.Parse(typeof(HttpVerbo), acceptVerbsAttrib.HttpMethods.ToList()[0].ToUpperInvariant());
 
 
-            var httpVerb = getAttrib != null ? HttpVerbo.GET : postAttrib != null ? HttpVerbo.POST : putAttrib != null ? HttpVerbo.PUT : deleteAttrib != null ? HttpVerbo.DELETE : verbo;
+            var httpVerb = getAttrib.NaoEhNulo() ? HttpVerbo.GET : postAttrib.NaoEhNulo() ? HttpVerbo.POST : putAttrib.NaoEhNulo() ? HttpVerbo.PUT : deleteAttrib.NaoEhNulo() ? HttpVerbo.DELETE : verbo;
             return httpVerb;
         }
     }

@@ -44,7 +44,7 @@ namespace SME.SGP.Infra
                                                                                     || (componenteCurricular.CodigoComponenteCurricularTerritorioSaber != 0 &&
                                                                                         cc.Codigo == componenteCurricular.CodigoComponenteCurricularTerritorioSaber)).FirstOrDefault();
 
-                if (componenteCurricularSgp != null)
+                if (componenteCurricularSgp.NaoEhNulo())
                 {
                     componenteCurricular.GrupoMatrizId = componenteCurricularSgp.GrupoMatrizId;
                     componenteCurricular.GrupoMatrizNome = componenteCurricularSgp.GrupoMatrizNome;

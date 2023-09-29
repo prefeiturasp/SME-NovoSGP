@@ -72,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 AnoTurma = "2",
                 DreId = 1,
                 CodigoUe = "1",
-                TurmaId = TURMA_ID_1,
+                TurmaId = TURMA_ID_2,
                 Situacao = (int)SituacaoNAAPA.Rascunho,
                 Prioridade = NORMAL,
                 CriarTurmaPadrao = false
@@ -80,11 +80,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             await CriarDadosBase(filtroNAAPA);
             await CriarTurma(filtroNAAPA.Modalidade);
-            await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_2);
+            await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_3);
 
             var useCase = ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA();
 
-            var mensagem = new MensagemRabbit(JsonSerializer.Serialize(ObterEncaminhamentoDto(ALUNO_CODIGO_2)));
+            var mensagem = new MensagemRabbit(JsonSerializer.Serialize(ObterEncaminhamentoDto(ALUNO_CODIGO_3)));
 
             await useCase.Executar(mensagem);
 

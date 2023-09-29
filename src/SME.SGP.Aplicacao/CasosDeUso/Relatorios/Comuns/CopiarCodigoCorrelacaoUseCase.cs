@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
 
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
-            if (relatorioCorrelacao == null)
+            if (relatorioCorrelacao.EhNulo())
                 throw new NegocioException("Não foi possível obter a correlação para copiar.");
 
 

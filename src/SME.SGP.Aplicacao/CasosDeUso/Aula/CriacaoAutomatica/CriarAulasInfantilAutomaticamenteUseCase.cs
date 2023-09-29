@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            var dadosCriacaoAulaInfantil = mensagemRabbit != null && mensagemRabbit.Mensagem != null ?
+            var dadosCriacaoAulaInfantil = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
                 mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
             var anoAtual = DateTime.Now.Year;
             var tipoCalendarioId = await mediator
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
             {
                 await mediator
                     .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             var turmas = await mediator
                 .Send(new ObterTurmasInfantilNaoDeProgramaQuery(anoAtual, dadosCriacaoAulaInfantil?.CodigoTurma, dadosCriacaoAulaInfantil?.Pagina ?? 1));
 
-            if (turmas == null || !turmas.Any())
+            if (turmas.EhNulo() || !turmas.Any())
             {
                 await mediator
                     .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não foram encontradas turmas.", LogNivel.Negocio, LogContexto.Infantil));
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
             }
 
-            if (dadosCriacaoAulaInfantil != null && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
+            if (dadosCriacaoAulaInfantil.NaoEhNulo() && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
             {
                 dadosCriacaoAulaInfantil.Pagina += 1;
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));

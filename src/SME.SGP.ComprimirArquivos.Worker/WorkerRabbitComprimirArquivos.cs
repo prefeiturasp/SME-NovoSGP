@@ -13,6 +13,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Auditoria.Worker.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
@@ -175,7 +176,7 @@ namespace SME.SGP.ComprimirArquivos.Worker
         
         private ulong GetRetryCount(IBasicProperties properties)
         {
-            if (properties.Headers != null && properties.Headers.ContainsKey("x-death"))
+            if (properties.Headers.NaoEhNulo() && properties.Headers.ContainsKey("x-death"))
             {
                 var deathProperties = (List<object>)properties.Headers["x-death"];
                 var lastRetry = (Dictionary<string, object>)deathProperties[0];

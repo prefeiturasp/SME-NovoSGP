@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var notificacao = await mediator.Send(new ObterNotificacaoPorIdQuery(param));
 
-            if (notificacao == null)
+            if (notificacao.EhNulo())
                 throw new NegocioException($"Notificação de Id: '{param}' não localizada.");
 
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 TipoId = (int)retorno.Tipo,
                 StatusId = (int)retorno.Status,
                 Codigo = retorno.Codigo,
-                Observacao = retorno.WorkflowAprovacaoNivel == null
+                Observacao = retorno.WorkflowAprovacaoNivel.EhNulo()
                     ? string.Empty
                     : retorno.WorkflowAprovacaoNivel.Observacao
             };

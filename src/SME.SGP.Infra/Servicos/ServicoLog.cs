@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace SME.SGP.Infra
     {
         public ServicoLog(IConfiguration configuration)
         {
-            if (configuration == null)
+            if (configuration.EhNulo())
             {
                 throw new ArgumentNullException(nameof(configuration));
             }

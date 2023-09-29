@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
             TipoCalendario entidade = repositorio.ObterPorId(id);
             bool possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
 
-            if (entidade == null)
+            if (entidade.EhNulo())
             {
                 entidade = new TipoCalendario();
             }
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
             foreach (long id in ids)
             {
                 var tipoCalendario = repositorio.ObterPorId(id);
-                if (tipoCalendario != null)
+                if (tipoCalendario.NaoEhNulo())
                 {
                     var possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
                     if (possuiEventos)

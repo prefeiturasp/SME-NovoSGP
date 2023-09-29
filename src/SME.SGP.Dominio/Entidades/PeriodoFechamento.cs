@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarDre(Dre dre)
         {
-            if (dre != null)
+            if (dre.NaoEhNulo())
             {
                 DreId = dre.Id;
                 Dre = dre;
@@ -59,7 +59,7 @@ namespace SME.SGP.Dominio
         public void ValidarPeriodoConcomitante(PeriodoFechamentoBimestre fechamentoBimestre)
         {
             var periodoComDataInvalida = FechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolar.Bimestre < fechamentoBimestre.PeriodoEscolar.Bimestre && c.FinalDoFechamento > fechamentoBimestre.InicioDoFechamento);
-            if (periodoComDataInvalida != null)
+            if (periodoComDataInvalida.NaoEhNulo())
             {
                 throw new NegocioException($"A data de início do fechamento do {fechamentoBimestre.PeriodoEscolar.Bimestre}º Bimestre deve ser maior que a data final do {periodoComDataInvalida.PeriodoEscolar.Bimestre}º Bimestre.");
             }
@@ -67,7 +67,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarUe(Ue ue)
         {
-            if (ue != null)
+            if (ue.NaoEhNulo())
             {
                 UeId = ue.Id;
                 Ue = ue;

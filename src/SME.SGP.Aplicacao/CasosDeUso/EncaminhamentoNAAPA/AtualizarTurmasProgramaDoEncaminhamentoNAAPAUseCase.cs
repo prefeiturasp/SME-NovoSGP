@@ -29,14 +29,14 @@ namespace SME.SGP.Aplicacao
                                         .Select(turmaPrograma => MapearDTO(turmaPrograma)).ToList();
 
             var questaoTurmasProgramaNAAPA = (await mediator.Send(new ObterQuestaoTurmasProgramaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
-            if (questaoTurmasProgramaNAAPA == null) return false;
+            if (questaoTurmasProgramaNAAPA.EhNulo()) return false;
 
             var respostaTurmasProgramaNAAPA = questaoTurmasProgramaNAAPA.Respostas?.FirstOrDefault();
-            if (respostaTurmasProgramaNAAPA != null)
+            if (respostaTurmasProgramaNAAPA.NaoEhNulo())
             {
                 var turmasProgramaNaapa = JsonConvert.DeserializeObject<List<RespostaTurmaProgramaEncaminhamentoNAAPADto>>(respostaTurmasProgramaNAAPA.Texto);
                 if (turmasProgramaAluno.Count == turmasProgramaNaapa?.Count &&
-                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa != null && turmasProgramaNaapa.Any(x => x.Equals(turmaProgramaAluno)))) 
+                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa.NaoEhNulo() && turmasProgramaNaapa.Any(x => x.Equals(turmaProgramaAluno)))) 
                     return false;
 
                 var respostaEnderecoAtualizado = MapearDTO(questaoTurmasProgramaNAAPA.QuestaoId, respostaTurmasProgramaNAAPA.Id, turmasProgramaAluno);

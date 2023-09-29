@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio
         }
         public void Adicionar(AtividadeAvaliativaDisciplina atividadeAvaliativaDisciplina)
         {
-            if (atividadeAvaliativaDisciplina != null)
+            if (atividadeAvaliativaDisciplina.NaoEhNulo())
                 Disciplinas.Add(atividadeAvaliativaDisciplina);
         }
         public void AdicionarTipoAvaliacao(TipoAvaliacao tipoAvaliacao)

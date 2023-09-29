@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using SME.SGP.Dominio;
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -8,7 +9,7 @@ namespace SME.SGP.Infra
         public override bool IsValid(object value)
         {
             var list = value as IList;
-            if (list != null)
+            if (list.NaoEhNulo())
             {
                 return list.Count > 0;
             }

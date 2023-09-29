@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio
 
         public void Adicionar(ItineranciaAlunoQuestao questao)
         {
-            if (questao == null)
+            if (questao.EhNulo())
                 throw new NegocioException("Não é possível incluir uma questão sem informação");
 
             if (!questoes.Any(q => q.Id == questao.Id))

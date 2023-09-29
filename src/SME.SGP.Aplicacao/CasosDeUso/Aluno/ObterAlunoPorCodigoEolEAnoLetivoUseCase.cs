@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, true, codigoTurma));
 
-            if (alunoPorTurmaResposta == null)
+            if (alunoPorTurmaResposta.EhNulo())
                 throw new NegocioException("Aluno não localizado");
             
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new[]{codigoAluno}, anoLetivo);
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             var turmaNome = "";
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
-            if (turma != null)
+            if (turma.NaoEhNulo())
             {
                 var nomeTurno = "";
                 if (Enum.IsDefined(typeof(TipoTurnoEOL), turma.TipoTurno))

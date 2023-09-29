@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
                         Id = opcaoResposta.Id,
                         Nome = opcaoResposta.Nome,
                         Ordem = opcaoResposta.Ordem,
-                        QuestoesComplementares = opcaoResposta.QuestoesComplementares != null ?
+                        QuestoesComplementares = opcaoResposta.QuestoesComplementares.NaoEhNulo() ?
                             ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, respostasEncaminhamento).ToList() :
                             null
                     };

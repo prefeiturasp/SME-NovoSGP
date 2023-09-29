@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Consultas
             {
                 var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(planoAulaTurmaDatasDto[i].TurmaId.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
 
-                if (componentesCurriculares == null)
+                if (componentesCurriculares.EhNulo())
                     componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(planoAulaTurmaDatasDto[i].TurmaId.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
 
                 string disciplina = componentesCurriculares
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao.Consultas
         }
 
         private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>
-            plano == null ? null :
+            plano.EhNulo() ? null :
             new PlanoAulaRetornoDto()
             {
                 Id = plano.Id,

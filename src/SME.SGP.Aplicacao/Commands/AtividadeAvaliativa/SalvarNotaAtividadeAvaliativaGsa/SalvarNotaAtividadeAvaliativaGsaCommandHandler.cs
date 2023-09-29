@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarNotaAtividadeAvaliativaGsaCommand request, CancellationToken cancellationToken)
         {
-            if (request.NotaConceito != null)
+            if (request.NotaConceito.NaoEhNulo())
                 await AlterarAtividade(request.NotaConceito, request);
             else
                 await InserirAtividade(request);

@@ -33,12 +33,12 @@ namespace SME.SGP.Aplicacao
                 return TipoNota.Nota;
 
             var anoCicloModalidade = string.Empty;
-            if (request.Turma != null)
+            if (request.Turma.NaoEhNulo())
                 anoCicloModalidade = request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano;            
 
             var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, request.Turma.ModalidadeCodigo));
 
-            if (ciclo == null)
+            if (ciclo.EhNulo())
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
             var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, request.DataReferencia));

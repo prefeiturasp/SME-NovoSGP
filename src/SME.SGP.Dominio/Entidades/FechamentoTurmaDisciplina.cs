@@ -26,16 +26,16 @@ namespace SME.SGP.Dominio
 
         public void AdicionarPeriodoEscolar(PeriodoEscolar periodoEscolar)
         {
-            if (FechamentoTurma == null)
+            if (FechamentoTurma.EhNulo())
                 throw new NegocioException("Fechamento Turma não carregado para atribuição de período escolar");
 
-            if (periodoEscolar != null)
+            if (periodoEscolar.NaoEhNulo())
                 FechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
         }
 
         public void AdicionarNota(FechamentoNota fechamentoNota)
         {
-            if (fechamentoNota == null) 
+            if (fechamentoNota.EhNulo()) 
                 return;
             
             var fechamentoAluno = FechamentoAlunos.FirstOrDefault(a => a.Id == fechamentoNota.FechamentoAlunoId);

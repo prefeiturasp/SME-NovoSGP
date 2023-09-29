@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                                                                                                        request.ModalidadeTipoCalendario.ObterModalidadesTurma(),
                                                                                                        ObterSemestre(request)
                                                                                                       ));
-            if (turmas != null && turmas.Any())
+            if (turmas.NaoEhNulo() && turmas.Any())
                 await EnviarNotificacaoProfessores(turmas, request.PeriodoFechamentoBimestre.PeriodoEscolar, request.PeriodoFechamentoBimestre, request.PeriodoFechamentoBimestre.PeriodoFechamento.Ue);
 
             return true;
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 <br/><br/>Após esta data o sistema será bloqueado para edições neste bimestre.";
 
             var professores = await ObterProfessores(turmas);
-            if (professores != null && professores.Any())
+            if (professores.NaoEhNulo() && professores.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, professores, ue.Dre.CodigoDre, ue.CodigoUe));
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(),

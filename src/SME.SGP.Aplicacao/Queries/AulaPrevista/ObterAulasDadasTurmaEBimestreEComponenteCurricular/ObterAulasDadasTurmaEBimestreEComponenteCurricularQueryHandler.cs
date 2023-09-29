@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var aulaPrevistaAgrupada = await repositorioAulaPrevistaBimestre.ObterBimestresAulasTurmasComponentesCumpridasAsync(request.TurmasCodigo, request.ComponentesCurricularesId,
                 request.TipoCalendarioId, request.Bimestres);
 
-            if (aulaPrevistaAgrupada != null)
+            if (aulaPrevistaAgrupada.NaoEhNulo())
             {
 
                 var lista = aulaPrevistaAgrupada.Select(a =>

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
             if (request.TurmaPrograma)
             {                
                 var componentesTurmaPrograma = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.CodigoUe, request.Modalidade, request.AnoLetivo, null))?.ToList();
-                if (componentesTurmaPrograma != null)
+                if (componentesTurmaPrograma.NaoEhNulo())
                 {
                     var componentesTurmaProgramaFiltrada = componentesTurmaPrograma.Where(x => !componentes.Any(y => y.Codigo == x.Codigo));
 
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
                 }
             }
 
-            if (componentes == null || !componentes.Any())
+            if (componentes.EhNulo() || !componentes.Any())
             {
                 throw new NegocioException("Nenhum componente localizado para a modalidade e anos informados.");
             }

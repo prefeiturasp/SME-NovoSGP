@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 var componenteUsuarioTurma = componentesCurricularesUsuarioTurma.FirstOrDefault(d => d.Codigo.Equals(id) || 
                                                                                  d.CodigoComponenteTerritorioSaber.Equals(id));
 
-                if (componenteUsuarioTurma == null)
+                if (componenteUsuarioTurma.EhNulo())
                 {
                     if (usuarioLogado.EhProfessorCjInfantil())
                         if (!componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))

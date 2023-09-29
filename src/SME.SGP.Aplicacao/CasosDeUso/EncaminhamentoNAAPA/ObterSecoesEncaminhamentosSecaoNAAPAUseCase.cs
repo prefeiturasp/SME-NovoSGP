@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var secoesQuestionario = (await mediator.Send(new ObterSecoesEncaminhamentosSecaoNAAPAQuery(filtro.Modalidade, filtro.EncaminhamentoNAAPAId))).ToList();
 
-            foreach (var secao in secoesQuestionario.Where(secao => secao.NomeComponente != SECAO_ITINERANCIA && secao.Auditoria == null))
+            foreach (var secao in secoesQuestionario.Where(secao => secao.NomeComponente != SECAO_ITINERANCIA && secao.Auditoria.EhNulo()))
             {
                 var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId));
                 secao.Concluido = !listaQuestoes.Any(c => c.Obrigatorio);

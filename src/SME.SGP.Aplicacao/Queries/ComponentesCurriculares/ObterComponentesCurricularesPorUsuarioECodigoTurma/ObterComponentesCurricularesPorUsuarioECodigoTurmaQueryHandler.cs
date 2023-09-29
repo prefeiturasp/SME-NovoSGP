@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                                                                perfilAtual,
                                                                realizarAgrupamentoComponente));
 
-            if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
+            if (componentesCurricularesEol.EhNulo() || !componentesCurricularesEol.Any())
                 return null;
 
             return componentesCurricularesEol.Select(cc => new DisciplinaNomeDto()
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
         {
             var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, turmaCodigo, string.Empty, 0, login, string.Empty, true));
 
-            if (atribuicoes == null || !atribuicoes.Any())
+            if (atribuicoes.EhNulo() || !atribuicoes.Any())
                 return null;
 
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));

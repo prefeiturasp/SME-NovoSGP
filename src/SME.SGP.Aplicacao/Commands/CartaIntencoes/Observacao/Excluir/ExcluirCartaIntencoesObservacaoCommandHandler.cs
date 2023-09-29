@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirCartaIntencoesObservacaoCommand request, CancellationToken cancellationToken)
         {
             var cartaIntencoesObservacao = await repositorioCartaIntencoesObservacao.ObterPorIdAsync(request.ObservacaoId);
-            if (cartaIntencoesObservacao == null)
+            if (cartaIntencoesObservacao.EhNulo())
                 throw new NegocioException("Observação da carta de intenções não encontrada.");
 
             cartaIntencoesObservacao.ValidarUsuarioAlteracao(request.UsuarioId);

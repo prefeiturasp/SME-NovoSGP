@@ -96,9 +96,9 @@ namespace SME.SGP.Aplicacao
             return retorno.OrderBy(x => x.Nome).ToList();
         }
 
-        public IEnumerable<DreConsultaDto> ObterTodos()
+        public async Task<IEnumerable<DreConsultaDto>> ObterTodos()
         {
-            var respostaEol = servicoEOL.ObterDres();
+            var respostaEol = await servicoEOL.ObterDres();
 
             return MapearParaDto(respostaEol);
         }

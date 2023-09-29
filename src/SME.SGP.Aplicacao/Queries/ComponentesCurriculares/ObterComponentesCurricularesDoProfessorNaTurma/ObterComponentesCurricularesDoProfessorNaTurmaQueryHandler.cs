@@ -1,13 +1,11 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Interfaces;
-using System.Linq;
-using SME.SGP.Dominio.Constantes;
-using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -33,9 +31,10 @@ namespace SME.SGP.Aplicacao
                 async () => await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(request.CodigoTurma, request.Login,
                                                                request.PerfilUsuario,
                                                                request.RealizarAgrupamentoComponente,
-                                                               request.ChecaMotivoDisponibilizacao)));
+                                                               request.ChecaMotivoDisponibilizacao))
+                , minutosParaExpirar: 240);
 
-            if (resultado == null)
+            if (resultado.EhNulo())
                 return Enumerable.Empty<ComponenteCurricularEol>();
 
             return resultado;

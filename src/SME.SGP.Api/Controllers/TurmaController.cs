@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await listarTurmasComComponentesUseCase.Executar(filtroTurmaDto);
 
-            if (retorno == null)
+            if (retorno.EhNulo())
                 return NoContent();
 
             return Ok(retorno);

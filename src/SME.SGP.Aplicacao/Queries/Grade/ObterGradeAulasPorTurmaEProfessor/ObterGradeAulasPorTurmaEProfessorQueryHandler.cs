@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             var semana = UtilData.ObterSemanaDoAno(request.DataAula);
 
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada.");
 
             // verifica se é regencia de classe
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
             // Busca grade a partir dos dados da abrangencia da turma
             var grade = await mediator.Send(new ObterGradePorTipoEscolaModalidadeDuracaoAnoQuery(turma.Ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula, ano, turma.AnoLetivo.ToString()));
-            if (grade == null)
+            if (grade.EhNulo())
                 return 0;
 
             return await repositorioGrade.ObterHorasComponente(grade.Id, componentesCurricularesId, ano);

@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
             var alunosDaTurma = await mediator.Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (param.DataInicio, param.DataFim)));
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
 
-            if (componenteCurricular == null)
+            if (componenteCurricular.EhNulo())
                 throw new NegocioException("Componente curricular não localizado");
 
-            var disciplinaAula = componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai != null ?
+            var disciplinaAula = componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.NaoEhNulo() ?
                 componenteCurricular.CdComponenteCurricularPai.ToString() :
                 componenteCurricular.CodigoComponenteCurricular.ToString();
 
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
         private async Task<int> ObterParametro(TipoParametroSistema parametro, int anoLetivo)
         {
             var parametroPercentual = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(parametro, anoLetivo));
-            if (parametroPercentual == null || string.IsNullOrEmpty(parametroPercentual.Valor))
+            if (parametroPercentual.EhNulo() || string.IsNullOrEmpty(parametroPercentual.Valor))
                 throw new NegocioException("Parâmetro de percentual de frequência em nível crítico/alerta não encontrado.");
 
             return int.Parse(parametroPercentual.Valor);
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoEscolar(long tipoCalendarioId, DateTime dataInicio)
         {
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(tipoCalendarioId, dataInicio));
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
 
             return periodoEscolar;
@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(string turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi encontrada a turma informada.");
 
             return turma;
@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<Aula>> ObterAulas(DateTime dataInicio, DateTime dataFim, string turmaId, string[] disciplinasId, bool aulaCJ)
         {
             var aulas = await mediator.Send(new ObterAulasPorDataPeriodoQuery(dataInicio, dataFim, turmaId, disciplinasId, aulaCJ));
-            if (aulas == null || !aulas.Any())
+            if (aulas.EhNulo() || !aulas.Any())
                 throw new NegocioException("Aulas não encontradas para a turma no Período.");
 
             return aulas;

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var parametroQuantidadeEventos = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(ObterTipoParametro(request.TipoEvento), anoAtual));
             var pendenciaParametroEvento = await mediator.Send(new ObterPendenciaParametroEventoPorCalendarioUeParametroQuery(request.TipoCalendarioId, ue.Id, parametroQuantidadeEventos.Id));
-            if (pendenciaParametroEvento != null)
+            if (pendenciaParametroEvento.NaoEhNulo())
             {
                 var eventos = await mediator.Send(new ObterEventosPorTipoECalendarioUeQuery(request.TipoCalendarioId, request.UeCodigo, request.TipoEvento));
                 if (EventosSuficientes(eventos, int.Parse(parametroQuantidadeEventos.Valor)))
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
         private bool EventosSuficientes(IEnumerable<Evento> eventos, int quantidadeEventosParametro)
         {
             return quantidadeEventosParametro == 0
-                || ((eventos != null) && (eventos.Count() >= quantidadeEventosParametro));
+                || ((eventos.NaoEhNulo()) && (eventos.Count() >= quantidadeEventosParametro));
         }
 
 

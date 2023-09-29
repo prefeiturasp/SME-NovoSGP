@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesCurricularesDoProfessorCJ.Any())
                 {
-                    componentesCurricularesDoProfessorCJ.ToList().ForEach(ccj =>
+                    componentesCurricularesDoProfessorCJ.ToList().ForEach(async ccj =>
                     {
                         var componenteListaProfessor = componentesCurricularesEolProfessor
                             .Any(ccp => ccp.Codigo == ccj.DisciplinaId || ccp.CodigoComponenteTerritorioSaber == ccj.DisciplinaId);
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
 
             var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, codigosComponentesUsuario);
 
-            if (datasAulas == null || !datasAulas.Any())
+            if (datasAulas.EhNulo() || !datasAulas.Any())
                 return default;
 
             var ids = datasAulas.Select(a => a.IdAula).Distinct().ToList();
@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodosEscolares(long tipoCalendarioId)
         {
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Períodos escolares não localizados para o tipo de calendário da turma");
 
             return periodosEscolares;
@@ -154,7 +154,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             return turma;

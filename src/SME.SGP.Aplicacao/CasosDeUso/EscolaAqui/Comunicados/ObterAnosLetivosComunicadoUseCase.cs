@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var anosLetivosHistorico = await mediator.Send(new ObterAnosLetivosHistoricoDeComunicadosQuery(dataInicial, dataAtual));
 
-            if (anosLetivosHistorico != null && anosLetivosHistorico.Any())
+            if (anosLetivosHistorico.NaoEhNulo() && anosLetivosHistorico.Any())
             {
                 AnoLetivoComunicado.TemHistorico = true;
                 AnoLetivoComunicado.AnosLetivosHistorico = anosLetivosHistorico;

@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(request.EncaminhamentoAEEId));
 
-            if (encaminhamentoAEE == null)
+            if (encaminhamentoAEE.EhNulo())
                 throw new NegocioException("Não foi possível localizar o EncaminhamentoAEE");
 
 
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var pendenciaExiste = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
                         var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, null, null, turma.UeId, turma.Id);
-                        if (pendenciaExiste == null)
+                        if (pendenciaExiste.EhNulo())
                         {
                             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 

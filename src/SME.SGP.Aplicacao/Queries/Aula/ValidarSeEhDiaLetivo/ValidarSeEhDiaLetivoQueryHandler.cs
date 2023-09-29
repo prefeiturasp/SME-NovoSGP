@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
             DateTime dataFinal = request.DataInicio.Date;
             
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(request.TipoCalendarioId, dataInicial, dataFinal);
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return false;
 
             var eventos = await repositorioEvento.ObterEventosPorTipoDeCalendarioDreUeDia(request.TipoCalendarioId, request.DreId, request.UeId, request.DataInicio, true, true);

@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             {
                 var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(request.TurmaModalidade, string.Empty, string.Empty, 0, request.LoginAtual, string.Empty, true, string.Empty, request.TurmasCodigo);
 
-                if (atribuicoes != null && atribuicoes.Any())
+                if (atribuicoes.NaoEhNulo() && atribuicoes.Any())
                 {
                     var atribuicoesIds = atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray();
                     var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoesIds));
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             }
             disciplinas = MapearDto(await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(request.TurmasCodigo, request.AdicionarComponentesPlanejamento)));
 
-            if (disciplinas != null && disciplinas.Any(a => a.Regencia) && request.AdicionarComponentesPlanejamento)
+            if (disciplinas.NaoEhNulo() && disciplinas.Any(a => a.Regencia) && request.AdicionarComponentesPlanejamento)
             {
                 var regencias = await repositorioComponenteCurricular.ObterComponentesCurricularesRegenciaPorAnoETurno(request.TurmaAno, request.TurnoParaComponentesCurriculares);
                 var novasDisciplinasSemRegencia = disciplinas.Where(a => !a.Regencia).ToList();
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 disciplinas = novasDisciplinasSemRegencia.Union(novasDisciplinasRegencia).OrderBy(a => a.Nome).ToList();
             }
 
-            if (disciplinas != null && disciplinas.Any())
+            if (disciplinas.NaoEhNulo() && disciplinas.Any())
                 disciplinasDto = await ChecarSeComponenteLancaFrequenciaSgp(await MapearParaDto(disciplinas, disciplinasCJ, request.TemEnsinoEspecial));
 
             return disciplinasDto;
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
-            if (componentesCurriculares == null || !componentesCurriculares.Any())
+            if (componentesCurriculares.EhNulo() || !componentesCurriculares.Any())
                 return Enumerable.Empty<DisciplinaResposta>();
             return componentesCurriculares.Select(cc => new DisciplinaResposta()
             {
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                 LancaNota = cc.LancaNota,
                 BaseNacional = cc.BaseNacional,
                 TurmaCodigo = cc.TurmaCodigo,
-                GrupoMatriz = cc.GrupoMatriz != null ? new Integracoes.Respostas.GrupoMatriz() { Id = cc.GrupoMatriz.Id, Nome = cc.GrupoMatriz.Nome } : null,
+                GrupoMatriz = cc.GrupoMatriz.NaoEhNulo() ? new Integracoes.Respostas.GrupoMatriz() { Id = cc.GrupoMatriz.Id, Nome = cc.GrupoMatriz.Nome } : null,
                 NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
                 Professor = cc.Professor,
                 CodigosTerritoriosAgrupamento = cc.CodigosTerritoriosAgrupamento
@@ -91,10 +91,10 @@ namespace SME.SGP.Aplicacao
             foreach (var turma in turmasCodigo)
             {
                 var componenteRegenciaTurmaPai = (await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma))).FirstOrDefault(x => x.Regencia == true);
-                if (componenteRegenciaTurmaPai != null)
+                if (componenteRegenciaTurmaPai.NaoEhNulo())
                     novasDisciplinasRegencia.ForEach(d =>
                     {
-                        if (d.Regencia && (d.CodigoComponenteCurricularPai == 0 || d.CodigoComponenteCurricularPai == null))
+                        if (d.Regencia && (d.CodigoComponenteCurricularPai == 0 || d.CodigoComponenteCurricularPai.EhNulo()))
                         {
                             d.CodigoComponenteCurricularPai = componenteRegenciaTurmaPai.CodigoComponenteCurricular;
                         }
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<DisciplinaDto>();
 
-            if (disciplinas != null)
+            if (disciplinas.NaoEhNulo())
             {
                 var disciplinasCodigos = disciplinas.Select(a => a.CodigoComponenteCurricular);
                 var disciplinasComObjetivos = await ObterComponentesPossuiObjetivos(disciplinasCodigos);
@@ -155,8 +155,8 @@ namespace SME.SGP.Aplicacao
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             CodigoComponenteCurricularTerritorioSaber = disciplina.CodigoComponenteTerritorioSaber ?? 0,
-            GrupoMatrizId = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Id : default,
-            GrupoMatrizNome = disciplina.GrupoMatriz != null ? disciplina.GrupoMatriz.Nome : string.Empty,
+            GrupoMatrizId = disciplina.GrupoMatriz.NaoEhNulo() ? disciplina.GrupoMatriz.Id : default,
+            GrupoMatrizNome = disciplina.GrupoMatriz.NaoEhNulo() ? disciplina.GrupoMatriz.Nome : string.Empty,
             Nome = disciplina.Nome,
             Regencia = disciplina.Regencia,
             TerritorioSaber = disciplina.TerritorioSaber,

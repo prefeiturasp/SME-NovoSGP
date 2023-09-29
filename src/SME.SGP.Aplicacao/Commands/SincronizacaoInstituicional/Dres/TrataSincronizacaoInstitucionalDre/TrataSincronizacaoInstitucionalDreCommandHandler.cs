@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var uesCodigo = await mediator.Send(new ObterUesCodigoPorDreSincronizacaoInstitucionalQuery(request.DreCodigo));
 
-            if (uesCodigo == null || !uesCodigo.Any()) return true;
+            if (uesCodigo.EhNulo() || !uesCodigo.Any()) return true;
 
             foreach (var ueCodigo in uesCodigo)
             {

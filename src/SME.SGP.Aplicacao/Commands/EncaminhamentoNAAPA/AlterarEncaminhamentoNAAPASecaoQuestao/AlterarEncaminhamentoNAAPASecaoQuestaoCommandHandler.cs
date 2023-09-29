@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 var questaoExistenteAgrupada = questoesExistentesAgrupadas.FirstOrDefault(c => c.Key == questoes.Key);
 
-                if (questaoExistenteAgrupada == null)
+                if (questaoExistenteAgrupada.EhNulo())
                 {
                     var resultadoEncaminhamentoQuestao = await mediator.Send(
                         new RegistrarEncaminhamentoNAAPASecaoQuestaoCommand(request.EncaminhamentoNAAPASecaoObj.Id,
