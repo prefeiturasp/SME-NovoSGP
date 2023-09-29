@@ -3,21 +3,7 @@ pipeline {
       branchname =  env.BRANCH_NAME.toLowerCase()
       kubeconfig = getKubeconf(env.branchname)
       registryCredential = 'jenkins_registry'
-      deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"           
-      deployment2 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
-      deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-geral-r2' : 'sme-worker-geral' }"
-      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-aee-r2' : 'sme-worker-aee' }"
-      deployment5 = "${env.branchname == 'release-r2' ? 'sme-worker-aula-r2' : 'sme-worker-aula' }"
-      deployment6 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
-      deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
-      deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
-      deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-avaliacao-r2' : 'sme-worker-avaliacao' }"
-      deployment10 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
-      deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-r2' : 'sme-worker-notificacoes' }"
-      deployment12 = "${env.branchname == 'release-r2' ? 'sme-worker-notificacoes-hub-r2' : 'sme-worker-notificacoes-hub' }"
-      deployment13 = "${env.branchname == 'release-r2' ? 'sme-worker-compressao-r2' : 'sme-worker-compressao' }"
-      deployment14 = "${env.branchname == 'release-r2' ? 'sme-worker-naapa-r2' : 'sme-worker-naapa' }"
-      namespace = "${env.branchname == 'pre-prod' ? 'sme-novosgp-d1' : env.branchname == 'development' ? 'novosgp-dev' : 'sme-novosgp' }"
+      namespace = "${env.branchname == 'pre-prod' ? 'sme-novosgp-d1' : env.branchname == 'development' ? 'novosgp-dev' : env.branchname == 'release' ? 'novosgp-hom' : env.branchname == 'release-r2' ? 'novosgp-hom2' : 'sme-novosgp' }"
            
     }
   
@@ -27,7 +13,7 @@ pipeline {
 
     options {
       timestamps ()
-      buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
+      buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '5'))
       disableConcurrentBuilds()
       skipDefaultCheckout()
     }
@@ -38,6 +24,115 @@ pipeline {
             steps { checkout scm }            
         }
    
+   
+        stage('Sonar & Testes') {
+        when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+        parallel {
+          stage('TesteIntegracao & build'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
+            }
+          }
+
+          stage('TesteIntegracao.AEE'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.AEE/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.AEE /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Aula'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Aula/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Aula /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Fechamento'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Fechamento/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Fechamento /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Frequencia'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Frequencia/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Frequencia /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
+            }
+          }
+
+          stage('TesteIntegracao.Pendencia'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Pendencia/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                    sh 'dotnet build SME.SGP.sln'
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Pendencia --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
+            }
+          }
+        }
+      } 
+
         stage('Build') {
           when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
           parallel {
@@ -287,20 +382,20 @@ pipeline {
                         withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
                                 sh('rm -f '+"$home"+'/.kube/config')
                                 sh('cp $config '+"$home"+'/.kube/config')
-                                sh "kubectl rollout restart deployment/${deployment1} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment2} -n ${namespace}"   
-                                sh "kubectl rollout restart deployment/${deployment3} -n ${namespace}"   
-                                sh "kubectl rollout restart deployment/${deployment4} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment5} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment6} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment7} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment8} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment9} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment10} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment11} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment12} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment13} -n ${namespace}"
-                                sh "kubectl rollout restart deployment/${deployment14} -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-api -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-fechamento -n ${namespace}"   
+                                sh "kubectl rollout restart deployment/sme-worker-geral -n ${namespace}"   
+                                sh "kubectl rollout restart deployment/sme-worker-aee -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-aula -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-frequencia -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-institucional -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-pendencias -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-avaliacao -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-auditoria -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-notificacoes -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-notificacoes-hub -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-compressao -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-naapa -n ${namespace}"
                                 sh('rm -f '+"$home"+'/.kube/config')
                         }
                     //}
@@ -395,9 +490,9 @@ def getKubeconf(branchName) {
     if("main".equals(branchName)) { return "config_prd"; }
     else if ("master".equals(branchName)) { return "config_prd"; }
     else if ("pre-prod".equals(branchName)) { return "config_prd"; }
-    else if ("homolog".equals(branchName)) { return "config_hom"; }
-    else if ("release".equals(branchName)) { return "config_hom"; }
-    else if ("release-r2".equals(branchName)) { return "config_hom"; }
+    else if ("homolog".equals(branchName)) { return "config_release"; }
+    else if ("release".equals(branchName)) { return "config_release"; }
+    else if ("release-r2".equals(branchName)) { return "config_release"; }
     else if ("development".equals(branchName)) { return "config_release"; }
     else if ("develop".equals(branchName)) { return "config_release"; }
 }
