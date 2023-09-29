@@ -1,9 +1,6 @@
-﻿using SME.SGP.Infra;
-using System.Threading.Tasks;
-
-namespace SME.SGP.Aplicacao
+﻿namespace SME.SGP.Aplicacao
 {
-    public interface INotificarResultadoInsatisfatorioUseCase : IUseCase<MensagemRabbit, bool>
+    public interface INotificarResultadoInsatisfatorioUseCase : IRabbitUseCase
     {
     }
 }

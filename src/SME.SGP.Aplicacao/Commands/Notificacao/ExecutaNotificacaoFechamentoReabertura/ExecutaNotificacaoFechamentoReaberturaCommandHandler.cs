@@ -16,19 +16,17 @@ namespace SME.SGP.Aplicacao
     public class ExecutaNotificacaoFechamentoReaberturaCommandHandler : IRequestHandler<ExecutaNotificacaoFechamentoReaberturaCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEOL;
 
-        public ExecutaNotificacaoFechamentoReaberturaCommandHandler(IMediator mediator, IServicoEol servicoEOL)
+        public ExecutaNotificacaoFechamentoReaberturaCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<bool> Handle(ExecutaNotificacaoFechamentoReaberturaCommand request, CancellationToken cancellationToken)
         {
             var fechamentoReabertura = request.FechamentoReabertura;
 
-            var adminsSgpUe = await servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.UeCodigo);
+            var adminsSgpUe = await mediator.Send(new ObterAdministradoresPorUEQuery(fechamentoReabertura.UeCodigo));
             if (adminsSgpUe.NaoEhNulo() && adminsSgpUe.Any())
             {
                 foreach (var adminSgpUe in adminsSgpUe)

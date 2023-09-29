@@ -13,16 +13,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasPorProfessorRfQueryHandler : IRequestHandler<ObterTurmasPorProfessorRfQuery, IEnumerable<ProfessorTurmaDto>>
     {
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ObterTurmasPorProfessorRfQueryHandler(IServicoEol servicoEOL)
+        public ObterTurmasPorProfessorRfQueryHandler(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<ProfessorTurmaDto>> Handle(ObterTurmasPorProfessorRfQuery request, CancellationToken cancellationToken)
         {
-            return MapearParaDto(await servicoEOL.ObterListaTurmasPorProfessor(request.CodigoRf));
+            return MapearParaDto(await mediator.Send(new ObterTurmasDoProfessorQuery(request.CodigoRf)));
         }
 
         private IEnumerable<ProfessorTurmaDto> MapearParaDto(IEnumerable<ProfessorTurmaReposta> turmas)

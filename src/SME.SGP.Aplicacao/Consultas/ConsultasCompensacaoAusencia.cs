@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasUe consultasUe;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
@@ -32,7 +31,6 @@ namespace SME.SGP.Aplicacao
                                             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                             IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
-                                            IServicoEol servicoEOL,
                                             IServicoUsuario servicoUsuario,
                                             IContextoAplicacao contextoAplicacao,
                                             IConsultasProfessor consultasProfessor,
@@ -45,7 +43,6 @@ namespace SME.SGP.Aplicacao
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasUe = consultasUe ?? throw new ArgumentNullException(nameof(consultasUe));
@@ -240,7 +237,7 @@ namespace SME.SGP.Aplicacao
                 return await ObtemTurmasUsuarioCPParaCopiaCompensacao(turmaOrigem, usuario.CodigoRf);
             else
             {
-                var turmas = await servicoEOL.ObterListaTurmasPorProfessor(usuario.CodigoRf);
+                var turmas = await mediator.Send(new ObterTurmasDoProfessorQuery(usuario.CodigoRf));
                 return turmas.Where(t => t.CodTurma.ToString() != turmaOrigem.CodigoTurma
                                 && t.CodEscola == ue.CodigoUe
                                 && t.AnoLetivo == turmaOrigem.AnoLetivo

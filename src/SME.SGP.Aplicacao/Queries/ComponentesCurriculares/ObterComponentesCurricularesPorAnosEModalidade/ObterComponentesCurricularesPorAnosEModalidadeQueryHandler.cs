@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,19 +9,20 @@ namespace SME.SGP.Aplicacao.Queries.ComponentesCurriculares.ObterComponentesCurr
 {
     public class ObterComponentesCurricularesPorAnosEModalidadeQueryHandler : IRequestHandler<ObterComponentesCurricularesPorAnosEModalidadeQuery, IEnumerable<ComponenteCurricularEol>>
     {
-        private readonly IServicoEol servicoEol;
-        public ObterComponentesCurricularesPorAnosEModalidadeQueryHandler(IServicoEol servicoEol)
+        private readonly IMediator mediator;
+        
+        public ObterComponentesCurricularesPorAnosEModalidadeQueryHandler(IMediator mediator)
         {
-            this.servicoEol = servicoEol ?? throw new System.ArgumentNullException(nameof(servicoEol));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesPorAnosEModalidadeQuery request, CancellationToken cancellationToken)
         {
-            var componentes = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.CodigoUe, request.Modalidade, request.AnoLetivo, request.AnosEscolares))?.ToList();
+            var componentes = (await mediator.Send(new ObterComponentesCurricularesPorUeModalidadeAnoQuery(request.CodigoUe, request.Modalidade, request.AnoLetivo, request.AnosEscolares)))?.ToList();
 
             if (request.TurmaPrograma)
             {                
-                var componentesTurmaPrograma = (await servicoEol.ObterComponentesCurricularesPorAnosEModalidade(request.CodigoUe, request.Modalidade, request.AnoLetivo, null))?.ToList();
+                var componentesTurmaPrograma = (await mediator.Send(new ObterComponentesCurricularesPorUeModalidadeAnoQuery(request.CodigoUe, request.Modalidade, request.AnoLetivo, null)))?.ToList();
                 if (componentesTurmaPrograma.NaoEhNulo())
                 {
                     var componentesTurmaProgramaFiltrada = componentesTurmaPrograma.Where(x => !componentes.Any(y => y.Codigo == x.Codigo));

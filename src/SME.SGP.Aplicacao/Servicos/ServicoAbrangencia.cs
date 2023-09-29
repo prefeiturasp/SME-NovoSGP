@@ -21,18 +21,16 @@ namespace SME.SGP.Aplicacao.Servicos
         private readonly IRepositorioTipoEscola repositorioTipoEscola;
         private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioUe repositorioUe;
-        private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IRepositorioUsuarioConsulta repositorioUsuario;
 
-        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IServicoEol servicoEOL, IConsultasSupervisor consultasSupervisor,
+        public ServicoAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IUnitOfWork unitOfWork, IConsultasSupervisor consultasSupervisor,
             IRepositorioDre repositorioDre, IRepositorioUe repositorioUe, IRepositorioTurma repositorioTurma, IRepositorioCicloEnsino repositorioCicloEnsino, IRepositorioTipoEscola repositorioTipoEscola,
             IMediator mediator, IRepositorioUsuarioConsulta repositorioUsuario)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasSupervisor = consultasSupervisor ?? throw new ArgumentNullException(nameof(consultasSupervisor));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
@@ -106,7 +104,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             try
             {
-                estruturaInstitucionalVigente = await servicoEOL.ObterEstruturaInstuticionalVigentePorDre();
+                estruturaInstitucionalVigente = await mediator.Send(ObterEstruturaInstitucionalVigenteQuery.Instance);
             }
             catch (Exception ex)
             {
@@ -123,11 +121,9 @@ namespace SME.SGP.Aplicacao.Servicos
                 throw new NegocioException(erro);
             }
 
-            var tiposEscolas = await servicoEOL.BuscarTiposEscola();
+            var tiposEscolas = await mediator.Send(ObterTiposEscolaEolQuery.Instance);
             if (tiposEscolas.Any())
-            {
                 SincronizarTiposEscola(tiposEscolas);
-            }
             else
             {
                 var erro = "Não foi possível obter dados de tipos de escolas do EOL";
@@ -136,11 +132,9 @@ namespace SME.SGP.Aplicacao.Servicos
                 throw new NegocioException(erro);
             }
 
-            var ciclos = await servicoEOL.BuscarCiclos();
+            var ciclos = await mediator.Send(ObterCiclosEolQuery.Instance);
             if (ciclos.Any())
-            {
                 SincronizarCiclos(ciclos);
-            }
             else
             {
                 var erro = "Não foi possível obter dados de ciclos de ensino do EOL";
@@ -249,7 +243,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
-            Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
+            AbrangenciaCompactaVigenteRetornoEOLDTO consultaEol = null;
             AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol = null;
 
             var ehSupervisor = perfil == Perfis.PERFIL_SUPERVISOR;
@@ -260,7 +254,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 var uesIds = await ObterAbrangenciaEolSupervisor(login);
                 if (!uesIds.Any())
                     return;
-                var abrangenciaSupervisor = await servicoEOL.ObterAbrangenciaParaSupervisor(uesIds.ToArray());
+                var abrangenciaSupervisor = await mediator.Send(new ObterAbrangenciaParaSupervisorQuery(uesIds.ToArray()));
                 abrangenciaEol = new AbrangenciaCompactaVigenteRetornoEOLDTO()
                 {
                     Abrangencia = abrangenciaSupervisor.Abrangencia,
@@ -270,7 +264,7 @@ namespace SME.SGP.Aplicacao.Servicos
             else if (ehProfessorCJ)
                 return;
             else
-                consultaEol = servicoEOL.ObterAbrangenciaCompactaVigente(login, perfil);
+                consultaEol = await mediator.Send(new ObterAbrangenciaCompactaVigenteEolPorLoginEPerfilQuery(login, perfil));
 
             if (consultaEol.NaoEhNulo() || abrangenciaEol.NaoEhNulo())
             {
@@ -278,7 +272,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 var consultaAbrangenciaSintetica = repositorioAbrangencia.ObterAbrangenciaSintetica(login, perfil, string.Empty);
 
                 if (abrangenciaEol.EhNulo())
-                    abrangenciaEol = await consultaEol;
+                    abrangenciaEol = consultaEol;
                 var abrangenciaSintetica = await consultaAbrangenciaSintetica;
 
                 if (abrangenciaEol.NaoEhNulo())
@@ -305,9 +299,9 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             if (codigosNaoEncontrados.NaoEhNulo() && codigosNaoEncontrados.Length > 0)
             {
-                var turmasEol = await servicoEOL.ObterEstruturaInstuticionalVigentePorTurma(codigosTurma: codigosNaoEncontrados);
-                if (turmasEol.NaoEhNulo())
-                    await SincronizarEstruturaInstitucional(turmasEol);
+                var estruturaInstitucionalRetornoEolDTO = await mediator.Send(new ObterEstruturaInstuticionalVigentePorTurmaQuery(codigosTurma: codigosNaoEncontrados));
+                if (estruturaInstitucionalRetornoEolDTO.NaoEhNulo())
+                    await SincronizarEstruturaInstitucional(estruturaInstitucionalRetornoEolDTO);
             }
 
             return repositorioTurma.MaterializarCodigosTurma(codigosNaoEncontrados, out codigosNaoEncontrados);

@@ -12,12 +12,10 @@ namespace SME.SGP.Aplicacao
     public class NotificarEventoCommandHandler : IRequestHandler<NotificarEventoCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
 
-        public NotificarEventoCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public NotificarEventoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<bool> Handle(NotificarEventoCommand request, CancellationToken cancellationToken)
@@ -43,16 +41,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterFuncionarios(Ue ue)
         {
-            var funcionarios = await servicoEol.ObterFuncionariosPorUe(new BuscaFuncionariosFiltroDto()
-            {
-                CodigoUE = ue.CodigoUe
-            });
+            var funcionarios = await mediator.Send(new ObterFuncionariosPorRfUeNomeServidorQuery(string.Empty,ue.CodigoUe, string.Empty));
 
             var listaUsuarios = new List<long>();
             foreach (var funcionario in funcionarios)
-            {
                 listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(funcionario.CodigoRf)));
-            }
 
             return listaUsuarios;
         }

@@ -15,19 +15,16 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioNotificacaoConsulta repositorioNotificacaoConsulta;
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
         public ServicoNotificacao(IRepositorioNotificacao repositorioNotificacao,
                                   IRepositorioNotificacaoConsulta repositorioNotificacaoConsulta,
                                   IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
-                                  IServicoEol servicoEOL,
                                   IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioNotificacaoConsulta = repositorioNotificacaoConsulta ?? throw new ArgumentNullException(nameof(repositorioNotificacaoConsulta));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -114,7 +111,7 @@ namespace SME.SGP.Dominio.Servicos
             if (cargo == Cargo.Supervisor)
                 supervisoresEscola = await repositorioSupervisorEscolaDre.ObtemSupervisoresPorUeAsync(codigoUe);
             else
-                funcionarios = await servicoEOL.ObterFuncionariosPorCargoUeAsync(codigoUe, (int)cargo);
+                funcionarios = await mediator.Send(new ObterFuncionariosPorCargoUeQuery(codigoUe, (int)cargo));
 
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 

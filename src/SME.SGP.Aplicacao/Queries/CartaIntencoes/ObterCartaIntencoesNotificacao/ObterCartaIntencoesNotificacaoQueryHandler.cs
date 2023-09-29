@@ -32,7 +32,12 @@ namespace SME.SGP.Aplicacao
 
             var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, request.ComponenteCurricular));
 
-            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string> { turma.CodigoTurma }));
+            var professoresTitularDisciplinaEols = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string> { turma.CodigoTurma }));
+            
+            var professoresDaTurma = professoresTitularDisciplinaEols
+                                                        .SelectMany(c => c.ProfessorRf.Split(',').AsEnumerable())
+                                                        .Where(c => !string.IsNullOrEmpty(c))
+                                                        .Select(a => a.Trim());
 
             var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(ue.CodigoUe, (int)Cargo.Diretor));
 

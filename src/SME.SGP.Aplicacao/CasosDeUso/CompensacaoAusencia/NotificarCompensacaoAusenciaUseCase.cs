@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-        private readonly IServicoEol servicoEOL;
 
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
                                                    IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAlunoConsulta,
@@ -29,8 +28,7 @@ namespace SME.SGP.Aplicacao
                                                    IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
                                                    IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                                    IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
-                                                   IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-                                                   IServicoEol servicoEOL) : base(mediator)
+                                                   IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular) : base(mediator)
         {
             this.repositorioCompensacaoAusenciaAlunoConsulta = repositorioCompensacaoAusenciaAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAlunoConsulta));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
@@ -38,7 +36,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -62,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinaEOL = await ObterNomeDisciplina(compensacao.DisciplinaId);
 
-            MeusDadosDto professor = await servicoEOL.ObterMeusDados(compensacao.CriadoRF);
+            MeusDadosDto professor = await mediator.Send(new ObterUsuarioCoreSSOQuery(compensacao.CriadoRF));
 
             var possuirPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(), compensacao.Bimestre, true));
             var parametroAtivo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));

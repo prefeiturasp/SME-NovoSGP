@@ -1,11 +1,6 @@
-﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.SGP.Aplicacao
+﻿namespace SME.SGP.Aplicacao
 {
-    public interface IExecutarExclusaoPendenciaDiasLetivosInsuficientes : IUseCase<MensagemRabbit, bool>
+    public interface IExecutarExclusaoPendenciaDiasLetivosInsuficientes : IRabbitUseCase
     {
     }
 }
