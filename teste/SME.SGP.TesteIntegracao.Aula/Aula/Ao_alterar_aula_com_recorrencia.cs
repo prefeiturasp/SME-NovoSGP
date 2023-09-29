@@ -9,6 +9,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
