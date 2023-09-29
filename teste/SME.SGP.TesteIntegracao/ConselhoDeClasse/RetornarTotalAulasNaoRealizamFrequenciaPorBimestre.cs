@@ -2,6 +2,7 @@
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.AlunosSemFrequencia
 
             var useCase = ServiceProvider.GetService<IObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase>();
 
-            var retorno = await useCase.Executar("1106", "1", 1);
+            var retorno = await useCase.Executar("1106", "1", 1, new System.DateTime(DateTime.Now.Year, 02,09));
            
             retorno.ShouldNotBeNull();
 

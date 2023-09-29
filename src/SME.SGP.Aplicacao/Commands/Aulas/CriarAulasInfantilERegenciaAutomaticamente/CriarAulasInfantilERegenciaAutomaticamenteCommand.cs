@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriarAulasInfantilAutomaticamenteCommand : IRequest<bool>
+    public class CriarAulasInfantilERegenciaAutomaticamenteCommand : IRequest<bool>
     {
-        public CriarAulasInfantilAutomaticamenteCommand(IEnumerable<DiaLetivoDto> diasLetivos, Turma turma, long tipoCalendarioId, IEnumerable<DateTime> diasForaDoPeriodoEscolar, IEnumerable<string> codigosDisciplinasConsideradas, DadosAulaCriadaAutomaticamenteDto dadosAulaCriadaAutomaticamente)
+        public CriarAulasInfantilERegenciaAutomaticamenteCommand(IEnumerable<DiaLetivoDto> diasLetivos, Turma turma, long tipoCalendarioId, IEnumerable<DateTime> diasForaDoPeriodoEscolar, IEnumerable<string> codigosDisciplinasConsideradas, DadosAulaCriadaAutomaticamenteDto dadosAulaCriadaAutomaticamente)
         {
             DiasLetivos = diasLetivos;
             Turma = turma;
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         public DadosAulaCriadaAutomaticamenteDto DadosAulaCriadaAutomaticamente { get; set; }
     }
 
-    public class CriarAulasInfantilAutomaticamenteCommandValidator : AbstractValidator<CriarAulasInfantilAutomaticamenteCommand>
+    public class CriarAulasInfantilAutomaticamenteCommandValidator : AbstractValidator<CriarAulasInfantilERegenciaAutomaticamenteCommand>
     {
         public CriarAulasInfantilAutomaticamenteCommandValidator()
         {
