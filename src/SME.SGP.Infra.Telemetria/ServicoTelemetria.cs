@@ -3,7 +3,6 @@ using Elastic.Apm.Api;
 using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
@@ -17,9 +16,8 @@ namespace SME.SGP.Infra
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
         }
 
-        public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
+        public async Task<T> RegistrarComRetornoAsync<T>(Func<Task<T>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            dynamic result = default;
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -28,19 +26,15 @@ namespace SME.SGP.Infra
                  {
                      span.SetLabel(telemetriaNome, telemetriaValor);
                      span.SetLabel("Parametros", parametros);
-                     result = (await acao()) as dynamic;
+                     return await acao();
                  });
             }
-            else
-            {
-                result = await acao() as dynamic;
-            }
-            return result;
+
+            return await acao();
         }
 
-        public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
+        public T RegistrarComRetorno<T>(Func<T> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            dynamic result = default;
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -49,14 +43,11 @@ namespace SME.SGP.Infra
                 {
                     span.SetLabel(telemetriaNome, telemetriaValor);
                     span.SetLabel("Parametros", parametros);
-                    result = acao();
+                    return acao();
                 });
             }
-            else
-            {
-                result = acao();
-            }
-            return result;
+
+            return acao();
         }
 
         public void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor)
