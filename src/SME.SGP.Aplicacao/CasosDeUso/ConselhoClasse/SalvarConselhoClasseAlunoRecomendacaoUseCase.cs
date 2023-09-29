@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTimeExtension.HorarioBrasilia();
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaCompletoPorIdQuery(conselhoClasseAlunoDto.FechamentoTurmaId));
 
-            if (fechamentoTurma == null)
+            if (fechamentoTurma.EhNulo())
                 throw new NegocioException(MensagemNegocioFechamentoNota.FECHAMENTO_TURMA_NAO_LOCALIZADO);
 
             var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue ? fechamentoTurma.PeriodoEscolar.Bimestre :
@@ -39,31 +39,20 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar ??
                                  await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(fechamentoTurma.Turma, bimestre));
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
             var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == conselhoClasseAlunoDto.AlunoCodigo);
 
-            if (alunoConselho == null)
+            if (alunoConselho.EhNulo())
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_ENCONTRADO_PARA_SALVAR_CONSELHO_CLASSE);
 
-            if (fechamentoTurma.Turma.AnoLetivo == dataAtual.Year && alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim))
-            {
-                var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery
-                {
-                    DataParaVerificar = dataAtual,
-                    TipoCalendarioId = periodoEscolar.TipoCalendarioId,
-                    UeId = fechamentoTurma.Turma.UeId
-                });
+            var permiteEdicao = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim) || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
 
-                var permiteEdicao = (alunoConselho.PossuiSituacaoAtiva() && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
-                                    (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoFim);
-
-                if (!permiteEdicao)
-                    throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
-            }
-
+            if (!permiteEdicao)
+                throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
+            
             var bimestreParaValidacaoNotasPreenchidas = fechamentoTurma.PeriodoEscolarId.HasValue ? bimestre : BIMESTRE_FINAL_CONSULTA_NOTA;
 
             var existeConselhoClasseBimestre = await mediator
@@ -80,11 +69,16 @@ namespace SME.SGP.Aplicacao
 
             return conselhoClasseAluno;
         }
+        
+        private async Task<bool> EstaInativoDentroPeriodoAberturaReabertura(AlunoPorTurmaResposta dadosAluno, int bimestre, long tipoCalendarioId, Turma turma)
+        {
+            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dadosAluno.DataSituacao.Date, bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendarioId));
+        }
 
         private async Task<ConselhoClasseAluno> MapearParaEntidade(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
         {
             var conselhoClasseAluno = await mediator.Send(new ObterPorConselhoClasseAlunoCodigoQuery(conselhoClasseAlunoDto.ConselhoClasseId, conselhoClasseAlunoDto.AlunoCodigo));
-            if (conselhoClasseAluno == null)
+            if (conselhoClasseAluno.EhNulo())
             {
                 ConselhoClasse conselhoClasse = conselhoClasseAlunoDto.ConselhoClasseId == 0 ?
                     new ConselhoClasse() { FechamentoTurmaId = conselhoClasseAlunoDto.FechamentoTurmaId } :

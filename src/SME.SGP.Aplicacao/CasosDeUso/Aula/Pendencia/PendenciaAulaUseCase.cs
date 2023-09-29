@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var dadosParametroGeracaoPendencias = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.DataInicioGeracaoPendencias, DateTimeExtension.HorarioBrasilia().Year));
             
-            if(dadosParametroGeracaoPendencias != null)
+            if(dadosParametroGeracaoPendencias.NaoEhNulo())
             {
                 DateTime dataDefinida = Convert.ToDateTime(dadosParametroGeracaoPendencias.Valor);
 

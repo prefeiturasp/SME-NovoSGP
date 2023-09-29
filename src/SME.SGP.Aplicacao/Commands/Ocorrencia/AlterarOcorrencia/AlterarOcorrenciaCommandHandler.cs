@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var ocorrencia = await repositorioOcorrencia.ObterPorIdAsync(request.Id);
-                    if (ocorrencia == null)
+                    if (ocorrencia.EhNulo())
                         throw new NegocioException($"Ocorrencia {request.Id} não encontrada!");
 
                     var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);

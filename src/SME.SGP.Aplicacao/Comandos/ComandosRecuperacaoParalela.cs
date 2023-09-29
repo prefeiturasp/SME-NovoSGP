@@ -62,17 +62,24 @@ namespace SME.SGP.Aplicacao
             var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigo));
 
             unitOfWork.IniciarTransacao();
-
-            foreach (var item in recuperacaoParalelaDto.Periodo.Alunos)
+            try
             {
-                var turmaDoItem = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString());
-                var recuperacaoParalela = MapearEntidade(recuperacaoParalelaDto, item, turmaDoItem.Id, turmaRecuperacaoParalela.Id, turmaDoItem.AnoLetivo);
+                foreach (var item in recuperacaoParalelaDto.Periodo.Alunos)
+                {
+                    var turmaDoItem = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString());
+                    var recuperacaoParalela = MapearEntidade(recuperacaoParalelaDto, item, turmaDoItem.Id, turmaRecuperacaoParalela.Id, turmaDoItem.AnoLetivo);
 
-                await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
-                await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
-                await SalvarRespostasAluno(recuperacaoParalelaDto, item, recuperacaoParalela);
+                    await repositorioRecuperacaoParalela.SalvarAsync(recuperacaoParalela);
+                    await repositorioRecuperacaoParalelaPeriodoObjetivoResposta.Excluir(item.Id, recuperacaoParalelaDto.Periodo.Id);
+                    await SalvarRespostasAluno(recuperacaoParalelaDto, item, recuperacaoParalela);
+                }
+                unitOfWork.PersistirTransacao();
             }
-            unitOfWork.PersistirTransacao();
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
 
             return await consultaRecuperacaoParalela.Listar(new Infra.FiltroRecuperacaoParalelaDto
             {
@@ -102,7 +109,7 @@ namespace SME.SGP.Aplicacao
         {
             var aluno = recuperacaoParalelaDto.Periodo.Alunos.FirstOrDefault(w => w.CodAluno == item.CodAluno);
 
-            if (aluno == null || !aluno.Respostas.Any())
+            if (aluno.EhNulo() || !aluno.Respostas.Any())
                 return;
 
             var respostasFiltradas = aluno.Respostas.Where(x => x.RespostaId != 0);

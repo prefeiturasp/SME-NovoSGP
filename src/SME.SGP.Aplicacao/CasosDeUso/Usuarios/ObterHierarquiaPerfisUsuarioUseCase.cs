@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhPerfilProfessor())
             {
                 var perfil = await mediator.Send(new ObterPerfilPorGuidQuery(perfilUsuario));
-                if (perfil == null)
+                if (perfil.EhNulo())
                     throw new NegocioException("Perfil do usuário não localizado na base de dados do SGP");
 
                 return new[] { new KeyValuePair<Guid, string>( perfil.CodigoPerfil, perfil.NomePerfil) };

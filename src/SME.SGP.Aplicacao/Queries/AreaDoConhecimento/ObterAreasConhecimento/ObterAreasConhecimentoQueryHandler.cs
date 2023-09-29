@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -26,31 +27,30 @@ namespace SME.SGP.Aplicacao
 
             TratarComponentesRegencia(request, listaCodigosComponentes);
 
-            if (listaCodigosComponentes == null || !listaCodigosComponentes.Any())
+            if (listaCodigosComponentes.EhNulo() || !listaCodigosComponentes.Any())
                 return default;
 
             return await mediator
                 .Send(new ObterAreasConhecimentoComponenteCurricularQuery(listaCodigosComponentes.Distinct().ToArray()));
         }
 
-        private void TratarComponentesRegencia(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
+        private async Task TratarComponentesRegencia(ObterAreasConhecimentoQuery request, List<long> listaCodigosComponentes)
         {
             if (request.ConsideraRegencia)
             {
                 var codigosTurmas = request.ComponentesCurriculares.Where(c => !string.IsNullOrEmpty(c.TurmaCodigo))
                     .Select(cc => cc.TurmaCodigo)
-                    .Where(codigoTurma => codigoTurma != null)
+                    .Where(codigoTurma => codigoTurma.NaoEhNulo())
                     .Distinct();
-
-                codigosTurmas.ToList().ForEach(ct =>
+                foreach (var ct in codigosTurmas)
                 {
-                    var componentesRegencia = mediator
-                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho: true))
-                        .Result;
+                    var componentesRegencia = await mediator
+                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho: true));
 
-                    if (componentesRegencia != null && componentesRegencia.Any())
+                    if (componentesRegencia.NaoEhNulo() && componentesRegencia.Any())
                         listaCodigosComponentes.AddRange(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
-                });
+                }
+                
             }
         }
     }

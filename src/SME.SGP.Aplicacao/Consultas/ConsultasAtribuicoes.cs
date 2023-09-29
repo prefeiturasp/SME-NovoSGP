@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
                 var dres = repositorioDre
                     .ListarPorCodigos(codigosDres.Distinct().ToArray());
 
-                if (dres != null && dres.Any())
+                if (dres.NaoEhNulo() && dres.Any())
                     return TransformarDresEmDresDto(dres);
                 else
                     return null;
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                           where !novosTiposUe.Split(',').Contains(((int)ue.TipoEscola).ToString())
                           select ue;
 
-                if (ues != null && ues.Any())
+                if (ues.NaoEhNulo() && ues.Any())
                     return TransformarUesEmUesDto(ues);
                 else
                     return null;
@@ -205,7 +205,7 @@ namespace SME.SGP.Aplicacao
             var atribuicoesEsporadicas = await mediator
                 .Send(new ObterAtribuicoesPorRFEAnoQuery(professorRf, somenteInfantil, anoLetivo, historico: historico));
 
-            if (atribuicoesEsporadicas != null && atribuicoesEsporadicas.Any())
+            if (atribuicoesEsporadicas.NaoEhNulo() && atribuicoesEsporadicas.Any())
             {
                 foreach (var atribuicaoEsporadica in atribuicoesEsporadicas)
                 {
@@ -220,7 +220,7 @@ namespace SME.SGP.Aplicacao
             var atribuicoesEsporadicas = await mediator
                 .Send(new ObterAtribuicoesPorRFEAnoQuery(professorRf, somenteInfantil, anoLetivo, historico: historico));
 
-            if (atribuicoesEsporadicas != null && atribuicoesEsporadicas.Any())
+            if (atribuicoesEsporadicas.NaoEhNulo() && atribuicoesEsporadicas.Any())
             {
                 foreach (var atribuicaoEsporadica in atribuicoesEsporadicas)
                 {

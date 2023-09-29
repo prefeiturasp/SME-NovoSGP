@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var historicoAlteracao = await ObterHistoricoAlteracaoDaSituacao(request.EncaminhamentoNAAPA, request.SituacaoAlterada);
 
-            if (historicoAlteracao != null)
+            if (historicoAlteracao.NaoEhNulo())
                 return await repositorioEncaminhamentoNAAPAHistoricoAlteracoes.SalvarAsync(historicoAlteracao);
 
             return 0;

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(Guid codigoArquivo)
         {
             var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(codigoArquivo));
-            if (entidadeArquivo == null)
+            if (entidadeArquivo.EhNulo())
               throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
 
             await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));

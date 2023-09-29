@@ -25,11 +25,9 @@ namespace SME.SGP.Api.Controllers
         [Route("{codigoRf}/turmas")]
         [ProducesResponseType(typeof(IEnumerable<ProfessorTurmaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get(string codigoRf)
+        public async Task<IActionResult> Get(string codigoRf)
         {
-            var retorno = consultasProfessor.Listar(codigoRf);
-
-            return Ok(retorno);
+            return Ok(await consultasProfessor.Listar(codigoRf));
         }
 
         [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]

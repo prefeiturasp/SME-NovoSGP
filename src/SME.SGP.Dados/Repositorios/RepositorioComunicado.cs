@@ -262,7 +262,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.Append($@" INNER JOIN turma {turmaAlias} ON {comunicadoTumaAlias}.turma_codigo = {turmaAlias}.turma_id ");
             }
 
-            if (filtro.Modalidades != null && filtro.Modalidades.Any())
+            if (filtro.Modalidades.NaoEhNulo() && filtro.Modalidades.Any())
             {
                 sql.Append($@" INNER JOIN comunicado_modalidade {comunicadoModalidadeAlias} ON {comunicadoAlias}.id = {comunicadoModalidadeAlias}.comunicado_id ");
             }
@@ -297,22 +297,22 @@ namespace SME.SGP.Dados.Repositorios
 
             where.Append(!string.IsNullOrWhiteSpace(filtro.CodigoUe) ? $" AND {comunicadoAlias}.codigo_ue = @CodigoUe" : $" AND {comunicadoAlias}.codigo_ue is null");
 
-            if (filtro.Modalidades != null)
+            if (filtro.Modalidades.NaoEhNulo())
                 where.Append($" AND {comunicadoModalidadeAlias}.modalidade = ANY(@Modalidades)");
 
-            if (filtro.Semestre != null)
+            if (filtro.Semestre.NaoEhNulo())
                 where.Append($" AND {comunicadoAlias}.semestre = @Semestre");
 
-            if (filtro.AnoEscolar != null)
+            if (filtro.AnoEscolar.NaoEhNulo())
                 where.Append($" AND {comunicadoAlias}.series_resumidas = @AnoEscolar");
 
             if (!string.IsNullOrWhiteSpace(filtro.CodigoTurma))
                 where.Append($" AND {comunicadoTumaAlias}.turma_codigo = @CodigoTurma");
 
-            if (filtro.DataEnvioInicial != null)
+            if (filtro.DataEnvioInicial.NaoEhNulo())
                 where.Append($" AND date({comunicadoAlias}.data_envio) >= @DataEnvioInicial");
 
-            if (filtro.DataEnvioFinal != null)
+            if (filtro.DataEnvioFinal.NaoEhNulo())
                 where.Append($" AND date({comunicadoAlias}.data_envio) <= @DataEnvioFinal");
 
             if (!string.IsNullOrWhiteSpace(filtro.Titulo))
@@ -583,16 +583,16 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("and c.codigo_ue is null ");
 
-            if (modalidades != null && !modalidades.Any(c => c == -99))
+            if (modalidades.NaoEhNulo() && !modalidades.Any(c => c == -99))
                 query.AppendLine("and cm.modalidade = any(@modalidades) ");           
 
-            if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
+            if (anosEscolares.NaoEhNulo() && !anosEscolares.Any(c => c == "-99"))
                 query.AppendLine("and t.ano = any(@anosEscolares) ");
 
-            if (turmasCodigo != null && !turmasCodigo.Any(c => c == "-99"))
+            if (turmasCodigo.NaoEhNulo() && !turmasCodigo.Any(c => c == "-99"))
                 query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
 
-            if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
+            if (tiposEscolas.NaoEhNulo() && !tiposEscolas.Any(c => c == -99))
                 query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");
 
             if (!string.IsNullOrEmpty(titulo))
@@ -641,13 +641,13 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("and c.codigo_ue is null ");            
 
-            if (anosEscolares != null && !anosEscolares.Any(c => c == "-99"))
+            if (anosEscolares.NaoEhNulo() && !anosEscolares.Any(c => c == "-99"))
                 query.AppendLine("and t.ano = any(@anosEscolares) ");
 
-            if (turmasCodigo != null && !turmasCodigo.Any(c => c == "-99"))
+            if (turmasCodigo.NaoEhNulo() && !turmasCodigo.Any(c => c == "-99"))
                 query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
 
-            if (tiposEscolas != null && !tiposEscolas.Any(c => c == -99))
+            if (tiposEscolas.NaoEhNulo() && !tiposEscolas.Any(c => c == -99))
                 query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");            
 
             if (!string.IsNullOrEmpty(titulo))

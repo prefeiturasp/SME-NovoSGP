@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                 var pendencia = pendenciaProfessorDisciplinaCache.FirstOrDefault(f => f.ComponenteCurricularId == item.ComponenteCurricularId 
                                                                                     && f.ProfessorRf.Equals(item.ProfessorRf)
                                                                                     && f.CodigoTurma == filtro.CodigoTurma);
-                if (pendencia == null)
+                if (pendencia.EhNulo())
                 {
                     pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(item.ComponenteCurricularId, item.ProfessorRf, item.PeriodoEscolarId, filtro.CodigoTurma));
 

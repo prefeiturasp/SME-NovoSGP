@@ -1,4 +1,5 @@
 ﻿using FluentValidation.Results;
+using SME.SGP.Dominio;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,7 @@ namespace SME.SGP.Infra
     {
         public RetornoBaseDto(IEnumerable<ValidationFailure> validationFailures)
         {
-            if (validationFailures != null && validationFailures.Any())
+            if (validationFailures.NaoEhNulo() && validationFailures.Any())
                 Mensagens = validationFailures.Select(c => c.ErrorMessage).ToList();
         }
         public RetornoBaseDto()

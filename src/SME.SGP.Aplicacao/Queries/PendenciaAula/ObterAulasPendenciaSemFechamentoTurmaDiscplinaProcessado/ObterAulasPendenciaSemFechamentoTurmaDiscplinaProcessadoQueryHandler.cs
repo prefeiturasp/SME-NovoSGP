@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<Aula>> Handle(ObterAulasPendenciaSemFechamentoTurmaDiscplinaProcessadoQuery request, CancellationToken cancellationToken)
         {
-            if (request.AulasPendencia == null || !request.AulasPendencia.Any()) return request.AulasPendencia;
+            if (request.AulasPendencia.EhNulo() || !request.AulasPendencia.Any()) return request.AulasPendencia;
 
             var aulas = request.AulasPendencia.ToList();
             var agrupamentoTurmaDisciplina = aulas.GroupBy(aula => new { TurmaCodigo = aula.TurmaId, aula.DisciplinaId, TurmaId = aula.Turma.Id, ModalidadeTipoCalendario = aula.Turma.ModalidadeTipoCalendario });

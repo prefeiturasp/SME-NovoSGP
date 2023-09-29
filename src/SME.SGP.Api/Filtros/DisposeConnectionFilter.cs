@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 
@@ -14,7 +15,7 @@ namespace SME.SGP.Api.Filtros
         }
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (sgpContext != null && sgpContext.State == System.Data.ConnectionState.Open)
+            if (sgpContext.NaoEhNulo() && sgpContext.State == System.Data.ConnectionState.Open)
             {
                 sgpContext.Close();
                 sgpContext.Dispose();

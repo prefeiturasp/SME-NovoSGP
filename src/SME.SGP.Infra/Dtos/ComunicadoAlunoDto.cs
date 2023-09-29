@@ -12,7 +12,7 @@ namespace SME.SGP.Infra.Dtos
         public long ComunicadoId { get; set; }
 
         public static explicit operator ComunicadoAlunoDto(ComunicadoAluno aluno)
-            => aluno == null ? null : new ComunicadoAlunoDto()
+            => aluno.EhNulo() ? null : new ComunicadoAlunoDto()
             {
                 AlunoCodigo = aluno.AlunoCodigo,
                 ComunicadoId = aluno.ComunicadoId,

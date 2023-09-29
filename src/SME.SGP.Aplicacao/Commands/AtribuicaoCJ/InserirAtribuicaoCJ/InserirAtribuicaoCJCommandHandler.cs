@@ -36,16 +36,17 @@ namespace SME.SGP.Aplicacao
         {
             var atribuicaoCJ = request.AtribuicaoCJ;
             var atribuicoesAtuais = request.AtribuicoesAtuais;
+            var excluiAbrangencia = request.ExcluiAbrangencia;
 
             await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
-            if (request.AtribuicoesAtuais == null)
+            if (request.AtribuicoesAtuais.EhNulo())
                 request.AtribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
                     atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty, null);
 
             var atribuicaoJaCadastrada = atribuicoesAtuais.FirstOrDefault(a => a.DisciplinaId == atribuicaoCJ.DisciplinaId);
 
-            if (atribuicaoJaCadastrada == null)
+            if (atribuicaoJaCadastrada.EhNulo())
             {
                 if (!atribuicaoCJ.Substituir)
                     return Unit.Value;
@@ -54,7 +55,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (atribuicaoCJ.Substituir == atribuicaoJaCadastrada.Substituir)
                 {
-                    await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico);
+                    await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
                     return Unit.Value;
                 }
 
@@ -68,12 +69,12 @@ namespace SME.SGP.Aplicacao
             ValidaSePerfilPodeIncluir(request.Usuario);
 
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
-            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico);
+            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico, excluiAbrangencia);
 
             return Unit.Value;
         }
 
-        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico)
+        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico, bool excluiAbrangencia)
         {
             var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
@@ -81,10 +82,10 @@ namespace SME.SGP.Aplicacao
 
             if (atribuicaoCJ.Substituir)
             {
-                if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
+                if (abrangenciasAtuais.NaoEhNulo() && !abrangenciasAtuais.Any())
                 {
                     var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId));
-                    if (turma == null)
+                    if (turma.EhNulo())
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
 
                     var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = ehHistorico } };
@@ -96,7 +97,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (ehHistorico)
                     await repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());
-                else
+                else if (excluiAbrangencia)
                     await repositorioAbrangencia.ExcluirAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
 
                 if(!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir))
@@ -110,7 +111,7 @@ namespace SME.SGP.Aplicacao
             if (componentesQueNaoPodemSerSubstituidos.Any(a => a == atribuicaoCJ.DisciplinaId))
             {
                 var nomeComponenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
-                if (!(nomeComponenteCurricular is null))
+                if (nomeComponenteCurricular.NaoEhNulo())
                 {
                     throw new NegocioException($"O componente curricular {nomeComponenteCurricular.Nome} não pode ser substituido.");
                 }
@@ -120,7 +121,7 @@ namespace SME.SGP.Aplicacao
 
         private void ValidaSePerfilPodeIncluir(Usuario usuario)
         {
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Não foi possível obter o usuário logado.");
 
             if (usuario.PerfilAtual == Perfis.PERFIL_CP || usuario.PerfilAtual == Perfis.PERFIL_DIRETOR)
@@ -132,7 +133,7 @@ namespace SME.SGP.Aplicacao
             if (atribuicaoCJ.Id > 0 && !atribuicaoCJ.Substituir)
             {
                 var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
-                if (aulas != null && aulas.Any())
+                if (aulas.NaoEhNulo() && aulas.Any())
                 {
                     var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
                     var nomeComponenteCurricular = componenteCurricular?.Nome ?? atribuicaoCJ.DisciplinaId.ToString();

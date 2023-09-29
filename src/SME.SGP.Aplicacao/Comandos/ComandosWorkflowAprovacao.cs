@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
             var notificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId);
 
-            if (notificacao == null)
+            if (notificacao.EhNulo())
                 return null;
             
             var codigoDaNotificacao = notificacao.Codigo;

@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = await repositorioAbrangencia.ObterAnosTurmasPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico,anoLetivo);
 
-            if (retorno != null && retorno.Any())
+            if (retorno.NaoEhNulo() && retorno.Any())
                 return TransformarAnosEmOpcoesDropdownDto(retorno.OrderBy(q => q), modalidade);
             else
                 return Enumerable.Empty<OpcaoDropdownDto>();

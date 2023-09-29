@@ -38,7 +38,8 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     string respostaHttp = $"HttpCode {(int)resposta.StatusCode} - HttpMessage: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
-                    var respostaErro = resposta?.Content != null ? resposta?.Content?.ReadAsStringAsync()?.Result.ToString() : respostaHttp;
+                    var httpContentResult = (await resposta?.Content?.ReadAsStringAsync())?.ToString();
+                    var respostaErro = (resposta?.Content).NaoEhNulo() ? httpContentResult : respostaHttp;
                     throw new Exception(respostaErro);
                 }
             }

@@ -241,7 +241,7 @@ namespace SME.SGP.Dados.Repositorios
             if (periodoFim.HasValue)
                 condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
 
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
             var query = $"select count(0) from (select distinct on (a.id, a.data_aula, db.componente_curricular_id) db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao}) as DiarioBordo";

@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(request.ProfessorRf))
                 url.Append($"?codigoRf={request.ProfessorRf}");
 
-            if (request.DataReferencia != null)
+            if (request.DataReferencia.HasValue)
             {
                 if (!string.IsNullOrEmpty(request.ProfessorRf))
                     url.Append($"&dataReferencia={request.DataReferencia.Value.ToString("yyyy-MM-dd")}");

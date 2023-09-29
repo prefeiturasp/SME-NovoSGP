@@ -55,10 +55,10 @@ namespace SME.SGP.Aplicacao
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuarioLogado.CodigoRf, false, aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if (possuiAtribuicaoCJ && (atribuicoesEsporadica != null && atribuicoesEsporadica.Any()))
+                if (possuiAtribuicaoCJ && (atribuicoesEsporadica.NaoEhNulo() && atribuicoesEsporadica.Any()))
                 {
                     var verificaAtribuicao = atribuicoesEsporadica.FirstOrDefault(a => a.DataInicio <= aulaRecorrente.DataAula.Date && a.DataFim >= aulaRecorrente.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe);
-                    if (verificaAtribuicao == null)
+                    if (verificaAtribuicao.EhNulo())
                         throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
 
                     atribuicao = verificaAtribuicao;
@@ -92,15 +92,15 @@ namespace SME.SGP.Aplicacao
 
         private bool PodeCadastarAulaNaTurma(IEnumerable<ComponenteCurricularEol> componentes, InserirAulaRecorrenteCommand aulaRecorrente)
         {
-            if (componentes == null || !componentes.Any())
+            if (componentes.EhNulo() || !componentes.Any())
                 return false;
 
             var componente = componentes.FirstOrDefault(c => c.Codigo == aulaRecorrente.ComponenteCurricularId);
 
-            if (componente == null)
+            if (componente.EhNulo())
                 componente = componentes.FirstOrDefault(c => c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId);
 
-            if (componente == null) return false;
+            if (componente.EhNulo()) return false;
 
             return true;
         }
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
             var componenteAtribuicaoEolCorrespondente = componentesAtribuicaoEol?
                 .FirstOrDefault(ca => ca.Codigo.Equals(aulaRecorrente.ComponenteCurricularId) || ca.CodigoComponenteTerritorioSaber.Equals(aulaRecorrente.ComponenteCurricularId));
 
-            if ((componentes == null || !componentes.Any(FilterComponentesCompativeis)) && componenteAtribuicaoEolCorrespondente == null)
+            if ((componentes.EhNulo() || !componentes.Any(FilterComponentesCompativeis)) && componenteAtribuicaoEolCorrespondente.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
         }
 
@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
                 aulaRecorrente.RecorrenciaAula);
             var fimRecorrencia = await mediator.Send(obterFimPeriodoQuery);
 
-            if (fimRecorrencia == null || fimRecorrencia == DateTime.MinValue)
+            if (fimRecorrencia.EhNulo() || fimRecorrencia == DateTime.MinValue)
                 fimRecorrencia = inicioRecorrencia;
 
             await GerarRecorrenciaParaPeriodos(aulaRecorrente, inicioRecorrencia, fimRecorrencia, usuario, atribuicao);
@@ -143,12 +143,12 @@ namespace SME.SGP.Aplicacao
         {
             var diasParaIncluirRecorrencia = ObterDiasDaRecorrencia(inicioRecorrencia, fimRecorrencia);
 
-            if (diasParaIncluirRecorrencia == null || !diasParaIncluirRecorrencia.Any())
+            if (diasParaIncluirRecorrencia.EhNulo() || !diasParaIncluirRecorrencia.Any())
                 throw new NegocioException("Não foi possível obter dias para incluir aulas recorrentes.");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível obter a turma para inclusão de aulas recorrentes.");
             
             var codigosComponentesConsiderados = new List<long>() { aulaRecorrente.ComponenteCurricularId };
@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
             var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componentesCurricularesCodigos, usuario.EhProfessorCj());
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
-            if (datasValidas == null || !datasValidas.Any())
+            if (datasValidas.EhNulo() || !datasValidas.Any())
             {
                 var mensagem = validacaoAulasExistentes.mensagensValidacao.Any() ?
                     string.Join("<br/>", validacaoAulasExistentes.mensagensValidacao) :
@@ -241,7 +241,7 @@ namespace SME.SGP.Aplicacao
             // Dias Letivos
             var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, tipoCalendarioId);
 
-            if (validacaoDiasLetivos.diasLetivos == null || !validacaoDiasLetivos.diasLetivos.Any())
+            if (validacaoDiasLetivos.diasLetivos.EhNulo() || !validacaoDiasLetivos.diasLetivos.Any())
                 throw new NegocioException($"{string.Join("<br/>", validacaoDiasLetivos.mensagensValidacao)}");
 
             // Atribuição Professor
@@ -294,9 +294,9 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(turmaCodigo, componentesCurricularesCodigos, dataConsulta, codigoRf, ehRegencia));
-                    var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
+                    var quantidadeAulasRestantes = gradeAulas.EhNulo() ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
-                    if (gradeAulas != null)
+                    if (gradeAulas.NaoEhNulo())
                     {
                         if (quantidadeAulasRestantes < quantidade)
                             throw new NegocioException("Quantidade de aulas superior ao limíte de aulas da grade.");
@@ -320,7 +320,7 @@ namespace SME.SGP.Aplicacao
             var mensagensValidacao = new List<string>();
             var datasComRegistro = await mediator.Send(new ObterAulaPorDataAulasExistentesQuery(diasParaIncluirRecorrencia.ToList(), turmaCodigo, componentesCurricularesCodigos.Select(c => c.ToString()).ToArray(), professorCJ));
 
-            if (datasComRegistro != null && datasComRegistro.Any())
+            if (datasComRegistro.NaoEhNulo() && datasComRegistro.Any())
             {
                 diasParaIncluirRecorrencia.Where(a => datasComRegistro.Any(d => d == a)).ToList()
                                                 .ForEach(a => IncluirMensagemValidacao(a, "Já existe aula cadastrada nesta data", ref mensagensValidacao));
@@ -355,7 +355,7 @@ namespace SME.SGP.Aplicacao
                 return (datasAtribuicaoCJ, mensagensValidacao);
             }
 
-            if (datasValidas == null || !datasValidas.Any())
+            if (datasValidas.EhNulo() || !datasValidas.Any())
                 throw new NegocioException("Não foi possível obter datas validas para a atribuição do professor no EOL.");
 
             var datasAtribuicaoEOL = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(
@@ -365,7 +365,7 @@ namespace SME.SGP.Aplicacao
                 componenteCurricularCodigo));
 
 
-            if (datasAtribuicaoEOL == null || !datasAtribuicaoEOL.Any())
+            if (datasAtribuicaoEOL.EhNulo() || !datasAtribuicaoEOL.Any())
                 throw new NegocioException("Não foi possível validar datas para a atribuição do professor no EOL.");
 
             var datasAtribuicao = datasAtribuicaoEOL

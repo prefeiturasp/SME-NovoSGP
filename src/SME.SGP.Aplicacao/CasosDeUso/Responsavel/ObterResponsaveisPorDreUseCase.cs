@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaNomesResponsaveisAtribuidos = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
-            if (responsaveisAtribuidos == null || !responsaveisAtribuidos.Any())
+            if (responsaveisAtribuidos.EhNulo() || !responsaveisAtribuidos.Any())
                 return listaNomesResponsaveisAtribuidos;
 
             switch (tipoResponsavelAtribuicao)
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                     }
             }
 
-            if (listaNomesResponsaveisAtribuidos == null || !listaNomesResponsaveisAtribuidos.Any())
+            if (listaNomesResponsaveisAtribuidos.EhNulo() || !listaNomesResponsaveisAtribuidos.Any())
                 throw new NegocioException("A API/EOL não retornou os nomes dos responsáveis atribuídos.");
 
             return await Task.FromResult(listaNomesResponsaveisAtribuidos);
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var funcionariosEol = await mediator.Send(new ObterFuncionariosPorDreECargoQuery(dreCodigo, 29));
 
-                        if (funcionariosEol != null)
+                        if (funcionariosEol.NaoEhNulo())
                         {
                             foreach (var funcionario in funcionariosEol)
                             {
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
                         var funcionariosUnidades = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(dreCodigo,
                             new List<Guid> { perfil }))).ToList();
 
-                        if (funcionariosUnidades != null)
+                        if (funcionariosUnidades.NaoEhNulo())
                         {
                             foreach (var funcionario in funcionariosUnidades)
                             {
@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
                 default:
                     var supervisoresEol = (await mediator.Send(new ObterSupervisoresPorDreEolQuery(dreCodigo))).ToList();
 
-                    if(supervisoresEol != null)
+                    if(supervisoresEol.NaoEhNulo())
                     {
                         foreach (var supervisor in supervisoresEol)
                         {
@@ -154,7 +154,7 @@ namespace SME.SGP.Aplicacao
 
             var nomesResponsaveisAtribuidos = await ObterNomesResponsaveisAtribuidos(responsaveisAtribuidos, filtro.TipoResponsavelAtribuicao);
 
-            if (responsaveisEolOuCoreSSO != null && responsaveisEolOuCoreSSO.Any())
+            if (responsaveisEolOuCoreSSO.NaoEhNulo() && responsaveisEolOuCoreSSO.Any())
             {
                 listaResponsaveis.AddRange(responsaveisEolOuCoreSSO?.Select(a => new SupervisorDto()
                 {
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
                 }));
             }
 
-            if (responsaveisAtribuidos != null && responsaveisAtribuidos.Any())
+            if (responsaveisAtribuidos.NaoEhNulo() && responsaveisAtribuidos.Any())
             {
                 listaResponsaveis.AddRange(responsaveisAtribuidos?.Where(s => !responsaveisEolOuCoreSSO.Select(se => se.CodigoRfOuLogin).Contains(s.SupervisorId))?
                     .Select(a => new SupervisorDto()

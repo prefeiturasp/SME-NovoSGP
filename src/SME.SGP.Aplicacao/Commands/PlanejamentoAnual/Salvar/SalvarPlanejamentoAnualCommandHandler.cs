@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.IniciarTransacao();
                 var listaDescricao = new List<PlanejamentoAnualComponenteResumidoDto>();
                 var planejamentoAnual = await repositorioPlanejamentoAnual.ObterPlanejamentoSimplificadoPorTurmaEComponenteCurricular(comando.TurmaId, comando.ComponenteCurricularId);
-                if (planejamentoAnual == null)
+                if (planejamentoAnual.EhNulo())
                 {
 
                     planejamentoAnual = new PlanejamentoAnual(comando.TurmaId, comando.ComponenteCurricularId);
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                 List<string> excessoes = new List<string>();
                 var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(comando.TurmaId));
-                if (turma == null)
+                if (turma.EhNulo())
                     throw new NegocioException($"Turma de id [{turma.Id}] não localizada!");
 
                 var regenteAtual = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(comando.ComponenteCurricularId, turma.CodigoTurma, DateTime.Now.Date, usuario));
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                     {
 
                         var planejamentoAnualPeriodoEscolar = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPorPlanejamentoAnualIdEPeriodoId(planejamentoAnual.Id, periodo.PeriodoEscolarId);
-                        if (planejamentoAnualPeriodoEscolar == null)
+                        if (planejamentoAnualPeriodoEscolar.EhNulo())
                         {
                             planejamentoAnualPeriodoEscolar = new PlanejamentoAnualPeriodoEscolar(periodo.PeriodoEscolarId)
                             {
@@ -118,13 +118,13 @@ namespace SME.SGP.Aplicacao
                             })?.ToList()
                         })?.ToList();
 
-                        if (componentes != null)
+                        if (componentes.NaoEhNulo())
                         {
 
                             foreach (var componente in componentes)
                             {
                                 var planejamentoAnualComponente = await repositorioPlanejamentoAnualComponente.ObterPorPlanejamentoAnualPeriodoEscolarId(componente.ComponenteCurricularId, planejamentoAnualPeriodoEscolar.Id);
-                                if (planejamentoAnualComponente == null)
+                                if (planejamentoAnualComponente.EhNulo())
                                 {
                                     planejamentoAnualComponente = new PlanejamentoAnualComponente
                                     {

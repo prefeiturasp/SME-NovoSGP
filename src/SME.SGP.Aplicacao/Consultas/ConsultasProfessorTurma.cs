@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
@@ -24,9 +23,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
         }
 
-        public IEnumerable<ProfessorTurmaDto> Listar(string codigoRf)
+        public async Task<IEnumerable<ProfessorTurmaDto>> Listar(string codigoRf)
         {
-            return MapearParaDto(servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
+            return MapearParaDto(await servicoEOL.ObterListaTurmasPorProfessor(codigoRf));
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterResumoAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
@@ -37,7 +36,7 @@ namespace SME.SGP.Aplicacao
             for (int i = 0; i < retornoProfessores.Count(); i++)
             {
                 var professorSgp = await ObterProfessorSGPConsultaPorNome(retornoProfessores.ToList()[i].CodigoRF);
-                if (professorSgp != null)
+                if (professorSgp.NaoEhNulo())
                     retornoProfessores.ToList()[i].UsuarioId = professorSgp.Id;
             }
             return retornoProfessores.Where(x => x.UsuarioId > 0);
@@ -56,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var professorResumo = await ObterProfessorEOL(codigoRF, anoLetivo, buscarOutrosCargos);
             var professorSgp = await ObterProfessorSGP(codigoRF);
 
-            if (professorResumo != null)
+            if (professorResumo.NaoEhNulo())
                 professorResumo.UsuarioId = professorSgp.Id;
 
             return professorResumo;
@@ -72,7 +71,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Usuario> ObterProfessorSGP(string codigoRF)
         {
             var usuarioSgp = await mediator.Send(new ObterUsuarioPorRfQuery(codigoRF));
-            if (usuarioSgp == null)
+            if (usuarioSgp.EhNulo())
                 throw new NegocioException("RF não localizado no SGP");
 
             return usuarioSgp;
@@ -87,7 +86,7 @@ namespace SME.SGP.Aplicacao
         private async Task<ProfessorResumoDto> ObterProfessorEOL(string codigoRF, int anoLetivo, bool buscarOutrosCargos)
         {
             var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
-            if (professorResumo == null)
+            if (professorResumo.EhNulo())
                 throw new NegocioException("RF não localizado do EOL");
 
             return professorResumo;
@@ -95,30 +94,18 @@ namespace SME.SGP.Aplicacao
         private async Task<ProfessorResumoDto> ObterProfessorUeRFEOL(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
             var professorResumo = await servicoEOL.ObterProfessorPorRFUeDreAnoLetivo(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre);
-            if (professorResumo == null)
+            if (professorResumo.EhNulo())
                 throw new NegocioException("RF não localizado do EOL");
 
             return professorResumo;
         }
-        public async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
+        public Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
         {
-            IEnumerable<TurmaDto> turmasDto = null;
             var chaveCache = string.Format(NomeChaveCache.TURMAS_PROFESSOR_ANO_ESCOLA, rfProfessor, anoLetivo, codigoEscola);
-            var disciplinasCacheString = repositorioCache.Obter(chaveCache);
 
-            if (!string.IsNullOrWhiteSpace(disciplinasCacheString))
-            {
-                turmasDto = JsonConvert.DeserializeObject<IEnumerable<TurmaDto>>(disciplinasCacheString);
-            }
-            else
-            {
-                turmasDto = await servicoEOL.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(rfProfessor, codigoEscola, anoLetivo);
-                if (turmasDto != null && turmasDto.Any())
-                {
-                    await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(turmasDto));
-                }
-            }
-            return turmasDto;
+            return repositorioCache.ObterAsync(chaveCache,
+             async () => await servicoEOL.ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(rfProfessor, codigoEscola, anoLetivo),
+             "Obter turmas atribuidas ao professor");
         }
 
         private IEnumerable<ProfessorTurmaDto> MapearParaDto(IEnumerable<ProfessorTurmaReposta> turmas)

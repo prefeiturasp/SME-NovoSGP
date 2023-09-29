@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private async Task AtualizarDataExecucao(int ano)
         {
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoFrequenciaTurma, ano));
-            if (parametroSistema != null)
+            if (parametroSistema.NaoEhNulo())
             {
                 parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
 

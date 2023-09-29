@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             var usuariosFaltantesRf = request.CodigosRf.Where(u => !usuarios.Select(us => us.CodigoRf).Contains(u));
 
-            if (usuariosFaltantesRf != null && usuariosFaltantesRf.Any())
+            if (usuariosFaltantesRf.NaoEhNulo() && usuariosFaltantesRf.Any())
             {
                 foreach (var usuarioFaltandoRf in usuariosFaltantesRf)
                 {
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
         {
             var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
 
-            if (perfisPorLogin == null)
+            if (perfisPorLogin.EhNulo())
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
 
             var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);

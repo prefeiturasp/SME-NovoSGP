@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            string codigoRfAluno = mensagem.Mensagem != null ? mensagem.Mensagem.ToString() : "";
+            string codigoRfAluno = mensagem.Mensagem.NaoEhNulo() ? mensagem.Mensagem.ToString() : "";
             var valorParametro = await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.GerarFechamentoTurmasEdFisica2020));
             
-            if(valorParametro != null)
+            if(valorParametro.NaoEhNulo())
             {
                 if (valorParametro.Equals("true"))
                 {
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                         foreach (var alunosTurma in dadosAgrupadosPorTurma)
                         {
                             var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = alunosTurma.Key.ToString() });
-                            if (dadosTurma != null && dadosTurma.TipoTurma == TipoTurma.EdFisica && dadosTurma.AnoLetivo == ANO_LETIVO_TURMAS_ED_FISICA)
+                            if (dadosTurma.NaoEhNulo() && dadosTurma.TipoTurma == TipoTurma.EdFisica && dadosTurma.AnoLetivo == ANO_LETIVO_TURMAS_ED_FISICA)
                                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma,
                                     new { TurmaId = dadosTurma.Id, CodigoAlunos = alunosTurma.Select(a => a.CodigoAluno).ToArray() }, Guid.NewGuid(), null));
                         }
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var dadosAlunoEdFisica = dadosEolAlunoTurma.Where(d => d.CodigoAluno.ToString().Equals(codigoRfAluno)).FirstOrDefault();
                        
-                        if (dadosAlunoEdFisica != null)
+                        if (dadosAlunoEdFisica.NaoEhNulo())
                         {
                             var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = dadosAlunoEdFisica.CodigoTurma.ToString() });
                             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma,

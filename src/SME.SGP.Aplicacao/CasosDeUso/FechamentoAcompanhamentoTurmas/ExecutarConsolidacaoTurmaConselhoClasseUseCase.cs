@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var consolidacaoTurmaConselhoClasse = mensagemRabbit.ObterObjetoMensagem<ConsolidacaoTurmaDto>();
 
-            if (consolidacaoTurmaConselhoClasse == null)
+            if (consolidacaoTurmaConselhoClasse.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma e o bimestre não foram informados", LogNivel.Critico, LogContexto.ConselhoClasse));
                 return false;
@@ -37,12 +37,12 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator
                 .Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, DateTime.Today));
 
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
             var tipoCalendarioId = await mediator
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
-            if (periodosEscolares == null)
+            if (periodosEscolares.EhNulo())
                 throw new NegocioException("Não foi possivel obter o período escolar.");
 
             foreach (var aluno in alunos)
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
 
-                if (ultimoBimestreAtivo == null)
+                if (ultimoBimestreAtivo.EhNulo())
                 {
                     await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id);
                     continue;
@@ -80,12 +80,12 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(mat => mat.DataSituacao)
                     .FirstOrDefault();
 
-                var dataSituacao = primeiroRegistroMatriculaAtiva != null && !primeiroRegistroMatriculaAtiva.DataSituacao.Equals(DateTime.MinValue) ? primeiroRegistroMatriculaAtiva.DataSituacao : aluno.DataSituacao;
+                var dataSituacao = primeiroRegistroMatriculaAtiva.NaoEhNulo() && !primeiroRegistroMatriculaAtiva.DataSituacao.Equals(DateTime.MinValue) ? primeiroRegistroMatriculaAtiva.DataSituacao : aluno.DataSituacao;
 
                 var matriculadoDepois = !aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => dataSituacao > p.PeriodoFim.Date)?.Bimestre : null;
 
-                if (!aluno.Inativo && matriculadoDepois != null && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
+                if (!aluno.Inativo && matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                 {
                     await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
                     continue;

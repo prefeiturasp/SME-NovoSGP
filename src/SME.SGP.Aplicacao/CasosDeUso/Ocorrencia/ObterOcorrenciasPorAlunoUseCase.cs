@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> Executar(FiltroTurmaAlunoSemestreDto dto)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("A Turma informada não foi encontrada");
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(dto.AlunoCodigo.ToString(), turma.AnoLetivo));
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException("O Aluno informado não foi encontrado");
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             var periodo = new PeriodoOcorrenciaPorAlunoDto();
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
-            if (periodosEscolares == null)
+            if (periodosEscolares.EhNulo())
                 throw new NegocioException("Não foi possível encontrar o período escolar da turma.");
 
             if (semestre == 1)

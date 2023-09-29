@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             param.UsuarioNome = usuarioLogado.Nome;
             param.UsuarioRf = usuarioLogado.CodigoRf;
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
 
             await mediator.Send(new RegistrarHistoricoDeAlteracaoDeImpressaoDoEncaminhamentoNAAPACommand(param.EncaminhamentoNaapaIds, usuarioLogado.Id));

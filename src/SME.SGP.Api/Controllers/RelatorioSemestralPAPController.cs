@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Api.Controllers
@@ -23,7 +24,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await ObterListaSemestresUseCase.Executar(mediator, turmaCodigo);
 
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);

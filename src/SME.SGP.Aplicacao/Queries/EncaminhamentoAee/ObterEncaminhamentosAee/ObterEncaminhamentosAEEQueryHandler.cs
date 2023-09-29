@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
                 var ueCodigo = await mediator.Send(new ObterUePorIdQuery(ueId));
                 var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0, 0, ehTurmaHistorica, anoLetivo, tipos, true));
 
-                if (turmas != null || turmas.Any())
+                if (turmas.NaoEhNulo() || turmas.Any())
                 {
                     foreach (var item in turmas)
                         turmasCodigos.Add(item.Codigo);

@@ -38,16 +38,16 @@ namespace SME.SGP.Dominio.Servicos
         {
             await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
-            if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinasId.Contains(atribuicaoCJ.DisciplinaId)))
+            if (professoresTitularesDisciplinasEol.NaoEhNulo() && professoresTitularesDisciplinasEol.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinasId.Contains(atribuicaoCJ.DisciplinaId)))
                 throw new NegocioException("Não é possível realizar substituição na turma onde o professor já é o titular.");
 
-            if (atribuicoesAtuais == null)
+            if (atribuicoesAtuais.EhNulo())
                 atribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
                     atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty, null);
 
             var atribuicaoJaCadastrada = atribuicoesAtuais.FirstOrDefault(a => a.DisciplinaId == atribuicaoCJ.DisciplinaId);
 
-            if (atribuicaoJaCadastrada == null)
+            if (atribuicaoJaCadastrada.EhNulo())
             {
                 if (!atribuicaoCJ.Substituir)
                     return;
@@ -78,10 +78,10 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId));
               
-                if (abrangenciasAtuais != null && !abrangenciasAtuais.Any())
+                if (abrangenciasAtuais.NaoEhNulo() && !abrangenciasAtuais.Any())
                 {
                  
-                    if (turma == null)
+                    if (turma.EhNulo())
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
                  
                     var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id , Historico  = turma.Historica } };
@@ -89,10 +89,10 @@ namespace SME.SGP.Dominio.Servicos
                     await servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
 
-                if (abrangenciasAtuais != null)
+                if (abrangenciasAtuais.NaoEhNulo())
                 {
                     var abrangenciaDaTurma = abrangenciasAtuais.Where(x => x.TurmaId == turma.Id).FirstOrDefault();
-                    if (abrangenciaDaTurma != null && abrangenciaDaTurma.Historico != turma.Historica)
+                    if (abrangenciaDaTurma.NaoEhNulo() && abrangenciaDaTurma.Historico != turma.Historica)
                     {
                         var abangencia = new long[] { abrangenciaDaTurma.Id };
                         await repositorioAbrangencia.AtualizaAbrangenciaHistorica(abangencia);
@@ -102,7 +102,7 @@ namespace SME.SGP.Dominio.Servicos
 
 
             }
-            else if ((abrangenciasAtuais != null && abrangenciasAtuais.Any()) &&
+            else if ((abrangenciasAtuais.NaoEhNulo() && abrangenciasAtuais.Any()) &&
                      (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
             {
                 await servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
@@ -120,7 +120,7 @@ namespace SME.SGP.Dominio.Servicos
             if (componentesQueNaoPodemSerSubstituidos.Any(a => a == atribuicaoCJ.DisciplinaId))
             {
                 var nomeComponenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
-                if (!(nomeComponenteCurricular is null))
+                if (nomeComponenteCurricular.NaoEhNulo())
                 {
                     throw new NegocioException($"O componente curricular {nomeComponenteCurricular.Nome} não pode ser substituido.");
                 }
@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
 
-            if (usuarioAtual == null)
+            if (usuarioAtual.EhNulo())
                 throw new NegocioException("Não foi possível obter o usuário logado.");
 
             if (usuarioAtual.PerfilAtual == Perfis.PERFIL_CP || usuarioAtual.PerfilAtual == Perfis.PERFIL_DIRETOR)
@@ -144,7 +144,7 @@ namespace SME.SGP.Dominio.Servicos
             if (atribuicaoCJ.Id > 0 && !atribuicaoCJ.Substituir)
             {
                 var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
-                if (aulas != null && aulas.Any())
+                if (aulas.NaoEhNulo() && aulas.Any())
                 {
                     var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId)); 
                     var nomeComponenteCurricular = componenteCurricular?.Nome ?? atribuicaoCJ.DisciplinaId.ToString();

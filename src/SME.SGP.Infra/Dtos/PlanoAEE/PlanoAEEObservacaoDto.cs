@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
@@ -20,7 +21,7 @@ namespace SME.SGP.Infra
 
         public void AdicionaUsuario(UsuarioNomeDto usuario)
         {
-            if (usuario != null && usuario.UsuarioId > 0)
+            if (usuario.NaoEhNulo() && usuario.UsuarioId > 0)
                 Usuarios.Add(usuario);
         }
     }

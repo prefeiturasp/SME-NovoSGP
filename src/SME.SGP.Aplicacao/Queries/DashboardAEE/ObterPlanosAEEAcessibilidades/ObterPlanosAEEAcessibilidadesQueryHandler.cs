@@ -32,8 +32,8 @@ namespace SME.SGP.Aplicacao
                 retorno.Add(new AEEAcessibilidadeRetornoDto()
                 {
                     Descricao = "Usa recursos de acessibilidade na sala regular",
-                    QuantidadeSim = dadosRegular.FirstOrDefault(a => a.Opcao.ToUpper() == "SIM") != null ? dadosRegular.First(a => a.Opcao.ToUpper() == "SIM").Quantidade : 0,
-                    QuantidadeNao = dadosRegular.FirstOrDefault(a => a.Opcao.ToUpper() == "NÃO") != null ? dadosRegular.First(a => a.Opcao.ToUpper() == "NÃO").Quantidade : 0,
+                    QuantidadeSim = dadosRegular.FirstOrDefault(a => a.Opcao.ToUpper() == "SIM").NaoEhNulo() ? dadosRegular.First(a => a.Opcao.ToUpper() == "SIM").Quantidade : 0,
+                    QuantidadeNao = dadosRegular.FirstOrDefault(a => a.Opcao.ToUpper() == "NÃO").NaoEhNulo() ? dadosRegular.First(a => a.Opcao.ToUpper() == "NÃO").Quantidade : 0,
                     LegendaSim = "Sim",
                     LegendaNao = "Não",
                 });
@@ -42,8 +42,8 @@ namespace SME.SGP.Aplicacao
                 retorno.Add(new AEEAcessibilidadeRetornoDto()
                 {
                     Descricao = "Usa recursos de acessibilidade na SRM",
-                    QuantidadeSim = dadosSRM.FirstOrDefault(a => a.Opcao.ToUpper() == "SIM") != null ? dadosSRM.First(a => a.Opcao.ToUpper() == "SIM").Quantidade : 0,
-                    QuantidadeNao = dadosSRM.FirstOrDefault(a => a.Opcao.ToUpper() == "NÃO") != null ? dadosSRM.First(a => a.Opcao.ToUpper() == "NÃO").Quantidade : 0,
+                    QuantidadeSim = dadosSRM.FirstOrDefault(a => a.Opcao.ToUpper() == "SIM").NaoEhNulo() ? dadosSRM.First(a => a.Opcao.ToUpper() == "SIM").Quantidade : 0,
+                    QuantidadeNao = dadosSRM.FirstOrDefault(a => a.Opcao.ToUpper() == "NÃO").NaoEhNulo() ? dadosSRM.First(a => a.Opcao.ToUpper() == "NÃO").Quantidade : 0,
                     LegendaSim = "Sim",
                     LegendaNao = "Não",
                 });

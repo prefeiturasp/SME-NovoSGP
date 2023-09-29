@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.DiasGeracaoNotificacoesPlanoAEEExpirado, DateTime.Today.Year));
 
-            if (parametro == null)
+            if (parametro.EhNulo())
                 throw new NegocioException("Parâmetro de Dias para notificar plano AEE expirados não localizado");
 
             return DateTime.Today.AddDays(int.Parse(parametro.Valor) * -1);
@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

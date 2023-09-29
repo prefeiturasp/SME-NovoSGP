@@ -36,7 +36,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await useCase.Executar(filtro);
 
-            if (retorno == null)
+            if (retorno.EhNulo())
                 return NoContent();
 
             return Ok(retorno);

@@ -180,7 +180,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join turma t on t.turma_id = a.turma_id ");
 
 
-            if (bimestres != null)
+            if (bimestres.NaoEhNulo())
                 sql.AppendLine(" inner join periodo_escolar pe on a.tipo_calendario_id = pe.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim and pe.bimestre = any(@bimestres)");
 
             sql.AppendLine(@" where not an.excluido 

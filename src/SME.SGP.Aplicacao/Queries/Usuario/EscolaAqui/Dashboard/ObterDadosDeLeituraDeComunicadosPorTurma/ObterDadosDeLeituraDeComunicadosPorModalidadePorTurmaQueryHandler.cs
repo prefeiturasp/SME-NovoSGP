@@ -36,14 +36,14 @@ namespace SME.SGP.Aplicacao
             url.Append(@"&codigoUe=" + request.CodigoUe);
             url.Append(@"&notificacaoId=" + request.ComunicadoId);
             url.Append(@"&modoVisualizacao=" + request.ModoVisualizacao);
-            if (request.CodigosTurmas != null)
+            if (request.CodigosTurmas.NaoEhNulo())
             {
                 foreach (var item in request.CodigosTurmas)
                 {                    
                     url.Append(@"&codigosTurmas=" + item);
                 }
             }
-            if (request.Modalidades != null)
+            if (request.Modalidades.NaoEhNulo())
             {
                 foreach (var item in request.Modalidades)
                 {

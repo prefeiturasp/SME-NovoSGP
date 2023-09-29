@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
                 var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(filtro.EncaminhamentoId));
 
-                if (pendenciasEncaminhamentoAEE != null)
+                if (pendenciasEncaminhamentoAEE.NaoEhNulo())
                 {
                     foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
                         await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));

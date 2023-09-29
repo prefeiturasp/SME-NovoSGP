@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var eventos = await mediator.Send(new ObterEventosPorTipoDeCalendarioDreUeQuery(request.TipoCalendarioId, request.DreCodigo, request.UeCodigo, false, false));
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorIdQuery(request.TipoCalendarioId));
 
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo de calendario não encontrado");
 
             var anoLetivo = tipoCalendario.AnoLetivo;

@@ -43,8 +43,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
             retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao == null).ShouldBeTrue();
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Informacao == null).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao.EhNulo()).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Informacao.EhNulo()).ShouldBeTrue();
         }
 
         [Fact]
@@ -80,8 +80,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             var retorno = await ExecutarTeste(filtroNotaFechamento);
 
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)) == null).ShouldBeTrue();
-            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)) == null).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)).EhNulo()).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)).EhNulo()).ShouldBeTrue();
         }
         
         private async Task<FechamentoTurmaDisciplinaBimestreDto> ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)

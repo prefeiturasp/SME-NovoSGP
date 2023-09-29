@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -22,11 +23,11 @@ namespace SME.SGP.Aplicacao
         {
             var fechamento = await repositorioFechamentoTurma.ObterIdEPeriodoPorTurmaBimestre(request.TurmaId, request.Bimestre > 0 ? (int?)request.Bimestre : null);
 
-            var periodoEscolarId = fechamento == null ?
+            var periodoEscolarId = fechamento.EhNulo() ?
                 await ObterPeriodoEscolarId(request.TurmaId, request.Bimestre) :
                 fechamento.PeriodoEscolarId;
 
-            if (fechamento == null)
+            if (fechamento.EhNulo())
                 fechamento = new FechamentoTurmaPeriodoEscolarDto() { PeriodoEscolarId = periodoEscolarId };
 
             if (periodoEscolarId.HasValue)
@@ -41,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 return 0;
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-            if (turma == null) return null;
+            if (turma.EhNulo()) return null;
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
 
             return periodoEscolar.Id;

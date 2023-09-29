@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -24,11 +25,11 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(AtualizarCacheFechamentoNotaCommand request, CancellationToken cancellationToken)
         {
             var notasFechamentoFinaisNoCache = await ObterFechamentosNotasDoCache(request);
-            if (notasFechamentoFinaisNoCache != null)
+            if (notasFechamentoFinaisNoCache.NaoEhNulo())
                 await PersistirNotasFinaisNoCache(notasFechamentoFinaisNoCache, request);
 
             var notasConceitosFechamento = await ObterNotasConceitosCache(request);
-            if (notasConceitosFechamento != null)
+            if (notasConceitosFechamento.NaoEhNulo())
                 await PersistirNotaConceitoBimestreNoCache(notasConceitosFechamento, request);
 
             return true;
@@ -54,7 +55,7 @@ namespace SME.SGP.Aplicacao
         {
             var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == request.CodigoAluno && c.ComponenteCurricularId == request.FechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
-            if (notaFinalAluno == null)
+            if (notaFinalAluno.EhNulo())
             {
                 notasFinais.Add(new FechamentoNotaAlunoAprovacaoDto
                 {
@@ -83,7 +84,7 @@ namespace SME.SGP.Aplicacao
             var notaConceitoFechamentoAluno = notasConceitosFechamento.FirstOrDefault(c => c.AlunoCodigo == request.CodigoAluno &&
                 c.ComponenteCurricularCodigo == request.FechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
-            if (notaConceitoFechamentoAluno == null)
+            if (notaConceitoFechamentoAluno.EhNulo())
                 notasConceitosFechamento.Add(ObterNotaConceitoBimestreAluno(request));
             else
             {
@@ -104,8 +105,8 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularCodigo = request.FechamentoNota.DisciplinaId,
                 TurmaCodigo = request.CodigoTurma,
                 Bimestre = null,
-                ConselhoClasseNotaId = request.ConselhosClasseAlunos != null ? request.ConselhosClasseAlunos.ConselhoClasseNotaId : 0,
-                ConselhoClasseId = request.ConselhosClasseAlunos != null ? request.ConselhosClasseAlunos.ConselhoClasseId : 0
+                ConselhoClasseNotaId = request.ConselhosClasseAlunos.NaoEhNulo() ? request.ConselhosClasseAlunos.ConselhoClasseNotaId : 0,
+                ConselhoClasseId = request.ConselhosClasseAlunos.NaoEhNulo() ? request.ConselhosClasseAlunos.ConselhoClasseId : 0
             };
         }
 

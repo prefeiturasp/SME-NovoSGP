@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         {
             var retornoConsultaPaginada = await repositorioPendenciaFechamento.ListarPaginada(Paginacao, filtro.TurmaCodigo, filtro.Bimestre, filtro.ComponenteCurricularId);
 
-            if (retornoConsultaPaginada.Items != null && retornoConsultaPaginada.Items.Any())
+            if (retornoConsultaPaginada.Items.NaoEhNulo() && retornoConsultaPaginada.Items.Any())
             {
                 // Atualiza nome da situacao
                 retornoConsultaPaginada.Items.ToList()
@@ -54,13 +54,13 @@ namespace SME.SGP.Aplicacao
         public async Task<PendenciaFechamentoCompletoDto> ObterPorPendenciaId(long pendenciaId)
         {
             var pendencia = await repositorioPendenciaFechamento.ObterPorPendenciaId(pendenciaId);
-            if (pendencia == null)
+            if (pendencia.EhNulo())
                 throw new NegocioException("Pendencia informada não localizada.");
 
             pendencia.SituacaoNome = Enum.GetName(typeof(SituacaoPendencia), pendencia.Situacao);
 
             var disciplinaEOL = await mediator.Send(new ObterComponenteCurricularPorIdQuery(pendencia.DisciplinaId));
-            if (disciplinaEOL is null)
+            if (disciplinaEOL.EhNulo())
                 throw new NegocioException("Componente curricular informado não localizado.");
 
             pendencia.ComponenteCurricular = disciplinaEOL.Nome;

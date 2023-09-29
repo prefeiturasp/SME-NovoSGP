@@ -29,11 +29,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<ResultadoEncaminhamentoAEEDto> Executar(EncaminhamentoAeeDto encaminhamentoAEEDto)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEEDto.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("A turma informada não foi encontrada");
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoAEEDto.AlunoCodigo, DateTime.Now.Year));
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException("O aluno informado não foi encontrado");
 
             var alunoEncaminhamentoAEE = await mediator.Send(new ExisteEncaminhamentoAEEPorEstudanteQuery(encaminhamentoAEEDto.AlunoCodigo, turma.Ue.Id));
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
             {
                 var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id.GetValueOrDefault()));
-                if (encaminhamentoAEE != null)
+                if (encaminhamentoAEE.NaoEhNulo())
                 {
                     await AlterarEncaminhamento(encaminhamentoAEEDto, encaminhamentoAEE);
                     await RemoverArquivosNaoUtilizados(encaminhamentoAEEDto.Secoes);
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
 
         private async Task RemoverArquivosNaoUtilizados(List<EncaminhamentoAEESecaoDto> secoes)
@@ -101,12 +101,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
             }
 
-            if (resposta != null && resposta.Any())
+            if (resposta.NaoEhNulo() && resposta.Any())
             {
                 foreach (var item in resposta)
                 {
                     var entidadeResposta = repositorioRespostaEncaminhamentoAEE.ObterPorId(item.RespostaEncaminhamentoId);
-                    if (entidadeResposta != null)
+                    if (entidadeResposta.NaoEhNulo())
                     {
                         await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(entidadeResposta));
                     }
@@ -134,7 +134,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 var secaoExistente = encaminhamentoAEE.Secoes.FirstOrDefault(s => s.SecaoEncaminhamentoAEEId == secao.SecaoId);
 
                 long resultadoEncaminhamentoSecao = 0;
-                if (secaoExistente == null)
+                if (secaoExistente.EhNulo())
                     secaoExistente = await mediator.Send(new RegistrarEncaminhamentoAEESecaoCommand(encaminhamentoAEE.Id, secao.SecaoId, secao.Concluido));
                 else
                 {
@@ -148,7 +148,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 {
                     var questaoExistente = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
 
-                    if (questaoExistente == null)
+                    if (questaoExistente.EhNulo())
                     {
                         var resultadoEncaminhamentoQuestao = await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoCommand(resultadoEncaminhamentoSecao, questoes.FirstOrDefault().QuestaoId));
                         await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
@@ -232,7 +232,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private bool NaoNuloEContemRegistros(IEnumerable<dynamic> data)
         {
-            return data != null && data.Any();
+            return data.NaoEhNulo() && data.Any();
         }
 
 
@@ -258,7 +258,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     foreach (var resposta in questao.Resposta)
                     {
                         var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
-                        if (opcao != null && opcao.QuestoesComplementares.Any())
+                        if (opcao.NaoEhNulo() && opcao.QuestoesComplementares.Any())
                         {
                             ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
                         }
@@ -291,7 +291,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 var secaoPresenteDto = encaminhamentoAEEDto.Secoes.FirstOrDefault(secaoDto => secaoDto.SecaoId == secao.Id);
 
                 IEnumerable<RespostaQuestaoObrigatoriaDto> respostasEncaminhamento;
-                if (secaoPresenteDto != null && secaoPresenteDto.Questoes.Any())
+                if (secaoPresenteDto.NaoEhNulo() && secaoPresenteDto.Questoes.Any())
                 {
                     respostasEncaminhamento = secaoPresenteDto.Questoes
                         .Select(questao => new RespostaQuestaoObrigatoriaDto()
@@ -303,7 +303,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
                 else
                 {
-                    if (respostasPersistidas == null)
+                    if (respostasPersistidas.EhNulo())
                         respostasPersistidas = await ObterRespostasEncaminhamentoAEE(encaminhamentoAEEDto.Id);
                     respostasEncaminhamento = respostasPersistidas;
                 }

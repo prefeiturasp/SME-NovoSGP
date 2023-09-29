@@ -20,14 +20,14 @@ namespace SME.SGP.Aplicacao
         public async Task<string[]> Handle(ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery request, CancellationToken cancellationToken)
         {
             var parametro = await repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.AgrupamentoTurmasFiltro, request.AnoLetivo);
-            if (parametro != null && !string.IsNullOrEmpty(parametro.Valor))
+            if (parametro.NaoEhNulo() && !string.IsNullOrEmpty(parametro.Valor))
                 return ObterAnosInfantilParaDesconsiderar(parametro, (int)request.Modalidade);
             else return null;
         }
 
         private string[] ObterAnosInfantilParaDesconsiderar(ParametrosSistema parametro, int modalidade)
         {
-            if (parametro != null && !string.IsNullOrEmpty(parametro.Valor))
+            if (parametro.NaoEhNulo() && !string.IsNullOrEmpty(parametro.Valor))
             {
                 var modalidadesAnos = parametro.Valor.Split(';');
                 Dictionary<int, string[]> dictionary = new Dictionary<int, string[]>();

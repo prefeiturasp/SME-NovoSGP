@@ -86,8 +86,8 @@ namespace SME.SGP.Dominio.Servicos
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 
             if (cargo == Cargo.Supervisor ? 
-                supervisoresEscola == null || !supervisoresEscola.Any() :
-                funcionarios == null || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && notificacaoExigeAcao.Value))
+                supervisoresEscola.EhNulo() || !supervisoresEscola.Any() :
+                funcionarios.EhNulo() || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && notificacaoExigeAcao.Value))
             {
                 Cargo? cargoProximoNivel = ObterProximoNivel(cargo, primeiroNivel);
 
@@ -119,8 +119,8 @@ namespace SME.SGP.Dominio.Servicos
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 
             if (cargo == Cargo.Supervisor ?
-                supervisoresEscola == null || !supervisoresEscola.Any() :
-                funcionarios == null || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && notificacaoExigeAcao.Value))
+                supervisoresEscola.EhNulo() || !supervisoresEscola.Any() :
+                funcionarios.EhNulo() || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && notificacaoExigeAcao.Value))
             {
                 Cargo? cargoProximoNivel = ObterProximoNivel(cargo, primeiroNivel);
 

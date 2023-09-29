@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
             var codigos = WFAprovacoes.Select(wf => long.Parse(wf.AlunoCodigo)).ToArray();
             var wfAprovacaoParecerConclusivo = WFAprovacoes.FirstOrDefault();
 
-            if (wfAprovacaoParecerConclusivo == null)
+            if (wfAprovacaoParecerConclusivo.EhNulo())
                 return;
             
             var anoLetivo = wfAprovacaoParecerConclusivo.AnoLetivo;

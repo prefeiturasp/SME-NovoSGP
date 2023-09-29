@@ -98,13 +98,13 @@ namespace SME.SGP.Dominio.Servicos
 
         private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
         {
-            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
-                                                                fechamentoReabertura.Ue != null ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
+            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
+                                                                fechamentoReabertura.Ue.NaoEhNulo() ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
                                                                 fechamentoReabertura.Id,
                                                                 usuario.CodigoRf,
                                                                 fechamentoReabertura.TipoCalendario.Nome,
-                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Ue.Nome : string.Empty,
-                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
+                                                                fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Ue.Nome : string.Empty,
+                                                                fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
                                                                 fechamentoReabertura.Inicio,
                                                                 fechamentoReabertura.Fim,
                                                                 fechamentoReabertura.ObterBimestresNumeral().ToString(),
@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
                     await ExcluirVinculosAysnc(fechamentoReabertura);
                 else
                 {
-                    if (fechamentoReaberturasParaExcluir != null && fechamentoReaberturasParaExcluir.Any())
+                    if (fechamentoReaberturasParaExcluir.NaoEhNulo() && fechamentoReaberturasParaExcluir.Any())
                         foreach (var fechamentoReaberturaParaExcluir in fechamentoReaberturasParaExcluir)
                             await ExcluirVinculosAysnc(fechamentoReaberturaParaExcluir);
                 }
@@ -209,7 +209,7 @@ namespace SME.SGP.Dominio.Servicos
                 await comandosWorkflowAprovacao.ExcluirAsync(fechamentoReaberturaParaExcluir.WorkflowAprovacaoId.Value);
 
             var notificacoesParaExcluir = await repositorioFechamentoReabertura.ObterNotificacoes(fechamentoReaberturaParaExcluir.Id);
-            if (notificacoesParaExcluir != null && notificacoesParaExcluir.Any())
+            if (notificacoesParaExcluir.NaoEhNulo() && notificacoesParaExcluir.Any())
             {
                 await repositorioFechamentoReabertura.ExcluirVinculoDeNotificacoesAsync(fechamentoReaberturaParaExcluir.Id);
                 await servicoNotificacao.ExcluirFisicamenteAsync(notificacoesParaExcluir.Select(a => a.NotificacaoId).ToArray());

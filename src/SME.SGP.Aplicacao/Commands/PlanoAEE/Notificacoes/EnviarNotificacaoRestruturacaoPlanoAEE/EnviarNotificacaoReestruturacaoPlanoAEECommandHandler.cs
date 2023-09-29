@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var reestruturacao = await mediator.Send(new ObterPlanoAEEReestruturacaoPorIdQuery(request.ReestruturacaoId));
 
-            if (reestruturacao == null)
+            if (reestruturacao.EhNulo())
                 throw new NegocioException($"A reestruturação [{request.ReestruturacaoId}] não foi localizada.");
 
             var plano = reestruturacao.PlanoAEEVersao.PlanoAEE;

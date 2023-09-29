@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var relatorioSemestral = relatorioSemestralAluno?.RelatorioSemestralTurmaPAP ?? await repositorioRelatorioSemestralTurmaPAP.ObterPorTurmaCodigoSemestreAsync(request.TurmaCodigo, request.Semestre);
 
             var relatorioSemestralAlunoDto = new RelatorioSemestralAlunoDto();
-            if (relatorioSemestralAluno != null || relatorioSemestral != null) 
+            if (relatorioSemestralAluno.NaoEhNulo() || relatorioSemestral.NaoEhNulo()) 
                 relatorioSemestralAlunoDto = ConverterParaDto(relatorioSemestralAluno, relatorioSemestral);
 
             var dataReferencia = DateTime.Today;
@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 RelatorioSemestralId = relatorioTurma?.Id ?? 0
             };
 
-            if (relatorioAluno != null)
+            if (relatorioAluno.NaoEhNulo())
                 dto.Auditoria = (AuditoriaDto) relatorioAluno;
 
             return dto;
