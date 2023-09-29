@@ -3,6 +3,7 @@ using Elastic.Apm.Api;
 using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
@@ -16,8 +17,9 @@ namespace SME.SGP.Infra
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
         }
 
-        public async Task<K> RegistrarComRetornoAsync<T,K>(Func<Task<K>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
+        public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
+            dynamic result = default;
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -26,20 +28,19 @@ namespace SME.SGP.Infra
                  {
                      span.SetLabel(telemetriaNome, telemetriaValor);
                      span.SetLabel("Parametros", parametros);
-                     return await acao();
+                     result = (await acao()) as dynamic;
                  });
             }
-
-            return await acao();
+            else
+            {
+                result = await acao() as dynamic;
+            }
+            return result;
         }
 
-        public Task<K> RegistrarComRetornoAsync<K>(Func<Task<K>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
+        public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
-            return RegistrarComRetornoAsync<K, K>(acao, acaoNome, telemetriaNome, telemetriaValor, parametros);
-        }
-
-        public K RegistrarComRetorno<T,K>(Func<K> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
-        {
+            dynamic result = default;
             if (telemetriaOptions.Apm)
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
@@ -48,16 +49,14 @@ namespace SME.SGP.Infra
                 {
                     span.SetLabel(telemetriaNome, telemetriaValor);
                     span.SetLabel("Parametros", parametros);
-                    return acao();
+                    result = acao();
                 });
             }
-
-            return acao();
-        }
-
-        public K RegistrarComRetorno<K>(Func<K> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
-        {
-            return RegistrarComRetorno<K, K>(acao, acaoNome, telemetriaNome, telemetriaValor, parametros);
+            else
+            {
+                result = acao();
+            }
+            return result;
         }
 
         public void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor)
@@ -84,7 +83,7 @@ namespace SME.SGP.Infra
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
 
-                if (!(transactionElk is null))
+                if (transactionElk != null)
                 {
                     await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
                     {
