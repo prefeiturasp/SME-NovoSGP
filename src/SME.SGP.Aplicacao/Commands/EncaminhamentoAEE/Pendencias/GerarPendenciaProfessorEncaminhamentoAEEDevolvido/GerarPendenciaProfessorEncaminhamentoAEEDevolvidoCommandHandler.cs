@@ -4,12 +4,15 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao.Commands.EncaminhamentoAEE.Pendencias.GerarPendenciaProfessorEncaminhamentoAEEDevolvido
 {
-    public class GerarPendenciaPAEEEncaminhamentoAEECommandHandler : IRequestHandler<GerarPendenciaPAEEEncaminhamentoAEECommand, bool>
+    public class GerarPendenciaProfessorEncaminhamentoAEEDevolvidoCommandHandler : IRequestHandler<GerarPendenciaProfessorEncaminhamentoAEEDevolvidoCommand, bool>
     {
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
@@ -17,7 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
         private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
 
-        public GerarPendenciaPAEEEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration, 
+        public GerarPendenciaProfessorEncaminhamentoAEEDevolvidoCommandHandler(IMediator mediator, IConfiguration configuration,
             IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
             IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE)
         {
@@ -26,11 +29,14 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.repositorioPendenciaUsuario = repositorioPendenciaUsuario ?? throw new ArgumentNullException(nameof(repositorioPendenciaUsuario));
             this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
+
         }
 
-        public async Task<bool> Handle(GerarPendenciaPAEEEncaminhamentoAEECommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(GerarPendenciaProfessorEncaminhamentoAEEDevolvidoCommand request, CancellationToken cancellationToken)
         {
             var encaminhamentoAEE = request.EncaminhamentoAEE;
+
+            var UsuarioIdProfessorCriadorDoEncaminhamentoAEE = (await mediator.Send(new ObterUsuariosPorCodigosRfQuery(new string[] { encaminhamentoAEE.CriadoRF }))).FirstOrDefault(b => b.CodigoRf != "0").Id;
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
 
@@ -43,10 +49,13 @@ namespace SME.SGP.Aplicacao
                 $"<br/><br/>Esta pendência será resolvida automaticamente quando o parecer do AEE for registrado no sistema";
 
             var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, turma.Id);
+
             pendencia.Situacao = SituacaoPendencia.Pendente;
+            encaminhamentoAEE.ResponsavelId = UsuarioIdProfessorCriadorDoEncaminhamentoAEE;
+
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
-            var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = encaminhamentoAEE.ResponsavelId.GetValueOrDefault() };
+            var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = UsuarioIdProfessorCriadorDoEncaminhamentoAEE };
             await repositorioPendenciaUsuario.SalvarAsync(pendenciaUsuario);
 
             var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
