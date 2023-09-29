@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio
         {
             if (FechamentosBimestre.Any(c => c.PeriodoEscolar.Bimestre == fechamentoBimestre.PeriodoEscolar.Bimestre))
             {
-                throw new NegocioException("Esse período escolar já foi adicionado.");
+                throw new Exception("Esse período escolar já foi adicionado.");
             }
 
             ValidarPeriodoInicioFim(fechamentoBimestre);
