@@ -98,7 +98,7 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public string PercentualFrequenciaFinalFormatado => FormatarPercentual(PercentualFrequenciaFinal);
+        public string PercentualFrequenciaFinalFormatado => TotalAulas > 0 ? FormatarPercentual(PercentualFrequenciaFinal) : string.Empty;
 
         public FrequenciaAluno DefinirFrequencia(string disciplinaId, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas, string professor)
         {

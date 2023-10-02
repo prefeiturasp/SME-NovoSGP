@@ -217,7 +217,7 @@ namespace SME.SGP.Aplicacao
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
-                percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado;
+                percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFinalFormatado;
 
             var lstDetalhesNotas = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
@@ -239,7 +239,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
             {
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
-                percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado;
+                percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFinalFormatado;
             }
 
             var notasFechamento = ObterNotasComponente(componenteCurricular.CodigoComponenteCurricular, periodoEscolar, notasFechamentoAluno);
