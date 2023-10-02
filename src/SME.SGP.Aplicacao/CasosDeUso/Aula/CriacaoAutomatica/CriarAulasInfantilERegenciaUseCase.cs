@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriarAulasInfantilUseCase : ICriarAulasInfantilUseCase
+    public class CriarAulasInfantilERegenciaUseCase : ICriarAulasInfantilERegenciaUseCase
     {
         private readonly IMediator mediator;
 
-        public CriarAulasInfantilUseCase(IMediator mediator)
+        public CriarAulasInfantilERegenciaUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {            
-            var comando = mensagemRabbit.ObterObjetoMensagem<CriarAulasInfantilAutomaticamenteCommand>();           
+            var comando = mensagemRabbit.ObterObjetoMensagem<CriarAulasInfantilERegenciaAutomaticamenteCommand>();           
 
             if (comando != null)
             {
