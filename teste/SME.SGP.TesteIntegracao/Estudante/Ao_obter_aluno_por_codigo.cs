@@ -20,8 +20,8 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         private const int ANO_2022 = 2022;
         private const string CODIGO_TURMA_1 = "1";
         private const string CODIGO_TURMA_2 = "2";
-        private const string NOME_TURMA_1 = "Turma Nome 1";
-        private const string NOME_TURMA_2 = "Turma Nome 2";
+        private const string NOME_TURMA_1 = "Turma Teste 1";
+        private const string NOME_TURMA_2 = "Turma Teste 2";
         private const int ID_UE = 1;
         private const string TIPO_TURNO_TARDE = "Tarde";
         private const string TIPO_TURNO_INTERMEDIARIO = "Intermediário";
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         {
             _builder = new ItensBasicosBuilder(this);
             
-            await _builder.CriaItensComunsEja();
+            await _builder.CriaItensComuns();
 
             var useCase = ServiceProvider.GetService<IObterAlunoPorCodigoEolEAnoLetivoUseCase>();
 
@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         {
             _builder = new ItensBasicosBuilder(this);
             
-            await _builder.CriaItensComunsEja();
+            await _builder.CriaItensComuns();
             await CriaTurma2();
 
             var useCase = ServiceProvider.GetService<IObterAlunoPorCodigoEolEAnoLetivoUseCase>();
@@ -70,13 +70,13 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
         private async Task CriaTurma2()
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = ID_UE,
                 Ano = "2",
                 CodigoTurma = CODIGO_TURMA_2,
                 Historica = true,
-                ModalidadeCodigo = Modalidade.EJA,
+                ModalidadeCodigo = Modalidade.Fundamental,
                 AnoLetivo = ANO_2022,
                 Semestre = 2,
                 Nome = NOME_TURMA_2,
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
         private string ObterNomeTurma(string nome, string turno)
         {
-            return $"{Modalidade.EJA.ShortName()} - {nome} - {turno}";
+            return $"{Modalidade.Fundamental.ShortName()} - {nome} - {turno}";
         }
     }
 }

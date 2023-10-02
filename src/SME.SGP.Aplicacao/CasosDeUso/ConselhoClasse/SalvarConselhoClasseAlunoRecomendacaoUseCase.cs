@@ -48,11 +48,13 @@ namespace SME.SGP.Aplicacao
             if (alunoConselho == null)
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_ENCONTRADO_PARA_SALVAR_CONSELHO_CLASSE);
 
-            var permiteEdicao = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim) || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
+            var alunoEstaAtivo = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim);
+            
+            var permiteEdicao = alunoEstaAtivo || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
 
             if (!permiteEdicao)
                 throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
-            
+
             var bimestreParaValidacaoNotasPreenchidas = fechamentoTurma.PeriodoEscolarId.HasValue ? bimestre : BIMESTRE_FINAL_CONSULTA_NOTA;
 
             var existeConselhoClasseBimestre = await mediator

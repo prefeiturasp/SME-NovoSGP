@@ -26,15 +26,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
             var disciplinasRetorno = new List<DisciplinaDto>();
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma), cancellationToken);
 
             var disciplinasUsuario = await mediator
-                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, turma.EhTurmaInfantil), cancellationToken);
 
-            var disciplinasAgrupadas = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(request.Ids, request.CodigoTurma));
+            var disciplinasAgrupadas = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(request.Ids, request.CodigoTurma), cancellationToken);
             
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                         .FirstOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
 
                     disciplina.RegistraFrequencia = await mediator
-                        .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
+                        .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular), cancellationToken);
 
                     disciplinasRetorno.Add(disciplina);
                 }
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                     if (disciplinaCorrespondente != null)
                     {
                         var registraFrequencia = await mediator
-                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente != null && disciplinaCorrespondente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo));
+                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente != null && disciplinaCorrespondente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplinaCorrespondente.Codigo), cancellationToken);
 
                         disciplinasRetorno.Add(new DisciplinaDto()
                         {
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                         if (usuarioLogado.EhProfessorCjInfantil())
                         {
                            var componentesCurricularesDoProfessorCJInfantil = await mediator
-                                .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+                                .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login), cancellationToken);
 
                             if (!componentesCurricularesDoProfessorCJInfantil.Any(c => c.DisciplinaId == id))
                                 continue;
@@ -97,13 +97,13 @@ namespace SME.SGP.Aplicacao
                         if (disciplina != null)
                         {
                             disciplina.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular), cancellationToken);
 
-                            disciplina.LancaNota = disciplina.TerritorioSaber ? false : disciplina.LancaNota;
+                            disciplina.LancaNota = !disciplina.TerritorioSaber && disciplina.LancaNota;
 
                             if (disciplina.GrupoMatrizId == 0 || String.IsNullOrEmpty(disciplina.GrupoMatrizNome))
                             {
-                                var dadosGrupoMatriz = await mediator.Send(new ObterComponenteCurricularGrupoMatrizPorComponenteIdQuery() { ComponenteCurricularId = disciplina.CodigoComponenteCurricular });
+                                var dadosGrupoMatriz = await mediator.Send(new ObterComponenteCurricularGrupoMatrizPorComponenteIdQuery() { ComponenteCurricularId = disciplina.CodigoComponenteCurricular }, cancellationToken);
                                 if (dadosGrupoMatriz != null)
                                 {
                                     disciplina.GrupoMatrizId = dadosGrupoMatriz.GrupoMatrizId;

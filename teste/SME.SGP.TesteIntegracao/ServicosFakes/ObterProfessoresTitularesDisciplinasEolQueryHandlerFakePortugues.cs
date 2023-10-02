@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public class ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues : IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
+    public class ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues : 
+        IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>,
+        IRequestHandler<ObterProfessoresTitularesDaTurmaCompletosQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
@@ -17,6 +19,20 @@ namespace SME.SGP.TesteIntegracao
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf ="111111",
+                    ProfessorNome ="PROFESSOR DE PORTUGUES",
+                    DisciplinaNome = "LÍNGUA PORTUGUESA",
+                    DisciplinasId = new long[] { 138 }
+                },
+            };
+        }
+
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
+        {
+            return new List<ProfessorTitularDisciplinaEol>()
+            {
+                new ProfessorTitularDisciplinaEol
+                {
+                    ProfessorRf ="2222222",
                     ProfessorNome ="PROFESSOR DE PORTUGUES",
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
                     DisciplinasId = new long[] { 138 }

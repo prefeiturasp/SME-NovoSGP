@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                 tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
                 tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));                
                 
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, turma.Historica, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre));
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre));
             }
             else
                 turmasCodigos = new string[1] { turma.CodigoTurma };
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Conselho), "Conselho"))
                 return parecerNota;
 
-            var validacaoConselho = await ValidarParecerPorConselho(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo);
+            var validacaoConselho = await ValidarParecerPorConselho(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo, turma);
             if (!validacaoConselho.ExisteNotaConselho)
                 return parecerNota;
 
@@ -277,9 +277,23 @@ namespace SME.SGP.Aplicacao
         #endregion
 
         #region Conselho
-        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
+        private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo, Turma turma)
         {
-            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
+            bool validaNota = false;
+            bool validaConceito = false;
+
+            if (turmasCodigos.Count() == 1)
+            {
+                var tipoNotaTurma = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(turma.Id, turma.TipoTurma));
+                
+                if(tipoNotaTurma != null)
+                {
+                    validaConceito = tipoNotaTurma.TipoNota == TipoNota.Conceito;
+                    validaNota = tipoNotaTurma.TipoNota == TipoNota.Nota;
+                }
+            }
+
+            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo, validaNota, validaConceito));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
             else
