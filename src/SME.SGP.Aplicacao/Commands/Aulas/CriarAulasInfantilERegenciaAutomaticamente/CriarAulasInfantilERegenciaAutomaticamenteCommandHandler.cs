@@ -12,20 +12,20 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriarAulasInfantilAutomaticamenteCommandHandler : IRequestHandler<CriarAulasInfantilAutomaticamenteCommand, bool>
+    public class CriarAulasInfantilERegenciaAutomaticamenteCommandHandler : IRequestHandler<CriarAulasInfantilERegenciaAutomaticamenteCommand, bool>
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IMediator mediator;
         private const string AUDITORIA_SISTEMA = "SISTEMA";
 
-        public CriarAulasInfantilAutomaticamenteCommandHandler(IRepositorioAula repositorioAula,
+        public CriarAulasInfantilERegenciaAutomaticamenteCommandHandler(IRepositorioAula repositorioAula,
                                                                IMediator mediator)
         {
             this.repositorioAula = repositorioAula;
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Handle(CriarAulasInfantilAutomaticamenteCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(CriarAulasInfantilERegenciaAutomaticamenteCommand request, CancellationToken cancellationToken)
         {
             var tipoCalendarioId = request.TipoCalendarioId;
             var diasParaCriarAula = request.DiasLetivos;
@@ -198,10 +198,13 @@ namespace SME.SGP.Aplicacao
         public bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
             => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA && !diasLetivos.Any(d=> d.Data == aula.DataAula);
 
+        public bool VerificaSeAulaENoFimDeSemana(IEnumerable<DiaLetivoDto> diasDoPeriodo)
+            => diasDoPeriodo.Any(b => b.Data.FimDeSemana());
+
         private async Task<IEnumerable<(Aula aula, long? plano_aula_id)>> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
             var diasParaCriar = diasDoPeriodo
-                .Where(l => diasLetivos.NaoEhNulo() && diasLetivos.Any(n => n.Data == l.Data) || (diasNaoLetivos.EhNulo() || !diasNaoLetivos.Any(n => n.Data == l.Data)))?
+                .Where(l => !VerificaSeAulaENoFimDeSemana(diasDoPeriodo) && (diasLetivos.NaoEhNulo() && diasLetivos.Any(n => n.Data == l.Data) || (diasNaoLetivos.NaoEhNulo() || !diasNaoLetivos.Any(n => n.Data == l.Data))))?
                 .ToList();
 
             return await ObterListaDeAulas(diasParaCriar?.DistinctBy(c => c.Data)?.ToList(), tipoCalendarioId, turma, aulasCriadasPeloSistema, dadosDisciplina, quantidade, rfProfessor);
@@ -217,8 +220,9 @@ namespace SME.SGP.Aplicacao
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DateTime> diasNaoLetivos, Turma turma)
         {
             return diasDoPeriodo.Where(c => !c.Data.FimDeSemana() && c.CriarAulaSME ||
-                                            ((c.PossuiEventoDre(turma.Ue.Dre.CodigoDre) || c.PossuiEventoUe(turma.Ue.CodigoUe)) && c.EhLetivo) ||
-                                            (c.NaoPossuiDre && c.NaoPossuiUe && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)))?
+                                            ((c.PossuiEventoDre(turma.Ue.Dre.CodigoDre) && !c.Data.FimDeSemana() ||
+                                            c.PossuiEventoUe(turma.Ue.CodigoUe)) && !c.Data.FimDeSemana() && c.EhLetivo) ||
+                                            (c.NaoPossuiDre && !c.Data.FimDeSemana() && c.NaoPossuiUe && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)))?
                                 .OrderBy(c => c.Data)?.ToList();
         }
 
