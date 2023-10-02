@@ -50,6 +50,8 @@ namespace SME.SGP.Infra
                              SituacaoMatriculaAluno.Concluido }.Contains(this.CodigoSituacaoMatricula));
         }
 
+        public bool Ativo { get => !Inativo; }
+
         public int Idade 
         { 
             get 
