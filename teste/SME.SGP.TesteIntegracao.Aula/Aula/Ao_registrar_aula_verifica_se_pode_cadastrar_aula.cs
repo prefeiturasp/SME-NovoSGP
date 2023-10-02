@@ -1,12 +1,15 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.TesteIntegracao.Aula.ServicosFake;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -33,6 +36,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessorTitularPorTurmaEComponenteCurricularQuery, ProfessorTitularDisciplinaEol>), typeof(ObterProfessorTitularPorTurmaComponenteCurricularQueryFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -352,6 +356,74 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             var retorno = await PodeCadastrarAulaUseCase(TipoAula.Reposicao, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_19_06);
 
             retorno.PodeCadastrarAula.ShouldBeTrue();
+        }
+        [Fact]
+        public async Task Nao_Pode_Cadastrar_Aula_Infantil_E_Regencia_Automaticamente_Em_FimDeSemana()
+        {
+            var mensagemRabbit = await ObterMensagemRabbit();
+
+            await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
+
+            var mediator = ServiceProvider.GetService<ICriarAulasInfantilERegenciaUseCase>();
+            await mediator.Executar(mensagemRabbit);
+
+            var aulaCriada = ObterTodos<Dominio.Aula>();
+
+            aulaCriada.Count().ShouldBe(0);
+        }
+
+        private async Task<MensagemRabbit> ObterMensagemRabbit()
+        {
+            var diasLetivos = new DiaLetivoDto
+            {
+                Data = DATA_16_09,
+                Motivo = "REUNIAO",
+                EhLetivo = true,
+                PossuiEvento = true,
+            };
+
+            var diasLetivosList = new List<DiaLetivoDto> { diasLetivos };
+
+            var dadosDisciplina = (codigo: COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), nome: COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105);
+
+            var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto(dadosDisciplina);
+            var diasForaPeriodoEscolar = new List<DateTime> { DATA_20_07, DATA_21_07, DATA_22_07, DATA_23_07, DATA_01_10 };
+            var codigoDisciplinaConsiderada = new List<string> { COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString() };
+            var turma = new Turma
+            {
+                Ano = ANO_9,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                CodigoTurma = TURMA_CODIGO_1,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
+                Ue = new Ue { CodigoUe = UE_CODIGO_1, Dre = new Dre { CodigoDre = DRE_CODIGO_1 } }
+            };
+
+            var mensagemRabbitObjeto = new ObjetoRabbit
+            {
+                DiasLetivos = diasLetivosList,
+                Turma = turma,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                DiasForaDoPeriodoEscolar = diasForaPeriodoEscolar,
+                CodigosDisciplinasConsideradas = codigoDisciplinaConsiderada,
+                DadosAulaCriadaAutomaticamente = dadosAulaCriadaAutomaticamente
+            };
+
+            var mensagemRabbitJson = JsonConvert.SerializeObject(mensagemRabbitObjeto);
+
+            return await Task.FromResult(new MensagemRabbit
+            {
+                Mensagem = mensagemRabbitJson
+            });
+        }
+
+        private class ObjetoRabbit
+        {
+            public long TipoCalendarioId { get; set; }
+            public IEnumerable<DiaLetivoDto> DiasLetivos { get; set; }
+            public Turma Turma { get; set; }
+            public IEnumerable<DateTime> DiasForaDoPeriodoEscolar { get; set; }
+            public IEnumerable<string> CodigosDisciplinasConsideradas { get; set; }
+            public DadosAulaCriadaAutomaticamenteDto DadosAulaCriadaAutomaticamente { get; set; }
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
