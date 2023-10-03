@@ -95,8 +95,8 @@ namespace SME.SGP.TesteIntegracao.Aula
 
             var aulas = ObterTodos<Dominio.Aula>();
             aulas.ShouldNotBeEmpty();
-            aulas.Count.ShouldBe(1);
-            aulas.SingleOrDefault(x => x.TipoCalendarioId == 1 && x.DisciplinaId == "1" && x.RecorrenciaAula == RecorrenciaAula.RepetirBimestreAtual && x.TurmaId == "1").ShouldNotBeNull();
+            aulas.Count.ShouldBe(4);
+            aulas.All(x => x.TipoCalendarioId == 1 && x.DisciplinaId == "1" && x.RecorrenciaAula == RecorrenciaAula.RepetirBimestreAtual && x.TurmaId == "1").ShouldBeTrue();
         }
     }
 }
