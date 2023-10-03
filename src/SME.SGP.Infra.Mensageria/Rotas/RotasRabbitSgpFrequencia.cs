@@ -44,5 +44,9 @@
         public const string RotaTratarFrequenciaRegistradaAlunosInativos = "sgp.frequencia.tratar.frequencia.registrada.alunos.inativos";
         
         public const string RotaFrequenciaLancamentoAulaSync = "sgp.frequencia.lancamento.aula.sync";
+        public const string IdentificarFrequenciaAlunoPresencasMaiorTotalAulas = "sgp.frequencia.aluno.identificar.presencas.maior.total.aulas";
+        public const string IdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUe = "sgp.frequencia.aluno.identificar.presencas.maior.total.aulas.ue";
+        public const string RegularizarFrequenciaAlunoPresencasMaiorTotalAulas = "sgp.frequencia.aluno.regularizar.presencas.maior.total.aulas";
+        public const string RegularizarFrequenciaAlunoPresencasMaiorTotalAulasPorRegistro = "sgp.frequencia.aluno.regularizar.presencas.maior.total.aulas.registro";
     }
 }
