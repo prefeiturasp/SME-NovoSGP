@@ -1370,6 +1370,18 @@ namespace SME.SGP.Infra
             EhAlteracao = true)]
         NAAPA_A = 238,
 
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_NAAPA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_RELATORIO_DINAMICO_NAAPA,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_RELATORIO_DINAMICO_NAAPA,
+            Url = ConstantesMenuPermissao.ROTA_RELATORIO_DINAMICO_NAAPA,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
+            EhConsulta = true)]
+        RDNAAPA_C = 250,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
