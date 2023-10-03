@@ -3,18 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Estudante.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using Xunit;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarEstudante
 {
