@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var turmasRegularESrmdoAluno = await mediator.Send(new ObterTurmaRegularESrmPorAlunoQuery(long.Parse(request.AlunoCodigo)), cancellationToken);
 
-            var turmaCodigos = turmasRegularESrmdoAluno.Select(s => s.CodigoTurma.ToString()).ToArray();
+            var turmaCodigos = turmasRegularESrmdoAluno.Where(s => !s.Inativo).Select(s => s.CodigoTurma.ToString()).ToArray();
             var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmaCodigos), cancellationToken);
 
             foreach (var turma in turmas)

@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             {
                 mensagem.Pagina += 1;
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.CarregarDadosUeTurmaRegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
             }
 
             return true;

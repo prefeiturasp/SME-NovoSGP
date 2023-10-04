@@ -7,13 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirAtribuicaoCJCommand : IRequest
     {
-        public InserirAtribuicaoCJCommand(AtribuicaoCJ atribuicaoCJ, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitulares, IEnumerable<AtribuicaoCJ> atribuicoesAtuais, Usuario usuario, bool ehHistorico)
+        public InserirAtribuicaoCJCommand(AtribuicaoCJ atribuicaoCJ, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitulares, IEnumerable<AtribuicaoCJ> atribuicoesAtuais, Usuario usuario, bool ehHistorico,bool excluiAbrangencia)
         {
             AtribuicaoCJ = atribuicaoCJ;
             ProfessoresTitulares = professoresTitulares;
             AtribuicoesAtuais = atribuicoesAtuais;
             Usuario = usuario;
             EhHistorico = ehHistorico;
+            ExcluiAbrangencia = excluiAbrangencia;
         }
 
         public AtribuicaoCJ AtribuicaoCJ { get; set; }
@@ -21,5 +22,6 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<AtribuicaoCJ> AtribuicoesAtuais { get; set; }
         public Usuario Usuario { get; set; }
         public bool EhHistorico { get; }
+        public bool ExcluiAbrangencia { get; set; }
     }
 }
