@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.Frequencia.ServicosFakes
+namespace SME.SGP.TesteIntegracao.Frequencia.ServicosFake
 {
     public class ObterAlunoPorTurmaAlunoCodigoFrequenciaGlobalQueryHandlerFake : IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>
     {
