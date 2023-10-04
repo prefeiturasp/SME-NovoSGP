@@ -19,6 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var regenciaClasseInfantilId = "512";
+
             var executarManutencao = await mediator.Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
             if (!executarManutencao)
             {
@@ -65,9 +67,10 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmas)
             {
-                var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto(("512", "Regência de classe infantil"));
-                var comando = new CriarAulasInfantilAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { "512" }, dadosAulaCriadaAutomaticamente);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
+                var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto((regenciaClasseInfantilId, "Regência de classe infantil"));
+                
+                var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { regenciaClasseInfantilId }, dadosAulaCriadaAutomaticamente);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
             }
 
             if (dadosCriacaoAulaInfantil.NaoEhNulo() && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
