@@ -1285,6 +1285,7 @@ namespace SME.SGP.IoC
             // Encaminhamento NAAPA
             services.TryAddScoped<IObterSecoesEncaminhamentosSecaoNAAPAUseCase, ObterSecoesEncaminhamentosSecaoNAAPAUseCase>();
             services.TryAddScoped<IObterQuestionarioEncaminhamentoNAAPAUseCase, ObterQuestionarioEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase, ObterQuestoesRelatorioDinamicoEncaminhamentoNaapaPorModalidadesUseCase>();
             services.TryAddScoped<IObterPrioridadeEncaminhamentoNAAPAUseCase, ObterPrioridadeEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterInformacoesAlunoPorCodigoUseCase, ObterInformacoesAlunoPorCodigoUseCase>();
             services.TryAddScoped<IObterEncaminhamentoNAAPAPorIdUseCase, ObterEncaminhamentoNAAPAPorIdUseCase>();
