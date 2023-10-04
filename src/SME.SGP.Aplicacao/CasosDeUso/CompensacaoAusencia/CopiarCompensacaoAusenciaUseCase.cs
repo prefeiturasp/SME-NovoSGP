@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Executar(CompensacaoAusenciaCopiaDto param)
         {
             var compensacaoOrigem = repositorioCompensacaoAusencia.ObterPorId(param.CompensacaoOrigemId);
-            if (compensacaoOrigem == null)
+            if (compensacaoOrigem.EhNulo())
                 throw new NegocioException("Compensação de origem não localizada com o identificador informado.");
 
             var turmasCopiadas = new StringBuilder("");
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
                 var disciplinasRegencia =
                     await repositorioCompensacaoAusenciaDisciplinaRegencia.ObterPorCompensacao(compensacaoOrigem.Id);
-                if (disciplinasRegencia != null && disciplinasRegencia.Any())
+                if (disciplinasRegencia.NaoEhNulo() && disciplinasRegencia.Any())
                     compensacaoDto.DisciplinasRegenciaIds = disciplinasRegencia.Select(s => s.DisciplinaId);
 
                 try

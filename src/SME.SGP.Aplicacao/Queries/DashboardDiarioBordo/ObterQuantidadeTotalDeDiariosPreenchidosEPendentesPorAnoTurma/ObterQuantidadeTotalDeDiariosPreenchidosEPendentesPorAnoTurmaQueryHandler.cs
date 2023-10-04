@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
             {
                 var quantidadeTotalDiariosPreenchidos = new GraficoTotalDiariosPreenchidosEPendentesDTO()
                 {
-                    TurmaAno = item.AnoTurma == null ? "" : item.AnoTurma,
+                    TurmaAno = item.AnoTurma.EhNulo() ? "" : item.AnoTurma,
                     Quantidade = item.QuantidadeTotalDiariosPreenchidos,
                     Descricao = "Preenchidos"
                 };
@@ -39,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                 var quantidadeTotalDiariosPendentes = new GraficoTotalDiariosPreenchidosEPendentesDTO()
                 {
-                    TurmaAno = item.AnoTurma == null ? "" : item.AnoTurma,
+                    TurmaAno = item.AnoTurma.EhNulo() ? "" : item.AnoTurma,
                     Quantidade = item.QuantidadeTotalDiariosPendentes,
                     Descricao = "Pendentes"
                 };

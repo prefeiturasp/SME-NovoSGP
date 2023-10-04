@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public string Observacao { get; }
         public IEnumerable<long> Usuarios { get; internal set; }
 
-        public bool PossuiUsuarios { get => Usuarios != null && Usuarios.Any(); }
+        public bool PossuiUsuarios { get => Usuarios.NaoEhNulo() && Usuarios.Any(); }
 
         internal void TratarUsuariosNotificacao(long usuarioLogadoId)
         {

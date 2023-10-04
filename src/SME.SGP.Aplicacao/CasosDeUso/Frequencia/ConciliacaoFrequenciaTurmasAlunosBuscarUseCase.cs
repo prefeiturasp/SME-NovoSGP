@@ -17,10 +17,10 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagem.ObterObjetoMensagem<TurmaComponentesParaCalculoFrequenciaDto>();
 
-            if (filtro.ComponentesCurricularesId != null || filtro.ComponentesCurricularesId.Length > 0)
+            if (filtro.ComponentesCurricularesId.NaoEhNulo() || filtro.ComponentesCurricularesId.Length > 0)
             {
                 var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaMapochoQuery(filtro.TurmaCodigo));
-                if (alunosDaTurma == null || alunosDaTurma.Length == 0)
+                if (alunosDaTurma.EhNulo() || alunosDaTurma.Length == 0)
                     throw new NegocioException($"Não foi possível obter os alunos da turma {filtro.TurmaCodigo} para cálculo de frequência.");
 
                 foreach (var disciplina in filtro.ComponentesCurricularesId.Distinct())

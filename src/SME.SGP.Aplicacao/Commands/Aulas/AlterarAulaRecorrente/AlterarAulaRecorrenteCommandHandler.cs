@@ -54,15 +54,15 @@ namespace SME.SGP.Aplicacao
                 var componentesCurricularesDoProfessorCJ = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(aulaRecorrente.Usuario.Login));
 
-                if (componentesCurricularesDoProfessorCJ == null || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
+                if (componentesCurricularesDoProfessorCJ.EhNulo() || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
                 {
-                    if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
+                    if (componentesCurricularesDoProfessor.EhNulo() || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
                         throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
                 }
             }
             else
             {
-                if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
+                if (componentesCurricularesDoProfessor.EhNulo() || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
                     throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);                
 
                 var usuarioPodePersistirTurmaNaData = await mediator
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
                     var aulaRecorrente = aulasDaRecorrencia.FirstOrDefault(c => UtilData.ObterSemanaDoAno(c.DataAula) == UtilData.ObterSemanaDoAno(diaAula));
 
                     // Se não existir aula da recorrencia na semana cria uma nova
-                    if (aulaRecorrente != null)
+                    if (aulaRecorrente.NaoEhNulo())
                         listaAlteracoes.Add(await TratarAlteracaoAula(request, aulaRecorrente, diaAula, turma));
                     else
                         listaAlteracoes.Add(await TratarAlteracaoAula(request, (Aula)aulaOrigem.Clone(), diaAula, turma));
@@ -205,18 +205,10 @@ namespace SME.SGP.Aplicacao
         private async Task AplicarValidacoes(AlterarAulaRecorrenteCommand request, DateTime dataAula, Turma turma, Aula aula)
         {
             await ValidarSeEhDiaLetivo(request.TipoCalendarioId, dataAula, turma);
-
-            var codigosComponentesEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
-
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
-
-            if (codigosComponentesEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(codigosComponentesEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
-
             var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), request.Usuario.Login));
             aulasExistentes = aulasExistentes.Where(a => a.Id != request.AulaId);
-            if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
+            if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
 
             await ValidarGrade(request, dataAula, aulasExistentes, turma, request.Quantidade - aula.Quantidade);
@@ -239,14 +231,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)
         {
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularId, request.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
-
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
-
-            if (codigosTerritorioEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
-
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,
                                                                                    codigosComponentesConsiderados.ToArray(),
@@ -255,7 +240,6 @@ namespace SME.SGP.Aplicacao
                                                                                    request.Quantidade,
                                                                                    request.EhRegencia,
                                                                                    aulasExistentes));
-
             if (!retornoValidacao.resultado)
                 throw new NegocioException(retornoValidacao.mensagem);
         }

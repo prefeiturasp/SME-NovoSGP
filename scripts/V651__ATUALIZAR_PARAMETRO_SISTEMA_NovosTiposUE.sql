@@ -1,0 +1,1 @@
+update parametros_sistema set valor = '10,11,12,13,14,15,18,19,22,23,25,26,29' where nome = 'NovosTiposUE' and ano = 2023

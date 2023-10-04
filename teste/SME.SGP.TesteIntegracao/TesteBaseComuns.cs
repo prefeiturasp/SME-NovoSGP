@@ -85,6 +85,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_CURRICULAR_INFORMATICA_OIE_NOME = "'INFORMATICA - OIE'";
 
         protected const long COMPONENTE_CURRICULAR_APRENDIZAGEM_E_LEITURA_ID_1359 = 1359;
+        protected const long COMPONENTE_CURRICULAR_TERRITORIO_SABER_1_ID_1214 = 1214;
 
         protected const string COMPONENTE_CURRICULAR_MATEMATICA_NOME = "'MATEMATICA'";
 

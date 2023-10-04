@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
@@ -27,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 Guid? perfilUsuario = command.Usuario?.PerfilAtual;
                 var administrador = await mediator.Send(ObterAdministradorDoSuporteQuery.Instance);
 
-                if (command.Usuario == null)
+                if (command.Usuario.EhNulo())
                 {
                     var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 

@@ -50,12 +50,12 @@ namespace SME.SGP.Aplicacao
 
             var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(rfs));
 
-            if (usuarios != null)
+            if (usuarios.NaoEhNulo())
             {
                 foreach (var funcionario in funcionarios)
                 {
                     funcionario.UsuarioId = usuarios.FirstOrDefault(a => a.CodigoRf == funcionario.CodigoRf)?.Id ?? 0;
-                    funcionario.PodeEditar = request.Usuario != null && request.Usuario.EhCoordenadorCEFAI();
+                    funcionario.PodeEditar = request.Usuario.NaoEhNulo() && request.Usuario.EhCoordenadorCEFAI();
                 }
             }
 

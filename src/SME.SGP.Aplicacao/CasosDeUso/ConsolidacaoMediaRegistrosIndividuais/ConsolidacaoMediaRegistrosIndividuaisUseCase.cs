@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
             var alunosInfantilComRegistrosIndividuais = await mediator.Send(new ObterAlunosInfantilComRegistrosIndividuaisPorTurmaAnoQuery(filtro.AnoLetivo, filtro.TurmaId));
 
-            if (alunosInfantilComRegistrosIndividuais != null && alunosInfantilComRegistrosIndividuais.Any())
+            if (alunosInfantilComRegistrosIndividuais.NaoEhNulo() && alunosInfantilComRegistrosIndividuais.Any())
             {
                 var mediaPorCriancaTurma = new List<MediaRegistoIndividualCriancaDTO>();
                 var totalMediasPorTurma = new List<int>();
@@ -28,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var registrosIndividuaisAluno = await mediator.Send(new ObterRegistrosIndividuaisPorTurmaAlunoQuery(alunoRegistroIndividual.TurmaId, alunoRegistroIndividual.AlunoCodigo));
 
-                    if (registrosIndividuaisAluno != null && registrosIndividuaisAluno.Any())
+                    if (registrosIndividuaisAluno.NaoEhNulo() && registrosIndividuaisAluno.Any())
                     {
 
                         var datasDeRegistro = registrosIndividuaisAluno.Select(r => r.DataRegistro).ToList();

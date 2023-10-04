@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                         new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
                             0, false, DateTime.Now.Year, tipos, true));
 
-                if (turmas != null || turmas.Any())
+                if (turmas.NaoEhNulo() || turmas.Any())
                 {
                     foreach (var item in turmas)
                         turmasCodigos.Add(item.Codigo);
@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao
         {
             var retorno = new List<PlanoAEEResumoDto>();
             IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPAP = new List<AlunosTurmaProgramaPapDto>();
-            if(planosAEE != null && planosAEE.Any())
+            if(planosAEE.NaoEhNulo() && planosAEE.Any())
                 matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(planosAEE.Select(x => x.AlunoCodigo).ToArray(), anoLetivoConsultaPap);
             
             foreach (var planoAEE in planosAEE)

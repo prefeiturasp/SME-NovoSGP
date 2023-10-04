@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var notificacao = await repositorioNotificacao.ObterPorIdAsync(request.NotificacaoId);
 
-            if (notificacao == null)
+            if (notificacao.EhNulo())
                 throw new NegocioException($"Notificação de Id: '{request.NotificacaoId}' não localizada.");
 
             return notificacao;

@@ -33,7 +33,7 @@ namespace SME.SGP.Dto
         public bool EmEdicao = true;
 
         public static explicit operator ComunicadoDto(Comunicado comunicado)
-        => comunicado == null ? null : new ComunicadoDto
+        => comunicado.EhNulo() ? null : new ComunicadoDto
         {
             AnoLetivo = comunicado.AnoLetivo,
             Turmas = comunicado.Turmas.Select(x => (ComunicadoTurmaDto)x),

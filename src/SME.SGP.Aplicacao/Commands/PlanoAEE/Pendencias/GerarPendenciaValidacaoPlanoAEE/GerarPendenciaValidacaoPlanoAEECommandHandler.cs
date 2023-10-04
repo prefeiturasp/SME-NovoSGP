@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             {
                 var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
 
-                if (planoAEE == null)
+                if (planoAEE.EhNulo())
                     throw new NegocioException("Não foi possível localizar o PlanoAEE");
 
                 var existePendencia = await mediator.Send(new ExistePendenciaPlanoAEEQuery(request.PlanoAEEId));

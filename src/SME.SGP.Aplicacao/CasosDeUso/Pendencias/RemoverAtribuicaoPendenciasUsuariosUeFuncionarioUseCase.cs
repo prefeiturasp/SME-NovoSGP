@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                     case PerfilUsuario.AD:
                     case PerfilUsuario.DIRETOR:
 
-                        if (filtro.FuncionarioAtual == null || (int)EnumHelper.ObterPerfilPorCargo(filtro.FuncionarioAtual.CargoId) != filtro.PendenciaFuncionario.PerfilCodigo)
+                        if (filtro.FuncionarioAtual.EhNulo() || (int)EnumHelper.ObterPerfilPorCargo(filtro.FuncionarioAtual.CargoId) != filtro.PendenciaFuncionario.PerfilCodigo)
                             await RemoverTratarAtribuicao(filtro.PendenciaFuncionario);
 
                         break;

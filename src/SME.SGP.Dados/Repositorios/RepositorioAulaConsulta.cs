@@ -857,7 +857,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("AND a.professor_rf = @codigoRf");
             if (!string.IsNullOrEmpty(disciplinaId))
                 query.AppendLine("AND a.disciplina_id = @disciplinaId");
-            if (disciplinasId != null && disciplinasId.Length > 0)
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
                 query.AppendLine("AND a.disciplina_id = ANY(@disciplinasId)");
             if (ehCj)
                 query.AppendLine("AND a.aula_cj = true");
@@ -1211,7 +1211,7 @@ namespace SME.SGP.Dados.Repositorios
             var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
             await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query, (diarioBordoPorPeriodoDto, auditoriaDto) =>
                  {
-                     if (auditoriaDto != null)
+                     if (auditoriaDto.NaoEhNulo())
                          diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
 
                      lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
@@ -1281,6 +1281,26 @@ namespace SME.SGP.Dados.Repositorios
                 disciplinaId,
                 tipoAula
             })).Any();
+        }
+
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasFuturasPorDataTurmaComponentesCurriculares(DateTime dataBase, string codigoTurma, string[] componentesCurricularesCodigo)
+        {
+            var query = @"select id, ue_id Ueid, disciplina_id DisciplinaId, turma_id TurmaId,
+                                 tipo_calendario_id TipoCalendarioId, professor_rf ProfessorRf, quantidade, 
+                                 data_aula DataAula, recorrencia_aula RecorrenciaAula, tipo_aula TipoAula, 
+                                 migrado, aula_cj AulaCj 
+                          from aula
+                          where not excluido
+                                and DATE(data_aula) >= @data
+                                and turma_id = @codigoTurma
+                                and disciplina_id = any(@componentesCurricularesCodigo) ";
+
+            return await database.Conexao.QueryAsync<AulaConsultaDto>(query, new
+            {
+                data = dataBase.Date,
+                codigoTurma,
+                componentesCurricularesCodigo
+            });
         }
     }
 }

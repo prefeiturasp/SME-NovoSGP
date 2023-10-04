@@ -44,6 +44,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirCompensacaoAusenciaPorIdsUseCase, ExcluirCompensacaoAusenciaPorIdsUseCase>();
             services.TryAddScoped<IPendenciaTurmaComponenteSemAulasPorUeUseCase, PendenciaTurmaComponenteSemAulasPorUeUseCase>();
             services.TryAddScoped<IPendenciaTurmaComponenteSemAulasUseCase, PendenciaTurmaComponenteSemAulasUseCase>();
+            services.TryAddScoped<IExcluirAulasRecorrentesTerritorioSaberUseCase, ExcluirAulasRecorrentesTerritorioSaberUseCase>();
         }
     }
 }

@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> Executar(ConselhoClasseNotasFrequenciaDto notasFrequenciaDto)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(notasFrequenciaDto.CodigoTurma));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var turmaItinerarioPercurso = turma.EhTurmaPercurso() ? turma.CodigoTurma : "";
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(notasFrequenciaDto.FechamentoTurmaId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.ConsideraHistorico));
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 
-            if (fechamentoTurma != null)
+            if (fechamentoTurma.NaoEhNulo())
                 turma = fechamentoTurma?.Turma;
             else if (notasFrequenciaDto.Bimestre > 0)
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, notasFrequenciaDto.Bimestre));
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             bool turmaTipoNotaConceito = await ObterSeATurmaEhTipoNotaConceito(notasFrequenciaDto.AlunoCodigo, turma);
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
 
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
             var turmasCodigos = new List<string>();
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
             var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance)).ToList();
             var alunosEol = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(notasFrequenciaDto.AlunoCodigo)));
-            var alunoNaTurma = periodoEscolar != null ? alunosEol.FirstOrDefault(a => a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) : alunosEol.Last();
+            var alunoNaTurma = periodoEscolar.NaoEhNulo() ? alunosEol.FirstOrDefault(a => a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) : alunosEol.Last();
             var codigosAlunos = alunosEol.Select(a => a.CodigoAluno).ToArray();
 
             if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
@@ -70,11 +70,11 @@ namespace SME.SGP.Aplicacao
                 tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
                 tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
-                if (alunoNaTurma != null)
+                if (alunoNaTurma.NaoEhNulo())
                     notasFrequenciaDto.ConsideraHistorico = alunoNaTurma.Inativo;
 
                 var turmasCodigoAtivos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, notasFrequenciaDto.AlunoCodigo,
-                    tiposParaConsulta, notasFrequenciaDto.ConsideraHistorico));
+                    tiposParaConsulta, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
                 turmasCodigos.AddRange(turmasCodigoAtivos.ToList());
 
@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 conselhosClassesIds = await mediator
                     .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos.Distinct().ToArray(), periodoEscolar?.Id));
 
-                if (conselhosClassesIds != null && !conselhosClassesIds.Any())
+                if (conselhosClassesIds.NaoEhNulo() && !conselhosClassesIds.Any())
                     conselhosClassesIds = new long[1] { notasFrequenciaDto.ConselhoClasseId };
             }
             else
@@ -103,14 +103,14 @@ namespace SME.SGP.Aplicacao
                 var conselhosComplementares = await mediator
                     .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos.ToArray(), periodoEscolar?.Id));
 
-                if (notasFrequenciaDto.ConselhoClasseId > 0 && conselhosComplementares != null)
+                if (notasFrequenciaDto.ConselhoClasseId > 0 && conselhosComplementares.NaoEhNulo())
                 {
-                    conselhosClassesIds = conselhosComplementares != null ?
+                    conselhosClassesIds = conselhosComplementares.NaoEhNulo() ?
                         conselhosComplementares.Append(notasFrequenciaDto.ConselhoClasseId).Distinct().ToArray() : new long[] { notasFrequenciaDto.ConselhoClasseId };
                 }
                 else if (notasFrequenciaDto.ConselhoClasseId > 0)
                     conselhosClassesIds = new long[] { notasFrequenciaDto.ConselhoClasseId };
-                else if (conselhosComplementares != null)
+                else if (conselhosComplementares.NaoEhNulo())
                     conselhosClassesIds = conselhosComplementares;
                 else
                     conselhosClassesIds = null;
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
             var periodosLetivos = (await mediator
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id))).ToList();
 
-            if (periodosLetivos == null || !periodosLetivos.Any())
+            if (periodosLetivos.EhNulo() || !periodosLetivos.Any())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FORAM_ENCONTRADOS_PERIODOS_TIPO_CALENDARIO);
 
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao
 
             var notasConselhoClasseAluno = new List<NotaConceitoBimestreComponenteDto>();
 
-            if (conselhosClassesIds != null)
+            if (conselhosClassesIds.NaoEhNulo())
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(notasFrequenciaDto.CodigoTurma, turma.AnoLetivo, null, true));
             var periodosEscolares = (await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id))).ToList();
 
-            if (periodosEscolares != null)
+            if (periodosEscolares.NaoEhNulo())
             {
                 var dataInicioPrimeiroBimestre = periodosEscolares.FirstOrDefault(pe => pe.Bimestre == PRIMEIRO_BIMESTRE).PeriodoInicio;
                 dadosAlunos = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.SituacaoCodigo != SituacaoMatriculaAluno.VinculoIndevido && d.DataSituacao >= dataInicioPrimeiroBimestre);
@@ -172,13 +172,13 @@ namespace SME.SGP.Aplicacao
 
             if (turmasComMatriculasValidas.Contains(turma.CodigoTurma))
             {
-                if (alunoNaTurma != null)
+                if (alunoNaTurma.NaoEhNulo())
                     validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
 
                 var turmasCodigosFiltro = turmasCodigos.Distinct()
                     .ToArray();
 
-                notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
+                notasFechamentoAluno = fechamentoTurma.NaoEhNulo() && fechamentoTurma.PeriodoEscolarId.HasValue ?
                     await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigosFiltro, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.Bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo)) :
                     await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigosFiltro, notasFrequenciaDto.AlunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, notasFrequenciaDto.Bimestre, validaMatricula));
             }
@@ -192,7 +192,7 @@ namespace SME.SGP.Aplicacao
                 (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos.ToArray(), usuarioAtual.PerfilAtual,
                     usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, true))).ToList();
 
-            if (turmaTipoNotaConceito && turma.EhEJA() && notasFechamentoAluno.Any(x => x.Nota != null))
+            if (turmaTipoNotaConceito && turma.EhEJA() && notasFechamentoAluno.Any(x => x.Nota.NaoEhNulo()))
                 ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
@@ -202,7 +202,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
             
-            var frequenciasAluno = turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma != null ?
+            var frequenciasAluno = turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma.NaoEhNulo() ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoNaTurma, tipoCalendario.Id, notasFrequenciaDto.Bimestre, tipoCalendario.AnoLetivo) :
                 Enumerable.Empty<FrequenciaAluno>();
 
@@ -213,26 +213,29 @@ namespace SME.SGP.Aplicacao
                 if (frequenciasAluno.Any())
                 {
                     frequenciaAlunoRegenciaPai = frequenciasAluno.FirstOrDefault(f => f.DisciplinaId == componenteRegenciaPai);
-                    frequenciaAlunoRegenciaPai.TotalAulas = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAulas);
-                    frequenciaAlunoRegenciaPai.TotalAusencias = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAusencias);
-                    frequenciaAlunoRegenciaPai.TotalCompensacoes = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalCompensacoes);
+                    if (!(frequenciaAlunoRegenciaPai is null))
+                    {
+                        frequenciaAlunoRegenciaPai.TotalAulas = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAulas);
+                        frequenciaAlunoRegenciaPai.TotalAusencias = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalAusencias);
+                        frequenciaAlunoRegenciaPai.TotalCompensacoes = frequenciasAluno.Where(f => f.DisciplinaId == componenteRegenciaPai).Sum(s => s.TotalCompensacoes);
+                    }
                 }
             }
 
-            var registrosFrequencia = (turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma != null ?
+            var registrosFrequencia = (turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma.NaoEhNulo() ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(notasFrequenciaDto.AlunoCodigo, turmasCodigos.ToArray(),
                     disciplinasCodigo.Select(d => d.ToString()).ToArray(), periodoEscolar?.Id)) :
                 Enumerable.Empty<RegistroFrequenciaAlunoBimestreDto>()).ToList();
 
             var gruposMatrizes = disciplinasDaTurma
-                .Where(c => c.GrupoMatrizNome != null && c.LancaNota)
+                .Where(c => c.GrupoMatrizNome.NaoEhNulo() && c.LancaNota)
                 .OrderBy(d => d.GrupoMatrizId)
                 .GroupBy(c => c.GrupoMatrizId)
                 .ToList();
 
             var permiteEdicao = dadosAluno.EstaAtivo() || await EstaInativoDentroPeriodoAberturaReabertura(dadosAluno.DataSituacao.Date, notasFrequenciaDto.Bimestre, tipoCalendario.Id, turma);
 
-            var periodoMatricula = alunoNaTurma != null ? await mediator
+            var periodoMatricula = alunoNaTurma.NaoEhNulo() ? await mediator
                 .Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula)) : null;
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
@@ -260,13 +263,13 @@ namespace SME.SGP.Aplicacao
                                                          && (alunoNaTurma.DataMatricula <= dataFim
                                                          || MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma)));
 
-                        frequenciasAlunoParaTratar = (periodoMatricula != null ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
+                        frequenciasAlunoParaTratar = (periodoMatricula.NaoEhNulo() ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
 
                         FrequenciaAluno frequenciaAluno;
                         var percentualFrequenciaPadrao = false;
 
 
-                        if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
+                        if (frequenciasAlunoParaTratar.EhNulo() || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
                         {
@@ -323,7 +326,7 @@ namespace SME.SGP.Aplicacao
                 if (conselhoClasseAlunoNotas.ComponentesCurriculares.Any())
                     conselhoClasseAlunoNotas.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponentesCurriculares.OrderBy(c => c.Nome).ToList();
 
-                if (conselhoClasseAlunoNotas.ComponenteRegencia != null)
+                if (conselhoClasseAlunoNotas.ComponenteRegencia.NaoEhNulo())
                     conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares.OrderBy(c => c.Nome).ToList();
 
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
@@ -345,7 +348,7 @@ namespace SME.SGP.Aplicacao
                 var turmasCodigosParaConsulta = new List<int>();
                 turmasCodigosParaConsulta.AddRange(turmaAluno.ObterTiposRegularesDiferentes());
 
-                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaAluno.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta));
+                var codigosTurmasRelacionadas = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turmaAluno.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, semestre: turmaAluno.Semestre != 0 ? turmaAluno.Semestre : null));
 
                 turmaAluno = await mediator.Send(new ObterTurmaPorCodigoQuery(codigosTurmasRelacionadas.FirstOrDefault()));
             }
@@ -364,7 +367,7 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestrePorTurma(Turma turma)
         {
             var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (periodoEscolarUltimoBimestre == null)
+            if (periodoEscolarUltimoBimestre.EhNulo())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FOI_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
 
             return periodoEscolarUltimoBimestre;
@@ -377,8 +380,8 @@ namespace SME.SGP.Aplicacao
         
         private bool VerificarSePossuiRegistroFrequencia(string alunoCodigo, string turmaCodigo, long codigoComponenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<FrequenciaAluno> frequenciasAlunoParaTratar, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia)
         {
-            return (frequenciasAlunoParaTratar != null && frequenciasAlunoParaTratar.Any()) ||
-                   registrosFrequencia.Any(f => (periodoEscolar == null || f.Bimestre == periodoEscolar.Bimestre) &&
+            return (frequenciasAlunoParaTratar.NaoEhNulo() && frequenciasAlunoParaTratar.Any()) ||
+                   registrosFrequencia.Any(f => (periodoEscolar.EhNulo() || f.Bimestre == periodoEscolar.Bimestre) &&
                                                 f.CodigoAluno == alunoCodigo &&
                                                 f.CodigoComponenteCurricular == codigoComponenteCurricular &&
                                                 f.CodigoTurma == turmaCodigo);
@@ -390,7 +393,7 @@ namespace SME.SGP.Aplicacao
         {
             var componentesRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
-            if (componentesRegencia == null || !componentesRegencia.Any())
+            if (componentesRegencia.EhNulo() || !componentesRegencia.Any())
                 throw new NegocioException(MensagemNegocioComponentesCurriculares.NAO_FORAM_ENCONTRADOS_COMPONENTES_CURRICULARES_REGENCIA_INFORMADA);
 
             // Excessão de disciplina ED. Fisica para modalidade EJA
@@ -399,20 +402,20 @@ namespace SME.SGP.Aplicacao
 
             double percentualFrequencia;
 
-            if(componentesRegencia != null && componentesRegencia.Any() && frequenciaAlunoRegenciaPai != null)
+            if(componentesRegencia.NaoEhNulo() && componentesRegencia.Any() && frequenciaAlunoRegenciaPai.NaoEhNulo())
                 percentualFrequencia = (frequenciaAlunoRegenciaPai.TotalAulas > 0 ? frequenciaAlunoRegenciaPai?.PercentualFrequencia ?? 0 : 0);
             else 
                 percentualFrequencia = (frequenciaAluno.TotalAulas > 0 ? frequenciaAluno?.PercentualFrequencia ?? 0 : 0);
 
             // Cálculo de frequência particular do ano de 2020
-            if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
+            if (periodoEscolar.EhNulo() && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
 
             var conselhoClasseComponente = new ConselhoClasseComponenteRegenciaFrequenciaDto()
             {
-                QuantidadeAulas = componentesRegencia != null && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalAulas ?? 0 : frequenciaAluno.TotalAulas,
-                Faltas = componentesRegencia != null && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalAusencias ?? 0 : frequenciaAluno?.TotalAusencias ?? 0,
-                AusenciasCompensadas = componentesRegencia != null && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalCompensacoes ?? 0  : frequenciaAluno?.TotalCompensacoes ?? 0,
+                QuantidadeAulas = componentesRegencia.NaoEhNulo() && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalAulas ?? 0 : frequenciaAluno.TotalAulas,
+                Faltas = componentesRegencia.NaoEhNulo() && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalAusencias ?? 0 : frequenciaAluno?.TotalAusencias ?? 0,
+                AusenciasCompensadas = componentesRegencia.NaoEhNulo() && componentesRegencia.Any() ? frequenciaAlunoRegenciaPai?.TotalCompensacoes ?? 0  : frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = percentualFrequencia <= 0 ? "" : FrequenciaAluno.FormatarPercentual(percentualFrequencia)
             };
 
@@ -443,7 +446,7 @@ namespace SME.SGP.Aplicacao
             && c.TurmaCodigo.Equals(codigoTurma));
             var notaComponenteId = notaComponente?.ConselhoClasseNotaId;
 
-            if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
+            if (notaComponente.EhNulo() || !notaComponente.NotaConceito.HasValue)
             {
                 var notaComponenteFechamento = new NotaConceitoBimestreComponenteDto();
 
@@ -496,7 +499,7 @@ namespace SME.SGP.Aplicacao
         {
             var notasFinais = new List<NotaBimestreDto>();
 
-            if (periodoEscolar != null)
+            if (periodoEscolar.NaoEhNulo())
                 notasFinais.Add(ObterNotasFinaisFechamento(componenteCurricularCodigo, periodoEscolar.Bimestre, notasFechamentoAluno));
             else
                 notasFinais.AddRange(ObterNotasFinaisConselho(componenteCurricularCodigo, notasFechamentoAluno));
@@ -525,7 +528,7 @@ namespace SME.SGP.Aplicacao
             double? notaConceito = null;
             // Busca nota do FechamentoNota
             var notaFechamento = notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == codigoComponenteCurricular);
-            if (notaFechamento != null)
+            if (notaFechamento.NaoEhNulo())
                 notaConceito = notaFechamento.NotaConceito;
 
             return new NotaBimestreDto()
@@ -548,7 +551,7 @@ namespace SME.SGP.Aplicacao
             var turmasCodigo = disciplinasDaTurma.Select(a => a.TurmaCodigo).Distinct().ToArray();
 
             int[] bimestres;
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
             {
                 var periodosEscolaresTurma = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
@@ -566,7 +569,7 @@ namespace SME.SGP.Aplicacao
             var aulasComponentesTurmas = await mediator
                 .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinas, bimestres, alunoTurma.DataMatricula, alunoTurma.Inativo ? alunoTurma.DataSituacao : null));
 
-            if (frequenciasAluno != null && frequenciasAluno.Any())
+            if (frequenciasAluno.NaoEhNulo() && frequenciasAluno.Any())
                 frequenciasAlunoRetorno.AddRange(frequenciasAluno);
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
@@ -586,7 +589,7 @@ namespace SME.SGP.Aplicacao
             }
 
             // Cálculo específico para 2020
-            if (periodoEscolar == null && anoLetivo.Equals(2020))
+            if (periodoEscolar.EhNulo() && anoLetivo.Equals(2020))
             {
                 var frequenciasAlunoRetornoAgrupado = frequenciasAlunoRetorno
                     .GroupBy(fa => (fa.TurmaId, fa.CodigoAluno, fa.DisciplinaId))
@@ -618,7 +621,7 @@ namespace SME.SGP.Aplicacao
             {
                 var compensacoesDisciplina = compensacoes.Where(c => c.ComponenteCurricularId == disciplinaCodigo).FirstOrDefault();
 
-                if (compensacoesDisciplina != null)
+                if (compensacoesDisciplina.NaoEhNulo())
                     return compensacoesDisciplina.Compensacoes;
             }
             return 0;
@@ -630,7 +633,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(notaFechamento.ComponenteCurricularCodigo))
                 {
-                    if (notaFechamento.Nota != null)
+                    if (notaFechamento.Nota.NaoEhNulo())
                         if (notaFechamento.Nota >= 7)
                         {
                             notaFechamento.ConceitoId = 1;
@@ -647,7 +650,7 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
         {
             var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (periodoEscolarUltimoBimestre == null)
+            if (periodoEscolarUltimoBimestre.EhNulo())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FOI_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
 
             return periodoEscolarUltimoBimestre;
@@ -663,10 +666,10 @@ namespace SME.SGP.Aplicacao
         {
             var totalAulas = Enumerable.Empty<TotalAulasPorAlunoTurmaDto>();
             var componentePermiteFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricularCodigo));
-            var bimestre = periodoEscolar?.Bimestre == null ? 0 : periodoEscolar.Bimestre;
+            var bimestre = !(periodoEscolar?.Bimestre).HasValue ? 0 : periodoEscolar.Bimestre;
             var percentualFrequencia = double.MinValue;
 
-            if (turmaPossuiRegistroFrequencia && frequenciaAluno != null)
+            if (turmaPossuiRegistroFrequencia && frequenciaAluno.NaoEhNulo())
                 percentualFrequencia = frequenciaAluno.PercentualFrequencia;
 
             if (componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
@@ -675,7 +678,7 @@ namespace SME.SGP.Aplicacao
                 totalAulas = await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma));
 
             // Cálculo de frequência particular do ano de 2020
-            if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
+            if (periodoEscolar.EhNulo() && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno?.PercentualFrequenciaFinal ?? 0;
             else if (turma.AnoLetivo.Equals(2020) && frequenciaAluno?.TotalAulas == 0)
                 percentualFrequencia = 100;

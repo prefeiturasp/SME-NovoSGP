@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var administrador = await mediator.Send(ObterAdministradorDoSuporteQuery.Instance);
 
-            if (administrador == null || string.IsNullOrEmpty(administrador.Login))
+            if (administrador.EhNulo() || string.IsNullOrEmpty(administrador.Login))
             {
                 throw new NegocioException($"O usuário não está em suporte de um administrador!");
             }

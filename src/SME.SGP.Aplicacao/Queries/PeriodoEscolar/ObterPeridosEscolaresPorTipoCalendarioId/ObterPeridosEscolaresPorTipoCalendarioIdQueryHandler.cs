@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(request.TipoCalendarioId);
             
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
             
             return periodosEscolares;

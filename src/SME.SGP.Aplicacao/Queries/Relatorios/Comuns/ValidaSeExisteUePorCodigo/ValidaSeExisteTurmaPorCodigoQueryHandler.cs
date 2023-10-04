@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Queries
                 int codigoTurma;
                 if (int.TryParse(request.CodigoTurma, out codigoTurma) && codigoTurma <= 0)
                     request.CodigoTurma = String.Empty;
-                else if (await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma)) == null)
+                else if ((await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma))).EhNulo())
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
             return true;

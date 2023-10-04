@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
         {
             var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
-            if (pendenciasEncaminhamentoAEE != null || !pendenciasEncaminhamentoAEE.Any())
+            if (pendenciasEncaminhamentoAEE.NaoEhNulo() || !pendenciasEncaminhamentoAEE.Any())
             {
                 foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
                 {

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             PaginacaoResultadoDto<RegistroIndividualDto> registrosDto = null;
 
-            if (registrosIndividuais != null && registrosIndividuais.Items.Any())
+            if (registrosIndividuais.NaoEhNulo() && registrosIndividuais.Items.Any())
                 registrosDto = MapearParaDto(registrosIndividuais);
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));

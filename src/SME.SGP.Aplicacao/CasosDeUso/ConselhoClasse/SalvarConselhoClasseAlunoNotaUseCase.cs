@@ -36,14 +36,14 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = new PeriodoEscolar();
 
-            if (fechamentoTurma == null)
+            if (fechamentoTurma.EhNulo())
             {
                 if (!ehAnoAnterior)
                     throw new NegocioException("Não existe fechamento de turma para o conselho de classe");
 
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, dto.Bimestre));
 
-                if (periodoEscolar == null && dto.Bimestre > 0)
+                if (periodoEscolar.EhNulo() && dto.Bimestre > 0)
                     throw new NegocioException("Período escolar não encontrado");
 
                 fechamentoTurma = new FechamentoTurma()
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (fechamentoTurma.PeriodoEscolarId != null)
+                if (fechamentoTurma.PeriodoEscolarId.NaoEhNulo())
                 {
                     periodoEscolar =
                         await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
             {
                 var periodosLetivos = await ObtenhaListaDePeriodoLetivo(turma);
 
-                if (periodosLetivos != null || periodosLetivos.Any())
+                if (periodosLetivos.NaoEhNulo() || periodosLetivos.Any())
                 {
                     periodoInicio = periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
                     periodoFim = periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<FechamentoReabertura> ObtenhaPeriodoDeAbertura(PeriodoEscolar periodoEscolar, Turma turma, DateTime? periodoInicio)
         {
-            if (periodoEscolar != null)
+            if (periodoEscolar.NaoEhNulo())
             {
                 if (periodoInicio.GetValueOrDefault().Year >= DateTime.Now.Year)
                 {
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
         {
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
 
-            if (tipoCalendario != null)
+            if (tipoCalendario.NaoEhNulo())
                 return (await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id))).ToList();
 
             return null;
@@ -169,13 +169,13 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarConceitoOuNota(SalvarConselhoClasseAlunoNotaDto dto, FechamentoTurma fechamentoTurma,
             AlunoPorTurmaResposta alunoConselho, PeriodoEscolar periodoEscolar)
         {
-            if (fechamentoTurma.Turma == null)
+            if (fechamentoTurma.Turma.EhNulo())
                 return;
 
             var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId,
                 fechamentoTurma.Turma.TipoTurma));
 
-            if (notaTipoValor == null)
+            if (notaTipoValor.EhNulo())
                 return;
 
             var turmasCodigos = new[] { dto.CodigoTurma };
@@ -195,16 +195,16 @@ namespace SME.SGP.Aplicacao
 
             switch (notaTipoValor.TipoNota)
             {
-                case TipoNota.Conceito when dto.ConselhoClasseNotaDto.Conceito == null:
+                case TipoNota.Conceito when dto.ConselhoClasseNotaDto.Conceito.EhNulo():
                     {
-                        if (notaFechamentoAluno?.ConceitoId == null)
+                        if (!(notaFechamentoAluno?.ConceitoId).HasValue)
                             return;
 
                         throw new NegocioException(MensagemNegocioConselhoClasse.CONCEITO_POS_CONSELHO_DEVE_SER_INFORMADO);
                     }
-                case TipoNota.Nota when dto.ConselhoClasseNotaDto.Nota == null:
+                case TipoNota.Nota when dto.ConselhoClasseNotaDto.Nota.EhNulo():
                     {
-                        if (notaFechamentoAluno?.Nota == null)
+                        if (!(notaFechamentoAluno?.Nota).HasValue)
                             return;
 
                         throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_POS_CONSELHO_DEVE_SER_INFORMADA);

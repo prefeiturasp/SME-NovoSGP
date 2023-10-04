@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(IEnumerable<DevolutivaTurmaDTO> turmasInfantil, int anoLetivo)
         {
-            if (turmasInfantil == null && !turmasInfantil.Any())
+            if (turmasInfantil.EhNulo() && !turmasInfantil.Any())
                 throw new NegocioException("Não foi possível localizar turmas para consolidar dados de devolutivas");
 
             foreach (var turma in turmasInfantil)
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task AtualizarDataExecucao(int ano)
         {
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, ano));
-            if (parametroSistema != null)
+            if (parametroSistema.NaoEhNulo())
             {
                 parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
                 await mediator.Send(new AtualizarParametroSistemaCommand(parametroSistema));

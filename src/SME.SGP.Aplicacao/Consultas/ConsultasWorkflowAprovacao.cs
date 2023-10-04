@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
 
-            if (workflow == null)
+            if (workflow.EhNulo())
                 throw new NegocioException($"Não foi possível obter o workflow através da mensagem de id {notificacaoId}");
 
             var listaWorkflows = new List<WorkflowAprovacaoTimeRespostaDto>();

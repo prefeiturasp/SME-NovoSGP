@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                         await TrataTurmasCodigos(itineranciaDto);
                     }
                     var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao, itineranciaDto.EventoId, itineranciaDto.DreId, itineranciaDto.UeId));
-                    if (itinerancia == null)
+                    if (itinerancia.EhNulo())
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 
                     if (itineranciaDto.PossuiAlunos)
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
         private async Task SalvarEventoItinerancia(long itineranciaId, ItineranciaDto itineranciaDto)
         {
             var ue = await mediator.Send(new ObterUePorIdQuery(itineranciaDto.UeId));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
 
             await mediator.Send(new CriarEventoItineranciaPAAICommand(
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmasCodigos = itineranciaDto.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToList();
 
-            if (turmasCodigos != null && turmasCodigos.Any())
+            if (turmasCodigos.NaoEhNulo() && turmasCodigos.Any())
             {
                 var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
                 if (turmas.Count() != turmasCodigos.Count())

@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                         0, 0, request.ExibirHistorico, DateTimeExtension.HorarioBrasilia().Year, null, true));
             }
             
-            var turmasIds = turmas != null || turmas.Any() ? turmas.Select(s => s.Id) : null;
+            var turmasIds = turmas.NaoEhNulo() || turmas.Any() ? turmas.Select(s => s.Id) : null;
 
             return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.AnoLetivo, request.DreId, 
                 request.CodigoUe,request.NomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 

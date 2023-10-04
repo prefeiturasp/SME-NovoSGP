@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                                                     s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.PendenteRematricula ||
                                                     s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.SemContinuidade ||
                                                     s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
-                            if (alunos == null || !alunos.Any())
+                            if (alunos.EhNulo() || !alunos.Any())
                                 continue;
 
                             var alunosFrequencia = await mediator.Send(new ObterFrequenciaGeralPorAlunosTurmaQuery(alunos.Select(a => a.CodigoAluno).ToArray(), turma.TurmaCodigo));
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                                         s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.PendenteRematricula ||
                                         s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.SemContinuidade ||
                                         s.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
-                if (alunos == null || !alunos.Any())
+                if (alunos.EhNulo() || !alunos.Any())
                     throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
                 var alunosFrequencia = await mediator.Send(new ObterFrequenciaGeralPorAlunosTurmaQuery(alunos.Select(a => a.CodigoAluno).ToArray(), turma.CodigoTurma));

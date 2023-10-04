@@ -26,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<RelatorioSemestralPAPAluno, RelatorioSemestralPAPAlunoSecao, SecaoRelatorioSemestralPAP, RelatorioSemestralPAPAluno>(
                     query, (relatorioSemestralAluno, relatorioSemestralAlunoSecao, secaoRelatorioSemestral) =>
                     {
-                        if (relatorioAluno == null)
+                        if (relatorioAluno.EhNulo())
                             relatorioAluno = relatorioSemestralAluno;
 
                         relatorioSemestralAlunoSecao.SecaoRelatorioSemestralPAP = secaoRelatorioSemestral;

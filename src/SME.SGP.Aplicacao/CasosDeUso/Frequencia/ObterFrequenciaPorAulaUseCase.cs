@@ -21,35 +21,35 @@ namespace SME.SGP.Aplicacao
             var aula = await mediator
                 .Send(new ObterAulaPorIdQuery(param.AulaId));
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Aula não encontrada.");
 
             var turma = await mediator
                 .Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.TURMA_NAO_ENCONTRADA_POR_CODIGO);
 
             var alunosDaTurmaNaData = await mediator
                 .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (aula.DataAula, aula.DataAula)));
 
-            if (alunosDaTurmaNaData == null || !alunosDaTurmaNaData.Any())
+            if (alunosDaTurmaNaData.EhNulo() || !alunosDaTurmaNaData.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
             var registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
 
             var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id));
-            if (frequenciaAlunos == null)
+            if (frequenciaAlunos.EhNulo())
                 frequenciaAlunos = new List<FrequenciaAlunoSimplificadoDto>();
 
             var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id));
-            if (compensacaoAusenciaAlunoAulas == null)
+            if (compensacaoAusenciaAlunoAulas.EhNulo())
                 compensacaoAusenciaAlunoAulas = new List<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
 
             var periodoEscolar = await mediator
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula));
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
 
             var mesmoAnoLetivo = DateTime.Today.Year == aula.DataAula.Year;
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             var parametroPercentualCritico = await mediator
                 .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, periodoEscolar.PeriodoInicio.Year));
 
-            if (parametroPercentualCritico == null)
+            if (parametroPercentualCritico.EhNulo())
                 throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
 
             var percentualCritico = int.Parse(parametroPercentualCritico.Valor);
@@ -68,41 +68,27 @@ namespace SME.SGP.Aplicacao
             var parametroPercentualAlerta = await mediator
                 .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year));
 
-            if (parametroPercentualAlerta == null)
+            if (parametroPercentualAlerta.EhNulo())
                 throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
 
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
 
-            var usuarioLogado = await mediator
-                .Send(ObterUsuarioLogadoQuery.Instance);
-
-            var professorConsiderado = usuarioLogado.Login;
-
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null,turma.Id));
-
             var codigosComponentesConsiderados = new List<long>() { param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId) };
-
-            if (codigosTerritorioEquivalentes != default)
-            {
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => long.Parse(c.codigoComponente)).Except(codigosComponentesConsiderados));
-                professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-            }
 
             var componenteCurricularAula = await mediator
                 .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), codigoTurma: turma.CodigoTurma));
 
-            if (componenteCurricularAula == null || !componenteCurricularAula.Any())
+            if (componenteCurricularAula.EhNulo() || !componenteCurricularAula.Any())
                 throw new NegocioException("Componente curricular da aula não encontrado");
 
             var anotacoesTurma = await mediator
                 .Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
 
             var frequenciaAlunosRegistrada = await mediator
-                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesConsiderados.ToArray(), periodoEscolar.Id, professorConsiderado));
+                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesConsiderados.ToArray(), periodoEscolar.Id));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
-                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), periodoEscolar.Id, professorConsiderado));
+                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), periodoEscolar.Id));
 
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosDaTurmaNaData, turma);
             foreach (var aluno in alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno))
@@ -212,7 +198,7 @@ namespace SME.SGP.Aplicacao
         {
             double percentualFrequencia = Double.MinValue;
 
-            if (turmaComFrequenciasRegistradas && frequenciaAluno != null)
+            if (turmaComFrequenciasRegistradas && frequenciaAluno.NaoEhNulo())
                 percentualFrequencia = frequenciaAluno.PercentualFrequencia;
 
             var percentualFrequenciaLabel = percentualFrequencia < 0 ? null : FrequenciaAluno.FormatarPercentual(FrequenciaAluno.ArredondarPercentual(percentualFrequencia));
@@ -231,7 +217,7 @@ namespace SME.SGP.Aplicacao
         private async Task<FrequenciaDto> ObterRegistroFrequencia(Aula aula, Turma turma)
         {
             var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aula.Id));
-            if (registroFrequencia == null)
+            if (registroFrequencia.EhNulo())
             {
                 registroFrequencia = new RegistroFrequencia(aula);
             }

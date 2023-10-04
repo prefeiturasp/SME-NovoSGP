@@ -59,7 +59,7 @@ namespace SME.SGP.Dados.Repositorios
                 (periodo, periodoEscolar, componente, objetivo) =>
                 {
                     var periodoAdicionado = periodos.FirstOrDefault(c => c.Id == periodo.Id);
-                    if (periodoAdicionado == null)
+                    if (periodoAdicionado.EhNulo())
                     {
                         componente.ObjetivosAprendizagem.Add(objetivo);
                         periodo.ComponentesCurriculares.Add(componente);
@@ -69,10 +69,10 @@ namespace SME.SGP.Dados.Repositorios
                     else
                     {
                         var componenteCurricular = periodoAdicionado.ComponentesCurriculares.FirstOrDefault(c => c.Id == componente.Id);
-                        if (componenteCurricular != null)
+                        if (componenteCurricular.NaoEhNulo())
                         {
                             var objetivoAprendizagem = componenteCurricular.ObjetivosAprendizagem.FirstOrDefault(c => c.Id == objetivo.Id);
-                            if (objetivoAprendizagem == null)
+                            if (objetivoAprendizagem.EhNulo())
                             {
                                 componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
                             }

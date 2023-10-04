@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 {
                     GrupoMatriz = new ComponenteCurricularGrupoMatriz{ Id = componente.GrupoMatrizId},
                     AreaDoConhecimento = new AreaDoConhecimento { Id = componente.AreaConnhecimentoId},
-                    Disciplina = descricao != null && descricao.Any() ? descricao : componente.Descricao,
+                    Disciplina = descricao.NaoEhNulo() && descricao.Any() ? descricao : componente.Descricao,
                     CodDisciplina = componente.Id
                 }); ;
             }

@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
-        private readonly IServicoEol servicoEol;
         private readonly IMediator mediator;
         private const string Todas = "todas";
 
@@ -30,8 +29,7 @@ namespace SME.SGP.Aplicacao
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
             IRepositorioComunicadoAluno repositorioComunicadoAluno,
-            IMediator mediator,
-            IServicoEol servicoEol) : base(contextoAplicacao)
+            IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -39,7 +37,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<ComunicadoCompletoDto> BuscarPorIdAsync(long id)
@@ -75,7 +72,7 @@ namespace SME.SGP.Aplicacao
             {
                 var comunicadoDto = itens.FirstOrDefault(x => x.Id == item.Id);
 
-                if (comunicadoDto == null)
+                if (comunicadoDto.EhNulo())
                     itens.Add((ComunicadoDto)item);
                 else
                     comunicadoDto.Grupos.AddRange(item.GruposComunicacao.Select(x => new GrupoComunicacaoDto
@@ -113,7 +110,7 @@ namespace SME.SGP.Aplicacao
             {
                 var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma));
 
-                if (abrangenciaTurmas == null)
+                if (abrangenciaTurmas.EhNulo())
                     throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da Turma com codigo {turma.CodigoTurma}");
             }
         }
@@ -124,10 +121,10 @@ namespace SME.SGP.Aplicacao
 
             var ue = abrangenciaUes.FirstOrDefault(x => x.Codigo.Equals(filtroDto.CodigoUe));
 
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da UE com codigo {filtroDto.CodigoUe}");
 
-            if (filtroDto.Turmas != null && filtroDto.Turmas.Any())
+            if (filtroDto.Turmas.NaoEhNulo() && filtroDto.Turmas.Any())
                 await ValidarAbrangenciaTurma(filtroDto);
         }
 
@@ -137,7 +134,7 @@ namespace SME.SGP.Aplicacao
 
             var dre = abrangenciaDres.FirstOrDefault(x => x.Codigo.Equals(filtroDto.CodigoDre));
 
-            if (dre == null)
+            if (dre.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da DRE com codigo {filtroDto.CodigoDre}");
         }
     }

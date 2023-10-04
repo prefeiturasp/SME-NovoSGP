@@ -59,26 +59,21 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                                             request.CodigoComponenteCurricular,
                                                                             request.Usuario.EhProfessorCj()));
 
-            if (aulasExistentes != null && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
+            if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
             {
                 if (request.Usuario.EhProfessorCj())
                 {
                     if (aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
                         throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
                 }
-                else if (aulasExistentes.Any(a => a.ProfessorRf == request.ProfessorConsiderado))
-                    throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
-            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes, request.CodigoTerritorioSaberEquivalente);
+            await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes);
 
             var aula = MapearEntidade(request);
 
             if (request.Usuario.PerfilAtual == Perfis.PERFIL_DIRETOR)
                 aula.Status = EntidadeStatus.Aprovado;
-
-            if (!string.IsNullOrWhiteSpace(request.ProfessorConsiderado))
-                aula.ProfessorRf = request.ProfessorConsiderado;
 
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
@@ -132,15 +127,14 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         private async Task AplicarValidacoes(InserirAulaUnicaCommand inserirAulaUnicaCommand,
                                              Turma turma,
                                              Usuario usuarioLogado,
-                                             IEnumerable<AulaConsultaDto> aulasExistentes,
-                                             long? codigoTerritorioSaber = null)
+                                             IEnumerable<AulaConsultaDto> aulasExistentes)
         {
-            await ValidarComponentesDoProfessor(inserirAulaUnicaCommand, usuarioLogado, codigoTerritorioSaber);
+            await ValidarComponentesDoProfessor(inserirAulaUnicaCommand, usuarioLogado);
 
             await ValidarSeEhDiaLetivo(inserirAulaUnicaCommand, turma);
 
             if (inserirAulaUnicaCommand.TipoAula != TipoAula.Reposicao)
-                await ValidarGrade(inserirAulaUnicaCommand, usuarioLogado, aulasExistentes, turma, codigoTerritorioSaber);
+                await ValidarGrade(inserirAulaUnicaCommand, usuarioLogado, aulasExistentes, turma);
         }
 
         private Aula MapearEntidade(InserirAulaUnicaCommand inserirAulaUnicaCommand)
@@ -164,14 +158,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         private async Task ValidarGrade(InserirAulaUnicaCommand inserirAulaUnicaCommand,
                                         Usuario usuarioLogado,
                                         IEnumerable<AulaConsultaDto> aulasExistentes,
-                                        Turma turma,
-                                        long? codigoTerritorio)
+                                        Turma turma)
         {
 
             var codigosConsiderados = new List<long>() { inserirAulaUnicaCommand.CodigoComponenteCurricular };
-            if (codigoTerritorio.HasValue && codigoTerritorio.Value > 0)
-                codigosConsiderados.Add(codigoTerritorio.Value);
-
             var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
                                                                                    turma.ModalidadeCodigo,
                                                                                    codigosConsiderados.ToArray(),

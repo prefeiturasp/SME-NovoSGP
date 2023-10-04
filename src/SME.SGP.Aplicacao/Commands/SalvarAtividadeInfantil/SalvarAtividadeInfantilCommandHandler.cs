@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         private Dominio.AtividadeInfantil MapearParaEntidade(SalvarAtividadeInfantilCommand request, Dominio.AtividadeInfantil atividadeInfantil)
         {
-            if (atividadeInfantil == null)
+            if (atividadeInfantil.EhNulo())
                 atividadeInfantil = new Dominio.AtividadeInfantil();
 
             atividadeInfantil.AulaId = request.AulaId;

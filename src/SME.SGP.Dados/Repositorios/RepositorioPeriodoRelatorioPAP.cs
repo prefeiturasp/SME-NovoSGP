@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<PeriodoRelatorioPAP, ConfiguracaoRelatorioPAP, PeriodoEscolarRelatorioPAP, PeriodoEscolar, PeriodoRelatorioPAP>(sql,
                 (periodoPAP, configuracaoPAP, periodoEscolarPAP, periodoEscolar) =>
                 {
-                    if (retorno == null)
+                    if (retorno.EhNulo())
                     {
                         retorno = periodoPAP;
                         retorno.Configuracao = configuracaoPAP;

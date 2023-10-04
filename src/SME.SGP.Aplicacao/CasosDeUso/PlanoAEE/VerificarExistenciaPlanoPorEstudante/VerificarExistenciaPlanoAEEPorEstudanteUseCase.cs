@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var planoAEE = await mediator.Send(new VerificarExistenciaPlanoAEEPorEstudanteQuery(codigoEstudante));
 
-            if (planoAEE != null)
+            if (planoAEE.NaoEhNulo())
                 throw new NegocioException("Estudante/Criança já possui plano AEE em aberto");
 
             return true;

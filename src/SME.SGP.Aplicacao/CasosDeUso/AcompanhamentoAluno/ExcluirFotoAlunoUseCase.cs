@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var foto = await mediator.Send(new ObterFotoSemestreAlunoPorCodigoQuery(codigoFoto));
 
-            if (foto == null)
+            if (foto.EhNulo())
                 throw new NegocioException("Código da foto não licalizado");
 
             return await mediator.Send(new ExcluirFotoAcompanhamentoAlunoCommand(foto));
