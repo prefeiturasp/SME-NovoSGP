@@ -31,6 +31,9 @@ namespace SME.SGP.TesteIntegracao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
+            var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
+            var dataSituacao = new DateTime(anoAtual, 2, 1);
+
             var alunos = new List<AlunoPorTurmaResposta> {
                 new AlunoPorTurmaResposta
                 {
@@ -202,7 +205,7 @@ namespace SME.SGP.TesteIntegracao
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       CodigoTurma=int.Parse(request.CodigoTurma),
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
-                      DataSituacao= DateTimeExtension.HorarioBrasilia(),
+                      DataSituacao= dataSituacao,
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       NomeAluno= ALUNO_CODIGO_10,
                       NumeroAlunoChamada=1,
@@ -220,7 +223,7 @@ namespace SME.SGP.TesteIntegracao
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.ReclassificadoSaida,
                       CodigoTurma=int.Parse(request.CodigoTurma),
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
-                      DataSituacao= DateTimeExtension.HorarioBrasilia(),
+                      DataSituacao= dataSituacao,
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       NomeAluno= ALUNO_CODIGO_10,
                       NumeroAlunoChamada=1,

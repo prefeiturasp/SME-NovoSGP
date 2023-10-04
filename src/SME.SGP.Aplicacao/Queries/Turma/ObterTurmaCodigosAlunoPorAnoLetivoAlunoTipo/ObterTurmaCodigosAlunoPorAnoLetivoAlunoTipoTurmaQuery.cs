@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery : IRequest<string[]>
     {
-        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas, DateTime? dataReferencia = null, string ueCodigo = null, int? semestre = null)
+        public ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(int anoLetivo, string codigoAluno, IEnumerable<int> tiposTurmas, bool? consideraHistorico = null,  DateTime? dataReferencia = null, string ueCodigo = null, int? semestre = null)
         {
             AnoLetivo = anoLetivo;
             CodigoAluno = codigoAluno;
