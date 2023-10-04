@@ -34,6 +34,26 @@ namespace SME.SGP.Dados
             return retorno;
         }
 
+        public async Task<IEnumerable<AlunoSituacaoConselhoDto>> ObterStatusConsolidacaoConselhoClasseAlunoTurma(long turmaId, int bimestre)
+        {
+
+            var sql = $@"select cccat.aluno_codigo as AlunoCodigo,
+                            case 
+                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) = 0 then 0
+                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) < count(cccatn.id) then 1
+                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) = count(cccatn.id) then 2
+                            else 1
+                            end as StatusConselhoClasseAluno 
+                             from consolidado_conselho_classe_aluno_turma cccat 
+                             inner join consolidado_conselho_classe_aluno_turma_nota cccatn 
+                                on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
+                             where cccat.turma_id = @turmaId and coalesce(cccatn.bimestre, 0) = @bimestre
+                             and not cccat.excluido 
+                             group by cccat.aluno_codigo";
+
+            return await database.Conexao.QueryAsync<AlunoSituacaoConselhoDto>(sql.ToString(), new { turmaId, bimestre });
+        }
+
         public async Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = $@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,   
