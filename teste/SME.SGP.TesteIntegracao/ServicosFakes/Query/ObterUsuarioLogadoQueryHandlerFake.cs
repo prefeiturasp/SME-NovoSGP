@@ -25,10 +25,12 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.Query
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01)
             };
 
+            usuario.DefinirPerfis(new List<PrioridadePerfil>()
+            {
+                new PrioridadePerfil() { CodigoPerfil = Perfis.PERFIL_PROFESSOR }
+            });
 
-            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { CodigoPerfil = Perfis.PERFIL_PROFESSOR } });
-
-            return usuario;
+            return await Task.FromResult(usuario);
         }
     }
 }

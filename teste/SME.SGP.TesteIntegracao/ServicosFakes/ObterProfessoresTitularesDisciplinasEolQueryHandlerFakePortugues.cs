@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public class ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues : 
+    public class ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues :
         IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>,
         IRequestHandler<ObterProfessoresTitularesDaTurmaCompletosQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorTitularDisciplinaEol>() 
+            return new List<ProfessorTitularDisciplinaEol>()
             {
                 new ProfessorTitularDisciplinaEol
                 {
