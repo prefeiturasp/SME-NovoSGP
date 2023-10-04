@@ -74,10 +74,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterQuestoesPorModalidadesParaRelatorioDinamico([FromQuery] int[] modalidadesIds,
+        public async Task<IActionResult> ObterQuestoesPorModalidadesParaRelatorioDinamico([FromQuery] int? modalidadeId,
                                                                                 [FromServices] IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase useCase)
         {
-            return Ok(await useCase.Executar(modalidadesIds));
+            return Ok(await useCase.Executar(modalidadeId));
         }
 
         [HttpGet("situacoes")]

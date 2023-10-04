@@ -7,24 +7,13 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class ObterSecoesEncaminhamentosSecaoNAAPAQuery : IRequest<IEnumerable<SecaoQuestionarioDto>>
     {
-        public ObterSecoesEncaminhamentosSecaoNAAPAQuery(int[] modalidades, long? encaminhamentoNAAPAId)
+        public ObterSecoesEncaminhamentosSecaoNAAPAQuery(int? modalidade, long? encaminhamentoNAAPAId)
         {
             EncaminhamentoNAAPAId = encaminhamentoNAAPAId;
-            Modalidades = modalidades;
+            Modalidade = modalidade;
         }
 
         public long? EncaminhamentoNAAPAId { get; }
-        public int[] Modalidades { get; }
+        public int? Modalidade { get; }
     }
-
-    public class ObterSecoesEncaminhamentosSecaoNAAPAQueryValidator : AbstractValidator<ObterSecoesEncaminhamentosSecaoNAAPAQuery>
-    {
-        public ObterSecoesEncaminhamentosSecaoNAAPAQueryValidator()
-        {
-            RuleFor(c => c.Modalidades)
-                .NotNull()
-                .WithMessage("As modalidades devem ser informadas para obter as seções/encaminhamentos seção do encaminhamento NAAPA.");
-        }
-    }
-
 }

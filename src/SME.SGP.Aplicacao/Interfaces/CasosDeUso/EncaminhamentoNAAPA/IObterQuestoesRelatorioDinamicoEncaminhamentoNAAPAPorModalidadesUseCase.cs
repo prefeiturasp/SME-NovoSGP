@@ -8,6 +8,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase
     {
-        Task<IEnumerable<QuestaoDto>> Executar(int[] modalidadesIds);
+        Task<IEnumerable<QuestaoDto>> Executar(int? modalidadeId);
     }
 }

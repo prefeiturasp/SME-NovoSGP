@@ -22,11 +22,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery request, CancellationToken cancellationToken)
         {
-            var secoesQuestionario = await mediator.Send(new ObterSecoesEncaminhamentosSecaoNAAPAQuery(request.ModalidadesIds, null));
+            var secoesQuestionario = await mediator.Send(new ObterSecoesEncaminhamentosSecaoNAAPAQuery(request.ModalidadeId, null));
 
             var secoesQuestionariosNAAPA = secoesQuestionario.Where(secao => secao.TipoQuestionario == TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA);
 
-            if (request.ModalidadesIds.Length > 1)
+            if (!request.ModalidadeId.HasValue)
                 secoesQuestionariosNAAPA = secoesQuestionariosNAAPA.Where(secao => secao.NomeComponente.Equals(SECAO_INFORMACOES_ESTUDANTE));
 
             var questoes = new List<QuestaoDto>();
