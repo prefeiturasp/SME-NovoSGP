@@ -37,7 +37,8 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
                     Etapa = secao.Etapa,
                     Concluido = (secao.NomeComponente == SECAO_ITINERANCIA) || (secao.EncaminhamentoNAAPASecao?.Concluido ?? false),
                     NomeComponente = secao.NomeComponente,
-                    Auditoria = (AuditoriaDto)secao.EncaminhamentoNAAPASecao
+                    Auditoria = (AuditoriaDto)secao.EncaminhamentoNAAPASecao,
+                    TipoQuestionario = secao.Questionario.Tipo
                 };
             }
         }
