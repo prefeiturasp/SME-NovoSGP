@@ -190,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 TipoEscola = TipoEscola.Nenhum
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 Id = 1,
                 UeId = 1,
@@ -201,7 +201,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
                 Nome = "7A"
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 Id = 2,
                 UeId = 2,

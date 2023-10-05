@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             var usuarioId = usuarios.FirstOrDefault(c => c.Login == USUARIO_PROFESSOR_LOGIN_2222222)?.Id;
             usuarioId.ShouldNotBeNull();
 
-            var turmas = ObterTodos<Turma>();
+            var turmas = ObterTodos<Dominio.Turma>();
             var turmaId = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1)?.Id;
 
             var arquivos = ObterTodos<Arquivo>();
@@ -113,7 +113,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             var usuarioId = usuarios.FirstOrDefault(c => c.Login == USUARIO_PROFESSOR_LOGIN_2222222)?.Id;
             usuarioId.ShouldNotBeNull();
 
-            var turmas = ObterTodos<Turma>();
+            var turmas = ObterTodos<Dominio.Turma>();
             var turmaId = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1)?.Id;
 
             var arquivos = ObterTodos<Arquivo>();
@@ -178,7 +178,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             var usuarioId = usuarios.FirstOrDefault(c => c.Login == USUARIO_PROFESSOR_LOGIN_2222222)?.Id;
             usuarioId.ShouldNotBeNull();
 
-            var turmas = ObterTodos<Turma>();
+            var turmas = ObterTodos<Dominio.Turma>();
             var turmaId = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1)?.Id;
 
             var arquivos = ObterTodos<Arquivo>();

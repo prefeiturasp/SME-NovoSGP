@@ -434,7 +434,7 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         protected async Task CriarFrequenciaPreDefinida(long componenteCurricularId)
         {
-            var turmaId = ObterTodos<Turma>().Select(c => c.Id).FirstOrDefault();
+            var turmaId = ObterTodos<Dominio.Turma>().Select(c => c.Id).FirstOrDefault();
 
             foreach (var codigoAluno in codigosAlunos)
             {
