@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
     public class ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQueryHandler : IRequestHandler<ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery, (string codigoComponente, string professor)[]>
     {
         private readonly IMediator mediator;
-        
+
         public ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -21,10 +21,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<(string codigoComponente, string professor)[]> Handle(ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery request, CancellationToken cancellationToken)
         {
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma), cancellationToken);
+
             if (FiltrarProfessor(request))
             {
                 var componentesProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, request.Professor, Perfis.PERFIL_PROFESSOR));
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, request.Professor, Perfis.PERFIL_PROFESSOR, turma.EhTurmaInfantil), cancellationToken);
 
                 var componenteProfessorCorrespondente = componentesProfessor
                     .FirstOrDefault(cp => cp.Codigo == request.CodigoComponenteBase ||
@@ -43,8 +45,9 @@ namespace SME.SGP.Aplicacao
 
             }
 
-            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(new long[] { request.CodigoComponenteBase }, request.CodigoTurma));
-                
+            var disciplinasEOL = await mediator
+                .Send(new ObterComponentesCurricularesEOLComSemAgrupamentoTurmaQuery(new long[] { request.CodigoComponenteBase }, request.CodigoTurma), cancellationToken);
+
             if (disciplinasEOL == null || !disciplinasEOL.Any())
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
@@ -60,9 +63,13 @@ namespace SME.SGP.Aplicacao
 
                 return retorno.ToArray();
             }
+            
+            long turmaid = request.TurmaId > 0 ? request.TurmaId : 0;
+            if (request.TurmaId == 0)
+                turmaid = turma.Id;
 
             var componentesTurma = await mediator
-                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, "Sistema", Perfis.PERFIL_ADMSME, checaMotivoDisponibilizacao: false));
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, "Sistema", Perfis.PERFIL_ADMSME, turma.EhTurmaInfantil, false), cancellationToken);
 
             var componentesTurmaCorrespondentes = componentesTurma
                 .Where(ct => ct.CodigoComponenteTerritorioSaber.Equals(request.CodigoComponenteBase));
@@ -70,14 +77,7 @@ namespace SME.SGP.Aplicacao
             if (componentesTurmaCorrespondentes == null || !componentesTurmaCorrespondentes.Any())
                 return new (string, string)[] { (request.CodigoComponenteBase.ToString(), null) };
 
-            long turmaid = request.TurmaId > 0 ? request.TurmaId : 0;
-            if (request.TurmaId == 0)
-            {
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
-                turmaid = turma.Id;
-            }
-
-            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaid));
+            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaid), cancellationToken);
             bool existemProfessoresTitulares = professoresTitulares != null && professoresTitulares.Any(pt => !string.IsNullOrEmpty(pt.ProfessorRf));
 
             return componentesTurmaCorrespondentes
