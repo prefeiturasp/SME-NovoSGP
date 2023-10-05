@@ -26,7 +26,7 @@ pipeline {
    
    
         stage('Sonar & Testes') {
-        when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+        when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release_'; branch 'release-r2'; branch 'infra/*'; } } 
         parallel {
           stage('TesteIntegracao & build'){
             agent { kubernetes {
