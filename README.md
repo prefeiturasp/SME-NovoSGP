@@ -20,7 +20,8 @@ O [Ateliê do Software](http://forum.govit.prefeitura.sp.gov.br/uploads/default/
  5. [Comunicação](#Comunicação)
  6. [Como contribuir](#como-contribuir)
  7. [Repositórios](#Repositórios)
- 8. [Instalação e Configuração](#Instalação-e-Configuração).
+ 8. [Instalação e Configuração](#Instalação-e-Configuração)
+ 9. [Documentação Técnica](#Documentação-Técnica)
  
 # Sobre o Produto
 
@@ -156,3 +157,8 @@ Acessar o readme do projeto de Front e seguir a configuração de variáveis de 
 Executar o comando na raiz da solução 
 
 `docker-compose up --build`
+
+# Documentação Técnica
+
+A documentação técnica do sistema e suas dependencias encontra-se online em:
+https://novosgp.sme.prefeitura.sp.gov.br/docs/
