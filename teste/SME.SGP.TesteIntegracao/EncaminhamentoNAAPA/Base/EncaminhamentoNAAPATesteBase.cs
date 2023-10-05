@@ -2511,7 +2511,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_4,
-                Ordem = 7, Obrigatorio = true,
+                Ordem = 7, 
                 Nome = QUESTAO_NOME_FLUXO_ALERTA,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_FLUXO_ALERTA,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
@@ -2555,7 +2555,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_INFANTIL_5,
-                Ordem = 1, Obrigatorio = true,
+                Ordem = 1, 
                 Nome = QUESTAO_NOME_SELECIONE_UM_TIPO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
@@ -2566,7 +2566,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = QUESTIONARIO_RELATORIO_DINAMICO_ENCAMINHAMENTO_NAAPA_INFANTIL_5,
-                Ordem = 1, Obrigatorio = true,
+                Ordem = 1,
                 Nome = QUESTAO_NOME_SELECIONE_UM_TIPO,
                 NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO,
                 Tipo = TipoQuestao.ComboMultiplaEscolha,
