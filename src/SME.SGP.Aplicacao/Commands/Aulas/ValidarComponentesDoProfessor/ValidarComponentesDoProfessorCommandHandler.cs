@@ -21,14 +21,14 @@ namespace SME.SGP.Aplicacao
         public async Task<(bool resultado, string mensagem)> Handle(ValidarComponentesDoProfessorCommand request, CancellationToken cancellationToken)
         {
             var podeCriarAulasParaTurma = false;
-
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
             var componentesCurricularesDoProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil()));
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, turma.EhTurmaInfantil), cancellationToken);
 
             if (request.Usuario.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login), cancellationToken);
 
                 if (componentesCurricularesDoProfessorCJ != null)
                 {
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 if (!podeCriarAulasParaTurma)
                 {
                     var componenteTerritorioDefinidoParaAula = await mediator
-                        .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.Usuario));
+                        .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, request.ComponenteCurricularCodigo, request.Usuario), cancellationToken);
 
                     podeCriarAulasParaTurma = componenteTerritorioDefinidoParaAula != default &&
                                               componenteTerritorioDefinidoParaAula.codigoTerritorio.HasValue &&
@@ -53,8 +53,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (componentesCurricularesDoProfessor == null)
-                    componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil());
+                componentesCurricularesDoProfessor ??= await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, turma.EhTurmaInfantil);
 
                 podeCriarAulasParaTurma = componentesCurricularesDoProfessor != null &&
                                           (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == request.ComponenteCurricularCodigo) ||
@@ -67,7 +66,7 @@ namespace SME.SGP.Aplicacao
                 if (!request.Usuario.EhGestorEscolar())
                 {
                     var usuarioPodePersistirTurmaNaData = await mediator
-                        .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario));
+                        .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario), cancellationToken);
 
                     if (!usuarioPodePersistirTurmaNaData)
                         return (false, MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);

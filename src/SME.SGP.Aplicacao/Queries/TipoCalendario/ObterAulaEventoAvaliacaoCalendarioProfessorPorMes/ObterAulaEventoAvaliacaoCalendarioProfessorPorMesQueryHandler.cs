@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -14,25 +12,22 @@ namespace SME.SGP.Aplicacao
     public class ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler : IRequestHandler<ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery, IEnumerable<EventoAulaDiaDto>>
     {
         private readonly IMediator mediator;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoEol servicoEol;
-        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator, IServicoUsuario servicoUsuario, IServicoEol servicoEol)
+        public ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQueryHandler(IMediator mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<EventoAulaDiaDto>> Handle(ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery request, CancellationToken cancellationToken)
         {
             var qntDiasMes = DateTime.DaysInMonth(request.AnoLetivo, request.Mes);
 
             var listaRetorno = new List<EventoAulaDiaDto>();
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdQuery(tipoCalendarioId));
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma), cancellationToken);
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdQuery(tipoCalendarioId), cancellationToken);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
 
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+            var componentesCurriculares = await mediator
+                .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual), cancellationToken);
 
             var componentesCurricularesId = componentesCurriculares?.Where(b => b.RegistraFrequencia == true)
                 .Select(x => x.TerritorioSaber && x.CodigoComponenteTerritorioSaber > 0 ? x.CodigoComponenteTerritorioSaber : x.Codigo)
@@ -95,7 +90,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     if (aulasId != null && aulasId.Any() && componentesCurricularesId != null)
-                        eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, componentesCurricularesId.Union(aulasDoDia.Select(a => long.Parse(a.DisciplinaId))).ToArray()));
+                        eventoAula.PossuiPendencia = await mediator.Send(new ObterPendenciasAulaPorAulaIdsQuery(aulasId, turma.ModalidadeCodigo, componentesCurricularesId.Union(aulasDoDia.Select(a => long.Parse(a.DisciplinaId))).ToArray()), cancellationToken);
                     else
                         eventoAula.PossuiPendencia = false;
                 }
