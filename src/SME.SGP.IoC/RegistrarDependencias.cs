@@ -568,6 +568,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPSecao, RepositorioRelatorioPeriodicoPAPSecao>();
             services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPQuestao, RepositorioRelatorioPeriodicoPAPQuestao>();
             services.TryAddScoped<IRepositorioRelatorioPeriodicoPAPResposta, RepositorioRelatorioPeriodicoPAPResposta>();
+
+            //Relatório dinâmico NAAPA
+            services.TryAddScoped<IRepositorioRelatorioDinamicoNAAPA, RepositorioRelatorioDinamicoNAAPA>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1303,6 +1306,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase, ObterQuantidadeEncaminhamentoNAAPAEmAbertoPorDreUseCase>();
             services.TryAddScoped<IObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase, ObterQuantidadeAtendimentoNAAPAPorProfissionalMesUseCase>();
             services.TryAddScoped<IExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase, ExisteEncaminhamentoNAAPAAtivoParaAlunoUseCase>();
+
+            //Relatório Dinâmico NAAPA
+            services.TryAddScoped<IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase, RelatorioDinamicoObterEncaminhamentoNAAPAUseCase>();
 
             // Relatório PAP
             services.TryAddScoped<IObterPeriodosPAPUseCase, ObterPeriodosPAPUseCase>();
