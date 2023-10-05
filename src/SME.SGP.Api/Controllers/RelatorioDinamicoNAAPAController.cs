@@ -25,7 +25,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
-        [HttpGet("dinamico")] 
+        [HttpGet("questoes")] 
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
