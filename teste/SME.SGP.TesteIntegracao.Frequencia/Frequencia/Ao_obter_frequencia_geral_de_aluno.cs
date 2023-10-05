@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaFreqGeralQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasPorCodigosQuery, IEnumerable<Turma>>), typeof(ObterTurmasPorCodigosQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasPorCodigosQuery, IEnumerable<Dominio.Turma>>), typeof(ObterTurmasPorCodigosQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoFrequenciaGlobalQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -80,7 +80,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             valor.ShouldNotBeEmpty();
             valor.ShouldBe(VALOR_8333);
         }
-
 
         [Fact(DisplayName = "Frequência - Deve obter frequencia geral vazia, na situação onde não há freq. consolidada no período ativo na turma")]
         public async Task Deve_obter_frequencia_geral_de_aluno_sem_frequencia_consolidada()

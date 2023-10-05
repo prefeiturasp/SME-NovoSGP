@@ -109,7 +109,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         #region Massa de Dados
         private async Task CriarTurmaFundamental()
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = "2",
@@ -123,7 +123,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarTurmaEja()
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = "2",

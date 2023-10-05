@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         
         private async Task CriarTurma(Modalidade modalidade, bool ehAnoAnterior = false)
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = TURMA_ANO_2,

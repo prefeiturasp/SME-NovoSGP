@@ -165,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
                 DreId = DRE_ID_1
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Id = TURMA_ID_1,
                 UeId = UE_ID_1,

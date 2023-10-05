@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao.Queries
                 tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c=> tiposTurmas.All(x=> x != c)));
                 
                 var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas,
-                    semestre:request.Turma.EhEJA() ? request.Turma.Semestre : null), cancellationToken);
+                   dataReferencia: request.PeriodoEscolar?.PeriodoFim, semestre:request.Turma.EhEJA() ? request.Turma.Semestre : null), cancellationToken);
 
                 if (request.Historico.HasValue && request.Historico.Value)
                 {
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Queries
                         turmasCodigos = new string[] { request.Turma.CodigoTurma };
                 }
             }
-            else 
+            else
                 turmasCodigos = new[] { request.Turma.CodigoTurma };
 
             var conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);

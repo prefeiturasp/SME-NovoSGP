@@ -13,5 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<CompensacaoAusenciaAlunoEDataDto>> ObterCompensacaoAusenciaAlunoEAulaPorAulaId(long aulaId);
         Task<IEnumerable<CompensacaoAusenciaAlunoEDataDto>> ObterCompensacoesAusenciasAlunosPorRegistroFrequenciaAlunoIdsQuery(IEnumerable<long> registroFrequenciaAlunoIds);
         Task<IEnumerable<CompensacaoAusenciaAluno>> ObterPorIdsAsync(long[] ids);
+        public Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaDesconsiderandoIdCompensacaoAsync(int bimestre, string turmaCodigo, string[] codigosAlunos, long idCompensacaoDesconsiderado);
     }
 }
