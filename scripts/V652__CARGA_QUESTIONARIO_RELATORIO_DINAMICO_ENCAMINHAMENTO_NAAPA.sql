@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS tablefunc;
+
 do $$
 declare 
 	questionarioId bigint;
@@ -15,14 +17,14 @@ begin
 	insert into questionario (nome, excluido, criado_em, criado_por, criado_rf, tipo)
 		values ('Questionário Relatório Dinâmico Encaminhamento NAAPA', false, NOW(), 'SISTEMA', '0', 7)
 		RETURNING id INTO questionarioId;
-	insert into secao_encaminhamento_naapa (questionario_id, nome, etapa, ordem, criado_em, criado_por, criado_rf)
-		values(questionarioId, 'Informações do Estudante Relatório dinâmico', 1, 1, NOW(), 'SISTEMA', '0');
+	insert into secao_encaminhamento_naapa (questionario_id, nome, etapa, ordem, nome_componente, criado_em, criado_por, criado_rf)
+		values(questionarioId, 'Informações do Estudante Relatório dinâmico', 1, 1, 'INFORMACOES_ESTUDANTE', NOW(), 'SISTEMA', '0');
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 0, 'Data de entrada da queixa', '', false, 10, '', NOW(), 'SISTEMA', '0', 6, 'Data', 'DATA_ENTRADA_QUEIXA');
+		values(questionarioId, 1, 'Data de entrada da queixa', '', false, 10, '', NOW(), 'SISTEMA', '0', 6, 'Data', 'DATA_ENTRADA_QUEIXA');
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 1, 'Prioridade', '', false, 9, '', NOW(), 'SISTEMA', '0', 6, 'Prioridade', 'PRIORIDADE')
+		values(questionarioId, 2, 'Prioridade', '', false, 9, '', NOW(), 'SISTEMA', '0', 6, 'Prioridade', 'PRIORIDADE')
 		RETURNING id INTO questaoId;
 	
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
