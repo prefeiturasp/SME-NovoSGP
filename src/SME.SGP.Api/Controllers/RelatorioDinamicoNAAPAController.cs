@@ -14,12 +14,12 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class RelatorioDinamicoNAAPAController : ControllerBase
     {
-        [HttpGet]
+        [HttpPost]
         [ProducesResponseType(typeof(RelatorioDinamicoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosNAAPA(
-                                            [FromQuery] FiltroRelatorioDinamicoNAAPADto filtro,
+                                            [FromBody] FiltroRelatorioDinamicoNAAPADto filtro,
                                             [FromServices] IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
