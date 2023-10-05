@@ -28,13 +28,14 @@ namespace SME.SGP.Aplicacao
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
             var componenteCurricularId = long.Parse(aula.DisciplinaId);
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
 
             if (!usuarioLogado.EhProfessorCj())
                 componentesCurricularesEolProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.TurmaId,
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma,
                                                                                   usuarioLogado.Login,
                                                                                   usuarioLogado.PerfilAtual,
-                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                                                                                  turma.EhTurmaInfantil));
 
             if (usuarioLogado.EhProfessorCj())
             {

@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 CodigoUe = "22"
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Nome = "7P",
                 CodigoTurma = "111",
