@@ -44,11 +44,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> TurmaEmPeriodoDeFechamento(Turma turma, PeriodoRelatorioPAP periodoRelatorio, long tipoCalendarioId)
         {
-            var periodosFechamento = await this.repositorioEventoFechamento.UeEmFechamentoVigente(DateTimeExtension.HorarioBrasilia().Date, tipoCalendarioId, turma.EhTurmaInfantil, 0);
+            var periodosFechamento = await this.repositorioEventoFechamento.UeEmFechamentoVigente(DateTimeExtension.HorarioBrasilia().Date, tipoCalendarioId, turma.EhTurmaInfantil, periodoRelatorio.Configuracao.EhSemestre ? 0 : periodoRelatorio.Periodo) ;
         
             if (periodosFechamento != null)
             {
-                return periodoRelatorio.PeriodosEscolaresRelatorio.Any(periodo => periodo.Id == periodosFechamento.PeriodoEscolarId);
+                return periodoRelatorio.PeriodosEscolaresRelatorio.Any(periodo => periodo.PeriodoEscolarId == periodosFechamento.PeriodoEscolarId);
             }
             
             return false;
