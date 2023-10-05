@@ -175,13 +175,7 @@ namespace SME.SGP.Aplicacao
                                 Regencia = c.Regencia
                             }).ToList();
                         }
-                    }else
-                        componentesCurriculares.ForEach(c =>
-                        {
-                            var codigoTerritorio = c.Codigo;
-                            c.Codigo = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo;
-                            c.CodigoComponenteTerritorioSaber = c.TerritorioSaber ? codigoTerritorio : c.CodigoComponenteTerritorioSaber;
-                        });
+                    }
                 }
 
                 var idsDisciplinas = componentesCurriculares?.Select(a => a.Codigo).ToArray();

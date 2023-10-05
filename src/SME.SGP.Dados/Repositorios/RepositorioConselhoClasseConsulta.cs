@@ -441,19 +441,20 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<int>> ObterTotalAulasSemFrequenciaPorTurmaBismetre(string discplinaId, string codigoTurma, int bismetre)
+        public async Task<IEnumerable<int>> ObterTotalAulasSemFrequenciaPorTurmaBimestre(string disciplinaId, string codigoTurma, int bimestre, DateTime dataMatricula)
         {
             var sql = @"select COALESCE(SUM(quantidade), 0) as totalaulas from aula a
                         join  componente_curricular cc on cc.id = a.disciplina_id::int8 
                         join  periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id::int8  
-                        where cc.permite_registro_frequencia  = false 
+                        where cc.permite_registro_frequencia = false 
                         and a.turma_id = @codigoTurma
                         and not a.excluido 
-                        and a.disciplina_id = @discplinaId
-                        and pe.bimestre = @bismetre
-                        and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula";
+                        and a.disciplina_id = @disciplinaId
+                        and pe.bimestre = @bimestre
+                        and pe.periodo_inicio <= a.data_aula and pe.periodo_fim >= a.data_aula
+                        and a.data_aula > @dataMatricula";
 
-            return await database.Conexao.QueryAsync<int>(sql, new { discplinaId, codigoTurma, bismetre });
+            return await database.Conexao.QueryAsync<int>(sql, new { disciplinaId, codigoTurma, bimestre, dataMatricula });
         }
 
         public async Task<bool> ExisteConselhoDeClasseParaTurma(string[] codigosTurmas, int bimestre)

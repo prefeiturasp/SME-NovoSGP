@@ -16,6 +16,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
             {
                 new AbrangenciaTurmaRetorno()
                 {
+                    Id = 1,
                     Codigo = "1"
                 }
             };
