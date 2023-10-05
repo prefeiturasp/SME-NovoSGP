@@ -136,7 +136,7 @@ namespace SME.SGP.Aplicacao
                             Ano = turma.Ano,
                             ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
                             NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
-                            ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
+                            ComponenteCurricularCodigo = d.CodigoComponenteCurricular,
                             Turno = (TipoTurnoEOL)turma.TipoTurno,
                         });
 
