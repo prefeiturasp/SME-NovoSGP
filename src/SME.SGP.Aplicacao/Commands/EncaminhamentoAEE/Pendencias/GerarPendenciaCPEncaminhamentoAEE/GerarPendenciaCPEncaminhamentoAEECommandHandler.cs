@@ -40,8 +40,6 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("Não foi possível localizar o EncaminhamentoAEE");
 
-
-
             if (encaminhamentoAEE.Situacao == SituacaoAEE.Encaminhado)
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
@@ -59,14 +57,15 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         var pendenciaExiste = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
+                        
                         var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, null, null, turma.UeId, turma.Id);
                         if (pendenciaExiste == null)
                         {
                             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
                             var pendenciaEncaminhamento = new PendenciaEncaminhamentoAEE { PendenciaId = pendencia.Id, EncaminhamentoAEEId = encaminhamentoAEE.Id };
+                            var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, Pendencia = pendencia,  };
                             await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
-
                             await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CP }));
                         }
 
