@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao.Queries
 
         public async Task<bool> Handle(ValidaSeExisteDrePorCodigoQuery request, CancellationToken cancellationToken)
         {
-            if (repositorioDre.ObterPorCodigo(request.CodigoDre).EhNulo())
+            if ((await repositorioDre.ObterPorCodigo(request.CodigoDre)).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a DRE");
 
             return true;
