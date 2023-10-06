@@ -42,7 +42,7 @@
         public const string MENU_PLANO = "Plano";
         public const string MENU_REGISTRO_DE_ITINERANCIA = "Registro de itinerância";
         public const string MENU_NAAPA = "NAAPA";
-        public const string MENU_RELATORIO_DINAMICO_NAAPA = "Relatório dinâmico NAAPA";
+        public const string MENU_RELATORIO_DINAMICO_NAAPA = "Relatório dinâmico";
         public const string MENU_FREQUENCIA = "Frequência";
         public const string MENU_FREQUENCIA_MENSAL = "Frequência mensal";
         public const string MENU_CONTROLE_DE_FREQUENCIA_MENSAL =  "Controle de frequência mensal";
