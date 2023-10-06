@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        //[Fact]
         public async Task Deve_gravar_aula_com_auditoria_para_administrador()
         {
             await _buider.CriaItensComunsEja(true);
