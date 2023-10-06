@@ -172,7 +172,7 @@ namespace SME.SGP.Aplicacao
                 Bimestre = x.Bimestre,
                 Inicio = x.PeriodoInicio,
                 Fim = x.PeriodoFim
-            }).ToList();
+            }).OrderBy(ap => ap.Bimestre).ToList();
         }
 
         private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
