@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             if ((await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SepararDiarioBordoPorComponente, filtro.AnoLetivo))).NaoEhNulo())
             {
                 var ue = await repositorioUe.ObterUePorId(filtro.UeId);
-                var professoresTitulares = (await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia))).Where(p => p.TurmaId == 2506950);
+                var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia));
 
                 if (professoresTitulares is null || !professoresTitulares.Any())
                     return true;
