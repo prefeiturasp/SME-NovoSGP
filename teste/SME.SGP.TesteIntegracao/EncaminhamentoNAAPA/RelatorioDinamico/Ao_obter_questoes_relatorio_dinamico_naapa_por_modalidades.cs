@@ -7,12 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 {
     public class Ao_obter_questoes_relatorio_dinamico_naapa_por_modalidades : EncaminhamentoNAAPATesteBase
     {
         public Ao_obter_questoes_relatorio_dinamico_naapa_por_modalidades(CollectionFixture collectionFixture) : base(collectionFixture)
-        {}
+        { }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Obter questões para relatório dinâmico para uma modalidade")]
         public async Task Ao_obter_questoes_de_uma_modalidade()
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var retorno = await useCase.Executar((int)ModalidadeTipoCalendario.FundamentalMedio);
             retorno.ShouldNotBeNull();
         }
-        
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Obter questões para relatório dinâmico para todas as modalidades")]
         public async Task Ao_obter_questoes_de_todas_as_modalidade()
         {
