@@ -130,7 +130,7 @@
         public const string ROTA_AEE_PLANO = "/aee/plano";
         public const string ROTA_AEE_REGISTRO_ITINERANCIA = "/aee/registro-itinerancia";
         public const string ROTA_NAAPA_ENCAMINHAMENTO = "/naapa/encaminhamento";
-        public const string ROTA_RELATORIO_DINAMICO_NAAPA = "/naapa/relatorico-dinamico";
+        public const string ROTA_RELATORIO_DINAMICO_NAAPA = "/naapa/relatorio-dinamico";
         public const string ROTA_RELATORIOS_FREQUENCIA_FREQUENCIA = "/relatorios/frequencia/frequencia";
         public const string ROTA_RELATORIOS_FREQUENCIA_MENSAL = "/relatorios/frequencia/mensal";
         public const string ROTA_RELATORIOS_FREQUENCIA_CONTROLE_MENSAL = "/relatorios/frequencia/controle-mensal";
