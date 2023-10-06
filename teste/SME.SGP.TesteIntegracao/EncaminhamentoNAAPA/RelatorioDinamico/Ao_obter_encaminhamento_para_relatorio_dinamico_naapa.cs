@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 {
     public class Ao_obter_encaminhamento_para_relatorio_dinamico_naapa : EncaminhamentoNAAPATesteBase
     {
@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
-                AnoLetivo = 2023,
+                AnoLetivo = dataAtual.Year,
                 Modalidade = null,
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
@@ -125,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
-                AnoLetivo = 2023,
+                AnoLetivo = dataAtual.Year,
                 Modalidade = null,
                 Anos = new List<string> { ANO_1 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
@@ -194,7 +194,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
-                AnoLetivo = 2023,
+                AnoLetivo = dataAtual.Year,
                 Modalidade = null,
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
@@ -254,7 +254,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
-                AnoLetivo = 2023,
+                AnoLetivo = dataAtual.Year,
                 Modalidade = null,
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = null

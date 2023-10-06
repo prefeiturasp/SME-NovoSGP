@@ -22,8 +22,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<RelatorioDinamicoNAAPADto> ObterRelatorioDinamicoNAAPA(FiltroRelatorioDinamicoNAAPADto filtro, Paginacao paginacao)
         {
             var queryTabelaResposta = await ObterTabelaResposta();
-            var sqlPaginada = ObterQueryPaginada(filtro, paginacao, queryTabelaResposta);
+            var queryFiltro = ObterFiltro(filtro);
+            var sqlPaginada = ObterQueryPaginada(queryFiltro, paginacao, queryTabelaResposta);
+            var sqlTotalDeRegistros = ObterQueryTotalDeRegistros(queryFiltro, queryTabelaResposta, filtro);
+            var sql = string.Concat(sqlPaginada, ";", sqlTotalDeRegistros);
             var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPARelatorioDinamico>();
+            IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> retornoTotalDeRegitros = null; 
             var parametros = new
             {
                 filtro.DreId,
@@ -34,18 +38,20 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.Modalidade
             };
 
-            using (var encaminhamentosNAAPA = await contexto.Conexao.QueryMultipleAsync(sqlPaginada, parametros))
+            using (var encaminhamentosNAAPA = await contexto.Conexao.QueryMultipleAsync(sql, parametros))
             {
                 retornoPaginado.Items = encaminhamentosNAAPA.Read<EncaminhamentoNAAPARelatorioDinamico>();
-                //retornoPaginado.TotalRegistros = encaminhamentosNAAPA.ReadFirst<int>();
+                retornoTotalDeRegitros = encaminhamentosNAAPA.Read<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA>();
+                retornoPaginado.TotalRegistros = retornoTotalDeRegitros.Sum(registro => (int)registro.Total);
             }
 
-            //retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
+            retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return new RelatorioDinamicoNAAPADto()
             {
                 TotalRegistro = retornoPaginado.TotalRegistros,
-                EncaminhamentosNAAPAPaginado = retornoPaginado
+                EncaminhamentosNAAPAPaginado = retornoPaginado,
+                TotalRegistroPorModalidadesAno = retornoTotalDeRegitros.Count() > 1 ? retornoTotalDeRegitros : null
             };
         }
 
@@ -60,24 +66,53 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.QueryAsync<string>(sql.ToString(), new { tipo = (int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA });
         }
 
-        private string ObterQueryPaginada(FiltroRelatorioDinamicoNAAPADto filtro, Paginacao paginacao, string queryTabelaResposta)
+        private string ObterQueryPaginada(string filtro, Paginacao paginacao, string queryTabelaResposta)
+        {
+            var sql = new StringBuilder();
+            var camposRetorno = @"np.id, dre.abreviacao as Dre, ue.nome as UnidadeEscolar, 
+                                  concat(np.aluno_nome, ' (', np.aluno_codigo, ')') as Estudante,
+                                  t.modalidade_codigo as ModalidadeCodigo, t.ano";
+
+            sql.AppendLine(ObterQuery(filtro, queryTabelaResposta, camposRetorno));
+
+            sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+
+            return sql.ToString();
+        }
+
+        private string ObterQueryTotalDeRegistros(string queryFiltro, string queryTabelaResposta, FiltroRelatorioDinamicoNAAPADto filtro)
+        {
+            var sql = new StringBuilder();
+            var tupla = ObterCamposEGrupoParaQueryTotalDeRegistro(filtro);
+
+            sql.AppendLine(ObterQuery(queryFiltro, queryTabelaResposta, tupla.campos));
+            sql.AppendLine(tupla.groupBy);
+
+            return sql.ToString();
+        }
+
+        private (string campos, string groupBy) ObterCamposEGrupoParaQueryTotalDeRegistro(FiltroRelatorioDinamicoNAAPADto filtro)
+        {
+            if (!filtro.Modalidade.HasValue)
+                return ("count(np.id) Total, t.modalidade_codigo as Modalidade", " GROUP BY t.modalidade_codigo ");
+
+            return ("count(np.id) Total, t.ano", " GROUP BY t.ano");
+        }
+
+        private string ObterQuery(string filtro, string queryTabelaResposta, string camposRetorno)
         {
             var sql = new StringBuilder();
 
             sql.AppendLine(queryTabelaResposta);
 
-            sql.AppendLine(@$"SELECT np.id, dre.abreviacao as Dre, ue.nome as UnidadeEscolar, 
-                                     concat(np.aluno_nome, ' (', np.aluno_codigo, ')') as Estudante,
-                                     t.modalidade_codigo as ModalidadeCodigo, t.ano
+            sql.AppendLine(@$"SELECT {camposRetorno}
                             FROM encaminhamento_naapa np
                                     JOIN turma t ON t.id = np.turma_id
                                     JOIN ue ON t.ue_id = ue.id
                                     JOIN dre ON dre.id = ue.dre_id
                                     LEFT JOIN tab_resposta resposta ON resposta.id = np.id");
 
-            sql.AppendLine(ObterFiltro(filtro));
-
-            sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+            sql.AppendLine(filtro);
 
             return sql.ToString();
         }
