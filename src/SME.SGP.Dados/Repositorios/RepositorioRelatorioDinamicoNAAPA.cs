@@ -94,9 +94,9 @@ namespace SME.SGP.Dados.Repositorios
         private (string campos, string groupBy) ObterCamposEGrupoParaQueryTotalDeRegistro(FiltroRelatorioDinamicoNAAPADto filtro)
         {
             if (!filtro.Modalidade.HasValue)
-                return ("count(np.id) Total, t.modalidade_codigo as Modalidade", " GROUP BY t.modalidade_codigo ");
+                return ("count(distinct np.id) Total, t.modalidade_codigo as Modalidade", " GROUP BY t.modalidade_codigo ");
 
-            return ("count(np.id) Total, t.ano, t.modalidade_codigo as Modalidade", " GROUP BY t.ano, t.modalidade_codigo");
+            return ("count(distinct np.id) Total, t.ano, t.modalidade_codigo as Modalidade", " GROUP BY t.ano, t.modalidade_codigo");
         }
 
         private string ObterQuery(string filtro, string queryTabelaResposta, string camposRetorno)
