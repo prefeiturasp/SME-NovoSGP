@@ -37,21 +37,22 @@ namespace SME.SGP.Dados.Repositorios
                 Anos = filtro.Anos.ToArray(),
                 filtro.Modalidade
             };
-
             using (var encaminhamentosNAAPA = await contexto.Conexao.QueryMultipleAsync(sql, parametros))
             {
                 retornoPaginado.Items = encaminhamentosNAAPA.Read<EncaminhamentoNAAPARelatorioDinamico>();
                 retornoTotalDeRegitros = encaminhamentosNAAPA.Read<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA>();
                 retornoPaginado.TotalRegistros = retornoTotalDeRegitros.Sum(registro => (int)registro.Total);
             }
-
+            var encaminhamentosNAAPAIds = retornoPaginado.Items.Select(s => s.Id).Distinct().ToArray();
+            retornoPaginado.Items = retornoPaginado.Items.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return new RelatorioDinamicoNAAPADto()
             {
                 TotalRegistro = retornoPaginado.TotalRegistros,
                 EncaminhamentosNAAPAPaginado = retornoPaginado,
-                TotalRegistroPorModalidadesAno = retornoTotalDeRegitros.Count() > 1 ? retornoTotalDeRegitros : null
+                TotalRegistroPorModalidadesAno = retornoTotalDeRegitros.Count() > 1 ? retornoTotalDeRegitros : null,
+                EncaminhamentosNAAPAIds = encaminhamentosNAAPAIds,
             };
         }
 
@@ -74,8 +75,6 @@ namespace SME.SGP.Dados.Repositorios
                                   t.modalidade_codigo as ModalidadeCodigo, t.ano";
 
             sql.AppendLine(ObterQuery(filtro, queryTabelaResposta, camposRetorno));
-
-            sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
 
             return sql.ToString();
         }
