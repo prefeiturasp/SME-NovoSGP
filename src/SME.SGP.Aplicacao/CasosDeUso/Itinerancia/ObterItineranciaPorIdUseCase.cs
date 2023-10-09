@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(id));
 
-            if (itinerancia == null)
+            if (itinerancia.EhNulo())
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {id}");
 
             var questoesBase = await mediator.Send(ObterQuestoesBaseItineranciaEAlunoQuery.Instance);
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
             WorkflowAprovacao workflow = null;
 
-            if (verificaWorkflow != null)
+            if (verificaWorkflow.NaoEhNulo())
                 workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
 
             var itineranciaDto = new ItineranciaDto()
@@ -44,11 +44,11 @@ namespace SME.SGP.Aplicacao
                 EventoId = itinerancia.EventoId,
                 CriadoRF = itinerancia.CriadoRF,
                 Auditoria = (AuditoriaDto)itinerancia,
-                StatusWorkflow = workflow != null ? ObterMensagemStatus(workflow.Niveis, verificaWorkflow.StatusAprovacao) : "",
-                PodeEditar = workflow != null ? VerificaPodeEditar(workflow.Niveis) : true
+                StatusWorkflow = workflow.NaoEhNulo() ? ObterMensagemStatus(workflow.Niveis, verificaWorkflow.StatusAprovacao) : "",
+                PodeEditar = workflow.NaoEhNulo() ? VerificaPodeEditar(workflow.Niveis) : true
             };
 
-            if (itinerancia.Alunos != null && itinerancia.Alunos.Any())
+            if (itinerancia.Alunos.NaoEhNulo() && itinerancia.Alunos.Any())
             {
                 var CodigosAluno = itinerancia.Alunos.Select(a => a.CodigoAluno).ToArray();
 
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
 
         private bool VerificaPodeEditar(IEnumerable<WorkflowAprovacaoNivel> niveis)
         {
-            if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado) != null)
+            if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado).NaoEhNulo())
                 return true;
             else
                 return false;
@@ -79,22 +79,22 @@ namespace SME.SGP.Aplicacao
                 var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Aprovado).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Aceito por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
-            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido) != null)
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido).NaoEhNulo())
             {
                 var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Excluido).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Excluído por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
-            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado) != null)
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado).NaoEhNulo())
             {
                 var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Reprovado por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
-            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido) != null)
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido).NaoEhNulo())
             {
                 var nivel = niveis.Where(a => a.Status == WorkflowAprovacaoNivelStatus.Substituido).OrderByDescending(b => b.AlteradoEm).FirstOrDefault();
                 return $"Substituído por {nivel.AlteradoPor} ({nivel.AlteradoRF}) em {nivel.AlteradoEm:dd/MM/yyy HH:mm}";
             }
-            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.AguardandoAprovacao) != null)
+            else if (niveis.FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.AguardandoAprovacao).NaoEhNulo())
             {
                 return $"Aguardando aprovação";
             }

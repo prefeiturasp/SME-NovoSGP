@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
 
-            if (entidade == null || entidade.Excluido)
+            if (entidade.EhNulo() || entidade.Excluido)
                 throw new NegocioException("Registro para atualização não encontrado na base de dados");
 
             await MoverRemoverExcluidos(registroPoaDto, entidade);
@@ -47,13 +47,13 @@ namespace SME.SGP.Aplicacao
 
             var entidadeBanco = repositorioRegistroPoa.ObterPorId(id);
 
-            if (entidadeBanco == null || entidadeBanco.Excluido)
+            if (entidadeBanco.EhNulo() || entidadeBanco.Excluido)
                 throw new NegocioException($"Não foi encontrado o registro de código {id}");
 
             entidadeBanco.Excluido = true;
 
             repositorioRegistroPoa.Salvar(entidadeBanco);
-            if (entidadeBanco?.Descricao != null)
+            if ((entidadeBanco?.Descricao).NaoEhNulo())
             {
                 await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(entidadeBanco.Descricao, TipoArquivo.RegistroPOA.Name()));
             }

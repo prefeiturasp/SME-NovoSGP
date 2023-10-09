@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

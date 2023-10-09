@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Download(Guid codigoArquivo, [FromServices] IDownloadDeArquivoUseCase useCase)
         {
             var (arquivo, contentType, nomeArquivo) = await useCase.Executar(codigoArquivo);
-            if (arquivo == null) return NoContent();
+            if (arquivo.EhNulo()) return NoContent();
 
             return File(arquivo, contentType, nomeArquivo);
         }

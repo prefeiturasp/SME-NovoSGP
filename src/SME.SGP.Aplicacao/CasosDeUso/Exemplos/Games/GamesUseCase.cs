@@ -9,19 +9,16 @@ namespace SME.SGP.Aplicacao
     public class GamesUseCase : IGamesUseCase
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
 
-        public GamesUseCase(IMediator mediator, IUnitOfWork unitOfWork)
+        public GamesUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
         public async Task<bool> Executar(FiltroRelatorioGamesDto filtroRelatorioGamesDto)
         {
-            unitOfWork.IniciarTransacao();
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioExemplo, filtroRelatorioGamesDto, usuarioLogado));
-            unitOfWork.PersistirTransacao();
+
             return retorno;
         }
     }

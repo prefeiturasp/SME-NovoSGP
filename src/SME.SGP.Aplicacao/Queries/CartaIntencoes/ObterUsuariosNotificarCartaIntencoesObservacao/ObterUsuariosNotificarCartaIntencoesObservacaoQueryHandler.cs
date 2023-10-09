@@ -23,11 +23,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<UsuarioNotificarCartaIntencoesObservacaoDto>> ObterUsuariosDosProfessoresDaTurmaAsync(IEnumerable<ProfessorTitularDisciplinaEol> professores)
         {
-            if (professores != null && professores.Any())
+            if (professores.NaoEhNulo() && professores.Any())
             {
                 var professoresRf = professores.Select(x => x.ProfessorRf).ToList();
                 var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(professoresRf));
-                if (usuarios != null && usuarios.Any())
+                if (usuarios.NaoEhNulo() && usuarios.Any())
                 {
                     var retorno = professores
                         .Select(x => new UsuarioNotificarCartaIntencoesObservacaoDto

@@ -30,16 +30,16 @@ namespace SME.SGP.Aplicacao
         public async Task<GradeComponenteTurmaAulasDto> ObterGradeAulasTurmaProfessor(string turmaCodigo, long disciplina, int semana, DateTime dataAula, string codigoRf = null, bool ehRegencia = false)
         {
             var ue = repositorioUe.ObterUEPorTurma(turmaCodigo);
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Ue não localizada.");
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada.");
 
             // Busca grade a partir dos dados da abrangencia da turma
             var grade = await ObterGradeTurma(ue.TipoEscola, turma.ModalidadeCodigo, turma.QuantidadeDuracaoAula);
-            if (grade == null)
+            if (grade.EhNulo())
                 return null;
 
             // verifica se é regencia de classe
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
         private GradeDto MapearParaDto(Grade grade)
         {
-            return grade == null ? null : new GradeDto
+            return grade.EhNulo() ? null : new GradeDto
             {
                 Id = grade.Id,
                 Nome = grade.Nome

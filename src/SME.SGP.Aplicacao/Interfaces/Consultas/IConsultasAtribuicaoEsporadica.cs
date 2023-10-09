@@ -7,6 +7,6 @@ namespace SME.SGP.Aplicacao.Interfaces
     {
         Task<PaginacaoResultadoDto<AtribuicaoEsporadicaDto>> Listar(FiltroAtribuicaoEsporadicaDto filtro);
 
-        AtribuicaoEsporadicaCompletaDto ObterPorId(long id);
+        Task<AtribuicaoEsporadicaCompletaDto> ObterPorId(long id);
     }
 }

@@ -25,14 +25,14 @@ namespace SME.SGP.Aplicacao
         {
             var anotacaoAluno = await ObterAnotacaoPorAlunoEFechamento(fechamentoId, codigoAluno);
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, anoLetivo, null, true));
-            if (dadosAlunos == null || !dadosAlunos.Any(da => da.CodigoEOL.Equals(codigoAluno)))
+            if (dadosAlunos.EhNulo() || !dadosAlunos.Any(da => da.CodigoEOL.Equals(codigoAluno)))
                 throw new NegocioException($"Não foram localizados dados do aluno {codigoAluno} na turma {codigoTurma} no EOL para o ano letivo {anoLetivo}");
 
             var dadosAluno = dadosAlunos.First(da => da.CodigoEOL.Equals(codigoAluno));
 
             dadosAluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(codigoAluno, anoLetivo));
             dadosAluno.EhMatriculadoTurmaPAP = await BuscarAlunosTurmaPAP(dadosAluno.CodigoEOL, anoLetivo);
-            var anotacaoDto = anotacaoAluno == null ?
+            var anotacaoDto = anotacaoAluno.EhNulo() ?
                             new FechamentoAlunoCompletoDto() { Aluno = dadosAluno } :
                             MapearParaDto(anotacaoAluno, dadosAluno);
 
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
 
         private static FechamentoAlunoCompletoDto MapearParaDto(AnotacaoFechamentoAluno anotacaoAluno, AlunoDadosBasicosDto dadosAluno)
         {
-            if (anotacaoAluno == null)
+            if (anotacaoAluno.EhNulo())
                 return null;
             else
             {

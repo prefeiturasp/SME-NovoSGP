@@ -33,33 +33,29 @@ namespace SME.SGP.Aplicacao
             var idFalhaExclusao = new List<long>();
             var tiposEventoInvalidos = new List<string>();
 
-            using (var transacao = unitOfWork.IniciarTransacao())
+            foreach (var codigo in idsRemover)
             {
-                foreach (var codigo in idsRemover)
+                try
                 {
-                    try
+                    var entidade = repositorioEventoTipo.ObterPorId(codigo);
+                    var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
+                    if (possuiEventos)
                     {
-                        var entidade = repositorioEventoTipo.ObterPorId(codigo);
-                        var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(codigo);
-                        if (possuiEventos)
-                        {
-                            tiposEventoInvalidos.Add(entidade.Descricao);
-                        }
-                        else
-                        {
-                            entidade.Excluido = true;
-
-                            repositorioEventoTipo.Salvar(entidade);
-                        }
+                        tiposEventoInvalidos.Add(entidade.Descricao);
                     }
-                    catch (Exception)
+                    else
                     {
-                        idFalhaExclusao.Add(codigo);
+                        entidade.Excluido = true;
+
+                        repositorioEventoTipo.Salvar(entidade);
                     }
                 }
-
-                unitOfWork.PersistirTransacao();
+                catch (Exception)
+                {
+                    idFalhaExclusao.Add(codigo);
+                }
             }
+
             if (tiposEventoInvalidos.Any())
             {
                 var erroMensagem = idFalhaExclusao.Count > 1 ?
@@ -103,7 +99,7 @@ namespace SME.SGP.Aplicacao
         {
             var eventoTipo = repositorioEventoTipo.ObterPorId(id);
 
-            if (eventoTipo == null || eventoTipo.Id == 0)
+            if (eventoTipo.EhNulo() || eventoTipo.Id == 0)
                 throw new NegocioException("Não é possivel editar um tipo de evento não cadastrado");
 
             var possuiEventos = repositorioEvento.ExisteEventoPorEventoTipoId(id);

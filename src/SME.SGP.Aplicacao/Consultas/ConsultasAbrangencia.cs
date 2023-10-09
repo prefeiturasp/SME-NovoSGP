@@ -17,14 +17,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
-        public ConsultasAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IMediator mediator)
+        public ConsultasAbrangencia(IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -48,7 +46,7 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-            AbrangenciaCompactaVigenteRetornoEOLDTO abrangencia = await servicoEOL.ObterAbrangenciaCompactaVigente(login.ToString(), Guid.Parse(perfil.ToString()));
+            var abrangencia = await mediator.Send(new ObterAbrangenciaCompactaVigenteEolPorLoginEPerfilQuery(login, Guid.Parse(perfil.ToString())));
             bool abrangenciaPermitida = abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.UE
                                         || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre
                                         || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;
@@ -83,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = await repositorioAbrangencia.ObterAnosTurmasPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico,anoLetivo);
 
-            if (retorno != null && retorno.Any())
+            if (retorno.NaoEhNulo() && retorno.Any())
                 return TransformarAnosEmOpcoesDropdownDto(retorno.OrderBy(q => q), modalidade);
             else
                 return Enumerable.Empty<OpcaoDropdownDto>();
@@ -146,7 +144,7 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
 
             var result = await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
-            var turmasRegulares = await servicoEOL.DefinirTurmasRegulares(result.Select(x => x.Codigo).ToArray());
+            var turmasRegulares = await mediator.Send(new ObterTurmasRegularesQuery(result.Select(x => x.Codigo).ToArray()));
 
             return result.Where(r => turmasRegulares.Contains(r.Codigo));
         }

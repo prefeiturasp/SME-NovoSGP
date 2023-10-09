@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(request.CodigoAluno, request.AnoLetivo, false, request.TipoTurma))).OrderByDescending(a => a.DataSituacao).ThenByDescending(a => a.NumeroAlunoChamada)?.FirstOrDefault();
 
-            if (alunoPorTurmaResposta == null)
+            if (alunoPorTurmaResposta.EhNulo())
                 throw new NegocioException("Aluno não localizado");
 
             var alunoReduzido = new AlunoReduzidoDto()
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             var turmaNome = "";
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
-            if (turma != null)
+            if (turma.NaoEhNulo())
             {
                 var nomeTurno = "";
                 if (Enum.IsDefined(typeof(TipoTurnoEOL), turma.TipoTurno))

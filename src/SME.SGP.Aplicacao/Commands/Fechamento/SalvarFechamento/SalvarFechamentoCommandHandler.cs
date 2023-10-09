@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
             var tipoNota = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(turma.Id, turma.TipoTurma), cancellationToken);
             
-            if (fechamentoTurma.Justificativa != null)
+            if (fechamentoTurma.Justificativa.NaoEhNulo())
             {
                 var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma.Justificativa));
                 var limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, bimestre);
             var periodoEscolar = periodos.periodoEscolar;
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {fechamentoTurma.Bimestre}º Bimestre");
 
             if (!fechamentoTurma.EhFinal)
@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<FechamentoAluno> fechamentoAlunos;
 
-            var disciplinasEol = await mediator.Send(new ObterDisciplinasPorIdsQuery(new[] { fechamentoTurmaDisciplina.DisciplinaId }), cancellationToken);
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { fechamentoTurmaDisciplina.DisciplinaId }), cancellationToken);
 
             var disciplina = disciplinasEol is null
                 ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
             var parametroDiasAlteracao = await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turma.AnoLetivo), cancellationToken);
 
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
-            var acimaDiasPermitidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
+            var acimaDiasPermitidosAlteracao = parametroDiasAlteracao.NaoEhNulo() && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
 
             //salvar para todos
@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
                                         conceitoIdAnterior = fechamentoNota.ConceitoId;
                                     }
 
-                                    if (notaConceitoAprovacaoAluno != null)
+                                    if (notaConceitoAprovacaoAluno.NaoEhNulo())
                                     {
                                         fechamentoNota.Nota = notaConceitoAprovacaoAluno.Nota;
                                         fechamentoNota.ConceitoId = notaConceitoAprovacaoAluno.ConceitoId;
@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao
                             if (!emAprovacao)
                                 continue;
 
-                            if (notaConceitoAprovacaoAluno != null)
+                            if (notaConceitoAprovacaoAluno.NaoEhNulo())
                                 AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo,
                                     notaConceitoAprovacaoAluno?.Nota, notaConceitoAprovacaoAluno?.NotaAnterior,
                                     notaConceitoAprovacaoAluno?.ConceitoId, notaConceitoAprovacaoAluno?.ConceitoIdAnterior);
@@ -216,7 +216,7 @@ namespace SME.SGP.Aplicacao
                     
                     var notaAlunoAlterada = fechamentoTurma.NotaConceitoAlunos.FirstOrDefault(n => n.CodigoAluno.Equals(fechamentoAluno.AlunoCodigo));
 
-                    if (fechamentoTurma.Id <= 0 || !acimaDiasPermitidosAlteracao || notaAlunoAlterada == null ||
+                    if (fechamentoTurma.Id <= 0 || !acimaDiasPermitidosAlteracao || notaAlunoAlterada.EhNulo() ||
                         alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
                     {
                         continue;
@@ -224,7 +224,7 @@ namespace SME.SGP.Aplicacao
 
                     var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
 
-                    if (aluno != null)
+                    if (aluno.NaoEhNulo())
                         alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
                 }
 
@@ -239,7 +239,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
                 {
                     var dadosAluno = alunosDaTurma.FirstOrDefault(f => f.CodigoAluno.Equals(consolidacaoNotaAlunoDto.AlunoCodigo));
-                    consolidacaoNotaAlunoDto.Inativo = dadosAluno == null || dadosAluno.Inativo;
+                    consolidacaoNotaAlunoDto.Inativo = dadosAluno.EhNulo() || dadosAluno.Inativo;
 
                     await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto), cancellationToken);
                 }   
@@ -371,7 +371,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(string turmaId)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi encontrada a turma informada.");
 
             return turma;
@@ -387,7 +387,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
-            if (parametro == null)
+            if (parametro.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotafechamento' para o ano {anoLetivo}");
 
             return parametro.Ativo;
@@ -414,13 +414,13 @@ namespace SME.SGP.Aplicacao
 
                 var fechamentoFinalTurma = await mediator.Send(new ObterFechamentoTurmaPorTurmaIdQuery(turma.Id));
 
-                if (fechamentoFinalTurma == null)
+                if (fechamentoFinalTurma.EhNulo())
                     fechamentoFinalTurma = new FechamentoTurma(0, turma.Id);
                 else
                     //verificar retorno e disciplina regencia
                     fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaQuery(fechamentoDto.TurmaId, disciplinaId));
 
-                if (fechamentoTurmaDisciplina == null)
+                if (fechamentoTurmaDisciplina.EhNulo())
                     fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina { DisciplinaId = disciplinaId, Situacao = SituacaoFechamento.ProcessadoComSucesso };
 
                 fechamentoTurmaDisciplina.FechamentoTurma = fechamentoFinalTurma;
@@ -429,7 +429,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var fechamentoAluno = await mediator.Send(new ObterFechamentoAlunoPorTurmaIdQuery(fechamentoTurmaDisciplina.DisciplinaId, agrupamentoAluno.Key));
 
-                    if (fechamentoAluno == null)
+                    if (fechamentoAluno.EhNulo())
                         fechamentoAluno = new FechamentoAluno { AlunoCodigo = agrupamentoAluno.Key };
 
                     fechamentoTurmaDisciplina.FechamentoAlunos.Add(fechamentoAluno);
@@ -443,7 +443,7 @@ namespace SME.SGP.Aplicacao
                     fechamentoTurmaDisciplina.FechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdQuery(fechamentoTurmaDisciplina.FechamentoTurmaId));
                 }
 
-                if (fechamentoTurmaDisciplina == null)
+                if (fechamentoTurmaDisciplina.EhNulo())
                 {
                     fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
                     {
@@ -462,7 +462,7 @@ namespace SME.SGP.Aplicacao
             var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdQuery(tipoCalendarioId));
             var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == bimestre);
 
-            if (periodoFechamento == null || periodoFechamentoBimestre == null)
+            if (periodoFechamento.EhNulo() || periodoFechamentoBimestre.EhNulo())
             {
                 var hoje = DateTime.Today;
                 var tipodeEventoReabertura = await mediator.Send(new ObterEventoTipoIdPorCodigoQuery(TipoEvento.FechamentoBimestre));
@@ -471,7 +471,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoReaberturaQuery(bimestre, hoje, tipoCalendarioId, ue.Dre.CodigoDre, ue.CodigoUe));
 
-                    if (fechamentoReabertura == null)
+                    if (fechamentoReabertura.EhNulo())
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {bimestre}º Bimestre");
 
                     return ((await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId))).FirstOrDefault(a => a.Bimestre == bimestre),
@@ -500,7 +500,7 @@ namespace SME.SGP.Aplicacao
                 // Busca registro existente de fechamento da turma
                 var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorPeriodoQuery(turma.Id, periodoEscolar.Id));
 
-                if (fechamentoTurma == null)
+                if (fechamentoTurma.EhNulo())
                     fechamentoTurma = new FechamentoTurma(turma, periodoEscolar);
 
                 fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
@@ -509,7 +509,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento, string disciplinaId, Usuario usuario = null)
         {
-            if (usuario == null)
+            if (usuario.EhNulo())
                 usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var podePersistir = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, dataAula, usuario));
@@ -527,7 +527,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
                     var frequencia = await mediator.Send(new ObterFrequenciaPorAlunoDisciplinaDataQuery(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia, codigoTurma));
-                    var percentualFrequencia = frequencia == null ? 0 : frequencia.PercentualFrequencia;
+                    var percentualFrequencia = frequencia.EhNulo() ? 0 : frequencia.PercentualFrequencia;
                     var sinteseDto = await ObterSinteseAluno(percentualFrequencia, disciplina, anoLetivo);
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;
@@ -539,7 +539,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina, int anoLetivo)
         {
-            var sintese = percentualFrequencia == null ?
+            var sintese = percentualFrequencia.EhNulo() ?
                 SinteseEnum.NaoFrequente :
                 percentualFrequencia >= await ObterFrequenciaMedia(disciplina, anoLetivo) ?
                 SinteseEnum.Frequente :
@@ -582,7 +582,7 @@ namespace SME.SGP.Aplicacao
             {
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
 
-                if (fechamentoAluno == null)
+                if (fechamentoAluno.EhNulo())
                 {
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
                     indiceFechamentoAntigo = -1;
@@ -594,7 +594,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var notaFechamento = fechamentoAluno.FechamentoNotas.FirstOrDefault(x => x.DisciplinaId == fechamentoNotaDto.DisciplinaId);
 
-                    if (notaFechamento != null)
+                    if (notaFechamento.NaoEhNulo())
                     {
                         if (EnviarWfAprovacao(usuarioLogado, turmaAnoLetivo) && parametroAlteracaoNotaFechamento.Ativo)
                         {
@@ -683,7 +683,7 @@ namespace SME.SGP.Aplicacao
             => mediator.Send(new SalvarLogViaRabbitCommand(mensagem, nivel, LogContexto.Fechamento, e.Message));
 
         private FechamentoNota MapearParaEntidade(FechamentoNotaDto fechamentoNotaDto)
-            => fechamentoNotaDto == null ? null :
+            => fechamentoNotaDto.EhNulo() ? null :
                 new FechamentoNota()
                 {
                     DisciplinaId = fechamentoNotaDto.DisciplinaId,

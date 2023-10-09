@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Teste
         public void DeveCriarEventoEmDiaLetivo()
         {
             Evento evento = ObterEvento();
-            Assert.True(evento != null);
+            Assert.True(evento.NaoEhNulo());
             Assert.True(evento.DeveSerEmDiaLetivo());
         }
 

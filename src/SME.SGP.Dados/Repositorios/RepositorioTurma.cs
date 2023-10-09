@@ -296,6 +296,7 @@ namespace SME.SGP.Dados.Repositorios
                                     delete from consolidacao_registros_pedagogicos where turma_id = @turmaId;
                                     delete from consolidacao_frequencia_turma where turma_id = @turmaId;
                                     delete from consolidado_fechamento_componente_turma where turma_id = @turmaId;
+                                    delete from frequencia_turma_evasao where turma_id = @turmaId;
                                     delete from turma where id = @turmaId;";
             
             var parametros = new { turmaId };

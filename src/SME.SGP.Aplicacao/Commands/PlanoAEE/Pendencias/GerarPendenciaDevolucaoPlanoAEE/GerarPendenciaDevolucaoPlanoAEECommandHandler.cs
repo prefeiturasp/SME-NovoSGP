@@ -24,17 +24,17 @@ namespace SME.SGP.Aplicacao
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
 
-            if (planoAEE == null)
+            if (planoAEE.EhNulo())
                 throw new NegocioException("Não foi possível localizar o PlanoAEE");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Não foi possível localizar a turma");
 
             var usuarios = await mediator.Send(new ObterUsuariosIdPorCodigosRfQuery(planoAEE.CriadoRF));
 
-            if (usuarios == null || !usuarios.Any())
+            if (usuarios.EhNulo() || !usuarios.Any())
                 throw new NegocioException("Não foi possível localizar o usuário");
 
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";

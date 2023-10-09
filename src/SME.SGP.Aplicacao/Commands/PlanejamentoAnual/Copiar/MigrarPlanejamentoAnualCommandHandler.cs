@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                     else
                         checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turma.ToString()));
 
-                    if (checarTurma == null)
+                    if (checarTurma.EhNulo())
                         throw new NegocioException($"Turma não encontrada");
 
                     foreach (var periodoOrigem in periodosOrigem)
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                                 excessoes.Add($"Você não possui atribuição na turma {checarTurma.Nome} - {periodo.Bimestre}° Bimestre.");
                         }
 
-                        var periodoEmAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(checarTurma, DateTime.Today, periodo.Bimestre, checarTurma.AnoLetivo == DateTime.Today.Year)).Result;
+                        var periodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(checarTurma, DateTime.Today, periodo.Bimestre, checarTurma.AnoLetivo == DateTime.Today.Year));
                         if (!periodoEmAberto)
                             excessoes.Add($"O {periodo.Bimestre}° Bimestre não está aberto.");
                     }

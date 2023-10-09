@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroFechamentoReaberturaNotificacaoDto>();
 
-            if (filtro == null)
+            if (filtro.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível gerar as notificações, pois o fechamento reabertura não possui dados", LogNivel.Informacao, LogContexto.Fechamento));
                 return false;

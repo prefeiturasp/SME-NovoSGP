@@ -29,19 +29,19 @@ namespace SME.SGP.Aplicacao
             var periodosAberto = await repositorioEventoFechamento.ObterPeriodosFechamentoEmAberto(turma.UeId, DateTime.Now.Date, turma.AnoLetivo);
             var tipoCalendario = await mediator.Send(new ObterTipoDeCalendarioDaTurmaQuery { Turma = turma });
 
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
-            if (periodosEscolares == null)
+            if (periodosEscolares.EhNulo())
                 throw new NegocioException("Não foram encontrados periodos escolares cadastrados para a turma");
 
             DateTime primeiroPeriodoDoCalendario = periodosEscolares.Where(p => p.Bimestre == PRIMEIRO_BIMESTRE).Select(pe => pe.PeriodoInicio).FirstOrDefault();
 
 
             PeriodoEscolar periodoEscolar;
-            if (periodosAberto != null && periodosAberto.Any())
+            if (periodosAberto.NaoEhNulo() && periodosAberto.Any())
             {
                 // caso tenha mais de um periodo em aberto (abertura e reabertura) usa o ultimo bimestre
                 periodoEscolar = periodosAberto.OrderBy(c => c.Bimestre).Last();
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
 
                 periodoEscolar = periodosEscolares?.FirstOrDefault(p => p.DataDentroPeriodo(DateTimeExtension.HorarioBrasilia().Date));
 
-                if (periodoEscolar == null)
+                if (periodoEscolar.EhNulo())
                     periodoEscolar = periodosEscolares.OrderByDescending(o => o.PeriodoInicio).FirstOrDefault(p => p.PeriodoFim <= DateTimeExtension.HorarioBrasilia().Date);
             }
 

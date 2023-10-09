@@ -23,12 +23,12 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ObterTipoUeIgnoraGeracaoPendenciasQuery request, CancellationToken cancellationToken)
         {
             var dadosParametro = await repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.TiposUEIgnorarGeracaoPendencia, DateTimeExtension.HorarioBrasilia().Year);
-            if (dadosParametro == null || !dadosParametro.Ativo) return false;
+            if (dadosParametro.EhNulo() || !dadosParametro.Ativo) return false;
             
             TipoEscola? tipoUe = request.TipoUe;
-            if (tipoUe == null)
+            if (tipoUe.EhNulo())
                tipoUe = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(request.CodigoUe));
-            return dadosParametro != null ? dadosParametro.Valor.Split(',').Contains(((int)tipoUe).ToString()) : false;           
+            return dadosParametro.NaoEhNulo() ? dadosParametro.Valor.Split(',').Contains(((int)tipoUe).ToString()) : false;           
         }
             
     }

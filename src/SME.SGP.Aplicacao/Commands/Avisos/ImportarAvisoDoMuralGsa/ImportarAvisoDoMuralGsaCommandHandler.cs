@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool ReagendarImportacao(DataAulaDto aula)
-            => aula == null
+            => aula.EhNulo()
             || aula.AulaId == 0;
     }
 }

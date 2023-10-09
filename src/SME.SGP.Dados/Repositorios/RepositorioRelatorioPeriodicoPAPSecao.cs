@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     var questaoPAP = relatorioSecao.Questoes.FirstOrDefault(c => c.Id == relatorioQuestao.Id);
 
-                    if (questaoPAP == null)
+                    if (questaoPAP.EhNulo())
                     {
                         questaoPAP = relatorioQuestao;
                         questaoPAP.Questao = questao;
@@ -55,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     var resposta = questaoPAP.Respostas.FirstOrDefault(c => c.Id == relatorioResposta.Id);
 
-                    if (resposta != null)
+                    if (resposta.NaoEhNulo())
                         return secao;
 
                     resposta = relatorioResposta;

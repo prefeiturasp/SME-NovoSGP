@@ -389,7 +389,7 @@ namespace SME.SGP.Dados.Repositorios
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
                 retorno = await AcrescentarModalidadesSupervisor(login, consideraHistorico, anoLetivo, retorno);
-                if (modalidadesQueSeraoIgnoradas != null && modalidadesQueSeraoIgnoradas.Any())
+                if (modalidadesQueSeraoIgnoradas.NaoEhNulo() && modalidadesQueSeraoIgnoradas.Any())
                     retorno = retorno.Where(r => !modalidadesQueSeraoIgnoradas.Contains((Modalidade)r));
             }
 
@@ -611,7 +611,7 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.AppendLine("and semestre = @semestre");
 
-            if (anosInfantilDesconsiderar != null && anosInfantilDesconsiderar.Any())
+            if (anosInfantilDesconsiderar.NaoEhNulo() && anosInfantilDesconsiderar.Any())
             {
                 query.AppendLine("and t.ano <> ALL(@anosInfantilDesconsiderar)");
             }
@@ -654,7 +654,7 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0)
                 query.AppendLine("and semestre = @semestre ");
 
-            if (anos != null && anos.Any())
+            if (anos.NaoEhNulo() && anos.Any())
                 query.AppendLine(" and tca.ano IN (#anos)");
 
             var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString().Replace("#anos", "'" + string.Join("','", anos) + "'"), new { codigoUe, anoLetivo, modalidade, semestre, anos });
@@ -686,7 +686,7 @@ namespace SME.SGP.Dados.Repositorios
                 if (modalidades.Any() && !modalidades.Any(c => c == -99))
                     query.AppendLine("and t.modalidade_codigo = any(@modalidadesSemEja) ");
 
-                if (anos != null && anos.Any() && !anos.Any(a => a == "-99") && !modalidadesSemEja.Any(a => a == (int)Modalidade.MOVA))
+                if (anos.NaoEhNulo() && anos.Any() && !anos.Any(a => a == "-99") && !modalidadesSemEja.Any(a => a == (int)Modalidade.MOVA))
                     query.AppendLine(" and tca.ano = any(@anos)");
 
                 if (anos.Any(a => a == "-99"))
@@ -725,7 +725,7 @@ namespace SME.SGP.Dados.Repositorios
                                                and t.modalidade_codigo = @modalidadeEja 
                                                and semestre = @semestre and t.historica = @historico ");
 
-                if (anos != null && anos.Any() && !anos.Any(a => a == "-99"))
+                if (anos.NaoEhNulo() && anos.Any() && !anos.Any(a => a == "-99"))
                     query.AppendLine(" and tca.ano = any(@anos)");
             }
 
@@ -790,10 +790,10 @@ namespace SME.SGP.Dados.Repositorios
             {
                 resultadoFiltrado = await AcrescentarTurmasSupervisor(login, modalidade, periodo, codigoUe, consideraHistorico, anoLetivo, resultadoFiltrado);
 
-                if (tipos != null && tipos.Any())
+                if (tipos.NaoEhNulo() && tipos.Any())
                     resultadoFiltrado = resultadoFiltrado.Where(r => tipos.Contains(r.TipoTurma));
 
-                if (anosInfantilDesconsiderar != null && anosInfantilDesconsiderar.Any())
+                if (anosInfantilDesconsiderar.NaoEhNulo() && anosInfantilDesconsiderar.Any())
                     resultadoFiltrado = resultadoFiltrado.Where(r => !anosInfantilDesconsiderar.Contains(r.Ano));
             }
 
@@ -850,7 +850,7 @@ namespace SME.SGP.Dados.Repositorios
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
 
-            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 retorno = retorno.Concat(dadosAbrangenciaSupervisor
                     .Select(d => d.Modalidade)
@@ -865,7 +865,7 @@ namespace SME.SGP.Dados.Repositorios
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
 
-            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 retorno = retorno.Concat(dadosAbrangenciaSupervisor
                     .Where(d => (Modalidade)d.Modalidade == modalidade)
@@ -881,7 +881,7 @@ namespace SME.SGP.Dados.Repositorios
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
 
-            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 var dres = retorno.Select(d => d.Id).ToList();
 
@@ -923,7 +923,7 @@ namespace SME.SGP.Dados.Repositorios
             if(retorno.Any())
                 retornoUesSupervisor.AddRange(retorno);
 
-            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 var ues = retorno.Select(u => u.Id).ToList();
                 var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId });
@@ -984,7 +984,7 @@ namespace SME.SGP.Dados.Repositorios
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
 
-            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 var turmas = retorno.Select(t => t.Id).ToList();
 

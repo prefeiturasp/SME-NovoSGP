@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Utilitarios;
 using Microsoft.Extensions.Options;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -55,7 +56,7 @@ namespace SME.SGP.Aplicacao
                     while (true)
                     {
                         var mensagemParaEnviar = _channel.BasicGet(fila, true);
-                        if (mensagemParaEnviar == null)
+                        if (mensagemParaEnviar.EhNulo())
                             break;
 
                         var mensagem = Encoding.UTF8.GetString(mensagemParaEnviar.Body.ToArray());

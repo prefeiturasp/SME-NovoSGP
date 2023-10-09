@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
     {
         
-        public ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA(IServicoEol servicoEol)
+        public ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA()
         {}
 
         public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request,

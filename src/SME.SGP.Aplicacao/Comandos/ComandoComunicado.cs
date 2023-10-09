@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
             var comunicados = ids.Select(id =>
             {
                 var comunicado = repositorio.ObterPorId(id);
-                if (comunicado == null)
+                if (comunicado.EhNulo())
                 {
                     erros.Append($"<li>{id} - comunicado não encontrado</li>");
                 }
@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
                     if (comunicado.EventoId.HasValue)
                     {
                         var evento = repositorioEvento.ObterPorId(comunicado.EventoId.Value);
-                        if (evento != null && !evento.Excluido)
+                        if (evento.NaoEhNulo() && !evento.Excluido)
                         {
                             erros.Append($"<li>{id} - {comunicado.Titulo} - Comunicado com evento vinculado</li>");
                         }
@@ -199,7 +199,7 @@ namespace SME.SGP.Aplicacao
             if (comunicadoDto.CodigoUe.Equals(Todas) && comunicadoDto.Turmas.Any())
                 throw new NegocioException("Não é possivel especificar uma turma quando o comunicado é para todas as UEs");
 
-            if ((comunicadoDto.Turmas == null || !comunicadoDto.Turmas.Any()) && (comunicadoDto.AlunoEspecificado || (comunicadoDto.Alunos?.Any() ?? false)))
+            if ((comunicadoDto.Turmas.EhNulo() || !comunicadoDto.Turmas.Any()) && (comunicadoDto.AlunoEspecificado || (comunicadoDto.Alunos?.Any() ?? false)))
                 throw new NegocioException("Não é possivel especificar alunos quando o comunicado é para todas as Turmas");
         }
 
@@ -225,7 +225,7 @@ namespace SME.SGP.Aplicacao
                 //var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma));
                 var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
 
-                if (abrangenciaTurmas == null)
+                if (abrangenciaTurmas.EhNulo())
                     throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");
             }
         }
@@ -236,10 +236,10 @@ namespace SME.SGP.Aplicacao
 
             var ue = abrangenciaUes.FirstOrDefault(x => x.Codigo.Equals(comunicadoDto.CodigoUe));
 
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a UE com codigo {comunicadoDto.CodigoUe}");
 
-            if (comunicadoDto.Turmas != null && comunicadoDto.Turmas.Any())
+            if (comunicadoDto.Turmas.NaoEhNulo() && comunicadoDto.Turmas.Any())
                 await ValidarAbrangenciaTurma(comunicadoDto);
         }
 
@@ -249,7 +249,7 @@ namespace SME.SGP.Aplicacao
 
             var dre = abrangenciaDres.FirstOrDefault(x => x.Codigo.Equals(comunicadoDto.CodigoDre));
 
-            if (dre == null)
+            if (dre.EhNulo())
                 throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a DRE com codigo {comunicadoDto.CodigoDre}");
         }
 
@@ -270,7 +270,7 @@ namespace SME.SGP.Aplicacao
             if (!comunicadoDto.CodigoUe.Equals("-99"))
                 comunicado.CodigoUe = comunicadoDto.CodigoUe;
 
-            if (comunicadoDto.Turmas != null && comunicadoDto.Turmas.Any())
+            if (comunicadoDto.Turmas.NaoEhNulo() && comunicadoDto.Turmas.Any())
                 comunicadoDto.Turmas.ToList().ForEach(x => comunicado.AdicionarTurma(x));
 
             if (comunicadoDto.Modalidades.Any())

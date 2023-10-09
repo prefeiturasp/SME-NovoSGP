@@ -80,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
                             ap.turma_id = @turmaId and
                             ap.disciplina_id = any(@disciplinasId) ";
 
-            if (bimestre != null)
+            if (bimestre.NaoEhNulo())
                 sql += " and apb.bimestre = @bimestre";
 
             if (!string.IsNullOrWhiteSpace(codigoRf))

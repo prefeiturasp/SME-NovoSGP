@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PeriodoEscolarListaDto> Handle(ObterPeriodoEscolarListaPorTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
             var lista = await repositorio.ObterPorTipoCalendario(request.TipoCalendarioId);
-            if (lista == null || !lista.Any())
+            if (lista.EhNulo() || !lista.Any())
                 return null;
             
             return EntidadeParaDto(lista);

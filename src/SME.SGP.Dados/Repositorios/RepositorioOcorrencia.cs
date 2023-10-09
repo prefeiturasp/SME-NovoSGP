@@ -41,7 +41,7 @@ namespace SME.SGP.Dados
             var condicao = gerador.ObterCondicao();
             var orderBy = "order by o.data_ocorrencia desc";
 
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
             var query = $@" drop table if exists tempOcorrenciasSelecionadas;
@@ -92,11 +92,11 @@ namespace SME.SGP.Dados
                     lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
                 }
 
-                if (aluno != null &&
+                if (aluno.NaoEhNulo() &&
                     !ocorrenciaEntrada.Alunos.ToList().Exists(item => item.CodigoAluno == aluno.CodigoAluno))
                     ocorrenciaEntrada.Alunos.Add(aluno);
 
-                if (servidor != null &&
+                if (servidor.NaoEhNulo() &&
                    !ocorrenciaEntrada.Servidores.ToList().Exists(item => item.CodigoServidor == servidor.CodigoServidor))
                     ocorrenciaEntrada.Servidores.Add(servidor);
 
@@ -167,16 +167,16 @@ namespace SME.SGP.Dados
                         resultado = ocorrencia;
                     }
 
-                    if (turma != null) resultado.Turma = turma;
-                    if (ue != null) resultado.Ue = ue;
+                    if (turma.NaoEhNulo()) resultado.Turma = turma;
+                    if (ue.NaoEhNulo()) resultado.Ue = ue;
                     
                     resultado.Alunos = resultado?.Alunos ?? new List<OcorrenciaAluno>();
-                    if(ocorrenciaAluno != null && 
+                    if(ocorrenciaAluno.NaoEhNulo() && 
                         !resultado.Alunos.ToList().Exists(aluno => aluno.CodigoAluno == ocorrenciaAluno.CodigoAluno)) 
                         resultado.Alunos.Add(ocorrenciaAluno);
                     
                     resultado.Servidores = resultado?.Servidores ?? new List<OcorrenciaServidor>();
-                    if(ocorrenciaServidor != null && 
+                    if(ocorrenciaServidor.NaoEhNulo() && 
                        !resultado.Servidores.ToList().Exists(servidor => servidor.CodigoServidor == ocorrenciaServidor.CodigoServidor)) 
                         resultado.Servidores.Add(ocorrenciaServidor);
                     

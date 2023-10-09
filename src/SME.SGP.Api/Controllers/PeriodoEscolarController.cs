@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.Turma;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -26,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         {
             var periodoEscolar = await consultas.ObterPorTipoCalendario(codigoTipoCalendario);
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return NoContent();
 
             return Ok(periodoEscolar);
@@ -96,7 +97,7 @@ namespace SME.SGP.Api.Controllers
         {
             var bimestre = await useCase.Executar(turmaId);
 
-            if (bimestre != null)
+            if (bimestre.NaoEhNulo())
                 return Ok(bimestre);
             else
                 return NoContent();

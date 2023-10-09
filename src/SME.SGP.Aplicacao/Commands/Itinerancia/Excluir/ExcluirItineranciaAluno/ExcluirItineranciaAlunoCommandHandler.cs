@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirItineranciaAlunoCommand request, CancellationToken cancellationToken)
         {
-            if (request.ItineranciaAluno.AlunosQuestoes == null || request.ItineranciaAluno.AlunosQuestoes.Any())
+            if (request.ItineranciaAluno.AlunosQuestoes.EhNulo() || request.ItineranciaAluno.AlunosQuestoes.Any())
                 foreach (var questao in request.ItineranciaAluno.AlunosQuestoes)
                     await mediator.Send(new ExcluirItineranciaAlunoQuestaoCommand(questao.Id));
 

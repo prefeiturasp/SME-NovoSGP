@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
         protected async Task CarregarInformacoesParaNotificacao(IEnumerable<WFAprovacaoNotaConselho> wfAprovacoes)
         {
             WFAprovacoes = wfAprovacoes.ToList();
-            if (WFAprovacoes == null || !WFAprovacoes.Any()) return;
+            if (WFAprovacoes.EhNulo() || !WFAprovacoes.Any()) return;
 
             await CarregarTodasUes();
             await CarregarTodosAlunos();
@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(fechamentoTurmaId,
                                                                                                       codigoAluno,
                                                                                                       componenteCurricularId));
-            if (fechamentoNotas != null && fechamentoNotas.Any())
+            if (fechamentoNotas.NaoEhNulo() && fechamentoNotas.Any())
             {
                 var fechamentoNota = fechamentoNotas.FirstOrDefault();
                 return (fechamentoNota.ConceitoId, fechamentoNota.Nota);

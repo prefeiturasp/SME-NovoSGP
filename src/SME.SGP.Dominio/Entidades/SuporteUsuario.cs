@@ -20,7 +20,7 @@ namespace SME.SGP.Dominio
             {
                 var perfisNaoPermitido = PerfisNaoPermitidosParaSuporteAdmDre();
 
-                if (usuarioSuporte.Perfis != null &&
+                if (usuarioSuporte.Perfis.NaoEhNulo() &&
                     usuarioSuporte.Perfis.ToList().Exists(perfil => perfisNaoPermitido.Contains(perfil.CodigoPerfil)))
                 {
                     throw new NegocioException(MensagemNegocioComuns.ACESSO_SUPORTE_INDISPONIVEL);

@@ -21,13 +21,13 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
             var registroIndividual = await repositorioRegistroIndividual.ObterPorIdAsync(request.Id);
-            if (registroIndividual == null)
+            if (registroIndividual.EhNulo())
                 throw new NegocioException("Registro individual não encontrada.");
 
             registroIndividual.Remover();
 
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
-            if (registroIndividual?.Registro != null)
+            if ((registroIndividual?.Registro).NaoEhNulo())
             {
                 await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(registroIndividual.Registro, TipoArquivo.RegistroIndividual.Name()));
             }

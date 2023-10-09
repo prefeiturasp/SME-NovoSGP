@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                 var planoAEE = mensagemRabbit.ObterObjetoMensagem<PlanoAEE>();
                 var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
 
-                if (planoAEE != null)
+                if (planoAEE.NaoEhNulo())
                 {
                     var encerrarPlanoAee = false;
 
@@ -36,19 +36,19 @@ namespace SME.SGP.Aplicacao
 
                     var turmaDoPlanoAee = await ObterTurma(planoAEE.TurmaId);
 
-                    if (turmaDoPlanoAee == null)
+                    if (turmaDoPlanoAee.EhNulo())
                         throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Turma_nao_localizada, planoAEE.TurmaId));
 
-                    if (matriculas == null || !matriculas.Any())
+                    if (matriculas.EhNulo() || !matriculas.Any())
                     {
                         var uePlanoAluno = turmaDoPlanoAee.Ue.CodigoUe;
                         var dadosMatriculaAlunoNaUEPlano = await mediator.Send(new ObterMatriculasAlunoNaUEQuery(uePlanoAluno, planoAEE.AlunoCodigo));
 
-                        if (dadosMatriculaAlunoNaUEPlano != null && dadosMatriculaAlunoNaUEPlano.Any())
+                        if (dadosMatriculaAlunoNaUEPlano.NaoEhNulo() && dadosMatriculaAlunoNaUEPlano.Any())
                         {
                             var situacoesAlunoNaUEAnoAtual = dadosMatriculaAlunoNaUEPlano.Where(a => a.AnoLetivo == anoLetivo);
 
-                            if (situacoesAlunoNaUEAnoAtual.Any() && situacoesAlunoNaUEAnoAtual != null)
+                            if (situacoesAlunoNaUEAnoAtual.Any() && situacoesAlunoNaUEAnoAtual.NaoEhNulo())
                             {
                                 var codigosTurmasAluno = situacoesAlunoNaUEAnoAtual.Select(b => b.CodigoTurma.ToString()).ToArray();
 
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
                                 var ultimaSituacaoAlunoNaUE = situacoesAlunoNaUEAnoAtual.Where(b => b.CodigoTurma == codigoTurmaRegular).OrderByDescending(c => c.DataSituacao).FirstOrDefault();
 
-                                if (ultimaSituacaoAlunoNaUE != null && PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
+                                if (ultimaSituacaoAlunoNaUE.NaoEhNulo() && PlanoDeveSerEncerrado(ultimaSituacaoAlunoNaUE.CodigoSituacaoMatricula))
                                     await EncerrarPlanoAee(planoAEE, ultimaSituacaoAlunoNaUE?.SituacaoMatricula ?? "Inativo", ultimaSituacaoAlunoNaUE.DataSituacao);
                             }
                             else
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
 
-                        if (ultimaSituacao != null)
+                        if (ultimaSituacao.NaoEhNulo())
                         {
                             if (ultimaSituacao!.Inativo && PlanoDeveSerEncerrado(ultimaSituacao.CodigoSituacaoMatricula))
                                 encerrarPlanoAee = true;
@@ -149,7 +149,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
 
         private async Task NotificarEncerramento(PlanoAEE plano, string situacaoMatricula, DateTime dataSituacao)
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarisoIds = await ObterUsuariosParaNotificacao(turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre);
 
-            if (usuarisoIds != null && usuarisoIds.Any())
+            if (usuarisoIds.NaoEhNulo() && usuarisoIds.Any())
                 await mediator.Send(new GerarNotificacaoPlanoAEECommand(plano.Id, usuarisoIds, titulo, descricao, NotificacaoPlanoAEETipo.PlanoExpirado, NotificacaoCategoria.Aviso));
         }
 
@@ -175,7 +175,7 @@ namespace SME.SGP.Aplicacao
             var usuariosIds = await ObterUsuariosId(coordenadoresUe);
             var coordenadoresCEFAI = await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreCodigo));
 
-            if (coordenadoresCEFAI != null && coordenadoresCEFAI.Any())
+            if (coordenadoresCEFAI.NaoEhNulo() && coordenadoresCEFAI.Any())
                 foreach (var coordenadorCEFAI in coordenadoresCEFAI)
                     usuariosIds.Add(coordenadorCEFAI);
 
@@ -185,15 +185,15 @@ namespace SME.SGP.Aplicacao
         private async Task<List<string>> ObterCoordenadoresUe(string codigoUe)
         {
             var funcionariosCP = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.CP));
-            if (funcionariosCP != null && funcionariosCP.Any())
+            if (funcionariosCP.NaoEhNulo() && funcionariosCP.Any())
                 return funcionariosCP.Select(f => f.CodigoRF).ToList();
 
             var funcionariosAD = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.AD));
-            if (funcionariosAD != null && funcionariosAD.Any())
+            if (funcionariosAD.NaoEhNulo() && funcionariosAD.Any())
                 return funcionariosAD.Select(f => f.CodigoRF).ToList();
 
             var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(codigoUe, (int)Cargo.Diretor));
-            if (funcionariosDiretor != null && funcionariosDiretor.Any())
+            if (funcionariosDiretor.NaoEhNulo() && funcionariosDiretor.Any())
                 return funcionariosDiretor.Select(f => f.CodigoRF).ToList();
 
             return null;
@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuariosIds = new List<long>();
 
-            if(funcionarios != null)
+            if(funcionarios.NaoEhNulo())
             {
                 foreach (var functionario in funcionarios)
                 {

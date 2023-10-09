@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTimeExtension.HorarioBrasilia();
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaCompletoPorIdQuery(conselhoClasseAlunoDto.FechamentoTurmaId));
 
-            if (fechamentoTurma == null)
+            if (fechamentoTurma.EhNulo())
                 throw new NegocioException(MensagemNegocioFechamentoNota.FECHAMENTO_TURMA_NAO_LOCALIZADO);
 
             var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue ? fechamentoTurma.PeriodoEscolar.Bimestre :
@@ -39,13 +39,13 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar ??
                                  await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(fechamentoTurma.Turma, bimestre));
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
             var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == conselhoClasseAlunoDto.AlunoCodigo);
 
-            if (alunoConselho == null)
+            if (alunoConselho.EhNulo())
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_ENCONTRADO_PARA_SALVAR_CONSELHO_CLASSE);
 
             var permiteEdicao = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim) || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
         private async Task<ConselhoClasseAluno> MapearParaEntidade(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
         {
             var conselhoClasseAluno = await mediator.Send(new ObterPorConselhoClasseAlunoCodigoQuery(conselhoClasseAlunoDto.ConselhoClasseId, conselhoClasseAlunoDto.AlunoCodigo));
-            if (conselhoClasseAluno == null)
+            if (conselhoClasseAluno.EhNulo())
             {
                 ConselhoClasse conselhoClasse = conselhoClasseAlunoDto.ConselhoClasseId == 0 ?
                     new ConselhoClasse() { FechamentoTurmaId = conselhoClasseAlunoDto.FechamentoTurmaId } :

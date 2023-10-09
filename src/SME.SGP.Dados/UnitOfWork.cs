@@ -23,7 +23,7 @@ namespace SME.SGP.Dados
 
         public IDbTransaction IniciarTransacao()
         {
-            if (transacao == null || transacao?.Connection?.State == null && !TransacaoAberta)
+            if (transacao.EhNulo() || (transacao?.Connection?.State).EhNulo() && !TransacaoAberta)
             {
                 transacao = sgpContext.BeginTransaction();
                 TransacaoAberta = true;
@@ -34,7 +34,7 @@ namespace SME.SGP.Dados
 
         public void PersistirTransacao()
         {
-            if (transacao != null && TransacaoAberta)
+            if (transacao.NaoEhNulo() && TransacaoAberta)
             {
                 transacao.Commit();
                 TransacaoAberta = false;
@@ -44,7 +44,7 @@ namespace SME.SGP.Dados
 
         public void Rollback()
         {
-            if (transacao != null && transacao.Connection != null && TransacaoAberta)
+            if (transacao.NaoEhNulo() && transacao.Connection.NaoEhNulo() && TransacaoAberta)
             {
                 transacao.Rollback();
                 TransacaoAberta = false;

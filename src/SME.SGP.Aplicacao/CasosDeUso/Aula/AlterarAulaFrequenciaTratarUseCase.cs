@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagemRabbit.ObterObjetoMensagem<AulaAlterarFrequenciaRequestDto>();
 
             var aulaParaTratar = await mediator.Send(new ObterAulaPorIdQuery(filtro.AulaId));
-            if (aulaParaTratar != null)
+            if (aulaParaTratar.NaoEhNulo())
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aulaParaTratar.TurmaId));
                 

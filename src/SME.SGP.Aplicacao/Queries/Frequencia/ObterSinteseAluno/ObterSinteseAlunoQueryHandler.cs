@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> Handle(ObterSinteseAlunoQuery request, CancellationToken cancellationToken)
         {
-            var sintese = request.PercentualFrequencia == null ?
+            var sintese = request.PercentualFrequencia.EhNulo() ?
                 SinteseEnum.NaoFrequente :
                 request.PercentualFrequencia >= await mediator.Send(new ObterFrequenciaMediaQuery(request.Disciplina, request.AnoLetivo)) ?
                 SinteseEnum.Frequente :

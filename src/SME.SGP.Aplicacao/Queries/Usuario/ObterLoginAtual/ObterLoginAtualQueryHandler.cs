@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public Task<string> Handle(ObterLoginAtualQuery request, CancellationToken cancellationToken)
         {
             var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
-            if (loginAtual == null)
+            if (loginAtual.EhNulo())
                 throw new NegocioException("Não foi possível localizar o login no token");
 
             return Task.FromResult(loginAtual);

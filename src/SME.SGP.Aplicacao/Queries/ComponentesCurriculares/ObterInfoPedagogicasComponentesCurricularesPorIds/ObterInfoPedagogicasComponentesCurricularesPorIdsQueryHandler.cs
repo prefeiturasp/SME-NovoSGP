@@ -30,10 +30,10 @@ namespace SME.SGP.Aplicacao
             var todosComponentesCurriculares = (await repositorioCache.ObterAsync("InformacoesComponentesCurriculares",
                                                                                    async () => await repositorioComponenteCurricular.ObterInformacoesComponentesCurriculares()))?.ToList();
             
-            if (todosComponentesCurriculares == null)
+            if (todosComponentesCurriculares.EhNulo())
                 return Enumerable.Empty<InfoComponenteCurricular>();
 
-            if (request.Ids != null && request.Ids.Any())
+            if (request.Ids.NaoEhNulo() && request.Ids.Any())
                 return todosComponentesCurriculares.Where(cc => request.Ids.Contains(cc.Codigo));
 
             return todosComponentesCurriculares;

@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoAluno servicoAluno;
         private readonly IMediator mediator;
 
@@ -25,7 +24,6 @@ namespace SME.SGP.Aplicacao
                                 IConsultasTipoCalendario consultasTipoCalendario,
                                 IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                IServicoEol servicoEOL,
                                 IServicoAluno servicoAluno,
                                 IMediator mediator,
                                 IContextoAplicacao contextoAplicacao
@@ -35,7 +33,6 @@ namespace SME.SGP.Aplicacao
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -43,7 +40,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> TurmaEmPeriodoAberto(string codigoTurma, DateTime dataReferencia, int bimestre = 0, TipoCalendario tipoCalendario = null)
         {
             var turma = await ObterComUeDrePorCodigo(codigoTurma);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de código {codigoTurma} não localizada!");
 
             return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre, tipoCalendario: tipoCalendario);
@@ -52,7 +49,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> TurmaEmPeriodoAberto(long turmaId, DateTime dataReferencia, int bimestre = 0, TipoCalendario tipoCalendario = null)
         {
             var turma = await ObterComUeDrePorId(turmaId);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de ID {turmaId} não localizada!");
 
             return await TurmaEmPeriodoAberto(turma, dataReferencia, bimestre, tipoCalendario: tipoCalendario);
@@ -60,10 +57,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> TurmaEmPeriodoAberto(Turma turma, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false, TipoCalendario tipoCalendario = null)
         {
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
             {
                 tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
-                if (tipoCalendario == null)
+                if (tipoCalendario.EhNulo())
                     throw new NegocioException($"Tipo de calendário para turma {turma.CodigoTurma} não localizado!");
             }
 
@@ -84,13 +81,13 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<PeriodoEscolarAbertoDto>> PeriodosEmAbertoTurma(string turmaCodigo, DateTime dataReferencia, bool ehAnoLetivo = false)
         {
             var turma = await ObterComUeDrePorCodigo(turmaCodigo);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de código {turmaCodigo} não localizada!");
 
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
             var listaPeriodos = await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos != null ? listaPeriodos.Periodos : new List<PeriodoEscolarDto>(), ehAnoLetivo);
+            return await ObterPeriodosEmAberto(turma, dataReferencia, listaPeriodos.NaoEhNulo() ? listaPeriodos.Periodos : new List<PeriodoEscolarDto>(), ehAnoLetivo);
         }
 
         private async Task<IEnumerable<PeriodoEscolarAbertoDto>> ObterPeriodosEmAberto(Turma turma, DateTime dataReferencia, List<PeriodoEscolarDto> periodos, bool ehAnoLetivo = false)
@@ -110,11 +107,11 @@ namespace SME.SGP.Aplicacao
         public async Task<TipoCalendarioSugestaoDto> ObterSugestaoTipoCalendarioPorTurma(string turmaCodigo)
         {
             var turma = await ObterComUeDrePorCodigo(turmaCodigo);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de código {turmaCodigo} não localizada!");
 
             var tipoCalendario = await consultasTipoCalendario.ObterPorTurma(turma);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException($"Não foi possível obter o tipo de calendário da turma {turmaCodigo}");
 
             return new TipoCalendarioSugestaoDto() { Id = tipoCalendario.Id, Nome = tipoCalendario.Nome };
@@ -124,7 +121,7 @@ namespace SME.SGP.Aplicacao
         {
             var dadosAlunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turmaCodigo, DateTime.Today));
 
-            if (dadosAlunos == null || !dadosAlunos.Any())
+            if (dadosAlunos.EhNulo() || !dadosAlunos.Any())
                 throw new NegocioException($"Não foram localizados dados dos alunos para turma {turmaCodigo} no EOL para o ano letivo {anoLetivo}");
 
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
@@ -142,7 +139,7 @@ namespace SME.SGP.Aplicacao
 
                 dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
-                if (periodoEscolar != null)
+                if (periodoEscolar.NaoEhNulo())
                     dadosBasicos.Marcador = servicoAluno.ObterMarcadorAluno(dadoAluno, periodoEscolar, ehInfantil);
 
                 dadosBasicos.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(dadoAluno.CodigoAluno, anoLetivo));

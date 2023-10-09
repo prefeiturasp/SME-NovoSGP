@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var duplicados = await database.Conexao.QueryAsync<RegistroFrequenciaDuplicadoDto>(query, new { alunos, turmaCodigo, periodoEscolarId });
 
-            if (duplicados != null && duplicados.Any())
+            if (duplicados.NaoEhNulo() && duplicados.Any())
             {
                 var delete = @"delete
                                 from frequencia_aluno fa 

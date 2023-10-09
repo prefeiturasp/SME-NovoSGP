@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<InconsistenciasAlunoFamiliaDto>> Executar(FiltroInconsistenciasAlunoFamiliaDto param)
         {
-            var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
-            if (turmaRegular == null)
-                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
+                var turmaRegular = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
+                if (turmaRegular.EhNulo())
+                    throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var retorno = new List<InconsistenciasAlunoFamiliaDto>();
             var turmasCodigo = new List<string>();
@@ -50,9 +50,9 @@ namespace SME.SGP.Aplicacao
             
             var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 
-            var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
-            if (codigosItinerarioEnsinoMedio != null)
-                turmasCodigo.AddRange(codigosItinerarioEnsinoMedio);
+                var codigosItinerarioEnsinoMedio = await ObterTurmasCodigosItinerarioEnsinoMedio(turmaRegular, turmasItinerarioEnsinoMedio, periodoEscolar, param.Bimestre);
+                if (codigosItinerarioEnsinoMedio.NaoEhNulo())
+                    turmasCodigo.AddRange(codigosItinerarioEnsinoMedio);
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
