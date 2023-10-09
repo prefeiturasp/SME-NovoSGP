@@ -7,5 +7,6 @@ namespace SME.SGP.Infra
         public long TotalRegistro { get; set; }
         public IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> TotalRegistroPorModalidadesAno { get; set; }
         public PaginacaoResultadoDto<EncaminhamentoNAAPARelatorioDinamico> EncaminhamentosNAAPAPaginado { get; set; }
+        public long[] EncaminhamentosNAAPAIds { get; set; }
     }
 }
