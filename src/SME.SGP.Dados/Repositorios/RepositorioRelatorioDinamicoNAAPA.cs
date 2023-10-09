@@ -71,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder();
             var camposRetorno = @"distinct np.id, dre.abreviacao as Dre, ue.nome as UnidadeEscolar, 
                                   concat(np.aluno_nome, ' (', np.aluno_codigo, ')') as Estudante,
-                                  t.modalidade_codigo as ModalidadeCodigo, t.ano";
+                                  t.modalidade_codigo as Modalidade, t.ano";
 
             sql.AppendLine(ObterQuery(filtro, queryTabelaResposta, camposRetorno));
 

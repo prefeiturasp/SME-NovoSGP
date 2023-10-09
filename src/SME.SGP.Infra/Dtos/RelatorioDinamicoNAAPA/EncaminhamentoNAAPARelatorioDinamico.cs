@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class EncaminhamentoNAAPARelatorioDinamico
     {
@@ -7,5 +9,7 @@
         public string UnidadeEscolar { get; set; }
         public string Estudante { get; set; }
         public string Ano {  get; set; }
+        public Modalidade Modalidade { get; set; }
+        public string DescricaoAno { get { return string.Concat(Modalidade.ShortName(), "-", Ano); } }
     }
 }
