@@ -182,6 +182,9 @@ namespace SME.SGP.Aplicacao
                 case Modalidade.EJA:
                     return ModalidadeTipoCalendario.EJA;
 
+                case Modalidade.EducacaoInfantil:
+                    return ModalidadeTipoCalendario.Infantil;
+
                 default:
                     return ModalidadeTipoCalendario.FundamentalMedio;
             }

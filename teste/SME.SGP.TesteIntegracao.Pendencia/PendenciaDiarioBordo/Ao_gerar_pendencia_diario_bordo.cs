@@ -490,7 +490,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CodigoUe = "22"
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Nome = "7A",
                 CodigoTurma = CODIGO_TURMA_7A,
@@ -501,7 +501,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 UeId = 1
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Nome = "7B",
                 CodigoTurma = CODIGO_TURMA_7B,
@@ -512,7 +512,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 UeId = 1
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Nome = "7P",
                 CodigoTurma = CODIGO_TURMA_7P,

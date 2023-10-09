@@ -46,8 +46,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidarComponentesProfessor(AlterarAulaRecorrenteCommand aulaRecorrente)
         {
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aulaRecorrente.CodigoTurma));
+
             var componentesCurricularesDoProfessor = await mediator
-                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.Usuario.Login, aulaRecorrente.Usuario.PerfilAtual));
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.Usuario.Login, aulaRecorrente.Usuario.PerfilAtual, turma.EhTurmaInfantil));
 
             if (aulaRecorrente.Usuario.EhProfessorCj())
             {

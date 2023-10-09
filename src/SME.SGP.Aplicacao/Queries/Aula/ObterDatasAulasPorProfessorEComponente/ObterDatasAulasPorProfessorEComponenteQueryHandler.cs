@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using MailKit;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
@@ -31,19 +32,19 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(request.TurmaCodigo);
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
             var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
 
             var componentesCurricularesEolProfessor = (await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
                                                                               usuarioLogado.Login,
                                                                               usuarioLogado.PerfilAtual,
-                                                                              usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
+                                                                              turma.EhTurmaInfantil), cancellationToken)).ToList();
 
             if (usuarioLogado.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = (await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login)))
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login), cancellationToken))
                     .Where(cc => cc.TurmaId == turma.CodigoTurma);
 
                 if (componentesCurricularesDoProfessorCJ.Any())

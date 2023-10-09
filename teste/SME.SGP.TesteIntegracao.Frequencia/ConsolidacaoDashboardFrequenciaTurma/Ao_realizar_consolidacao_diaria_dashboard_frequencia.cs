@@ -333,7 +333,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 Nome = ConstantesTeste.UE_1_NOME,
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = ConstantesTeste.UE_1_ID,
                 Ano = ConstantesTeste.TURMA_ANO_1,
