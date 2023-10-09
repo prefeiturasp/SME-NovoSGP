@@ -70,9 +70,9 @@ namespace SME.SGP.Dados.Repositorios
         private string ObterQueryPaginada(string filtro, Paginacao paginacao, string queryTabelaResposta)
         {
             var sql = new StringBuilder();
-            var camposRetorno = @"np.id, dre.abreviacao as Dre, ue.nome as UnidadeEscolar, 
+            var camposRetorno = @"distinct np.id, dre.abreviacao as Dre, ue.nome as UnidadeEscolar, 
                                   concat(np.aluno_nome, ' (', np.aluno_codigo, ')') as Estudante,
-                                  t.modalidade_codigo as ModalidadeCodigo, t.ano";
+                                  t.modalidade_codigo as Modalidade, t.ano";
 
             sql.AppendLine(ObterQuery(filtro, queryTabelaResposta, camposRetorno));
 
@@ -93,9 +93,9 @@ namespace SME.SGP.Dados.Repositorios
         private (string campos, string groupBy) ObterCamposEGrupoParaQueryTotalDeRegistro(FiltroRelatorioDinamicoNAAPADto filtro)
         {
             if (!filtro.Modalidade.HasValue)
-                return ("count(np.id) Total, t.modalidade_codigo as Modalidade", " GROUP BY t.modalidade_codigo ");
+                return ("count(distinct np.id) Total, t.modalidade_codigo as Modalidade", " GROUP BY t.modalidade_codigo ");
 
-            return ("count(np.id) Total, t.ano", " GROUP BY t.ano");
+            return ("count(distinct np.id) Total, t.ano, t.modalidade_codigo as Modalidade", " GROUP BY t.ano, t.modalidade_codigo");
         }
 
         private string ObterQuery(string filtro, string queryTabelaResposta, string camposRetorno)
