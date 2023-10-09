@@ -420,10 +420,10 @@ namespace SME.SGP.Aplicacao
 
             foreach (var d in disciplinasEol)
             {
-                disciplinaEol.Professor = professoresTitulares
-                    .FirstOrDefault(pt => pt.DisciplinasId.Contains(disciplinaEol.CodigoComponenteCurricular))?.ProfessorRf;
+                d.Professor = professoresTitulares
+                    .FirstOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
 
-                if (!string.IsNullOrWhiteSpace(disciplinaEol.Professor))
+                if (!string.IsNullOrWhiteSpace(d.Professor))
                 {
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(codigoTurma, d.Professor, Perfis.PERFIL_PROFESSOR));
                     var componenteCorrepondente = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(d.CodigoComponenteCurricular));
@@ -495,8 +495,8 @@ namespace SME.SGP.Aplicacao
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorTurma(string codigoTurma, bool turmaPrograma)
         {
             var disciplinasDto = new List<DisciplinaDto>();
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var login = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var perfilAtual = await mediator.Send(ObterPerfilAtualQuery.Instance);
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma.EhNulo())
@@ -506,8 +506,8 @@ namespace SME.SGP.Aplicacao
 
             if (perfilAtual == Perfis.PERFIL_CJ || perfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
-                var disciplinasAtribuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, login);
-                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+                var disciplinasAtribuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, login.Login);
+                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login.Login, string.Empty, true);
                 if (atribuicoes.NaoEhNulo() && atribuicoes.Any())
                 {
                     var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));

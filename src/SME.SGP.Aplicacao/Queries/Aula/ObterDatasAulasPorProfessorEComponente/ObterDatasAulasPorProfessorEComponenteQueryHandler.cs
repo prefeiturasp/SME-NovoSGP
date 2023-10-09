@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                             CodigoComponenteTerritorioSaber = codigoComponenteEquivalente.HasValue ? ccj.DisciplinaId : 0,
                             Professor = ccj.ProfessorRf
                         });
-                    };
+                    });
                 }
             }
 
