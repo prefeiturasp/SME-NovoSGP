@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Nome = "Nome da UE",
             });
 
-            await _teste.InserirNaBase(new Turma
+            await _teste.InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = "5",
@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 TipoTurno = 2
             });
 
-            await _teste.InserirNaBase(new Turma
+            await _teste.InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = "9",
@@ -106,7 +106,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CriadoRF = "1"
             });
 
-            await _teste.InserirNaBase(new Turma
+            await _teste.InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = "2",
