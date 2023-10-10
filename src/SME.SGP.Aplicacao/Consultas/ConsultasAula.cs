@@ -111,6 +111,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var usuarioRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(disciplinaCodigo)));
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
             if (turma.EhNulo())
@@ -128,7 +129,9 @@ namespace SME.SGP.Aplicacao
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
 
             var dadosDisciplina = componentesCurriculares
-                                .Where(c => c.Codigo.ToString() == disciplinaCodigo)
+                                .Where(c => c.Codigo.ToString() == disciplinaCodigo ||
+                                            ((componenteCurricular?.TerritorioSaber ?? false) &&
+                                            c.CodigoComponenteTerritorioSaber == componenteCurricular.CodigoComponenteCurricularTerritorioSaber))
                                 .Select(c => new ComponenteCurricularTipoDto()
                                 {
                                     CodigoComponenteCurricular = c.Codigo.ToString(),

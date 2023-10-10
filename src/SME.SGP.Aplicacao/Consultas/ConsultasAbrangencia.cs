@@ -198,11 +198,14 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasAbrangenciaMesmoComponente(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoComponente)
         {
             List<AbrangenciaTurmaRetorno> turmasMesmoComponente = new List<AbrangenciaTurmaRetorno>();
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoComponente)));
 
             foreach(var turma in turmas)
             {
                 var disciplinasTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.Codigo));
-                bool possuiMesmoComponente = disciplinasTurma.Any(d => d.CodigoComponenteCurricular.ToString() == codigoComponente);
+                bool possuiMesmoComponente = disciplinasTurma.Any(d => d.CodigoComponenteCurricular.ToString() == codigoComponente  || 
+                                                                  ((componenteCurricular?.TerritorioSaber ?? false) && 
+                                                                   d.CodigoComponenteTerritorioSaber == componenteCurricular.CodigoComponenteCurricularTerritorioSaber));
 
                 if (possuiMesmoComponente)
                     turmasMesmoComponente.Add(turma);
