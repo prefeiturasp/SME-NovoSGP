@@ -8,7 +8,7 @@ pipeline {
     }
   
     agent {
-      node { label 'jenkinsnodes' }
+      node { label 'sme' }
     }
 
     options {
@@ -21,7 +21,7 @@ pipeline {
     stages {
 
             stage('Checkout') {
-                agent { label "jenkinsnodes" }
+                agent { label "sme" }
                 steps {
                     script {
                      def nodes = nodesByLabel label: 'jenkinsnodes'
