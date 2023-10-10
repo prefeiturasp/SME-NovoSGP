@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private const int BIMESTRE_4 = 4;
         private const double NOTA_CONCEITO_CINCO = 5.0;
         private const double NOTA_CONCEITO_SETE = 7.0;
+        private const int EdFisica = 6;
 
         public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator) : base(mediator)
         { }
@@ -63,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                     if (turma.EhTurmaRegular() && turma.EhEJA())
-                    componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
+                        componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
             }
 
             var statusNovo = SituacaoConselhoClasse.NaoIniciado;
@@ -103,7 +104,7 @@ namespace SME.SGP.Aplicacao
                  
                     //Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
-                        componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != 6);
+                        componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != EdFisica);
 
                     var possuiComponentesSemNotaConceito = componentesDaTurmaES
                         .Where(ct => ct.LancaNota && !ct.EhTerritorioSaber)
