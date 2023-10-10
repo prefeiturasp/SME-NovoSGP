@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra.Dtos
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra.Dtos
 {
     public class ConsolidacaoDevolutivaTurmaDTO
     {
@@ -22,6 +24,14 @@
     public class DevolutivaTurmaDTO
     {
         public long TurmaId { get; set; }
+        public int AnoLetivo { get; set; }
+        public long UeId { get; set; }
+        public long Id { get; set; }
+        public int AnoAtual { get; set; }
+        public DevolutivaTurmaDTO()
+        {
+            AnoAtual = DateTimeExtension.HorarioBrasilia().Year;
+        }
     }
 
     public class FiltroDevolutivaTurmaDTO

@@ -41,7 +41,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarFrequenciaPorTurmaAnualUseCase, ConsolidarFrequenciaPorTurmaAnualUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaPorTurmaMensalUseCase, ConsolidarFrequenciaPorTurmaMensalUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaPorTurmaSemanalUseCase, ConsolidarFrequenciaPorTurmaSemanalUseCase>();
-            
+
             services.TryAddScoped<IVerificaFrequenciaRegistradaAlunosInativosUseCase, VerificaFrequenciaRegistradaAlunosInativosUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaTurmasMensalUseCase, ConsolidarFrequenciaTurmasMensalUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaTurmasSemanalUseCase, ConsolidarFrequenciaTurmasSemanalUseCase>();
@@ -52,8 +52,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ITratarRegistroFrequenciaAlunoTurmaUseCase, TratarRegistroFrequenciaAlunoTurmaUseCase>();
             services.TryAddScoped<ITratarRegistroFrequenciaAlunoAulaUseCase, TratarRegistroFrequenciaAlunoAulaUseCase>();
             services.TryAddScoped<ITratarRegistroFrequenciaAlunoProcessamentoUseCase, TratarRegistroFrequenciaAlunoProcessamentoUseCase>();
-            
+
             services.TryAddScoped<ILancarFrequenciaAulaUseCase, LancarFrequenciaAulaUseCase>();
+            services.TryAddScoped<IIdentificarFrequenciaAlunoPresencasMaiorTotalAulasUseCase, IdentificarFrequenciaAlunoPresencasMaiorTotalAulasUseCase>();
+            services.TryAddScoped<IIdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUeUseCase, IdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUeUseCase>();
+            services.TryAddScoped<IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasUseCase, RegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasUseCase>();
+            services.TryAddScoped<IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasPorRegistroUseCase, RegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasPorRegistroUseCase>();
         }
     }
 }

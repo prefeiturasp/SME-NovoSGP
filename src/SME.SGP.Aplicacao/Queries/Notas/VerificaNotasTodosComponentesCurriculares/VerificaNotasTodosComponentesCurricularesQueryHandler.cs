@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Queries
                         turmasCodigos = new string[] { request.Turma.CodigoTurma };
                 }
             }
-            else 
+            else
                 turmasCodigos = new[] { request.Turma.CodigoTurma };
 
             var conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);
