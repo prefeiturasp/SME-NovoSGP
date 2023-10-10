@@ -27,10 +27,10 @@ namespace SME.SGP.Aplicacao
 
                 var agrupamentoTurmaDisciplina = aulasComPendenciaDiarioClasse.GroupBy(aula => new {TurmaCodigo = aula.TurmaId, aula.DisciplinaId, TurmaId = aula.Turma.Id, ModalidadeTipoCalendario = aula.Turma.ModalidadeTipoCalendario});
                 var agrupamentoTurma = agrupamentoTurmaDisciplina.GroupBy(turmaDisciplina => turmaDisciplina.Key.TurmaCodigo);
-                foreach (var turma in agrupamentoTurma.Where(a => a.Key == "2514097"))
+                foreach (var turma in agrupamentoTurma)
                     await mediator.Send(new ExcluirNotificacaoPendenciasFechamentoCommand(turma.Key, DateTimeExtension.HorarioBrasilia().Year));
 
-                foreach (var turmaDisciplina in agrupamentoTurmaDisciplina.Where(a => a.Key.TurmaCodigo == "2514097"))
+                foreach (var turmaDisciplina in agrupamentoTurmaDisciplina)
                 {
                     
                   var periodoEscolarFechamentoEmAberto = (await mediator.Send(new ObterPeriodoEscolarFechamentoEmAbertoQuery(turmaDisciplina.Key.TurmaCodigo, turmaDisciplina.Key.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date)));
