@@ -208,7 +208,7 @@ namespace SME.SGP.Aplicacao
         {
             await ValidarSeEhDiaLetivo(request.TipoCalendarioId, dataAula, turma);
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
-            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), request.Usuario.Login));
+            var aulasExistentes = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray()));
             aulasExistentes = aulasExistentes.Where(a => a.Id != request.AulaId);
             if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");

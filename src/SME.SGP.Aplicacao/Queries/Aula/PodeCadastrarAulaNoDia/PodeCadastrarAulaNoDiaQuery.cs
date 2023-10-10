@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class PodeCadastrarAulaNoDiaQuery: IRequest<bool>
     {
-        public PodeCadastrarAulaNoDiaQuery(DateTime dataAula, string turmaCodigo, long[] componentesCurriculares, string professorRf, TipoAula tipoAula)
+        public PodeCadastrarAulaNoDiaQuery(DateTime dataAula, string turmaCodigo, long[] componentesCurriculares, TipoAula tipoAula, string professorRf = null)
         {
             DataAula = dataAula;
             TurmaCodigo = turmaCodigo;
