@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                     if (turma.EhTurmaRegular() && turma.EhEJA())
-                    componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
+                        componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
             }
 
             var statusNovo = SituacaoConselhoClasse.NaoIniciado;
@@ -98,8 +98,12 @@ namespace SME.SGP.Aplicacao
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
 
-                    var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
-                    turmasCodigos.AddRange(codigosComplementares);
+                    if (turma.ModalidadeCodigo != Modalidade.Fundamental) 
+                    {
+                        var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+                        turmasCodigos.AddRange(codigosComplementares);
+                    }
+
                     var componentesDaTurmaEol = await mediator
                         .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
