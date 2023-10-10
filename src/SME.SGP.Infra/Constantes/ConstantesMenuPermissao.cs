@@ -42,6 +42,7 @@
         public const string MENU_PLANO = "Plano";
         public const string MENU_REGISTRO_DE_ITINERANCIA = "Registro de itinerância";
         public const string MENU_NAAPA = "NAAPA";
+        public const string MENU_RELATORIO_DINAMICO_NAAPA = "Relatório dinâmico";
         public const string MENU_FREQUENCIA = "Frequência";
         public const string MENU_FREQUENCIA_MENSAL = "Frequência mensal";
         public const string MENU_CONTROLE_DE_FREQUENCIA_MENSAL =  "Controle de frequência mensal";
@@ -129,6 +130,7 @@
         public const string ROTA_AEE_PLANO = "/aee/plano";
         public const string ROTA_AEE_REGISTRO_ITINERANCIA = "/aee/registro-itinerancia";
         public const string ROTA_NAAPA_ENCAMINHAMENTO = "/naapa/encaminhamento";
+        public const string ROTA_RELATORIO_DINAMICO_NAAPA = "/naapa/relatorio-dinamico";
         public const string ROTA_RELATORIOS_FREQUENCIA_FREQUENCIA = "/relatorios/frequencia/frequencia";
         public const string ROTA_RELATORIOS_FREQUENCIA_MENSAL = "/relatorios/frequencia/mensal";
         public const string ROTA_RELATORIOS_FREQUENCIA_CONTROLE_MENSAL = "/relatorios/frequencia/controle-mensal";
@@ -308,7 +310,8 @@
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIOS_ANALITICOS = 1;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
-        
+
+        public const int ORDEM_SUB_MENU_RELATORIO_DINAMICO_NAAPA = 1;
 
     }
 }

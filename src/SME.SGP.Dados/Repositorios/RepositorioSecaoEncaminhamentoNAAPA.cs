@@ -43,10 +43,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { modalidade, encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0 });
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId)
         {
-            var query = new StringBuilder(@"SELECT sea.*, eas.*
+            var query = new StringBuilder(@"SELECT sea.*, eas.*, q.*
                                             FROM secao_encaminhamento_naapa sea 
+                                                join questionario q on q.id = sea.questionario_id 
                                                 left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
                                                                                         and eas.secao_encaminhamento_id = sea.id
                                                                                         and not eas.excluido  
@@ -57,12 +58,13 @@ namespace SME.SGP.Dados.Repositorios
                                             ORDER BY sea.etapa, sea.ordem; ");
 
             return await database.Conexao
-                .QueryAsync<SecaoEncaminhamentoNAAPA, EncaminhamentoNAAPASecao, SecaoEncaminhamentoNAAPA>(
-                    query.ToString(), (secaoEncaminhamento, encaminhamentoSecao) =>
+                .QueryAsync<SecaoEncaminhamentoNAAPA, EncaminhamentoNAAPASecao, Questionario, SecaoEncaminhamentoNAAPA>(
+                    query.ToString(), (secaoEncaminhamento, encaminhamentoSecao, questionario) =>
                     {
                         secaoEncaminhamento.EncaminhamentoNAAPASecao = encaminhamentoSecao;
+                        secaoEncaminhamento.Questionario = questionario;
                         return secaoEncaminhamento;
-                    }, new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade });
+                    }, new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade },splitOn: "id");
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDto(long encaminhamentoNAAPAId)
