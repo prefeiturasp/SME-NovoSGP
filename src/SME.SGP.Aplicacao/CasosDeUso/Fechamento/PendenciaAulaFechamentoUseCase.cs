@@ -27,10 +27,10 @@ namespace SME.SGP.Aplicacao
 
                 var agrupamentoTurmaDisciplina = aulasComPendenciaDiarioClasse.GroupBy(aula => new {TurmaCodigo = aula.TurmaId, aula.DisciplinaId, TurmaId = aula.Turma.Id, ModalidadeTipoCalendario = aula.Turma.ModalidadeTipoCalendario});
                 var agrupamentoTurma = agrupamentoTurmaDisciplina.GroupBy(turmaDisciplina => turmaDisciplina.Key.TurmaCodigo);
-                foreach (var turma in agrupamentoTurma)
+                foreach (var turma in agrupamentoTurma.Where(a => a.Key == "2514097"))
                     await mediator.Send(new ExcluirNotificacaoPendenciasFechamentoCommand(turma.Key, DateTimeExtension.HorarioBrasilia().Year));
 
-                foreach (var turmaDisciplina in agrupamentoTurmaDisciplina)
+                foreach (var turmaDisciplina in agrupamentoTurmaDisciplina.Where(a => a.Key.TurmaCodigo == "2514097"))
                 {
                     
                   var periodoEscolarFechamentoEmAberto = (await mediator.Send(new ObterPeriodoEscolarFechamentoEmAbertoQuery(turmaDisciplina.Key.TurmaCodigo, turmaDisciplina.Key.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date)));
@@ -73,11 +73,9 @@ namespace SME.SGP.Aplicacao
 
             if (fechamentoTurmaDisciplina.NaoEhNulo())
             {
-                var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] {fechamentoTurmaDisciplina.DisciplinaId}));
+                var disciplinaEol = await mediator.Send(new ObterComponenteCurricularPorIdQuery(fechamentoTurmaDisciplina.DisciplinaId));
 
-                var disciplina = disciplinasEol is null
-                    ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")
-                    : disciplinasEol.FirstOrDefault();
+                var disciplina = disciplinaEol ?? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
                 if (fechamentoTurmaDisciplina.TipoTurma != TipoTurma.Programa)
                     await PublicarMsgGeracaoPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
