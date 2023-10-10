@@ -60,31 +60,31 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "2"
+                        OrdemResposta = 2
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GRUPO_ETNICO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_ESTUDANTE_MIGRANTE,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                 }
             };
@@ -134,25 +134,25 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_DESENVOLVIMENTO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1",
+                        OrdemResposta = 1,
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_PROMOCAO_CUIDADOS,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_AGRUPAMENTO_PROTECAO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     }
                 }
             };
@@ -203,19 +203,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_ENSINO_APRENDIZAGEM,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1",
+                        OrdemResposta = 1,
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_HIPOTESE_ESCRITA,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_PERMANENCIA_ESCOLAR,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     }
                 }
             };

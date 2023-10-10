@@ -68,31 +68,31 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "2"
+                        OrdemResposta = 2
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GRUPO_ETNICO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_ESTUDANTE_MIGRANTE,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                 }
             };
@@ -158,31 +158,31 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_PRIORIDADE,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GENERO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "2"
+                        OrdemResposta = 2
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_GRUPO_ETNICO,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                     new FiltroComponenteRelatorioDinamicoNAAPA()
                     {
                         NomeComponente = QUESTAO_NOME_COMPONENTE_ESTUDANTE_MIGRANTE,
                         TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
-                        Resposta = "1"
+                        OrdemResposta = 1
                     },
                 }
             };
