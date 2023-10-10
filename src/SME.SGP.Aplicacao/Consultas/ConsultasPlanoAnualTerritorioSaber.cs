@@ -50,6 +50,7 @@ namespace SME.SGP.Aplicacao
             IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
             var componenteCurricularId = territorioExperienciaId;
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+            var bimestres = periodos.Select(s => s.Bimestre).Distinct();
 
             foreach(var bimestre in periodos.Select(s => s.Bimestre).Distinct().ToList())
             {
@@ -67,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaId,
                                                                                   usuarioLogado.Login,
                                                                                   usuarioLogado.PerfilAtual,
-                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                                                                                  turma.EhTurmaInfantil));
 
             if (usuarioLogado.EhProfessorCj())
             {

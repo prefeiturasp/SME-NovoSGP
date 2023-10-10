@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class SecaoQuestionarioDto
     {
@@ -10,5 +12,6 @@
         public AuditoriaDto Auditoria { get; set; }
         public string? NomeComponente { get; set; }
         public int Ordem { get; set; }
+        public TipoQuestionario TipoQuestionario { get; set; }
     }
 }

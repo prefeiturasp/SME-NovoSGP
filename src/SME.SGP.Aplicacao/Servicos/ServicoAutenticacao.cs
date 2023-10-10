@@ -5,43 +5,42 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using MediatR;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.Servicos
 {
     public class ServicoAutenticacao : IServicoAutenticacao
     {
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ServicoAutenticacao(IServicoEol servicoEOL)
+        public ServicoAutenticacao(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task AlterarSenha(string login, string senhaAtual, string novaSenha)
         {
-            var autenticacao = await servicoEOL.Autenticar(login, senhaAtual);
+            var autenticacao = await mediator.Send(new AutenticarQuery(login, senhaAtual));
+            
             if (autenticacao.EhNulo() || autenticacao.Status != AutenticacaoStatusEol.Ok)
-            {
-                throw new NegocioException("Senha atual incorreta.", HttpStatusCode.Unauthorized);
-            }
+                throw new NegocioException(MensagemNegocioComuns.SENHA_ATUAL_INCORRETA, HttpStatusCode.Unauthorized);
 
-            var alteracaoSenha = await servicoEOL.AlterarSenha(login, novaSenha);
+            var alteracaoSenha = await mediator.Send(new AlterarSenhaUsuarioCommand(login, novaSenha));
             if (!alteracaoSenha.SenhaAlterada)
-            {
                 throw new NegocioException(alteracaoSenha.Mensagem);
-            }
         }
 
         public async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoEol(string login, string senha)
         {
-            var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
+            var retornoServicoEol = await mediator.Send(new AutenticarQuery(login, senha));
 
             return await ObterAutenticacao(retornoServicoEol);
         }
 
         public async Task<(UsuarioAutenticacaoRetornoDto UsuarioAutenticacaoRetornoDto, string CodigoRf, IEnumerable<Guid> Perfis, bool PossuiCargoCJ, bool PossuiPerfilCJ)> AutenticarNoEolSemSenha(string login)
         {
-            var retornoServicoEol = await servicoEOL.ObtenhaAutenticacaoSemSenha(login);
+            var retornoServicoEol = await mediator.Send(new ObterAutenticacaoSemSenhaQuery(login));
 
             return await ObterAutenticacao(retornoServicoEol);
         }
@@ -57,7 +56,7 @@ namespace SME.SGP.Aplicacao.Servicos
             retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
             retornoDto.UsuarioId = retornoServicoEol.UsuarioId;
 
-            var perfis = await servicoEOL.ObterPerfisPorLogin(retornoServicoEol.CodigoRf);
+            var perfis = await mediator.Send(new ObterPerfisPorLoginQuery(retornoServicoEol.CodigoRf));
 
             if (perfis.EhNulo())
                 throw new NegocioException("Usuário sem perfis de acesso.");

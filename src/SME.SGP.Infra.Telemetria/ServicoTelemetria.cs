@@ -83,7 +83,7 @@ namespace SME.SGP.Infra
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
 
-                if (!(transactionElk is null))
+                if (transactionElk != null)
                 {
                     await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
                     {

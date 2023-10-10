@@ -37,12 +37,11 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioUe repositorioUe;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
         private readonly IConsultasTurma consultasTurma;
 
-        public ConsultasNotasConceitos(IServicoEol servicoEOL, IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
+        public ConsultasNotasConceitos(IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
             IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina, IConsultasDisciplina consultasDisciplina,
             IConsultasPeriodoFechamento consultasFechamento,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitosConsulta repositorioNotasConceitos,
@@ -57,7 +56,6 @@ namespace SME.SGP.Aplicacao
             IMediator mediator,
             IConsultasTurma consultasTurma)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFechamentoTurmaDisciplina = consultasFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(consultasFechamentoTurmaDisciplina));

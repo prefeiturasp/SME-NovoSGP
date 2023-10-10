@@ -26,7 +26,10 @@ namespace SME.SGP.Dominio
         MOVA = 8,
 
         [Display(Name = "ETEC", ShortName = "ETEC")]
-        ETEC = 9
+        ETEC = 9,
+
+        [Display(Name = "CELP", ShortName = "CELP")]
+        CELP = 10
     }
 
     public static class ModalidadeExtension
@@ -42,6 +45,8 @@ namespace SME.SGP.Dominio
                     return ModalidadeTipoCalendario.FundamentalMedio;
                 case Modalidade.EJA:
                     return ModalidadeTipoCalendario.EJA;
+                case Modalidade.CELP:
+                    return ModalidadeTipoCalendario.CELP;
                 default:
                     return ModalidadeTipoCalendario.FundamentalMedio;
             }

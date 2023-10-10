@@ -8,18 +8,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasAtribuicaoEsporadica : ConsultasBase, IConsultasAtribuicaoEsporadica
     {
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoEol servicoEOL, IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IContextoAplicacao contextoAplicacao,IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<AtribuicaoEsporadicaDto>> Listar(FiltroAtribuicaoEsporadicaDto filtro)
@@ -55,7 +56,7 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             if (buscarNome)
             {
-                var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year);
+                var professorResumo = await mediator.Send(new ObterResumoProfessorPorRFAnoLetivoQuery(entidade.ProfessorRf, entidade.DataInicio.Year));
                 nomeProfessor = professorResumo.NaoEhNulo() ? professorResumo.Nome : "Professor não encontrado";
             }
 
@@ -76,7 +77,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private async Task<AtribuicaoEsporadicaCompletaDto> EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
         {
-            var professorResumo = await servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year);
+            var professorResumo = await mediator.Send(new ObterResumoProfessorPorRFAnoLetivoQuery(entidade.ProfessorRf, entidade.DataInicio.Year));
 
             return new AtribuicaoEsporadicaCompletaDto
             {
@@ -101,7 +102,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private async Task<IEnumerable<AtribuicaoEsporadicaDto>> ListaEntidadeParaListaDto(IEnumerable<AtribuicaoEsporadica> entidades)
         {
-            var professores = await servicoEOL.ObterListaNomePorListaRF(entidades.Select(x => x.ProfessorRf));
+            var professores = await mediator.Send(new ObterFuncionariosPorRFsQuery(entidades.Select(x => x.ProfessorRf)));
 
             return entidades.Select(async x => await EntidadeParaDto(x, false, ObterNomeProfessor(professores, x.ProfessorRf))).Select(_task => _task.Result);
         }

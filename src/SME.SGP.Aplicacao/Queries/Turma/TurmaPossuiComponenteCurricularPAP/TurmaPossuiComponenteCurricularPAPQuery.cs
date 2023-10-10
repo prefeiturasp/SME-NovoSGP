@@ -20,21 +20,21 @@ namespace SME.SGP.Aplicacao
         public Guid Perfil { get; set; }
     }
 
-    public class TurmaPossuiComponenteCurricularPAPValidator : AbstractValidator<TurmaPossuiComponenteCurricularPAPQuery>
+    public class TurmaPossuiComponenteCurricularPAPQueryValidator : AbstractValidator<TurmaPossuiComponenteCurricularPAPQuery>
     {
-        public TurmaPossuiComponenteCurricularPAPValidator()
+        public TurmaPossuiComponenteCurricularPAPQueryValidator()
         {
             RuleFor(c => c.TurmaCodigo)
                 .NotEmpty()
-                .WithMessage("O código da turma deve ser informado.");
+                .WithMessage("O código da turma deve ser informado para validação se turma tem componente PAP.");
 
             RuleFor(c => c.Login)
               .NotEmpty()
-              .WithMessage("O login do usuário logado deve ser informado.");
+              .WithMessage("O login do usuário logado deve ser informado para validação se turma tem componente PAP");
 
             RuleFor(c => c.Perfil)
               .NotEmpty()
-              .WithMessage("O perfil do usuário logado deve ser informado.");
+              .WithMessage("O perfil do usuário logado deve ser informado para validação se turma tem componente PAP.");
         }
     }
 }

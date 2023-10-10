@@ -318,7 +318,7 @@ namespace SME.SGP.Aplicacao
                             conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterNotasFrequenciaComponente(disciplina.Nome,
                                 disciplina.CodigoComponenteCurricular, frequenciaAluno, periodoEscolar, turma, notasConselhoClasseAluno,
                                 notasFechamentoAluno, turmaPossuiRegistroFrequencia, disciplina.LancaNota, percentualFrequenciaPadrao,
-                                permiteEdicao, turmasCodigos.Distinct().ToArray()));
+                                permiteEdicao, turmasCodigos.Distinct().ToArray(), dadosAluno.DataMatricula));
                         }
                     }
                 }
@@ -662,7 +662,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ConselhoClasseComponenteFrequenciaDto> ObterNotasFrequenciaComponente(string componenteCurricularNome, long componenteCurricularCodigo, FrequenciaAluno frequenciaAluno, PeriodoEscolar periodoEscolar,
             Turma turma, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool turmaPossuiRegistroFrequencia, bool componenteLancaNota, 
-            bool percentualFrequenciaPadrao, bool visualizaNota, string[] codigosTurma)
+            bool percentualFrequenciaPadrao, bool visualizaNota, string[] codigosTurma, DateTime dataMatricula)
         {
             var totalAulas = Enumerable.Empty<TotalAulasPorAlunoTurmaDto>();
             var componentePermiteFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricularCodigo));
@@ -702,7 +702,7 @@ namespace SME.SGP.Aplicacao
                     conselhoClasseComponente.Aulas = totalAulas.Count() == 0 ? "0" : totalAulas.FirstOrDefault().TotalAulas;
                 else
                 {
-                    var valor = await mediator.Send(new ObterTotalAlunosSemFrequenciaPorTurmaBimestreQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma, bimestre));
+                    var valor = await mediator.Send(new ObterTotalAlunosSemFrequenciaPorTurmaBimestreQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma, bimestre, dataMatricula.Date));
                     conselhoClasseComponente.QuantidadeAulas = valor.FirstOrDefault();
                 }
             }

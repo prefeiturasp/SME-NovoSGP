@@ -17,14 +17,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioDreConsulta repositorioDre;
         private readonly IRepositorioUeConsulta repositorioUe;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
         private const int ANO_LETIVO_MINIMO = 2014;
 
         public ConsultasAtribuicoes(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
                                     IRepositorioDreConsulta repositorioDre,
-                                    IServicoEol servicoEol,
                                     IRepositorioUeConsulta repositorioUe,
                                     IServicoUsuario servicoUsuario,
                                     IConsultasAbrangencia consultasAbrangencia,
@@ -32,7 +30,6 @@ namespace SME.SGP.Aplicacao
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
-            this.servicoEOL = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
@@ -172,8 +169,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ObterAtribuicoesEolAnosLetivos(string professorRf, Guid perfil, List<int> anosLetivos)
         {
-            var abrangencia = await servicoEOL
-                .ObterAbrangencia(professorRf, perfil);
+            var abrangencia = await mediator.Send(new ObterAbrangenciaPorLoginPerfilQuery(professorRf, perfil));
 
             anosLetivos.AddRange((from dre in abrangencia.Dres
                                   from ue in dre.Ues
@@ -183,8 +179,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ObterAtribuicoesEolDre(string professorRf, Guid perfil, List<string> codigosDres)
         {
-            var abrangencia = await servicoEOL
-                .ObterAbrangencia(professorRf, perfil);
+            var abrangencia = await mediator.Send(new ObterAbrangenciaPorLoginPerfilQuery(professorRf, perfil));
 
             codigosDres.AddRange((from dre in abrangencia.Dres
                                   select dre.Codigo).Distinct());
@@ -192,8 +187,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ObterAtribuicoesEolUe(string professorRf, Guid perfil, List<string> codigosUes, string codigoDre)
         {
-            var abrangencia = await servicoEOL
-                .ObterAbrangencia(professorRf, perfil);
+            var abrangencia = await mediator.Send(new ObterAbrangenciaPorLoginPerfilQuery(professorRf, perfil));
 
             codigosUes.AddRange((from dre in abrangencia.Dres
                                  from ue in dre.Ues
