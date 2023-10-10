@@ -54,15 +54,15 @@ namespace SME.SGP.Dados.Repositorios
             })).Any();
         }
 
-        public async Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaCodigo, string[] componentesCurriculares, string professorRf, TipoAula tipoAula)
+        public async Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaCodigo, string[] componentesCurriculares, TipoAula tipoAula, string professorRf = null)
         {
-            var query = @"select 1
+            var query = $@"select 1
                  from aula
                 where not excluido
                   and DATE(data_aula) = @data
                   and turma_id = @turmaCodigo
                   and disciplina_id = any(@componentesCurriculares)
-                  and professor_rf = @professorRf
+                  {(string.IsNullOrEmpty(professorRf) ? string.Empty : " and professor_rf = @professorRf ")}
                   and tipo_aula = @tipoAula";
 
             return (await database.Conexao.QueryAsync<int>(query, new
@@ -184,7 +184,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil }));
         }
 
-        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string[] disciplinasIdsConsideradas, string professorRf)
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string[] disciplinasIdsConsideradas, string professorRf = null)
         {
             var query = @$"select *, tipo_aula as TipoAula
                  from aula

@@ -396,7 +396,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var codigosComponentesConsiderados = new List<long>() { long.Parse(aula.DisciplinaId) };
 
-                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, codigosComponentesConsiderados.ToArray(), dia, ehRegencia, aulaRecorrente.TipoAula, usuario.CodigoRf);
+                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, codigosComponentesConsiderados.ToArray(), dia, ehRegencia, aulaRecorrente.TipoAula);
 
                     if (retornoPodeCadastrarAula.PodeCadastrarAula)
                     {
@@ -430,11 +430,11 @@ namespace SME.SGP.Aplicacao
             return (aula, aulasQueDeramErro);
         }
 
-        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula, string codigoRf)
+        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula)
         {
             if (CriandoAula(aulaId) || await AlterandoDataAula(aulaId, dataAula))
             {
-                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinasId, codigoRf, tipoAula)))
+                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinasId, tipoAula)))
                     throw new NegocioException($"Não é possível cadastrar aula do tipo '{tipoAula.Name()}' para o dia selecionado!");
             }
 
