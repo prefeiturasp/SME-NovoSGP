@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
                 .Where(c => c.Codigo == componenteCurricularId || (c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value == componenteCurricularId) || c.CodigoComponenteTerritorioSaber == componenteCurricularId)
                 .ToList();
 
-            if (componenteCurricularId >= TerritorioSaberConstants.COMPONENTE_AGRUPAMENTO_TERRITORIO_SABER_ID_INICIAL)
+            if (componenteCurricularId.EhIdComponenteCurricularTerritorioSaberAgrupado())
                 componentesCurricularesEolProfessor.AddRange(await mediator.Send(new ObterComponentesTerritorioAgrupamentoCorrelacionadosQuery(new long[] { componenteCurricularId })));
 
 

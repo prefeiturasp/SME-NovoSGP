@@ -48,11 +48,15 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var planoTurma in request.PlanoAulaMigrar.IdsPlanoTurmasDestino)
                 {
+                    var disciplinaId = aula.DisciplinaId;
+                    if (aula.DisciplinaId.EhIdComponenteCurricularTerritorioSaberAgrupado())
+                        disciplinaId = await ObterComponenteCurricularTerritorioAgrupadorOutraTurma(aula.DisciplinaId, planoTurma.TurmaId);
+
                     AulaConsultaDto aulaConsultaDto = await
                         mediator.Send(new ObterAulaDataTurmaDisciplinaQuery(
                             planoTurma.Data,
                             planoTurma.TurmaId,
-                            aula.DisciplinaId
+                            disciplinaId
                         ));
 
                     if (aulaConsultaDto.EhNulo())
@@ -84,6 +88,15 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
         }
+        private async Task<string> ObterComponenteCurricularTerritorioAgrupadorOutraTurma(string codigoComponenteCurricularAgrupadorTurmaOrigem, string codigoTurmaDestino)
+        {
+            var componenteCurricularTurmaOrigem = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoComponenteCurricularAgrupadorTurmaOrigem)));
+            var componentesCurricularesTurmaDestino = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurmaDestino));
+            var componenteCurricularTurmaDestino = componentesCurricularesTurmaDestino.Where(cc => (componenteCurricularTurmaOrigem?.TerritorioSaber ?? false) &&
+                                                                                    cc.CodigoComponenteTerritorioSaber == componenteCurricularTurmaOrigem.CodigoComponenteCurricularTerritorioSaber).FirstOrDefault();
+            return componenteCurricularTurmaDestino?.CodigoComponenteCurricular.ToString() ?? codigoComponenteCurricularAgrupadorTurmaOrigem;
+        }
+
         private async Task ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto, string codigoRf, bool ehProfessorCj, string ueId, string turmaCodigo)
         {
 
