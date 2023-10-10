@@ -4,9 +4,9 @@ using FluentValidation;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRelatorioSemestralTurmaPAPPorAnoSemestreQuery : IRequest<IEnumerable<long>>
+    public class ObterRelatorioSemestralAlunoPAPPorAnoSemestreQuery : IRequest<IEnumerable<long>>
     {
-        public ObterRelatorioSemestralTurmaPAPPorAnoSemestreQuery(int anoLetivo, int semestre)
+        public ObterRelatorioSemestralAlunoPAPPorAnoSemestreQuery(int anoLetivo, int semestre)
         {
             AnoLetivo = anoLetivo;
             Semestre = semestre;
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public int Semestre { get; set; }
     }
     
-    public class ObterRelatorioSemestralTurmaPAPPorAnoSemestreQueryValidator : AbstractValidator<ObterRelatorioSemestralTurmaPAPPorAnoSemestreQuery>
+    public class ObterRelatorioSemestralTurmaPAPPorAnoSemestreQueryValidator : AbstractValidator<ObterRelatorioSemestralAlunoPAPPorAnoSemestreQuery>
     {
         public ObterRelatorioSemestralTurmaPAPPorAnoSemestreQueryValidator()
         {

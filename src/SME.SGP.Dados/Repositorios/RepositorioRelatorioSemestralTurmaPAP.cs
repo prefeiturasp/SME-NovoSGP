@@ -34,17 +34,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<RelatorioSemestralTurmaPAP>(query, new { turmaCodigo, semestre });
         }
-        
-        public async Task<IEnumerable<long>> ObterRelatorioSemestralTurmaPAPPorAnoSemestreAsync(int anoLetivo, int semestre)
-        {
-            var query = @"select pap.id
-                            from public.relatorio_semestral_turma_pap pap
-                            join turma t on t.id =pap.turma_id
-                            where t.ano_letivo = @anoLetivo 
-                              and pap.semestre = @semestre";
-
-            return await database.Conexao.QueryAsync<long>(query, new { anoLetivo, semestre });
-        }
 
         public async Task SalvarAsync(RelatorioSemestralTurmaPAP relatorioSemestral)
         {
