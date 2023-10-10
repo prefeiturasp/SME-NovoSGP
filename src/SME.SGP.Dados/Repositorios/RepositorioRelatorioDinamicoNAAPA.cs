@@ -76,6 +76,8 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.AppendLine(ObterQuery(filtro, queryTabelaResposta, camposRetorno));
 
+            sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+
             return sql.ToString();
         }
 
@@ -137,7 +139,6 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@$"WITH tab_resposta as (
                                           SELECT * from CROSSTAB (
                                                     'SELECT ens.encaminhamento_naapa_id, 
-                                                            q.tipo,
                                                             q.nome_componente,
                                                             CASE WHEN 
                                                                     q.tipo = {(int)TipoQuestao.Radio} OR q.tipo = {(int)TipoQuestao.Combo} OR 
@@ -150,13 +151,17 @@ namespace SME.SGP.Dados.Repositorios
                                                     JOIN secao_encaminhamento_naapa secao ON secao.id = ens.secao_encaminhamento_id
                                                     JOIN questionario questio ON questio.id = secao.questionario_id
                                                     LEFT JOIN opcao_resposta opr ON opr.id = enr.resposta_id
-                                                    WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}',
+                                                    WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}
+                                                      and not ens.excluido 
+													  and not enq.excluido 
+												      and not enr.excluido 
+													order by ens.encaminhamento_naapa_id',
 
                                                     'SELECT DISTINCT nome_componente 
                                                      FROM questionario q
                                                      JOIN questao on q.id = questao.questionario_id
                                                      WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}') AS tab_pivot
-                                                    (id int8, tipo int4 {colunas}))");
+                                                    (id int8 {colunas}))");
 
             return sql.ToString();
         }
@@ -165,7 +170,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine(" WHERE 1=1 ");
+            sql.AppendLine(" WHERE not np.excluido ");
 
             var funcoes = new List<Func<FiltroRelatorioDinamicoNAAPADto, string>> 
             { 
@@ -226,12 +231,12 @@ namespace SME.SGP.Dados.Repositorios
             if (grupoComponente.Count() > 1)
                 return ObterGrupos(grupoComponente.Key, grupoComponente.ToList());
             
-             return $" AND {grupoComponente.Key} = '{grupoComponente.FirstOrDefault().Resposta}'";
+             return $" AND {grupoComponente.Key} = '{grupoComponente.FirstOrDefault().OrdemResposta}'";
         }
 
         private string ObterGrupos(string campo, List<FiltroComponenteRelatorioDinamicoNAAPA> filtros)
         {
-            var valores = filtros.Select(filtro => filtro.Resposta);
+            var valores = filtros.Select(filtro => filtro.OrdemResposta);
 
             return $" AND {campo} IN('{string.Join("','", valores.ToArray())}')";
         }
