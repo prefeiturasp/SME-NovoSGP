@@ -428,7 +428,7 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                 CodigoUe = UE_CODIGO
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Nome = TURMA_NOME,
                 CodigoTurma = TURMA_CODIGO,

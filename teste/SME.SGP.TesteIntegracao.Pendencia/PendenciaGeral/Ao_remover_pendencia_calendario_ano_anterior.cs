@@ -137,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral
                 TipoEscola = TipoEscola.CEU,
                 CodigoUe = "22"
             });
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Nome = "7F",
                 CodigoTurma = "111",

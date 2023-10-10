@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
 
             if (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())
             {
-                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, turma.EhTurmaInfantil));
 
                 if(componentesProfessor != null && componentesProfessor.Any())
                 {
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 if (professor != null)
                 {
                     rf = professor.ProfessorRf;
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR, turma.EhTurmaInfantil));
                     var componenteProfessorAtrelado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
                     codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
 
@@ -224,6 +224,9 @@ namespace SME.SGP.Aplicacao
             {
                 case Modalidade.EJA:
                     return ModalidadeTipoCalendario.EJA;
+
+                case Modalidade.EducacaoInfantil:
+                    return ModalidadeTipoCalendario.Infantil;
 
                 default:
                     return ModalidadeTipoCalendario.FundamentalMedio;

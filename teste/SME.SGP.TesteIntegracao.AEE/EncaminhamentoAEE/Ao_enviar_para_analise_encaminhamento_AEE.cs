@@ -297,7 +297,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CodigoUe = UE_CODIGO_100
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Nome = TURMA_NOME_7P,
                 CodigoTurma = TURMA_CODIGO_7P,
