@@ -1,0 +1,99 @@
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using System.Linq;
+using SME.SGP.Dominio.Interfaces;
+using MediatR;
+
+namespace SME.SGP.Aplicacao
+{
+    public class ConsultasRelatorioSemestralPAPAluno : ConsultasBase, IConsultasRelatorioSemestralPAPAluno
+    {
+        private readonly IConsultasTurma consultasTurma;
+        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
+        private readonly IConsultasTipoCalendario consultasTipoCalendario;
+        private readonly IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno;
+        private readonly IMediator mediator;
+
+        public ConsultasRelatorioSemestralPAPAluno(IContextoAplicacao contextoAplicacao,
+                                                IConsultasTurma consultasTurma,
+                                                IConsultasPeriodoEscolar consultasPeriodoEscolar,
+                                                IConsultasTipoCalendario consultasTipoCalendario,
+                                                IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno,
+                                                IMediator mediator) : base(contextoAplicacao)
+        {
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
+            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
+            this.repositorioRelatorioSemestralAluno = repositorioRelatorioSemestralAluno ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestralAluno));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        public async Task<IEnumerable<AlunoDadosBasicosDto>> ObterListaAlunosAsync(string turmaCodigo, int anoLetivo, int semestre)
+        {
+            var turma = await consultasTurma.ObterPorCodigo(turmaCodigo);
+            var periodoEscolar = await ObterPeriodoEscolar(turma, semestre);
+
+            // Obtem lista de alunos da turma com dados basicos
+            var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar);
+            // Carrega lista de alunos com relatório já preenchido
+            var alunosComRelatorio = await ObterRelatoriosAlunosPorTurmaAsync(turma.Id, semestre);
+            var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(dadosAlunos.Select(x => x.CodigoEOL).ToArray(), anoLetivo);
+            await VerificaEstudantePossuiAtendimentoAEE(turma, dadosAlunos);
+            await VerificaEstudantePossuiMatriculaPap(matriculadosTurmaPAP,dadosAlunos);
+            // Atuliza flag de processo concluido do aluno
+            foreach (var dadosAluno in dadosAlunos.Where(d => alunosComRelatorio.Any(a => a.AlunoCodigo == d.CodigoEOL)))
+                dadosAluno.ProcessoConcluido = true;
+
+            return dadosAlunos.OrderBy(w => w.Nome);
+        }
+
+        private async Task VerificaEstudantePossuiMatriculaPap(IEnumerable<AlunosTurmaProgramaPapDto> matriculadosTurmaPap, IEnumerable<AlunoDadosBasicosDto> dadosAlunos)
+        {
+            foreach (var dadosAluno in dadosAlunos)
+                dadosAluno.EhMatriculadoTurmaPAP = matriculadosTurmaPap.Any(x => x.CodigoAluno.ToString() == dadosAluno.CodigoEOL);
+        }
+
+        private async Task VerificaEstudantePossuiAtendimentoAEE(Turma turma, IEnumerable<AlunoDadosBasicosDto> dadosAlunos)
+        {
+            foreach (var dadosAluno in dadosAlunos)
+            {
+                dadosAluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(dadosAluno.CodigoEOL, turma.AnoLetivo));
+            }
+        }
+
+        private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
+        {
+            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+        }
+        private async Task<PeriodoEscolar> ObterPeriodoEscolar(Turma turma, int semestre)
+        {
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            if (tipoCalendario.EhNulo())
+                throw new NegocioException("Tipo de Calendario não localizado para a turma!");
+
+            var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
+                throw new NegocioException("Não localizados periodos escolares para o calendario da turma!");
+
+            var periodoAtual = periodosEscolares.FirstOrDefault(c => c.Bimestre == semestre * 2);
+            if (periodoAtual.EhNulo())
+                throw new NegocioException($"Não localizado periodo escolar para o semestre {semestre}!");
+
+            return periodoAtual;
+        }
+
+        public Task<RelatorioSemestralPAPAluno> ObterPorTurmaAlunoAsync(long relatorioSemestralId, string alunoCodigo)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<RelatorioSemestralPAPAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre)
+            => await repositorioRelatorioSemestralAluno.ObterRelatoriosAlunosPorTurmaAsync(turmaId, semestre);
+
+    }   
+}
