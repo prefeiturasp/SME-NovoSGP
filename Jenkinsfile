@@ -56,8 +56,9 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "pwd"
                   sh "hostname"
@@ -84,9 +85,7 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
-                  //sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
                   sh "pwd"
                   sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
@@ -109,9 +108,6 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
-                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
                   sh "hostname"
@@ -135,9 +131,6 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
-                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
                   sh "hostname"
@@ -161,9 +154,6 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
-                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
                   sh "hostname"
@@ -187,9 +177,6 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
-                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
                   sh "hostname"
@@ -213,9 +200,6 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
-                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
                   sh "hostname"
@@ -243,8 +227,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -263,8 +248,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -283,8 +269,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -303,8 +290,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -323,8 +311,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -343,8 +332,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -363,8 +353,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -383,8 +374,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -403,8 +395,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -423,8 +416,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -443,8 +437,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -463,8 +458,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -483,8 +479,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
@@ -503,8 +500,9 @@ pipeline {
               }
               steps{
                 script {
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh "ls -ltra"
                   sh "pwd"
