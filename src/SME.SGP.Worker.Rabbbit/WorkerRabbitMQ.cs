@@ -107,6 +107,11 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ExclusaoCompensacaoAusenciaPorIds, new ComandoRabbit("Executa exclusão lógica de compensações de ausências que não tem compensação ausência aluno e aula por ids", typeof(IExcluirCompensacaoAusenciaPorIdsUseCase)));
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDasInformacoesPlanoAEE, new ComandoRabbit("Atualiza informações do plano AEE", typeof(IAtualizarInformacoesDoPlanoAEEUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoPlanoAEE, new ComandoRabbit("Atualiza turma do planoAEE", typeof(IAtualizarTurmaDoPlanoAEEUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarMigracaoRelatorioSemestralPAP, new ComandoRabbit("Executar migração do relatório semestral pap", typeof(IExecutarMigracaoRelatorioSemestralPAPUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarMigracaoRelatorioSemestralPAPPorAnoLetivo, new ComandoRabbit("Executar migração do relatório semestral pap por ano letivo", typeof(IExecutarMigracaoRelatorioPapPorAnoEletivoUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarMigracaoRelatorioSemestralPAPPorDto, new ComandoRabbit("Executar migração do relatório semestral pap por dto", typeof(IExecutarMigracaoRelatorioPAPPorDtoUseCase), true));
+            
+
         }
     }
 }
