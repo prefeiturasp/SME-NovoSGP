@@ -1,18 +1,15 @@
 ﻿using Elastic.Apm;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
@@ -20,22 +17,21 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Workers
+namespace SME.SGP.Infra.Worker
 {
-    public abstract class WorkerRabbitMQBase : IHostedService
+    public abstract class WorkerRabbitSGP : IHostedService
     {
-        private readonly IModel canalRabbit;
+        protected readonly IModel canalRabbit;
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IServicoMensageriaSGP servicoMensageria;
         private readonly IServicoMensageriaMetricas servicoMensageriaMetricas;
         private readonly TelemetriaOptions telemetriaOptions;
-        private readonly IMediator mediator;
         private readonly string apmTransactionType;
         private readonly Type tipoRotas;
 
-        protected WorkerRabbitMQBase(IServiceScopeFactory serviceScopeFactory,
+        protected WorkerRabbitSGP(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IServicoMensageriaSGP servicoMensageria,
             IServicoMensageriaMetricas servicoMensageriaMetricas,
@@ -57,10 +53,6 @@ namespace SME.SGP.Aplicacao.Workers
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
             this.tipoRotas = tipoRotas ?? throw new ArgumentNullException(nameof(tipoRotas));
 
-
-            var scope = serviceScopeFactory.CreateScope();
-            mediator = scope.ServiceProvider.GetService<IMediator>();
-
             conexaoRabbit = factory.CreateConnection();
             canalRabbit = conexaoRabbit.CreateModel();
 
@@ -73,23 +65,17 @@ namespace SME.SGP.Aplicacao.Workers
             Comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
 
-            DeclararFilasSgp();
+            DeclararFilas();
         }
 
         protected Dictionary<string, ComandoRabbit> Comandos { get; }
 
-        protected virtual void DeclararFilasSgp()
+        protected virtual void DeclararFilas()
         {
             DeclararFilasPorRota(ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
         }
 
-        protected virtual void RegistrarUseCases()
-        {
-            Comandos.Add(RotasRabbitSgp.RotaNotificacaoUsuario, new ComandoRabbit("Notificar usuário", typeof(INotificarUsuarioUseCase)));
-            RegistrarUseCasesDoWorker();
-        }
-
-        protected abstract void RegistrarUseCasesDoWorker();
+        protected abstract void RegistrarUseCases();
 
         protected void DeclararFilasPorRota(string exchange, string exchangeDeadLetter = "")
         {
@@ -201,7 +187,7 @@ namespace SME.SGP.Aplicacao.Workers
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
                     await servicoMensageriaMetricas.Concluido(rota);
 
-                    await RegistrarLog(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
+                    await RegistrarErroTratamentoMensagem(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -213,7 +199,7 @@ namespace SME.SGP.Aplicacao.Workers
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
                     await servicoMensageriaMetricas.Concluido(rota);
 
-                    await RegistrarLog(ea, mensagemRabbit, vex, LogNivel.Negocio, $"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
+                    await RegistrarErroTratamentoMensagem(ea, mensagemRabbit, vex, LogNivel.Negocio, $"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -233,7 +219,7 @@ namespace SME.SGP.Aplicacao.Workers
                     else canalRabbit.BasicReject(ea.DeliveryTag, false);
 
                     await servicoMensageriaMetricas.Erro(rota);
-                    await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
+                    await RegistrarErroTratamentoMensagem(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
@@ -249,52 +235,28 @@ namespace SME.SGP.Aplicacao.Workers
                 await servicoMensageriaMetricas.Erro(rota);
 
                 var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-                await RegistrarLog(ea, mensagemRabbit, null, LogNivel.Critico, $"Rota não registrada");
+                await RegistrarErroTratamentoMensagem(ea, mensagemRabbit, null, LogNivel.Critico, $"Rota não registrada");
             }
         }
 
-        private async Task RegistrarLog(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex, LogNivel logNivel, string observacao)
+
+        protected virtual Task RegistrarErroTratamentoMensagem(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex, LogNivel logNivel, string observacao)
         {
-            var mensagem = $"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString()[..3]} - ERRO - {ea.RoutingKey}";
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao, rastreamento: ex?.StackTrace, excecaoInterna: ex?.InnerException?.Message));
+            return Task.CompletedTask;
         }
 
-        private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
+
+        protected virtual Task RegistrarErro(string mensagem, LogNivel logNivel, string observacao = "", string rastreamento = "", string excecaoInterna = "")
         {
-            if (!string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF))
-            {
-                var contextoAplicacao = scope.ServiceProvider.GetService<IContextoAplicacao>();
-
-                var variaveis = new Dictionary<string, object>
-                {
-                    { "NomeUsuario", mensagemRabbit.UsuarioLogadoNomeCompleto },
-                    { "UsuarioLogado", mensagemRabbit.UsuarioLogadoRF },
-                    { "RF", mensagemRabbit.UsuarioLogadoRF },
-                    { "login", mensagemRabbit.UsuarioLogadoRF },
-                    { "Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } } },
-                    { "Administrador", mensagemRabbit.Administrador }
-                };
-
-                contextoAplicacao.AdicionarVariaveis(variaveis);
-            }
+            return Task.CompletedTask;
         }
 
-        private void NotificarErroUsuario(string message, string usuarioRf, string nomeProcesso)
+        protected virtual void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
         {
-            if (!string.IsNullOrEmpty(usuarioRf))
-            {
-                var command = new NotificarUsuarioCommand($"Ocorreu um erro ao: '{nomeProcesso}'",
-                    message,
-                    usuarioRf,
-                    NotificacaoCategoria.Aviso,
-                    NotificacaoTipo.Worker);
+        }
 
-                var request = new MensagemRabbit(string.Empty, command, Guid.NewGuid(), usuarioRf);
-                var mensagem = JsonConvert.SerializeObject(request);
-                var body = Encoding.UTF8.GetBytes(mensagem);
-
-                canalRabbit.BasicPublish(ExchangeSgpRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario, null, body);
-            }
+        protected virtual void NotificarErroUsuario(string message, string usuarioRf, string nomeProcesso)
+        {
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
@@ -310,7 +272,7 @@ namespace SME.SGP.Aplicacao.Workers
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag} - {ea.RoutingKey}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
+                    await RegistrarErro($"Erro ao tratar mensagem {ea.DeliveryTag} - {ea.RoutingKey}", LogNivel.Critico, ex.Message);
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };
