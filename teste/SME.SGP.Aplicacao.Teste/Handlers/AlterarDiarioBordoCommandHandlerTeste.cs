@@ -10,6 +10,7 @@ using FluentValidation.TestHelper;
 using Xunit;
 using MediatR;
 using System.Threading;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers
 {
@@ -17,13 +18,15 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
     {
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioDiarioBordo> repositorioDiarioBordo;
+        private readonly Mock<IConsultasDisciplina> consultaDisciplina;
         private readonly AlterarDiarioBordoCommandHandler inserirDiarioBordoCommandHandler;
 
         public AlterarDiarioBordoCommandHandlerTeste()
         {
             mediator = new Mock<IMediator>();
             repositorioDiarioBordo = new Mock<IRepositorioDiarioBordo>();
-            inserirDiarioBordoCommandHandler = new AlterarDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object);
+            consultaDisciplina = new Mock<IConsultasDisciplina>();
+            inserirDiarioBordoCommandHandler = new AlterarDiarioBordoCommandHandler(mediator.Object, repositorioDiarioBordo.Object, consultaDisciplina.Object);
         }
 
         [Fact]
@@ -58,6 +61,16 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             mediator.Setup(a => a.Send(It.IsAny<RemoverArquivosExcluidosCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);
 
+            mediator.Setup(x => x.Send(It.IsAny<ObterTurmaComUeEDrePorCodigoQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Dominio.Turma { CodigoTurma = "1" });
+
+            mediator.Setup(x => x.Send(It.IsAny<ObterAulaPorIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Dominio.Aula { Id = 1, TurmaId = "1" });
+
+            var disciplinaDto = RetornaDisciplinaDto();
+
+            consultaDisciplina.Setup(x => x.ObterComponentesCurricularesPorProfessorETurma("1", false, false, false)).Returns(disciplinaDto);
+
             repositorioDiarioBordo.Setup(a => a.SalvarAsync(It.IsAny<DiarioBordo>()))
                 .ReturnsAsync(1);
             // Act
@@ -66,6 +79,15 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+        }
+        private async Task<List<DisciplinaDto>> RetornaDisciplinaDto()
+        {
+            var listaDisciplinaDto = new List<DisciplinaDto>();
+            var disciplinaDto = new DisciplinaDto() { Id = 1, CodigoComponenteCurricular = 1, CdComponenteCurricularPai = 1, Nome = "Matematica", TurmaCodigo = "1" };
+
+            listaDisciplinaDto.Add(disciplinaDto);
+
+            return await Task.FromResult(listaDisciplinaDto);
         }
 
         [Fact]
