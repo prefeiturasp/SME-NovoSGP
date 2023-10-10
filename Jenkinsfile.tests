@@ -43,8 +43,9 @@ pipeline {
             }
             steps{
               script{
-                  def jobName = URLDecoder.decode(env.JOB_NAME, 'UTF-8').replaceAll('/', '_')
-                  def sourceDir = "/home/jenkins/agent/temp/${jobName}"
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
                   sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
                   sh 'dotnet build SME.SGP.sln'
                   //stash includes: "**/*" , name: "bintestes"
