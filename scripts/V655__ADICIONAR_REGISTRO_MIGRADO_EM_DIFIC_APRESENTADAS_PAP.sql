@@ -1,4 +1,4 @@
-do $$
+﻿do $$
 declare
 	questaoId bigint;
 	ultimoId bigint;
