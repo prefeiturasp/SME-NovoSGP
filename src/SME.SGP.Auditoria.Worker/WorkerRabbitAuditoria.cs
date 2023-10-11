@@ -28,7 +28,7 @@ namespace SME.SGP.Auditoria.Worker
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory,
             string apmTransactionType)
-            : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas, telemetriaOptions, consumoFilasOptions, factory, apmTransactionType, typeof(RotasRabbitAuditoria))
+            : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas, telemetriaOptions, consumoFilasOptions, factory, apmTransactionType, typeof(RotasRabbitAuditoria), false)
         {
         }
 
