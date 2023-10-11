@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao.Teste.Servicos
 
         public ServicoAutenticacaoTeste()
         {
+            mediator = new Mock<IMediator>();
             servicoAutenticacao = new ServicoAutenticacao(mediator.Object);
         }
 
