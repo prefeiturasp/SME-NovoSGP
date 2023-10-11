@@ -255,7 +255,7 @@ namespace SME.SGP.Aplicacao
                 NomeComponenteCurricular = componenteCurricular.Nome,
                 QuantidadeAusencia = frequenciaAluno?.TotalAusencias ?? 0,
                 QuantidadeCompensacoes = frequenciaAluno?.TotalCompensacoes ?? 0,
-                PercentualFrequencia = percentualFrequenciaFormatado,
+                percentualFrequenciaFormatado = percentualFrequenciaFormatado,
                 NotaFechamento = notaFechamento,
                 NotaPosConselho = notaPosConselho != null && notaPosConselho?.Nota != null ? String.Format("{0:0.0}", notaPosConselho.Nota) : null
             };
@@ -272,7 +272,7 @@ namespace SME.SGP.Aplicacao
             {
                 QuantidadeAusencia = totalAusencias ?? 0,
                 QuantidadeCompensacoes = totalCompensacoes ?? 0,
-                PercentualFrequencia = percentualFrequencia,
+                percentualFrequenciaFormatado = percentualFrequencia,
                 NomeComponenteCurricular = componenteCurricularNome,
                 NotaFechamento = notasFechamento != null && notasFechamento.Any() &&
                                  notasFechamento.FirstOrDefault().NotaConceito != null ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null,
