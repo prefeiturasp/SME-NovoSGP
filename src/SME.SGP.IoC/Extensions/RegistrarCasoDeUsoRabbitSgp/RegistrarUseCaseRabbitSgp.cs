@@ -73,6 +73,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarGravarHistoricoEscolarObservacaoUseCase, ExecutarGravarHistoricoEscolarObservacaoUseCase>();
             services.TryAddScoped<IAtualizarInformacoesDoPlanoAEEUseCase, AtualizarInformacoesDoPlanoAEEUseCase>();
             services.TryAddScoped<IAtualizarTurmaDoPlanoAEEUseCase, AtualizarTurmaDoPlanoAEEUseCase>();
+            //Migração PAP
+            services.TryAddScoped<IExecutarMigracaoRelatorioPAPPorIdUseCase, ExecutarMigracaoRelatorioPAPPorIdUseCase>();
+            services.TryAddScoped<IExecutarMigracaoRelatorioPapPorAnoEletivoUseCase, ExecutarMigracaoRelatorioPapPorAnoEletivoUseCase>();
+            services.TryAddScoped<IExecutarMigracaoRelatorioSemestralPAPUseCase, ExecutarMigracaoRelatorioSemestralPAPUseCase>();
         }
     }
 }
