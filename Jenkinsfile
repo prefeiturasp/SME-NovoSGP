@@ -236,6 +236,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
                   dockerImage1 = docker.build(imagename, "-f src/SME.SGP.Api/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage1.push() } 
                   } 
                 }
               }
@@ -257,6 +259,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-geral"
                   dockerImage2 = docker.build(imagename, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage2.push() } 
                   }   
                 }
               }
@@ -278,6 +282,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"
                   dockerImage3 = docker.build(imagename, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage3.push() } 
                   }   
                 }
               }
@@ -299,6 +305,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aee"
                   dockerImage4 = docker.build(imagename, "-f src/SME.SGP.AEE.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage4.push() } 
                   }  
                 }
               }
@@ -320,6 +328,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aula"
                   dockerImage5 = docker.build(imagename, "-f src/SME.SGP.Aula.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage5.push() } 
                   }   
                 }
               }
@@ -341,6 +351,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-frequencia"
                   dockerImage6 = docker.build(imagename, "-f src/SME.SGP.Frequencia.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage6.push() } 
                   }   
                 }
               }
@@ -362,6 +374,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-institucional"
                   dockerImage7 = docker.build(imagename, "-f src/SME.SGP.Institucional.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage7.push() } 
                   }   
                 }
               }
@@ -383,6 +397,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-pendencias"
                   dockerImage8 = docker.build(imagename, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage8.push() } 
                   }  
                 }
               }
@@ -404,6 +420,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-avaliacao"
                   dockerImage9 = docker.build(imagename, "-f src/SME.SGP.Avaliacao.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage9.push() } 
                   }  
                 }
               }
@@ -425,6 +443,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-auditoria"
                   dockerImage10 = docker.build(imagename, "-f src/SME.SGP.Auditoria.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage10.push() } 
                   }  
                 }
               }
@@ -446,6 +466,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-notificacoes"
                   dockerImage11 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage11.push() } 
                   }  
                 }
               }
@@ -467,6 +489,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-notificacoes-hub"
                   dockerImage12 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Hub/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage12.push() } 
                   }   
                 }
               }
@@ -488,6 +512,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-compressao"
                   dockerImage13 = docker.build(imagename, "-f src/SME.SGP.ComprimirArquivos.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage13.push() } 
                   }  
                 }
               }
@@ -509,6 +535,8 @@ pipeline {
                   sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-naapa"
                   dockerImage14 = docker.build(imagename, "-f src/SME.SGP.NAAPA.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage14.push() } 
                   }  
                 }
               }
