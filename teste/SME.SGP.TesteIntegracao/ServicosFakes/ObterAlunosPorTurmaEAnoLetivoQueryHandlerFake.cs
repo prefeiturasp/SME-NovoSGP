@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao
         private readonly string ALUNO_CODIGO_9 = "9";
         private readonly string ALUNO_CODIGO_10 = "10";
         private readonly string ALUNO_CODIGO_11 = "11";
-        private readonly string ALUNO_CODIGO_12 = "11";
+        private readonly string ALUNO_CODIGO_12 = "12";
 
         private readonly string ATIVO = "Ativo";
         private readonly string INATIVO = "Inativo";
@@ -227,7 +227,7 @@ namespace SME.SGP.TesteIntegracao
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= dataSituacao,
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
-                      NomeAluno= ALUNO_CODIGO_10,
+                      NomeAluno= ALUNO_CODIGO_11,
                       NumeroAlunoChamada=1,
                       SituacaoMatricula= ATIVO,
                       NomeResponsavel= RESPONSAVEL,
@@ -240,14 +240,14 @@ namespace SME.SGP.TesteIntegracao
                       Ano = 0,
                       CodigoAluno = ALUNO_CODIGO_12,
                       CodigoComponenteCurricular = 0,
-                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.ReclassificadoSaida,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Transferido,
                       CodigoTurma=int.Parse(request.CodigoTurma),
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
-                      DataSituacao= DateTimeExtension.HorarioBrasilia(),
-                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataSituacao= new(DateTimeExtension.HorarioBrasilia().Year, 11, 20),
+                      DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       NomeAluno= ALUNO_CODIGO_12,
-                      NumeroAlunoChamada=0,
-                      SituacaoMatricula=INATIVO,
+                      NumeroAlunoChamada=12,
+                      SituacaoMatricula= INATIVO,
                       NomeResponsavel= RESPONSAVEL,
                       TipoResponsavel= TIPO_RESPONSAVEL_4,
                       CelularResponsavel=CELULAR_RESPONSAVEL,
