@@ -413,7 +413,8 @@ namespace SME.SGP.Aplicacao
                await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
 
             if (atribuicoes.EhNulo() || !atribuicoes.Any())
-                return null;
+                return Enumerable.Empty<DisciplinaResposta>();
+
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
                 
             var professoresTitulares = !string.IsNullOrEmpty(codigoTurma) ? await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma)) : Enumerable.Empty<ProfessorTitularDisciplinaEol>();
