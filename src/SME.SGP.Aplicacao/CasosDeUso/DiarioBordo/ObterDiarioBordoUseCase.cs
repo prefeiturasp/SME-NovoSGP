@@ -38,6 +38,20 @@ namespace SME.SGP.Aplicacao
             codigosComponentes.Add(componenteCurricularIdPrincipal);
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentes.Distinct().ToArray()));
 
+            if(diarioBordoIrmao == null && componentes.Any(b => b.CodigoComponenteCurricular != b.CdComponenteCurricularPai))
+            {
+                var codigoComponentePai = componentes.First().CdComponenteCurricularPai;
+
+                if(codigoComponentePai != null)
+                {
+                    var codigoIrmao = componentes.First().CdComponenteCurricularPai != componenteCurricularIdPrincipal ? (long)codigoComponentePai : componenteCurricularIdPrincipal;
+
+                    return MapearParaDto(new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = componenteCurricularIdPrincipal }, aberto, new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = codigoIrmao }, componentes);
+
+                }
+            }
+                
+
             if (diarioBordo == null)
                 return MapearParaDto(new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = componenteCurricularIdPrincipal }, aberto, diarioBordoIrmao, componentes);
             
