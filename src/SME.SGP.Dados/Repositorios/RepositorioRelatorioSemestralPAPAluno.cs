@@ -17,17 +17,22 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<RelatorioSemestralPAPAluno> ObterCompletoPorIdAsync(long relatorioSemestralAlunoId)
         {
-            var query = @"select ra.*, rs.*, s.* from relatorio_semestral_pap_aluno ra 
+            var query = @"select ra.*, rt.*, rs.*, s.* 
+                    from relatorio_semestral_pap_aluno ra 
+                    inner join relatorio_semestral_turma_pap rt on rt.id = ra.relatorio_semestral_turma_pap_id 
                     inner join relatorio_semestral_pap_aluno_secao rs on rs.relatorio_semestral_pap_aluno_id = ra.id
                     inner join secao_relatorio_semestral_pap s on s.id = rs.secao_relatorio_semestral_pap_id 
                     where ra.id = @relatorioSemestralAlunoId";
 
             RelatorioSemestralPAPAluno relatorioAluno = null;
-            await database.Conexao.QueryAsync<RelatorioSemestralPAPAluno, RelatorioSemestralPAPAlunoSecao, SecaoRelatorioSemestralPAP, RelatorioSemestralPAPAluno>(
-                    query, (relatorioSemestralAluno, relatorioSemestralAlunoSecao, secaoRelatorioSemestral) =>
+            await database.Conexao.QueryAsync<RelatorioSemestralPAPAluno, RelatorioSemestralTurmaPAP, RelatorioSemestralPAPAlunoSecao, SecaoRelatorioSemestralPAP, RelatorioSemestralPAPAluno>(
+                    query, (relatorioSemestralAluno, relatorioSemestralTurmaPAP, relatorioSemestralAlunoSecao, secaoRelatorioSemestral) =>
                     {
                         if (relatorioAluno.EhNulo())
+                        {
                             relatorioAluno = relatorioSemestralAluno;
+                            relatorioAluno.RelatorioSemestralTurmaPAP = relatorioSemestralTurmaPAP;
+                        }
 
                         relatorioSemestralAlunoSecao.SecaoRelatorioSemestralPAP = secaoRelatorioSemestral;
                         relatorioSemestralAlunoSecao.RelatorioSemestralPAPAluno = relatorioSemestralAluno;

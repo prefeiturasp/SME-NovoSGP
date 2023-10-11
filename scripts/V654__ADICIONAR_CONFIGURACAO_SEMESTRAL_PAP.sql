@@ -4,6 +4,7 @@ declare
 	periodoRelatorioId bigint;
 	configuracaoDB record;
 	periodoDB record;
+	secaoConfDB record;
 begin
 	
 	for configuracaoDB in
@@ -38,6 +39,13 @@ begin
 		loop
 			insert into periodo_escolar_relatorio_pap(periodo_relatorio_pap_id, periodo_escolar_id, criado_em, criado_por, criado_rf)
 			values (periodoRelatorioId, periodoDB.id, NOW(), 'SISTEMA', '0');
+		end loop;
+		
+		for secaoConfDB in
+			select id from secao_relatorio_periodico_pap
+		loop
+			insert into secao_config_relatorio_periodico_pap(secao_relatorio_periodico_pap_id, configuracao_relatorio_pap_id, criado_em, criado_por, criado_rf)
+			values (secaoConfDB.id, configuracaoId, NOW(), 'SISTEMA', '0');
 		end loop;
 	end loop;
 end $$;
