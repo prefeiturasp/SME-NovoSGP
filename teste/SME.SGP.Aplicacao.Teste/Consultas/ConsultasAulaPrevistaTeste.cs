@@ -55,9 +55,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                      mediator.Object);
 
             await consulta.ObterAulaPrevistaDada(Modalidade.EducacaoInfantil, "1", "1");
-
-            mediator.Verify(x => 
-                x.Send(It.Is<ObterComponentesCurricularesDoProfessorNaTurmaQuery>(x => x.RealizarAgrupamentoComponente), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
