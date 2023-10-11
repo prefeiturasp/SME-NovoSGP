@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace SME.SGP.Worker.RabbitMQ
 {
-    public class WorkerRabbitMQ : WorkerRabbitMQBase
+    public class WorkerRabbitMQ : WorkerRabbitAplicacao
     {
         private const int TENTATIVA_REPROCESSAR_10 = 10;
 
@@ -43,10 +43,11 @@ namespace SME.SGP.Worker.RabbitMQ
             RegistrarUseCasesRelatorioComErro();
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             RegistrarUseCasesRelatorios();
 
+            Comandos.Add(RotasRabbitSgp.RotaNotificacaoUsuario, new ComandoRabbit("Notificar usuário", typeof(INotificarUsuarioUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo, new ComandoRabbit("Notificar usuário sobre nova observação no diário de bordo", typeof(INotificarDiarioBordoObservacaoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoAlterarObservacaoDiarioBordo, new ComandoRabbit("Alterar as notificações dos usuários excluídos das observação no diário de bordo", typeof(IAlterarNotificacaoObservacaoDiarioBordoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNovaNotificacaoObservacaoCartaIntencoes, new ComandoRabbit("Notificar usuário sobre nova observação na carta de intenções", typeof(ISalvarNotificacaoCartaIntencoesObservacaoUseCase)));
