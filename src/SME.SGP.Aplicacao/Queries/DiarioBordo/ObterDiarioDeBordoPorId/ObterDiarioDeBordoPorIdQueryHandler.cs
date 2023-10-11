@@ -36,13 +36,13 @@ namespace SME.SGP.Aplicacao
                 componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId);
 
             var usuario = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
-            var diarioBordo = diariosBordo.FirstOrDefault(diario => componenteCurricularIdPrincipal != 0 ? diario.ComponenteCurricularId == componenteCurricularIdPrincipal : diario.Id == request.Id);
-            var observacoes = await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordo.Id, usuario));
+            var diarioBordo = diariosBordo.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularIdPrincipal);
+            var observacoes = diarioBordo != null ? await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordo.Id, usuario)) : null;
             var observacoesComUsuariosNotificados = await ObterUsuariosNotificados(observacoes);
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(diariosBordo.Select(diario => diario.ComponenteCurricularId).ToArray()));
-            var diarioIrmao = diariosBordo.FirstOrDefault(diario => componenteCurricularIdPrincipal != 0 ? diario.ComponenteCurricularId != componenteCurricularIdPrincipal : diario.Id != request.Id);
+            var diarioIrmao = diariosBordo.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
 
-            return MapearParaDto(diarioBordo, observacoesComUsuariosNotificados, diarioIrmao, componentes);
+            return MapearParaDto(diarioBordo, observacoesComUsuariosNotificados, diarioIrmao, componentes, componenteCurricularIdPrincipal);
         }
 
         private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo)
@@ -67,7 +67,8 @@ namespace SME.SGP.Aplicacao
                                                     Dominio.DiarioBordo diarioBordo, 
                                                     IEnumerable<ListarObservacaoDiarioBordoDto> observacoes,
                                                     DiarioBordo diarioBordoIrmao, 
-                                                    IEnumerable<DisciplinaDto> disciplinas)
+                                                    IEnumerable<DisciplinaDto> disciplinas, 
+                                                    long componenteCurricularIdPrincipal)
         {
             return new DiarioBordoDetalhesDto()
             {
@@ -79,8 +80,8 @@ namespace SME.SGP.Aplicacao
                 Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
                 InseridoCJ = diarioBordo.InseridoCJ,
-                NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordo.ComponenteCurricularId)?.NomeComponenteInfantil,
-                NomeComponenteIrmao = diarioBordoIrmao != null ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordoIrmao.ComponenteCurricularId)?.NomeComponenteInfantil : string.Empty,
+                NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteCurricularIdPrincipal)?.NomeComponenteInfantil,
+                NomeComponenteIrmao = diarioBordoIrmao != null ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular != componenteCurricularIdPrincipal)?.NomeComponenteInfantil : string.Empty,
                 PlanejamentoIrmao = diarioBordoIrmao?.Planejamento,
                 Observacoes = observacoes.Select(obs =>
                 {

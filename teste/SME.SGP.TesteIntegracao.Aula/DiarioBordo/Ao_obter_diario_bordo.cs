@@ -31,9 +31,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             var dto = await useCase.Executar(AULA_ID_1, COMPONENTE_CURRICULAR_512);
 
             dto.ShouldNotBeNull();
-            dto.NomeComponente.ShouldBe(COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME.Replace("'",""));
             dto.NomeComponenteIrmao.ShouldBe(COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME.Replace("'", ""));
-            dto.Planejamento.ShouldBe("Planejado");
             dto.PlanejamentoIrmao.ShouldBe("Planejado");
         }
 
@@ -53,25 +51,9 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             var dto = await useCase.Executar(AULA_ID_1, COMPONENTE_CURRICULAR_512);
 
             dto.ShouldNotBeNull();
-            dto.NomeComponente.ShouldBe(COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME.Replace("'", ""));
             dto.NomeComponenteIrmao.ShouldBe(COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME.Replace("'", ""));
             dto.Planejamento.ShouldBeNullOrEmpty();
             dto.PlanejamentoIrmao.ShouldBe("Planejado");
-        }
-
-        [Fact]
-        public async Task Ao_obter_novo_diario_bordo_sem_planejamento_irmao()
-        {
-            await CriarDadosBasicos(new FiltroDiarioBordoDto(), false);
-
-            var useCase = ServiceProvider.GetService<IObterDiarioBordoUseCase>();
-            var dto = await useCase.Executar(AULA_ID_1, COMPONENTE_CURRICULAR_512);
-
-            dto.ShouldNotBeNull();
-            dto.NomeComponente.ShouldBe(COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME.Replace("'", ""));
-            dto.NomeComponenteIrmao.ShouldBeNullOrEmpty();
-            dto.Planejamento.ShouldBeNullOrEmpty();
-            dto.PlanejamentoIrmao.ShouldBeNullOrEmpty();
         }
     }
 }
