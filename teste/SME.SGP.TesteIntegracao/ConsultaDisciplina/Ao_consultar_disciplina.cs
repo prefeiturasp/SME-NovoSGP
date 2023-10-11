@@ -53,7 +53,6 @@ namespace SME.SGP.TesteIntegracao.ConsultaDisciplina
         {
             var consulta = new ConsultasDisciplina(repositorioCache.Object,
                                                    consultasObjetivoAprendizagem.Object,
-                                                   servicoUsuario.Object,
                                                    repositorioComponenteCurricularJurema.Object,
                                                    repositorioAtribuicaoCJ.Object,
                                                    repositorioComponenteCurricularConsulta.Object,
