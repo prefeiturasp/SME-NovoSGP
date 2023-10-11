@@ -30,6 +30,7 @@ namespace SME.SGP.Infra.Worker
         private readonly TelemetriaOptions telemetriaOptions;
         private readonly string apmTransactionType;
         private readonly Type tipoRotas;
+        private readonly bool retryAutomatico;
 
         protected WorkerRabbitSGP(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
@@ -39,7 +40,8 @@ namespace SME.SGP.Infra.Worker
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory,
             string apmTransactionType,
-            Type tipoRotas)
+            Type tipoRotas,
+            bool retryAutomatico = true)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory), "Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
@@ -52,7 +54,7 @@ namespace SME.SGP.Infra.Worker
 
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
             this.tipoRotas = tipoRotas ?? throw new ArgumentNullException(nameof(tipoRotas));
-
+            this.retryAutomatico = retryAutomatico;
             conexaoRabbit = factory.CreateConnection();
             canalRabbit = conexaoRabbit.CreateModel();
 
@@ -93,19 +95,22 @@ namespace SME.SGP.Infra.Worker
                     canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, argsDlq);
                     canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
 
-                    var argsLimbo = new Dictionary<string, object>();
-                    argsLimbo.Add("x-queue-mode", "lazy");
+                    if (retryAutomatico)
+                    {
+                        var argsLimbo = new Dictionary<string, object>();
+                        argsLimbo.Add("x-queue-mode", "lazy");
 
-                    var queueLimbo = $"{fila}.limbo";
-                    canalRabbit.QueueDeclare(
-                        queue: queueLimbo,
-                        durable: true,
-                        exclusive: false,
-                        autoDelete: false,
-                        arguments: argsLimbo
-                    );
+                        var queueLimbo = $"{fila}.limbo";
+                        canalRabbit.QueueDeclare(
+                            queue: queueLimbo,
+                            durable: true,
+                            exclusive: false,
+                            autoDelete: false,
+                            arguments: argsLimbo
+                        );
 
-                    canalRabbit.QueueBind(queueLimbo, exchangeDeadLetter, queueLimbo, null);
+                        canalRabbit.QueueBind(queueLimbo, exchangeDeadLetter, queueLimbo, null);
+                    }
                 }
             }
         }
@@ -126,11 +131,14 @@ namespace SME.SGP.Infra.Worker
         private Dictionary<string, object> ObterArgumentoDaFilaDeadLetter(string fila, string exchange)
         {
             var argsDlq = new Dictionary<string, object>();
-            var ttl = Comandos.ContainsKey(fila) ? Comandos[fila].TTL : ExchangeSgpRabbit.SgpDeadLetterTTL;
 
-            argsDlq.Add("x-dead-letter-exchange", exchange);
-            argsDlq.Add("x-message-ttl", ttl);
             argsDlq.Add("x-queue-mode", "lazy");
+            if (retryAutomatico)
+            {
+                var ttl = Comandos.ContainsKey(fila) ? Comandos[fila].TTL : ExchangeSgpRabbit.SgpDeadLetterTTL;
+                argsDlq.Add("x-message-ttl", ttl);
+                argsDlq.Add("x-dead-letter-exchange", exchange);
+            }
 
             return argsDlq;
         }
