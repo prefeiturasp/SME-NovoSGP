@@ -132,12 +132,12 @@ namespace SME.SGP.Infra.Worker
         {
             var argsDlq = new Dictionary<string, object>();
 
-            argsDlq.Add("x-dead-letter-exchange", exchange);
             argsDlq.Add("x-queue-mode", "lazy");
             if (retryAutomatico)
             {
                 var ttl = Comandos.ContainsKey(fila) ? Comandos[fila].TTL : ExchangeSgpRabbit.SgpDeadLetterTTL;
                 argsDlq.Add("x-message-ttl", ttl);
+                argsDlq.Add("x-dead-letter-exchange", exchange);
             }
 
             return argsDlq;
