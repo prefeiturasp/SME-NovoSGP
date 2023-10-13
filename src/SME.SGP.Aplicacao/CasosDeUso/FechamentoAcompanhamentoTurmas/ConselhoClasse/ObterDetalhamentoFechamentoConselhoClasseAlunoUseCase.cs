@@ -212,16 +212,16 @@ namespace SME.SGP.Aplicacao
             if (componentesRegencia == null || !componentesRegencia.Any())
                 throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");
 
-            var percentualFrequencia = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequencia : 0;
+            var percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado;
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
-                percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
+                percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFinalFormatado;
 
             var lstDetalhesNotas = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
             foreach (var componenteRegencia in componentesRegencia)
-                lstDetalhesNotas.Add(ObterNotasRegencia(componenteRegencia.Descricao, componenteRegencia.Codigo, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, frequenciaAluno?.TotalAusencias, frequenciaAluno?.TotalCompensacoes, percentualFrequencia));
+                lstDetalhesNotas.Add(ObterNotasRegencia(componenteRegencia.Descricao, componenteRegencia.Codigo, periodoEscolar, notasConselhoClasseAluno, notasFechamentoAluno, frequenciaAluno?.TotalAusencias, frequenciaAluno?.TotalCompensacoes, percentualFrequenciaFormatado));
 
             return lstDetalhesNotas;
         }
@@ -232,10 +232,14 @@ namespace SME.SGP.Aplicacao
             IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int bimestre, int anoLetivo)
         {
             var percentualFrequencia = frequenciaAluno.TotalAulas > 0 ? frequenciaAluno.PercentualFrequencia : 0;
+            var percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFormatado;
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))
+            {
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
+                percentualFrequenciaFormatado = frequenciaAluno.PercentualFrequenciaFinalFormatado;
+            }
 
             var notasFechamento = ObterNotasComponente(componenteCurricular.CodigoComponenteCurricular, periodoEscolar, notasFechamentoAluno);
             var notaPosConselho = ObterNotaPosConselho(componenteCurricular.CodigoComponenteCurricular, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno);
@@ -251,7 +255,7 @@ namespace SME.SGP.Aplicacao
                 NomeComponenteCurricular = componenteCurricular.Nome,
                 QuantidadeAusencia = frequenciaAluno?.TotalAusencias ?? 0,
                 QuantidadeCompensacoes = frequenciaAluno?.TotalCompensacoes ?? 0,
-                PercentualFrequencia = percentualFrequencia,
+                percentualFrequenciaFormatado = percentualFrequenciaFormatado,
                 NotaFechamento = notaFechamento,
                 NotaPosConselho = notaPosConselho != null && notaPosConselho?.Nota != null ? String.Format("{0:0.0}", notaPosConselho.Nota) : null
             };
@@ -259,7 +263,7 @@ namespace SME.SGP.Aplicacao
             return conselhoClasseComponente;
         }
 
-        private DetalhamentoComponentesCurricularesAlunoDto ObterNotasRegencia(string componenteCurricularNome, long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int? totalAusencias, int? totalCompensacoes, double percentualFrequencia)
+        private DetalhamentoComponentesCurricularesAlunoDto ObterNotasRegencia(string componenteCurricularNome, long componenteCurricularCodigo, PeriodoEscolar periodoEscolar, IEnumerable<NotaConceitoBimestreComponenteDto> notasConselhoClasseAluno, IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, int? totalAusencias, int? totalCompensacoes, string percentualFrequencia)
         {
             var notasFechamento = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno);
             var notaPosConselho = ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno);
@@ -268,7 +272,7 @@ namespace SME.SGP.Aplicacao
             {
                 QuantidadeAusencia = totalAusencias ?? 0,
                 QuantidadeCompensacoes = totalCompensacoes ?? 0,
-                PercentualFrequencia = percentualFrequencia,
+                percentualFrequenciaFormatado = percentualFrequencia,
                 NomeComponenteCurricular = componenteCurricularNome,
                 NotaFechamento = notasFechamento != null && notasFechamento.Any() &&
                                  notasFechamento.FirstOrDefault().NotaConceito != null ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null,

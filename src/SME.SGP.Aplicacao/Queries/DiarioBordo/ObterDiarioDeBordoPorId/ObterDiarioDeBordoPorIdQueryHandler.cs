@@ -13,11 +13,13 @@ namespace SME.SGP.Aplicacao
     public class ObterDiarioDeBordoPorIdQueryHandler : IRequestHandler<ObterDiarioDeBordoPorIdQuery, DiarioBordoDetalhesDto>
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao;
         private readonly IMediator mediator;
 
-        public ObterDiarioDeBordoPorIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo, IMediator mediator, IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao)
+        public ObterDiarioDeBordoPorIdQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo, IConsultasDisciplina consultasDisciplina, IMediator mediator, IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao)
         {
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
             this.repositorioDiarioBordoObservacao = repositorioDiarioBordoObservacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacao));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -26,16 +28,32 @@ namespace SME.SGP.Aplicacao
         public async Task<DiarioBordoDetalhesDto> Handle(ObterDiarioDeBordoPorIdQuery request, CancellationToken cancellationToken)
         {
             var diariosBordo = await repositorioDiarioBordo.ObterDiariosDaMesmaAulaPorId(request.Id);
-            var usuario = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
-            var diarioBordo = diariosBordo.FirstOrDefault(diario => diario.Id == request.Id);
-            var observacoes = await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordo.Id, usuario));
-            var observacoesComUsuariosNotificados = await ObterUsuariosNotificados(observacoes);
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(diariosBordo.Select(diario => diario.ComponenteCurricularId).ToArray()));
-            var diarioIrmao = diariosBordo.FirstOrDefault(diario => diario.Id != request.Id);
 
-            return MapearParaDto(diarioBordo, observacoesComUsuariosNotificados, diarioIrmao, componentes);
+            long componenteCurricularIdPrincipal = 0;
+
+            Aula aula = await mediator.Send(new ObterAulaPorIdQuery(diariosBordo.FirstOrDefault(diario => diario.Id == request.Id).AulaId));
+            if (aula != null || !aula.Excluido)
+                componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId);
+            
+
+            if(diariosBordo.All(b => b.ComponenteCurricularId != componenteCurricularIdPrincipal))
+                componenteCurricularIdPrincipal = diariosBordo.FirstOrDefault().ComponenteCurricularId;
+
+            var usuario = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
+            var diarioBordo = diariosBordo.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularIdPrincipal);
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(diariosBordo.Select(diario => diario.ComponenteCurricularId).ToArray()));
+            var diarioIrmao = diariosBordo.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
+            var observacoes = diarioBordo != null ? await mediator.Send(new ListarObservacaoDiarioBordoQuery(diarioBordo.Id, usuario)) : null;
+            var observacoesComUsuariosNotificados = observacoes != null ? await ObterUsuariosNotificados(observacoes) : null;
+            
+            return MapearParaDto(diarioBordo, observacoesComUsuariosNotificados, diarioIrmao, componentes, componenteCurricularIdPrincipal);
         }
 
+        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo)
+        {
+            var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
+            return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
+        }
         private async Task<IEnumerable<ListarObservacaoDiarioBordoDto>> ObterUsuariosNotificados(IEnumerable<ListarObservacaoDiarioBordoDto> observacoes)
         {
             var listaObservacoes = new List<ListarObservacaoDiarioBordoDto>();
@@ -53,7 +71,8 @@ namespace SME.SGP.Aplicacao
                                                     Dominio.DiarioBordo diarioBordo, 
                                                     IEnumerable<ListarObservacaoDiarioBordoDto> observacoes,
                                                     DiarioBordo diarioBordoIrmao, 
-                                                    IEnumerable<DisciplinaDto> disciplinas)
+                                                    IEnumerable<DisciplinaDto> disciplinas, 
+                                                    long componenteCurricularIdPrincipal)
         {
             return new DiarioBordoDetalhesDto()
             {
@@ -65,10 +84,10 @@ namespace SME.SGP.Aplicacao
                 Migrado = diarioBordo.Migrado,
                 Planejamento = diarioBordo.Planejamento,
                 InseridoCJ = diarioBordo.InseridoCJ,
-                NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordo.ComponenteCurricularId)?.NomeComponenteInfantil,
-                NomeComponenteIrmao = diarioBordoIrmao != null ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordoIrmao.ComponenteCurricularId)?.NomeComponenteInfantil : string.Empty,
+                NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteCurricularIdPrincipal)?.NomeComponenteInfantil,
+                NomeComponenteIrmao = diarioBordoIrmao != null ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular != componenteCurricularIdPrincipal)?.NomeComponenteInfantil : string.Empty,
                 PlanejamentoIrmao = diarioBordoIrmao?.Planejamento,
-                Observacoes = observacoes.Select(obs =>
+                Observacoes = observacoes != null ? observacoes.Select(obs =>
                 {
                     return new ObservacaoNotificacoesDiarioBordoDto()
                     {
@@ -79,7 +98,7 @@ namespace SME.SGP.Aplicacao
                         NomeUsuariosNotificados = obs.NomeUsuariosNotificados,
                         Proprietario = obs.Proprietario
                     };
-                })
+                }) : null
             };
         }
     }
