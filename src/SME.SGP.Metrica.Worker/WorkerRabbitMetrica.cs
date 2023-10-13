@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.Infra.Worker;
+using SME.SGP.Metrica.Worker.Rotas;
 
 namespace SME.SGP.Metrica.Worker
 {
@@ -17,7 +18,7 @@ namespace SME.SGP.Metrica.Worker
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory)
-            : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas, telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitMetrica", typeof(RotasRabbitAuditoria), false)
+            : base(serviceScopeFactory, servicoTelemetria, servicoMensageria, servicoMensageriaMetricas, telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitMetrica", typeof(RotasRabbitMetrica), false)
         {
         }
 
