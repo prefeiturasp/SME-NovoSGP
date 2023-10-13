@@ -333,7 +333,10 @@ namespace SME.SGP.Aplicacao
             }
 
             retorno.TemConselhoClasseAluno = notasFrequenciaDto.ConselhoClasseId > 0 && await VerificaSePossuiConselhoClasseAlunoAsync(notasFrequenciaDto.ConselhoClasseId, notasFrequenciaDto.AlunoCodigo);
-            retorno.PodeEditarNota = permiteEdicao && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(notasFrequenciaDto.AlunoCodigo, turma, periodoEscolar));
+            
+            var periodoEscolarParaEdicaoNota = periodoEscolar ?? periodosLetivos.OrderByDescending(p => p.Bimestre).FirstOrDefault();
+            
+            retorno.PodeEditarNota = permiteEdicao && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(notasFrequenciaDto.AlunoCodigo, turma, periodoEscolarParaEdicaoNota));
             retorno.NotasConceitos = gruposMatrizesNotas;
             retorno.DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(periodoFim));
             return retorno;
