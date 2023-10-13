@@ -118,7 +118,9 @@ namespace SME.SGP.Dados.Repositorios
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                                inner join pendencia_diario_bordo pdb on p.id = pdb.pendencia_id
+                                        inner join aula a on a.id = pdb.aula_id
 		                            where not p.excluido 
+                                    and not a.excluido
 		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao 
 		                            union all
