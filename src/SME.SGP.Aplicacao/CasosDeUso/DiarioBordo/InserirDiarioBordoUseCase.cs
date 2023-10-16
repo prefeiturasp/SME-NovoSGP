@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
             if (disciplinas.Count() > 1)
-                return disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular;
+                return disciplinas.Any() ? disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular : 0;
 
             return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
         }
