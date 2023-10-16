@@ -240,7 +240,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var valores = filtros.Select(filtro => filtro.OrdemResposta);
 
-            return $" AND ARRAY['{string.Join("','", valores.ToArray())}'] @> {campo}";
+            return $" AND ARRAY['{string.Join("','", valores.ToArray())}'] && {campo}";
         }
 
         private string ObterPeriodoData(string campo, string valor)
