@@ -32,9 +32,9 @@ namespace SME.SGP.Aplicacao
             long componenteCurricularIdPrincipal = 0;
 
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(diariosBordo.FirstOrDefault(diario => diario.Id == request.Id).AulaId));
-            if (aula != null || !aula.Excluido)
-                componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId);
             
+            if (aula != null || !aula.Excluido)
+                componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId));
 
             if(diariosBordo.All(b => b.ComponenteCurricularId != componenteCurricularIdPrincipal))
                 componenteCurricularIdPrincipal = diariosBordo.FirstOrDefault().ComponenteCurricularId;
@@ -49,11 +49,15 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(diarioBordo, observacoesComUsuariosNotificados, diarioIrmao, componentes, componenteCurricularIdPrincipal);
         }
 
-        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo)
+        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
+            if (disciplinas.Count() > 1)
+                return disciplinas.Any() ? disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular : 0;
+
             return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
         }
+
         private async Task<IEnumerable<ListarObservacaoDiarioBordoDto>> ObterUsuariosNotificados(IEnumerable<ListarObservacaoDiarioBordoDto> observacoes)
         {
             var listaObservacoes = new List<ListarObservacaoDiarioBordoDto>();
