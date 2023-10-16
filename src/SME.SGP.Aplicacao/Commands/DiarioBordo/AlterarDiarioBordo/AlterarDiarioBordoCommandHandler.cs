@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCurricularPrincipalProfessor = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma);
+            var componenteCurricularPrincipalProfessor = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, request.ComponenteCurricularId);
 
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, componenteCurricularPrincipalProfessor);
             if (diarioBordo == null)
@@ -66,11 +66,15 @@ namespace SME.SGP.Aplicacao
 
             return (AuditoriaDto)diarioBordo;
         }
-        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo)
+        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
+            if (disciplinas.Count() > 1)
+                return disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular;
+
             return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
         }
+
         private async Task MoverRemoverExcluidos(AlterarDiarioBordoCommand diario, DiarioBordo diarioBordo)
         {
             if (!string.IsNullOrEmpty(diario.Planejamento))

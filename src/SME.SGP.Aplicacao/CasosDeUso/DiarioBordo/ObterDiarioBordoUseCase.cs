@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<DiarioBordo> diariosBordos = await mediator.Send(new ObterDiariosDeBordosPorAulaQuery(aulaId));
             
-            var componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId);
+            var componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, componenteCurricularId);
 
             var diarioBordo = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularIdPrincipal);
             var diarioBordoIrmao = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
@@ -61,9 +61,12 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo)
+        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
+            if(disciplinas.Count() > 1)
+                return disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular;
+
             return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
         }
 
