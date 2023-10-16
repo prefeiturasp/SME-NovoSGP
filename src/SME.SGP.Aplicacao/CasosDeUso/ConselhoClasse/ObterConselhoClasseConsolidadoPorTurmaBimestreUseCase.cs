@@ -16,20 +16,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<StatusTotalConselhoClasseDto>> Executar(FiltroConselhoClasseConsolidadoTurmaBimestreDto filtro)
         {
-            var listaConselhosClasseConsolidado = await mediator.Send(new ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestreQuery(filtro.TurmaId, filtro.Bimestre));
-
-            if (filtro.SituacaoConselhoClasse != -99)
-                listaConselhosClasseConsolidado = listaConselhosClasseConsolidado.Where(l => l.StatusConselhoClasseAluno == filtro.SituacaoConselhoClasse);
-
-            if (listaConselhosClasseConsolidado == null || !listaConselhosClasseConsolidado.Any())
+            var lista = await mediator.Send(new ObterAlunosEStatusConselhoClasseConsolidadoPorTurmaEbimestreQuery(filtro.TurmaId, filtro.Bimestre, filtro.SituacaoConselhoClasse));
+            if (lista == null || !lista.Any())
                 return Enumerable.Empty<StatusTotalConselhoClasseDto>();
 
-            var statusAgrupados = listaConselhosClasseConsolidado.GroupBy(g => g.StatusConselhoClasseAluno);
+            var statusAgrupados = lista.GroupBy(g => g.SituacaoFechamentoCodigo);
 
             return MapearRetornoStatusAgrupado(statusAgrupados);
         }
 
-        private IEnumerable<StatusTotalConselhoClasseDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<int, AlunoSituacaoConselhoDto>> statusAgrupados)
+        private IEnumerable<StatusTotalConselhoClasseDto> MapearRetornoStatusAgrupado(IEnumerable<IGrouping<int, ConselhoClasseAlunoDto>> statusAgrupados)
         {
             var lstStatus = new List<StatusTotalConselhoClasseDto>();
 
@@ -60,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return lstStatus.OrderBy(o => (int)o.Status); 
+            return lstStatus.OrderBy(o => (int)o.Status);
         }
 
         private string NomeStatusConselhoClasse(int situacaoConselhoClasse)
