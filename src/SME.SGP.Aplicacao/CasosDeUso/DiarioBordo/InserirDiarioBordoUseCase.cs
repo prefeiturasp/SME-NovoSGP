@@ -25,15 +25,18 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma informada não encontrada");
 
-            param.ComponenteCurricularId = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma);
+            param.ComponenteCurricularId = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, param.ComponenteCurricularId);
 
             var auditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ComponenteCurricularId));
             await mediator.Send(new ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand(param.AulaId, param.ComponenteCurricularId));
             return auditoria;
         }
-        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo)
+        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
+            if (disciplinas.Count() > 1)
+                return disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular;
+
             return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
         }
     }
