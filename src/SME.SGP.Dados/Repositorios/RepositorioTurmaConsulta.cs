@@ -250,6 +250,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Turma>> ObterTurmasInfantilNaoDeProgramaPorAnoLetivoAsync(int anoLetivo, string codigoTurma = null, int pagina = 1)
         {
             var modalidade = Modalidade.EducacaoInfantil;
+            var tipoTurma = TipoTurma.Regular;
+
             var turmas = new List<Turma>();
             var query = $@"select
 	                            t.*,
@@ -262,11 +264,13 @@ namespace SME.SGP.Dados.Repositorios
                             inner join dre d on
 	                            u.dre_id = d.id
                             where
-	                            t.modalidade_codigo = :modalidade
+	                            t.modalidade_codigo = @modalidade
 	                            and t.historica = false
-	                            and t.ano_letivo = :anoLetivo
+	                            and t.ano_letivo = @anoLetivo
+                                and tipo_turma = @tipoTurma
 	                            and ano ~ E'^[0-9\.]+$'
-                                {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = :codigoTurma" : " offset (@pagina * 10) rows fetch next 10 rows only")}";
+                              
+                                {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = @codigoTurma" : " offset (@pagina * 10) rows fetch next 10 rows only")}";
 
             await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
             {
@@ -278,7 +282,7 @@ namespace SME.SGP.Dados.Repositorios
                     turmas.Add(turma);
 
                 return turma;
-            }, new { anoLetivo, modalidade, codigoTurma, pagina = pagina - 1 });
+            }, new { anoLetivo, modalidade, codigoTurma, tipoTurma, pagina = pagina - 1});
 
             return turmas;
         }
