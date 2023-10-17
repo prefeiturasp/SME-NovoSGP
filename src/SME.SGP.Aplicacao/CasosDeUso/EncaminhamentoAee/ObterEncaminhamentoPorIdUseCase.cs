@@ -120,7 +120,8 @@ namespace SME.SGP.Aplicacao
                     (encaminhamento.Situacao == SituacaoAEE.Encaminhado || 
                      encaminhamento.Situacao == SituacaoAEE.Devolvido))
                 || (usuarioLogado.EhCoordenadorCEFAI() && encaminhamento.Situacao == SituacaoAEE.AtribuicaoPAAI)
-                || ((usuarioLogado.EhProfessorPaee() || usuarioLogado.EhPerfilPaai()) && encaminhamento.Situacao == SituacaoAEE.Analise);
+                || ((usuarioLogado.EhProfessorPaee() || usuarioLogado.EhPerfilPaai()) && 
+                    (encaminhamento.Situacao == SituacaoAEE.Analise || encaminhamento.Situacao == SituacaoAEE.Rascunho));
         }
 
         private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Turma turma)
