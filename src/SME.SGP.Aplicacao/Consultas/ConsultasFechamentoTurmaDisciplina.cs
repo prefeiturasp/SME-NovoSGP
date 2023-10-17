@@ -365,7 +365,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
             var codigosDisciplinasArray = Array.ConvertAll(codigosDisciplinas.ToArray(), long.Parse);
-            var aulasPrevistas = await ObterAulasPrevistasAsync(turma, codigosDisciplinasArray, tipoCalendario.Id, bimestre, usuarioRF);
+            var aulasPrevistas = await ObterAulasPrevistasAsync(turma, codigosDisciplinasArray, tipoCalendario.Id, bimestre);
             var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, codigosDisciplinasArray, tipoCalendario.Id, periodoAtual.Id, usuarioRF));
 
             var periodoAberto = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreAtual.Value));
@@ -447,9 +447,9 @@ namespace SME.SGP.Aplicacao
             return permissoesUsuario.Any(p => p == Permissao.FB_A);
         }
 
-        private async Task<int> ObterAulasPrevistasAsync(Turma turma, long[] componentesCurricularesId, long tipoCalendarioId, int? bimestre = null, string professor = null)
+        private async Task<int> ObterAulasPrevistasAsync(Turma turma, long[] componentesCurricularesId, long tipoCalendarioId, int? bimestre = null)
             => turma.ModalidadeCodigo != Modalidade.EducacaoInfantil
-                ? await mediator.Send(new ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(turma.CodigoTurma, tipoCalendarioId, componentesCurricularesId, bimestre, professor))
+                ? await mediator.Send(new ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(turma.CodigoTurma, tipoCalendarioId, componentesCurricularesId, bimestre))
                 : default;
 
     }
