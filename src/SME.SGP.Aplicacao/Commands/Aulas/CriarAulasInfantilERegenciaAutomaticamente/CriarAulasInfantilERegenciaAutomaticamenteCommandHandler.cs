@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
 
             if (idsAulasAExcluir.Any())
             {                
-                foreach(var idAula in idsAulasAExcluir)
+                foreach(var idAula in idsAulasAExcluir.Distinct())
                 {
                     await mediator.Send(new ExcluirPendenciaAulaCommand(idAula, TipoPendencia.Frequencia), cancellationToken);                    
                     await mediator.Send(new ExcluirPendenciaDiarioPorAulaIdCommand(idAula));
