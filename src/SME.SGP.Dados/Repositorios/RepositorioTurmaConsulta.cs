@@ -475,7 +475,7 @@ namespace SME.SGP.Dados.Repositorios
                                                left join periodo_escolar pe
 	                                              on tc.id = pe.tipo_calendario_id
                                                where dre.id = @dreId
-                                                 and ue.id = @ueId and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49) ");
+                                                 and ue.id = @ueId and t.tipo_turma not in(@tipoTurma) ");
 
             if (!listarTodasTurmas)
                 query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
@@ -524,7 +524,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
                                 and not t.historica 
-                                and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)
+                                and t.tipo_turma not in(@tipoTurma)
                             order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
             }
@@ -532,7 +532,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query.AppendLine(@" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
-                                and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)
+                                and t.tipo_turma not in(@tipoTurma)
                             order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
             }
@@ -564,13 +564,13 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
                                and not t.historica
-                               and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)");
+                               and t.tipo_turma not in(@tipoTurma)");
             }
             else
             {
                 query.AppendLine(@"and t.modalidade_codigo = @modalidade 
                                and t.ano_letivo = @anoLetivo
-                               and t.tipo_turma in(1,2,7,20,21,12,13,24,25,50,42,40,10,47,27,28,34,49)");
+                               and t.tipo_turma not in(@tipoTurma)");
             }
 
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
@@ -589,7 +589,8 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo,
                 situacaoFechamento,
                 situacaoConselhoClasse,
-                dataReferencia
+                dataReferencia,
+                tipoTurma = (int)TipoTurma.Programa
             };
 
             var multi = await contexto.Conexao.QueryMultipleAsync(query.ToString(), parametros);
