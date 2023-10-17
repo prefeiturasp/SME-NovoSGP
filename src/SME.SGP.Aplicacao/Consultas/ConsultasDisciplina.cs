@@ -186,7 +186,7 @@ namespace SME.SGP.Aplicacao
                 if (componentesCurricularesJurema.EhNulo())
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
 
-                foreach(var discplina in disciplinasDto)
+                foreach(var d in disciplinasDto)
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = PossuiObjetivos(turma, Convert.ToInt32(dataInicioNovoSGP), componenteEOL, componentesCurricularesJurema);
@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao
                     d.Nome = componenteEOL.Descricao;
                     d.NomeComponenteInfantil = componenteEOL.DescricaoComponenteInfantil;
                     d.Professor = componenteEOL.Professor;
-                });
+                };
 
                 if (usuarioLogado.TemPerfilGestaoUes())
                 {
