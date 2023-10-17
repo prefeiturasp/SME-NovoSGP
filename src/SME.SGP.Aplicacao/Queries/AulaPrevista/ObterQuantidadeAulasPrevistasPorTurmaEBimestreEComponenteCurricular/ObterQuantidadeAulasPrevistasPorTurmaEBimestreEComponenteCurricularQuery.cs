@@ -9,15 +9,13 @@ namespace SME.SGP.Aplicacao
         public long TipoCalendarioId { get; set; }
         public long[] ComponentesCurricularesId { get; set; }
         public int? Bimestre { get; set; }
-        public string Professor { get; set; }
 
-        public ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(string codigoTurma, long tipoCalendarioId, long[] componentesCurricularesId, int? bimestre, string professor = null)
+        public ObterQuantidadeAulasPrevistasPorTurmaEBimestreEComponenteCurricularQuery(string codigoTurma, long tipoCalendarioId, long[] componentesCurricularesId, int? bimestre)
         {
             CodigoTurma = codigoTurma;
             TipoCalendarioId = tipoCalendarioId;
             ComponentesCurricularesId = componentesCurricularesId;
             Bimestre = bimestre;
-            Professor = professor;
         }
     }
 
