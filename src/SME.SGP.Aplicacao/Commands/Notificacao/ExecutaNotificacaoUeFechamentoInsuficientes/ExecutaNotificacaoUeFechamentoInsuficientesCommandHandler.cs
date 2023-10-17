@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                modalidade.ObterModalidadesTurma(),
                                                                                                                DateTime.Now.Semestre()));
 
-                    if (turmas != null && turmas.Any())
+                    if (turmas.NaoEhNulo() && turmas.Any())
                         listaUes.Add(await VerificaTurmasComPendenciaFechamentoNaUe(turmas, periodoEncerrando.PeriodoFechamento.Ue, percentualFechamentoInsuficiente));
                 }
 
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
                                                                                                            null,
                                                                                                            modalidade.ObterModalidadesTurma(),
                                                                                                            DateTime.Now.Semestre()));
-                if (turmas != null && turmas.Any())
+                if (turmas.NaoEhNulo() && turmas.Any())
                     listaUes.Add(await VerificaTurmasComPendenciaFechamentoNaUe(turmas, periodoEncerramentoUe.PeriodoFechamento.Ue, percentualFechamentoInsuficiente));
             }
 
@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
             mensagem.Append("</table>");
 
             var supervisores = await ObterUsuariosSupervisores(dre.CodigoDre);
-            if (supervisores != null && supervisores.Any())
+            if (supervisores.NaoEhNulo() && supervisores.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Fechamento, supervisores, dre.CodigoDre));
         }
 

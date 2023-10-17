@@ -49,7 +49,7 @@ namespace SME.SGP.Dados
                           where not c.excluido  
                             and t.turma_id = @turmaId ", select));
 
-            if (disciplinasId != null && disciplinasId.Any())
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Any())
                 query.AppendLine("and c.disciplina_id = any(@disciplinasId)");
             if (bimestre != 0)
                 query.AppendLine("and c.bimestre = @bimestre");
@@ -176,15 +176,15 @@ namespace SME.SGP.Dados
 	                                    a.turma_id = t.turma_id
                                     left join registro_frequencia rf on
 	                                    a.id = rf.aula_id
-                                    inner join componente_curricular cc on
-	                                    cc.id = cast(a.disciplina_id as bigint)
                                     inner join ue on
 	                                    ue.id = t.ue_id
                                     inner join dre on
 	                                    dre.id = ue.dre_id                                   
                                     inner join periodo_escolar pe on
                                         a.tipo_calendario_id = pe.tipo_calendario_id 
-                                    where t.ano_letivo = @anoLetivo and not a.excluido and cc.permite_registro_frequencia ");
+                                    left join componente_curricular cc on
+	                                    cc.id = cast(a.disciplina_id as bigint)
+                                    where t.ano_letivo = @anoLetivo and not a.excluido and coalesce(cc.permite_registro_frequencia, true) ");
 
             if (dreId != -99)
                 query.AppendLine(" and dre.id = @dreId ");

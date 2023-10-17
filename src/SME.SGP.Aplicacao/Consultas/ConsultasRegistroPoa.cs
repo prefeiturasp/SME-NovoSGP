@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using System;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -7,18 +8,19 @@ using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasRegistroPoa : ConsultasBase, IConsultasRegistroPoa
     {
         private readonly IRepositorioRegistroPoa repositorioRegistroPoa;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao, IServicoEol servicoEOL) : base(contextoAplicacao)
+        public ConsultasRegistroPoa(IRepositorioRegistroPoa repositorioRegistroPoa, IContextoAplicacao contextoAplicacao, IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioRegistroPoa = repositorioRegistroPoa ?? throw new System.ArgumentNullException(nameof(repositorioRegistroPoa));
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<RegistroPoaDto>> ListarPaginado(RegistroPoaFiltroDto registroPoaFiltroDto)
@@ -43,27 +45,26 @@ namespace SME.SGP.Aplicacao.Consultas
                 TotalRegistros = retornoquery.TotalRegistros
             };
 
-            bool nenhumItemEncontrado = retornoquery.Items == null ||
+            bool nenhumItemEncontrado = retornoquery.Items.EhNulo() ||
                 !retornoquery.Items.Any() ||
                 retornoquery.Items.ElementAt(0).Id == 0;
 
             var listaRf = retornoquery.Items.Select(x => x.CodigoRf);
 
-            var nomes = await servicoEOL.ObterListaNomePorListaRF(listaRf);
-
+            var nomes = await mediator.Send(new ObterFuncionariosPorRFsQuery(listaRf));
             return MapearListagem(retornoquery, retornoPaginado, nenhumItemEncontrado, nomes);
         }
 
-        public RegistroPoaCompletoDto ObterPorId(long id)
+        public async Task<RegistroPoaCompletoDto> ObterPorId(long id)
         {
-            var registro = repositorioRegistroPoa.ObterPorId(id);
+            var registro = await repositorioRegistroPoa.ObterPorIdAsync(id);
 
-            if (registro == null)
+            if (registro.EhNulo())
                 return null;
 
-            var professor = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(registro.CodigoRf, registro.AnoLetivo).Result;
+            var professor = await mediator.Send(new ObterResumoProfessorPorRFAnoLetivoQuery(registro.CodigoRf, registro.AnoLetivo));
 
-            return MapearParaDtoCompleto(registro, professor == null ? "Professor não encontrado" : professor.Nome);
+            return MapearParaDtoCompleto(registro, professor.EhNulo() ? "Professor não encontrado" : professor.Nome);
         }
 
         private PaginacaoResultadoDto<RegistroPoaDto> MapearListagem(PaginacaoResultadoDto<RegistroPoa> retornoquery, PaginacaoResultadoDto<RegistroPoaDto> retornoPaginado, bool nenhumItemEncontrado, IEnumerable<ProfessorResumoDto> nomes)
@@ -72,7 +73,7 @@ namespace SME.SGP.Aplicacao.Consultas
             {
                 var professor = nomes.FirstOrDefault(resumo => resumo.CodigoRF.Equals(registro.CodigoRf));
 
-                string nome = professor == null ? "Professor não encontrado" : professor.Nome;
+                string nome = professor.EhNulo() ? "Professor não encontrado" : professor.Nome;
 
                 return MapearParaDto(registro, nome);
             });

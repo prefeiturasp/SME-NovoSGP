@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarDre(Dre dre)
         {
-            if (dre != null)
+            if (dre.NaoEhNulo())
             {
                 Dre = dre;
                 DreId = dre.Id;

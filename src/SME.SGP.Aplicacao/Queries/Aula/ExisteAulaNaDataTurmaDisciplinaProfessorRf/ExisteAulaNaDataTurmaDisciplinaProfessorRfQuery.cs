@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery : IRequest<bool>
     {
-        public ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery(DateTime dataAula, string turmaCodigo, string[] disciplinasId, string professorRf, TipoAula tipoAula)
+        public ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery(DateTime dataAula, string turmaCodigo, string[] disciplinasId, TipoAula tipoAula, string professorRf = null)
         {
             DataAula = dataAula;
             TurmaCodigo = turmaCodigo;
@@ -38,10 +38,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.DisciplinasId)
                 .NotEmpty()
                 .WithMessage("O código do componente curricular deve ser informado para consulta de existência de aulas");
-
-            RuleFor(a => a.ProfessorRf)
-                .NotEmpty()
-                .WithMessage("O RF do professor deve ser informado para consulta de existência de aulas");
         }
     }
 }

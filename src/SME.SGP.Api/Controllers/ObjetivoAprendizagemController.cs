@@ -43,7 +43,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterObjetivosPorAnoEComponenteCurricular([FromServices] IListarObjetivoAprendizagemPorAnoTurmaEComponenteCurricularUseCase useCase, [FromQuery] bool ensinoEspecial, string ano, long componenteCurricularId, long turmaId)
         {
             var result = await useCase.Executar(ano, componenteCurricularId, ensinoEspecial, turmaId);
-            if (result == null)
+            if (result.EhNulo())
                 return NoContent();
 
             return Ok(result);

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             if (request.EhRegencia)
             {
                 var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-                if (request.AulasExistentes != null && request.AulasExistentes.Any(c => c.TipoAula != TipoAula.Reposicao) && !(usuarioLogado.EhProfessorCj() || usuarioLogado.EhProfessorCjInfantil()))
+                if (request.AulasExistentes.NaoEhNulo() && request.AulasExistentes.Any(c => c.TipoAula != TipoAula.Reposicao) && !(usuarioLogado.EhProfessorCj() || usuarioLogado.EhProfessorCjInfantil()))
                 {
                     if (request.TurmaModalidade == Modalidade.EJA)
                         return (false, "Para regência de EJA só é permitido a criação de 5 aulas por dia.");
@@ -32,9 +32,9 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var gradeAulas = await mediator.Send(new ObterGradeAulasPorTurmaEProfessorQuery(request.TurmaCodigo, request.ComponenteCurricularesCodigo, request.Data, request.UsuarioRf, request.EhRegencia, request.EhGestor));
-                var quantidadeAulasRestantes = gradeAulas == null ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
+                var quantidadeAulasRestantes = gradeAulas.EhNulo() ? int.MaxValue : gradeAulas.QuantidadeAulasRestante;
 
-                if (gradeAulas != null)
+                if (gradeAulas.NaoEhNulo())
                 {
                     if (quantidadeAulasRestantes < request.Quantidade)
                         return (false, "Quantidade de aulas superior ao limíte de aulas da grade.");

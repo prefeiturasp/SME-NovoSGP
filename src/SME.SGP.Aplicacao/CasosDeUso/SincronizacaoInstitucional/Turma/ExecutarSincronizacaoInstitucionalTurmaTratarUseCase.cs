@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 var turmaEOL = await mediator
                     .Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(filtro.CodigoTurma, filtro.UeId));
 
-                if (turmaEOL == null)
+                if (turmaEOL.EhNulo())
                     return true;
 
                 var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.CodigoTurma.ToString(),true));

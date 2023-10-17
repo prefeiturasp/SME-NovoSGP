@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var atividadeAvaliativas = await repositorioCache.ObterObjetoAsync<List<NotaConceito>>(nomeChave);
 
-            if (atividadeAvaliativas == null)
+            if (atividadeAvaliativas.EhNulo())
                 return null;
 
             foreach (var excluir in request.EntidadesExcluir)
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             {
                 var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id);
 
-                if (atividade != null)
+                if (atividade.NaoEhNulo())
                 {
                     atividade.Nota = alterar.Nota;
                     atividade.ConceitoId = alterar.ConceitoId;

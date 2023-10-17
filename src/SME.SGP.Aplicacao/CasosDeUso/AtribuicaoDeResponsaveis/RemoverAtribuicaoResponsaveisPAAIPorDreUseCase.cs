@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> RemoverPAAISemAtribuicao(IEnumerable<SupervisorEscolasDreDto> reponsaveisPAAI, IEnumerable<UsuarioEolRetornoDto> responsaveisEOL)
         {
 
-            if (responsaveisEOL != null)
+            if (responsaveisEOL.NaoEhNulo())
                 reponsaveisPAAI = reponsaveisPAAI.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.PAAI && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
 
             foreach (var supervisor in reponsaveisPAAI)

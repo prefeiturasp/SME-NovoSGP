@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentos = await mediator.Send(new ObterEncaminhamentoAEEVigenteQuery());
 
-            if (encaminhamentos != null && encaminhamentos.Any())
+            if (encaminhamentos.NaoEhNulo() && encaminhamentos.Any())
                 foreach (var encaminhamento in encaminhamentos)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.AtualizarTabelaEncaminhamentoAEETurmaAlunoTratar, new SalvarEncaminhamentoAEETurmaAlunoCommand(encaminhamento.EncaminhamentoId, encaminhamento.AlunoCodigo)));
 

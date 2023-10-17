@@ -17,8 +17,7 @@ namespace SME.SGP.Aplicacao
                                        TipoAula tipoAula,
                                        string codigoUe,
                                        bool ehRegencia,
-                                       RecorrenciaAula recorrenciaAula,
-                                       long? codigoTerritorioSaber)
+                                       RecorrenciaAula recorrenciaAula)
         {
             Usuario = usuario;
             DataAula = dataAula;
@@ -31,7 +30,6 @@ namespace SME.SGP.Aplicacao
             CodigoUe = codigoUe;
             EhRegencia = ehRegencia;
             RecorrenciaAula = recorrenciaAula;
-            CodigoTerritorioSaber = codigoTerritorioSaber;
         }
 
         public Usuario Usuario { get; set; }
@@ -45,7 +43,6 @@ namespace SME.SGP.Aplicacao
         public string CodigoUe { get; set; }
         public bool EhRegencia { get; set; }
         public RecorrenciaAula RecorrenciaAula  { get; set; }
-        public long? CodigoTerritorioSaber { get; set; }
     }
 
     public class InserirAulaRecorrenteCommandValidator : AbstractValidator<InserirAulaRecorrenteCommand>

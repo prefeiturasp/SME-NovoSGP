@@ -26,18 +26,18 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = request.Frequencia.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
 
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
 
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.Frequencia.AulaId), cancellationToken);
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.A_aula_informada_nao_foi_encontrada);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId), cancellationToken);
             
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
 
             if (usuario.EhProfessorCj())
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
             var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aula.Id), cancellationToken);
 
-            var alteracaoRegistro = registroFrequencia != null;
+            var alteracaoRegistro = registroFrequencia.NaoEhNulo();
             
             registroFrequencia ??= new RegistroFrequencia(aula);
             registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia), cancellationToken);

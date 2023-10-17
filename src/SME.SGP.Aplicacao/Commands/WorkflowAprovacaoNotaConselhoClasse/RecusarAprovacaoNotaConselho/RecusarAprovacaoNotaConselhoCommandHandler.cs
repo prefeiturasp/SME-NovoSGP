@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(notaEmProvacao.Id));
 
-                if (notaEmProvacao.ConselhoClasseNota.Nota == null && notaEmProvacao.ConselhoClasseNota.Conceito == null) //Conselho de classe nota gerado automaticamente pelo WF Conselho Nota
+                if (notaEmProvacao.ConselhoClasseNota.Nota.EhNulo() && notaEmProvacao.ConselhoClasseNota.Conceito.EhNulo()) //Conselho de classe nota gerado automaticamente pelo WF Conselho Nota
                 {
                     await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId??0));
                 }
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                                                                           request.Justificativa));
 
             var periodoEscolar = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
-            var bimestre = periodoEscolar != null ? periodoEscolar.Bimestre : (int)Bimestre.Final;
+            var bimestre = periodoEscolar.NaoEhNulo() ? periodoEscolar.Bimestre : (int)Bimestre.Final;
             var codigoAluno = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo;
             await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, request.TurmaCodigo, bimestre, codigoAluno), cancellationToken);
         }

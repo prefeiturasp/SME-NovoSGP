@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             filtro.Usuario = usuarioLogado;
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
             {
                 throw new NegocioException("Não foi possível identificar o usuário");
             }

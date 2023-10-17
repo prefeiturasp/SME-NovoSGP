@@ -1,10 +1,6 @@
-﻿using SME.SGP.Infra;
-using System.Threading.Tasks;
-
-namespace SME.SGP.Aplicacao
+﻿namespace SME.SGP.Aplicacao
 {
-    public interface IInserirCodigoCorrelacaoUseCase
+    public interface IInserirCodigoCorrelacaoUseCase : IRabbitUseCase
     {
-        Task<bool> Executar(MensagemRabbit mensagemRabbit);
     }
 }

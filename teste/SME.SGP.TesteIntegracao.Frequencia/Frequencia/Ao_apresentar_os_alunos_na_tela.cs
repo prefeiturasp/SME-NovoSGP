@@ -36,8 +36,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             var retornoAluno = retorno.ListaFrequencia;
             retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
             retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
-            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Marcador == null).ShouldBeTrue();
-            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Marcador == null).ShouldBeTrue();
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Marcador.EhNulo()).ShouldBeTrue();
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Marcador.EhNulo()).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Frequência - Deve exibir tooltip alunos inativos ate data sua inativacao")]
@@ -62,9 +62,9 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             
             var retornoAluno = retorno.ListaFrequencia;
             
-            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)) == null).ShouldBeTrue();
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)).EhNulo()).ShouldBeTrue();
             
-            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)) == null).ShouldBeTrue();
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)).EhNulo()).ShouldBeTrue();
         }
 
         private async Task InserirPeriodoEscolarCustomizado()

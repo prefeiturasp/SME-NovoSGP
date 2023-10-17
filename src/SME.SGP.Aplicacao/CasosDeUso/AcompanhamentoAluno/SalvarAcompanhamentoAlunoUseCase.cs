@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     public class SalvarAcompanhamentoAlunoUseCase : AbstractUseCase, ISalvarAcompanhamentoAlunoUseCase
     {
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        
         public SalvarAcompanhamentoAlunoUseCase(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
                 throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA, parametroQuantidadeImagens));
             
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
             
             var bimestre = acompanhamentoAlunoDto.Semestre == 1 ? 2 : 4;
@@ -43,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
             
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, turma.AnoLetivo, true,false, turma.CodigoTurma));
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
             
             if (aluno.EstaInativo(dataAtual))
@@ -60,17 +61,17 @@ namespace SME.SGP.Aplicacao
         private async Task<int> ObterQuantidadeLimiteImagens(int ano)
         {
             var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
-            return parametroQuantidade == null ?
+            return parametroQuantidade.EhNulo() ?
                 0 : int.Parse(parametroQuantidade.Valor);
         }
 
         private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
         {
-            var imagens = Regex.Matches(acompanhamentoAluno.PercursoIndividual, "<img[^>]*>");
-            if (imagens != null)
+            var imagens = UtilRegex.RegexTagsIMG.Matches(acompanhamentoAluno.PercursoIndividual);
+            if (imagens.NaoEhNulo())
                 foreach (var imagem in imagens)
                 {
-                    var nomeArquivo = Regex.Match(imagem.ToString(), ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
+                    var nomeArquivo = UtilRegex.RegexNomesArquivosUUID.Match(imagem.ToString());
                     if (!ImagemJaExistente(imagem.ToString()) && ImagemExisteTemp(imagem.ToString()))
                     {
                         var novoCaminho = nomeArquivo.Success ? await mediator.Send(new MoverArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;

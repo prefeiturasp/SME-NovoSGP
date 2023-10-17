@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(inserirRegistroIndividualDto.TurmaId));
             
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             if (turma.EhAnoAnterior())
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
             var periodoEscolar = await mediator.Send(new ObterUltimoPeriodoEscolarPorDataQuery(turma.AnoLetivo,turma.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date));
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
             
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, inserirRegistroIndividualDto.AlunoCodigo.ToString()));

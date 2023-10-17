@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    if (fechamentoTurma?.Justificativa != null)
+                    if ((fechamentoTurma?.Justificativa).NaoEhNulo())
                     {
                         var tamanhoJustificativa = await mediator.Send(new ObterTamanhoCaracteresJustificativaNotaQuery(fechamentoTurma.Justificativa));
                         var limite = int.Parse(FechamentoTurmaDisciplinaEnum.TamanhoCampoJustificativa.Description());

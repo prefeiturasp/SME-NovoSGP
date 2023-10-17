@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var nomeChave = $"parametro-{TipoParametroSistema.DiasAposInicioPeriodoLetivoComponenteSemAula}-{DateTimeExtension.HorarioBrasilia().Year}";
             var dadosParametro = await repositorioCache.ObterAsync(nomeChave, () => repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.DiasAposInicioPeriodoLetivoComponenteSemAula, DateTimeExtension.HorarioBrasilia().Year));
 
-            return dadosParametro != null && dadosParametro.Ativo ? int.Parse(dadosParametro.Valor) : 0;
+            return dadosParametro.NaoEhNulo() && dadosParametro.Ativo ? int.Parse(dadosParametro.Valor) : 0;
         }
     }
 }

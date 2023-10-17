@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
         public FechamentoReaberturaRetornoDto ObterPorId(long id)
         {
             var fechamentoReabertura = repositorioFechamentoReabertura.ObterCompleto(id);
-            if (fechamentoReabertura == null)
+            if (fechamentoReabertura.EhNulo())
                 throw new NegocioException("Não foi possível localizar esta reabertura de fechamento.");
 
             return TransformaEntidadeEmDto(fechamentoReabertura);
@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
                 AlteradoPor = fechamentoReabertura.AlteradoPor,
                 AlteradoRF = fechamentoReabertura.AlteradoRF,
                 CriadoRF = fechamentoReabertura.CriadoRF,
-                AprovadoPor = fechamentoReabertura.Aprovador != null ? string.Format("{0} ({1})", fechamentoReabertura.Aprovador.Nome, fechamentoReabertura.Aprovador.CodigoRf) : string.Empty,
+                AprovadoPor = fechamentoReabertura.Aprovador.NaoEhNulo() ? string.Format("{0} ({1})", fechamentoReabertura.Aprovador.Nome, fechamentoReabertura.Aprovador.CodigoRf) : string.Empty,
             };
 
             if (fechamentoReabertura.AprovadoEm.HasValue)

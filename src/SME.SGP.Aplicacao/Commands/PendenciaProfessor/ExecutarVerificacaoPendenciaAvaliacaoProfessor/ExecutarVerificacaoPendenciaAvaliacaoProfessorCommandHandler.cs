@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler : IRequestHandler<ExecutarVerificacaoPendenciaAvaliacaoProfessorCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
 
-        public ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
 
@@ -55,7 +53,7 @@ namespace SME.SGP.Aplicacao
                                     var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == professorComponenteTurma.DisciplinasId.ToString()
                                                                                                && c.LancaNota);
 
-                                    if (componenteCurricular != null && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId.Contains(c.ComponenteCurricularId)))
+                                    if (componenteCurricular.NaoEhNulo() && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId.Contains(c.ComponenteCurricularId)))
                                     {
                                         if (!fechamentosDaTurma.Any(a=> professorComponenteTurma.DisciplinasId.Contains(a.DisciplinaId) && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
                                         {

@@ -45,13 +45,13 @@ namespace SME.SGP.Dados.Repositorios
                     }
 
                     var entidadeOpcaoResposta = q.OpcoesRespostas.FirstOrDefault(a => a.Id == opcaoResposta.Id);
-                    if (entidadeOpcaoResposta == null && opcaoResposta != null)
+                    if (entidadeOpcaoResposta.EhNulo() && opcaoResposta.NaoEhNulo())
                     {
                         q.OpcoesRespostas.Add(opcaoResposta);
                         entidadeOpcaoResposta = opcaoResposta;
                     }
 
-                    if (OpcaoQuestaoComplementar != null)
+                    if (OpcaoQuestaoComplementar.NaoEhNulo())
                     {
                         entidadeOpcaoResposta.QuestoesComplementares.Add(OpcaoQuestaoComplementar);
                     }

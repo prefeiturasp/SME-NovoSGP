@@ -35,19 +35,19 @@ namespace SME.SGP.Aplicacao
             {
                 var documento = await mediator.Send(new ObterDocumentoPorIdQuery(request.DocumentoId), cancellationToken);
                 
-                if (documento == null)
+                if (documento.EhNulo())
                     throw new NegocioException(MensagemNegocioDocumento.DOCUMENTO_INFORMADO_NAO_EXISTE);
 
                 var arquivos = (await mediator.Send(new ObterArquivosPorCodigosQuery(request.ArquivosCodigos), cancellationToken)).ToList();
                 
-                if (arquivos == null || !arquivos.Any())
+                if (arquivos.EhNulo() || !arquivos.Any())
                     throw new NegocioException(MensagemNegocioDocumento.CODIGOS_ARQUIVOS_INFORMADOS_NAO_ENCONTRADOS);
 
                 var documentosArquivos = (await mediator.Send(new ObterDocumentosArquivosPorDocumentoIdQuery(request.DocumentoId), cancellationToken)).ToList();
 
                 var documentosArquivosExcluir = documentosArquivos.Where(w => !request.ArquivosCodigos.Contains(w.Codigo));
 
-                if (documentosArquivosExcluir != null && documentosArquivosExcluir.Any())
+                if (documentosArquivosExcluir.NaoEhNulo() && documentosArquivosExcluir.Any())
                 {
                     var arquivosAntigos =
                         await mediator.Send(

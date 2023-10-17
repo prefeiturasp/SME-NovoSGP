@@ -76,7 +76,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new StringBuilder();
 
-            if (paginacao == null || paginacao.QuantidadeRegistros == 0)
+            if (paginacao.EhNulo() || paginacao.QuantidadeRegistros == 0)
                 paginacao = new Paginacao(1, 10);
 
             MontaQueryCabecalhoSemBimestres(query);
@@ -313,7 +313,7 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine("and fr.ue_id is null");
 
-            if (ids != null && ids.Any())
+            if (ids.NaoEhNulo() && ids.Any())
                 query.AppendLine("and fr.id = ANY(@ids)");
         }
 

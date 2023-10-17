@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var bimestres = await repositorioEventoBimestre.ObterBimestresEventoPorTipoCalendarioDataReferencia(request.TipoCalendarioId, request.DataRefencia);
 
-            if (bimestres == null || !bimestres.Any())
+            if (bimestres.EhNulo() || !bimestres.Any())
                 throw new NegocioException("Lista de bimestres não encontrada");
 
             return bimestres;

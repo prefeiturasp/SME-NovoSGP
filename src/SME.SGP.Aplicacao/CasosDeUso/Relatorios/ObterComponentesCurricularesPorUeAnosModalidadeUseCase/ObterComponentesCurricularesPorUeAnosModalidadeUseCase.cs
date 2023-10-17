@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var turmaCodigos = await mediator.Send(new ObterTurmasPorUeAnosModalidadeQuery(ueCodigo, anoLetivo, anos, (int)modalidade));
 
-            if (turmaCodigos == null || !turmaCodigos.Any())
+            if (turmaCodigos.EhNulo() || !turmaCodigos.Any())
                 throw new NegocioException("Não foi possível obter turmas para obter os componentes curriculares.");
 
             if (!string.IsNullOrEmpty(ueCodigo))
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 listaComponentes = (await mediator.Send(new ObterComponentesCurricularesPorAnosEModalidadeQuery(ueCodigo, modalidade, anos, anoLetivo))).ToList();
             }
                 
-            if (listaComponentes != null && listaComponentes.Any())
+            if (listaComponentes.NaoEhNulo() && listaComponentes.Any())
                 await TratarNomeComponentes(listaComponentes);
 
             if(listaComponentes?.Count > 1)
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             {
                 var componenteSgp = componentesSgp.FirstOrDefault(c => c.Id == componente.Codigo);
 
-                if (componenteSgp != null)
+                if (componenteSgp.NaoEhNulo())
                     componente.Descricao = componenteSgp.Descricao;
             }
         }

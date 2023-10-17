@@ -12,12 +12,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNecessidadesEspeciaisAlunoQueryHandler : IRequestHandler<ObterNecessidadesEspeciaisAlunoQuery, InformacoesEscolaresAlunoDto>
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
-        public ObterNecessidadesEspeciaisAlunoQueryHandler(IServicoEol servicoEOL, IMediator mediator)
+        public ObterNecessidadesEspeciaisAlunoQueryHandler(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
@@ -29,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var necessidadesEspeciaisAluno = await mediator.Send(new ObterNecessidadesEspeciaisAlunoEolQuery(request.CodigoAluno));
 
-            if (necessidadesEspeciaisAluno != null)
+            if (necessidadesEspeciaisAluno.NaoEhNulo())
                 informacoesEscolaresAluno = necessidadesEspeciaisAluno;
 
             var frequenciasAluno = (await mediator.Send(new ObterFrequenciasGeralAlunoPorCodigoAnoSemestreQuery(request.CodigoAluno, turma.AnoLetivo, tipoCalendarioId))).GroupBy(x => (x.Bimestre, x.CodigoAluno));
@@ -61,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
             informacoesEscolaresAluno.FrequenciaAlunoPorBimestres = frequenciaBimestreAlunoDto;
 
-            if (frequenciasAluno == null || !frequenciasAluno.Any())
+            if (frequenciasAluno.EhNulo() || !frequenciasAluno.Any())
             {
                 informacoesEscolaresAluno.FrequenciaGlobal = "";
                 return informacoesEscolaresAluno;

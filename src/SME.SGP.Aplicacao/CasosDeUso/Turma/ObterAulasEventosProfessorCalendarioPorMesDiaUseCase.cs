@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using Npgsql.Replication;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -21,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
             var eventosDaUeSME = await mediator.Send(new ObterEventosCalendarioProfessorPorMesDiaQuery()
@@ -64,8 +66,6 @@ namespace SME.SGP.Aplicacao
             retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
-            var componentesCurricularesDoProfessor = new List<(string codigo, string codigoTerritorioSaber)>();
-
             IEnumerable<Aula> aulasParaVisualizar = null;
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
             var componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
@@ -92,6 +92,9 @@ namespace SME.SGP.Aplicacao
                                                                                  usuarioLogado.Login,
                                                                                  usuarioLogado.PerfilAtual,
                                                                                  turma.EhTurmaInfantil))).ToList();
+                var componentesCurricularesAgrupamentoTerritorioSaber = componentesCurricularesEolProfessor.Where(cc => cc.Codigo.EhIdComponenteCurricularTerritorioSaberAgrupado());
+                if (componentesCurricularesAgrupamentoTerritorioSaber.Any())
+                    componentesCurricularesEolProfessor.AddRange(await mediator.Send(new ObterComponentesTerritorioAgrupamentoCorrelacionadosQuery(componentesCurricularesAgrupamentoTerritorioSaber.Select(cc => cc.Codigo).ToArray(), dataConsulta)));
 
                 if (usuarioLogado.EhSomenteProfessorCj())
                 {
@@ -111,24 +114,16 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                var codigosTerritorio = componentesCurricularesEolProfessor.Where(c => c.TerritorioSaber).Select(c => c.Codigo);
-                var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
-                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), turma.CodigoTurma, usuarioLogado.Login)) : null;
-                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor, professoresDesconsiderados?.ToArray());
-                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesEolProfessor);
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
-            if (aulasParaVisualizar != null && aulasParaVisualizar.Any())
+            if (aulasParaVisualizar.NaoEhNulo() && aulasParaVisualizar.Any())
             {
                 var codigosComponentesConsiderados = new List<long>();
-                var possuiTerritorio = componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0");
-
                 codigosComponentesConsiderados.AddRange(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)));
-                codigosComponentesConsiderados.AddRange(componentesCurricularesDoProfessor.Select(c => long.Parse(c.codigo)).Except(codigosComponentesConsiderados));
-                codigosComponentesConsiderados.AddRange(componentesCurricularesDoProfessor.Where(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0").Select(c => long.Parse(c.codigoTerritorioSaber)).Except(codigosComponentesConsiderados));
-
+                
                 if (usuarioLogado.EhProfessorCjInfantil())
                 {
                     var componentesCurricularesDoProfessorCJInfantil = await mediator
@@ -141,7 +136,7 @@ namespace SME.SGP.Aplicacao
                 }
                 
                 componentesCurriculares = await mediator
-                    .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), possuiTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));
+                    .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), filtroAulasEventosCalendarioDto.TurmaCodigo));
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {

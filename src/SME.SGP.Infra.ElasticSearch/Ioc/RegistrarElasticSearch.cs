@@ -11,7 +11,7 @@ namespace SME.SGP.Infra.ElasticSearch
     {
         public static void RegistrarElastic(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
+            if (configuration is null)
                 return;
 
             var configElastic = configuration.GetSection(ElasticOptions.Secao);

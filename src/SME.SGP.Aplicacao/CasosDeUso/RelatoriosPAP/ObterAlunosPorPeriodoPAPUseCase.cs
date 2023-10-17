@@ -62,21 +62,21 @@ namespace SME.SGP.Aplicacao
         {
             var periodoPAP = await mediator.Send(new PeriodoRelatorioPAPQuery(periodoRelatorioPAPId));
 
-            if (periodoPAP == null)
+            if (periodoPAP.EhNulo())
                 throw new NegocioException("Período relatório PAP não localizado!");
 
             var bimestre = ObterBimestre(periodoPAP);
 
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, periodoPAP.Periodo));
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo de Calendario não localizado para a turma!");
 
             var periodosEscolares = await mediator.Send(new ObterPeridosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new NegocioException("Não localizados periodos escolares para o calendario da turma!");
 
             var periodoAtual = periodosEscolares.FirstOrDefault(c => c.Bimestre == bimestre);
-            if (periodoAtual == null)
+            if (periodoAtual.EhNulo())
                 throw new NegocioException($"Não localizado periodo escolar!");
 
             return periodoAtual;

@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 throw new Exception("Tipo calendário não encontrado");
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new Exception("Períodos escolares não encontrados");
 
             var eventos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, param.UeCodigo, false));

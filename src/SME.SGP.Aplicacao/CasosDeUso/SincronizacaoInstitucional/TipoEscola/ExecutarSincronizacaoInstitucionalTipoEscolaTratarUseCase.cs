@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoEscolaEOL = param.ObterObjetoMensagem<TipoEscolaRetornoDto>();
 
-            if (tipoEscolaEOL == null)
+            if (tipoEscolaEOL.EhNulo())
                 throw new NegocioException($"Não foi possível fazer o tratamento do tipo de escola da mensagem {param.CodigoCorrelacao}");
 
             var tipoEscolaSGP = await mediator.Send(new ObterTipoEscolaPorCodigoQuery(tipoEscolaEOL.Codigo));

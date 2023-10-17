@@ -9,11 +9,8 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPlanoAulaUseCase : AbstractUseCase, ISalvarPlanoAulaUseCase
     {
-        private readonly IUnitOfWork unitOfWork;
-
-        public SalvarPlanoAulaUseCase(IMediator mediator, IUnitOfWork unitOfWork) : base(mediator)
+        public SalvarPlanoAulaUseCase(IMediator mediator) : base(mediator)
         {
-            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<PlanoAulaDto> Executar(PlanoAulaDto planoAulaDto)

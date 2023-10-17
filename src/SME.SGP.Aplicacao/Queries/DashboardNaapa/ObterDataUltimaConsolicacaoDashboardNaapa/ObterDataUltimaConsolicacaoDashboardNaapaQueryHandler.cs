@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
 using System.Linq;
 using System.Threading;
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var tipos = new long[] { (long)request.Tipo };
             var parametroSistema = (await mediator.Send(new ObterParametrosSistemaPorTiposQuery() { Tipos = tipos })).FirstOrDefault();
-            if (parametroSistema != null)
+            if (parametroSistema.NaoEhNulo())
             {
                 if (!string.IsNullOrEmpty(parametroSistema.Valor))
                     return DateTime.Parse(parametroSistema.Valor);

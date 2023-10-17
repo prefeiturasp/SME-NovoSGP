@@ -14,12 +14,10 @@ namespace SME.SGP.Aplicacao
     public class ExecutarVerificacaoPendenciaAvaliacaoCPCommandHandler : IRequestHandler<ExecutarVerificacaoPendenciaAvaliacaoCPCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
 
-        public ExecutarVerificacaoPendenciaAvaliacaoCPCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public ExecutarVerificacaoPendenciaAvaliacaoCPCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAvaliacaoCPCommand request, CancellationToken cancellationToken)
@@ -33,7 +31,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoInicio,
                                                                                                                  periodoEncerrando.PeriodoEscolar.PeriodoFim));
 
-                    if (turmasSemAvaliacao != null && turmasSemAvaliacao.Any())
+                    if (turmasSemAvaliacao.NaoEhNulo() && turmasSemAvaliacao.Any())
                     {
                         var componentesCurriculares = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
                         foreach (var turmaSemAvaliacao in turmasSemAvaliacao.GroupBy(a => (a.TurmaCodigo, a.TurmaId)))
@@ -76,7 +74,7 @@ namespace SME.SGP.Aplicacao
 
                 if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
                 {
-                    if (professorComponente != null && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
+                    if (professorComponente.NaoEhNulo() && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
                         gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
                 }
             }
