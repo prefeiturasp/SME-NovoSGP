@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var diasSemAula = diasLetivos
-                    .Where(c => !aulas.Any(a => !a.Excluido && a.DataAula == c.Data) && (!turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio))?
+                    .Where(c => !aulas.Any(a => !a.Excluido && a.DataAula == c.Data) && (!turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio) && !c.Data.FimDeSemana())?
                     .OrderBy(a => a.Data)?
                     .Distinct()
                     .ToList();
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                                        select d).ToList();
 
                 aulasACriar.AddRange(ObterListaDeAulas(diasCriacaoAula, tipoCalendarioId, turma, aulasCriadasPeloSistema, dadosDisciplinaAulaCriada, quantidadeAulas, rfProfessor).ToList());
-
+                
                 var aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasNaoLetivos, turma, aulas.Where(a => !a.AulaCJ), diasLetivos);
                 ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasDaTurmaParaExcluir.ToList());
 
