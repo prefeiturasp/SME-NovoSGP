@@ -22,21 +22,6 @@ namespace SME.SGP.Infra
                             .GetCustomAttribute<TAttribute>();
         }
 
-        public static Modalidade[] ObterModalidadesTurma(this ModalidadeTipoCalendario modalidadeTipoCalendario)
-        {
-            switch (modalidadeTipoCalendario)
-            {
-                case ModalidadeTipoCalendario.FundamentalMedio:
-                    return new[] { Modalidade.Fundamental, Modalidade.Medio };
-                case ModalidadeTipoCalendario.EJA:
-                    return new[] { Modalidade.EJA };
-                case ModalidadeTipoCalendario.Infantil:
-                    return new[] { Modalidade.EducacaoInfantil };
-                default:
-                    throw new NegocioException("ModalidadeTipoCalendario não implementada.");
-            }
-        }
-
         public static Cargo ObterCargoPorPerfil(this PerfilUsuario perfilCodigo)
         {
             switch (perfilCodigo)

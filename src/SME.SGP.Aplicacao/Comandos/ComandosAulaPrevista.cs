@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
         {
-            var tipoCalendario = await repositorioTipoCalendarioConsulta.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
+            var tipoCalendario = await repositorioTipoCalendarioConsulta.BuscarPorAnoLetivoEModalidade(anoLetivo, turmaModalidade.ObterModalidadeTipoCalendario(), semestre);
 
             if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo calendário não encontrado!");
@@ -219,18 +219,6 @@ namespace SME.SGP.Aplicacao
             aulaPrevistaBimestre.Bimestre = bimestreQuantidadeDto.Bimestre;
             aulaPrevistaBimestre.Previstas = bimestreQuantidadeDto.Quantidade;
             return aulaPrevistaBimestre;
-        }
-
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
-        {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
         }
     }
 }

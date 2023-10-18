@@ -75,13 +75,13 @@ namespace SME.SGP.Aplicacao
             var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
 
             return Convert.ToInt32(modalidade == ModalidadeTipoCalendario.EJA ?
-                            await ObterParametroDiasLetivosEja(parametros) :
+                            await ObterParametroDiasLetivosEja(parametros) : //Aqui, vamos ter parâmetros para o CELP?
                             await ObterParametroDiasLetivosFundMedio(parametros));
         }
 
         private async Task<string> ObterParametroDiasLetivosEja(IEnumerable<ParametrosSistema> parametros)
         {
-            return parametros.FirstOrDefault(a => a.Nome == "EjaDiasLetivos").Valor;
+            return parametros.FirstOrDefault(a => a.Nome == "EjaDiasLetivos").Valor; //Vamos ter para CELP?
         }
 
         private async Task<string> ObterParametroDiasLetivosFundMedio(IEnumerable<ParametrosSistema> parametros)

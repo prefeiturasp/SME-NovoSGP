@@ -20,167 +20,182 @@ namespace SME.SGP.Dados.Repositorios
         }
         public async Task<PeriodoEscolar> ObterPeriodoEscolarPorCalendarioEData(long tipoCalendarioId, DateTime dataParaVerificar)
         {
-            StringBuilder query = new StringBuilder();
+            var query = @"select pe.*, tc.* 
+                            from periodo_escolar pe
+                            join tipo_calendario tc on tc.id = pe.tipo_calendario_id
+                          where tc.id = @tipoCalendarioId
+                                and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim::date";
 
-            query.AppendLine("select pe.*, tc.* from periodo_escolar pe");
-            query.AppendLine("inner join tipo_calendario tc");
-            query.AppendLine("on tc.id = pe.tipo_calendario_id");
-            query.AppendLine("where tc.id = @tipoCalendarioId");
-            query.AppendLine("and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim::date");
-
-            return (await database.Conexao.QueryAsync<PeriodoEscolar, TipoCalendario, PeriodoEscolar>(query.ToString(), (pe, tc) =>
+            return (await database.Conexao.QueryAsync<PeriodoEscolar, TipoCalendario, PeriodoEscolar>(query, (pe, tc) =>
             {
                 pe.AdicionarTipoCalendario(tc);
                 return pe;
 
             }, new { tipoCalendarioId, dataParaVerificar }, splitOn: "id")).FirstOrDefault();
         }
-        public async Task<IEnumerable<TipoCalendario>> BuscarPorAnoLetivo(int anoLetivo)
+
+        public async Task<TipoCalendario> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int? semestre = null)
         {
-            StringBuilder query = new StringBuilder();
+            var query = $@"select id, 
+                                 ano_letivo as anoLetivo,
+                                 nome,
+                                 periodo,
+                                 modalidade,
+                                 situacao,
+                                 semestre,
+                                 migrado,
+                                 criado_em as criadoEm,
+                                 criado_por as criadoPor,
+                                 criado_rf as criadoRf,
+                                 alterado_em as alteradoEm,
+                                 alterado_por as alteradoPor,
+                                 alterado_rf as alteradoRf
+                        from tipo_calendario 
+                        where not excluido
+                            and ano_letivo = @anoLetivo
+                            and modalidade = @modalidade
+                            {IncluirFiltroSemestrePorModalidade(modalidade)}";
 
-            query.AppendLine("select *");
-            query.AppendLine("from tipo_calendario");
-            query.AppendLine("where excluido = false");
-            query.AppendLine("and ano_letivo = @anoLetivo");
-
-            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<TipoCalendario>(query, new { anoLetivo, modalidade = (int)modalidade, semestre });
         }
 
-        public async Task<TipoCalendario> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
+        private string IncluirFiltroSemestrePorModalidade(ModalidadeTipoCalendario modalidade)
         {
-            StringBuilder query = new StringBuilder();
+            return modalidade.EhEjaOuCelp()
+                ? ObterFiltroSemestre() 
+                : string.Empty;
+        }
+        
+        private string IncluirFiltroSemestre(int? semestre)
+        {
+            return semestre.HasValue ? ObterFiltroSemestre() : string.Empty;
+        }
 
-            query.AppendLine("select *");
-            query.AppendLine("from tipo_calendario t");
-            query.AppendLine("where t.excluido = false");
-            query.AppendLine("and t.ano_letivo = @anoLetivo");
-            query.AppendLine("and t.modalidade = @modalidade");
-
-            DateTime dataReferencia = DateTime.MinValue;
-            if (modalidade == ModalidadeTipoCalendario.EJA)
-            {
-                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
-                query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
-
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
-            }
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
+        private static string ObterFiltroSemestre()
+        {
+            return " and semestre = @semestre";
         }
 
         public override TipoCalendario ObterPorId(long id)
         {
-            StringBuilder query = new StringBuilder();
+            var query = $@"select id, 
+                                 ano_letivo as anoLetivo,
+                                 nome,
+                                 periodo,
+                                 modalidade,
+                                 situacao,
+                                 semestre,
+                                 migrado,
+                                 criado_em as criadoEm,
+                                 criado_por as criadoPor,
+                                 criado_rf as criadoRf,
+                                 alterado_em as alteradoEm,
+                                 alterado_por as alteradoPor,
+                                 alterado_rf as alteradoRf
+                        from tipo_calendario 
+                        where id = @id ";
 
-            query.AppendLine("select * ");
-            query.AppendLine("from tipo_calendario ");
-            query.AppendLine("where excluido = false ");
-            query.AppendLine("and id = @id ");
-
-            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query.ToString(), new { id });
+            return database.Conexao.QueryFirstOrDefault<TipoCalendario>(query, new { id });
         }
 
         public async Task<IEnumerable<TipoCalendario>> ObterTiposCalendario()
         {
-            StringBuilder query = new StringBuilder();
+            var query = $@"select id, 
+                                 ano_letivo as anoLetivo,
+                                 nome,
+                                 periodo,
+                                 modalidade,
+                                 situacao,
+                                 semestre,
+                                 migrado,
+                                 criado_em as criadoEm,
+                                 criado_por as criadoPor,
+                                 criado_rf as criadoRf,
+                                 alterado_em as alteradoEm,
+                                 alterado_por as alteradoPor,
+                                 alterado_rf as alteradoRf
+                        from tipo_calendario 
+                        where not excluido";
 
-            query.AppendLine("select");
-            query.AppendLine("id,");
-            query.AppendLine("nome,");
-            query.AppendLine("ano_letivo,");
-            query.AppendLine("modalidade,");
-            query.AppendLine("periodo");
-            query.AppendLine("from tipo_calendario");
-            query.AppendLine("where excluido = false");
-
-            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString());
+            var retorno =  await database.Conexao.QueryAsync<TipoCalendario>(query);
+            return retorno;
         }
 
         public async Task<bool> VerificarRegistroExistente(long id, string nome)
         {
-            StringBuilder query = new StringBuilder();
+            var query = $@"select count(id) 
+                          from tipo_calendario 
+                          where upper(nome) = @nomeMaiusculo 
+                          and not excluido
+                          {IncluirFiltroPorId(id)}";
 
-            var nomeMaiusculo = nome.ToUpper().Trim();
-            query.AppendLine("select count(*) ");
-            query.AppendLine("from tipo_calendario ");
-            query.AppendLine("where upper(nome) = @nomeMaiusculo ");
-            query.AppendLine("and excluido = false");
-
-            if (id > 0)
-                query.AppendLine("and id <> @id");
-
-            int quantidadeRegistrosExistentes = await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { id, nomeMaiusculo });
-
-            return quantidadeRegistrosExistentes > 0;
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { id, nomeMaiusculo =  nome.ToUpper().Trim()}) > 0;
         }
 
-        private static StringBuilder ObterQueryListarPorAnoLetivo()
+        private string IncluirFiltroPorId(long id)
         {
-            StringBuilder query = new StringBuilder();
-
-            query.AppendLine("select *");
-            query.AppendLine("from tipo_calendario");
-            query.AppendLine("where not excluido");
-            query.AppendLine("and ano_letivo = @anoLetivo");
-            return query;
+            return id > 0 ? "and id <> @id" : string.Empty;
         }
 
         public async Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
         {
-            var query = new StringBuilder(@"select count(pe.Id)
-                          from periodo_escolar pe 
-                         where pe.tipo_calendario_id = @tipoCalendarioId
-                           and periodo_fim::date >= @dataReferencia::date ");
-
-            if (!ehAnoLetivo)
-            {
-                query.AppendLine("and periodo_inicio <= @dataReferencia");
-            }
-
-            if (bimestre > 0)
-                query.AppendLine(" and pe.bimestre = @bimestre");
+            var query = $@"select count(pe.Id)
+                             from periodo_escolar pe 
+                          where pe.tipo_calendario_id = @tipoCalendarioId
+                               and periodo_fim::date >= @dataReferencia::date 
+                               {IncluirFiltroDataReferencia(!ehAnoLetivo)}
+                               {IncluirFiltroBimestre(bimestre)}";
 
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre }) > 0;
         }
 
-        public async Task<long> ObterIdPorAnoLetivoEModalidadeAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
+        private string IncluirFiltroBimestre(int bimestre)
         {
-            var query = new StringBuilder();
+            return bimestre > 0 ? " and pe.bimestre = @bimestre " : string.Empty;
+        }
 
-            query.AppendLine("select id");
-            query.AppendLine("from tipo_calendario t");
-            query.AppendLine("where t.excluido = false");
-            query.AppendLine("and t.ano_letivo = @anoLetivo");
-            query.AppendLine("and t.modalidade = @modalidade");
-            query.AppendLine("and t.situacao ");
+        private string IncluirFiltroDataReferencia(bool ehPorDataReferencia)
+        {
+            return ehPorDataReferencia ? " and periodo_inicio <= @dataReferencia " : string.Empty;
+        }
 
-            var dataReferencia = new DateTime(anoLetivo, 7, 1);
-            if (modalidade == ModalidadeTipoCalendario.EJA)
-            {
-                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_inicio >= @dataReferencia";
-                query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");                
-            }
+        public async Task<long> ObterIdPorAnoLetivoEModalidadeAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int? semestre)
+        {
+            var query = $@"select id
+                            from tipo_calendario t
+                          where not t.excluido
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade = @modalidade
+                            and t.situacao 
+                            {IncluirFiltroSemestrePorModalidade(modalidade)}";
 
-            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
+            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { anoLetivo, modalidade = (int)modalidade, semestre });
             return retorno;
         }
 
-        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades, int semestre = 0)
+        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades, int? semestre = null)
         {
-            StringBuilder query = ObterQueryListarPorAnoLetivo();
-            query.AppendLine(" and modalidade = any(@modalidades) ");
+            var query = $@"select id, 
+                             ano_letivo as anoLetivo,
+                             nome,
+                             periodo,
+                             modalidade,
+                             situacao,
+                             semestre,
+                             migrado,
+                             criado_em as criadoEm,
+                             criado_por as criadoPor,
+                             criado_rf as criadoRf,
+                             alterado_em as alteradoEm,
+                             alterado_por as alteradoPor,
+                             alterado_rf as alteradoRf
+                    from tipo_calendario 
+                    where not excluido
+                          and ano_letivo = @anoLetivo
+                          and modalidade = any(@modalidades) 
+                          {IncluirFiltroSemestre(semestre)}";
 
-            DateTime dataReferencia = DateTime.MinValue;
-            if (semestre > 0)
-            {
-                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
-                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tipo_calendario.id and {periodoReferencia}) ");
-
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
-            }
-
-            return await database.Conexao.QueryAsync<TipoCalendario>(query.ToString(), new { anoLetivo, modalidades, dataReferencia });
+            return await database.Conexao.QueryAsync<TipoCalendario>(query, new { anoLetivo, modalidades, semestre });
         }
 
         public async Task<IEnumerable<TipoCalendarioRetornoDto>> ListarPorAnoLetivoDescricaoEModalidades(int anoLetivo, string descricao, IEnumerable<int> modalidades)
@@ -189,12 +204,13 @@ namespace SME.SGP.Dados.Repositorios
    		                                           tc.ano_letivo as AnoLetivo,   		  
    		                                           tc.nome,
    		                                           tc.ano_letivo ||' - '|| tc.nome as descricao,
-   		                                           tc.modalidade
+   		                                           tc.modalidade,
+   		                                           tc.semestre
                                               from tipo_calendario tc
                                              where not tc.excluido
                                                and tc.ano_letivo = @anoLetivo ");
 
-            if (!string.IsNullOrEmpty(descricao))
+            if (descricao.EstaPreenchido())
                 query.AppendLine("and UPPER(ano_letivo ||' - '|| nome) like UPPER('%{descricao}%') ");
 
             if (modalidades.Any() && !modalidades.Any(c => c == -99))
@@ -205,73 +221,66 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> ObterTiposCalendarioPorDescricaoAsync(string descricao)
         {
-            string query = $@"select id, 
+            var query = $@"select id, 
 	                                 ano_letivo,
 	                                 nome,
                                      modalidade,
 	                                 ano_letivo ||' - '|| nome as descricao,
                                      migrado,
                                      periodo,
-                                     situacao
+                                     situacao,
+                                     semestre
                                 from tipo_calendario tc
                                where UPPER(ano_letivo ||' - '|| nome) like UPPER('%{descricao}%')
                                  and not excluido
                                order by descricao desc
                                limit 10";
 
-            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString());
+            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query);
         }
 
         public async Task<string> ObterNomePorId(long tipoCalendarioId)
         {
-            var query = @"select nome from tipo_calendario where id = @tipoCalendarioId";
+            var query = "select nome from tipo_calendario where id = @tipoCalendarioId";
 
             return await database.Conexao.QueryFirstAsync<string>(query, new { tipoCalendarioId });
         }
 
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> ListarPorAnosLetivoEModalidades(int[] anosLetivo, int[] modalidades, string nome)
         {
-            StringBuilder query = new StringBuilder();
+            var query = $@"select *, ano_letivo ||' - '|| nome as descricao
+                           from tipo_calendario
+                           where not excluido
+                                and ano_letivo = any(@anosLetivo)
+                                and modalidade = any(@modalidades)
+                                {IncluirFiltroPorNome(nome)}
+                           order by ano_letivo desc ";
 
-            query.AppendLine("select *, ano_letivo ||' - '|| nome as descricao");
-            query.AppendLine("from tipo_calendario");
-            query.AppendLine("where not excluido");
-            query.AppendLine("and ano_letivo = any(@anosLetivo)");
-            query.AppendLine("and modalidade = any(@modalidades)");
-
-            if (!string.IsNullOrEmpty(nome))
-                query.Append($"and upper(f_unaccent(nome)) like UPPER('%{nome}%')");
-
-            query.AppendLine("order by ano_letivo desc");
-
-            return await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query.ToString(), new { anosLetivo, modalidades, nome });
+            var retorno = await database.Conexao.QueryAsync<TipoCalendarioBuscaDto>(query, new { anosLetivo, modalidades });
+            return retorno;
         }
 
-        public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, int modalidadeTipoCalendarioId, int semestre = 0)
+        private string IncluirFiltroPorNome(string nome)
         {
-            var query = @"select
+            return nome.EstaPreenchido() ? $"and upper(f_unaccent(nome)) like upper(f_unaccent('%{nome}%'))" : string.Empty;
+        }
+
+        public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int? semestre = null)
+        {
+            var query = $@"select
 	                        pe.id as periodoEscolarId,
 	                        pe.bimestre,
 	                        pe.periodo_inicio as PeriodoInicio,
 	                        pe.periodo_fim as PeriodoFim
-                        from
-	                        tipo_calendario tc
-                        inner join periodo_escolar pe on
-	                        pe.tipo_calendario_id = tc.id
+                        from tipo_calendario tc
+                        join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                         where
 	                        tc.ano_letivo = @anoLetivo
-	                        and tc.modalidade = @modalidadeTipoCalendarioId
-	                        and not tc.excluido ";
-            var dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
+	                        and tc.modalidade = @modalidadeTipoCalendario
+	                        and not tc.excluido 
+	                        {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario)}";
 
-            if (modalidadeTipoCalendarioId == (int)Modalidade.EJA.ObterModalidadeTipoCalendario() && semestre > 0)
-            {
-                if (semestre == 1)
-                    query += $"and pe.periodo_inicio < @dataReferencia";
-                else query += $"and pe.periodo_fim > @dataReferencia";
-            }
-
-            return await database.Conexao.QueryAsync<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>(query.ToString(), new { anoLetivo, modalidadeTipoCalendarioId, dataReferencia });
+            return await database.Conexao.QueryAsync<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>(query, new { anoLetivo, modalidadeTipoCalendario = (int)modalidadeTipoCalendario, semestre });
         }
 
         public async Task<long> ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferencia(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendarioId, DateTime dataReferencia)
@@ -310,23 +319,5 @@ namespace SME.SGP.Dados.Repositorios
                     modalidadeTipoCalendario
                 });
         }
-
-        public async Task<IEnumerable<GestoresDreUePorTipoModalidadeCalendarioDto>> ObterGestoresUePorTipoCalendarioModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendarioId)
-        {
-            var query = @"select distinct ue.ue_id as Ue, dre.dre_id as Dre from tipo_calendario tc 
-                                inner join turma t on t.modalidade_codigo = tc.modalidade
-                                inner join ue ue on ue.id = t.ue_id 
-                                inner join dre dre on dre.id = ue.dre_id
-                                where tc.modalidade = @modalidadeTipoCalendarioId and tc.ano_letivo = @anoLetivo and tc.excluido = false";
-
-            var parametros = new
-            {
-                anoLetivo,
-                modalidadeTipoCalendarioId,
-            };
-
-            return await database.Conexao.QueryAsync<GestoresDreUePorTipoModalidadeCalendarioDto>(query, parametros);
-        }
-
     }
 }

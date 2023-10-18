@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PeriodoFechamentoVigenteDto> Handle(ObterPeriodoFechamentoVigentePorAnoModalidadeQuery request, CancellationToken cancellationToken)
         {
-            var modalidade = request.ModalidadeTipoCalendario ?? Dominio.ModalidadeTipoCalendario.FundamentalMedio;
+            var modalidade = request.ModalidadeTipoCalendario ?? Dominio.ModalidadeTipoCalendario.FundamentalMedio; //E se vier outra modalidade?
             return await repositorioPeriodoFechamento.ObterPeriodoVigentePorAnoModalidade(request.AnoLetivo, (int)modalidade);
         }
     }

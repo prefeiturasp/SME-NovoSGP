@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery : IRequest<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>>
     {
-        public ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
+        public ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery(int anoLetivo, ModalidadeTipoCalendario modalidade, int? semestre = null)
         {
 
             AnoLetivo = anoLetivo;
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public int AnoLetivo { get; set; }
         public ModalidadeTipoCalendario Modalidade { get; set; }
-        public int Semestre { get; set; }
+        public int? Semestre { get; set; }
     }
 
     public class ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQueryValidator : AbstractValidator<ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery>

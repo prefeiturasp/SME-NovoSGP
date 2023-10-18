@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio
 
             await ValidarSeTipoCalendarioPossuiPeriodoCadastrado(periodos, tipo);
 
-            bool eja = tipo.Modalidade == ModalidadeTipoCalendario.EJA;
+            bool eja = tipo.Modalidade.EhEJA();
 
             int quantidadeBimestres = tipo.Periodo == Periodo.Semestral ? 2 : 4;
 

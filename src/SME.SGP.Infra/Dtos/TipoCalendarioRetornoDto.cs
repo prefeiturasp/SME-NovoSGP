@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public string Nome { get; set; }
         public string Descricao { get; set; }
         public ModalidadeTipoCalendario Modalidade { get; set; }
+        public int? Semestre { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private int ObterSemestre(int semestre, ModalidadeTipoCalendario tipoCalendario)
-            => tipoCalendario == ModalidadeTipoCalendario.EJA ? semestre : 0;
+            => tipoCalendario.EhEjaOuCelp() ? semestre : 0;
 
         private async Task<ModalidadeTipoCalendario> ObterTipoCalendario(string ueCodigo)
         {
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                     return ModalidadeTipoCalendario.Infantil;
                     break;
                 case Dominio.TipoEscola.CIEJA:
-                    return ModalidadeTipoCalendario.EJA;
+                    return ModalidadeTipoCalendario.EJA; //Onde o CELP se encaixa aqui?
                     break;
                 case Dominio.TipoEscola.Nenhum:
                 default:

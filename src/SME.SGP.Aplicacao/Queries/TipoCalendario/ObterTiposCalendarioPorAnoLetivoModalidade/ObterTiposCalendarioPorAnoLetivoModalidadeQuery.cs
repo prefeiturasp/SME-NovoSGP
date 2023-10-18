@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTiposCalendarioPorAnoLetivoModalidadeQuery : IRequest<IEnumerable<TipoCalendario>>
     {
-        public ObterTiposCalendarioPorAnoLetivoModalidadeQuery(int anoLetivo, string modalidadesStr, int semestre = 0)
+        public ObterTiposCalendarioPorAnoLetivoModalidadeQuery(int anoLetivo, string modalidadesStr, int? semestre = null)
         {
             AnoLetivo = anoLetivo;
             ModalidadesStr = modalidadesStr;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public int AnoLetivo { get; }
-        public int Semestre { get; }
+        public int? Semestre { get; }
         public string ModalidadesStr { get; }
 
         public Modalidade[] Modalidades { get; }
@@ -30,34 +30,27 @@ namespace SME.SGP.Aplicacao
         public static bool ObterModalidadesDaLista(string listaStr, out Modalidade[] modalidades)
         {
             modalidades = null;
-            if (string.IsNullOrWhiteSpace(listaStr))
-            {
+            if (listaStr.NaoEstaPreenchido())
                 return false;
-            }
 
             var listaModalidadesStr = listaStr.Split(',');
             var listaModalidades = new List<Modalidade>(listaStr.Length);
 
             foreach (var modalidadeStr in listaModalidadesStr)
             {
-                if (!string.IsNullOrWhiteSpace(modalidadeStr))
+                if (modalidadeStr.EstaPreenchido())
                 {
                     try
                     {
                         var modalidade = (Modalidade)Enum.Parse(typeof(Modalidade), modalidadeStr);
 
                         if (Enum.IsDefined(typeof(Modalidade), modalidade))
-                        {
                             listaModalidades.Add(modalidade);
-                        }
                         else
-                        {
                             return false;
-                        }
                     }
                     catch
                     {
-                        // falhou o parse.
                         return false;
                     }
                 }
