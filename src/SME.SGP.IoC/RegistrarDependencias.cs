@@ -565,6 +565,10 @@ namespace SME.SGP.IoC
 
             //Relatório dinâmico NAAPA
             services.TryAddScoped<IRepositorioRelatorioDinamicoNAAPA, RepositorioRelatorioDinamicoNAAPA>();
+
+            //Informativo
+            services.TryAddScoped<IRepositorioInformativo, RepositorioInformativo>();
+            services.TryAddScoped<IRepositorioInformativoPerfil, RepositorioInformativoPerfil>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
