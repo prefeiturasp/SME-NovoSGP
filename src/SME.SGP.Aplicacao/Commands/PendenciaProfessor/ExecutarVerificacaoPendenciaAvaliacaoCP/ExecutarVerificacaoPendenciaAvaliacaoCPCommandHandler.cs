@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAvaliacaoCPCommand request, CancellationToken cancellationToken)
         {
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade != ModalidadeTipoCalendario.Infantil))
+            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade.NaoEhEducacaoInfantil()))
             {
                 try
                 {

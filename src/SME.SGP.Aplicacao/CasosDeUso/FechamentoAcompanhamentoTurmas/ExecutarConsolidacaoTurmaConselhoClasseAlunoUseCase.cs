@@ -235,7 +235,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> TipoNotaEhConceito(Turma turma, int bimestre)
         {
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
             var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, periodoEscolar.NaoEhNulo() ? periodoEscolar.PeriodoFim : DateTimeExtension.HorarioBrasilia().Date));
             if (tipoNota.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
@@ -269,7 +269,7 @@ namespace SME.SGP.Aplicacao
                 if (turmasItinerarioEnsinoMedio.NaoEhNulo())
                     tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
-                var turmasCodigosComplementares = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, codigoAluno, tiposParaConsulta, turma.Historica, null, null, (turma.Semestre != 0 ? turma.Semestre : null)));
+                var turmasCodigosComplementares = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, codigoAluno, tiposParaConsulta, null, null, (turma.Semestre != 0 ? turma.Semestre : null)));
 
                 if (turmasCodigosComplementares.Any())
                 {

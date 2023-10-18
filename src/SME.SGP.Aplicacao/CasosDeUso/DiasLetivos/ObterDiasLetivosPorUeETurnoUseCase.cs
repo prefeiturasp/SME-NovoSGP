@@ -24,14 +24,14 @@ namespace SME.SGP.Aplicacao
                 ?
                 ModalidadeTipoCalendario.FundamentalMedio
                 :
-                ModalidadeTipoCalendario.EJA;           
+                ModalidadeTipoCalendario.EJA; //Como fica o tratamento de CELP?          
 
             var diasLetivos = new List<DiaLetivoSimplesDto>();
             long tipoCalendarioId = 0;
             var semestre = 0;
             var anoLetivo = param.DataInicio.Year;            
 
-            if (modalidadeCalendario == ModalidadeTipoCalendario.EJA)
+            if (modalidadeCalendario.EhEjaOuCelp())
                 tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferenciaQuery(anoLetivo, modalidadeCalendario, param.DataInicio));
             else
                 tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(modalidadeCalendario, anoLetivo, semestre));

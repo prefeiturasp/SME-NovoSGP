@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
         private async Task CriaTurma2()
         {
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = ID_UE,
                 Ano = "2",

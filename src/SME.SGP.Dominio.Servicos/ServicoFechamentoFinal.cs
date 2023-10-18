@@ -318,7 +318,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task VerificaPersistenciaGeral(Turma turma)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), turma.Semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), turma.Semestre);
             if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de calendário.");
 

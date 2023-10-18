@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery request, CancellationToken cancellationToken)
-            => await repositorioAula.ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(request.DataAula, request.TurmaCodigo, request.DisciplinasId, request.ProfessorRf, request.TipoAula);
+            => await repositorioAula.ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(request.DataAula, request.TurmaCodigo, request.DisciplinasId, request.TipoAula, request.ProfessorRf);
     }
 }

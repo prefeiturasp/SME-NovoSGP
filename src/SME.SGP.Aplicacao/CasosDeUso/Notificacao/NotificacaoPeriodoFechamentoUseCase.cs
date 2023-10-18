@@ -37,6 +37,10 @@ namespace SME.SGP.Aplicacao
                 periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.EJA, DateTime.Now.Date.AddDays(diasParaFechamento));
                 if (periodoIniciando.NaoEhNulo())
                     await NotificarDre(ModalidadeTipoCalendario.EJA, periodoIniciando);
+                
+                periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.CELP, DateTime.Now.Date.AddDays(diasParaFechamento));//Está correto adicionar CELP?
+                if (periodoIniciando.NaoEhNulo())
+                    await NotificarDre(ModalidadeTipoCalendario.CELP, periodoIniciando);
             }
         }
 
@@ -58,6 +62,10 @@ namespace SME.SGP.Aplicacao
                 periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.EJA, DateTime.Now.Date.AddDays(diasParaFechamento));
                 if (periodoIniciando.NaoEhNulo())
                     await NotificarUe(ModalidadeTipoCalendario.EJA, periodoIniciando);
+                
+                periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.CELP, DateTime.Now.Date.AddDays(diasParaFechamento));//Está correto adicionar CELP?
+                if (periodoIniciando.NaoEhNulo())
+                    await NotificarUe(ModalidadeTipoCalendario.CELP, periodoIniciando);
             }
         }
 

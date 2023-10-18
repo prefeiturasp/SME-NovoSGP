@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao
 
             retorno.ShouldBeTrue();
 
-            var retornoTurma = ObterTodos<Turma>();
+            var retornoTurma = ObterTodos<Dominio.Turma>();
 
             retornoTurma.ShouldNotBeEmpty();
             
@@ -138,7 +138,7 @@ namespace SME.SGP.TesteIntegracao
                 turmaId++;
             }
 
-            var retornoTurma = ObterTodos<Turma>();
+            var retornoTurma = ObterTodos<Dominio.Turma>();
 
             retornoTurma.ShouldBeEmpty();
 
@@ -160,7 +160,7 @@ namespace SME.SGP.TesteIntegracao
 
             retorno.ShouldBeTrue();
 
-            var retornoTurma = ObterTodos<Turma>();
+            var retornoTurma = ObterTodos<Dominio.Turma>();
 
             retornoTurma.ShouldNotBeEmpty();
         }
@@ -181,7 +181,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoEscola = TipoEscola.EMEF
             });
             
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = Turma_4A_ANO4_Ano,
@@ -191,7 +191,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = Turma_4A_ANO4_Nome
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = Turma_5B_ANO5_Ano,
@@ -201,7 +201,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = Turma_5B_ANO5_Nome
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = Turma_6B_ANO6_Ano,
@@ -211,7 +211,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = Turma_6B_ANO6_Nome
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = Turma_8B_ANO8_Ano,
@@ -221,7 +221,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = Turma_8B_ANO8_Nome
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = Turma_9A_ANO9_Ano,
@@ -231,7 +231,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = Turma_9A_ANO9_Nome
             });
 
-            await InserirNaBase(new Turma
+            await InserirNaBase(new Dominio.Turma
             {
                 UeId = 1,
                 Ano = Turma_9B_ANO9_Ano,
