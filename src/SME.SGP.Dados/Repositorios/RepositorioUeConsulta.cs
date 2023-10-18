@@ -246,15 +246,15 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select ue.*, dre.*
                             from ue
                            inner join dre on dre.id = ue.dre_id
-                           where dre_id = @dreCodigo
-                             and exists (select 1 from turma where modalidade_codigo = any(@modalidades))";
+                           where dre.dre_id = @dreCodigo
+                             and exists (select 1 from turma where modalidade_codigo = any(@modalidadesIds))";
 
             return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 return ue;
             },
-            new { dreCodigo, modalidades }));
+            new { dreCodigo, modalidadesIds = modalidades.Cast<int>().ToArray() }));
         }
 
         public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades, DateTime dataReferencia)
