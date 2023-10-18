@@ -7,3 +7,8 @@ update  tipo_calendario tc
 where tc.modalidade = 2 
       and not excluido 
 	  and semestre is null;
+	  
+--> Inserindo parâmetro
+INSERT INTO public.parametros_sistema
+(id, nome, tipo, descricao, valor, ano, ativo, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf)
+VALUES(1, 'CelpDiasLetivos', 1, 'Dias letivos minimo permitido para CELP', '100', 2023, true, now(), 'Sistema', NULL, NULL, 'Sistema', NULL);

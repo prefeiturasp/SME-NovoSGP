@@ -72,21 +72,22 @@ namespace SME.SGP.Aplicacao
 
         private async Task<int> ObterDiasLetivos(ModalidadeTipoCalendario modalidade, int anoLetivo)
         {
-            var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
-
-            return Convert.ToInt32(modalidade == ModalidadeTipoCalendario.EJA ?
-                            await ObterParametroDiasLetivosEja(parametros) : //Aqui, vamos ter parâmetros para o CELP?
-                            await ObterParametroDiasLetivosFundMedio(parametros));
+            switch (modalidade)
+            {
+                case ModalidadeTipoCalendario.EJA : 
+                    return Convert.ToInt32(await ObterParametrosSistemas(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
+                
+                case ModalidadeTipoCalendario.CELP : 
+                    return Convert.ToInt32(await ObterParametrosSistemas(TipoParametroSistema.CelpDiasLetivos, anoLetivo));
+                
+                default : 
+                    return Convert.ToInt32(await ObterParametrosSistemas(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
+            }
         }
 
-        private async Task<string> ObterParametroDiasLetivosEja(IEnumerable<ParametrosSistema> parametros)
+        private async Task<IEnumerable<ParametrosSistema>> ObterParametrosSistemas(TipoParametroSistema tipoParametroSistema, int anoLetivo)
         {
-            return parametros.FirstOrDefault(a => a.Nome == "EjaDiasLetivos").Valor; //Vamos ter para CELP?
-        }
-
-        private async Task<string> ObterParametroDiasLetivosFundMedio(IEnumerable<ParametrosSistema> parametros)
-        {
-            return parametros.FirstOrDefault(a => a.Nome == "FundamentalMedioDiasLetivos").Valor;
+            return await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(tipoParametroSistema, anoLetivo));
         }
 
         public List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)

@@ -38,11 +38,11 @@ namespace SME.SGP.Aplicacao
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
                 
-                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 1));//Fazer para CELP?
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 1));
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.CELP, anoAtual);
 
-                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 2));//Fazer para CELP?
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 2));
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.CELP, anoAtual);
 
