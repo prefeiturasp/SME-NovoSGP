@@ -161,9 +161,9 @@ namespace SME.SGP.Aplicacao
                 string erroTipos = tiposInvalidos.ToString().TrimEnd(',');
 
                 if (tiposInvalidos.ToString().IndexOf(',') > -1)
-                    throw new NegocioException($"Houve um erro ao excluir os tipos de calendário '{erroTipos}'. Os tipos de calendário possuem eventos vinculados");
+                    throw new NegocioException($"Houve um erro ao excluir os tipos de calendário '{erroTipos}'. Os tipos de calendário possuem eventos vinculados. Excluia primeiro os eventos para depois remover o tipo de calendário escolar");
                 else
-                    throw new NegocioException($"Houve um erro ao excluir o tipo de calendário '{erroTipos}'. O tipo de calendário possui eventos vinculados");
+                    throw new NegocioException($"Houve um erro ao excluir o tipo de calendário '{erroTipos}'. O tipo de calendário possui eventos vinculados. Excluia primeiro os eventos para depois remover o tipo de calendário escolar");
             }
         }
     }
