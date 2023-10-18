@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTiposCalendarioPorAnoLetivoModalidadeQuery : IRequest<IEnumerable<TipoCalendario>>
     {
-        public ObterTiposCalendarioPorAnoLetivoModalidadeQuery(int anoLetivo, string modalidadesStr, int? semestre = null)
+        public ObterTiposCalendarioPorAnoLetivoModalidadeQuery(int anoLetivo, string modalidadesStr, int semestre = 0)
         {
             AnoLetivo = anoLetivo;
             ModalidadesStr = modalidadesStr;
@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public int AnoLetivo { get; }
-        public int? Semestre { get; }
+        public int Semestre { get; }
         public string ModalidadesStr { get; }
 
         public Modalidade[] Modalidades { get; }

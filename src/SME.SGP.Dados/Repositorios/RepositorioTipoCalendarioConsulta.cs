@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
             }, new { tipoCalendarioId, dataParaVerificar }, splitOn: "id")).FirstOrDefault();
         }
 
-        public async Task<TipoCalendario> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int? semestre = null)
+        public async Task<TipoCalendario> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
             var query = $@"select id, 
                                  ano_letivo as anoLetivo,
@@ -54,21 +54,21 @@ namespace SME.SGP.Dados.Repositorios
                         where not excluido
                             and ano_letivo = @anoLetivo
                             and modalidade = @modalidade
-                            {IncluirFiltroSemestrePorModalidade(modalidade)}";
+                            {IncluirFiltroSemestrePorModalidade(modalidade, semestre)}";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<TipoCalendario>(query, new { anoLetivo, modalidade = (int)modalidade, semestre });
         }
 
-        private string IncluirFiltroSemestrePorModalidade(ModalidadeTipoCalendario modalidade)
+        private string IncluirFiltroSemestrePorModalidade(ModalidadeTipoCalendario modalidade,int semestre)
         {
-            return modalidade.EhEjaOuCelp()
+            return modalidade.EhEjaOuCelp() && semestre.EhMaiorQueZero() 
                 ? ObterFiltroSemestre() 
                 : string.Empty;
         }
         
-        private string IncluirFiltroSemestre(int? semestre)
+        private string IncluirFiltroSemestre(int semestre)
         {
-            return semestre.HasValue ? ObterFiltroSemestre() : string.Empty;
+            return semestre.EhMaiorQueZero() ? ObterFiltroSemestre() : string.Empty;
         }
 
         private static string ObterFiltroSemestre()
@@ -129,12 +129,12 @@ namespace SME.SGP.Dados.Repositorios
                           and not excluido
                           {IncluirFiltroPorId(id)}";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { id, nomeMaiusculo =  nome.ToUpper().Trim()}) > 0;
+            return (await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { id, nomeMaiusculo =  nome.ToUpper().Trim()})).EhMaiorQueZero();
         }
 
         private string IncluirFiltroPorId(long id)
         {
-            return id > 0 ? "and id <> @id" : string.Empty;
+            return id.EhMaiorQueZero() ? "and id <> @id" : string.Empty;
         }
 
         public async Task<bool> PeriodoEmAberto(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
@@ -146,12 +146,12 @@ namespace SME.SGP.Dados.Repositorios
                                {IncluirFiltroDataReferencia(!ehAnoLetivo)}
                                {IncluirFiltroBimestre(bimestre)}";
 
-            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre }) > 0;
+            return (await database.Conexao.QueryFirstAsync<int>(query.ToString(), new { tipoCalendarioId, dataReferencia, bimestre })).EhMaiorQueZero();
         }
 
         private string IncluirFiltroBimestre(int bimestre)
         {
-            return bimestre > 0 ? " and pe.bimestre = @bimestre " : string.Empty;
+            return bimestre.EhMaiorQueZero() ? " and pe.bimestre = @bimestre " : string.Empty;
         }
 
         private string IncluirFiltroDataReferencia(bool ehPorDataReferencia)
@@ -159,7 +159,7 @@ namespace SME.SGP.Dados.Repositorios
             return ehPorDataReferencia ? " and periodo_inicio <= @dataReferencia " : string.Empty;
         }
 
-        public async Task<long> ObterIdPorAnoLetivoEModalidadeAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int? semestre)
+        public async Task<long> ObterIdPorAnoLetivoEModalidadeAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
             var query = $@"select id
                             from tipo_calendario t
@@ -167,13 +167,13 @@ namespace SME.SGP.Dados.Repositorios
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade = @modalidade
                             and t.situacao 
-                            {IncluirFiltroSemestrePorModalidade(modalidade)}";
+                            {IncluirFiltroSemestrePorModalidade(modalidade, semestre)}";
 
             var retorno = await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { anoLetivo, modalidade = (int)modalidade, semestre });
             return retorno;
         }
 
-        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades, int? semestre = null)
+        public async Task<IEnumerable<TipoCalendario>> ListarPorAnoLetivoEModalidades(int anoLetivo, int[] modalidades, int semestre = 0)
         {
             var query = $@"select id, 
                              ano_letivo as anoLetivo,
@@ -265,7 +265,7 @@ namespace SME.SGP.Dados.Repositorios
             return nome.EstaPreenchido() ? $"and upper(f_unaccent(nome)) like upper(f_unaccent('%{nome}%'))" : string.Empty;
         }
 
-        public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int? semestre = null)
+        public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int semestre = 0)
         {
             var query = $@"select
 	                        pe.id as periodoEscolarId,
@@ -278,7 +278,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        tc.ano_letivo = @anoLetivo
 	                        and tc.modalidade = @modalidadeTipoCalendario
 	                        and not tc.excluido 
-	                        {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario)}";
+	                        {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
 
             return await database.Conexao.QueryAsync<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>(query, new { anoLetivo, modalidadeTipoCalendario = (int)modalidadeTipoCalendario, semestre });
         }
