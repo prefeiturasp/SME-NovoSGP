@@ -1195,26 +1195,8 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
                 Migrado = false,
-                Semestre = semestre
+                Semestre = tipoCalendario.EhEjaOuCelp() ? semestre : null
             });
-
-            //Avaliar se isso será necessário
-            // if (tipoCalendario == ModalidadeTipoCalendario.EJA) 
-            // {
-            //     await InserirNaBase(new TipoCalendario
-            //     {
-            //         AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
-            //         Nome = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NOME : ANO_LETIVO_Ano_Atual_NOME,
-            //         Periodo = Periodo.Semestral,
-            //         Modalidade = tipoCalendario,
-            //         Situacao = true,
-            //         CriadoEm = DateTime.Now,
-            //         CriadoPor = SISTEMA_NOME,
-            //         CriadoRF = SISTEMA_CODIGO_RF,
-            //         Excluido = false,
-            //         Migrado = false
-            //     });                
-            // }
         }
 
         protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
