@@ -84,7 +84,8 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = entidade.CriadoEm,
                 CriadoPor = entidade.CriadoPor,
                 DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
-                PossuiEventos = possuiEventos
+                PossuiEventos = possuiEventos,
+                Semestre = entidade.Semestre
             };
         }
 
