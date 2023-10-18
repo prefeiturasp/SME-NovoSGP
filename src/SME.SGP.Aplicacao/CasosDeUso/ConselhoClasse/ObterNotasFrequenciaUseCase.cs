@@ -233,7 +233,7 @@ namespace SME.SGP.Aplicacao
                 .GroupBy(c => c.GrupoMatrizId)
                 .ToList();
 
-            var permiteEdicao = dadosAluno.EstaAtivo() || await EstaInativoDentroPeriodoAberturaReabertura(dadosAluno.DataSituacao.Date, notasFrequenciaDto.Bimestre, tipoCalendario.Id, turma);
+            var permiteEdicao = dadosAluno.EstaAtivo() || await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, notasFrequenciaDto.Bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendario.Id));
 
             var periodoMatricula = alunoNaTurma != null ? await mediator
                 .Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula)) : null;
