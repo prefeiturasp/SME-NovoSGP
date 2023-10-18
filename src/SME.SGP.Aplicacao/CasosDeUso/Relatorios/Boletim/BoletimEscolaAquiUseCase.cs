@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(FiltroRelatorioEscolaAquiDto relatorioBoletimEscolaAquiDto)
         {
             int usuarioLogadoId = 1;
-            if (repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo).EhNulo())
+            if ((await repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo)).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a DRE");
 
             if (repositorioUe.ObterPorCodigo(relatorioBoletimEscolaAquiDto.UeCodigo).EhNulo())

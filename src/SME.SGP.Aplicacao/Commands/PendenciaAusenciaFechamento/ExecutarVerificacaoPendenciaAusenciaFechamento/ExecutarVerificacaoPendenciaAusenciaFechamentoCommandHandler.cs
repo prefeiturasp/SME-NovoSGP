@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAusenciaFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
+            var turmas = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, request.ModalidadeTipoCalendario.ObterModalidades()));
 
             var periodoFechamentoBimestres = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
             var componentes = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
                 foreach (var periodoFechamentoBimestre in periodoFechamentoBimestres)
                 {
-                    if (periodoFechamentoBimestre.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
+                    if (periodoFechamentoBimestre.PeriodoEscolar.TipoCalendario.Modalidade.EhEducacaoInfantil())
                         continue;
 
                     var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
         private bool EhBimestreFinal(ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre)
         {
-            return (bimestre == 2 && modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA) || bimestre == 4;
+            return (bimestre == 2 && modalidadeTipoCalendario.EhEjaOuCelp()) || bimestre == 4;
         }
 
         private async Task<bool> ExistePendenciaProfessor(long turmaId, long componenteCurricularId, string professorRf, long? periodoEscolarId)

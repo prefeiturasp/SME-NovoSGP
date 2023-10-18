@@ -1344,7 +1344,7 @@ namespace SME.SGP.Infra
         NAAPA_C = 235,
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
-            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
@@ -1353,7 +1353,7 @@ namespace SME.SGP.Infra
         NAAPA_I = 236,
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
-            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,
@@ -1362,7 +1362,7 @@ namespace SME.SGP.Infra
         NAAPA_E = 237,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA, 
-            Menu = ConstantesMenuPermissao.MENU_NAAPA, 
+            Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
             Url = ConstantesMenuPermissao.ROTA_NAAPA_ENCAMINHAMENTO,

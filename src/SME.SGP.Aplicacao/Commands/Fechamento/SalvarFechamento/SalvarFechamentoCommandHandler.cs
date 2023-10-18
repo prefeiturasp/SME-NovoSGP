@@ -64,15 +64,13 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendario = await mediator.Send(
                 new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(
-                    turma.ModalidadeCodigo == Modalidade.EJA
-                        ? ModalidadeTipoCalendario.EJA
-                        : ModalidadeTipoCalendario.FundamentalMedio, turma.AnoLetivo, turma.Semestre),
+                    turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), turma.AnoLetivo, turma.Semestre),
                 cancellationToken);
 
             var ue = turma.Ue;
 
-            var bimestre = fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario != ModalidadeTipoCalendario.EJA ? 4
-                : fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.Equals(ModalidadeTipoCalendario.EJA) ? 2
+            var bimestre = fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 4
+                : fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 2
                 : fechamentoTurma.Bimestre;
 
             var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, bimestre);
@@ -231,6 +229,7 @@ namespace SME.SGP.Aplicacao
                 await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
                 unitOfWork.PersistirTransacao();
 
+                await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolar.Id, fechamentoTurma.DisciplinaId), cancellationToken);
                 await RemoverCache(string.Format(NomeChaveCache.FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, bimestre), cancellationToken);
 
                 var alunosDaTurma = (await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma), cancellationToken)).ToList();

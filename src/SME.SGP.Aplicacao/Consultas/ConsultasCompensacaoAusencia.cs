@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,7 +16,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia;
         private readonly IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno;
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
-        private readonly IConsultasProfessor consultasProfessor;
         private readonly IConsultasUe consultasUe;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
@@ -33,14 +31,12 @@ namespace SME.SGP.Aplicacao
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IServicoUsuario servicoUsuario,
                                             IContextoAplicacao contextoAplicacao,
-                                            IConsultasProfessor consultasProfessor,
                                             IConsultasUe consultasUe,
                                             IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.consultasCompensacaoAusenciaAluno = consultasCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaAluno));
             this.consultasCompensacaoAusenciaDisciplinaRegencia = consultasCompensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaDisciplinaRegencia));
-            this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
@@ -61,8 +57,8 @@ namespace SME.SGP.Aplicacao
             // Busca os nomes de alunos do EOL por turma
             var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-            var matriculadosTurmaPAP = alunos.Any() ? await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), turma) : Enumerable.Empty<AlunosTurmaProgramaPapDto>(); 
-            
+            var matriculadosTurmaPAP = alunos.Any() ? await BuscarAlunosTurmaPAP(alunos.Select(x => x.CodigoAluno).ToArray(), turma) : Enumerable.Empty<AlunosTurmaProgramaPapDto>();
+
             foreach (var compensacaoAusencia in listaCompensacoes.Items)
             {
                 var compensacaoDto = MapearParaDto(compensacaoAusencia);
@@ -103,7 +99,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, Turma turma)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
         public async Task<CompensacaoAusenciaCompletoDto> ObterPorId(long id)
         {

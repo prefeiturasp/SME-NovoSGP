@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = new List<DisciplinaDto>();
             foreach (var turmaDisciplina in aulasAgrupadasTurmaDisciplina.GroupBy(x => x.TurmaId))
             {
-                var contemDisciplinaCodigoTerritorioSaber = turmaDisciplina.Any(x => long.Parse(x.DisciplinaId) >= TerritorioSaberConstants.COMPONENTE_AGRUPAMENTO_TERRITORIO_SABER_ID_INICIAL);
+                var contemDisciplinaCodigoTerritorioSaber = turmaDisciplina.Any(x => x.DisciplinaId.EhIdComponenteCurricularTerritorioSaberAgrupado());
                 var disciplinasTurma = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(turmaDisciplina.Select(s => long.Parse(s.DisciplinaId)).Distinct().ToArray()))).ToList();
                 disciplinasTurma.ForEach(disciplina => disciplina.TurmaCodigo = turmaDisciplina.Key);
                 componentesCurriculares.AddRange(disciplinasTurma);

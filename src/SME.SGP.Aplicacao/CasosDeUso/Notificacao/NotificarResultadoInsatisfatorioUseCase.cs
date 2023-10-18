@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
 
             await NotificarResultadoInsatisfatorio(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.FundamentalMedio);
             await NotificarResultadoInsatisfatorio(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.EJA);
+            await NotificarResultadoInsatisfatorio(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.CELP);//Está correto adicionar CELP?
 
             return true;
         }

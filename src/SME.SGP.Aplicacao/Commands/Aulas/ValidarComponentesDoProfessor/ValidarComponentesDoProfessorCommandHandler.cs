@@ -21,14 +21,14 @@ namespace SME.SGP.Aplicacao
         public async Task<(bool resultado, string mensagem)> Handle(ValidarComponentesDoProfessorCommand request, CancellationToken cancellationToken)
         {
             var podeCriarAulasParaTurma = false;
-
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
             var componentesCurricularesDoProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil()));
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, turma.EhTurmaInfantil), cancellationToken);
 
             if (request.Usuario.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login), cancellationToken);
 
                 if (componentesCurricularesDoProfessorCJ.NaoEhNulo())
                 {
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                 if (!request.Usuario.EhGestorEscolar())
                 {
                     var usuarioPodePersistirTurmaNaData = await mediator
-                        .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario));
+                        .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario), cancellationToken);
 
                     if (!usuarioPodePersistirTurmaNaData)
                         return (false, MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);

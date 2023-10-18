@@ -91,8 +91,8 @@ namespace SME.SGP.Aplicacao
                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
                                                                                  usuarioLogado.Login,
                                                                                  usuarioLogado.PerfilAtual,
-                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
-                var componentesCurricularesAgrupamentoTerritorioSaber = componentesCurricularesEolProfessor.Where(cc => cc.Codigo >= TerritorioSaberConstants.COMPONENTE_AGRUPAMENTO_TERRITORIO_SABER_ID_INICIAL);
+                                                                                 turma.EhTurmaInfantil))).ToList();
+                var componentesCurricularesAgrupamentoTerritorioSaber = componentesCurricularesEolProfessor.Where(cc => cc.Codigo.EhIdComponenteCurricularTerritorioSaberAgrupado());
                 if (componentesCurricularesAgrupamentoTerritorioSaber.Any())
                     componentesCurricularesEolProfessor.AddRange(await mediator.Send(new ObterComponentesTerritorioAgrupamentoCorrelacionadosQuery(componentesCurricularesAgrupamentoTerritorioSaber.Select(cc => cc.Codigo).ToArray(), dataConsulta)));
 

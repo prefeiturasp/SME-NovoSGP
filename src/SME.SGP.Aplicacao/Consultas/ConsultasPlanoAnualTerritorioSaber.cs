@@ -50,6 +50,7 @@ namespace SME.SGP.Aplicacao
             IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
             var componenteCurricularId = territorioExperienciaId;
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+            var bimestres = periodos.Select(s => s.Bimestre).Distinct();
 
             foreach(var bimestre in periodos.Select(s => s.Bimestre).Distinct().ToList())
             {
@@ -67,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaId,
                                                                                   usuarioLogado.Login,
                                                                                   usuarioLogado.PerfilAtual,
-                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                                                                                  turma.EhTurmaInfantil));
 
             if (usuarioLogado.EhProfessorCj())
             {
@@ -134,8 +135,7 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Turma não encontrada.");
             }
-            var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario());
             if (tipoCalendario.EhNulo())
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");
@@ -158,18 +158,6 @@ namespace SME.SGP.Aplicacao
                 TurmaId = turmaId,
                 AnoLetivo = anoLetivo
             };
-        }
-
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
-        {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
         }
     }
 }

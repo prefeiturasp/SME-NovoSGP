@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
                     turmasPaginadas.Items = listRetorno;
                 }
             }
-            else if(!filtroTurmaDto.ConsideraHistorico)
+            else if (!filtroTurmaDto.ConsideraHistorico)
             {
                 turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
                                                                                              filtroTurmaDto.DreCodigo,
@@ -259,7 +259,7 @@ namespace SME.SGP.Aplicacao
         {
             var componente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo);
 
-            var nomeComponente = componente?.Descricao ?? turmas.NomeComponenteCurricular;
+            var nomeComponente = (turmas.TerritorioSaber || componente is null) ? turmas.NomeComponenteCurricular : componente.Descricao;
             var componentePermiteLanctoNota = componente?.PermiteLanctoNota ?? false;
 
             return turmas.EhNulo() ? null : new TurmaComComponenteDto

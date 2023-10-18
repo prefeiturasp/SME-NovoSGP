@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularCodigo };
 
             var aulasExistentes = await mediator
-                .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), professorConsiderado));
+                .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray()));
 
             if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any())
             {

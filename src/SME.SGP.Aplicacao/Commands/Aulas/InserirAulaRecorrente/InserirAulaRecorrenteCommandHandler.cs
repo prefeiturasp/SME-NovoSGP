@@ -48,9 +48,10 @@ namespace SME.SGP.Aplicacao
             Usuario usuarioLogado,
             AtribuicaoEsporadica atribuicao)
         {
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
+
             if (usuarioLogado.EhProfessorCj())
             {
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
                 var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuarioLogado.CodigoRf));
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuarioLogado.CodigoRf, false, aulaRecorrente.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
@@ -68,22 +69,21 @@ namespace SME.SGP.Aplicacao
                 return atribuicao;
             }
 
-            var obterComponentesQuery = new ObterComponentesCurricularesDoProfessorNaTurmaQuery(
-                aulaRecorrente.CodigoTurma,
-                usuarioLogado.Login,
-                usuarioLogado.PerfilAtual);
+            var obterComponentesQuery = new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma,
+                                                                                                usuarioLogado.Login,
+                                                                                                usuarioLogado.PerfilAtual,
+                                                                                                turma.EhTurmaInfantil);
+
             var componentes = await mediator.Send(obterComponentesQuery);
             var podeCriarAulaTurma = PodeCadastarAulaNaTurma(componentes, aulaRecorrente);
 
             if (!podeCriarAulaTurma)
-            {
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
-            }
 
-            var obterUsuarioQuery = new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(
-                aulaRecorrente.ComponenteCurricularId,
-                aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
+            var obterUsuarioQuery = new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId,
+                                                                                           aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
             var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery);
+
             if (!usuarioPodePersistirTurmaNaData)
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
 
@@ -359,7 +359,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível obter datas validas para a atribuição do professor no EOL.");
 
             var datasAtribuicaoEOL = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(
-                usuario.CodigoRf,
+                usuario.Login,
                 turmaCodigo,
                 datasValidas.Select(a => a.Date).ToArray(),
                 componenteCurricularCodigo));
@@ -396,7 +396,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var codigosComponentesConsiderados = new List<long>() { long.Parse(aula.DisciplinaId) };
 
-                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, codigosComponentesConsiderados.ToArray(), dia, ehRegencia, aulaRecorrente.TipoAula, usuario.CodigoRf);
+                    var retornoPodeCadastrarAula = await PodeCadastrarAula(0, aula.TurmaId, codigosComponentesConsiderados.ToArray(), dia, ehRegencia, aulaRecorrente.TipoAula);
 
                     if (retornoPodeCadastrarAula.PodeCadastrarAula)
                     {
@@ -419,7 +419,7 @@ namespace SME.SGP.Aplicacao
                     await repositorioAula.SalvarAsync(aulaParaAdicionar);
                     await mediator.Send(new ExecutarExclusaoPendenciaProfessorComponenteSemAulaCommand(turma,
                                                                                                        long.Parse(aulaParaAdicionar.DisciplinaId),
-                                                                                                       aulaParaAdicionar.DataAula)); 
+                                                                                                       aulaParaAdicionar.DataAula));
                 }
                 catch (Exception ex)
                 {
@@ -430,11 +430,11 @@ namespace SME.SGP.Aplicacao
             return (aula, aulasQueDeramErro);
         }
 
-        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula, string codigoRf)
+        private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula)
         {
             if (CriandoAula(aulaId) || await AlterandoDataAula(aulaId, dataAula))
             {
-                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinasId, codigoRf, tipoAula)))
+                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinasId, tipoAula)))
                     throw new NegocioException($"Não é possível cadastrar aula do tipo '{tipoAula.Name()}' para o dia selecionado!");
             }
 

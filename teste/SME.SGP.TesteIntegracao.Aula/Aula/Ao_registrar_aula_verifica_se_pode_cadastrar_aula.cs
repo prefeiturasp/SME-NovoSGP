@@ -389,10 +389,10 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto(dadosDisciplina);
             var diasForaPeriodoEscolar = new List<DateTime> { DATA_20_07, DATA_21_07, DATA_22_07, DATA_23_07, DATA_01_10 };
             var codigoDisciplinaConsiderada = new List<string> { COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString() };
-            var turma = new Turma
+            var turma = new Dominio.Turma
             {
                 Ano = ANO_9,
-                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = ANO_LETIVO_ANO_ATUAL,
                 CodigoTurma = TURMA_CODIGO_1,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 Ue = new Ue { CodigoUe = UE_CODIGO_1, Dre = new Dre { CodigoDre = DRE_CODIGO_1 } }
@@ -420,7 +420,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
         {
             public long TipoCalendarioId { get; set; }
             public IEnumerable<DiaLetivoDto> DiasLetivos { get; set; }
-            public Turma Turma { get; set; }
+            public Dominio.Turma Turma { get; set; }
             public IEnumerable<DateTime> DiasForaDoPeriodoEscolar { get; set; }
             public IEnumerable<string> CodigosDisciplinasConsideradas { get; set; }
             public DadosAulaCriadaAutomaticamenteDto DadosAulaCriadaAutomaticamente { get; set; }

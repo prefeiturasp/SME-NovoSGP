@@ -24,9 +24,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<int> modalidadesTipoCalendario;
 
             if (request.Modalidades.Any(c => c == -99))
-            {
                 modalidadesTipoCalendario = request.Modalidades;
-            }
             else
             {
                 var modalidades = request.Modalidades.Select(m => (Modalidade)m);

@@ -125,15 +125,9 @@ namespace SME.SGP.Dados
                 query.AppendLine("and extract(year from fa.periodo_inicio) = @anoLetivo");
 
             query.AppendLine("and ((fa.total_ausencias::numeric - fa.total_compensacoes::numeric ) / fa.total_aulas::numeric) > (1 -(@percentualFrequenciaMinimo::numeric / 100::numeric)) ");
+            query.AppendLine("and t.modalidade_codigo = any(@modalidades) ");
 
-            if (modalidade == ModalidadeTipoCalendario.EJA)
-                query.AppendLine("and t.modalidade_codigo = 3");
-            else if (modalidade == ModalidadeTipoCalendario.Infantil)
-                query.AppendLine("and t.modalidade_codigo = 1");
-            else query.AppendLine("and t.modalidade_codigo in (5,6)");
-
-
-            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { bimestre, anoLetivo, percentualFrequenciaMinimo });
+            return database.Conexao.Query<AlunoFaltosoBimestreDto>(query.ToString(), new { bimestre, anoLetivo, percentualFrequenciaMinimo, modalidades = modalidade.ObterModalidades().Select(s=> (int)s).ToArray() });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, string componenteCurricularCodigo = "")

@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_lancar_nota_aluno_inativo_ano_anterior : NotaFechamentoTesteBase
     {
-        private const string ALUNO_INATIVO_11 = "11"; 
+        private const string ALUNO_INATIVO_12 = "12"; 
         public Ao_lancar_nota_aluno_inativo_ano_anterior(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             var retorno = await consulta.ObterFechamentos(filtro);
             retorno.ShouldNotBeNull();
             retorno.Alunos.Any(aluno => aluno.Codigo == ALUNO_CODIGO_9).ShouldBeTrue();
-            retorno.Alunos.Any(aluno => aluno.Codigo == ALUNO_INATIVO_11).ShouldBeFalse();
+            retorno.Alunos.Any(aluno => aluno.Codigo == ALUNO_INATIVO_12).ShouldBeFalse();
         }
 
         [Fact(DisplayName = "Nota Fechamento Final - Deve lançar nota no ano anterior em aprovação")]

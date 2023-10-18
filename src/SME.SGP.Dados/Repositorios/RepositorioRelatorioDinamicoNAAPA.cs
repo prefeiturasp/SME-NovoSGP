@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -26,6 +27,7 @@ namespace SME.SGP.Dados.Repositorios
             var sqlPaginada = ObterQueryPaginada(queryFiltro, paginacao, queryTabelaResposta);
             var sqlTotalDeRegistros = ObterQueryTotalDeRegistros(queryFiltro, queryTabelaResposta, filtro);
             var sql = string.Concat(sqlPaginada, ";", sqlTotalDeRegistros);
+            var situacao = new List<int>() { (int)SituacaoNAAPA.AguardandoAtendimento, (int)SituacaoNAAPA.EmAtendimento };
             var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPARelatorioDinamico>();
             IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> retornoTotalDeRegitros = null; 
             var parametros = new
@@ -35,6 +37,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.Historico,
                 filtro.AnoLetivo,
                 Anos = filtro.Anos.ToArray(),
+                situacao = situacao.ToArray(),
                 filtro.Modalidade
             };
             using (var encaminhamentosNAAPA = await contexto.Conexao.QueryMultipleAsync(sql, parametros))
@@ -75,6 +78,8 @@ namespace SME.SGP.Dados.Repositorios
                                   t.modalidade_codigo as Modalidade, t.ano";
 
             sql.AppendLine(ObterQuery(filtro, queryTabelaResposta, camposRetorno));
+
+            sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
 
             return sql.ToString();
         }
@@ -122,7 +127,7 @@ namespace SME.SGP.Dados.Repositorios
 
             foreach(var nomeComponente in nomesComponentes)
             {
-                sql.AppendLine($",{nomeComponente} text");
+                sql.AppendLine($",{nomeComponente} text[]");
             }
 
             return sql.ToString();
@@ -137,12 +142,11 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@$"WITH tab_resposta as (
                                           SELECT * from CROSSTAB (
                                                     'SELECT ens.encaminhamento_naapa_id, 
-                                                            q.tipo,
                                                             q.nome_componente,
                                                             CASE WHEN 
                                                                     q.tipo = {(int)TipoQuestao.Radio} OR q.tipo = {(int)TipoQuestao.Combo} OR 
                                                                     q.tipo = {(int)TipoQuestao.Checkbox} OR q.tipo = {(int)TipoQuestao.ComboMultiplaEscolha} 
-                                                                 THEN opr.ordem::text ELSE enr.texto END resposta
+                                                                 THEN array_agg(opr.ordem::text) ELSE array_agg(enr.texto) END resposta
                                                     FROM encaminhamento_naapa_secao ens
                                                     JOIN encaminhamento_naapa_questao enq ON ens.id = enq.encaminhamento_naapa_secao_id
                                                     JOIN questao q ON enq.questao_id = q.id
@@ -150,13 +154,18 @@ namespace SME.SGP.Dados.Repositorios
                                                     JOIN secao_encaminhamento_naapa secao ON secao.id = ens.secao_encaminhamento_id
                                                     JOIN questionario questio ON questio.id = secao.questionario_id
                                                     LEFT JOIN opcao_resposta opr ON opr.id = enr.resposta_id
-                                                    WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}',
+                                                    WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}
+                                                      and not ens.excluido 
+													  and not enq.excluido 
+												      and not enr.excluido 
+                                                    group by ens.encaminhamento_naapa_id, q.nome_componente, q.tipo
+													order by ens.encaminhamento_naapa_id',
 
                                                     'SELECT DISTINCT nome_componente 
                                                      FROM questionario q
                                                      JOIN questao on q.id = questao.questionario_id
                                                      WHERE q.tipo = {(int)TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA}') AS tab_pivot
-                                                    (id int8, tipo int4 {colunas}))");
+                                                    (id int8 {colunas}))");
 
             return sql.ToString();
         }
@@ -165,7 +174,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
 
-            sql.AppendLine(" WHERE 1=1 ");
+            sql.AppendLine(" WHERE not np.excluido ");
+            sql.AppendLine("   AND np.situacao = ANY(@situacao)");
 
             var funcoes = new List<Func<FiltroRelatorioDinamicoNAAPADto, string>> 
             { 
@@ -223,17 +233,14 @@ namespace SME.SGP.Dados.Repositorios
             if (grupoComponente.Any(c => c.TipoQuestao == TipoQuestao.Periodo))
                 return ObterPeriodoData(grupoComponente.Key, grupoComponente.FirstOrDefault().Resposta);
 
-            if (grupoComponente.Count() > 1)
-                return ObterGrupos(grupoComponente.Key, grupoComponente.ToList());
-            
-             return $" AND {grupoComponente.Key} = '{grupoComponente.FirstOrDefault().Resposta}'";
+            return ObterGrupos(grupoComponente.Key, grupoComponente.ToList());
         }
 
         private string ObterGrupos(string campo, List<FiltroComponenteRelatorioDinamicoNAAPA> filtros)
         {
-            var valores = filtros.Select(filtro => filtro.Resposta);
+            var valores = filtros.Select(filtro => filtro.OrdemResposta);
 
-            return $" AND {campo} IN('{string.Join("','", valores.ToArray())}')";
+            return $" AND ARRAY['{string.Join("','", valores.ToArray())}'] && {campo}";
         }
 
         private string ObterPeriodoData(string campo, string valor)
@@ -244,7 +251,7 @@ namespace SME.SGP.Dados.Repositorios
             string[] periodos = respostaRetorno.ToString().Split(',');
 
             if (periodos.Length > 0) 
-                return $" AND TO_DATE({campo},'yyyy-MM-dd') BETWEEN '{DateTime.Parse(periodos[DATA_INICIO]).Date.ToString("yyyy-MM-dd")}' AND '{DateTime.Parse(periodos[DATA_FIM]).Date.ToString("yyyy-MM-dd")}'";
+                return $" AND TO_DATE(array_to_string({campo}, ''),'yyyy-MM-dd') BETWEEN '{DateTime.Parse(periodos[DATA_INICIO]).Date.ToString("yyyy-MM-dd")}' AND '{DateTime.Parse(periodos[DATA_FIM]).Date.ToString("yyyy-MM-dd")}'";
             
             return string.Empty;
         }
