@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<PeriodosParaConsultaNotasDto>> Executar(ObterPeriodosParaConsultaNotasFiltroDto filtro)
         {
-            var periodos = await mediator.Send(new ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery(filtro.AnoLetivo, ObterModalidadeCalendario(filtro.Modalidade), filtro.Semestre));
+            var periodos = await mediator.Send(new ObterPeriodoCalendarioBimestrePorAnoLetivoModalidadeQuery(filtro.AnoLetivo, filtro.Modalidade.ObterModalidadeTipoCalendario(), filtro.Semestre));
             if (periodos.EhNulo() || !periodos.Any())
                 throw new NegocioException("Não foram encontrados períodos escolares para esta turma.");
 
@@ -42,10 +42,6 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar.EhNulo())
                 return 1;
             else return periodoEscolar.Bimestre;
-        }
-        private static ModalidadeTipoCalendario ObterModalidadeCalendario(Modalidade modalidade)
-        {
-            return modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
         }
     }   
 }

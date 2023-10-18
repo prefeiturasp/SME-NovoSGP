@@ -221,7 +221,7 @@ namespace SME.SGP.Dominio.Servicos
 
             // Valida periodo de fechamento
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turmaFechamento.AnoLetivo, 
-                turmaFechamento.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio,
+                turmaFechamento.ModalidadeCodigo.ObterModalidadeTipoCalendario(),
                 turmaFechamento.Semestre);
 
             var ue = turmaFechamento.Ue;

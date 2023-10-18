@@ -6,9 +6,9 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTipoCalendarioPorBuscaQuery : IRequest<IEnumerable<TipoCalendarioBuscaDto>>
+    public class ObterTiposCalendariosPorBuscaQuery : IRequest<IEnumerable<TipoCalendarioBuscaDto>>
     {
-        public ObterTipoCalendarioPorBuscaQuery(string descricao)
+        public ObterTiposCalendariosPorBuscaQuery(string descricao)
         {
             Descricao = descricao;
         }

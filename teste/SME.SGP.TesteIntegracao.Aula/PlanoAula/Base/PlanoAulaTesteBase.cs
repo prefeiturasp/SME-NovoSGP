@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 
         protected async Task CriarDadosBasicos(FiltroPlanoAula filtroPlanoAula)
         {
-            await CriarTipoCalendario(filtroPlanoAula.TipoCalendario);
+            await CriarTipoCalendario(filtroPlanoAula.TipoCalendario, semestre:SEMESTRE_1);
             
             await CriarItensComuns(filtroPlanoAula.CriarPeriodoEscolarBimestre, filtroPlanoAula.DataInicio, filtroPlanoAula.DataFim, filtroPlanoAula.Bimestre, filtroPlanoAula.TipoCalendarioId);
             

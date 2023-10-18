@@ -61,13 +61,17 @@ namespace SME.SGP.TesteIntegracao
         protected const long USUARIO_ID_1 = 1;
         protected const long USUARIO_ID_2 = 2;
 
-        protected int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
-        private const string ANO_LETIVO_Ano_Atual_NOME = "Ano Letivo Ano Atual";
+        protected int ANO_LETIVO_ANO_ATUAL = DateTimeExtension.HorarioBrasilia().Year;
+        protected int ANO_LETIVO_ANO_ANTERIOR = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
+        protected const string NOME_TIPO_CALENDARIO_ANO_ATUAL = "Nome do Tipo Calendário no ano letivo atual";
+        protected const string NOME_TIPO_CALENDARIO_ANO_ANTERIOR = "Nome do Tipo Calendário no ano letivo anterior";
+        
         protected const string FALSE = "false";
         protected const string TRUE = "true";
 
         protected const int SEMESTRE_0 = 0;
         protected const int SEMESTRE_1 = 1;
+        protected const int SEMESTRE_2 = 2;
         protected const long COMPONENTE_CURRICULAR_ARTES_ID_139 = 139;
         protected const string COMPONENTE_CURRICULAR_ARTES_NOME = "'Artes'";
         protected const string COMPONENTE_CURRICULAR_INGLES_NOME = "'InglêsArtes'";
@@ -309,6 +313,14 @@ namespace SME.SGP.TesteIntegracao
 
         protected const long TIPO_CALENDARIO_1 = 1;
         protected const long TIPO_CALENDARIO_2 = 2;
+        protected const long TIPO_CALENDARIO_3 = 3;
+        protected const long TIPO_CALENDARIO_4 = 4;
+        protected const long TIPO_CALENDARIO_5 = 5;
+        protected const long TIPO_CALENDARIO_6 = 6;
+        protected const long TIPO_CALENDARIO_7 = 7;
+        protected const long TIPO_CALENDARIO_8 = 8;
+        protected const long TIPO_CALENDARIO_9 = 9;
+        protected const long TIPO_CALENDARIO_10 = 10;
 
         protected string DATA_INICIO_SGP = "DataInicioSGP";
         protected string NUMERO_50 = "50";
@@ -359,9 +371,6 @@ namespace SME.SGP.TesteIntegracao
 
         protected readonly long ATIVIDADE_AVALIATIVA_1 = 1;
         protected readonly long ATIVIDADE_AVALIATIVA_2 = 2;
-
-        protected int ANO_LETIVO_ANO_ANTERIOR_NUMERO = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
-        protected const string ANO_LETIVO_ANO_ANTERIOR_NOME = "Ano Letivo Ano Anterior";
 
         protected DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
 
@@ -804,7 +813,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = ANO_LETIVO_ANO_ATUAL,
                 DreId = DRE_CODIGO_1,
                 DataInicio = dataInicio,
                 DataFim = dataFim,
@@ -953,7 +962,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_1,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1,
                 TipoTurma = TipoTurma.Regular
@@ -966,7 +975,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_2,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_2,
                 TipoTurma = TipoTurma.Regular
@@ -979,7 +988,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_3,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_3,
                 TipoTurma = TipoTurma.Regular
@@ -996,7 +1005,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_1,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1,
                 TipoTurma = tipoTurma,
@@ -1013,7 +1022,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = codigoTurma,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1
             });
@@ -1027,7 +1036,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = codigoTurma,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1,
                 TipoTurma = tipoTurma
@@ -1172,12 +1181,12 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior = false)
+        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior = false, int semestre = SEMESTRE_1)
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
-                Nome = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NOME : ANO_LETIVO_Ano_Atual_NOME,
+                AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR : ANO_LETIVO_ANO_ATUAL,
+                Nome = considerarAnoAnterior ? NOME_TIPO_CALENDARIO_ANO_ANTERIOR : NOME_TIPO_CALENDARIO_ANO_ATUAL,
                 Periodo = Periodo.Semestral,
                 Modalidade = tipoCalendario,
                 Situacao = true,
@@ -1185,25 +1194,9 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
-                Migrado = false
+                Migrado = false,
+                Semestre = tipoCalendario.EhEjaOuCelp() ? semestre : null
             });
-
-            if (tipoCalendario == ModalidadeTipoCalendario.EJA)
-            {
-                await InserirNaBase(new TipoCalendario
-                {
-                    AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
-                    Nome = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NOME : ANO_LETIVO_Ano_Atual_NOME,
-                    Periodo = Periodo.Semestral,
-                    Modalidade = tipoCalendario,
-                    Situacao = true,
-                    CriadoEm = DateTime.Now,
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    Excluido = false,
-                    Migrado = false
-                });                
-            }
         }
 
         protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
@@ -1578,6 +1571,53 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
+        }
+
+        protected async Task CriarVariosTiposCalendariosEPeriodosEscolaresParaEjaCelpFundamental()
+        {
+            await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,true,SEMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, true);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1,true);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,true, SEMESTRE_2);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_2,true);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_2,true);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,true, SEMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_3,true);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_3,true);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,true, SEMESTRE_2);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_4,true);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_4,true);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio, true);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_5,true);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_5,true);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_5,true);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_5,true);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,semestre:1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_6);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_6);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,semestre:2);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_7);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_7);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,semestre:1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_8);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_8);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,semestre:2);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_9);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_9);
+            
+            await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_10);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_10);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_10);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_10);
         }
     }
 }
