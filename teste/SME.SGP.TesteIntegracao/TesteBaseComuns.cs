@@ -1181,7 +1181,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior = false, int? semestre = null)
+        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior = false, int semestre = SEMESTRE_1)
         {
             await InserirNaBase(new TipoCalendario
             {
@@ -1198,7 +1198,8 @@ namespace SME.SGP.TesteIntegracao
                 Semestre = semestre
             });
 
-            // if (tipoCalendario == ModalidadeTipoCalendario.EJA)
+            //Avaliar se isso será necessário
+            // if (tipoCalendario == ModalidadeTipoCalendario.EJA) 
             // {
             //     await InserirNaBase(new TipoCalendario
             //     {
