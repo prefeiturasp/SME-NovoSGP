@@ -31,11 +31,11 @@ namespace SME.SGP.Aplicacao
                 var diasParaFechamento = int.Parse(parametro.Valor);
 
                 var periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.FundamentalMedio, DateTime.Now.Date.AddDays(diasParaFechamento));
-                if (periodoIniciando != null)
+                if (periodoIniciando.NaoEhNulo())
                     await NotificarDre(ModalidadeTipoCalendario.FundamentalMedio, periodoIniciando);
 
                 periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.EJA, DateTime.Now.Date.AddDays(diasParaFechamento));
-                if (periodoIniciando != null)
+                if (periodoIniciando.NaoEhNulo())
                     await NotificarDre(ModalidadeTipoCalendario.EJA, periodoIniciando);
             }
         }
@@ -52,11 +52,11 @@ namespace SME.SGP.Aplicacao
                 var diasParaFechamento = int.Parse(parametro.Valor);
 
                 var periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.FundamentalMedio, DateTime.Now.Date.AddDays(diasParaFechamento));
-                if (periodoIniciando != null)
+                if (periodoIniciando.NaoEhNulo())
                     await NotificarUe(ModalidadeTipoCalendario.FundamentalMedio, periodoIniciando);
 
                 periodoIniciando = await ObterPeriodosFechamento(ModalidadeTipoCalendario.EJA, DateTime.Now.Date.AddDays(diasParaFechamento));
-                if (periodoIniciando != null)
+                if (periodoIniciando.NaoEhNulo())
                     await NotificarUe(ModalidadeTipoCalendario.EJA, periodoIniciando);
             }
         }

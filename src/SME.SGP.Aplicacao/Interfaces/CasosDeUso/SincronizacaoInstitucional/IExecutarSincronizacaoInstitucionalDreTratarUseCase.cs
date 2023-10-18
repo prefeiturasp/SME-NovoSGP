@@ -1,10 +1,6 @@
-﻿using SME.SGP.Infra;
-using System.Threading.Tasks;
-
-namespace SME.SGP.Aplicacao.Interfaces
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutarSincronizacaoInstitucionalDreTratarUseCase
+    public interface IExecutarSincronizacaoInstitucionalDreTratarUseCase : IRabbitUseCase
     {
-        Task<bool> Executar(MensagemRabbit param);
     }
 }

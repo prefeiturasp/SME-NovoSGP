@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
         public async Task ExcluirCalculoFrequencia(string turmaId, string disciplinaId, int bimestre)
         {
             var processo = await repositorio.ObterProcessoCalculoFrequenciaAsync(turmaId, disciplinaId, bimestre, TipoProcesso.CalculoFrequencia);
-            if (processo != null)
+            if (processo.NaoEhNulo())
                 Excluir(processo);
         }
     }

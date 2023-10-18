@@ -23,7 +23,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarNota(FechamentoNota fechamentoNota)
         {
-            if (fechamentoNota != null)
+            if (fechamentoNota.NaoEhNulo())
                 FechamentoNotas.Add(fechamentoNota);
         }
     }

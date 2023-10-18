@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao.Queries.AreaDoConhecimento.MapearAreasConhecimento
         public async Task<IEnumerable<IGrouping<(string Nome, int? Ordem, long Id), AreaDoConhecimentoDto>>> Handle(MapearAreasConhecimentoQuery request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(request.AreasConhecimentos.Where(a => (request.ComponentesCurricularesTurma.Where(cc => !cc.Regencia).Select(cc => cc.CodigoComponenteCurricular).Contains(a.CodigoComponenteCurricular) ||
-                                                                                request.ComponentesCurricularesTurma.Where(cc => !cc.Regencia).Select(cc => cc.CodigoTerritorioSaber).Contains(a.CodigoComponenteCurricular)) || 
+                                                                                request.ComponentesCurricularesTurma.Where(cc => !cc.Regencia).Select(cc => cc.CodigoComponenteCurricularTerritorioSaber).Contains(a.CodigoComponenteCurricular)) || 
                                                                               (request.ComponentesCurricularesTurma.Any(cc => cc.Regencia) && request.ComponentesCurricularesTurma.Where(cc => cc.Regencia)
                                                                    .Select(r => r.CodigoComponenteCurricular).Contains(a.CodigoComponenteCurricular)))
                                                                    .Select(a => { a.DefinirOrdem(request.GruposAreaOrdenacao, request.GrupoMatrizId); return a; }).GroupBy(g => (g.Nome, g.Ordem, g.Id))

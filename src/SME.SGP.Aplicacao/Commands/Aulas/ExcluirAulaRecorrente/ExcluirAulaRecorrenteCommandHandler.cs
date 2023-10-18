@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
             var aulaOrigem = await repositorioAulaConsulta.ObterCompletoPorIdAsync(request.AulaId);
-            if (aulaOrigem == null)
+            if (aulaOrigem.EhNulo())
                 throw new NegocioException("Não foi possível obter a aula.");
 
             var listaAlteracoesFrequencia = new List<long>() { aulaOrigem.Id };
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
         {
             var plano = await repositorioPlanoAula.ObterPlanoAulaPorAulaRegistroExcluido(aulaId);
 
-            if (plano != null)
+            if (plano.NaoEhNulo())
             {
                 await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
                 await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var diarioDeBordo in diariosDeBordos)
             {
-                if(diarioDeBordo?.Planejamento != null)
+                if((diarioDeBordo?.Planejamento).NaoEhNulo())
                     await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
             }
         }

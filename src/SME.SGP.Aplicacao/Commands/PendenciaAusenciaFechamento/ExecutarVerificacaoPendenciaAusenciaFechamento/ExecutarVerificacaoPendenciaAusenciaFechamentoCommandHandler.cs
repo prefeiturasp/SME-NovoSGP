@@ -13,12 +13,9 @@ namespace SME.SGP.Aplicacao
     public class ExecutarVerificacaoPendenciaAusenciaFechamentoCommandHandler : IRequestHandler<ExecutarVerificacaoPendenciaAusenciaFechamentoCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
-        public ExecutarVerificacaoPendenciaAusenciaFechamentoCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public ExecutarVerificacaoPendenciaAusenciaFechamentoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
-
         }
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAusenciaFechamentoCommand request, CancellationToken cancellationToken)
@@ -40,7 +37,7 @@ namespace SME.SGP.Aplicacao
                     foreach (var professorTurma in professoresTurma)
                     {
                         var obterComponenteCurricular = componentes.FirstOrDefault(c => professorTurma.DisciplinasId.Contains(long.Parse(c.Codigo)));
-                        if (obterComponenteCurricular != null)
+                        if (obterComponenteCurricular.NaoEhNulo())
                         {
                             if (professorTurma.ProfessorRf != "")
                             {

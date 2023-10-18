@@ -206,7 +206,7 @@ namespace SME.SGP.Dados
 	                        and bimestre = @bimestre 
                             and turma_id = @codigoTurma ");
 
-            if (disciplinasId != null && disciplinasId.Any())
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Any())
                 query.AppendLine("and disciplina_id = any(@disciplinasId)");
 
             if (!string.IsNullOrWhiteSpace(professor))
@@ -571,7 +571,7 @@ namespace SME.SGP.Dados
 	                                                and turma_id = ANY(@turmasCodigo)
 	                                                and disciplina_id = ANY(@disciplinasId)");
 
-            if (periodosEscolaresId != null)
+            if (periodosEscolaresId.NaoEhNulo())
                 query.AppendLine(" and fa.periodo_escolar_id = ANY(@periodosEscolaresId)");
 
             query.AppendLine(") rf where rf.sequencia = 1");
@@ -704,7 +704,7 @@ namespace SME.SGP.Dados
             query.AppendLine("                a.quantidade AulasQuantidade");
             query.AppendLine("	from aula a");
             query.AppendLine("    	left join registro_frequencia_aluno rfa");
-            query.AppendLine($"    		on a.id = rfa.aula_id {(codigosAluno != null && codigosAluno.Length > 0 ? " and rfa.codigo_aluno = any(@codigosAluno) " : string.Empty)}");
+            query.AppendLine($"    		on a.id = rfa.aula_id {(codigosAluno.NaoEhNulo() && codigosAluno.Length > 0 ? " and rfa.codigo_aluno = any(@codigosAluno) " : string.Empty)}");
             query.AppendLine("        inner join periodo_escolar p");
             query.AppendLine("        	on a.tipo_calendario_id = p.tipo_calendario_id");
             query.AppendLine("where not a.excluido");
@@ -717,10 +717,10 @@ namespace SME.SGP.Dados
             query.AppendLine(" 		  where a.id = rfa2.aula_id and");
             query.AppendLine(" 			not rfa2.excluido)");
 
-            if (componentesCurricularesId != null && componentesCurricularesId.Length > 0)
+            if (componentesCurricularesId.NaoEhNulo() && componentesCurricularesId.Length > 0)
                 query.AppendLine("and a.disciplina_id = any(@componentesCurricularesId) ");
 
-            if (bimestres != null && bimestres.Length > 0)
+            if (bimestres.NaoEhNulo() && bimestres.Length > 0)
                 query.AppendLine("and p.bimestre = any(@bimestres) ");
 
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)

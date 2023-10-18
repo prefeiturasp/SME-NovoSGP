@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaSemanalMensalDtos = await mediator.Send(new ObterFrequenciasConsolidadasPorTurmaMensalSemestralQuery(anoLetivo, dreId, ueId, modalidade, anoTurma, dataInicio.Value, datafim.Value, tipoConsolidado, semestre, visaoDre));
 
-            if (frequenciaSemanalMensalDtos == null || !frequenciaSemanalMensalDtos.Any())
+            if (frequenciaSemanalMensalDtos.EhNulo() || !frequenciaSemanalMensalDtos.Any())
                 return null;
             
             foreach (var frequenciasGroup in frequenciaSemanalMensalDtos.GroupBy(f => f.Descricao))

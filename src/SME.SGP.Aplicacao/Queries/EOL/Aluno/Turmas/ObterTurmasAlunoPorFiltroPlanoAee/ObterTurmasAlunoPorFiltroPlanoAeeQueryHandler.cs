@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var erro = $"Não foi possível obter os dados do aluno no EOL - HttpCode {(int) resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
-                var respostaErro = resposta?.Content?.ReadAsStringAsync(cancellationToken)?.Result.ToString();
+                var respostaErro = (await resposta?.Content?.ReadAsStringAsync(cancellationToken))?.ToString();
 
                 await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, respostaErro), cancellationToken);
                 return Enumerable.Empty<AlunoPorTurmaResposta>();

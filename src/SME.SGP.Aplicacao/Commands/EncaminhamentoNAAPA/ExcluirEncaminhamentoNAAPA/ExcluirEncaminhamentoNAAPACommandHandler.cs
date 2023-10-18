@@ -60,12 +60,12 @@ namespace SME.SGP.Aplicacao.Commands
         private async Task ExcluirArquivos(long encaminhamentoNAAPAId)
         {
             var codigos = await repositorioEncaminhamentoNAAPA.ObterCodigoArquivoPorEncaminhamentoNAAPAId(encaminhamentoNAAPAId);
-            if (codigos !=null && codigos.Any())
+            if (codigos.NaoEhNulo() && codigos.Any())
             {
                 foreach (var item in codigos)
                 {
                     var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(item.Codigo));
-                    if (entidadeArquivo == null)
+                    if (entidadeArquivo.EhNulo())
                         throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
 
                     

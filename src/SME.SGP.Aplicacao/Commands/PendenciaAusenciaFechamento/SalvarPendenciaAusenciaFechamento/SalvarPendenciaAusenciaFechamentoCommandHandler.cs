@@ -24,11 +24,19 @@ namespace SME.SGP.Aplicacao
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(Dominio.TipoPendencia.AusenciaFechamento,null, request.TurmaId, request.Mensagem, request.Instrucao, request.Titulo));
-                await mediator.Send(new SalvarPendenciaProfessorCommand(pendenciaId, request.TurmaId, request.ComponenteCurricularId, request.ProfessorRf, request.PeriodoEscolarId));
-                await GerarPendenciaUsuario(pendenciaId, request.ProfessorRf);
+                try
+                {
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(Dominio.TipoPendencia.AusenciaFechamento, null, request.TurmaId, request.Mensagem, request.Instrucao, request.Titulo));
+                    await mediator.Send(new SalvarPendenciaProfessorCommand(pendenciaId, request.TurmaId, request.ComponenteCurricularId, request.ProfessorRf, request.PeriodoEscolarId));
+                    await GerarPendenciaUsuario(pendenciaId, request.ProfessorRf);
 
-                unitOfWork.PersistirTransacao();
+                    unitOfWork.PersistirTransacao();
+                }catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
+
             }
             return true;
         }

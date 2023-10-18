@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                                                                                                        DateTime.Now.Semestre()));
             var componentes = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
-            if (turmas != null && turmas.Any())
+            if (turmas.NaoEhNulo() && turmas.Any())
                 await EnviarNotificacaoTurmas(turmas, componentes, request.PeriodoEncerrandoBimestre.PeriodoEscolar, request.PeriodoEncerrandoBimestre.PeriodoFechamento.Ue);
 
             return true;
@@ -39,15 +39,15 @@ namespace SME.SGP.Aplicacao
         {
             var ues = new List<Ue>();
 
-            if (ue != null)
+            if (ue.NaoEhNulo())
                 ues.Add(ue);
             else
             {
-                turmas.Select(t => t.UeId).Distinct().ToList().ForEach(ueId =>
+                foreach(var ueId in turmas.Select(t => t.UeId).Distinct().ToList())
                 {
-                    var ueLocalizada = mediator.Send(new ObterUePorIdQuery(ueId)).Result;
+                    var ueLocalizada = await mediator.Send(new ObterUePorIdQuery(ueId));
                     ues.Add(ueLocalizada);
-                });
+                }
             }
 
             foreach (var ueAtual in ues)

@@ -34,29 +34,18 @@ namespace SME.SGP.Aplicacao
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
                         .FirstOrDefault(a => a.CodigoComponenteCurricular == discplinaIdAula ||
                                              a.Id == discplinaIdAula ||
-                                             a.CodigoTerritorioSaber == discplinaIdAula ||
+                                             a.CodigoComponenteCurricularTerritorioSaber == discplinaIdAula ||
                                              (a.CdComponenteCurricularPai.HasValue && a.CdComponenteCurricularPai.Value == discplinaIdAula));
 
-                    if (componenteCurricular != null && !componenteCurricular.RegistraFrequencia)
+                    if (componenteCurricular.NaoEhNulo() && !componenteCurricular.RegistraFrequencia)
                     {
-                        var componenteVerificacao = await mediator
-                            .Send(new DefinirComponenteCurricularParaAulaQuery(request.TurmaCodigo, discplinaIdAula, usuarioLogado), cancellationToken);
-
-                        if (componenteVerificacao != default && componenteVerificacao.codigoTerritorio.HasValue && componenteVerificacao.codigoTerritorio.Value > 0)
-                        {
-                            componenteCurricular.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteVerificacao.codigoComponente, componenteVerificacao.codigoTerritorio), cancellationToken);
-                        }
-                        else
-                        {
-                            componenteCurricular.RegistraFrequencia = await mediator
-                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular), cancellationToken);
-                        }
+                        componenteCurricular.RegistraFrequencia = await mediator
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.CodigoComponenteCurricular), cancellationToken);
                     }
 
                     var professorTitular = professoresTitulares?
                         .FirstOrDefault(p => p.DisciplinasId.Contains(discplinaIdAula) ||
-                        (componenteCurricular != null && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoTerritorioSaber))));
+                        (componenteCurricular.NaoEhNulo() && (p.DisciplinasId.Contains(componenteCurricular.Id) || p.DisciplinasId.Contains(componenteCurricular.CodigoComponenteCurricularTerritorioSaber))));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -66,7 +55,7 @@ namespace SME.SGP.Aplicacao
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
                         EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
                         EhAulaCJ = aulaParaVisualizar.AulaCJ,
-                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ
+                        PodeEditarAula = professorTitular.NaoEhNulo() && !aulaParaVisualizar.AulaCJ
                                       || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
                         ComponenteCurricularId = componenteCurricular?.CodigoComponenteCurricular ?? discplinaIdAula
@@ -77,7 +66,7 @@ namespace SME.SGP.Aplicacao
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
                                                              disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId &&
                                                              (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf ||
-                                                             (professorTitular != null && !avaliacao.EhCj) || usuarioLogado.EhGestorEscolar())
+                                                             (professorTitular.NaoEhNulo() && !avaliacao.EhCj) || usuarioLogado.EhGestorEscolar())
                                                        select avaliacao);
 
                     if (atividadesAvaliativasDaAula.Any())
@@ -89,7 +78,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
 
-                    if (componenteCurricular != null)
+                    if (componenteCurricular.NaoEhNulo())
                     {
                         eventoAulaDto.MostrarBotaoFrequencia = componenteCurricular.RegistraFrequencia;
                         eventoAulaDto.PodeCadastrarAvaliacao = ObterPodeCadastrarAvaliacao(atividadesAvaliativasDaAula, componenteCurricular);

@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
         private async Task<AcompanhamentoTurma> GerarAcompanhamentoTurma(AcompanhamentoTurmaDto dto)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(dto.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemAcompanhamentoTurma.TURMA_NAO_ENCONTRADA);
 
             var periodAberto = await TurmaEmPeridoAberto(turma, dto.Semestre);

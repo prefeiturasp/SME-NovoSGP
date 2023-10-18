@@ -30,8 +30,8 @@ namespace SME.SGP.Infra
         public string StatusWorkflow { get; set; }
         public TipoQuestao TipoQuestao { get; set; }
         public bool PodeEditar { get; set; }
-        public bool PossuiAlunos { get => Alunos != null && Alunos.Any(); }
-        public bool PossuiObjetivos { get => ObjetivosVisita != null && ObjetivosVisita.Any(); }
-        public bool PossuiQuestoes { get => Questoes != null && Questoes.Any(); }
+        public bool PossuiAlunos { get => Alunos.NaoEhNulo() && Alunos.Any(); }
+        public bool PossuiObjetivos { get => ObjetivosVisita.NaoEhNulo() && ObjetivosVisita.Any(); }
+        public bool PossuiQuestoes { get => Questoes.NaoEhNulo() && Questoes.Any(); }
     }
 }

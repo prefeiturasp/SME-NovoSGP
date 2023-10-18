@@ -53,7 +53,7 @@ namespace SME.SGP.Infra
                 yield return new ValidationResult("A data de início do evento deve ser menor que a data final.");
             }
 
-            if (RecorrenciaEventos != null && RecorrenciaEventos.DataFim.HasValue && RecorrenciaEventos.DataInicio > RecorrenciaEventos.DataFim)
+            if (RecorrenciaEventos.NaoEhNulo() && RecorrenciaEventos.DataFim.HasValue && RecorrenciaEventos.DataInicio > RecorrenciaEventos.DataFim)
                 yield return new ValidationResult("A data de início da recorrência deve ser menor que a data final.");
         }
     }

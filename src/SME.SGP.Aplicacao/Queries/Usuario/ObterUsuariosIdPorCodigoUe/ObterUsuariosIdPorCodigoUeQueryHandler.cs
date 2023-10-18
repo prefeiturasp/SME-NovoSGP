@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var funcionarios = await ObterFuncionarios(request.CodigoUe);
 
-            if (funcionarios == null)
+            if (funcionarios.EhNulo())
                 return null;
 
             var usuarios = await ObterUsuariosId(funcionarios);

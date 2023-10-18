@@ -21,7 +21,9 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_BUSCAR_RF, request.CodigoRF, request.AnoLetivo) + $"?buscarOutrosCargos={request.BuscarOutrosCargos}");
+            var url = string.Format(ServicosEolConstants.URL_PROFESSORES_BUSCAR_RF, request.CodigoRF, request.AnoLetivo) + $"?buscarOutrosCargos={request.BuscarOutrosCargos}";
+            
+            var resposta = await httpClient.GetAsync(url);
 
             if (resposta.IsSuccessStatusCode)
             {
@@ -29,9 +31,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
             }
             else
-            {
                 throw new Exception($"Não foi possível obter o resumo do professor rf : {request.CodigoRF} no ano letivo {request.AnoLetivo}.");
-            }
         }
     }
 }

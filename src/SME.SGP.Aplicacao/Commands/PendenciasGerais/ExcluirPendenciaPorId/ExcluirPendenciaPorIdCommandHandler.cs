@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var pendencia = await repositorioPendencia.ObterPorIdAsync(request.PendenciaId);
            
-            if(pendencia != null)
+            if(pendencia.NaoEhNulo())
             {
                 pendencia.Excluido = true;
                 await repositorioPendencia.SalvarAsync(pendencia);

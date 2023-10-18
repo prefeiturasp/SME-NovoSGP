@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(id));
 
-            if(encaminhamentoNAAPA == null)
+            if(encaminhamentoNAAPA.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
 
             var aluno = await ObterAlunoPorCodigoETurma(encaminhamentoNAAPA.AlunoCodigo, encaminhamentoNAAPA.Turma.CodigoTurma,encaminhamentoNAAPA.Turma.AnoLetivo);
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
         private async Task<AlunoTurmaReduzidoDto> ObterAlunoPorCodigoETurma(string alunoCodigo, string turmaCodigo,int anoLetivo)
         {
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, alunoCodigo, true));
-            if (aluno == null) throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_INFORMACOES_ALUNO_TURMA_EOL);           
+            if (aluno.EhNulo()) throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_INFORMACOES_ALUNO_TURMA_EOL);           
 
             var frequencia = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo));
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(new []{aluno.CodigoAluno}, anoLetivo);
@@ -95,7 +95,7 @@ namespace SME.SGP.Aplicacao
             var turmaNome = "";
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
-            if (turma != null)
+            if (turma.NaoEhNulo())
             {
                 var nomeTurno = "";
                 if (Enum.IsDefined(typeof(TipoTurnoEOL), turma.TipoTurno))

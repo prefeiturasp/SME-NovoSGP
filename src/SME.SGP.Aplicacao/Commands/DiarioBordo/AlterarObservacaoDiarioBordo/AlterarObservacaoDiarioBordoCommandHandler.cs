@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Handle(AlterarObservacaoDiarioBordoCommand request, CancellationToken cancellationToken)
         {
             var diarioBordoObservacao = await repositorioDiarioBordoObservacao.ObterPorIdAsync(request.ObservacaoId);
-            if (diarioBordoObservacao == null)
+            if (diarioBordoObservacao.EhNulo())
                 throw new NegocioException("Observação do diário de bordo não encontrada.");
 
             diarioBordoObservacao.ValidarUsuarioAlteracao(request.UsuarioId);
@@ -39,10 +39,10 @@ namespace SME.SGP.Aplicacao
             var notificacoes = await repositorioDiarioBordoObservacaoNotificacao.ObterPorDiarioBordoObservacaoId(request.ObservacaoId);
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (request.Observacao.Trim().Length < 200 && (request.UsuariosIdNotificacao == null || !request.UsuariosIdNotificacao.Any()))
+            if (request.Observacao.Trim().Length < 200 && (request.UsuariosIdNotificacao.EhNulo() || !request.UsuariosIdNotificacao.Any()))
             {          
                 var usuariosIdNotificacao = notificacoes.Select(n => n.IdUsuario);
-                var usuariosNotificacaoAnterior = usuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
+                var usuariosNotificacaoAnterior = usuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(_task => _task.Result);
 
                 // Excluir Notificação Especifica
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
@@ -51,11 +51,11 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
                       new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacaoAnterior.Select(u=> u.CodigoRf)), Guid.NewGuid(), null));
             }
-            else if (request.UsuariosIdNotificacao != null && request.UsuariosIdNotificacao.Any())
+            else if (request.UsuariosIdNotificacao.NaoEhNulo() && request.UsuariosIdNotificacao.Any())
             {
                 var usuariosNotificados = notificacoes.Select(n => n.IdUsuario);               
                 var usuariosExcluidos = usuariosNotificados.Where(u => !request.UsuariosIdNotificacao.Contains(u) && u != usuario.Id);
-                var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(t => t.Result);
+                var usuariosNotificacao = request.UsuariosIdNotificacao?.Select(async u => await mediator.Send(new ObterUsuarioPorIdQuery(u)))?.Select(_task => _task.Result);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo,
                         new NotificarDiarioBordoObservacaoDto(diarioBordoObservacao.DiarioBordoId, request.Observacao, usuario, request.ObservacaoId, usuariosNotificacao.Select(u=> u.CodigoRf)), Guid.NewGuid(), null));

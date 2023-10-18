@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
     public class ObterPendenciasAulaPorAulaIdsQueryHandler : IRequestHandler<ObterPendenciasAulaPorAulaIdsQuery, bool>
     {
         private readonly IRepositorioPendenciaAulaConsulta repositorioPendenciaAula;
-        public ObterPendenciasAulaPorAulaIdsQueryHandler(IRepositorioPendenciaAulaConsulta repositorioPendenciaAula, IServicoUsuario servicoUsuario, IServicoEol servicoEol)
+        public ObterPendenciasAulaPorAulaIdsQueryHandler(IRepositorioPendenciaAulaConsulta repositorioPendenciaAula)
         {
             this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
         }

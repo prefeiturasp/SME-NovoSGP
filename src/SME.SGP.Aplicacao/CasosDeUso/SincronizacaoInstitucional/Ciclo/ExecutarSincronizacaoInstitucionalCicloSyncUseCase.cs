@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
             var ciclos = await mediator.Send(ObterCiclosEolQuery.Instance);
 
-            if (ciclos == null || !ciclos.Any())
+            if (ciclos.EhNulo() || !ciclos.Any())
             {
                 throw new NegocioException("Não foi possível localizar tipos de ciclos no EOL para a sincronização instituicional");
             }

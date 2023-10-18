@@ -9,17 +9,12 @@ namespace SME.SGP.Aplicacao
         public ObterComponentesCurricularesPorIdsQuery()
         { }
 
-        public ObterComponentesCurricularesPorIdsQuery(long[] ids, bool? possuiTerritorio = false, string codigoTurma = null)
+        public ObterComponentesCurricularesPorIdsQuery(long[] ids)
         {
             Ids = ids;
-            PossuiTerritorio = possuiTerritorio;
-            CodigoTurma = codigoTurma;
         }
 
         public long[] Ids { get; set; }
-
-        public bool? PossuiTerritorio { get; set; }
-        public string CodigoTurma { get; set; }
     }
 
 }

@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             
             var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaTurmaQuery(atividadeAvaliativa.TurmaId, filtro.Usuario.Login, filtro.Usuario.PerfilAtual, filtro.ConsideraHistorico, filtro.TemAbrangenciaUeOuDreOuSme));
                 
-            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, filtro.Usuario, abrangenciaTurma, abrangenciaTurma != null);
+            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, filtro.Usuario, abrangenciaTurma, abrangenciaTurma.NaoEhNulo());
             
             var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
             
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                 var valorConceito = ehTipoNota ? valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId) : null;
 
                 quantidadeAlunosSuficientes += ehTipoNota ? nota.Nota >= notaParametro.Media ? 1 : 0 
-                                                          : valorConceito != null && valorConceito.Aprovado ? 1 : 0;
+                                                          : valorConceito.NaoEhNulo() && valorConceito.Aprovado ? 1 : 0;
             }
             string mensagemNotasConceitos = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {abrangenciaTurma.NomeTurma} da {abrangenciaTurma.NomeUe} (DRE {abrangenciaTurma.NomeDre}) no bimestre {periodoAtividade.Bimestre} de {abrangenciaTurma.AnoLetivo} foram alterados " +
           $"pelo Professor {filtro.Usuario.Nome} ({filtro.Usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
@@ -124,7 +124,7 @@ namespace SME.SGP.Aplicacao
 
             var notaTipo = await ObterNotaTipo(abrangenciaTurma, atividadeAvaliativa.DataAvaliacao, usuario, consideraHistorico);
 
-            if (notaTipo == null)
+            if (notaTipo.EhNulo())
                 throw new NegocioException(MensagemNegocioNota.TIPO_NOTA_NAO_ENCONTRADO);
 
             return notaTipo;
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
             var dataFinal = atividadeAvaliativa.DataAvaliacao.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
             var aula = await repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, atividadeAvaliativa.Id);
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException($"Não encontrada aula para a atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' no dia {atividadeAvaliativa.DataAvaliacao.Date.ToString("dd/MM/yyyy")}");
 
             IEnumerable<PeriodoEscolar> periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
             
             var ciclo = await repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, abrangenciaFiltroRetorno.Modalidade);
 
-            if (ciclo == null)
+            if (ciclo.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.CICLO_TURMA_NAO_ENCONTRADO);
 
             return await repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);

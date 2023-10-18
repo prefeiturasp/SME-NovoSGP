@@ -18,6 +18,8 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
         const string SUPERVISOR_ID_1 = "1";
         const string SUPERVISOR_ID_2 = "2";
         const string SUPERVISOR_ID_3 = "3";
+        const string SUPERVISOR_ID_4 = "4";
+        const string SUPERVISOR_ID_5 = "5";
         const string SUPERVISOR_RF_01 = "1";
         const string SUPERVISOR_RF_02 = "2";
         const string SUPERVISOR_RF_03 = "3";
@@ -31,8 +33,8 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
             //Arrange
             await InserirDre(DRE_CODIGO_1);
             await InserirSupervisorPAAI(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
-            await InserirSupervisorPAAI(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
-            await InserirSupervisorPAAI(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
+            await InserirSupervisorPAAI(SUPERVISOR_ID_4, SUPERVISOR_RF_02);
+            await InserirSupervisorPAAI(SUPERVISOR_ID_5, SUPERVISOR_RF_03);
 
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
 
@@ -51,8 +53,8 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
         {
             //Arrange
             await InserirDre(DRE_CODIGO_1);
-            await InserirSupervisorPAAI(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
-            await InserirSupervisorPAAI(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
+            await InserirSupervisorPAAI(SUPERVISOR_ID_4, SUPERVISOR_RF_02);
+            await InserirSupervisorPAAI(SUPERVISOR_ID_5, SUPERVISOR_RF_03);
 
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
 

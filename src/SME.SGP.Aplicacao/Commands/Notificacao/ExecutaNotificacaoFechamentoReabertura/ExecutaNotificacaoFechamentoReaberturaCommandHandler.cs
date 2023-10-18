@@ -16,20 +16,18 @@ namespace SME.SGP.Aplicacao
     public class ExecutaNotificacaoFechamentoReaberturaCommandHandler : IRequestHandler<ExecutaNotificacaoFechamentoReaberturaCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEOL;
 
-        public ExecutaNotificacaoFechamentoReaberturaCommandHandler(IMediator mediator, IServicoEol servicoEOL)
+        public ExecutaNotificacaoFechamentoReaberturaCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<bool> Handle(ExecutaNotificacaoFechamentoReaberturaCommand request, CancellationToken cancellationToken)
         {
             var fechamentoReabertura = request.FechamentoReabertura;
 
-            var adminsSgpUe = await servicoEOL.ObterAdministradoresSGP(fechamentoReabertura.UeCodigo);
-            if (adminsSgpUe != null && adminsSgpUe.Any())
+            var adminsSgpUe = await mediator.Send(new ObterAdministradoresPorUEQuery(fechamentoReabertura.UeCodigo));
+            if (adminsSgpUe.NaoEhNulo() && adminsSgpUe.Any())
             {
                 foreach (var adminSgpUe in adminsSgpUe)
                 {
@@ -42,7 +40,7 @@ namespace SME.SGP.Aplicacao
             var diretores =
                 await mediator.Send(
                     new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long) Cargo.Diretor));
-            if (diretores != null && diretores.Any())
+            if (diretores.NaoEhNulo() && diretores.Any())
             {
                 foreach (var diretor in diretores)
                 {
@@ -53,7 +51,7 @@ namespace SME.SGP.Aplicacao
             }
             var ads = await mediator.Send(
                 new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.AD));
-            if (ads != null && ads.Any())
+            if (ads.NaoEhNulo() && ads.Any())
             {
                 foreach (var ad in ads)
                 {
@@ -64,7 +62,7 @@ namespace SME.SGP.Aplicacao
             }
             var cps = await mediator.Send(
                 new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.CP));
-            if (cps != null && cps.Any())
+            if (cps.NaoEhNulo() && cps.Any())
             {
                 foreach (var cp in cps)
                 {

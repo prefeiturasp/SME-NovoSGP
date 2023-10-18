@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (!resposta.IsSuccessStatusCode)
                 throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
             
-            var json = resposta.Content.ReadAsStringAsync(cancellationToken).Result;
+            var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
             return JsonConvert.DeserializeObject<bool>(json);
         }
     }

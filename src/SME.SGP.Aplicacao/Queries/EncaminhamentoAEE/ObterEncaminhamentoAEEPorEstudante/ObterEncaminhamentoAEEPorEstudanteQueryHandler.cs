@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private EncaminhamentoAEEResumoDto MapearParaDto(EncaminhamentoAEEAlunoTurmaDto encaminhamento)
-            => encaminhamento == null ? null :
+            => encaminhamento.EhNulo() ? null :
             new EncaminhamentoAEEResumoDto()
             {
                 Id = encaminhamento.Id,

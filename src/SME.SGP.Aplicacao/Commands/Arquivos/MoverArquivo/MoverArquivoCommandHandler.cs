@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
         private async Task AlterarTipoArquivo(TipoArquivo tipo, string nomeArquivo)
         {
             var arquivo = await repositorioArquivo.ObterPorCodigo(new Guid(nomeArquivo.Split('.').FirstOrDefault()));
-            if (arquivo != null)
+            if (arquivo.NaoEhNulo())
             {
                 arquivo.Tipo = tipo;
                 await repositorioArquivo.SalvarAsync(arquivo);

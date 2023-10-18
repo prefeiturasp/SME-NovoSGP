@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             var dadosAbrangenciaSupervisor = await repositorioSupervisorEscolaDre
                 .ObterDadosAbrangenciaSupervisor(request.Login, request.ConsideraHistorico, request.AnoLetivo);
 
-            if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
+            if (dadosAbrangenciaSupervisor.NaoEhNulo() && dadosAbrangenciaSupervisor.Any())
             {
                 lista = lista.Concat(dadosAbrangenciaSupervisor
                     .Where(d => !request.ModalidadesQueSeraoIgnoradas.Contains((Modalidade)d.Modalidade))

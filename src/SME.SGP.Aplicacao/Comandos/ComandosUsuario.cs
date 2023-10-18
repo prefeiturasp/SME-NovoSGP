@@ -18,7 +18,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioSuporteUsuario repositorioSuporteUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
@@ -26,7 +25,6 @@ namespace SME.SGP.Aplicacao
         public ComandosUsuario(IServicoAutenticacao servicoAutenticacao,
             IServicoUsuario servicoUsuario,
             IServicoPerfil servicoPerfil,
-            IServicoEol servicoEOL,
             IRepositorioCache repositorioCache,
             IServicoAbrangencia servicoAbrangencia,
             IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario,
@@ -36,7 +34,6 @@ namespace SME.SGP.Aplicacao
             this.servicoAutenticacao = servicoAutenticacao ?? throw new ArgumentNullException(nameof(servicoAutenticacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoPerfil = servicoPerfil ?? throw new ArgumentNullException(nameof(servicoPerfil));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
             this.repositorioHistoricoEmailUsuario = repositorioHistoricoEmailUsuario ?? throw new ArgumentNullException(nameof(repositorioHistoricoEmailUsuario));
             this.repositorioSuporteUsuario = repositorioSuporteUsuario ?? throw new ArgumentNullException(nameof(repositorioSuporteUsuario));
@@ -63,7 +60,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(null, login);
             
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado.");
 
             usuario.ValidarSenha(alterarSenhaDto.NovaSenha);
@@ -85,7 +82,7 @@ namespace SME.SGP.Aplicacao
 
             usuario.ValidarSenha(primeiroAcessoDto.NovaSenha);
 
-            return await servicoEOL.AlterarSenha(usuario.Login, primeiroAcessoDto.NovaSenha);
+            return await mediator.Send(new AlterarSenhaUsuarioCommand(usuario.Login, primeiroAcessoDto.NovaSenha));
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
@@ -102,7 +99,7 @@ namespace SME.SGP.Aplicacao
             if (!retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto.Autenticado)
                 return retornoAutenticacaoEol.UsuarioAutenticacaoRetornoDto;
 
-            var dadosUsuario = await servicoEOL.ObterMeusDados(login);
+            var dadosUsuario = await mediator.Send(new ObterUsuarioCoreSSOQuery(login));
 
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(retornoAutenticacaoEol.CodigoRf, login, dadosUsuario.Nome, dadosUsuario.Email, true);
 
@@ -115,7 +112,7 @@ namespace SME.SGP.Aplicacao
 
             var administradorSuporte = ObterAdministradorSuporte(suporte, usuario);
 
-            var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(login, perfilSelecionado, administradorSuporte);
+            var dadosAcesso = await mediator.Send(new CarregarDadosAcessoPorLoginPerfilQuery(login, perfilSelecionado, administradorSuporte));
 
             var permissionamentos = dadosAcesso.Permissoes.ToList();
 
@@ -148,7 +145,7 @@ namespace SME.SGP.Aplicacao
 
         private AdministradorSuporteDto ObterAdministradorSuporte(SuporteUsuario suporte, Usuario usuarioSimulado)
         {
-            if (suporte != null && suporte.UsuarioPodeReceberSuporte(usuarioSimulado))
+            if (suporte.NaoEhNulo() && suporte.UsuarioPodeReceberSuporte(usuarioSimulado))
             {
                 return new AdministradorSuporteDto
                 {
@@ -172,10 +169,10 @@ namespace SME.SGP.Aplicacao
                 Nome = servicoUsuario.ObterClaim("nome_adm_suporte")
             };
 
-            var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(loginAtual, perfil, administradorSuporte);
+            var dadosAcesso = await mediator.Send(new CarregarDadosAcessoPorLoginPerfilQuery(loginAtual, perfil, administradorSuporte));
             var permissionamentos = dadosAcesso.Permissoes.ToList();
 
-            if (permissionamentos == null || !permissionamentos.Any())
+            if (permissionamentos.EhNulo() || !permissionamentos.Any())
                 throw new NegocioException("Não foi possível obter os permissionamentos do perfil selecionado");
 
             await servicoAbrangencia.Salvar(loginAtual, perfil, false);
@@ -199,15 +196,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<UsuarioReinicioSenhaDto> ReiniciarSenha(string codigoRf)
         {
-            var usuario = await servicoEOL.ObterMeusDados(codigoRf);
+            var usuario = await mediator.Send(new ObterUsuarioCoreSSOQuery(codigoRf));
 
             var retorno = new UsuarioReinicioSenhaDto();
 
-            if (usuario != null && string.IsNullOrEmpty(usuario.Email))
+            if (usuario.NaoEhNulo() && string.IsNullOrEmpty(usuario.Email))
                 retorno.DeveAtualizarEmail = true;
             else
             {
-                await servicoEOL.ReiniciarSenha(codigoRf);
+                await mediator.Send(new ReiniciarSenhaEolCommand(codigoRf));
                 retorno.DeveAtualizarEmail = false;
             }
 
@@ -235,7 +232,7 @@ namespace SME.SGP.Aplicacao
             var guidPerfil = await mediator.Send(ObterPerfilDoTokenQuery.Instance);
 
             // Busca lista de permissões do EOL
-            var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(login, guidPerfil);
+            var dadosAcesso = await mediator.Send(new CarregarDadosAcessoPorLoginPerfilQuery(login, guidPerfil));
             var permissionamentos = dadosAcesso.Permissoes.ToList();
             
             if (!permissionamentos.Any())

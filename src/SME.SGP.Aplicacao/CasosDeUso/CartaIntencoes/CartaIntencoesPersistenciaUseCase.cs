@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private static async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de codigo [{turmaCodigo}] não localizada!");
 
             var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(dataAula,turma));

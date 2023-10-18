@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AcompanhamentoTurmaDto> Executar(FiltroAcompanhamentoTurmaApanhadoGeral filtro)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             var acompanhamentoTurma = await mediator.Send(new ObterApanhadoGeralPorTurmaIdESemestreQuery(filtro.TurmaId, filtro.Semestre));
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
         private AcompanhamentoTurmaDto MapearEntidadeParaDTO(AcompanhamentoTurma acompanhamentoTurma)
         {
-            if (acompanhamentoTurma == null)
+            if (acompanhamentoTurma.EhNulo())
                 return new AcompanhamentoTurmaDto();
            
             var acompanhamentoTurmaDto = new AcompanhamentoTurmaDto

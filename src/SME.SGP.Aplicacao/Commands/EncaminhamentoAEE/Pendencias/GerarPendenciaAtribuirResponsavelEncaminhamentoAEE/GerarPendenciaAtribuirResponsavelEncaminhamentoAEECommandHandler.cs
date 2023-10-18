@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuarios = await mediator.Send(new ObterUsuariosIdPorCodigoUeQuery(turma.Ue.CodigoUe));
 
-            if (usuarios == null)
+            if (usuarios.EhNulo())
                 return false;
 
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     var existePendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
-                    if (existePendencia != null)
+                    if (existePendencia.NaoEhNulo())
                         await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(existePendencia.PendenciaId));
 
                     var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, string.Empty, string.Empty, turma.UeId, turma.Id);

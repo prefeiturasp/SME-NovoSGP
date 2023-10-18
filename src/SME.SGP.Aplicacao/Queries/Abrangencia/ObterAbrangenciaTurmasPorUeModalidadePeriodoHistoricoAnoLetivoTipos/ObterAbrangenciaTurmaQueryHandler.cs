@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 : null;
 
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil,
-                request.Modalidade, request.Tipos != null && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
+                request.Modalidade, request.Tipos.NaoEhNulo() && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
                 request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
 
             return OrdernarTurmasItinerario(result);

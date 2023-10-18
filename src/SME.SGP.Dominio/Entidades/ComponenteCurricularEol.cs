@@ -56,7 +56,7 @@ namespace SME.SGP.Dominio
                                                                                     || (componenteCurricular.CodigoComponenteTerritorioSaber != 0 &&
                                                                                         cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber)).FirstOrDefault();
 
-                if (componenteCurricularSgp != null)
+                if (componenteCurricularSgp.NaoEhNulo())
                 {
                     componenteCurricular.GrupoMatriz = new GrupoMatriz() { Id = componenteCurricularSgp.GrupoMatrizId, Nome = componenteCurricularSgp.GrupoMatrizNome };
                     componenteCurricular.LancaNota = componenteCurricularSgp.LancaNota;

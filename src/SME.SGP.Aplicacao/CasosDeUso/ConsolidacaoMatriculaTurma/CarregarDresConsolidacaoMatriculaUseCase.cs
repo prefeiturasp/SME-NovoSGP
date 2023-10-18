@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ExecutarConsolidacaoMatricula()
         {
             var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoInformacoesEscolares, DateTime.Now.Year));
-            if (parametroExecucao != null)
+            if (parametroExecucao.NaoEhNulo())
                 return parametroExecucao.Ativo;
 
             return false;
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
         private async Task AtualizarDataExecucao(int ano)
         {
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoInformacoesEscolares, ano));
-            if (parametroSistema != null)
+            if (parametroSistema.NaoEhNulo())
             {
                 parametroSistema.Valor = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff tt");
 

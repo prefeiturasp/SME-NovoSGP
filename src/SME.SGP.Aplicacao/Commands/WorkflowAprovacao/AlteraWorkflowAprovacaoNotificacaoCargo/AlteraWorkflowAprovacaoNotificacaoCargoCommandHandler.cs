@@ -28,11 +28,11 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var wfAprovacao = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(request.WorkflowId);
 
-            if (wfAprovacao == null)
+            if (wfAprovacao.EhNulo())
                 throw new NegocioException("Não foi possível obter o workflow de aprovação.");
 
             var nivelParaModificar = wfAprovacao.ObterNivelPorNotificacaoId(request.NotificacaoId);
-            if (nivelParaModificar == null)
+            if (nivelParaModificar.EhNulo())
                 throw new NegocioException("Não foi possível obter o nível do workflow de aprovação.");
 
 

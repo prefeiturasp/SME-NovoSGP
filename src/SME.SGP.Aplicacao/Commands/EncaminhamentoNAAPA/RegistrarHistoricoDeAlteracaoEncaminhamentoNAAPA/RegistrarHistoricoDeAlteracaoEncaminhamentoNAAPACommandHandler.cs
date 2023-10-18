@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var historicoAlteracao = await mediator.Send(new ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery(request.EncaminhamentoNAAPASecaoAlterado, request.EncaminhamentoNAAPASecaoExistente, request.TipoHistoricoAlteracoes));
 
-            if (historicoAlteracao != null)
+            if (historicoAlteracao.NaoEhNulo())
                 return await repositorioEncaminhamentoNAAPAHistoricoAlteracoes.SalvarAsync(historicoAlteracao);
 
             return 0;

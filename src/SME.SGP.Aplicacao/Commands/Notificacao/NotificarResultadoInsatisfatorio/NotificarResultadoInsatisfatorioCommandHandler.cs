@@ -33,11 +33,11 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodoFechamentoBimestre in periodoFechamentoBimestres)
             {
-                if (periodoFechamentoBimestre.PeriodoFechamento.UeId != null)
+                if (periodoFechamentoBimestre.PeriodoFechamento.UeId.NaoEhNulo())
                 {
                     var alunosComNotaLancada = await mediator.Send(new ObterAlunosComNotaLancadaPorPeriodoEscolarUEQuery(periodoFechamentoBimestre.PeriodoFechamento.UeId.GetValueOrDefault(), periodoFechamentoBimestre.PeriodoEscolarId));
 
-                    if (alunosComNotaLancada != null)
+                    if (alunosComNotaLancada.NaoEhNulo())
                     {
                         var turmasAlunosComNotaLancada = alunosComNotaLancada.GroupBy(a => a.TurmaId);
                         foreach (var turmaId in turmasAlunosComNotaLancada)
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                                         var professoresTurmaDisciplina = await mediator.Send(new ProfessoresTurmaDisciplinaQuery(turma.CodigoTurma, obterComponenteCurricular.Codigo, dataNotificacao));
 
                                         componenteNotificacao.ComponenteCurricularNome = obterComponenteCurricular.Descricao;
-                                        if (professoresTurmaDisciplina != null && professoresTurmaDisciplina.Any())
+                                        if (professoresTurmaDisciplina.NaoEhNulo() && professoresTurmaDisciplina.Any())
                                         {
                                             var professorTurma = professoresTurmaDisciplina.FirstOrDefault();
                                             componenteNotificacao.Professor = $"{professorTurma.NomeProfessor} ({professorTurma.CodigoRf})";

@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         //    var planoAula = await consultasPlanoAula.ObterPlanoAulaPorAula(1);
 
         //    // ASSERT
-        //    Assert.False(planoAula == null);
+        //    Assert.False(planoAula.EhNulo());
 
         //    Assert.True(planoAula.ObjetivosAprendizagemAula.Any());
 

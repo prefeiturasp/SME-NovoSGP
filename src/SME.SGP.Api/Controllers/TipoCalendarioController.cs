@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await consultas.ListarPorAnoLetivo(anoLetivo, modalidade);
 
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);
