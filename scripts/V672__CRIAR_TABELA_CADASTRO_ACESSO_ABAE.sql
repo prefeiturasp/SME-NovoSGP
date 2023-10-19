@@ -10,6 +10,7 @@ CREATE table IF NOT EXISTS public.cadastro_acesso_abae (
 	endereco varchar(200) not null,
 	numero integer not null,
 	complemento  varchar(20) NULL,
+	bairro varchar(50) NULL,
 	cidade varchar(50) NULL,
 	estado varchar(5) NULL,	
 	excluido bool NOT NULL DEFAULT false,

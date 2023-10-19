@@ -21,5 +21,8 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string SENHA_ATUAL_INCORRETA = "Senha atual incorreta.";
         public const string SOMENTE_EH_POSSIVEL_REALIZAR_ACOMPANHAMENTO_PARA_TURMAS_PAP = "Somente é possivel realizar acompanhamento para turmas PAP";
         public const string NAO_FORAM_ENCONTRADOS_ALUNOS_ATIVOS_PARA_UE = "Não foram encontrados alunos ativos para UE {0}";
+        public const string JA_EXISTE_CADASTRO_ACESSO_ABAR_PARA_ESSE_CPF = "Já existe cadastro para esse CPF: {0}";
+        public const string NAO_EH_PERMITIDO_ALTERACAO_CPF_POS_CADASTRO = "Não é permitido alteração de CPF após cadastro.";
+        public const string NAO_EH_PERMITIDO_ALTERACAO_UE_POS_CADASTRO = "Não é permitido alteração da UE após cadastro.";
     }
 }

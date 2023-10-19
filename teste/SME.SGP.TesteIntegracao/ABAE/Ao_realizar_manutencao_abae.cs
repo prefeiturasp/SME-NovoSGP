@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ABAE.Base;
-using SME.SGP.TesteIntegracao.Ocorrencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -14,159 +11,233 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
     public class Ao_realizar_manutencao_abae : ABAETesteBase
     {
         public Ao_realizar_manutencao_abae(CollectionFixture collectionFixture) : base(collectionFixture)
-        {
-        }
+        {}
 
-        [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia com Turma")]
-        public async Task AlterarOcorrenciaComTurma()
+        [Fact(DisplayName = "ABAE - Inserir")]
+        public async Task Ao_inserir_cadastro_acesso_ABAE()
         {
             await CriarDadosBasicos();
-            var dtoIncluir = new InserirOcorrenciaDto
-            {
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                DreId = 1,
-                UeId = 1,
-                Modalidade = 5,
-                Semestre = 3,
-                TurmaId = 1,
-                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
-                Titulo = "Lorem ipsum",
-                Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
-                OcorrenciaTipoId = 1,
-                HoraOcorrencia = "17:34",
-            };
-            var useCaseIncluir = InserirOcorrenciaUseCase();
-            await useCaseIncluir.Executar(dtoIncluir);
-            await ValidarAlteracao(dtoIncluir);
 
+            var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
+            
+            var dtoIncluir = new CadastroAcessoABAEDto
+            {
+                UeId = 1,
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "001.002.003-01",
+                Email = "email@email.com",
+                Telefone = "11 9999-9999",
+                Situacao = true,
+                Cep = "01000-001",
+                Endereco = "Endereço ABC",
+                Numero = 99,
+                Complemento = "Complemento",
+                Cidade = "São Paulo",
+                Estado = "SP"
+            };
+            
+            var retorno = await useCase.Executar(dtoIncluir);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
+            retorno.Nome.ShouldBe(dtoIncluir.Nome);
+            retorno.Cpf.ShouldBe(dtoIncluir.Cpf);
+            retorno.Email.ShouldBe(dtoIncluir.Email);
+            retorno.Telefone.ShouldBe(dtoIncluir.Telefone);
+            retorno.Situacao.ShouldBe(dtoIncluir.Situacao);
+            retorno.Cep.ShouldBe(dtoIncluir.Cep);
+            retorno.Endereco.ShouldBe(dtoIncluir.Endereco);
+            retorno.Numero.ShouldBe(dtoIncluir.Numero);
+            retorno.Complemento.ShouldBe(dtoIncluir.Complemento);
+            retorno.Cidade.ShouldBe(dtoIncluir.Cidade);
+            retorno.Estado.ShouldBe(dtoIncluir.Estado);
         }
         
-        [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Ue sem Turma")]
-        public async Task AlterarOcorrenciaComUeSemTurma()
+        [Fact(DisplayName = "ABAE - Não pode inserir com cpf duplicado")]
+        public async Task Ao_inserir_com_cpf_duplicado_deve_gerar_excecao()
         {
             await CriarDadosBasicos();
-            var dtoIncluir = new InserirOcorrenciaDto
+            
+            await InserirNaBase(new CadastroAcessoABAE()
             {
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                DreId = 1,
                 UeId = 1,
-                Modalidade = 5,
-                Semestre = 3,
-                TurmaId = null,
-                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
-                Titulo = "Lorem ipsum",
-                Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
-                OcorrenciaTipoId = 1,
-                HoraOcorrencia = "17:34",
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "001.002.003-01",
+                Email = "email@email.com",
+                Telefone = "11 9999-9999",
+                Situacao = true,
+                Cep = "01000-001",
+                Endereco = "Endereço ABC",
+                Numero = 99,
+                Complemento = "Complemento",
+                Cidade = "São Paulo",
+                Estado = "SP",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
+            
+            var dtoIncluir = new CadastroAcessoABAEDto
+            {
+                UeId = 1,
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "001.002.003-01",
+                Email = "email@email.com",
+                Telefone = "11 9999-9999",
+                Situacao = true,
+                Cep = "01000-001",
+                Endereco = "Endereço ABC",
+                Numero = 99,
+                Complemento = "Complemento",
+                Cidade = "São Paulo",
+                Estado = "SP"
             };
-            var useCaseIncluir = InserirOcorrenciaUseCase();
-            await useCaseIncluir.Executar(dtoIncluir);
-            await ValidarAlteracao(dtoIncluir);
+            
+            await useCase.Executar(dtoIncluir).ShouldThrowAsync<NegocioException>();
         }
         
-        [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Turma e Aluno")]
-        public async Task AlterarOcorrenciaComTurmaEAluno()
+        [Fact(DisplayName = "ABAE - Não pode alterar o cpf")]
+        public async Task Ao_alterar_o_cpf_deve_gerar_excecao()
         {
             await CriarDadosBasicos();
-            var dtoIncluir = new InserirOcorrenciaDto
-            {
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                DreId = 1,
-                UeId = 1,
-                Modalidade = 5,
-                Semestre = 3,
-                TurmaId = 1,
-                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
-                Titulo = "Lorem ipsum",
-                Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
-                OcorrenciaTipoId = 1,
-                HoraOcorrencia = "17:34",
-                CodigosAlunos = new List<long>(){1,2}
-            };
-            var useCaseIncluir = InserirOcorrenciaUseCase();
-            await useCaseIncluir.Executar(dtoIncluir);
-            
-            await ValidarAlteracao(dtoIncluir,temAlunos:true);
-        }
 
-        [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Ue e Servidor")]
-        public async Task AlterarOcorrenciaComUeEServidor()
-        {
-            await CriarDadosBasicos();
-            var dtoIncluir = new InserirOcorrenciaDto
+            var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
+
+            await InserirNaBase(new CadastroAcessoABAE()
             {
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                DreId = 1,
                 UeId = 1,
-                Modalidade = 5,
-                Semestre = 3,
-                TurmaId = 1,
-                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
-                Titulo = "Lorem ipsum",
-                Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
-                OcorrenciaTipoId = 1,
-                HoraOcorrencia = "17:34",
-                CodigosServidores = new List<string>(){"rf1","rf2"}
-            };
-            var useCaseIncluir = InserirOcorrenciaUseCase();
-            await useCaseIncluir.Executar(dtoIncluir);
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "001.002.003-01",
+                Email = "email@email.com",
+                Telefone = "11 9999-9999",
+                Situacao = true,
+                Cep = "01000-001",
+                Endereco = "Endereço ABC",
+                Numero = 99,
+                Complemento = "Complemento",
+                Cidade = "São Paulo",
+                Estado = "SP",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
             
-            await ValidarAlteracao(dtoIncluir,temServidor:true);
+            var dtoAlterar = new CadastroAcessoABAEDto
+            {
+                Id = 1,
+                UeId = 1,
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "002.003.004-01",
+                Email = "email1@email1.com",
+                Telefone = "11 1999-9999",
+                Situacao = true,
+                Cep = "00000-001",
+                Endereco = "Endereço DEF",
+                Numero = 11,
+                Complemento = "Com DEF",
+                Cidade = "São Paulo ",
+                Estado = "SP "
+            };
+            
+            await useCase.Executar(dtoAlterar).ShouldThrowAsync<NegocioException>();
         }
         
-        [Fact(DisplayName = "Ocorrencia - Alterar Ocorrencia Com Turma, Aluno e Servidor")]
-        public async Task AlterarOcorrenciaComTurmaAlunoEServidor()
+        [Fact(DisplayName = "ABAE - Não pode alterar a UE")]
+        public async Task Ao_alterar_o_ue_deve_gerar_excecao()
         {
             await CriarDadosBasicos();
-            var dtoIncluir = new InserirOcorrenciaDto
+
+            var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
+
+            await InserirNaBase(new CadastroAcessoABAE()
             {
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                DreId = 1,
                 UeId = 1,
-                Modalidade = 5,
-                Semestre = 3,
-                TurmaId = 1,
-                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
-                Titulo = "Lorem ipsum",
-                Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
-                OcorrenciaTipoId = 1,
-                HoraOcorrencia = "17:34",
-                CodigosServidores = new List<string>(){"rf1","rf2"},
-                CodigosAlunos = new List<long>(){1,2}
-            };
-            var useCaseIncluir = InserirOcorrenciaUseCase();
-            await useCaseIncluir.Executar(dtoIncluir);
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "001.002.003-01",
+                Email = "email@email.com",
+                Telefone = "11 9999-9999",
+                Situacao = true,
+                Cep = "01000-001",
+                Endereco = "Endereço ABC",
+                Numero = 99,
+                Complemento = "Complemento",
+                Cidade = "São Paulo",
+                Estado = "SP",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
             
-            await ValidarAlteracao(dtoIncluir,true,true);
-        }
-        private async Task ValidarAlteracao(InserirOcorrenciaDto dtoIncluir,bool temAlunos = false,bool temServidor = false)
-        {
-            var obterTodos = ObterTodos<Dominio.Ocorrencia>();
-            obterTodos.ShouldNotBeNull();
-
-
-            var obterOcorrenciaUseCase = ObterOcorrenciaUseCase();
-            var ocorrencia = await obterOcorrenciaUseCase.Executar(obterTodos.FirstOrDefault()!.Id);
-
-            var alterarDto = new AlterarOcorrenciaDto
+            var dtoAlterar = new CadastroAcessoABAEDto
             {
-                Id = obterTodos.FirstOrDefault()!.Id,
-                UeId = ocorrencia.UeId,
-                OcorrenciaTipoId = 2,
-                DataOcorrencia = dtoIncluir.DataOcorrencia,
-                Descricao = "Descricao Alterada",
-                Titulo = "Titulo Alterado",
-                CodigosAlunos = temAlunos ? new List<long>(){1,2} : new List<long>(),
-                CodigosServidores = temServidor ? new List<string>(){"1","2"} : new List<string>()
+                Id = 1,
+                UeId = 2,
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "001.002.003-01",
+                Email = "email1@email1.com",
+                Telefone = "11 1999-9999",
+                Situacao = true,
+                Cep = "00000-001",
+                Endereco = "Endereço DEF",
+                Numero = 11,
+                Complemento = "Com DEF",
+                Cidade = "São Paulo ",
+                Estado = "SP "
             };
-            var alterarUseCase = AlterarOcorrenciaUseCase();
-            await alterarUseCase.Executar(alterarDto);
+            
+            await useCase.Executar(dtoAlterar).ShouldThrowAsync<NegocioException>();
+        }
+        
+        [Fact(DisplayName = "ABAE - Alterar")]
+        public async Task Ao_alterar()
+        {
+            await CriarDadosBasicos();
 
-            var obterTodosAlterados = ObterTodos<Dominio.Ocorrencia>();
-            obterTodosAlterados.ShouldNotBeNull();
-            obterTodosAlterados.FirstOrDefault()?.Titulo.ShouldBeEquivalentTo(alterarDto.Titulo);
-            obterTodosAlterados.FirstOrDefault()?.Descricao.ShouldBeEquivalentTo(alterarDto.Descricao);
-            obterTodosAlterados.FirstOrDefault()?.OcorrenciaTipoId.ShouldBeEquivalentTo(alterarDto.OcorrenciaTipoId);
+            var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
+
+            await InserirNaBase(new CadastroAcessoABAE()
+            {
+                UeId = 1,
+                Nome = USUARIO_LOGADO_NOME,
+                Cpf = "001.002.003-01",
+                Email = "email@email.com",
+                Telefone = "11 9999-9999",
+                Situacao = true,
+                Cep = "01000-001",
+                Endereco = "Endereço ABC",
+                Numero = 99,
+                Complemento = "Complemento",
+                Cidade = "São Paulo",
+                Estado = "SP",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            var dtoAlterar = new CadastroAcessoABAEDto
+            {
+                Id = 1,
+                UeId = 1,
+                Nome = "Nome de usuário alterado",
+                Cpf = "001.002.003-01",
+                Email = "email1@email1.com",
+                Telefone = "11 1999-9999",
+                Situacao = true,
+                Cep = "00000-001",
+                Endereco = "Endereço DEF",
+                Numero = 11,
+                Complemento = "Com DEF",
+                Cidade = "São Paulo ",
+                Estado = "SP "
+            };
+            
+            var retorno = await useCase.Executar(dtoAlterar);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(dtoAlterar.Id);
+            retorno.Nome.ShouldBe(dtoAlterar.Nome);
+            retorno.Cpf.ShouldBe(dtoAlterar.Cpf);
+            retorno.Email.ShouldBe(dtoAlterar.Email);
+            retorno.Telefone.ShouldBe(dtoAlterar.Telefone);
+            retorno.Situacao.ShouldBe(dtoAlterar.Situacao);
+            retorno.Cep.ShouldBe(dtoAlterar.Cep);
+            retorno.Endereco.ShouldBe(dtoAlterar.Endereco);
+            retorno.Numero.ShouldBe(dtoAlterar.Numero);
+            retorno.Complemento.ShouldBe(dtoAlterar.Complemento);
+            retorno.Cidade.ShouldBe(dtoAlterar.Cidade);
+            retorno.Estado.ShouldBe(dtoAlterar.Estado);
         }
     }
 }

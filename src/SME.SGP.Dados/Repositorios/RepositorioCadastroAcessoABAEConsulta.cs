@@ -18,5 +18,10 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioCadastroAcessoABAEConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {}
+
+        public Task<bool> ExisteCadastroAcessoABAEPorCpf(string cpf)
+        {
+            return database.Conexao.QueryFirstOrDefaultAsync<bool>("select 1 from cadastro_acesso_abae where cpf = @cpf and not excluido", new {cpf });
+        }
     }
 }
