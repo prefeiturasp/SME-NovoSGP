@@ -67,6 +67,7 @@
   <ItemGroup>
     <Folder Include="Commands\FechamentoTurmaDisciplina\" />
     <Folder Include="obj\" />
+    <Folder Include="Queries\Informes\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
     <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
