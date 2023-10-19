@@ -409,7 +409,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             var turma = new Dominio.Turma
             {
                 Ano = ANO_9,
-                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = ANO_LETIVO_ANO_ATUAL,
                 CodigoTurma = TURMA_CODIGO_1,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 Ue = new Ue { CodigoUe = UE_CODIGO_1, Dre = new Dre { CodigoDre = DRE_CODIGO_1 } }

@@ -22,21 +22,6 @@ namespace SME.SGP.Infra
                             .GetCustomAttribute<TAttribute>();
         }
 
-        public static Modalidade[] ObterModalidadesTurma(this ModalidadeTipoCalendario modalidadeTipoCalendario)
-        {
-            switch (modalidadeTipoCalendario)
-            {
-                case ModalidadeTipoCalendario.FundamentalMedio:
-                    return new[] { Modalidade.Fundamental, Modalidade.Medio };
-                case ModalidadeTipoCalendario.EJA:
-                    return new[] { Modalidade.EJA };
-                case ModalidadeTipoCalendario.Infantil:
-                    return new[] { Modalidade.EducacaoInfantil };
-                default:
-                    throw new NegocioException("ModalidadeTipoCalendario não implementada.");
-            }
-        }
-
         public static Cargo ObterCargoPorPerfil(this PerfilUsuario perfilCodigo)
         {
             switch (perfilCodigo)
@@ -142,6 +127,16 @@ namespace SME.SGP.Infra
             if (!typeof(TEnum).IsEnum) throw new InvalidOperationException();
 
             return ((TEnum[])Enum.GetValues(typeof(TEnum))).Cast<Enum>().ToDictionary(key => key, value => value.Name());
+        }
+        
+        public static bool EhMaiorQueZero(this int valor)
+        {
+            return valor > 0;
+        }
+        
+        public static bool EhMaiorQueZero(this long valor)
+        {
+            return valor > 0;
         }
     }
 }

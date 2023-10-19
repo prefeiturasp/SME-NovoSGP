@@ -7,14 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUesComDrePorCodigoEModalidadeQuery : IRequest<IEnumerable<Ue>>
     {
-        public ObterUesComDrePorCodigoEModalidadeQuery(string dreCodigo, Modalidade modalidade)
+        public ObterUesComDrePorCodigoEModalidadeQuery(string dreCodigo, Modalidade[] modalidades)
         {
             DreCodigo = dreCodigo;
-            Modalidade = modalidade;
+            Modalidades = modalidades;
         }
 
         public string DreCodigo { get; set; }
-        public Modalidade Modalidade { get; set; }
+        public Modalidade[] Modalidades { get; set; }
     }
 
     public class ObterUesComDrePorCodigoDreQueryValidator : AbstractValidator<ObterUesComDrePorCodigoEModalidadeQuery>

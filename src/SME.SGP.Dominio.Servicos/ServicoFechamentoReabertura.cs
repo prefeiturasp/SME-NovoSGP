@@ -108,7 +108,7 @@ namespace SME.SGP.Dominio.Servicos
                                                                 fechamentoReabertura.ObterBimestresNumeral().ToString(),
                                                                 fechamentoReabertura.EhParaUe(),
                                                                 fechamentoReabertura.TipoCalendario.AnoLetivo,
-                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidadesTurma().Cast<int>().ToArray());
+                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidades().Cast<int>().ToArray());
         }
 
         public async Task<string> ExcluirAsync(FechamentoReabertura fechamentoReabertura)

@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(periodoEncerrando.PeriodoFechamento.UeId.Value,
                                                                                                                DateTime.Now.Year,
                                                                                                                periodoEncerrando.PeriodoEscolarId,
-                                                                                                               modalidade.ObterModalidadesTurma(),
+                                                                                                               modalidade.ObterModalidades(),
                                                                                                                DateTime.Now.Semestre()));
 
                     if (turmas.NaoEhNulo() && turmas.Any())
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool EhFechamentoFinal(int bimestre, ModalidadeTipoCalendario modalidade)
-            => bimestre == (modalidade == ModalidadeTipoCalendario.EJA ? 2 : 4);
+            => bimestre == (modalidade.EhEjaOuCelp() ? 2 : 4);
 
         private async Task<(bool notificar, Ue ue, int quantidadeTurmasPendentes)> VerificaTurmasComPendenciaFechamentoNaUe(IEnumerable<Turma> turmas, Ue ue, double percentualFechamentoInsuficiente)
         {
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                 var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(periodoEncerramentoUe.PeriodoFechamento.UeId.Value,
                                                                                                            DateTime.Now.Year,
                                                                                                            null,
-                                                                                                           modalidade.ObterModalidadesTurma(),
+                                                                                                           modalidade.ObterModalidades(),
                                                                                                            DateTime.Now.Semestre()));
                 if (turmas.NaoEhNulo() && turmas.Any())
                     listaUes.Add(await VerificaTurmasComPendenciaFechamentoNaUe(turmas, periodoEncerramentoUe.PeriodoFechamento.Ue, percentualFechamentoInsuficiente));
