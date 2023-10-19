@@ -33,7 +33,7 @@ namespace SME.SGP.Dominio.Servicos
             if (atribuicoesConflitantes.NaoEhNulo() && atribuicoesConflitantes.Any())
                 throw new NegocioException("Já existem outras atribuições, para este professor, no periodo especificado");
 
-            var modalidade = ehInfantil ? ModalidadeTipoCalendario.Infantil : ModalidadeTipoCalendario.FundamentalMedio; //E se for outra modalidade?
+            var modalidade = ehInfantil ? ModalidadeTipoCalendario.Infantil : ModalidadeTipoCalendario.FundamentalMedio;
 
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
 
