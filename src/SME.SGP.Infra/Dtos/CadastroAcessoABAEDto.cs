@@ -14,12 +14,15 @@ namespace SME.SGP.Infra
         public string Nome { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o cpf do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(15, ErrorMessage = "O cpf do usuário não pode conter mais que 15 caracteres")]
         public string Cpf { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o e-mail do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(80, ErrorMessage = "O e-mail do usuário não pode conter mais que 80 caracteres")]
         public string Email { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o telefone do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(15, ErrorMessage = "O telefone do usuário não pode conter mais que 15 caracteres")]
         public string Telefone { get; set; }
         
         public bool Situacao { get; set; }
