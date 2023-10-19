@@ -11,7 +11,6 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/informes")]
-    [ValidaDto]
     [Authorize("Bearer")]
     public class InformesController : Controller
     {
