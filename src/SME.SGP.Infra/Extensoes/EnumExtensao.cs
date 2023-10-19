@@ -143,5 +143,20 @@ namespace SME.SGP.Infra
 
             return ((TEnum[])Enum.GetValues(typeof(TEnum))).Cast<Enum>().ToDictionary(key => key, value => value.Name());
         }
+        
+        public static bool EhMaiorQueZero(this long valor)
+        {
+            return valor > 0;
+        }
+        
+        public static bool EhMenorQueZero(this long valor)
+        {
+            return valor < 0;
+        }
+        
+        public static bool EhIgualZero(this long valor)
+        {
+            return valor == 0;
+        }
     }
 }
