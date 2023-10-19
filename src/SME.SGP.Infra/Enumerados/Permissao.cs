@@ -1230,7 +1230,7 @@ namespace SME.SGP.Infra
             Menu = ConstantesMenuPermissao.MENU_INFORMES,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
         INF_C = 251,
@@ -1239,7 +1239,7 @@ namespace SME.SGP.Infra
             Menu = ConstantesMenuPermissao.MENU_INFORMES,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
         INF_I = 252,
@@ -1248,7 +1248,7 @@ namespace SME.SGP.Infra
             Menu = ConstantesMenuPermissao.MENU_INFORMES,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
         INF_E = 253,
@@ -1257,7 +1257,7 @@ namespace SME.SGP.Infra
             Menu = ConstantesMenuPermissao.MENU_INFORMES,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
-            Url = ConstantesMenuPermissao.ROTA_GESTAO_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
         INF_A = 254,
