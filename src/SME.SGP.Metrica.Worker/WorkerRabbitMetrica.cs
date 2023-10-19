@@ -6,6 +6,7 @@ using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.Infra.Worker;
 using SME.SGP.Metrica.Worker.Rotas;
+using SME.SGP.Metrica.Worker.UseCases.Interfaces;
 
 namespace SME.SGP.Metrica.Worker
 {
@@ -24,6 +25,7 @@ namespace SME.SGP.Metrica.Worker
 
         protected override void RegistrarUseCases()
         {
+            Comandos.Add(RotasRabbitMetrica.AcessosSGP, new ComandoRabbit("Quantidade de Acessos Diario no SGP", typeof(IRegistrarMetricaAcessosSGPUseCase)));
         }
     }
 }

@@ -16,14 +16,17 @@ namespace SME.SGP.Dados.ElasticSearch
         private const int QUANTIDADE_RETORNO = 200;
         private readonly IElasticClient _elasticClient;
         private readonly IServicoTelemetria servicoTelemetria;
+        private readonly string indicePadraoRepositorio;
         private readonly ElasticOptions elasticOptions;
 
         protected RepositorioElasticBase(IElasticClient elasticClient,
                                          IServicoTelemetria servicoTelemetria,
-                                         IOptions<ElasticOptions> elasticOptions)
+                                         IOptions<ElasticOptions> elasticOptions, 
+                                         string indicePadraoRepositorio = "")
         {
             _elasticClient = elasticClient;
             this.servicoTelemetria = servicoTelemetria;
+            this.indicePadraoRepositorio = indicePadraoRepositorio;
             this.elasticOptions = elasticOptions.Value ?? throw new ArgumentNullException(nameof(elasticOptions));
         }
 
@@ -159,7 +162,9 @@ namespace SME.SGP.Dados.ElasticSearch
         private string ObterNomeIndice(string indice = "")
         {
             var nomeIndice = string.IsNullOrEmpty(indice) ?
-                elasticOptions.IndicePadrao :
+                string.IsNullOrEmpty(indicePadraoRepositorio) ?
+                    elasticOptions.IndicePadrao :
+                    indicePadraoRepositorio :
                 indice;
 
             return $"{elasticOptions.Prefixo}{nomeIndice}";

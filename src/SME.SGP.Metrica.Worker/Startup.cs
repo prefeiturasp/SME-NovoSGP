@@ -8,11 +8,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using SME.SGP.Dados.Contexto;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.ElasticSearch;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
+using SME.SGP.Metrica.Worker.Repositorios;
+using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
+using SME.SGP.Metrica.Worker.UseCases;
+using SME.SGP.Metrica.Worker.UseCases.Interfaces;
+using System;
 using System.Threading;
 
 namespace SME.SGP.Metrica.Worker
@@ -68,8 +77,24 @@ namespace SME.SGP.Metrica.Worker
         private void RegistrarDependencias(IServiceCollection services)
         {
             services.ConfigurarTelemetria(Configuration);
+            services.AddHttpContextAccessor();
+
+            RegistrarRepositorio(services);
+            RegistrarUseCases(services);
         }
 
+        private void RegistrarRepositorio(IServiceCollection services)
+        {
+            services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
+            services.TryAddScoped<ISgpContext, SgpContext>();
+            services.TryAddScoped<IRepositorioSGP, RepositorioSGP>();
+            services.TryAddScoped<IRepositorioAcessos, RepositorioAcessos>();
+        }
+
+        private void RegistrarUseCases(IServiceCollection services)
+        {
+            services.TryAddScoped<IRegistrarMetricaAcessosSGPUseCase, RegistrarMetricaAcessosSGPUseCase>();
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Dados.ElasticSearch\SME.SGP.Dados.ElasticSearch.csproj" />
+    <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.HealthCheck\SME.SGP.Infra.HealthCheck.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Polly\SME.SGP.Infra.Polly.csproj" />
