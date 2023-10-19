@@ -11,7 +11,7 @@ public class SalvarCadastroAcessoABAEUseCase: AbstractUseCase, ISalvarCadastroAc
     public SalvarCadastroAcessoABAEUseCase(IMediator mediator) : base(mediator)
     {}
 
-    public async Task<CadastroAcessoABAE> Executar(CadastroAcessoABAEDto cadastroAcessoABAEDto)
+    public async Task<CadastroAcessoABAEDto> Executar(CadastroAcessoABAEDto cadastroAcessoABAEDto)
     {
         var cadastroAcessoABAE = cadastroAcessoABAEDto.Id.EhMaiorQueZero() ? await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(cadastroAcessoABAEDto.Id)): new CadastroAcessoABAE();
 
@@ -42,10 +42,10 @@ public class SalvarCadastroAcessoABAEUseCase: AbstractUseCase, ISalvarCadastroAc
             cadastroAcessoABAE.Cpf = cadastroAcessoABAEDto.Cpf;
         }
 
-        cadastroAcessoABAE.Id = await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
+        cadastroAcessoABAEDto.Id = await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
         
         await mediator.Send(new PublicarFilaApiEOLCommand(RotasRabbitApiEOL.RotaManutencaoUsuarioABAECoreSSO, cadastroAcessoABAE));
 
-        return cadastroAcessoABAE;
+        return cadastroAcessoABAEDto;
     }
 }

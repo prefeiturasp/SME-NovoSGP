@@ -2,10 +2,8 @@
 
 namespace SME.SGP.Infra
 {
-    public class CadastroAcessoABAEDto
+    public class CadastroAcessoABAEDto : AuditoriaDto
     {
-        public long Id { get; set; }
-        
         [Required(ErrorMessage = "É necessário informar o identificador da UE para o cadastro de acesso ABAE")]
         public long UeId { get; set; }
         

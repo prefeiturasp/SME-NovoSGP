@@ -24,5 +24,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string JA_EXISTE_CADASTRO_ACESSO_ABAR_PARA_ESSE_CPF = "Já existe cadastro para esse CPF: {0}";
         public const string NAO_EH_PERMITIDO_ALTERACAO_CPF_POS_CADASTRO = "Não é permitido alteração de CPF após cadastro.";
         public const string NAO_EH_PERMITIDO_ALTERACAO_UE_POS_CADASTRO = "Não é permitido alteração da UE após cadastro.";
+        public const string CADASTRO_ACESSO_ABAE_NAO_ENCONTRADO = "Cadastro de Acesso ABAE não localizado!";
     }
 }
