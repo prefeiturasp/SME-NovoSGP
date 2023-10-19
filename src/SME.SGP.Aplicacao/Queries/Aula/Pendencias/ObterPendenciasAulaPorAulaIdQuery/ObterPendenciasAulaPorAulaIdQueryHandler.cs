@@ -22,14 +22,16 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId), cancellationToken);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance, cancellationToken);
             var componentesCurricularesDoProfessorCJ = Enumerable.Empty<AtribuicaoCJ>();
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
+
             var componentesCurricularesEolProfessor = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.TurmaId,
                                                                                   usuarioLogado.Login,
                                                                                   usuarioLogado.PerfilAtual,
-                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                                                                                  turma.EhTurmaInfantil), cancellationToken);
 
             if (usuarioLogado.EhSomenteProfessorCj())
                 componentesCurricularesDoProfessorCJ = await mediator

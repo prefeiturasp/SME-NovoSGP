@@ -23,14 +23,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(FiltroSecoesDeEncaminhamento filtro)
         {
             var secoesQuestionario = (await mediator.Send(new ObterSecoesEncaminhamentosSecaoNAAPAQuery(filtro.Modalidade, filtro.EncaminhamentoNAAPAId))).ToList();
+            var secoes = secoesQuestionario.Where(secao => secao.TipoQuestionario == TipoQuestionario.EncaminhamentoNAAPA);
 
-            foreach (var secao in secoesQuestionario.Where(secao => secao.NomeComponente != SECAO_ITINERANCIA && secao.Auditoria.EhNulo()))
+            foreach (var secao in secoes.Where(secao => secao.NomeComponente != SECAO_ITINERANCIA && secao.Auditoria.EhNulo()))
             {
                 var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId));
                 secao.Concluido = !listaQuestoes.Any(c => c.Obrigatorio);
             }
             
-            return secoesQuestionario;
+            return secoes;
         }
     }
 }

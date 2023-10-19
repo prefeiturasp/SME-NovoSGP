@@ -73,11 +73,9 @@ namespace SME.SGP.Aplicacao
 
             if (fechamentoTurmaDisciplina.NaoEhNulo())
             {
-                var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] {fechamentoTurmaDisciplina.DisciplinaId}));
+                var disciplinaEol = await mediator.Send(new ObterComponenteCurricularPorIdQuery(fechamentoTurmaDisciplina.DisciplinaId));
 
-                var disciplina = disciplinasEol is null
-                    ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")
-                    : disciplinasEol.FirstOrDefault();
+                var disciplina = disciplinaEol ?? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
                 if (fechamentoTurmaDisciplina.TipoTurma != TipoTurma.Programa)
                     await PublicarMsgGeracaoPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,

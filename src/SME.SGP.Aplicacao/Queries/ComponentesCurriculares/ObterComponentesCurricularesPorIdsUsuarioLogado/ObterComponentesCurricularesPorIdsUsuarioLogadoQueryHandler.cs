@@ -30,7 +30,8 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesUsuarioTurma = await mediator
                                                             .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, 
                                                                                                                           usuarioLogado.Login, 
-                                                                                                                          usuarioLogado.PerfilAtual));
+                                                                                                                          usuarioLogado.PerfilAtual,
+                                                                                                                          turma.EhTurmaInfantil));
             var disciplinasPorIds = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(request.Ids));
 
             IEnumerable<AtribuicaoCJ> componentesCurricularesDoProfessorCJInfantil = Enumerable.Empty<AtribuicaoCJ>();

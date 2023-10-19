@@ -54,15 +54,15 @@ namespace SME.SGP.Dados.Repositorios
             })).Any();
         }
 
-        public async Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaCodigo, string[] componentesCurriculares, string professorRf, TipoAula tipoAula)
+        public async Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaCodigo, string[] componentesCurriculares, TipoAula tipoAula, string professorRf = null)
         {
-            var query = @"select 1
+            var query = $@"select 1
                  from aula
                 where not excluido
                   and DATE(data_aula) = @data
                   and turma_id = @turmaCodigo
                   and disciplina_id = any(@componentesCurriculares)
-                  and professor_rf = @professorRf
+                  {(string.IsNullOrEmpty(professorRf) ? string.Empty : " and professor_rf = @professorRf ")}
                   and tipo_aula = @tipoAula";
 
             return (await database.Conexao.QueryAsync<int>(query, new
@@ -184,7 +184,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaCompletaDto>(query.ToString(), new { tipoCalendarioId, turmaId, ueId, data, perfil }));
         }
 
-        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string[] disciplinasIdsConsideradas, string professorRf)
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string[] disciplinasIdsConsideradas, string professorRf = null)
         {
             var query = @$"select *, tipo_aula as TipoAula
                  from aula
@@ -303,8 +303,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select a.*, t.id, t.modalidade_codigo
                             from aula a
-                            inner join componente_curricular cc on a.disciplina_id::int8 = cc.id and cc.permite_registro_frequencia
                             inner join turma t on a.turma_id = t.turma_id
+                            left join componente_curricular cc on a.disciplina_id::int8 = cc.id 
                             left join registro_frequencia r on r.aula_id = a.id
                            where a.turma_id = @codigoTurma
 	                            and disciplina_id = @disciplinaId
@@ -312,6 +312,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
 	                            and r.id is null
+                                and coalesce(cc.permite_registro_frequencia, true)
                                 and not a.excluido;";
             return database.Conexao.Query<Aula, Turma, Aula>(query, (aula, turma) =>
             {

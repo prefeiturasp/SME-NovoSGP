@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using SME.SGP.Dominio.Constantes;
+using System.IO;
 using System.Linq;
 
 namespace SME.SGP.Infra
@@ -47,6 +48,21 @@ namespace SME.SGP.Infra
         public static bool EhArquivoVideoParaOtimizar(this string nomeArquivo)
         {
             return EhExtensaoVideoParaOtimizar(Path.GetExtension(nomeArquivo));
+        }
+
+        public static bool EhIdComponenteCurricularTerritorioSaberAgrupado(this string source)
+        {
+            long componenteCurricularTerritorioSaberAgrupadoId = 0;
+            if (long.TryParse(source, out componenteCurricularTerritorioSaberAgrupadoId))
+            {
+                return componenteCurricularTerritorioSaberAgrupadoId.EhIdComponenteCurricularTerritorioSaberAgrupado();
+            }
+            return false;
+        }
+
+        public static bool EhIdComponenteCurricularTerritorioSaberAgrupado(this long source)
+        {
+            return source >= TerritorioSaberConstants.COMPONENTE_AGRUPAMENTO_TERRITORIO_SABER_ID_INICIAL;
         }
     }
 }

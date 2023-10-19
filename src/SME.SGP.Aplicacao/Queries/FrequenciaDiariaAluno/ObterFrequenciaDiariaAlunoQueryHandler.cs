@@ -33,14 +33,8 @@ namespace SME.SGP.Aplicacao
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            var professorRfAula = turma.EhTurmaInfantil 
-                                    ? string.Empty 
-                                    : (usuarioLogado.EhProfessor() 
-                                        ? usuarioLogado.Login 
-                                        : null);
-            
             var quantidadeDiasPorTipoFrequencia = await repositorioFrequenciaDiaria.ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao, bimestres, request.AlunoCodigo.ToString()
-                , request.TurmaId, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), professorRfAula);
+                , request.TurmaId, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray());
 
             var lista = MapearMotivoAusencia(quantidadeDiasPorTipoFrequencia.Items);
             retornoPaginado = new PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>()
