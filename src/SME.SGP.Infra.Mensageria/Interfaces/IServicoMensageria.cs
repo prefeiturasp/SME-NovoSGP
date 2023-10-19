@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using System;
+using RabbitMQ.Client;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra.Interface
@@ -18,4 +19,5 @@ namespace SME.SGP.Infra.Interface
         Task Concluido(string rota);
         Task Erro(string rota);
     }
+    public interface IServicoMensageriaApiEOL : IServicoMensageria<object> { }
 }

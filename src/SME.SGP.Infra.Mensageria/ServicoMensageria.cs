@@ -123,4 +123,9 @@ namespace SME.SGP.Infra
                         "Publicar Metrica Mensageria");
 
     }
+    public class ServicoMensageriaApiEOL : ServicoMensageria<object>, IServicoMensageriaApiEOL
+    {
+        public ServicoMensageriaApiEOL(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+            : base(conexaoRabbit, servicoTelemetria, registry) { }
+    }
 }

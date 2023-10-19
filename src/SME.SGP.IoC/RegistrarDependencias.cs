@@ -1332,6 +1332,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterEventosEscolaAquiPorDreUeTurmaMesUseCase, ObterEventosEscolaAquiPorDreUeTurmaMesUseCase>();
             services.TryAddScoped<IObterDresUseCase, ObterDresUseCase>();
             services.TryAddScoped<IObterComunicadosAnoAtualUseCase, ObterComunicadosAnoAtualUseCase>();
+            
+            services.TryAddScoped<ISalvarCadastroAcessoABAEUseCase, SalvarCadastroAcessoABAEUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
