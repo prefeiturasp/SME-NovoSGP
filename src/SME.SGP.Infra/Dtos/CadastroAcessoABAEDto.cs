@@ -28,21 +28,26 @@ namespace SME.SGP.Infra
         public bool Situacao { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o cep do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(10, ErrorMessage = "O cep do usuário não pode conter mais que 10 caracteres")]
         public string Cep { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o endereço do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(200, ErrorMessage = "O endereço do usuário não pode conter mais que 200 caracteres")]
         public string Endereco { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o número do usuário para o cadastro de acesso ABAE")]
         public int Numero { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o complemento do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(20, ErrorMessage = "O complemento do usuário não pode conter mais que 20 caracteres")]
         public string Complemento { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o cidade do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(50, ErrorMessage = "A cidade do usuário não pode conter mais que 50 caracteres")]
         public string Cidade { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o estado do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(5, ErrorMessage = "O estado do usuário não pode conter mais que 5 caracteres")]
         public string Estado { get; set; }
         
         public bool Excluido { get; set; }
