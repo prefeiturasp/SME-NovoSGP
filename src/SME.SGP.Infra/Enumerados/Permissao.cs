@@ -1233,7 +1233,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
-            ABA_A = 251,    
+            ABA_A = 255,    
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
@@ -1242,7 +1242,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhExclusao = true)]
-            ABA_E = 252, 
+            ABA_E = 256, 
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
@@ -1251,7 +1251,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhInclusao = true)]
-            ABA_I = 253, 
+            ABA_I = 257, 
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
@@ -1260,7 +1260,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
-            ABA_C = 254, 
+            ABA_C = 258, 
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 

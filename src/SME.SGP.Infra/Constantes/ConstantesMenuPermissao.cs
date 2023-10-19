@@ -247,7 +247,7 @@
         public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 12;
         public const int ORDEM_MENU_COMUNICADOS = 13;
         public const int ORDEM_MENU_OCORRENCIAS = 14;
-        public const int ORDEM_MENU_CADASTRO_DE_ABAE = 15;
+        public const int ORDEM_MENU_CADASTRO_DE_ABAE = 16;
         
         public const int ORDEM_MENU_ENCAMINHAMENTO_AEE = 1;
         public const int ORDEM_MENU_PLANO_AEE = 2;
