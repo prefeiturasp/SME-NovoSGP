@@ -10,6 +10,7 @@ namespace SME.SGP.Infra
         public long UeId { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o nome do usuáro para o cadastro de acesso ABAE")]
+        [MaxLength(100, ErrorMessage = "O nome do usuário não pode conter mais que 100 caracteres")]
         public string Nome { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o cpf do usuário para o cadastro de acesso ABAE")]
