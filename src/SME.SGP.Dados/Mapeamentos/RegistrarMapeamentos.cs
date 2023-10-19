@@ -235,6 +235,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RelatorioPeriodicoPAPSecaoMap());
                config.AddMap(new RelatorioPeriodicoPAPQuestaoMap());
                config.AddMap(new RelatorioPeriodicoPAPRespostaMap());
+               config.AddMap(new CadastroAcessoABAEMap());
 
                config.ForDommel();
            });
