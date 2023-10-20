@@ -1,5 +1,4 @@
 ﻿
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
@@ -23,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.ABA_I, Policy = "Bearer")]
         public async Task<IActionResult> Incluir([FromBody] CadastroAcessoABAEDto cadastroAcessoAbaeDto, [FromServices] ISalvarCadastroAcessoABAEUseCase salvarCadastroAcessoAbaeUse)
         {
-            return Ok(salvarCadastroAcessoAbaeUse.Executar(cadastroAcessoAbaeDto));
+            return Ok(await salvarCadastroAcessoAbaeUse.Executar(cadastroAcessoAbaeDto));
         }
         
         [HttpPut]
@@ -34,7 +33,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.ABA_A, Policy = "Bearer")]
         public async Task<IActionResult> Alterar([FromBody] CadastroAcessoABAEDto cadastroAcessoAbaeDto, [FromServices] ISalvarCadastroAcessoABAEUseCase salvarCadastroAcessoAbaeUse)
         {
-            return Ok(salvarCadastroAcessoAbaeUse.Executar(cadastroAcessoAbaeDto));
+            return Ok(await salvarCadastroAcessoAbaeUse.Executar(cadastroAcessoAbaeDto));
         }
         
         [HttpGet("{id}")]
@@ -46,16 +45,28 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.ABA_C, Policy = "Bearer")]
         public async Task<IActionResult> BuscarPorId(int id, [FromServices] IObterCadastroAcessoABAEUseCase obterCadastroAcessoAbaeUse)
         {
-            return Ok(obterCadastroAcessoAbaeUse.Executar(id));
+            return Ok(await obterCadastroAcessoAbaeUse.Executar(id));
         }
         
         [HttpDelete]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ABA_E, Policy = "Bearer")]
-        public IActionResult Excluir([FromBody] long id, [FromServices] IExcluirCadastroAcessoABAEUseCase excluirCadastroAcessoABAEUseCase)
+        public async Task<IActionResult> Excluir([FromBody] long id, [FromServices] IExcluirCadastroAcessoABAEUseCase excluirCadastroAcessoABAEUseCase)
         {
-            return Ok(excluirCadastroAcessoABAEUseCase.Executar(id));
+            return Ok(await excluirCadastroAcessoABAEUseCase.Executar(id));
+        }
+        
+        [HttpGet]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<DreUeNomeSituacaoABAEDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.ABA_C, Policy = "Bearer")]
+        public async Task<IActionResult> BuscarPaginada([FromQuery] FiltroDreIdUeIdNomeSituacaoABAEDto filtro, [FromServices] IObterPaginadoCadastroAcessoABAEUseCase obterPaginadoCadastroAcessoAbaeUseCase)
+        {
+            return Ok(await obterPaginadoCadastroAcessoAbaeUseCase.Executar(filtro));
         }
     }
 }

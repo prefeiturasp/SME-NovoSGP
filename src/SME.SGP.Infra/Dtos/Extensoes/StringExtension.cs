@@ -134,5 +134,10 @@ namespace SME.SGP.Infra
 
             return cpf.EndsWith(digito);
         }
+        
+        public static bool EstaPreenchido(this string str)
+        {
+            return !string.IsNullOrEmpty(str) || !string.IsNullOrWhiteSpace(str);
+        }
     }
 }
