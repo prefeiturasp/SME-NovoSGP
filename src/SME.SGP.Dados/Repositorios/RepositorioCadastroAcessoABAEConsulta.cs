@@ -34,7 +34,7 @@ namespace SME.SGP.Dados.Repositorios
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                retorno.Items = await multi.ReadAsync<DreUeNomeSituacaoTipoEscolaDataABAEDto>();
+                retorno.Items = multi.Read<DreUeNomeSituacaoTipoEscolaDataABAEDto>();
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                               ue.nome as Ue,
                               a.nome,
                               a.situacao,
-                              coalesce(a.alterado_em, a.criado_em) Data ";
+                              coalesce(a.alterado_em, a.criado_em) as Data ";
                 
             sql.AppendLine(query);
 

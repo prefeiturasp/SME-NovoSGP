@@ -21,21 +21,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
             
-            var dtoIncluir = new CadastroAcessoABAEDto
-            {
-                UeId = 1,
-                Nome = USUARIO_LOGADO_NOME,
-                Cpf = "047.328.400-60",
-                Email = "email@email.com",
-                Telefone = "(11) 9999-9999",
-                Situacao = true,
-                Cep = "01000-001",
-                Endereco = "Endereço ABC",
-                Numero = 99,
-                Complemento = "Complemento",
-                Cidade = "São Paulo",
-                Estado = "SP"
-            };
+            var dtoIncluir = GerarCadastroAcessoABAEDto().Generate();
             
             var retorno = await useCase.Executar(dtoIncluir);
             retorno.ShouldNotBeNull();
@@ -49,6 +35,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Endereco.ShouldBe(dtoIncluir.Endereco);
             retorno.Numero.ShouldBe(dtoIncluir.Numero);
             retorno.Complemento.ShouldBe(dtoIncluir.Complemento);
+            retorno.Bairro.ShouldBe(dtoIncluir.Bairro);
             retorno.Cidade.ShouldBe(dtoIncluir.Cidade);
             retorno.Estado.ShouldBe(dtoIncluir.Estado);
         }
@@ -59,22 +46,11 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             await CriarDadosBasicos(true);
             
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
+
+            var cadastros = ObterTodos<CadastroAcessoABAE>();
             
-            var dtoIncluir = new CadastroAcessoABAEDto
-            {
-                UeId = 1,
-                Nome = USUARIO_LOGADO_NOME,
-                Cpf = "047.328.400-60",
-                Email = "email@email.com",
-                Telefone = "(11) 9999-9999",
-                Situacao = true,
-                Cep = "01000-001",
-                Endereco = "Endereço ABC",
-                Numero = 99,
-                Complemento = "Complemento",
-                Cidade = "São Paulo",
-                Estado = "SP"
-            };
+            var dtoIncluir = GerarCadastroAcessoABAEDto().Generate();
+            dtoIncluir.Cpf = cadastros.FirstOrDefault().Cpf;
             
             await useCase.Executar(dtoIncluir).ShouldThrowAsync<NegocioException>();
         }
@@ -83,25 +59,11 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
         public async Task Ao_alterar_o_cpf_deve_gerar_excecao()
         {
             await CriarDadosBasicos(true);
+            
+            var dtoAlterar = GerarCadastroAcessoABAEDto().Generate();
+            dtoAlterar.Id = 1;
 
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
-
-            var dtoAlterar = new CadastroAcessoABAEDto
-            {
-                Id = 1,
-                UeId = 1,
-                Nome = USUARIO_LOGADO_NOME,
-                Cpf = "032.741.300-01",
-                Email = "email1@email1.com",
-                Telefone = "(11) 9999-9999",
-                Situacao = true,
-                Cep = "00000-001",
-                Endereco = "Endereço DEF",
-                Numero = 11,
-                Complemento = "Com DEF",
-                Cidade = "São Paulo ",
-                Estado = "SP "
-            };
             
             await useCase.Executar(dtoAlterar).ShouldThrowAsync<NegocioException>();
         }
@@ -110,25 +72,12 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
         public async Task Ao_alterar_o_ue_deve_gerar_excecao()
         {
             await CriarDadosBasicos(true);
-
+            
+            var dtoAlterar = GerarCadastroAcessoABAEDto().Generate();
+            dtoAlterar.Id = 1;
+            dtoAlterar.UeId = 2;
+            
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
-
-            var dtoAlterar = new CadastroAcessoABAEDto
-            {
-                Id = 1,
-                UeId = 2,
-                Nome = USUARIO_LOGADO_NOME,
-                Cpf = "047.328.400-60",
-                Email = "email1@email1.com",
-                Telefone = "(11) 9999-9999",
-                Situacao = true,
-                Cep = "00000-001",
-                Endereco = "Endereço DEF",
-                Numero = 11,
-                Complemento = "Com DEF",
-                Cidade = "São Paulo ",
-                Estado = "SP "
-            };
             
             await useCase.Executar(dtoAlterar).ShouldThrowAsync<NegocioException>();
         }
@@ -139,23 +88,8 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             await CriarDadosBasicos(true);
 
             var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
-
-            var dtoAlterar = new CadastroAcessoABAEDto
-            {
-                Id = 1,
-                UeId = 1,
-                Nome = "Nome de usuário alterado",
-                Cpf = "047.328.400-60",
-                Email = "email1@email1.com",
-                Telefone = "(11) 9999-9999",
-                Situacao = true,
-                Cep = "00000-001",
-                Endereco = "Endereço DEF",
-                Numero = 11,
-                Complemento = "Com DEF",
-                Cidade = "São Paulo ",
-                Estado = "SP "
-            };
+            
+            var dtoAlterar = GerarCadastroAcessoABAEDto().Generate();
             
             var retorno = await useCase.Executar(dtoAlterar);
             retorno.ShouldNotBeNull();
@@ -169,6 +103,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Endereco.ShouldBe(dtoAlterar.Endereco);
             retorno.Numero.ShouldBe(dtoAlterar.Numero);
             retorno.Complemento.ShouldBe(dtoAlterar.Complemento);
+            retorno.Bairro.ShouldBe(dtoAlterar.Bairro);
             retorno.Cidade.ShouldBe(dtoAlterar.Cidade);
             retorno.Estado.ShouldBe(dtoAlterar.Estado);
         }
@@ -201,37 +136,41 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
         [Fact(DisplayName = "ABAE - Obter por Id")]
         public async Task Ao_obter_por_id()
         {
-            await CriarDadosBasicos(true);
+            await CriarDadosBasicos();
+            
+            var dtoInserir = GerarCadastroAcessoABAE().Generate();
+            await InserirNaBase(dtoInserir);
 
             var useCase = ObterServicoObterCadastroAcessoABAEUseCase();
             
             var retorno = await useCase.Executar(1);
             retorno.ShouldNotBeNull();
-            retorno.UeId.ShouldBe(1);
-            retorno.Nome.ShouldBe(USUARIO_LOGADO_NOME);
-            retorno.Cpf.ShouldBe("047.328.400-60");
-            retorno.Email.ShouldBe("email@email.com");
-            retorno.Telefone.ShouldBe("(11) 9999-9999");
+            retorno.UeId.ShouldBe(dtoInserir.UeId);
+            retorno.Nome.ShouldBe(dtoInserir.Nome);
+            retorno.Cpf.ShouldBe(dtoInserir.Cpf);
+            retorno.Email.ShouldBe(dtoInserir.Email);
+            retorno.Telefone.ShouldBe(dtoInserir.Telefone);
             retorno.Situacao.ShouldBeTrue();
-            retorno.Cep.ShouldBe("01000-001");
-            retorno.Endereco.ShouldBe("Endereço ABC");
-            retorno.Numero.ShouldBe(99);
-            retorno.Complemento.ShouldBe("Complemento");
-            retorno.Cidade.ShouldBe("São Paulo");
-            retorno.Estado.ShouldBe("SP");
-            retorno.CriadoEm.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
-            retorno.CriadoPor.ShouldBe(SISTEMA_NOME);
-            retorno.CriadoRF.ShouldBe(SISTEMA_CODIGO_RF);
-            retorno.AlteradoEm.ShouldBeNull();
-            retorno.AlteradoPor.ShouldBeNull();
-            retorno.AlteradoRF.ShouldBeNull();
+            retorno.Cep.ShouldBe(dtoInserir.Cep);
+            retorno.Endereco.ShouldBe(dtoInserir.Endereco);
+            retorno.Numero.ShouldBe(dtoInserir.Numero);
+            retorno.Complemento.ShouldBe(dtoInserir.Complemento);
+            retorno.Bairro.ShouldBe(dtoInserir.Bairro);
+            retorno.Cidade.ShouldBe(dtoInserir.Cidade);
+            retorno.Estado.ShouldBe(dtoInserir.Estado);
+            retorno.CriadoEm.Date.ShouldBe(dtoInserir.CriadoEm.Date);
+            retorno.CriadoPor.ShouldBe(dtoInserir.CriadoPor);
+            retorno.CriadoRF.ShouldBe(dtoInserir.CriadoRF);
+            retorno.AlteradoEm.Value.Date.ShouldBe(dtoInserir.AlteradoEm.Value.Date);
+            retorno.AlteradoPor.ShouldBe(dtoInserir.AlteradoPor);
+            retorno.AlteradoRF.ShouldBe(dtoInserir.AlteradoRF);
         }
 
         [Fact(DisplayName = "ABAE - Validar telefone")]
         public async Task Ao_validar_telefone()
         {
             "11 1212 1212".EhTelefoneValido().ShouldBeFalse();
-            "(11) 1515-1212".EhTelefoneValido().ShouldBeTrue();
+            "(11) 41515-1212".EhTelefoneValido().ShouldBeTrue();
             "abab.com".EhTelefoneValido().ShouldBeFalse();
         }
         
@@ -244,6 +183,26 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             "abab.com".EhEmailValido().ShouldBeFalse();
             "@abab.com".EhEmailValido().ShouldBeFalse();
             "@abab.net".EhEmailValido().ShouldBeFalse();
+        }
+        
+        [Fact(DisplayName = "ABAE - Obter paginado")]
+        public async Task Ao_obter_paginado()
+        {
+            await CriarDadosBasicos();
+
+            await CriarCadastroAcessoABAE(22);
+
+            var useCase = ObterServicoObterPaginadoCadastroAcessoABAEUseCase();
+
+            var filtro = new FiltroDreIdUeIdNomeSituacaoABAEDto()
+            {
+                UeId = 1,
+                Situacao = true,
+            };
+            
+            var retorno = await useCase.Executar(filtro);
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBe(22);
         }
     }
 }

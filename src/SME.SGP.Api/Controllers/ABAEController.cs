@@ -48,11 +48,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterCadastroAcessoAbaeUse.Executar(id));
         }
         
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ABA_E, Policy = "Bearer")]
-        public async Task<IActionResult> Excluir([FromBody] long id, [FromServices] IExcluirCadastroAcessoABAEUseCase excluirCadastroAcessoABAEUseCase)
+        public async Task<IActionResult> Excluir([FromRoute] long id, [FromServices] IExcluirCadastroAcessoABAEUseCase excluirCadastroAcessoABAEUseCase)
         {
             return Ok(await excluirCadastroAcessoABAEUseCase.Executar(id));
         }

@@ -14,13 +14,14 @@ using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.TesteIntegracao.Mocks;
 using Xunit;
 
 //[assembly: CollectionBehavior(DisableTestParallelization = true)]
 namespace SME.SGP.TesteIntegracao
 {
     [Collection("TesteIntegradoSGP")]
-    public class TesteBase : IClassFixture<TestFixture>
+    public class TesteBase : BaseMock, IClassFixture<TestFixture>
     {
         protected readonly CollectionFixture _collectionFixture;
 
