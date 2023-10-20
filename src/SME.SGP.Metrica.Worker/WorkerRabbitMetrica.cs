@@ -25,7 +25,7 @@ namespace SME.SGP.Metrica.Worker
 
         protected override void RegistrarUseCases()
         {
-            Comandos.Add(RotasRabbitMetrica.AcessosSGP, new ComandoRabbit("Quantidade de Acessos Diario no SGP", typeof(IRegistrarMetricaAcessosSGPUseCase)));
+            Comandos.Add(RotasRabbitMetrica.AcessosSGP, new ComandoRabbit("Quantidade de Acessos Diario no SGP", typeof(IAcessosDiarioSGPUseCase)));
         }
     }
 }

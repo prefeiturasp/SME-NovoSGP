@@ -89,11 +89,13 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<ISgpContext, SgpContext>();
             services.TryAddScoped<IRepositorioSGP, RepositorioSGP>();
             services.TryAddScoped<IRepositorioAcessos, RepositorioAcessos>();
+            services.TryAddScoped<IRepositorioConselhoClasseDuplicado, RepositorioConselhoClasseDuplicado>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
         {
-            services.TryAddScoped<IRegistrarMetricaAcessosSGPUseCase, RegistrarMetricaAcessosSGPUseCase>();
+            services.TryAddScoped<IAcessosDiarioSGPUseCase, AcessosDiarioSGPUseCase>();
+            services.TryAddScoped<IConselhoClasseDuplicadoUseCase, ConselhoClasseDuplicadoUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

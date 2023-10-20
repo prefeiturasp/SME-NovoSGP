@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.UseCases
 {
-    public class RegistrarMetricaAcessosSGPUseCase : IRegistrarMetricaAcessosSGPUseCase
+    public class AcessosDiarioSGPUseCase : IAcessosDiarioSGPUseCase
     {
         private readonly IRepositorioSGP repositorioSGP;
         private readonly IRepositorioAcessos repositorioAcessos;
 
-        public RegistrarMetricaAcessosSGPUseCase(IRepositorioSGP repositorioSGP, IRepositorioAcessos repositorioAcessos)
+        public AcessosDiarioSGPUseCase(IRepositorioSGP repositorioSGP, IRepositorioAcessos repositorioAcessos)
         {
             this.repositorioSGP = repositorioSGP ?? throw new ArgumentNullException(nameof(repositorioSGP));
             this.repositorioAcessos = repositorioAcessos ?? throw new ArgumentNullException(nameof(repositorioAcessos));

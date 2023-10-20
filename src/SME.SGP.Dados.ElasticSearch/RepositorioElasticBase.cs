@@ -177,5 +177,20 @@ namespace SME.SGP.Dados.ElasticSearch
 
             return (List<TEntidade>)Activator.CreateInstance(construtor);
         }
+
+        public async Task ExcluirTodos(string indice = "")
+        {
+            var nomeIndice = ObterNomeIndice(indice);
+            ISearchResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () =>
+                await _elasticClient.DeleteByQueryAsync<TEntidade>(q => q
+                      .Index(nomeIndice)
+                      .Query(rq => rq.MatchAll())),
+                "Elastic",
+                $"Excluir Todos [{nomeIndice}]",
+                indice);
+
+            if (!response.IsValid)
+                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+        }
     }
 }
