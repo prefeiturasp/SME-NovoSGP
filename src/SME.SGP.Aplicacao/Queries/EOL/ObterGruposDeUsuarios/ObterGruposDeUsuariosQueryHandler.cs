@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.EOL.ObterGruposDeUsuarios
 {
-    internal class ObterGruposDeUsuariosQueryHandler : IRequestHandler<ObterGruposDeUsuariosQuery, IEnumerable<GruposDeUsuariosDto>>
+    public class ObterGruposDeUsuariosQueryHandler : IRequestHandler<ObterGruposDeUsuariosQuery, IEnumerable<GruposDeUsuariosDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries.EOL.ObterGruposDeUsuarios
         public async Task<IEnumerable<GruposDeUsuariosDto>> Handle(ObterGruposDeUsuariosQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_GRUPOS_USUARIOS, cancellationToken);
+            var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_GRUPOS_USUARIOS, request.TipoPerfil), cancellationToken);
 
             if (resposta.IsSuccessStatusCode)
             {

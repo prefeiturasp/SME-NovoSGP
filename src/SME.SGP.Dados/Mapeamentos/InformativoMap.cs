@@ -11,6 +11,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.Titulo).ToColumn("titulo");
             Map(c => c.Texto).ToColumn("texto");
+            Map(c => c.DataEnvio).ToColumn("data_envio");
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.Informes.ServicosFake
+namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
 {
     public class ObterGruposDeUsuariosQueryHandlerFake : IRequestHandler<ObterGruposDeUsuariosQuery, IEnumerable<GruposDeUsuariosDto>>
     {

@@ -4,16 +4,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.TesteIntegracao.Informes.Base;
-using SME.SGP.TesteIntegracao.Informes.ServicosFake;
+using SME.SGP.TesteIntegracao.Informe.Base;
+using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Informes
+namespace SME.SGP.TesteIntegracao.Informe
 {
     public class Ao_obter_grupos_usuarios : InformesBase
     {
@@ -33,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.Informes
             await CriarDadosBase();
             var useCase = ServiceProvider.GetService<IObterGruposDeUsuariosUseCase>();
 
-            var resultado = await useCase.Executar();
+            var resultado = await useCase.Executar((int)TipoPerfil.SME);
             resultado.ShouldNotBeNull();
             resultado.Count().ShouldBeGreaterThan(1);
         }
