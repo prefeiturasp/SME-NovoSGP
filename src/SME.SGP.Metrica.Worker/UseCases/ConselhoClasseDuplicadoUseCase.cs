@@ -11,11 +11,11 @@ namespace SME.SGP.Metrica.Worker.UseCases
 {
     public class ConselhoClasseDuplicadoUseCase : IConselhoClasseDuplicadoUseCase
     {
-        private readonly IRepositorioSGP repositorioSGP;
+        private readonly IRepositorioSGPConsulta repositorioSGP;
         private readonly IRepositorioConselhoClasseDuplicado repositorioConselhoClasseDuplicado;
         private readonly IMediator mediator;
 
-        public ConselhoClasseDuplicadoUseCase(IRepositorioSGP repositorioSGP,
+        public ConselhoClasseDuplicadoUseCase(IRepositorioSGPConsulta repositorioSGP,
                                               IRepositorioConselhoClasseDuplicado repositorioConselhoClasseDuplicado,
                                               IMediator mediator)
         {

@@ -87,7 +87,10 @@ namespace SME.SGP.Metrica.Worker
         {
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
             services.TryAddScoped<ISgpContext, SgpContext>();
+            // Postgres
             services.TryAddScoped<IRepositorioSGP, RepositorioSGP>();
+            services.TryAddScoped<IRepositorioSGPConsulta, RepositorioSGPConsulta>();
+            // ElasticSearch
             services.TryAddScoped<IRepositorioAcessos, RepositorioAcessos>();
             services.TryAddScoped<IRepositorioConselhoClasseDuplicado, RepositorioConselhoClasseDuplicado>();
         }
@@ -96,6 +99,7 @@ namespace SME.SGP.Metrica.Worker
         {
             services.TryAddScoped<IAcessosDiarioSGPUseCase, AcessosDiarioSGPUseCase>();
             services.TryAddScoped<IConselhoClasseDuplicadoUseCase, ConselhoClasseDuplicadoUseCase>();
+            services.TryAddScoped<ILimpezaConselhoClasseDuplicadoUseCase, LimpezaConselhoClasseDuplicadoUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -9,10 +9,10 @@ namespace SME.SGP.Metrica.Worker.UseCases
 {
     public class AcessosDiarioSGPUseCase : IAcessosDiarioSGPUseCase
     {
-        private readonly IRepositorioSGP repositorioSGP;
+        private readonly IRepositorioSGPConsulta repositorioSGP;
         private readonly IRepositorioAcessos repositorioAcessos;
 
-        public AcessosDiarioSGPUseCase(IRepositorioSGP repositorioSGP, IRepositorioAcessos repositorioAcessos)
+        public AcessosDiarioSGPUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioAcessos repositorioAcessos)
         {
             this.repositorioSGP = repositorioSGP ?? throw new ArgumentNullException(nameof(repositorioSGP));
             this.repositorioAcessos = repositorioAcessos ?? throw new ArgumentNullException(nameof(repositorioAcessos));
