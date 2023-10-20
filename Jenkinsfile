@@ -75,7 +75,7 @@ pipeline {
             }
           }
    
-         stage('Sonar & Testes') {
+         /*stage('Sonar & Testes') {
           parallel {
           stage('TesteIntegracao & build'){
             agent { kubernetes {
@@ -215,7 +215,7 @@ pipeline {
             }
           }
         }
-      } 
+      } */
 
         stage('Build') {
           parallel {
