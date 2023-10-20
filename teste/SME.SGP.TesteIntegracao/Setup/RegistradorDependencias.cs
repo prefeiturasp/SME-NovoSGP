@@ -59,6 +59,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             services.TryAddScoped<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicyFake>();
             services.AddSingleton<ConfiguracaoRabbitLogOptions>();
             services.TryAddScoped<ObjectPoolProvider, DefaultObjectPoolProvider>();
+            services.TryAddScoped<IServicoMensageriaApiEOL, ServicoMensageriaApiEOL>();
             base.RegistrarServicos(services);
         }
 
