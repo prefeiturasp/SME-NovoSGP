@@ -19,14 +19,13 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagemRabbit.ObterObjetoMensagem<MensagemSyncTurmaDto>();
 
             if (filtro.CodigoTurma == 0) return true;
-
             try
             {
                 var turmaEOL = await mediator
                     .Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(filtro.CodigoTurma, filtro.UeId));
 
                 if (turmaEOL.EhNulo())
-                    return true;
+                    throw new Exception($"Turma não encontrada no EOL!");
 
                 var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.CodigoTurma.ToString(),true));
 
