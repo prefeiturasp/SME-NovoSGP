@@ -8,20 +8,34 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarInformesUseCase : AbstractUseCase, ISalvarInformesUseCase
     {
-        public SalvarInformesUseCase(IMediator mediator) : base(mediator)
+        private readonly IUnitOfWork unitOfWork;
+
+        public SalvarInformesUseCase(IMediator mediator, IUnitOfWork unitOfWork) : base(mediator)
         {
+            this.unitOfWork = unitOfWork;
         }
 
         public async Task<AuditoriaDto> Executar(InformesDto informesDto)
         {
-            var informes = await mediator.Send(new SalvarInformesCommand(informesDto));
-
-            foreach (var perfil in informesDto.Perfis) 
+            unitOfWork.IniciarTransacao();
+            try
             {
-                await mediator.Send(new SalvarInformesPerfilsCommand(informes.Id, perfil.Id));
-            }
+                var informes = await mediator.Send(new SalvarInformesCommand(informesDto));
 
-            return ObterAuditoria(informes);
+                foreach (var perfil in informesDto.Perfis) 
+                {
+                    await mediator.Send(new SalvarInformesPerfilsCommand(informes.Id, perfil.Id));
+                }
+
+                unitOfWork.PersistirTransacao();
+
+                return ObterAuditoria(informes);
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         private AuditoriaDto ObterAuditoria(Informativo informativo)
