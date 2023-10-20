@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
         }
 
-        public Task<IEnumerable<GruposDeUsuariosDto>> Executar()
+        public Task<IEnumerable<GruposDeUsuariosDto>> Executar(int tipoPerfil)
         {
-            return mediator.Send(new ObterGruposDeUsuariosQuery());
+            return mediator.Send(new ObterGruposDeUsuariosQuery(tipoPerfil));
         }
     }
 }

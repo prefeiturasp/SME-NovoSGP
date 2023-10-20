@@ -1,9 +1,10 @@
 CREATE table IF NOT EXISTS public.informativo (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-	dre_id int8 not null,
-	ue_id int8 not null,
+	dre_id int8 NULL,
+	ue_id int8 NULL,
 	titulo varchar(100) NOT NULL,
 	texto varchar NOT NULL,
+	data_envio date NOT NULL,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
 	alterado_em timestamp NULL,
@@ -24,8 +25,8 @@ ALTER TABLE public.informativo ADD CONSTRAINT informativo_ue_fk FOREIGN KEY (ue_
 
 CREATE table IF NOT EXISTS public.informativo_perfil(
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-	informativo_id int8 not null,
-	codigo_perfil int8 not null,
+	informativo_id int8 NOT NULL,
+	codigo_perfil int8 NOT NULL,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
 	alterado_em timestamp NULL,

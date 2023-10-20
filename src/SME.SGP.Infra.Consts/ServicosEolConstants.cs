@@ -233,6 +233,6 @@
         
         public const string URL_AUTENTICACAO_SGP_CARREGAR_DADOS_ACESSO_USUARIOS_PERFIS = "AutenticacaoSgp/CarregarDadosAcesso/usuarios/{0}/perfis/{1}";
 
-        public const string URL_GRUPOS_USUARIOS = "grupos-usuarios";
+        public const string URL_GRUPOS_USUARIOS = "grupos-usuarios/tipo-perfil/{0}";
     }
 }

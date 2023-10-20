@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterGruposDeUsuariosUseCase
     {
-        Task<IEnumerable<GruposDeUsuariosDto>> Executar();
+        Task<IEnumerable<GruposDeUsuariosDto>> Executar(int tipoPerfil);
     }
 }
