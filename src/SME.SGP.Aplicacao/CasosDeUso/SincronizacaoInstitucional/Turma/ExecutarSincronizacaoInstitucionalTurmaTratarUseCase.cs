@@ -25,7 +25,10 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(filtro.CodigoTurma, filtro.UeId));
 
                 if (turmaEOL.EhNulo())
-                    throw new Exception($"Turma não encontrada no EOL!");
+                {
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a sincronização da turma de código : {filtro.CodigoTurma}. Informações da turma não encontradas no EOL", LogNivel.Critico, LogContexto.SincronizacaoInstitucional));
+                    return false;
+                }
 
                 var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.CodigoTurma.ToString(),true));
 
