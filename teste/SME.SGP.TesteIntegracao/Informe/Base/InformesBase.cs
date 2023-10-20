@@ -5,6 +5,7 @@ namespace SME.SGP.TesteIntegracao.Informe.Base
 {
     public abstract class InformesBase : TesteBaseComuns
     {
+        protected const long INFORME_ID_1 = 1;
         protected const long PERFIL_AD = 11;
         protected const long PERFIL_ADM_COTIC = 33;
         protected const long PERFIL_ADM_DRE = 14;
