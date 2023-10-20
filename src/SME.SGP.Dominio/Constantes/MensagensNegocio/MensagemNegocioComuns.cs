@@ -24,5 +24,8 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string JA_EXISTE_CADASTRO_ACESSO_ABAR_PARA_ESSE_CPF = "Já existe cadastro para esse CPF: {0}";
         public const string NAO_EH_PERMITIDO_ALTERACAO_CPF_POS_CADASTRO = "Não é permitido alteração de CPF após cadastro.";
         public const string NAO_EH_PERMITIDO_ALTERACAO_UE_POS_CADASTRO = "Não é permitido alteração da UE após cadastro.";
+        public const string CADASTRO_ACESSO_ABAE_NAO_ENCONTRADO = "Cadastro de Acesso ABAE não localizado!";
+        public const string CPF_INFORMADO_EH_INVALIDO = "O cpf informado é inválido";
+        public const string TELEFONE_DEVE_ESTAR_COM_A_SEGUINTE_MASCARA = "O telefone deve estar com a seguinte máscara (XX) XXXX-XXXX";
     }
 }

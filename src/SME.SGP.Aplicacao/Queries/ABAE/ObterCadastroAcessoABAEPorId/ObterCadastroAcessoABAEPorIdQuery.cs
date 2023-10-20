@@ -6,18 +6,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCadastroAcessoABAEPorIdQuery : IRequest<CadastroAcessoABAE>
     {
-        public ObterCadastroAcessoABAEPorIdQuery(long cadastroAcessoABAEId)
+        public ObterCadastroAcessoABAEPorIdQuery(long id)
         {
-            CadastroAcessoABAEId = cadastroAcessoABAEId;
+            Id = id;
         }
-        public long CadastroAcessoABAEId { get; set; }
+        public long Id { get; set; }
     }
 
     public class ObterCadastroAcessoABAEPorIdQueryValidator : AbstractValidator<ObterCadastroAcessoABAEPorIdQuery>
     {
         public ObterCadastroAcessoABAEPorIdQueryValidator()
         {
-            RuleFor(a => a.CadastroAcessoABAEId)
+            RuleFor(a => a.Id)
                 .GreaterThan(0)
                 .WithMessage("É necessário informar o identificador para a busca de cadastro de acesso ABAE");
         }
