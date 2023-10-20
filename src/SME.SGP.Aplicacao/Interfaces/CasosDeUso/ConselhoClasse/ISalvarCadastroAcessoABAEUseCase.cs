@@ -3,7 +3,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface ISalvarCadastroAcessoABAEUseCase : IUseCase<CadastroAcessoABAEDto, CadastroAcessoABAE>
+    public interface ISalvarCadastroAcessoABAEUseCase : IUseCase<CadastroAcessoABAEDto, CadastroAcessoABAEDto>
     {
     }
 }

@@ -11,8 +11,14 @@ public class SalvarCadastroAcessoABAEUseCase: AbstractUseCase, ISalvarCadastroAc
     public SalvarCadastroAcessoABAEUseCase(IMediator mediator) : base(mediator)
     {}
 
-    public async Task<CadastroAcessoABAE> Executar(CadastroAcessoABAEDto cadastroAcessoABAEDto)
+    public async Task<CadastroAcessoABAEDto> Executar(CadastroAcessoABAEDto cadastroAcessoABAEDto)
     {
+        if (cadastroAcessoABAEDto.Cpf.NaoEhCpfValido())
+            throw new NegocioException(MensagemNegocioComuns.CPF_INFORMADO_EH_INVALIDO);
+        
+        if (cadastroAcessoABAEDto.Telefone.NaoEhTelefoneValido())
+            throw new NegocioException(MensagemNegocioComuns.TELEFONE_DEVE_ESTAR_COM_A_SEGUINTE_MASCARA);
+        
         var cadastroAcessoABAE = cadastroAcessoABAEDto.Id.EhMaiorQueZero() ? await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(cadastroAcessoABAEDto.Id)): new CadastroAcessoABAE();
 
         if (cadastroAcessoABAEDto.Id.EhMaiorQueZero() && !cadastroAcessoABAE.Cpf.Equals(cadastroAcessoABAEDto.Cpf))
@@ -42,10 +48,10 @@ public class SalvarCadastroAcessoABAEUseCase: AbstractUseCase, ISalvarCadastroAc
             cadastroAcessoABAE.Cpf = cadastroAcessoABAEDto.Cpf;
         }
 
-        cadastroAcessoABAE.Id = await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
+        cadastroAcessoABAEDto.Id = await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
         
         await mediator.Send(new PublicarFilaApiEOLCommand(RotasRabbitApiEOL.RotaManutencaoUsuarioABAECoreSSO, cadastroAcessoABAE));
 
-        return cadastroAcessoABAE;
+        return cadastroAcessoABAEDto;
     }
 }
