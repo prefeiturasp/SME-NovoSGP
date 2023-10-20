@@ -65,6 +65,7 @@ namespace SME.SGP.IoC
             });
 
             services.AddSingleton<IServicoMensageriaSGP, ServicoMensageriaSGP>();
+            services.AddSingleton<IServicoMensageriaApiEOL, ServicoMensageriaApiEOL>();
         }
     }
 }

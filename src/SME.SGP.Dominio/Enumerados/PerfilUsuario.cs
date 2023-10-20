@@ -89,6 +89,9 @@ namespace SME.SGP.Dominio
         ASSISTENTE_COORDENADOR_NAAPA = 28,
         
         [Display(Name = "32C01A4F-B251-4A0F-933D-5B61C8B5DDBF")]
-        COORDENADOR_CELP = 29
+        COORDENADOR_CELP = 29,
+        
+        [Display(Name = "EA741BF4-47EA-486D-8B88-5327521BCFC5")]
+        ABAE = 30,
     }
 }
