@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
             var atividadesAvaliativaEBimestres = await mediator
                 .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(filtro.TurmaCodigo));
+            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaCompleta.CodigoTurma)));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -149,25 +149,29 @@ namespace SME.SGP.Aplicacao
 
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
 
-            IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             if (filtro.TurmaHistorico)
             {
-                alunosAtivos = from a in alunos
-                    where a.EstaAtivo(periodoInicio, periodoFim) ||
-                          (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
-                          (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
-                    orderby a.NomeValido(), a.NumeroAlunoChamada
-                    select a;
+                alunos = from a in alunos
+                         where a.EstaAtivo(periodoInicio, periodoFim) ||
+                               (a.EstaInativo(periodoInicio, periodoFim) && a.DataSituacao.Date >= periodoInicio.Date && a.DataSituacao.Date <= periodoFim.Date) &&
+                               (a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido || a.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido)
+                         select a;
             }
             else
             {
-                alunosAtivos = from a in alunos
-                    where (a.EstaAtivo(periodoInicio,periodoFim) ||
-                           (a.EstaInativo(periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
-                          a.DataMatricula.Date <= periodoFim.Date
-                    orderby a.NomeValido(), a.NumeroAlunoChamada
-                    select a;
+                alunos = from a in alunos
+                         where (a.EstaAtivo(periodoInicio, periodoFim) ||
+                                (a.EstaInativo(periodoInicio, periodoFim) && a.DataSituacao.Date >= periodoInicio.Date)) &&
+                               a.DataMatricula.Date <= periodoFim.Date
+                         select a;
             }
+
+            var alunosAtivos = alunos?
+                             .OrderByDescending(a => a.DataSituacao)
+                             .DistinctBy(a => a.CodigoAluno)
+                             .OrderBy(a => a.NomeValido())
+                             .ThenBy(a => a.NumeroAlunoChamada)
+                             .ToList();
 
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).ToArray();
@@ -191,7 +195,7 @@ namespace SME.SGP.Aplicacao
                     Id = aluno.CodigoAluno,
                     Nome = aluno.NomeValido(),
                     NumeroChamada = aluno.ObterNumeroAlunoChamada(),
-                    EhAtendidoAEE = dadosAlunosQuePossuemPlanoAEEAtivo.Any(d=> d.CodigoAluno == aluno.CodigoAluno),
+                    EhAtendidoAEE = dadosAlunosQuePossuemPlanoAEEAtivo.Any(d => d.CodigoAluno == aluno.CodigoAluno),
                     EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                 };
 
@@ -199,7 +203,7 @@ namespace SME.SGP.Aplicacao
 
                 var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCompleta.CodigoTurma, aluno.CodigoAluno));
 
-                if(matriculasAluno.Count() > 1)
+                if (matriculasAluno.Count() > 1)
                     matriculasAluno = matriculasAluno.Where(m => m.NumeroAlunoChamada == aluno.NumeroAlunoChamada).ToList();
 
                 foreach (var atividadeAvaliativa in atividadesAvaliativasdoBimestre)
@@ -240,7 +244,7 @@ namespace SME.SGP.Aplicacao
                         PodeEditar = estavaAtivoNaAvaliacao && ChecarSeProfessorCJTitularPodeEditarNota(usuario, atividadeAvaliativa),
                         StatusGsa = notaDoAluno?.StatusGsa
                     };
-                    
+
                     notasAvaliacoes.Add(notaAvaliacao);
                 }
 
@@ -307,7 +311,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             //para casos onde teve uma inserção de nota, saiu da tela, e inseriu outra nota, mas em outro aluno.
-                            if(fechamentoTurma.FechamentoAlunos.Count() > 1)
+                            if (fechamentoTurma.FechamentoAlunos.Count() > 1)
                             {
                                 var ultimoDadoDeAuditoria = fechamentoTurma.FechamentoAlunos
                                                                .SelectMany(a => a.FechamentoNotas).ToList()
@@ -486,7 +490,7 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, Turma turma)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
         private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
         {
