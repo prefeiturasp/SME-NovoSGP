@@ -35,7 +35,6 @@ namespace SME.SGP.Dados.Repositorios
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
                 retorno.Items = multi.Read<DreUeNomeSituacaoTipoEscolaDataABAEDto>();
-
                 retorno.TotalRegistros = multi.ReadFirst<int>();
             }
 
