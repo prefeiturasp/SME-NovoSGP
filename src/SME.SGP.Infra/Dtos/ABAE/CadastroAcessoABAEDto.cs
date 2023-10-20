@@ -40,6 +40,10 @@ namespace SME.SGP.Infra
         [MaxLength(20, ErrorMessage = "O complemento do usuário não pode conter mais que 20 caracteres")]
         public string Complemento { get; set; }
         
+        [Required(ErrorMessage = "É necessário informar o bairro do usuário para o cadastro de acesso ABAE")]
+        [MaxLength(50, ErrorMessage = "O bairro do usuário não pode conter mais que 50 caracteres")]
+        public string Bairro { get; set; }
+        
         [Required(ErrorMessage = "É necessário informar o cidade do usuário para o cadastro de acesso ABAE")]
         [MaxLength(50, ErrorMessage = "A cidade do usuário não pode conter mais que 50 caracteres")]
         public string Cidade { get; set; }

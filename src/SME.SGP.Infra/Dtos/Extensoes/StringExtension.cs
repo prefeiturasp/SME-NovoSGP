@@ -69,7 +69,7 @@ namespace SME.SGP.Infra
         
         public static bool EhTelefoneValido(this string telefone)
         {
-            return new Regex(@"^\(\d{2}\) \d{4}-\d{4}$").Match(telefone).Success;
+            return new Regex(@"^\(\d{2}\)\s\d{5}-\d{4}$").Match(telefone).Success;
         }
         
         public static bool NaoEhTelefoneValido(this string telefone)

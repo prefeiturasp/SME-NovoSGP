@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public string Nome { get; set; }
         public TipoEscola TipoEscola { get; set; }
         public bool Situacao { get; set; }
+        public DateTime Data { get; set; }
     }
 }
