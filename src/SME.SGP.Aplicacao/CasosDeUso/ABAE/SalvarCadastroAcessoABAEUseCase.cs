@@ -13,6 +13,12 @@ public class SalvarCadastroAcessoABAEUseCase: AbstractUseCase, ISalvarCadastroAc
 
     public async Task<CadastroAcessoABAEDto> Executar(CadastroAcessoABAEDto cadastroAcessoABAEDto)
     {
+        if (cadastroAcessoABAEDto.Cpf.NaoEhCpfValido())
+            throw new NegocioException(MensagemNegocioComuns.CPF_INFORMADO_EH_INVALIDO);
+        
+        if (cadastroAcessoABAEDto.Telefone.NaoEhTelefoneValido())
+            throw new NegocioException(MensagemNegocioComuns.TELEFONE_DEVE_ESTAR_COM_A_SEGUINTE_MASCARA);
+        
         var cadastroAcessoABAE = cadastroAcessoABAEDto.Id.EhMaiorQueZero() ? await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(cadastroAcessoABAEDto.Id)): new CadastroAcessoABAE();
 
         if (cadastroAcessoABAEDto.Id.EhMaiorQueZero() && !cadastroAcessoABAE.Cpf.Equals(cadastroAcessoABAEDto.Cpf))

@@ -25,9 +25,9 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             {
                 UeId = 1,
                 Nome = USUARIO_LOGADO_NOME,
-                Cpf = "001.002.003-01",
+                Cpf = "047.328.400-60",
                 Email = "email@email.com",
-                Telefone = "11 9999-9999",
+                Telefone = "(11) 9999-9999",
                 Situacao = true,
                 Cep = "01000-001",
                 Endereco = "Endereço ABC",
@@ -64,9 +64,9 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             {
                 UeId = 1,
                 Nome = USUARIO_LOGADO_NOME,
-                Cpf = "001.002.003-01",
+                Cpf = "047.328.400-60",
                 Email = "email@email.com",
-                Telefone = "11 9999-9999",
+                Telefone = "(11) 9999-9999",
                 Situacao = true,
                 Cep = "01000-001",
                 Endereco = "Endereço ABC",
@@ -91,9 +91,9 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Id = 1,
                 UeId = 1,
                 Nome = USUARIO_LOGADO_NOME,
-                Cpf = "002.003.004-01",
+                Cpf = "032.741.300-01",
                 Email = "email1@email1.com",
-                Telefone = "11 1999-9999",
+                Telefone = "(11) 9999-9999",
                 Situacao = true,
                 Cep = "00000-001",
                 Endereco = "Endereço DEF",
@@ -118,9 +118,9 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Id = 1,
                 UeId = 2,
                 Nome = USUARIO_LOGADO_NOME,
-                Cpf = "001.002.003-01",
+                Cpf = "047.328.400-60",
                 Email = "email1@email1.com",
-                Telefone = "11 1999-9999",
+                Telefone = "(11) 9999-9999",
                 Situacao = true,
                 Cep = "00000-001",
                 Endereco = "Endereço DEF",
@@ -145,9 +145,9 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Id = 1,
                 UeId = 1,
                 Nome = "Nome de usuário alterado",
-                Cpf = "001.002.003-01",
+                Cpf = "047.328.400-60",
                 Email = "email1@email1.com",
-                Telefone = "11 1999-9999",
+                Telefone = "(11) 9999-9999",
                 Situacao = true,
                 Cep = "00000-001",
                 Endereco = "Endereço DEF",
@@ -209,9 +209,9 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.ShouldNotBeNull();
             retorno.UeId.ShouldBe(1);
             retorno.Nome.ShouldBe(USUARIO_LOGADO_NOME);
-            retorno.Cpf.ShouldBe("001.002.003-01");
+            retorno.Cpf.ShouldBe("047.328.400-60");
             retorno.Email.ShouldBe("email@email.com");
-            retorno.Telefone.ShouldBe("11 9999-9999");
+            retorno.Telefone.ShouldBe("(11) 9999-9999");
             retorno.Situacao.ShouldBeTrue();
             retorno.Cep.ShouldBe("01000-001");
             retorno.Endereco.ShouldBe("Endereço ABC");
@@ -225,6 +225,25 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.AlteradoEm.ShouldBeNull();
             retorno.AlteradoPor.ShouldBeNull();
             retorno.AlteradoRF.ShouldBeNull();
+        }
+
+        [Fact(DisplayName = "ABAE - Validar telefone")]
+        public async Task Ao_validar_telefone()
+        {
+            "11 1212 1212".EhTelefoneValido().ShouldBeFalse();
+            "(11) 1515-1212".EhTelefoneValido().ShouldBeTrue();
+            "abab.com".EhTelefoneValido().ShouldBeFalse();
+        }
+        
+        [Fact(DisplayName = "ABAE - Validar e-mail")]
+        public async Task Ao_validar_email()
+        {
+            "ab@ab.com".EhEmailValido().ShouldBeTrue();
+            "ab@ab.net".EhEmailValido().ShouldBeTrue();
+            "ab@ab.com.br".EhEmailValido().ShouldBeTrue();
+            "abab.com".EhEmailValido().ShouldBeFalse();
+            "@abab.com".EhEmailValido().ShouldBeFalse();
+            "@abab.net".EhEmailValido().ShouldBeFalse();
         }
     }
 }

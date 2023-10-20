@@ -25,9 +25,9 @@ namespace SME.SGP.TesteIntegracao.ABAE.Base
             {
                 UeId = 1,
                 Nome = USUARIO_LOGADO_NOME,
-                Cpf = "001.002.003-01",
+                Cpf = "047.328.400-60",
                 Email = "email@email.com",
-                Telefone = "11 9999-9999",
+                Telefone = "(11) 9999-9999",
                 Situacao = true,
                 Cep = "01000-001",
                 Endereco = "Endereço ABC",
