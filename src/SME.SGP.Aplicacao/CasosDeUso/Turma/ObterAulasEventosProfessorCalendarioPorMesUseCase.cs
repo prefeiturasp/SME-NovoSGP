@@ -49,6 +49,7 @@ namespace SME.SGP.Aplicacao
 
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtroAulasEventosCalendarioDto.TurmaCodigo));
             IEnumerable<Aula> aulasParaVisualizar;
             var componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
 
@@ -57,10 +58,10 @@ namespace SME.SGP.Aplicacao
             else
             {
                 componentesCurricularesEolProfessor = (await mediator
-                   .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
+                   .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma,
                                                                                  usuarioLogado.Login,
                                                                                  usuarioLogado.PerfilAtual,
-                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
+                                                                                 turma.EhTurmaInfantil))).ToList();
 
                 if (usuarioLogado.EhSomenteProfessorCj())
                 {

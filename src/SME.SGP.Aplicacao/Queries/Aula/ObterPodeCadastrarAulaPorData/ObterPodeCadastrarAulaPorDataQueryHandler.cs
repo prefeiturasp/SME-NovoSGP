@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             var mesmoAnoLetivo = DateTime.Today.Year == request.DataAula.Year;
 
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo), cancellationToken);
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo, request.TipoCalendarioId), cancellationToken);;
 
             return temPeriodoAberto
                 ? new PodeCadastrarAulaPorDataRetornoDto(true)

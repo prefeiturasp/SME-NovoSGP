@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Minio;
 using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
@@ -13,8 +8,12 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.TesteIntegracao.PendenciaGeral.ServicosFake;
+using SME.SGP.TesteIntegracao.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
@@ -118,7 +117,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-2).Year, 1, 1),
             });
 
-            await InserirNaBase(new Turma()
+            await InserirNaBase(new Dominio.Turma()
             {
                 Id = 1,
                 DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1),

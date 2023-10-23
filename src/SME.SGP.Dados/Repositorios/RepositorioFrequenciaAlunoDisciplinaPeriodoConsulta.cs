@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Pipelines.Sockets.Unofficial.Arenas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -400,7 +401,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorAnoModalidadeSemestre(string alunoCodigo, int anoTurma, long tipoCalendarioId)
         {
-            var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
+            var query = new StringBuilder($@"with lista as (select fa.*, row_number() over (partition by fa.codigo_aluno, fa.bimestre, fa.turma_id order by fa.id desc) sequencia
                             from frequencia_aluno fa
                             inner join turma t on fa.turma_id = t.turma_id ");
 
@@ -410,7 +411,7 @@ namespace SME.SGP.Dados
             query.AppendLine(@" where fa.tipo = 2 
                 and fa.codigo_aluno = @alunoCodigo 
                 and t.ano_letivo = @anoTurma 
-                and t.tipo_turma in(1,2,7) ");
+                and t.tipo_turma not in(@tipoTurma) ");
 
             if (tipoCalendarioId > 0)
                 query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
@@ -422,7 +423,8 @@ namespace SME.SGP.Dados
                 {
                     alunoCodigo,
                     anoTurma,
-                    tipoCalendarioId
+                    tipoCalendarioId,
+                    tipoTurma = (int)TipoTurma.Programa
                 });
         }
 
@@ -438,7 +440,7 @@ namespace SME.SGP.Dados
             query.AppendLine(@" where fa.tipo = 1 
                 and fa.codigo_aluno = @alunoCodigo 
                 and t.turma_id = any(@codigosTurmas)
-                and t.tipo_turma in(1,2,7) ");
+                and t.tipo_turma not in(@tipoTurma) ");
 
             if (bimestre > 0)
                 query.AppendLine(" and fa.bimestre = @bimestre ");
@@ -454,8 +456,9 @@ namespace SME.SGP.Dados
                     alunoCodigo,
                     codigosTurmas,
                     tipoCalendarioId,
-                    bimestre
-                });
+                    bimestre,
+                    tipoTurma = (int)TipoTurma.Programa
+        });
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaGeralAlunoPorTurmas(string alunoCodigo, string[] codigosTurmas, long tipoCalendarioId)
