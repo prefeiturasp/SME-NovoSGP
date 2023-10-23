@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Dtos.Informes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -41,6 +42,18 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterInforme(long informeId, [FromServices] IObterInformeUseCase useCase)
         {
             return Ok(await useCase.Executar(informeId));
+        }
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<InformeResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.INF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterInformes(
+                                            [FromQuery] InformeFiltroDto filtro,
+                                            [FromServices] IObterInformesPorFiltroUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
 
         [HttpGet]

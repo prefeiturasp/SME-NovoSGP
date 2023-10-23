@@ -1339,6 +1339,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ISalvarInformesUseCase, SalvarInformesUseCase>();
             services.TryAddScoped<IExcluirInformesUseCase, ExcluirInformesUseCase>();
             services.TryAddScoped<IObterInformeUseCase, ObterInformeUseCase>();
+            services.TryAddScoped<IObterInformesPorFiltroUseCase, ObterInformesPorFiltroUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

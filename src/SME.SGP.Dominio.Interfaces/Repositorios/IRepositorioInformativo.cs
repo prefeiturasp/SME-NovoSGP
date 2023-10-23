@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Informes;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -6,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<Informativo> ObterInformes(long id);
         Task<bool> RemoverAsync(long id);
+        Task<PaginacaoResultadoDto<Informativo>> ObterInformesPaginado(InformeFiltroDto filtro, Paginacao paginacao);
     }
 }
