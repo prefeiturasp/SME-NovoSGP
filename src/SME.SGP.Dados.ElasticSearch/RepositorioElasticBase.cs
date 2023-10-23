@@ -181,7 +181,7 @@ namespace SME.SGP.Dados.ElasticSearch
         public async Task ExcluirTodos(string indice = "")
         {
             var nomeIndice = ObterNomeIndice(indice);
-            ISearchResponse<TEntidade> response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () =>
+            DeleteByQueryResponse response = await servicoTelemetria.RegistrarComRetornoAsync<DeleteByQueryResponse>(async () =>
                 await _elasticClient.DeleteByQueryAsync<TEntidade>(q => q
                       .Index(nomeIndice)
                       .Query(rq => rq.MatchAll())),
