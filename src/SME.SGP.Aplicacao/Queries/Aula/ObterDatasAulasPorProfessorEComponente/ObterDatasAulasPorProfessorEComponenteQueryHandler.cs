@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
                     .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor).Select(a => a.Id).ToList();
             }
 
-            return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
+            return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data.Date)
                 .Select(x => new DatasAulasDto()
                 {
                     Data = x.Key,

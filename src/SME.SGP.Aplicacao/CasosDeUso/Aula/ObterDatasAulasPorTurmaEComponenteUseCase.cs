@@ -20,10 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DatasAulasDto>> Executar(ConsultaDatasAulasDto param)
         {
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var professorRF = usuarioLogado.EhProfessor() && !usuarioLogado.EhProfessorInfantil() ? usuarioLogado.CodigoRf : string.Empty;
-
-            return await mediator.Send(new ObterDatasAulasPorProfessorEComponenteQuery(professorRF, param.TurmaCodigo, param.ComponenteCurricularCodigo, usuarioLogado.EhProfessorCj(), usuarioLogado.EhProfessor() || usuarioLogado.EhProfessorCj()));
+            return await mediator.Send(new ObterDatasAulasPorProfessorEComponenteQuery(param.TurmaCodigo, param.ComponenteCurricularCodigo));
         }
     }
 }
