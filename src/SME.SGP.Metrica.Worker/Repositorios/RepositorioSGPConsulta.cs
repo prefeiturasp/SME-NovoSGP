@@ -50,6 +50,24 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                 group by cc.fechamento_turma_id
                 having count(cc.id) > 1");
 
+        public Task<IEnumerable<ConselhoClasseNotaDuplicado>> ObterConselhosClasseNotaDuplicados()
+            => database.Conexao.QueryAsync<ConselhoClasseNotaDuplicado>(
+                @"select ccn.conselho_classe_aluno_id as ConselhoClasseAlunoId
+        	        , ccn.componente_curricular_codigo as ComponenteCorricularId
+        	        , count(ccn.id) as Quantidade
+        	        , min(ccn.criado_em) as PrimeiroRegistro
+        	        , max(ccn.criado_em) as UltimoRegistro
+        	        , max(ccn.id) as UltimoId
+                  from conselho_classe_nota ccn 
+                 inner join conselho_classe_aluno cca on cca.id = ccn.conselho_classe_aluno_id 
+                 inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
+                 inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                 inner join turma t on t.id = ft.turma_id
+                where t.ano_letivo = extract(year from NOW())
+                group by ccn.conselho_classe_aluno_id
+        	        , ccn.componente_curricular_codigo 
+                having count(ccn.id) > 1");
+
         public Task<int> ObterQuantidadeAcessosDia(DateTime data)
             => database.Conexao.QueryFirstOrDefaultAsync<int>("select count(u.id) from usuario u where date(u.ultimo_login) = @data", new { data });
 

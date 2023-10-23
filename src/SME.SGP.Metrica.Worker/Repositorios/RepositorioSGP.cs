@@ -96,5 +96,43 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 					   and aluno_codigo = @alunoCodigo
 					   and id <> @ultimoId;", new { conselhoClasseId, alunoCodigo, ultimoId });
 
-    }
+		public Task AtualizarWfAprovacaoConselhoClasseNotaDuplicado(long conselhoClasseAlunoId, long componenteCurricularId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update wf_aprovacao_nota_conselho 
+					set conselho_classe_nota_id = @ultimoId
+				where conselho_classe_nota_id in (
+					select ccn.id 
+					  from conselho_classe_nota ccn
+					 where ccn.conselho_classe_aluno_id = @conselhoClasseAlunoId
+					   and ccn.componente_curricular_codigo = @componenteCurricularId
+					   and ccn.id <> @ultimoId
+				);", new { conselhoClasseAlunoId, componenteCurricularId, ultimoId });
+
+		public Task AtualizarHistoricoNotaConselhoClasseNotaDuplicado(long conselhoClasseAlunoId, long componenteCurricularId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update historico_nota_conselho_classe 
+					set conselho_classe_nota_id = @ultimoId
+				where conselho_classe_nota_id in (
+					select ccn.id 
+					  from conselho_classe_nota ccn
+					 where ccn.conselho_classe_aluno_id = @conselhoClasseAlunoId
+					   and ccn.componente_curricular_codigo = @componenteCurricularId
+					   and ccn.id <> @ultimoId
+				);", new { conselhoClasseAlunoId, componenteCurricularId, ultimoId });
+
+		public Task AtualizarMaiorNotaConselhoClasseNotaDuplicado(long conselhoClasseAlunoId, long componenteCurricularId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update conselho_classe_nota 
+		 			set nota = (select max(nota) from conselho_classe_nota where conselho_classe_aluno_id = @conselhoClasseAlunoId and componente_curricular_codigo = @componenteCurricularId)
+		 			  , conceito_id = (select min(conceito_id) from conselho_classe_nota where conselho_classe_aluno_id = @conselhoClasseAlunoId and componente_curricular_codigo = @componenteCurricularId)
+				where id = @ultimoId;", new { conselhoClasseAlunoId, componenteCurricularId, ultimoId });
+
+		public Task ExcluirConselhoClasseNotaDuplicado(long conselhoClasseAlunoId, long componenteCurricularId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"delete from conselho_classe_nota 
+				where conselho_classe_aluno_id = @conselhoClasseAlunoId
+				  and componente_curricular_codigo = @componenteCurricularId
+				  and id <> @ultimoId;", new { conselhoClasseAlunoId, componenteCurricularId, ultimoId });
+
+	}
 }

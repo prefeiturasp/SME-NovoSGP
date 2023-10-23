@@ -8,5 +8,7 @@
         public const string DuplicacaoConselhoClasseAluno = "sgp.metricas.conselho.classe.aluno.duplicado";
         public const string DuplicacaoConselhoClasseAlunoUe = "sgp.metricas.conselho.classe.aluno.duplicado.ue";
         public const string LimpezaConselhoClasseAlunoDuplicado = "sgp.metricas.conselho.classe.aluno.duplicado.limpeza";
+        public const string DuplicacaoConselhoClasseNota = "sgp.metricas.conselho.classe.nota.duplicado";
+        public const string LimpezaConselhoClasseNotaDuplicado = "sgp.metricas.conselho.classe.nota.duplicado.limpeza";
     }
 }
