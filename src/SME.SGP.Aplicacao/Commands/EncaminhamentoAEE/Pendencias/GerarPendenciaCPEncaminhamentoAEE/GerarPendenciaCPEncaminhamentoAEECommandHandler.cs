@@ -66,7 +66,10 @@ namespace SME.SGP.Aplicacao
 
                             await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CP }));
                         }
-
+                        else
+                        {
+                            await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoAEE.Id);
+                        }
                         unitOfWork.PersistirTransacao();
 
                         if (pendencia.Id > 0 || pendenciaExiste.PendenciaId > 0)
@@ -82,6 +85,17 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return false;
+        }
+        private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
+        {
+            var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
+            if (pendenciasEncaminhamentoAEE != null || !pendenciasEncaminhamentoAEE.Any())
+            {
+                foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
+                {
+                    await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendenciaEncaminhamentoAEE.PendenciaId));
+                }
+            }
         }
     }
 }
