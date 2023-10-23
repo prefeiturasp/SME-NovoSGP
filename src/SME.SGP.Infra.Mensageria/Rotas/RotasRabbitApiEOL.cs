@@ -2,6 +2,6 @@
 {
     public static class RotasRabbitApiEOL
     {
-        public const string RotaManutencaoUsuarioABAECoreSSO = "ApiEol:ManutencaoUsuarioABAECoreSSO";
+        public const string RotaManutencaoUsuarioABAECoreSSO = "ApiEol:ManutencaoUsuarioABAECoreSSOCommand";
     }
 }
