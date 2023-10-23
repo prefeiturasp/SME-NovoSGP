@@ -93,6 +93,7 @@ namespace SME.SGP.Metrica.Worker
             // ElasticSearch
             services.TryAddScoped<IRepositorioAcessos, RepositorioAcessos>();
             services.TryAddScoped<IRepositorioConselhoClasseDuplicado, RepositorioConselhoClasseDuplicado>();
+            services.TryAddScoped<IRepositorioConselhoClasseAlunoDuplicado, RepositorioConselhoClasseAlunoDuplicado>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
@@ -100,6 +101,9 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IAcessosDiarioSGPUseCase, AcessosDiarioSGPUseCase>();
             services.TryAddScoped<IConselhoClasseDuplicadoUseCase, ConselhoClasseDuplicadoUseCase>();
             services.TryAddScoped<ILimpezaConselhoClasseDuplicadoUseCase, LimpezaConselhoClasseDuplicadoUseCase>();
+            services.TryAddScoped<IConselhoClasseAlunoDuplicadoUseCase, ConselhoClasseAlunoDuplicadoUseCase>();
+            services.TryAddScoped<IConselhoClasseAlunoUeDuplicadoUseCase, ConselhoClasseAlunoUeDuplicadoUseCase>();
+            services.TryAddScoped<ILimpezaConselhoClasseAlunoDuplicadoUseCase, LimpezaConselhoClasseAlunoDuplicadoUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

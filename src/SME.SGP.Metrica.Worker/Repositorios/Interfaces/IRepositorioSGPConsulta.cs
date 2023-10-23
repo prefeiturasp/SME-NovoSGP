@@ -7,7 +7,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
 {
     public interface IRepositorioSGPConsulta
     {
+        Task<IEnumerable<long>> ObterUesIds();
         Task<int> ObterQuantidadeAcessosDia(DateTime data);
         Task<IEnumerable<ConselhoClasseDuplicado>> ObterConselhosClasseDuplicados();
+        Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
     }
 }

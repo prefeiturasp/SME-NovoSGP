@@ -27,7 +27,10 @@ namespace SME.SGP.Metrica.Worker
         {
             Comandos.Add(RotasRabbitMetrica.AcessosSGP, new ComandoRabbit("Quantidade de Acessos Diario no SGP", typeof(IAcessosDiarioSGPUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoConselhoClasse, new ComandoRabbit("Quantidade de registros de conselho de classe para o mesmo fechamento", typeof(IConselhoClasseDuplicadoUseCase)));
-            Comandos.Add(RotasRabbitMetrica.LimpezaConselhoClasseDuplicado, new ComandoRabbit("Limpeza de registros de conselho de classe para o mesmo fechamento", typeof(IConselhoClasseDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.LimpezaConselhoClasseDuplicado, new ComandoRabbit("Limpeza de registros de conselho de classe para o mesmo fechamento", typeof(ILimpezaConselhoClasseDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DuplicacaoConselhoClasseAluno, new ComandoRabbit("Quantidade de registros de conselho de classe aluno para o mesmo conselho de classe", typeof(IConselhoClasseAlunoDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DuplicacaoConselhoClasseAlunoUe, new ComandoRabbit("Quantidade de registros de conselho de classe aluno para o mesmo conselho de classe na UE", typeof(IConselhoClasseAlunoUeDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.LimpezaConselhoClasseAlunoDuplicado, new ComandoRabbit("Limpeza de registros de conselho de classe aluno para o mesmo conselho de classe", typeof(ILimpezaConselhoClasseAlunoDuplicadoUseCase)));
         }
     }
 }
