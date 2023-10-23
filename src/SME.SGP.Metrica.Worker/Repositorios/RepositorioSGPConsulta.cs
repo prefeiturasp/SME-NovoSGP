@@ -88,5 +88,21 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                    and t.ano_letivo = extract(year from NOW())
                 group by ft.turma_id, ft.periodo_escolar_id
                 having count(ft.id) > 1");
+
+        public Task<IEnumerable<FechamentoTurmaDisciplinaDuplicado>> ObterFechamentosTurmaDisciplinaDuplicados()
+            => database.Conexao.QueryAsync<FechamentoTurmaDisciplinaDuplicado>(
+                @"select ftd.fechamento_turma_id as FechamentoTurmaId
+        	        , ftd.disciplina_id as DisciplinaId
+        	        , count(ftd.id) as Quantidade
+        	        , min(ftd.criado_em) as PrimeiroRegistro
+        	        , max(ftd.criado_em) as UltimoRegistro
+        	        , max(ftd.id) as UltimoId
+                  from turma t
+                 inner join fechamento_turma ft on ft.turma_id = t.id and not ft.excluido
+                 inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id and not ftd.excluido 
+                 where t.ano_letivo = extract(year from NOW())
+                group by ftd.fechamento_turma_id
+        	        , ftd.disciplina_id
+                having count(ftd.id) > 1");
     }
 }

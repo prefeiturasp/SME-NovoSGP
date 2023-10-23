@@ -12,5 +12,7 @@
         public const string LimpezaConselhoClasseNotaDuplicado = "sgp.metricas.conselho.classe.nota.duplicado.limpeza";
         public const string DuplicacaoFechamentoTurma = "sgp.metricas.fechamento.turma.duplicado";
         public const string LimpezaFechamentoTurmaDuplicado = "sgp.metricas.fechamento.turma.duplicado.limpeza";
+        public const string DuplicacaoFechamentoTurmaDisciplina = "sgp.metricas.fechamento.disciplina.duplicado";
+        public const string LimpezaFechamentoTurmaDisciplinaDuplicado = "sgp.metricas.fechamento.disciplina.duplicado.limpeza";
     }
 }

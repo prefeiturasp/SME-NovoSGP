@@ -163,5 +163,49 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				  and coalesce(periodo_escolar_id,0) = @periodoEscolarId
 				  and id <> @ultimoId;", new { turmaId, periodoEscolarId, ultimoId });
 
+		public Task AtualizarAlunoFechamentoTurmaDisciplinaDuplicados(long fechamentoTurmaId, long disciplinaId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update fechamento_aluno
+					set fechamento_turma_disciplina_id = @ultimoId
+				where fechamento_turma_disciplina_id in (
+					select id from fechamento_turma_disciplina 
+					where fechamento_turma_id = @fechamentoTurmaId
+					  and disciplina_id = @disciplinaId
+					  and id <> @ultimoId
+				);", new { fechamentoTurmaId, disciplinaId, ultimoId });
+
+		public Task AtualizarAnotacaoAlunoFechamentoTurmaDisciplinaDuplicados(long fechamentoTurmaId, long disciplinaId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update anotacao_aluno_fechamento
+					set fechamento_turma_disciplina_id = @ultimoId
+				where fechamento_turma_disciplina_id in (
+					select id from fechamento_turma_disciplina 
+					where fechamento_turma_id = @fechamentoTurmaId
+					  and disciplina_id = @disciplinaId
+					  and id <> @ultimoId
+				);", new { fechamentoTurmaId, disciplinaId, ultimoId });
+
+		public Task AtualizarPendenciaFechamentoTurmaDisciplinaDuplicados(long fechamentoTurmaId, long disciplinaId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update pendencia_fechamento
+					set fechamento_turma_disciplina_id = @ultimoId
+				where fechamento_turma_disciplina_id in (
+					select id from fechamento_turma_disciplina 
+					where fechamento_turma_id = @fechamentoTurmaId
+					  and disciplina_id = @disciplinaId
+					  and id <> @ultimoId
+				);", new { fechamentoTurmaId, disciplinaId, ultimoId });
+		
+		public Task ExcluirFechamentoTurmaDisciplinaDuplicados(long fechamentoTurmaId, long disciplinaId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update pendencia_fechamento
+					set fechamento_turma_disciplina_id = @ultimoId
+				where fechamento_turma_disciplina_id in (
+					select id from fechamento_turma_disciplina 
+					where fechamento_turma_id = @fechamentoTurmaId
+					  and disciplina_id = @disciplinaId
+					  and id <> @ultimoId
+				);", new { fechamentoTurmaId, disciplinaId, ultimoId });
+
 	}
 }

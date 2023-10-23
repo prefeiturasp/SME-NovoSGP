@@ -13,5 +13,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
         Task<IEnumerable<ConselhoClasseNotaDuplicado>> ObterConselhosClasseNotaDuplicados();
         Task<IEnumerable<FechamentoTurmaDuplicado>> ObterFechamentosTurmaDuplicados();
+        Task<IEnumerable<FechamentoTurmaDisciplinaDuplicado>> ObterFechamentosTurmaDisciplinaDuplicados();
     }
 }
