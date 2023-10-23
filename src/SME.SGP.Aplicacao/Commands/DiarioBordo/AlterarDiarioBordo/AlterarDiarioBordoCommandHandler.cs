@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
             var componenteCurricularPrincipalProfessor = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, request.ComponenteCurricularId);
             if (componenteCurricularPrincipalProfessor == 0)
-                throw new NegocioException($"Componente Curricular não encontrado", 204);
+                throw new NegocioException($"Componente Curricular não encontrado");
 
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, componenteCurricularPrincipalProfessor);
             if (diarioBordo == null)

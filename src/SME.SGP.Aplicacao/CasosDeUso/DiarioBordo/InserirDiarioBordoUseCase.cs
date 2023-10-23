@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             param.ComponenteCurricularId = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, param.ComponenteCurricularId);
 
             if (param.ComponenteCurricularId == 0)
-                throw new NegocioException($"Componente Curricular não encontrado", 204);
+                throw new NegocioException($"Componente Curricular não encontrado");
 
             var auditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ComponenteCurricularId));
             await mediator.Send(new ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand(param.AulaId, param.ComponenteCurricularId));

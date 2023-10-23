@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             
             var componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, componenteCurricularId);
             if(componenteCurricularIdPrincipal == 0)
-                throw new NegocioException($"Componente Curricular não encontrado", 204);
+                throw new NegocioException($"Componente Curricular não encontrado");
 
             var diarioBordo = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularIdPrincipal);
             var diarioBordoIrmao = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
