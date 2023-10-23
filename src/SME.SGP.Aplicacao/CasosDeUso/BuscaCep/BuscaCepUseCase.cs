@@ -4,15 +4,17 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao;
-
-public class BuscaCepUseCase: AbstractUseCase, IBuscaCepUseCase
+namespace SME.SGP.Aplicacao
 {
-    public BuscaCepUseCase(IMediator mediator) : base(mediator)
-    {}
-
-    public async Task<CepDto> Executar(string cep)
+    public class BuscaCepUseCase : AbstractUseCase, IBuscaCepUseCase
     {
-        return await mediator.Send(new ObterCepQuery(cep));
+        public BuscaCepUseCase(IMediator mediator) : base(mediator)
+        {
+        }
+
+        public async Task<CepDto> Executar(string cep)
+        {
+            return await mediator.Send(new ObterCepQuery(cep));
+        }
     }
 }

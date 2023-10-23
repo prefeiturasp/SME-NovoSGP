@@ -4,25 +4,28 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao;
-
-public class ExcluirCadastroAcessoABAEUseCase: AbstractUseCase, IExcluirCadastroAcessoABAEUseCase
+namespace SME.SGP.Aplicacao
 {
-    public ExcluirCadastroAcessoABAEUseCase(IMediator mediator) : base(mediator)
-    {}
-
-    public async Task<bool> Executar(long id)
+    public class ExcluirCadastroAcessoABAEUseCase : AbstractUseCase, IExcluirCadastroAcessoABAEUseCase
     {
-        var cadastroAcessoABAE = await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(id));
+        public ExcluirCadastroAcessoABAEUseCase(IMediator mediator) : base(mediator)
+        {
+        }
 
-        if (cadastroAcessoABAE.EhNulo())
-            throw new NegocioException(MensagemNegocioComuns.CADASTRO_ACESSO_ABAE_NAO_ENCONTRADO);
+        public async Task<bool> Executar(long id)
+        {
+            var cadastroAcessoABAE = await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(id));
 
-        cadastroAcessoABAE.ExcluirLogicamente();
+            if (cadastroAcessoABAE.EhNulo())
+                throw new NegocioException(MensagemNegocioComuns.CADASTRO_ACESSO_ABAE_NAO_ENCONTRADO);
 
-        await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
-        await mediator.Send(new PublicarFilaApiEOLCommand(RotasRabbitApiEOL.RotaManutencaoUsuarioABAECoreSSO, cadastroAcessoABAE));
+            cadastroAcessoABAE.ExcluirLogicamente();
 
-        return true;
+            await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
+            await mediator.Send(new PublicarFilaApiEOLCommand(RotasRabbitApiEOL.RotaManutencaoUsuarioABAECoreSSO,
+                cadastroAcessoABAE));
+
+            return true;
+        }
     }
 }
