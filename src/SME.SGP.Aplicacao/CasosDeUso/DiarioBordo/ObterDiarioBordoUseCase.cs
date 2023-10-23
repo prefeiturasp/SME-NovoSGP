@@ -30,6 +30,8 @@ namespace SME.SGP.Aplicacao
             IEnumerable<DiarioBordo> diariosBordos = await mediator.Send(new ObterDiariosDeBordosPorAulaQuery(aulaId));
             
             var componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, componenteCurricularId);
+            if(componenteCurricularIdPrincipal == 0)
+                throw new NegocioException($"Componente Curricular não encontrado", 204);
 
             var diarioBordo = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularIdPrincipal);
             var diarioBordoIrmao = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
@@ -64,18 +66,21 @@ namespace SME.SGP.Aplicacao
         private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
-            if (disciplinas.Count() > 1 && disciplinas.Any())
+            if (disciplinas != null && disciplinas.Any())
             {
-                var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
+                if(disciplinas.Count() > 1)
+                {
+                    var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 
-                if (disciplina.Any())
-                    return disciplina.FirstOrDefault().CodigoComponenteCurricular;
-                else
-                    return (long)disciplinas.FirstOrDefault().CdComponenteCurricularPai;
+                    if (disciplina.Any())
+                        return disciplina.FirstOrDefault().CodigoComponenteCurricular;
+                    else
+                        return (long)disciplinas.FirstOrDefault().CdComponenteCurricularPai;
+                }
+
+                return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
             }
-
-
-            return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
+            return 0;
         }
 
         private async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)

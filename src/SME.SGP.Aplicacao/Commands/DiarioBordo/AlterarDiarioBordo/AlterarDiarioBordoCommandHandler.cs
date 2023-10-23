@@ -53,6 +53,8 @@ namespace SME.SGP.Aplicacao
             }
 
             var componenteCurricularPrincipalProfessor = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, request.ComponenteCurricularId);
+            if (componenteCurricularPrincipalProfessor == 0)
+                throw new NegocioException($"Componente Curricular não encontrado", 204);
 
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, componenteCurricularPrincipalProfessor);
             if (diarioBordo == null)
@@ -69,18 +71,21 @@ namespace SME.SGP.Aplicacao
         private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
-            if (disciplinas.Count() > 1 && disciplinas.Any())
+            if (disciplinas != null && disciplinas.Any())
             {
-                var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
+                if (disciplinas.Count() > 1)
+                {
+                    var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 
-                if (disciplina.Any())
-                    return disciplina.FirstOrDefault().CodigoComponenteCurricular;
-                else
-                    return (long)disciplinas.FirstOrDefault().CdComponenteCurricularPai;
+                    if (disciplina.Any())
+                        return disciplina.FirstOrDefault().CodigoComponenteCurricular;
+                    else
+                        return (long)disciplinas.FirstOrDefault().CdComponenteCurricularPai;
+                }
+
+                return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
             }
-
-
-            return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
+            return 0;
         }
 
         private async Task MoverRemoverExcluidos(AlterarDiarioBordoCommand diario, DiarioBordo diarioBordo)
