@@ -64,8 +64,16 @@ namespace SME.SGP.Aplicacao
         private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
-            if(disciplinas.Count() > 1)
-                return disciplinas.Any() ? disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular : 0;
+            if (disciplinas.Count() > 1 && disciplinas.Any())
+            {
+                var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
+
+                if (disciplina.Any())
+                    return disciplina.FirstOrDefault().CodigoComponenteCurricular;
+                else
+                    return (long)disciplinas.FirstOrDefault().CdComponenteCurricularPai;
+            }
+
 
             return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
         }
