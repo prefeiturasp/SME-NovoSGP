@@ -104,5 +104,23 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                 group by ftd.fechamento_turma_id
         	        , ftd.disciplina_id
                 having count(ftd.id) > 1");
+
+        public Task<IEnumerable<FechamentoAlunoDuplicado>> ObterFechamentosAlunoDuplicados(long ueId)
+            => database.Conexao.QueryAsync<FechamentoAlunoDuplicado>(
+                @"select fa.fechamento_turma_disciplina_id
+        	        , fa.aluno_codigo 
+        	        , count(fa.id) as quantidade
+        	        , min(fa.criado_em) as primeiro_registro
+        	        , max(fa.criado_em) as ultimo_registro
+        	        , max(fa.id) as ultimo_id
+                  from fechamento_aluno fa
+                 inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
+                 inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
+                 inner join turma t on t.id = ft.turma_id 
+     	        where t.ano_letivo = extract(year from NOW())
+	              and t.ue_id = @ueId
+                group by fa.fechamento_turma_disciplina_id
+        	        , fa.aluno_codigo
+                having count(fa.id) > 1", new { ueId });
     }
 }

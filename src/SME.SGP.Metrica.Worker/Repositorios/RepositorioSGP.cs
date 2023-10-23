@@ -206,6 +206,35 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 					  and disciplina_id = @disciplinaId
 					  and id <> @ultimoId
 				);", new { fechamentoTurmaId, disciplinaId, ultimoId });
+		
+		public Task AtualizarNotaFechamentoAlunoDuplicados(long fechamentoDisciplinaId, string alunoCodigo, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update fechamento_nota
+					set fechamento_aluno_id = @ultimoId
+				where fechamento_aluno_id in (
+					select id from fechamento_aluno 
+					where fechamento_turma_disciplina_id = @fechamentoDisciplinaId
+					  and aluno_codigo = @alunoCodigo
+					  and id <> @ultimoId
+				);", new { fechamentoDisciplinaId, alunoCodigo, ultimoId });
+		
+		public Task AtualizarAnotacaoFechamentoAlunoDuplicados(long fechamentoDisciplinaId, string alunoCodigo, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update anotacao_fechamento_aluno
+					set fechamento_aluno_id = @ultimoId
+				where fechamento_aluno_id in (
+					select id from fechamento_aluno 
+					where fechamento_turma_disciplina_id = @fechamentoDisciplinaId
+					  and aluno_codigo = @alunoCodigo
+					  and id <> @ultimoId
+				);", new { fechamentoDisciplinaId, alunoCodigo, ultimoId });
+		
+		public Task ExcluirFechamentoAlunoDuplicados(long fechamentoDisciplinaId, string alunoCodigo, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"delete from fechamento_aluno 
+				where fechamento_turma_disciplina_id = @fechamentoDisciplinaId
+				  and aluno_codigo = @alunoCodigo
+				  and id <> @ultimoId;", new { fechamentoDisciplinaId, alunoCodigo, ultimoId });
 
 	}
 }
