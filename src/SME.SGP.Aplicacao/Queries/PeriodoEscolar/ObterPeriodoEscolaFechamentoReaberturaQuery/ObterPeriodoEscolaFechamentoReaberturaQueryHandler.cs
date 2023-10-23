@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao.Queries
             var periodoFechamento = await servicoPeriodoFechamento.ObterPorTipoCalendarioSme(request.TipoCalendarioId);
             var periodoFechamentoBimestre = periodoFechamento?.FechamentosBimestres.FirstOrDefault(x => x.Bimestre == request.Bimestre);
 
-            if (periodoFechamento == null || periodoFechamentoBimestre == null)
+            if (periodoFechamento.EhNulo() || periodoFechamentoBimestre.EhNulo())
             {
                 var hoje = DateTime.Today;
                 var tipodeEventoReabertura = ObterTipoEventoFechamentoBimestre();
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Queries
                 if (await repositorioEvento.TemEventoNosDiasETipo(hoje, hoje, (TipoEvento)tipodeEventoReabertura.Codigo, request.TipoCalendarioId, request.Ue.CodigoUe, request.Ue.Dre.CodigoDre))
                 {
                     var fechamentoReabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(request.Bimestre, hoje, request.TipoCalendarioId, request.Ue.Dre.CodigoDre, request.Ue.CodigoUe);
-                    if (fechamentoReabertura == null)
+                    if (fechamentoReabertura.EhNulo())
                         throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {request.Bimestre}º Bimestre");
 
                     return ((await repositorioPeriodoEscolar.ObterPorTipoCalendario(request.TipoCalendarioId)).FirstOrDefault(a => a.Bimestre == request.Bimestre)
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao.Queries
         private EventoTipo ObterTipoEventoFechamentoBimestre()
         {
             EventoTipo tipoEvento = repositorioEventoTipo.ObterPorCodigo((int)TipoEvento.FechamentoBimestre);
-            if (tipoEvento == null)
+            if (tipoEvento.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.ObterAtributo<DisplayAttribute>().Name}.");
             return tipoEvento;
         }

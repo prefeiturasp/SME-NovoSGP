@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
                         param.Semestre,
                         param.Bimestre));
 
-            if (parecerConclusivo == null || !parecerConclusivo.Any())
+            if (parecerConclusivo.EhNulo() || !parecerConclusivo.Any())
                 return default;
 
             List<GraficoBaseDto> parecerConclusivos = new List<GraficoBaseDto>();

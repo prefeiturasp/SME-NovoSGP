@@ -22,11 +22,11 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(NotificacaoRegistroItineranciaRecusadoCommand request, CancellationToken cancellationToken)
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(request.ItineranciaId));
-            if (itinerancia == null)
+            if (itinerancia.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a Itinerância informada");
 
             var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.UeId));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE informada");
             
             await NotificarItineranciaRecusada(ue, itinerancia.CriadoRF, itinerancia.DataVisita, itinerancia.Alunos, request.Observacoes);
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
             foreach (var estudante in estudantesMapeados.OrderBy(a => a.AlunoNome))
             {
                 var turma = turmas.FirstOrDefault(a => a.Id == estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.AlunoCodigo.ToString()).TurmaId);
-                if (turma == null)
+                if (turma.EhNulo())
                 {
                     turma = await mediator.Send(new ObterTurmaPorIdQuery(estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.AlunoCodigo.ToString()).TurmaId));
                     turmas.Add(turma);

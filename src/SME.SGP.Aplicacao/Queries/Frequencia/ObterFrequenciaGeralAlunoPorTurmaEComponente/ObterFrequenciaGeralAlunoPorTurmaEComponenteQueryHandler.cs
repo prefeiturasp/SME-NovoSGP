@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(request.AlunoCodigo, request.TurmaCodigo, request.ComponenteCurricularCodigo);
 
-            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+            if (frequenciaAlunoPeriodos.EhNulo() || !frequenciaAlunoPeriodos.Any())
                 return null;
 
             var frequenciaAluno = new FrequenciaAluno()
@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             periodos.ToList().ForEach(p =>
             {
                 var frequenciaCorrespondente = frequenciaAlunoPeriodos.OrderByDescending(x => x.AlteradoEm ?? x.CriadoEm).FirstOrDefault(x => x.Bimestre == p.Bimestre);
-                frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente != null ? frequenciaCorrespondente.PercentualFrequencia : 0);
+                frequenciaAluno.AdicionarFrequenciaBimestre(p.Bimestre, frequenciaCorrespondente.NaoEhNulo() ? frequenciaCorrespondente.PercentualFrequencia : 0);
             });
 
             return frequenciaAluno;

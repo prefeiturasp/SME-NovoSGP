@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await repositorioUsuario.ObterPorCodigoRfLogin(string.Empty, login);
 
-            if (usuario == null)
+            if (usuario.EhNulo())
             {
                 throw new NegocioException("Usuário não encontrado.");
             }

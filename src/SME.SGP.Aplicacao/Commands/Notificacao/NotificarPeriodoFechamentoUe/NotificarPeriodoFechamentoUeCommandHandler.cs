@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(), ue.Dre.CodigoDre, ue.CodigoUe));
 
             var admins = await ObterUsuariosAdms(ue);
-            if (admins != null && admins.Any())
+            if (admins.NaoEhNulo() && admins.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, admins, ue.Dre.CodigoDre, ue.CodigoUe));
         }
 

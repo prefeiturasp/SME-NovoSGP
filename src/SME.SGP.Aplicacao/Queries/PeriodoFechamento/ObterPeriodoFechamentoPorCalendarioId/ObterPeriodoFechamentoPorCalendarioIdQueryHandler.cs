@@ -29,17 +29,17 @@ namespace SME.SGP.Aplicacao.Queries.PeriodoFechamento.ObterPeriodoFechamentoPorC
         {
             var fechamentoSME = await repositorioPeriodoFechamento.ObterPorFiltrosAsync(request.TipoCalendarioId, null);
 
-            if (fechamentoSME == null)
+            if (fechamentoSME.EhNulo())
             {
                 LimparCamposNaoUtilizadosRegistroPai(fechamentoSME);
                 fechamentoSME = new Dominio.PeriodoFechamento();
 
                 var tipoCalendario = await repositorioTipoCalendario.ObterPorIdAsync(request.TipoCalendarioId);
-                if (tipoCalendario == null)
+                if (tipoCalendario.EhNulo())
                     throw new NegocioException("Tipo de calendário não encontrado.");
 
                 var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(request.TipoCalendarioId);
-                if (periodosEscolares == null || !periodosEscolares.Any())
+                if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                     throw new NegocioException("Período escolar não encontrado.");
 
                 foreach (var periodo in periodosEscolares)
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Queries.PeriodoFechamento.ObterPeriodoFechamentoPorC
 
         private void LimparCamposNaoUtilizadosRegistroPai(Dominio.PeriodoFechamento registroFilho)
         {
-            if (registroFilho != null && registroFilho.Id > 0)
+            if (registroFilho.NaoEhNulo() && registroFilho.Id > 0)
             {
                 registroFilho.Id = 0;
                 registroFilho.CriadoEm = DateTime.MinValue;
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao.Queries.PeriodoFechamento.ObterPeriodoFechamentoPorC
 
         private FechamentoDto MapearParaDto(Dominio.PeriodoFechamento fechamento)
         {
-            return fechamento == null ? null : new FechamentoDto
+            return fechamento.EhNulo() ? null : new FechamentoDto
             {
                 Id = fechamento.Id,
                 DreId = fechamento.Dre?.CodigoDre,

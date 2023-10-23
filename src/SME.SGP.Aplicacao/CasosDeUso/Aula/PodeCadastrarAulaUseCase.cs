@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
             if (CriandoAula(filtro.AulaId) || await AlterandoDataAula(filtro.AulaId, filtro.DataAula))
             {                
-                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(filtro.DataAula, filtro.TurmaCodigo, filtro.ComponentesCurriculares, usuarioLogado.CodigoRf, filtro.TipoAula)))
+                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(filtro.DataAula, filtro.TurmaCodigo, filtro.ComponentesCurriculares, filtro.TipoAula)))
                     throw new NegocioException($"Não é possível cadastrar aula do tipo '{filtro.TipoAula.Name()}' para o dia selecionado!");
             }
 

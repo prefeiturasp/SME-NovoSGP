@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
             var resultado = await database.Conexao
                 .QueryFirstAsync<ParametroSistemaRetornoDto>(query.ToString(), new { tipo });
 
-            if (resultado != null)
+            if (resultado.NaoEhNulo())
                 return new KeyValuePair<string, string>(resultado.Nome, resultado.Valor);
 
             return null;

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var correlacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(codigoCorrelacao));
 
-            if (correlacao == null || correlacao.PrazoDownloadExpirado)
+            if (correlacao.EhNulo() || correlacao.PrazoDownloadExpirado)
             {
                 //TODO DISPARAR FILA PARA REMOVER O PDF DO SERVIDOR DE RELATORIOS
                 throw new NegocioException("Relatório não encontrado ou prazo para download expirado.");

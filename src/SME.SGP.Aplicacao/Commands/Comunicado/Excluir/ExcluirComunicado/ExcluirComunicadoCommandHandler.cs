@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var comunicados = await mediator.Send(new ObterComunicadosPorIdsQuery(request.Ids));
 
-            if (comunicados == null || !comunicados.Any())
+            if (comunicados.EhNulo() || !comunicados.Any())
                 throw new NegocioException("Comunicados não localizados");
 
             var erros = new StringBuilder();
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             var idsNaoEncontrados = request.Ids.Select(id =>
             {
                 var comunicado = comunicados.FirstOrDefault(c => c.Id == id);
-                if (comunicado == null)
+                if (comunicado.EhNulo())
                 {
                     erros.Append($"<li>{id} - comunicado não encontrado</li>");
                 }

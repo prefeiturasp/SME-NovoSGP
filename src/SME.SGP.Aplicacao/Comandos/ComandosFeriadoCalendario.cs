@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             FeriadoCalendario entidade = repositorio.ObterPorId(dto.Id);
 
-            if (entidade == null)
+            if (entidade.EhNulo())
             {
                 entidade = new FeriadoCalendario();
             }
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             foreach (long id in ids)
             {
                 var feriadoCalendario = repositorio.ObterPorId(id);
-                if (feriadoCalendario != null)
+                if (feriadoCalendario.NaoEhNulo())
                 {
                     var possuiEventos = repositorioEvento.ExisteEventoPorFeriadoId(id);
                     if (possuiEventos)

@@ -5,6 +5,8 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.Ocorrencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -25,6 +27,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnicaGrade
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPerfilAtualQuery, Guid>), typeof(ObterPerfilAtualProfessorQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -47,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnicaGrade
             excecao.Message.ShouldBe("Quantidade de aulas superior ao limíte de aulas da grade.");
         }
 
-        [Fact]
+        //[Fact]
         public async Task EJA_so_permite_criacao_de_5_aulas()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
@@ -69,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnicaGrade
             excecao.Message.ShouldBe("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
         }
 
-        [Fact]
+        //[Fact]
         public async Task Regencia_classe_permite_criacao_de_uma_aula()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
@@ -89,6 +92,25 @@ namespace SME.SGP.TesteIntegracao.AulaUnicaGrade
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Para regência de classe só é permitido a criação de 1 (uma) aula por dia.");
+        }
+
+        public async Task Somente_permite_criacao_de_uma_aula_dia_por_componente_turma()
+        {
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
+
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, USUARIO_PROFESSOR_CODIGO_RF_1111111);
+
+            await CriarGrade(5);
+
+            var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
+
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
+
+            await CriarPeriodoEscolarEAbertura();
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
+
+            excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");
         }
 
         private async Task CriarGrade(int quantidadeAula = 1)

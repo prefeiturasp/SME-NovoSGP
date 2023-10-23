@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ExecutarConsolidacaoDevolutivas()
         {
             var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, DateTime.Now.Year));
-            if (parametroExecucao != null)
+            if (parametroExecucao.NaoEhNulo())
                 return parametroExecucao.Ativo;
 
             return false;

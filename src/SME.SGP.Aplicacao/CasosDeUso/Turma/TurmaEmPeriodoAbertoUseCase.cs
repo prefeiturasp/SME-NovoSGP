@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         public static async Task<bool> Executar(IMediator mediator, string turmaCodigo, DateTime dataReferencia, int bimestre, bool ehAnoLetivo)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de código [{turmaCodigo}] não localizada!");
             
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataReferencia, bimestre, ehAnoLetivo));

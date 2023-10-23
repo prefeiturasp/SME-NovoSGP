@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(request.CodigoTurma, DateTimeExtension.HorarioBrasilia()));
 
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException($"Não foi encontrado alunos para a turma {request.CodigoTurma}");
 
             return alunos.OrderBy(x => x.NumeroAlunoChamada);

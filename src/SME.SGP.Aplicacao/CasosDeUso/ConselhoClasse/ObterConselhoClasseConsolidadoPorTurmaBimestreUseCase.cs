@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             if (filtro.SituacaoConselhoClasse != -99)
                 listaConselhosClasseConsolidado = listaConselhosClasseConsolidado.Where(l => l.StatusConselhoClasseAluno == filtro.SituacaoConselhoClasse);
 
-            if (listaConselhosClasseConsolidado == null || !listaConselhosClasseConsolidado.Any())
+            if (listaConselhosClasseConsolidado.EhNulo() || !listaConselhosClasseConsolidado.Any())
                 return Enumerable.Empty<StatusTotalConselhoClasseDto>();
 
             var statusAgrupados = listaConselhosClasseConsolidado.GroupBy(g => g.StatusConselhoClasseAluno);
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
             var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => (SituacaoConselhoClasse)s.Status).Contains(ls));
 
-            if (statusNaoEncontrados != null && statusNaoEncontrados.Any())
+            if (statusNaoEncontrados.NaoEhNulo() && statusNaoEncontrados.Any())
             {
                 foreach (var status in statusNaoEncontrados)
                 {

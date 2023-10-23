@@ -8,19 +8,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultaRecuperacaoParalelaPeriodo : IConsultaRecuperacaoParalelaPeriodo
     {
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;        
 
-        public ConsultaRecuperacaoParalelaPeriodo(IServicoEol servicoEOL, IServicoUsuario servicoUsuario,
+        public ConsultaRecuperacaoParalelaPeriodo(IMediator mediator, IServicoUsuario servicoUsuario,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
         }
@@ -29,7 +30,7 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var turmaPossuiComponente = await servicoEOL.TurmaPossuiComponenteCurricularPAP(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual);
+            var turmaPossuiComponente = await mediator.Send(new TurmaPossuiComponenteCurricularPAPQuery(turmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
             if (!turmaPossuiComponente)
                 return null;

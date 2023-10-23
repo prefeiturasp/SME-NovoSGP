@@ -2,6 +2,7 @@
 using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var chaveCache = string.Format(NomeChaveCache.TOTAL_ALUNOS_DRE, request.AnoEscolar, request.ModalidadeTurma, request.CodigoDre, request.DataInicio.Ticks, request.DataFim.Ticks);
             var cacheAlunos = request.AnoEscolar != "0" && request.ModalidadeTurma > 0 ? repositorioCache.Obter(chaveCache) : null;
 
-            if (cacheAlunos != null)
+            if (cacheAlunos.NaoEhNulo())
                 quantidadeAlunos = Convert.ToInt64(cacheAlunos);
             else
             {

@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 (await mediator.Send(new ObterArquivosPorCodigosQuery(request.SalvarDocumentoDto.ArquivosCodigos),
                     cancellationToken)).ToList();
 
-            if (arquivos == null || !arquivos.Any())
+            if (arquivos.EhNulo() || !arquivos.Any())
                 throw new NegocioException(MensagemNegocioDocumento.NAO_FORAM_ENCONTRADOS_ARQUIVOS_COM_ESTES_CODIGOS);
 
             var classificacaoDocumento =
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                     .FirstOrDefault(t => t.Id == request.SalvarDocumentoDto.TipoDocumentoId)?.Classificacoes
                     .FirstOrDefault(c => c.Id == request.SalvarDocumentoDto.ClassificacaoId);
 
-                if (!usuario.Perfis.Any(u => classificacao != null && u.NomePerfil == classificacao.Classificacao))
+                if (!usuario.Perfis.Any(u => classificacao.NaoEhNulo() && u.NomePerfil == classificacao.Classificacao))
                     throw new NegocioException(MensagemNegocioDocumento.USUARIO_VINCULADO_DOCUMENTO_NAO_POSSUIR_PERFIL_CORRESPONDE_TIPO_PLANO_SELECIONADO);
             }
 

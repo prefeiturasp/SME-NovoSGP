@@ -24,11 +24,11 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> RemoverPendenciasCP(long turmaId, long encaminhamentoAEEId)
         {
             var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turmaId));
-            if (ue == null)
+            if (ue.EhNulo())
                 return false;
 
             var pendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEEId));
-            if (pendencia != null)
+            if (pendencia.NaoEhNulo())
                 await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(pendencia.PendenciaId));
 
             return true;

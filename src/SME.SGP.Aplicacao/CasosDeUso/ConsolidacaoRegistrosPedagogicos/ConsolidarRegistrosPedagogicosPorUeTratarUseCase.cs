@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var consolidacoes = Enumerable.Empty<ConsolidacaoRegistrosPedagogicosDto>();
 
-            if (await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SepararDiarioBordoPorComponente, filtro.AnoLetivo)) != null)
+            if ((await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SepararDiarioBordoPorComponente, filtro.AnoLetivo))).NaoEhNulo())
             {
                 var ue = await repositorioUe.ObterUePorId(filtro.UeId);
                 var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia));
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                                 var nomesProfessores = dadosProfessorTitularDisciplina.Select(dpd => dpd.NomeProfessor).ToArray();
                                 var rfProfessores = dadosProfessorTitularDisciplina.Select(dpd => dpd.RFProfessor).ToArray();
 
-                                if (dadosProfessorTitularDisciplina != null && consolidacao.RFProfessor != null
+                                if (dadosProfessorTitularDisciplina.NaoEhNulo() && consolidacao.RFProfessor.NaoEhNulo()
                                     && consolidacao.ModalidadeCodigo != (int)Modalidade.EducacaoInfantil)
                                 {
                                     var dadosProfessorTitular = dadosProfessorTitularDisciplina.FirstOrDefault();
@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
                                 }
                                 else
                                 {
-                                    if (dadosProfessorTitularDisciplina != null && consolidacao.ModalidadeCodigo == (int)Modalidade.EducacaoInfantil)
+                                    if (dadosProfessorTitularDisciplina.NaoEhNulo() && consolidacao.ModalidadeCodigo == (int)Modalidade.EducacaoInfantil)
                                     {
                                         if (dadosProfessorTitularDisciplina.Count() > 1)
                                         {

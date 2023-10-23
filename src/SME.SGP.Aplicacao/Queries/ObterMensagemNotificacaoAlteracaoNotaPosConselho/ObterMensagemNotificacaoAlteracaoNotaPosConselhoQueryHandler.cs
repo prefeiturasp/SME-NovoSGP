@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var notificacao =
                 await mediator.Send(new ObterNotificacaoPorIdQuery(request.NotificacaoId), cancellationToken);
 
-            if (notificacao == null)
+            if (notificacao.EhNulo())
                 return string.Empty;
             
             var mensagem = notificacao.Mensagem;
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             var notaPosConselho = notasPosConselho.FirstOrDefault();
 
-            if (notaPosConselho == null)
+            if (notaPosConselho.EhNulo())
                 return mensagem;
 
             var ehMensagemDinamica = mensagem.Contains(MENSAGEM_DINAMICA_TABELA_POR_ALUNO);

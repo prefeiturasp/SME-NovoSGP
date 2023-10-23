@@ -27,12 +27,12 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(request.EncaminhamentoId), cancellationToken);
 
-            if (encaminhamentoAEE == null)
+            if (encaminhamentoAEE.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_NAO_ENCONTRADO);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;           
@@ -41,9 +41,9 @@ namespace SME.SGP.Aplicacao
 
             var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
 
-            if (funcionarioPAEE != null && funcionarioPAEE.Count() == 1)
+            if (funcionarioPAEE.NaoEhNulo() && funcionarioPAEE.Count() == 1)
                 await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionarioPAEE.FirstOrDefault().CodigoRf);
-            else if (funcionarioPAAI != null && funcionarioPAAI.Count() == 1)
+            else if (funcionarioPAAI.NaoEhNulo() && funcionarioPAAI.Count() == 1)
                 await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionarioPAAI.FirstOrDefault().CodigoRf);
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             if (!await ParametroGeracaoPendenciaAtivo())
                 return;
 
-            var ehCEFAI = ((!funcionarioPAEE.Any()) && ((encaminhamentoAEE.ResponsavelId == 0) || (encaminhamentoAEE.ResponsavelId == null)));
+            var ehCEFAI = ((!funcionarioPAEE.Any()) && ((encaminhamentoAEE.ResponsavelId == 0) || (encaminhamentoAEE.ResponsavelId.EhNulo())));
 
             if (ehCEFAI)
             {
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                     return;
                 }
 
-                if ((encaminhamentoAEE.ResponsavelId != null) && (encaminhamentoAEE.ResponsavelId > 0))
+                if ((encaminhamentoAEE.ResponsavelId.NaoEhNulo()) && (encaminhamentoAEE.ResponsavelId > 0))
                     await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
             }
         }
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

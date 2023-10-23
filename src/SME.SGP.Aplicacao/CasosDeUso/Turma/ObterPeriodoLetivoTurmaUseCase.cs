@@ -17,12 +17,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Turma
         public async Task<PeriodoEscolarLetivoTurmaDto> Executar(string codigoTurma)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"A turma com o código {codigoTurma} não foi localizada.");
 
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
-            if (periodos != null && periodos.Any())
+            if (periodos.NaoEhNulo() && periodos.Any())
             {
                 return new PeriodoEscolarLetivoTurmaDto()
                 {

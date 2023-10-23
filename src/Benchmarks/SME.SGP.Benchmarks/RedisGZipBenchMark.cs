@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Utilitarios;
 using StackExchange.Redis;
 using System;
@@ -79,7 +80,7 @@ namespace SME.SGP.Benchmarks
 
         private void Dispose(Lazy<ConnectionMultiplexer> conexao)
         {
-            if (conexao != null && conexao.IsValueCreated)
+            if (conexao.NaoEhNulo() && conexao.IsValueCreated)
             {
                 conexao.Value.Close();
                 conexao.Value.Dispose();

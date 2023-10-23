@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ObterDataEhDiaLetivoPorTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(request.TipoCalendarioId, request.Data.Date));
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return false;
 
             var ehEventoNaoLetivo = await mediator.Send(new ObterTemEventoNaoLetivoPorCalendarioEDiaQuery(request.TipoCalendarioId, request.Data, request.CodigoDre, request.CodigoUe));

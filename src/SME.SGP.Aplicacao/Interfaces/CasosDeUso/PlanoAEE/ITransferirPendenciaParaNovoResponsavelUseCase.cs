@@ -1,8 +1,6 @@
-﻿using SME.SGP.Infra;
-
-namespace SME.SGP.Aplicacao.Interfaces
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ITransferirPendenciaParaNovoResponsavelUseCase : IUseCase<MensagemRabbit, bool>
+    public interface ITransferirPendenciaParaNovoResponsavelUseCase : IRabbitUseCase
     {
     }
 }

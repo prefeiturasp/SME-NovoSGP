@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 if (request.CodigoUe == "-99")
                 {
                     var todasAsModalidades = EnumExtensao.ListarDto<Modalidade>();
-                    if (request.ModalidadesQueSeraoIgnoradas != null && request.ModalidadesQueSeraoIgnoradas.Any())
+                    if (request.ModalidadesQueSeraoIgnoradas.NaoEhNulo() && request.ModalidadesQueSeraoIgnoradas.Any())
                     {
                         var idsIgnoradas = request.ModalidadesQueSeraoIgnoradas.Select(a => (int)a);
                         var listaTratada = todasAsModalidades.Where(m => !idsIgnoradas.Contains(m.Id));

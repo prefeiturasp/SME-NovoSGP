@@ -224,7 +224,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var notasConsolidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
             notasConsolidacao.ShouldNotBeNull();
 
-            var notaConsolidacao = componentesRegencia != null && componentesRegencia.Any() ? notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && componentesRegencia.Contains(s.ComponenteCurricularId.Value)) : notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && s.ComponenteCurricularId.Equals(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular));
+            var notaConsolidacao = componentesRegencia.NaoEhNulo() && componentesRegencia.Any() ? notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && componentesRegencia.Contains(s.ComponenteCurricularId.Value)) : notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && s.ComponenteCurricularId.Equals(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular));
             notaConsolidacao.ShouldNotBeNull();
 
             if (tipoNota == TipoNota.Nota)

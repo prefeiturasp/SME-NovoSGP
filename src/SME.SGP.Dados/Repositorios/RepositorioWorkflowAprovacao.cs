@@ -71,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                     }
                     workflowAprovacao.Adicionar(workflowNivel);
 
-                    if (notificacao != null)
+                    if (notificacao.NaoEhNulo())
                         workflowAprovacao.Adicionar(workflowNivel.Id, notificacao, usuario);                    
 
                     return workflowAprovacao;
@@ -112,7 +112,7 @@ namespace SME.SGP.Dados.Repositorios
                      }
                      workflowAprovacao.Adicionar(workflowNivel);
 
-                     if (notificacao != null)
+                     if (notificacao.NaoEhNulo())
                          workflowAprovacao.Adicionar(workflowNivel.Id, notificacao, usuario);
 
                      return workflowAprovacao;

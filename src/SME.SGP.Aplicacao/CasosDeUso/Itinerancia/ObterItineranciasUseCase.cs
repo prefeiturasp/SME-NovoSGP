@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                                                                                       filtro.Situacao,
                                                                                       filtro.CriadoRf));
 
-            if (listaRetorno != null && listaRetorno.Items.Any())
+            if (listaRetorno.NaoEhNulo() && listaRetorno.Items.Any())
             {
                 return await MapearParaDto(listaRetorno, filtro.AnoLetivo);
             }
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
         {
             var itineranciasParaRetornar = new List<ItineranciaResumoDto>();
 
-            if (itinerancias == null || !itinerancias.Any())
+            if (itinerancias.EhNulo() || !itinerancias.Any())
                 return itineranciasParaRetornar;
 
             var alunosEol = new List<TurmasDoAlunoDto>();
@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterNomeUeAsync(long ueId)
         {
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Não foi possível encrontra a UE!");
             
             return $"{ue.TipoEscola.ShortName()} {ue.Nome}";

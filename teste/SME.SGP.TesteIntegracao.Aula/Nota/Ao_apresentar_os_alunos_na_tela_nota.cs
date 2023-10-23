@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var listaDeAlunos = await ObterListaDeAlunos();
 
             listaDeAlunos.ShouldNotBeNull();
-            var listaDeMarcador = listaDeAlunos.FindAll(alunos => alunos.Marcador != null);
+            var listaDeMarcador = listaDeAlunos.FindAll(alunos => alunos.Marcador.NaoEhNulo());
             listaDeMarcador.ShouldNotBeNull();
             listaDeMarcador.Exists(marcador => marcador.Marcador.Tipo == TipoMarcadorFrequencia.Novo).ShouldBeTrue();
         }
@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var listaDeAlunos = await ObterListaDeAlunos();
 
             listaDeAlunos.ShouldNotBeNull();
-            var listaDeMarcador = listaDeAlunos.FindAll(alunos => alunos.Marcador != null);
+            var listaDeMarcador = listaDeAlunos.FindAll(alunos => alunos.Marcador.NaoEhNulo());
             listaDeMarcador.ShouldNotBeNull();
             listaDeMarcador.Exists(marcador => marcador.Marcador.Tipo == TipoMarcadorFrequencia.Inativo).ShouldBeTrue();
         }

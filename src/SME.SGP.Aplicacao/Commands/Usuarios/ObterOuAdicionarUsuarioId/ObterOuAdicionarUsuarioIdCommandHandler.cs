@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(request.UsuarioRF, string.Empty));
 
-            if (usuario == null)
+            if (usuario.EhNulo())
             {
                 var usuarioParaAdicionar = new Usuario() { CodigoRf = request.UsuarioRF, Login = request.UsuarioRF, Nome = request.UsuarioNome };
                 return await repositorioUsuario.SalvarAsync(usuarioParaAdicionar);

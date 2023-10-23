@@ -25,5 +25,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> EncaminhamentoContemAtendimentosItinerancia(long encaminhamentoId);
         Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo);
         Task<bool> ExisteEncaminhamentoNAAPAAtivoParaAluno(string codigoAluno);
+        Task<IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(long ueId);
     }
 }

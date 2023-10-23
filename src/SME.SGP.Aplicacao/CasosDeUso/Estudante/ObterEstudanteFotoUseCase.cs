@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             var miniatura = await mediator.Send(new ObterMiniaturaFotoEstudantePorAlunoCodigoQuery(alunoCodigo));
 
-            if (miniatura == null)
+            if (miniatura.EhNulo())
                 return null;
 
             return await DownloadMiniatura(miniatura);

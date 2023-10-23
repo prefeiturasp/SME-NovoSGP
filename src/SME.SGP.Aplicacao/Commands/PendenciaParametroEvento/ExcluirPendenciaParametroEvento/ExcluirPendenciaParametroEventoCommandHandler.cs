@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             repositorioPendenciaParametroEvento.Remover(request.PendenciaParametroEvento);
 
             var pendenciasParametrosRestantes = await mediator.Send(new ObterPendenciasParametroEventoPorPendenciaCalendarioUeQuery(request.PendenciaParametroEvento.PendenciaCalendarioUeId));
-            if (pendenciasParametrosRestantes == null)
+            if (pendenciasParametrosRestantes.EhNulo())
                 await mediator.Send(new ExcluirPendenciaCalendarioUeCommand(request.PendenciaParametroEvento.PendenciaCalendarioUe.TipoCalendarioId, request.PendenciaParametroEvento.PendenciaCalendarioUe.UeId, TipoPendencia.CadastroEventoPendente));
 
             return true;

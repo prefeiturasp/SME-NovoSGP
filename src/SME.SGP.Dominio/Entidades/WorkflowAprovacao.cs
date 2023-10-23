@@ -26,7 +26,7 @@ namespace SME.SGP.Dominio
 
         public void Adicionar(WorkflowAprovacaoNivel nivel)
         {
-            if (nivel == null)
+            if (nivel.EhNulo())
                 throw new NegocioException("Não é possível incluir um nível sem informação");
 
             nivel.Workflow = this;
@@ -40,7 +40,7 @@ namespace SME.SGP.Dominio
         public void Adicionar(long nivelId, Notificacao notificacao, Usuario usuario)
         {
             var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
-            if (nivel == null)
+            if (nivel.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
 
             notificacao.Usuario = usuario;
@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio
         public void Adicionar(long nivelId, Usuario usuario)
         {
             var nivel = niveis.FirstOrDefault(a => a.Id == nivelId);
-            if (nivel == null)
+            if (nivel.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o nível de Id {nivelId}");
 
             nivel.Adicionar(usuario);
@@ -96,7 +96,7 @@ namespace SME.SGP.Dominio
                 .OrderBy(a => a.Nivel)
                 .FirstOrDefault(a => a.Status == WorkflowAprovacaoNivelStatus.SemStatus && a.Nivel > nivelAtual);
 
-            if (proximoNivel == null)
+            if (proximoNivel.EhNulo())
                 return Enumerable.Empty<WorkflowAprovacaoNivel>();
 
             return ObtemNiveis(proximoNivel.Nivel);

@@ -9,13 +9,13 @@ namespace SME.SGP.Infra.Utilitarios
         {
             var methodName = objType.GetMethod(method);
 
-            if (methodName == null)
+            if (methodName is null)
             {
                 foreach (var itf in objType.GetInterfaces())
                 {
                     methodName = ObterMetodo(itf, method);
 
-                    if (methodName != null)
+                    if (!(methodName is null))
                         break;
                 }
             }
