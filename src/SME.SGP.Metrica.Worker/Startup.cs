@@ -106,6 +106,7 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRepositorioConselhoClasseDuplicado, RepositorioConselhoClasseDuplicado>();
             services.TryAddScoped<IRepositorioConselhoClasseAlunoDuplicado, RepositorioConselhoClasseAlunoDuplicado>();
             services.TryAddScoped<IRepositorioConselhoClasseNotaDuplicado, RepositorioConselhoClasseNotaDuplicado>();
+            services.TryAddScoped<IRepositorioFechamentoTurmaDuplicado, RepositorioFechamentoTurmaDuplicado>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
@@ -118,6 +119,8 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<ILimpezaConselhoClasseAlunoDuplicadoUseCase, LimpezaConselhoClasseAlunoDuplicadoUseCase>();
             services.TryAddScoped<IConselhoClasseNotaDuplicadoUseCase, ConselhoClasseNotaDuplicadoUseCase>();
             services.TryAddScoped<ILimpezaConselhoClasseNotaDuplicadoUseCase, LimpezaConselhoClasseNotaDuplicadoUseCase>();
+            services.TryAddScoped<IFechamentoTurmaDuplicadoUseCase, FechamentoTurmaDuplicadoUseCase>();
+            services.TryAddScoped<ILimpezaFechamentoTurmaDuplicadoUseCase, LimpezaFechamentoTurmaDuplicadoUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -134,5 +134,34 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				  and componente_curricular_codigo = @componenteCurricularId
 				  and id <> @ultimoId;", new { conselhoClasseAlunoId, componenteCurricularId, ultimoId });
 
+		public Task AtualizarConselhoClasseFechamentoTurmaDuplicados(long turmaId, long periodoEscolarId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update conselho_classe
+					set fechamento_turma_id = @ultimoId
+				where fechamento_turma_id in (
+					select id from fechamento_turma 
+					where turma_id = @turmaId
+					  and coalesce(periodo_escolar_id,0) = @periodoEscolarId
+					  and id <> @ultimoId
+				);", new { turmaId, periodoEscolarId, ultimoId });
+
+		public Task AtualizarComponenteFechamentoTurmaDuplicados(long turmaId, long periodoEscolarId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"update fechamento_turma_disciplina
+					set fechamento_turma_id = @ultimoId
+				where fechamento_turma_id in (
+					select id from fechamento_turma 
+					where turma_id = @turmaId
+					  and coalesce(periodo_escolar_id,0) = @periodoEscolarId
+					  and id <> @ultimoId
+				);", new { turmaId, periodoEscolarId, ultimoId });
+
+		public Task ExcluirFechamentoTurmaDuplicados(long turmaId, long periodoEscolarId, long ultimoId)
+			=> database.Conexao.ExecuteScalarAsync(
+				@"delete from fechamento_turma 
+				where turma_id = @turmaId
+				  and coalesce(periodo_escolar_id,0) = @periodoEscolarId
+				  and id <> @ultimoId;", new { turmaId, periodoEscolarId, ultimoId });
+
 	}
 }

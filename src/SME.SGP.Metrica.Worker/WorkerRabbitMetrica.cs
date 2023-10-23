@@ -33,6 +33,8 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.LimpezaConselhoClasseAlunoDuplicado, new ComandoRabbit("Limpeza de registros de conselho de classe aluno para o mesmo conselho de classe", typeof(ILimpezaConselhoClasseAlunoDuplicadoUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoConselhoClasseNota, new ComandoRabbit("Registros de notas de conselho de classe para o mesmo aluno", typeof(IConselhoClasseNotaDuplicadoUseCase)));
             Comandos.Add(RotasRabbitMetrica.LimpezaConselhoClasseNotaDuplicado, new ComandoRabbit("Limpeza de registros de notas de conselho de classe para o mesmo aluno", typeof(ILimpezaConselhoClasseNotaDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DuplicacaoFechamentoTurma, new ComandoRabbit("Registros de fechamento para a mesma turma e periodo escolar", typeof(IFechamentoTurmaDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.LimpezaFechamentoTurmaDuplicado, new ComandoRabbit("Limpeza de registros de fechamento para a mesma turma e periodo escolar", typeof(ILimpezaFechamentoTurmaDuplicadoUseCase)));
         }
     }
 }

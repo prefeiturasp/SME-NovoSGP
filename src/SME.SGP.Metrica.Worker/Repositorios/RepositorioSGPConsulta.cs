@@ -18,6 +18,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
+        public Task<IEnumerable<long>> ObterUesIds()
+            => database.Conexao.QueryAsync<long>("select id from ue order by id");
+
         public Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId)
             => database.Conexao.QueryAsync<ConselhoClasseAlunoDuplicado>(
                 @"select cca.conselho_classe_id as ConselhoClasseId
@@ -71,7 +74,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<int> ObterQuantidadeAcessosDia(DateTime data)
             => database.Conexao.QueryFirstOrDefaultAsync<int>("select count(u.id) from usuario u where date(u.ultimo_login) = @data", new { data });
 
-        public Task<IEnumerable<long>> ObterUesIds()
-            => database.Conexao.QueryAsync<long>("select id from ue order by id");
+        public Task<IEnumerable<FechamentoTurmaDuplicado>> ObterFechamentosTurmaDuplicados()
+            => database.Conexao.QueryAsync<FechamentoTurmaDuplicado>(
+                @"select ft.turma_id as TurmaId
+        	        , ft.periodo_escolar_id as PeriodoEscolarId
+        	        , count(ft.id) as Quantidade
+        	        , min(ft.criado_em) as PrimeiroRegistro
+        	        , max(ft.criado_em) as UltimoRegistro
+        	        , max(ft.id) as UltimoId
+                  from turma t
+                 inner join fechamento_turma ft on ft.turma_id = t.id
+                 where not ft.excluido 
+                   and t.ano_letivo = extract(year from NOW())
+                group by ft.turma_id, ft.periodo_escolar_id
+                having count(ft.id) > 1");
     }
 }
