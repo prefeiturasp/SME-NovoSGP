@@ -1,4 +1,4 @@
-﻿using Dapper;
+﻿using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;

@@ -3,6 +3,7 @@ using Dapper.FluentMap.Dommel;
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
@@ -22,6 +25,7 @@ using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;
 using System;
+using System.Reflection;
 using System.Threading;
 
 namespace SME.SGP.Metrica.Worker
@@ -56,6 +60,12 @@ namespace SME.SGP.Metrica.Worker
                 .Bind(Configuration.GetSection(TelemetriaOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<TelemetriaOptions>();
             services.AddSingleton<IServicoTelemetria, ServicoTelemetria>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
+            var servicoTelemetria = new ServicoTelemetria(options);
+            DapperExtensionMethods.Init(servicoTelemetria);
+
         }
 
         private void RegistrarRabbitMQ(IServiceCollection services)
@@ -78,6 +88,7 @@ namespace SME.SGP.Metrica.Worker
         {
             services.ConfigurarTelemetria(Configuration);
             services.AddHttpContextAccessor();
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             RegistrarRepositorio(services);
             RegistrarUseCases(services);
