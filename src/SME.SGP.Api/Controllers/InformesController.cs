@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using SME.SGP.Aplicacao;
-using Microsoft.AspNetCore.Http;
-using System;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -26,15 +25,30 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(informesDto));
         }
 
+        [HttpDelete("{informeId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.INF_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long informeId, [FromServices] IExcluirInformesUseCase useCase)
+        {
+            return Ok(await useCase.Executar(informeId));
+        }
+
+        [HttpGet("{informeId}")]
+        [ProducesResponseType(typeof(InformesRespostaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.INF_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterInforme(long informeId, [FromServices] IObterInformeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(informeId));
+        }
+
         [HttpGet]
         [Route("grupos-usuarios/perfil/{tipoPerfil}")]
         [ProducesResponseType(typeof(IEnumerable<GruposDeUsuariosDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.INF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterGruposDeUsuarios(
-            [FromServices] IObterGruposDeUsuariosUseCase useCase,
-            int tipoPerfil)
+        public async Task<IActionResult> ObterGruposDeUsuarios(int tipoPerfil, [FromServices] IObterGruposDeUsuariosUseCase useCase)
         {
             return Ok(await useCase.Executar(tipoPerfil));
         }
