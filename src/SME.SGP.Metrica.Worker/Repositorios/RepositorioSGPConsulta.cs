@@ -166,5 +166,26 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 			    and not cccat.excluido
 			    group by cccat.aluno_codigo, cccat.turma_id 
 			    having count(cccat.id) > 1");
+
+        public Task<IEnumerable<ConsolidacaoCCNotaDuplicado>> ObterConsolidacaoCCNotasDuplicados()
+            => database.Conexao.QueryAsync<ConsolidacaoCCNotaDuplicado>(
+                @"select cccatn.consolidado_conselho_classe_aluno_turma_id as ConsolicacaoCCAlunoTurmaId, 
+					    coalesce(cccatn.bimestre, 0) as Bimestre,
+					    cccatn.componente_curricular_id as ComponenteCurricularId,
+					    cccat.turma_id as TurmaId,
+					    count(cccatn.id) as Quantidade,
+					    min(cccat.criado_em) as PrimeiroRegistro,
+					    max(cccat.criado_em) as UltimoRegistro,
+					    max(cccatn.id) as UltimoId 
+				 from consolidado_conselho_classe_aluno_turma_nota cccatn
+				 join consolidado_conselho_classe_aluno_turma cccat on cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id 
+				 join turma t on t.id = cccat.turma_id 		
+			    where t.ue_id = p_ueid
+			      and not cccat.excluido
+			    group by cccatn.consolidado_conselho_classe_aluno_turma_id,
+			        cccat.turma_id,
+					coalesce(cccatn.bimestre, 0),
+					cccatn.componente_curricular_id
+			    having count(cccatn.id) > 1");
     }
 }

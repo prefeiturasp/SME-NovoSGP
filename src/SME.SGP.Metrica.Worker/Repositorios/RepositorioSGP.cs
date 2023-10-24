@@ -281,6 +281,14 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				where aluno_codigo = @alunoCodigo
 						and turma_id = @turmaId
 						  and id <> @ultimoId;", new { alunoCodigo, turmaId, ultimoId });
+		
+		public Task ExcluirConsolidacaoCCNotaDuplicado(long consolicacaoCCAlunoTurmaId, int bimestre, long componenteCurricularId, long ultimoId)
+			=> database.Conexao.ExecuteAsync(
+				@"delete from consolidado_conselho_classe_aluno_turma_nota  
+				where consolidado_conselho_classe_aluno_turma_id = @consolicacaoCCAlunoTurmaId
+				  and coalesce(bimestre, 0) = @bimestre
+				  and componente_curricular_id = @componenteCurricularId
+				  and id <> @ultimoId;", new { consolicacaoCCAlunoTurmaId, bimestre, componenteCurricularId, ultimoId });
 
 	}
 }

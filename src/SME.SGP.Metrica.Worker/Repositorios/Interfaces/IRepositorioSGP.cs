@@ -39,5 +39,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         // ConsolidacaoCCAlunoTurma
         Task AtualizarNotaConsolidacaoCCAlunoTurmaDuplicado(string alunoCodigo, long turmaId, long ultimoId);
         Task ExcluirConsolidacaoCCAlunoTurmaDuplicado(string alunoCodigo, long turmaId, long ultimoId);
+        // ConsolidacaoCCNota
+        Task ExcluirConsolidacaoCCNotaDuplicado(long consolicacaoCCAlunoTurmaId, int bimestre, long componenteCurricularId, long ultimoId);
     }
 }
