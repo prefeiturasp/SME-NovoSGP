@@ -21,6 +21,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<IEnumerable<long>> ObterUesIds()
             => database.Conexao.QueryAsync<long>("select id from ue order by id");
 
+        public Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades)
+            => database.Conexao.QueryAsync<long>("select id from turma where modalidade_codigo = @modalidades order by id", new { modalidades });
+
         public Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId)
             => database.Conexao.QueryAsync<ConselhoClasseAlunoDuplicado>(
                 @"select cca.conselho_classe_id as ConselhoClasseId
@@ -122,5 +125,22 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                 group by fa.fechamento_turma_disciplina_id
         	        , fa.aluno_codigo
                 having count(fa.id) > 1", new { ueId });
+
+        public Task<IEnumerable<FechamentoNotaDuplicado>> ObterFechamentosNotaDuplicados(long turmaId)
+            => database.Conexao.QueryAsync<FechamentoNotaDuplicado>(
+                @"select fn.fechamento_aluno_id as FechamentoAlunoId
+		            , fn.disciplina_id as DisciplinaId
+		            , count(fn.id) as Quantidade
+		            , min(fn.criado_em) as PrimeiroRegistro
+		            , max(fn.criado_em) as UltimoRegistro
+		            , max(fn.id) as UltimoId 
+		            from fechamento_nota fn
+		            inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
+		            inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
+		            inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
+	            WHERE ft.id = p_turmaid
+	            group by fn.fechamento_aluno_id
+		            , fn.disciplina_id 
+	            having count(fn.id) > 1", new { turmaId });
     }
 }

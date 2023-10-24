@@ -32,5 +32,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task AtualizarNotaFechamentoAlunoDuplicados(long fechamentoDisciplinaId, string alunoCodigo, long ultimoId);
         Task AtualizarAnotacaoFechamentoAlunoDuplicados(long fechamentoDisciplinaId, string alunoCodigo, long ultimoId);
         Task ExcluirFechamentoAlunoDuplicados(long fechamentoDisciplinaId, string alunoCodigo, long ultimoId);
+        // FechamentoNota
+        Task AtualizarHistoricoFechamentoNotaDuplicados(long fechamentoAlunoId, long disciplinaId, long ultimoId);
+        Task AtualizarWfAprovacaoFechamentoNotaDuplicados(long fechamentoAlunoId, long disciplinaId, long ultimoId);
+        Task ExcluirFechamentoNotaDuplicados(long fechamentoAlunoId, long disciplinaId, long ultimoId);
     }
 }

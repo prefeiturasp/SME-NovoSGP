@@ -17,5 +17,8 @@
         public const string DuplicacaoFechamentoAluno = "sgp.metricas.fechamento.aluno.duplicado";
         public const string DuplicacaoFechamentoAlunoUE = "sgp.metricas.fechamento.aluno.duplicado.ue";
         public const string LimpezaFechamentoAlunoDuplicado = "sgp.metricas.fechamento.aluno.duplicado.limpeza";
+        public const string DuplicacaoFechamentoNota = "sgp.metricas.fechamento.nota.duplicado";
+        public const string DuplicacaoFechamentoNotaTurma = "sgp.metricas.fechamento.nota.duplicado.turma";
+        public const string LimpezaFechamentoNotaDuplicado = "sgp.metricas.fechamento.nota.duplicado.limpeza";
     }
 }

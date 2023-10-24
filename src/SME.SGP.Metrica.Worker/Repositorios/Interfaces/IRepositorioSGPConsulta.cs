@@ -8,6 +8,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
     public interface IRepositorioSGPConsulta
     {
         Task<IEnumerable<long>> ObterUesIds();
+        Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades);
         Task<int> ObterQuantidadeAcessosDia(DateTime data);
         Task<IEnumerable<ConselhoClasseDuplicado>> ObterConselhosClasseDuplicados();
         Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
@@ -15,5 +16,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<IEnumerable<FechamentoTurmaDuplicado>> ObterFechamentosTurmaDuplicados();
         Task<IEnumerable<FechamentoTurmaDisciplinaDuplicado>> ObterFechamentosTurmaDisciplinaDuplicados();
         Task<IEnumerable<FechamentoAlunoDuplicado>> ObterFechamentosAlunoDuplicados(long ueId);
+        Task<IEnumerable<FechamentoNotaDuplicado>> ObterFechamentosNotaDuplicados(long turmaId);
     }
 }
