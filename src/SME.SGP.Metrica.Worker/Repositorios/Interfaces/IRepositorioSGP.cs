@@ -36,5 +36,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task AtualizarHistoricoFechamentoNotaDuplicados(long fechamentoAlunoId, long disciplinaId, long ultimoId);
         Task AtualizarWfAprovacaoFechamentoNotaDuplicados(long fechamentoAlunoId, long disciplinaId, long ultimoId);
         Task ExcluirFechamentoNotaDuplicados(long fechamentoAlunoId, long disciplinaId, long ultimoId);
+        // ConsolidacaoCCAlunoTurma
+        Task AtualizarNotaConsolidacaoCCAlunoTurmaDuplicado(string alunoCodigo, long turmaId, long ultimoId);
+        Task ExcluirConsolidacaoCCAlunoTurmaDuplicado(string alunoCodigo, long turmaId, long ultimoId);
     }
 }

@@ -264,6 +264,23 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				where fechamento_aluno_id = @fechamentoAlunoId
 				  and disciplina_id = @disciplinaId
 				  and id <> @ultimoId;", new { fechamentoAlunoId, disciplinaId, ultimoId });
+		
+		public Task AtualizarNotaConsolidacaoCCAlunoTurmaDuplicado(string alunoCodigo, long turmaId, long ultimoId)
+			=> database.Conexao.ExecuteAsync(
+				@"update consolidado_conselho_classe_aluno_turma_nota
+					set consolidado_conselho_classe_aluno_turma_id = @ultimoId
+					where consolidado_conselho_classe_aluno_turma_id in (
+							select id from consolidado_conselho_classe_aluno_turma
+							where aluno_codigo = @alunoCodigo
+							and turma_id = @turmaId
+								and id <> @ultimoId);", new { alunoCodigo, turmaId, ultimoId });
+		
+		public Task ExcluirConsolidacaoCCAlunoTurmaDuplicado(string alunoCodigo, long turmaId, long ultimoId)
+			=> database.Conexao.ExecuteAsync(
+				@"delete from consolidado_conselho_classe_aluno_turma
+				where aluno_codigo = @alunoCodigo
+						and turma_id = @turmaId
+						  and id <> @ultimoId;", new { alunoCodigo, turmaId, ultimoId });
 
 	}
 }
