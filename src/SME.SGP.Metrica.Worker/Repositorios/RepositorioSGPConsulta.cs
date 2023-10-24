@@ -150,5 +150,21 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 			       inner join consolidado_conselho_classe_aluno_turma cccat on cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id  
 			       inner join turma t on t.id = cccat.turma_id  
 			       where cccatn.nota is null and cccatn.conceito_id is null");
+
+        public Task<IEnumerable<ConsolidacaoConselhoClasseAlunoTurmaDuplicado>> ObterConsolidacaoCCAlunoTurmaDuplicados(long ueId)
+            => database.Conexao.QueryAsync<ConsolidacaoConselhoClasseAlunoTurmaDuplicado>(
+                @"select cccat.aluno_codigo as AlunoCodigo, 
+                        cccat.turma_id as TurmaId,
+					    count(cccat.id) as Quantidade,
+					    min(cccat.criado_em) as PrimeiroRegistro,
+					    max(cccat.criado_em) as UltimoRegistro,
+					    max(cccat.id) as UltimoId 
+				 from consolidado_conselho_classe_aluno_turma cccat
+				 join turma t on t.id = cccat.turma_id 
+			    where t.ue_id = @ueId
+			    and t.ano_letivo = extract(year from NOW())
+			    and not cccat.excluido
+			    group by cccat.aluno_codigo, cccat.turma_id 
+			    having count(cccat.id) > 1");
     }
 }
