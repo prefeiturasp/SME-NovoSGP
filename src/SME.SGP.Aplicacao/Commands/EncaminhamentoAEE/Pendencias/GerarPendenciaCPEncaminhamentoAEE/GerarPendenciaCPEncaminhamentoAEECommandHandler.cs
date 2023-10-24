@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
         {
             var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
-            if (pendenciasEncaminhamentoAEE != null || !pendenciasEncaminhamentoAEE.Any())
+            if (pendenciasEncaminhamentoAEE != null && pendenciasEncaminhamentoAEE.Any())
             {
                 foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
                 {
