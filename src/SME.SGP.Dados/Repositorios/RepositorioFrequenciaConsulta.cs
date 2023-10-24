@@ -650,5 +650,22 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { codigoTurma, dataInicio, dataFim });
         }
+
+        public async Task<long[]> ObterFrequenciasAlunosIdsComPresencasMaiorTotalAulas(long ueId, int anoLetivo)
+        {
+            var query = @"select fa.id
+                          	from frequencia_aluno fa
+                          		inner join turma t 
+                          			on fa.turma_id = t.turma_id 		
+                          where not fa.excluido and
+                          	    t.ano_letivo = @anoLetivo and
+                          	    fa.total_presencas > fa.total_aulas and
+                          	    t.ue_id = @ueId;";
+
+            var resultado = await database.Conexao
+                .QueryAsync<long>(query, new { ueId, anoLetivo });
+
+            return resultado.ToArray();
+        }
     }
 }
