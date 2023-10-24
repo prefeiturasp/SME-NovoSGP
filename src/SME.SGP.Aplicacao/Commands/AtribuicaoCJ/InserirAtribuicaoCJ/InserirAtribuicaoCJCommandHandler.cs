@@ -133,6 +133,7 @@ namespace SME.SGP.Aplicacao
             if (atribuicaoCJ.Id > 0 && !atribuicaoCJ.Substituir)
             {
                 var aulas = await repositorioAula.ObterAulas(atribuicaoCJ.TurmaId, atribuicaoCJ.UeId, atribuicaoCJ.ProfessorRf, null, atribuicaoCJ.DisciplinaId.ToString());
+                aulas = aulas.NaoEhNulo() ? aulas.Where(a => a.AulaCJ) : null;
                 if (aulas.NaoEhNulo() && aulas.Any())
                 {
                     var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(atribuicaoCJ.DisciplinaId));
