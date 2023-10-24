@@ -142,5 +142,13 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 	            group by fn.fechamento_aluno_id
 		            , fn.disciplina_id 
 	            having count(fn.id) > 1", new { turmaId });
+
+        public Task<IEnumerable<ConsolidacaoConselhoClasseNotaNulos>> ObterConsolidacaoCCNotasNulos()
+            => database.Conexao.QueryAsync<ConsolidacaoConselhoClasseNotaNulos>(
+                @"select t.turma_id as TurmaId, cccatn.bimestre, cccat.aluno_codigo as AlunoCodigo, cccatn.componente_curricular_id as ComponenteCurricularId
+			        from consolidado_conselho_classe_aluno_turma_nota cccatn 
+			       inner join consolidado_conselho_classe_aluno_turma cccat on cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id  
+			       inner join turma t on t.id = cccat.turma_id  
+			       where cccatn.nota is null and cccatn.conceito_id is null");
     }
 }

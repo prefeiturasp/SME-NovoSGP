@@ -43,6 +43,7 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.DuplicacaoFechamentoNota, new ComandoRabbit("Registros de fechamento nota para o mesmo aluno", typeof(IFechamentoNotaDuplicadoUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoFechamentoNotaTurma, new ComandoRabbit("Registros de fechamento nota para o mesmo aluno por turma", typeof(IFechamentoNotaDuplicadoTurmaUseCase)));
             Comandos.Add(RotasRabbitMetrica.LimpezaFechamentoNotaDuplicado, new ComandoRabbit("Limpeza de registros de fechamento nota para o mesmo aluno", typeof(ILimpezaFechamentoNotaDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.ConsolidacaoCCNotaNulo, new ComandoRabbit("Registros de consolidação de CC com nota e conceito nulos", typeof(IConsolidacaoConselhoClasseNotaNuloUseCase)));
         }
     }
 }
