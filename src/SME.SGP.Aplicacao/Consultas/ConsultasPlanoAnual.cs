@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioTurma repositorioTurma;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
@@ -30,8 +29,7 @@ namespace SME.SGP.Aplicacao
                                    IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                    IRepositorioTurma repositorioTurma,
                                    IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
-                                   IServicoUsuario servicoUsuario,
-                                   IServicoEol servicoEOL, IMediator mediator)
+                                   IServicoUsuario servicoUsuario,IMediator mediator)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanoAnual));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
@@ -41,7 +39,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -62,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await ObterPeriodoEscolar(filtro.TurmaId, filtro.AnoLetivo);
 
-            if (periodosEscolares == null)
+            if (periodosEscolares.EhNulo())
                 return null;
 
             var retorno = planoAnualLista.FirstOrDefault(x => VerificaSeBimestreEhExpandido(periodosEscolares, x.Bimestre));
@@ -73,7 +70,7 @@ namespace SME.SGP.Aplicacao
         public long ObterIdPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
         {
             var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
-            return plano != null ? plano.Id : 0;
+            return plano.NaoEhNulo() ? plano.Id : 0;
         }
 
         public async Task<PlanoAnualObjetivosDisciplinaDto> ObterObjetivosEscolaTurmaDisciplina(FiltroPlanoAnualDisciplinaDto filtro)
@@ -84,17 +81,17 @@ namespace SME.SGP.Aplicacao
                                                             filtro.Bimestre,
                                                             filtro.ComponenteCurricularEolId,
                                                             filtro.DisciplinaId);
-            if (planoAnual != null)
+            if (planoAnual.NaoEhNulo())
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
 
-                if (planoAnual.IdsObjetivosAprendizagem == null)
+                if (planoAnual.IdsObjetivosAprendizagem.EhNulo())
                     return planoAnual;
 
                 foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
                 {
                     var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
-                    if (objetivo != null)
+                    if (objetivo.NaoEhNulo())
                     {
                         planoAnual.ObjetivosAprendizagem.Add(objetivo);
                     }
@@ -107,17 +104,17 @@ namespace SME.SGP.Aplicacao
         {
             var planoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoEscolaBimestreETurma(filtroPlanoAnualDto.AnoLetivo, filtroPlanoAnualDto.EscolaId, filtroPlanoAnualDto.TurmaId, filtroPlanoAnualDto.Bimestre, filtroPlanoAnualDto.ComponenteCurricularEolId);
 
-            if (planoAnual != null)
+            if (planoAnual.NaoEhNulo())
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
 
-                if (planoAnual.IdsObjetivosAprendizagem == null)
+                if (planoAnual.IdsObjetivosAprendizagem.EhNulo())
                     return planoAnual;
 
                 foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
                 {
                     var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
-                    if (objetivo != null)
+                    if (objetivo.NaoEhNulo())
                     {
                         planoAnual.ObjetivosAprendizagem.Add(objetivo);
                     }
@@ -135,28 +132,28 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTime.Now.Date;
             var listaPlanoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCurricularEolId);
             var componentesCurricularesEol = repositorioComponenteCurricular.Listar();
-            if (listaPlanoAnual != null && listaPlanoAnual.Any())
+            if (listaPlanoAnual.NaoEhNulo() && listaPlanoAnual.Any())
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
                 foreach (var planoAnual in listaPlanoAnual)
                 {
                     var periodo = periodos.FirstOrDefault(c => c.Bimestre == planoAnual.Bimestre);
-                    if (periodo == null)
+                    if (periodo.EhNulo())
                         throw new NegocioException("Plano anual com data fora do período escolar. Contate o suporte.");
                     if (periodo.PeriodoFim.Local() >= dataAtual && periodo.PeriodoInicio.Local() <= dataAtual)
                     {
                         planoAnual.Obrigatorio = true;
                     }
-                    if (planoAnual.IdsObjetivosAprendizagem == null)
+                    if (planoAnual.IdsObjetivosAprendizagem.EhNulo())
                         continue;
 
                     foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
                     {
                         var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
-                        if (objetivo != null)
+                        if (objetivo.NaoEhNulo())
                         {
                             var componenteCurricularEol = componentesCurricularesEol.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
-                            if (componenteCurricularEol != null)
+                            if (componenteCurricularEol.NaoEhNulo())
                             {
                                 objetivo.ComponenteCurricularEolId = componenteCurricularEol.CodigoEOL;
                             }
@@ -180,8 +177,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, long componenteCurricular, bool consideraHistorico)
         {
             var codigoRfUsuarioLogado = servicoUsuario.ObterRf();
-            var turmasEOL = await servicoEOL.ObterTurmasParaCopiaPlanoAnual(codigoRfUsuarioLogado, componenteCurricular, turmaId);
-            if (turmasEOL != null && turmasEOL.Any())
+            var turmasEOL = await mediator.Send(new ObterTurmasParaCopiaPlanoAnualQuery(codigoRfUsuarioLogado, componenteCurricular, turmaId));
+            if (turmasEOL.NaoEhNulo() && turmasEOL.Any())
             {
                 var idsTurmas = turmasEOL.Select(c => c.TurmaId.ToString());                
                 turmasEOL = await mediator.Send(new ValidaSeTurmasPossuemPlanoAnualQuery(idsTurmas.ToArray(), consideraHistorico));
@@ -205,18 +202,6 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = anoLetivo,
                 Obrigatorio = obrigatorio
             };
-        }
-
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
-        {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
         }
 
         private FiltroPlanoAnualDto ObtenhaFiltro(int anoLetivo, long componenteCurricularEolId, string escolaId, string turmaId, int bimestre)
@@ -264,19 +249,18 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodoEscolar(string turmaId, int anoLetivo)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-            if (turma == null)
+            if (turma.EhNulo())
             {
                 throw new NegocioException("Turma não encontrada.");
             }
-            var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, turma.Semestre);
-            if (tipoCalendario == null)
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), turma.Semestre);
+            if (tipoCalendario.EhNulo())
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");
             }
 
             var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            if (periodos == null)
+            if (periodos.EhNulo())
             {
                 throw new NegocioException("Período escolar não encontrado.");
             }
@@ -287,7 +271,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodo = periodosEscolares.FirstOrDefault(p => p.Bimestre == bimestre);
 
-            if (periodo == null)
+            if (periodo.EhNulo())
                 return false;
 
             var dataAtual = DateTime.Now;
@@ -298,7 +282,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PlanoAnualResumoDto> ObterPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
         {
             var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
-            return plano == null ? null : new PlanoAnualResumoDto()
+            return plano.EhNulo() ? null : new PlanoAnualResumoDto()
             {
                 Id = plano.Id,
                 ObjetivosAprendizagemOpcionais = plano.ObjetivosAprendizagemOpcionais

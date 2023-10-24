@@ -6,17 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.ServicosFakes
 {
-    public class ObterProfessoresTitularesDasTurmasQueryHandlerFake : IRequestHandler<ObterProfessoresTitularesDasTurmasQuery, IEnumerable<string>>
+    public class ObterProfessoresTitularesDasTurmasQueryHandlerFake : IRequestHandler<ObterProfessoresTitularesDasTurmasQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
         private const string CODIGO_RF_1111111 = "1111111";
-        public async Task<IEnumerable<string>> Handle(ObterProfessoresTitularesDasTurmasQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDasTurmasQuery request, CancellationToken cancellationToken)
         {
-            return new List<string>()
+            return new List<ProfessorTitularDisciplinaEol>()
             {
-                new(CODIGO_RF_1111111)
+                new () { ProfessorRf = CODIGO_RF_1111111 }
             };
         }
     }

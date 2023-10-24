@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
             int ano = int.TryParse(turma.Ano, out int anoTurma) ? anoTurma : 1;
 
-            if (turma == null)
+            if (turma.EhNulo())
             {
                 if (request.SituacaoConselho)
                     return default;

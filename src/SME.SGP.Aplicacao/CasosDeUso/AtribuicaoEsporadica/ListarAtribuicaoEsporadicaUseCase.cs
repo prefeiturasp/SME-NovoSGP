@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 TotalRegistros = lstAtribuicoes.TotalRegistros
             };
 
-            bool nenhumItemEncontrado = lstAtribuicoes.Items == null ||
+            bool nenhumItemEncontrado = lstAtribuicoes.Items.EhNulo() ||
               !lstAtribuicoes.Items.Any() ||
               lstAtribuicoes.Items.ElementAt(0).Id == 0;
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             if (buscarNome)
             {
                 var professorResumo = await mediator.Send(new ObterResumoProfessorPorRFAnoLetivoQuery(entidade.ProfessorRf, entidade.DataInicio.Year));
-                nomeProfessor = professorResumo != null ? professorResumo.Nome : "Professor não encontrado";
+                nomeProfessor = professorResumo.NaoEhNulo() ? professorResumo.Nome : "Professor não encontrado";
             }
 
             return new AtribuicaoEsporadicaDto
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
         {
             var professor = professores.FirstOrDefault(p => p.CodigoRF == codigoRF);
 
-            if (professor == null)
+            if (professor.EhNulo())
                 return "Professor não encontrado";
 
             return professor.Nome;

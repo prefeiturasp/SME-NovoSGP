@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAee = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAeeId));
 
-            if (encaminhamentoAee == null )
+            if (encaminhamentoAee.EhNulo() )
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_NAO_ENCONTRADO);
             
             if (!(encaminhamentoAee.Situacao == SituacaoAEE.Rascunho || encaminhamentoAee.Situacao == SituacaoAEE.Encaminhado))
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
         {
             var pendenciasEncaminhamentoAEE = await mediator.Send(new ObterPendenciasDoEncaminhamentoAEEPorIdQuery(encaminhamentoId));
-            if (pendenciasEncaminhamentoAEE != null || !pendenciasEncaminhamentoAEE.Any())
+            if (pendenciasEncaminhamentoAEE.NaoEhNulo() || !pendenciasEncaminhamentoAEE.Any())
             {
                 foreach (var pendenciaEncaminhamentoAEE in pendenciasEncaminhamentoAEE)
                 {

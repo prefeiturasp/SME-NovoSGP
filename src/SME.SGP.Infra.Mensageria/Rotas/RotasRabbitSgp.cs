@@ -39,6 +39,9 @@
         public const string RemoverArquivoArmazenamento = "sgp.armazenamento.remover.arquivo";
         public const string ExecutarAtualizacaoDasInformacoesPlanoAEE = "sgp.atualizar.informacoes.plano.aee";
         public const string ExecutarAtualizacaoDaTurmaDoPlanoAEE = "sgp.atualizar.turma.plano.aee";
+        public const string ExecutarMigracaoRelatorioSemestralPAP = "sgp.executar.migracao.relatorio.semestral.pap";
+        public const string ExecutarMigracaoRelatorioSemestralPAPPorAnoLetivo = "sgp.executar.migracao.relatorio.semestral.pap.ano.letivo";
+        public const string ExecutarMigracaoRelatorioSemestralPAPPorId = "sgp.executar.migracao.relatorio.semestral.pap.id";
 
         #region Relatórios
 

@@ -25,10 +25,10 @@ namespace SME.SGP.Aplicacao
             var turmas = await mediator.Send(new ObterTurmasComFechamentoOuConselhoNaoFinalizadosQuery(request.PeriodoFechamentoBimestre.PeriodoFechamento.Ue.Id,
                                                                                                        DateTime.Now.Year,
                                                                                                        request.PeriodoFechamentoBimestre.PeriodoFechamentoId,
-                                                                                                       request.ModalidadeTipoCalendario.ObterModalidadesTurma(),
+                                                                                                       request.ModalidadeTipoCalendario.ObterModalidades(),
                                                                                                        ObterSemestre(request)
                                                                                                       ));
-            if (turmas != null && turmas.Any())
+            if (turmas.NaoEhNulo() && turmas.Any())
                 await EnviarNotificacaoProfessores(turmas, request.PeriodoFechamentoBimestre.PeriodoEscolar, request.PeriodoFechamentoBimestre, request.PeriodoFechamentoBimestre.PeriodoFechamento.Ue);
 
             return true;
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
         private static int ObterSemestre(ExecutaNotificacaoPeriodoFechamentoEncerrandoCommand request)
         {
-            return request.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? request.PeriodoFechamentoBimestre.PeriodoEscolar.Bimestre : 0;
+            return request.ModalidadeTipoCalendario.EhEjaOuCelp() ? request.PeriodoFechamentoBimestre.PeriodoEscolar.Bimestre : 0;
         }
 
         private async Task EnviarNotificacaoProfessores(IEnumerable<Turma> turmas, PeriodoEscolar periodoEscolar, PeriodoFechamentoBimestre periodoFechamentoBimestre, Ue ue)
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
                 <br/><br/>Após esta data o sistema será bloqueado para edições neste bimestre.";
 
             var professores = await ObterProfessores(turmas);
-            if (professores != null && professores.Any())
+            if (professores.NaoEhNulo() && professores.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, professores, ue.Dre.CodigoDre, ue.CodigoUe));
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(),
@@ -64,8 +64,13 @@ namespace SME.SGP.Aplicacao
         {
             var listaUsuarios = new List<long>();
             var professores = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(turmas.Select(a => a.CodigoTurma)));
+            
+            var professoresDaTurma = professores
+                .SelectMany(c => c.ProfessorRf.Split(',').AsEnumerable())
+                .Where(c => !string.IsNullOrEmpty(c))
+                .Select(a => a.Trim());
 
-            foreach (var professor in professores)
+            foreach (var professor in professoresDaTurma)
             {
                 if (professor != "")
                     listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor)));

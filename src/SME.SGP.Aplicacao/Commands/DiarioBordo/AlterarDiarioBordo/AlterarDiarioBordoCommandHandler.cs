@@ -32,11 +32,11 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Aula informada não existe");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma informada não encontrada");
 
             if (usuario.EhProfessorCj())
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var componenteCurricularPrincipalProfessor = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, request.ComponenteCurricularId);
 
             var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, componenteCurricularPrincipalProfessor);
-            if (diarioBordo == null)
+            if (diarioBordo.EhNulo())
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
 
             await MoverRemoverExcluidos(request, diarioBordo);

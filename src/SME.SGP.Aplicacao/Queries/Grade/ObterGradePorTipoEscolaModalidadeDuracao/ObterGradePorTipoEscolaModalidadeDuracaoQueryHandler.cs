@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private GradeDto MapearParaDto(Grade grade)
-            => grade == null ? null : new GradeDto
+            => grade.EhNulo() ? null : new GradeDto
             {
                 Id = grade.Id,
                 Nome = grade.Nome

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -23,7 +24,7 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in turmasCodigos)
             {
                 var componentesNaTurma = await mediator.Send(new ObterComponentesCurricularesPorUsuarioECodigoTurmaQuery(usuarioLogado, turmaCodigo));
-                if ((componentesNaTurma != null) && componentesNaTurma.Any())
+                if ((componentesNaTurma.NaoEhNulo()) && componentesNaTurma.Any())
                     componetesCurriculares.AddRange(componentesNaTurma);
             }
 

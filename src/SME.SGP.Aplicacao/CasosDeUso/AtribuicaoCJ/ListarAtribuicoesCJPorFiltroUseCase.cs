@@ -23,12 +23,12 @@ namespace SME.SGP.Aplicacao
                 filtroDto.UsuarioRf, filtroDto.UsuarioNome, true, anoLetivo: filtroDto.AnoLetivo, historico: filtroDto.Historico))).ToList();
 
             if (listaRetorno.Any())
-                return TransformaEntidadesEmDtosListaRetorno(listaRetorno);
+                return await TransformaEntidadesEmDtosListaRetorno(listaRetorno);
             else
                 return Enumerable.Empty<AtribuicaoCJListaRetornoDto>();
         }
 
-        private IEnumerable<AtribuicaoCJListaRetornoDto> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
+        private async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
         {
             var idsDisciplinas = listaDto
                 .Select(a => a.DisciplinaId)
@@ -40,28 +40,27 @@ namespace SME.SGP.Aplicacao
 
             var listRetorno = new List<AtribuicaoCJListaRetornoDto>();
 
-            professoresDisciplinas.ForEach(a =>
+            foreach (var profDisciplina in professoresDisciplinas)
             {
-                var disciplinasIds = a.Select(b => b.DisciplinaId);
-                var disciplinasEol = mediator
-                    .Send(new ObterDisciplinasPorCodigoTurmaQuery(a.Key.TurmaId)).Result;
+                var disciplinasIds = profDisciplina.Select(b => b.DisciplinaId);
+                var disciplinasEol = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(profDisciplina.Key.TurmaId));
 
                 if (!disciplinasEol.Any())
                     throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
 
                 var disciplinasDescricoes = disciplinasEol
-                    .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular) || 
+                    .Where(c => disciplinasIds.Contains(c.CodigoComponenteCurricular) ||
                                (c.TerritorioSaber && (disciplinasIds.Contains(c.CodigoComponenteTerritorioSaber.Value) || disciplinasIds.Intersect(c.CodigosTerritoriosAgrupamento).Any())))
                     .ToList();
 
-                var professorDisciplina = a.FirstOrDefault();
+                var professorDisciplina = profDisciplina.FirstOrDefault();
 
-                var exibeNomeTurmaNovoInfantil = professorDisciplina != null && professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;         
+                var exibeNomeTurmaNovoInfantil = professorDisciplina.NaoEhNulo() && professorDisciplina.Turma.ModalidadeCodigo == Modalidade.EducacaoInfantil && professorDisciplina.Turma.AnoLetivo >= DateTime.Now.Year;
 
                 var atribuicaoDto = new AtribuicaoCJListaRetornoDto()
                 {
-                    Modalidade = a.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
-                    ModalidadeId = (int)a.Key.Modalidade,
+                    Modalidade = profDisciplina.Key.Modalidade.GetAttribute<DisplayAttribute>().Name,
+                    ModalidadeId = (int)profDisciplina.Key.Modalidade,
                     Turma = professorDisciplina?.Turma.Nome,
                     TurmaId = professorDisciplina?.TurmaId,
                     Disciplinas = exibeNomeTurmaNovoInfantil
@@ -71,8 +70,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 listRetorno.Add(atribuicaoDto);
-            });
-
+            }
             return listRetorno;
         }
     }

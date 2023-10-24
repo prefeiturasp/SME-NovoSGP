@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.Bimestre)
                 .InclusiveBetween(0, 4)
-                .When(c => c.Bimestre != null)
+                .When(c => !c.Bimestre.HasValue)
                 .WithMessage("Um bimestre válido deve ser informado para inserir ou atualizar o cache do fechamento.");
 
             RuleFor(c => c.FechamentosNotasConceitos)

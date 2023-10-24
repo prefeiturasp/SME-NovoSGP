@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,7 @@ namespace SME.SGP.Infra.Dtos
         public bool Excluido { get; set; }
 
         public static explicit operator ComunicadoTurmaDto(ComunicadoTurma turma)
-         => turma == null ? null : new ComunicadoTurmaDto
+         => turma.EhNulo() ? null : new ComunicadoTurmaDto
          {
              CodigoTurma = turma.CodigoTurma,
              ComunicadoId = turma.ComunicadoId,

@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<RelatorioSemestralPAPAluno> ObterRelatorioSemestralPorAlunoTurmaSemestreAsync(string alunoCodigo, string turmaCodigo, int semestre); 
         Task<IEnumerable<RelatorioSemestralAlunoSecaoDto>> ObterDadosSecaoPorRelatorioSemestralAlunoIdDataReferenciaAsync(long relatorioSemestralAlunoId, DateTime dataReferencia);
         Task<IEnumerable<RelatorioSemestralPAPAluno>> ObterRelatoriosAlunosPorTurmaAsync(long turmaId, int semestre);
+        Task<IEnumerable<long>> ObterRelatorioSemestralAlunoPAPPorAnoSemestreAsync(int anoLetivo, int semestre);
     }
 }

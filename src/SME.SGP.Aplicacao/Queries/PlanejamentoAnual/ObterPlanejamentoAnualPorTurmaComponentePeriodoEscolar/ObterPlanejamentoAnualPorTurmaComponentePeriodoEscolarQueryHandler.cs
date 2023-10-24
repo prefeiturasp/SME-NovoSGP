@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -25,15 +26,15 @@ namespace SME.SGP.Aplicacao
             };
 
             var periodo = await repositorioPlanejamentoAnualPeriodoEscolar.ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(request.TurmaId, request.ComponenteCurricularId, request.PeriodoEscolarId);
-            if (periodo != null)
+            if (periodo.NaoEhNulo())
             {
-                planejamento.Bimestre = periodo.PeriodoEscolar != null ? periodo.PeriodoEscolar.Bimestre : 0;
+                planejamento.Bimestre = periodo.PeriodoEscolar.NaoEhNulo() ? periodo.PeriodoEscolar.Bimestre : 0;
                 planejamento.Componentes = periodo.ComponentesCurriculares?.Select(c => new PlanejamentoAnualComponenteDto
                 {
                     ComponenteCurricularId = c.ComponenteCurricularId,
                     Descricao = c.Descricao,
                     ObjetivosAprendizagemId = c.ObjetivosAprendizagem?
-                    .Where(oa => oa != null && oa.ObjetivoAprendizagemId > 0)?
+                    .Where(oa => oa.NaoEhNulo() && oa.ObjetivoAprendizagemId > 0)?
                     .Select(o => o.ObjetivoAprendizagemId),
                     Auditoria = (AuditoriaDto)c
                 })?.ToList();

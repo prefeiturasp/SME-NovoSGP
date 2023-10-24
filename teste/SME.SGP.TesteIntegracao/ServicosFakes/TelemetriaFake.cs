@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             => null;
 
         public void Finalizar(ITransaction transacao)
-        { 
+        {
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException("Não foi possível localizar o Usuário logado.");
 
             var aulas = await mediator.Send(new ObterAulasCalendarioProfessorPorMesQuery()
@@ -63,6 +64,11 @@ namespace SME.SGP.Aplicacao
                                                                                  usuarioLogado.PerfilAtual,
                                                                                  turma.EhTurmaInfantil))).ToList();
 
+                var componentesCurricularesAgrupamentoTerritorioSaber = componentesCurricularesEolProfessor.Where(cc => cc.Codigo.EhIdComponenteCurricularTerritorioSaberAgrupado());
+                if (componentesCurricularesAgrupamentoTerritorioSaber.Any())
+                    componentesCurricularesEolProfessor.AddRange(await mediator.Send(new ObterComponentesTerritorioAgrupamentoCorrelacionadosQuery(componentesCurricularesAgrupamentoTerritorioSaber.Select(cc => cc.Codigo).ToArray())));
+
+
                 if (usuarioLogado.EhSomenteProfessorCj())
                 {
                     var componentesCurricularesDoProfessorCJ = await mediator
@@ -81,15 +87,8 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                var codigosTerritorio = componentesCurricularesEolProfessor
-                    .Where(c => c.TerritorioSaber)
-                    .Select(c => c.Codigo);
-
-                var professoresDesconsiderados = usuarioLogado.EhProfessor() && codigosTerritorio.Any() ?
-                    await mediator.Send(new ObterProfessoresAtribuidosPorCodigosComponentesTerritorioQuery(codigosTerritorio.ToArray(), filtroAulasEventosCalendarioDto.TurmaCodigo, usuarioLogado.Login)) : null;
-
                 aulasParaVisualizar = usuarioLogado
-                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor, professoresDesconsiderados);
+                    .ObterAulasQuePodeVisualizar(aulas, componentesCurricularesEolProfessor);
 
                 // códigos disciplinas normais + regência + território
                 var codigosComponentesUsuario = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString())

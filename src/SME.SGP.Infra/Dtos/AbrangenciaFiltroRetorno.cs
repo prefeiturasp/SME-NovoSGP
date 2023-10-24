@@ -16,14 +16,6 @@ namespace SME.SGP.Dto
         public string CodigoUe { get; set; }
         public string DescricaoFiltro { get { return $"{NomeModalidade} - {NomeTurma} - {NomeTipoEscola} {NomeUe} "; } }
         public Modalidade Modalidade { get; set; }
-        public ModalidadeTipoCalendario ModalidadeTipoCalendario
-        {
-            get => Modalidade == Modalidade.EJA ?
-                ModalidadeTipoCalendario.EJA :
-                Modalidade == Modalidade.EducacaoInfantil ?
-                    ModalidadeTipoCalendario.Infantil :
-                    ModalidadeTipoCalendario.FundamentalMedio;
-        }
         public string NomeDre { get; set; }
         public string NomeModalidade { get { return this.Modalidade.GetAttribute<DisplayAttribute>().Name; } }
         public string NomeTurma { get; set; }

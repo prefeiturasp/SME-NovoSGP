@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var planos = await mediator.Send(new ObterPlanosComSituacaoDiferenteDeEncerradoQuery(DateTime.Now.Year));
 
-            if (planos != null && planos.Any())
+            if (planos.NaoEhNulo() && planos.Any())
                 foreach (var plano in planos)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.AtualizarTabelaPlanoAEETurmaAlunoTratar, new SalvarPlanoAEETurmaAlunoCommand(plano.Id, plano.AlunoCodigo)));
 

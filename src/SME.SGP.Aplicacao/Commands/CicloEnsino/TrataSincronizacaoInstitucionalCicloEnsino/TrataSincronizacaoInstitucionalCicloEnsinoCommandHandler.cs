@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(TrataSincronizacaoInstitucionalCicloEnsinoCommand request, CancellationToken cancellationToken)
         {
 
-            if (request.CicloSgp == null)
+            if (request.CicloSgp.EhNulo())
             {
                 var cicloEnsino = MapearParaEntidade(request.CicloEol);
 

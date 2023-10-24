@@ -201,7 +201,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 .Any(a => a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue(); 
             
             respostaEncaminhamentoNAAPA.Where(c => c.QuestaoEncaminhamentoId == 2)
-                .Any(a => a.Texto == null).ShouldBeTrue();            
+                .Any(a => a.Texto.EhNulo()).ShouldBeTrue();            
         }        
         
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA")]

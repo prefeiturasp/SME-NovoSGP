@@ -34,7 +34,7 @@ namespace SME.SGP.Dominio
 
         public void Adicionar(FechamentoReaberturaBimestre bimestre)
         {
-            if (bimestre == null)
+            if (bimestre.EhNulo())
                 return;
 
             bimestre.FechamentoAbertura = this;
@@ -63,7 +63,7 @@ namespace SME.SGP.Dominio
 
         public void AtualizarDre(Dre dre)
         {
-            if (dre == null)
+            if (dre.EhNulo())
                 return;
 
             Dre = dre;
@@ -72,7 +72,7 @@ namespace SME.SGP.Dominio
 
         public void AtualizarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 return;
 
             TipoCalendario = tipoCalendario;
@@ -81,7 +81,7 @@ namespace SME.SGP.Dominio
 
         public void AtualizarUe(Ue ue)
         {
-            if (ue == null)
+            if (ue.EhNulo())
                 return;
 
             Ue = ue;
@@ -90,7 +90,7 @@ namespace SME.SGP.Dominio
 
         public void AtualizarAprovador(Usuario aprovador)
         {
-            if (aprovador == null)
+            if (aprovador.EhNulo())
                 return;
 
             Aprovador = aprovador;

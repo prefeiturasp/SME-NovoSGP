@@ -58,6 +58,7 @@ namespace SME.SGP.Aula.Worker
             Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoAulasPrevistas, new ComandoRabbit("Executa notificação de aulas previstas x dadas", typeof(INotificacaoAulasPrevistrasUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.NotificacoesDaAulaExcluir, new ComandoRabbit("Executar exclusão de notificações por aula id", typeof(IExcluirNotificacoesPorAulaIdUseCase)));
             Comandos.Add(RotasRabbitSgpAula.PlanoAulaDaAulaExcluir, new ComandoRabbit("Executar exclusão de plano de aula por aula id", typeof(IExcluirPlanoAulaPorAulaIdUseCase)));
+            Comandos.Add(RotasRabbitSgpAula.RotaExcluirAulasRecorrentesComponentesCurricularesTerritorioSaberDisponibilizado, new ComandoRabbit("Executar exclusão de aulas recorrentes relacionadas a componentes território do saber disponibilizados", typeof(IExcluirAulasRecorrentesTerritorioSaberUseCase)));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var erro = mensagemRabbit.ObterObjetoMensagem<RetornoWorkerDto>();
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
 
-            if (relatorioCorrelacao == null)
+            if (relatorioCorrelacao.EhNulo())
             {
                 throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
             }

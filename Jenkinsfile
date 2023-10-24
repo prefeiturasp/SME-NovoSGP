@@ -216,7 +216,7 @@ pipeline {
           }
         }
       } 
-
+        
         stage('Build') {
           parallel {
             stage('sme-sgp-backend') {

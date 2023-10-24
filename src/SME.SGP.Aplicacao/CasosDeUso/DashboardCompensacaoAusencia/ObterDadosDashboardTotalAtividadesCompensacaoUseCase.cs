@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                         bimestre,
                                                                                                                         semestre));
 
-            if(dadosAtividadesCompensadas != null && dadosAtividadesCompensadas.Any())
+            if(dadosAtividadesCompensadas.NaoEhNulo() && dadosAtividadesCompensadas.Any())
                 return MapearParaDto(dadosAtividadesCompensadas, "");
 
             return default;

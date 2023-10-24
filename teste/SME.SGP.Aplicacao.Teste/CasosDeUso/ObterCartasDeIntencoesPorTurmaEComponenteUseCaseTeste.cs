@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             // Assert
             Assert.NotNull(cartas);
             Assert.True(cartas.Count() == periodosEscolares.Count(), "O número de registros esperado é o mesmo número de períodos escolares");
-            Assert.True(cartas.First(c => c.PeriodoEscolarId == 1).Auditoria != null, "Auditoria não carregada");
+            Assert.True(cartas.First(c => c.PeriodoEscolarId == 1).Auditoria.NaoEhNulo(), "Auditoria não carregada");
         }
 
         [Fact]

@@ -24,7 +24,7 @@ namespace SME.SGP.Dominio
 
         public void Validar(bool ehSme, int anoLetivo, IEnumerable<PeriodoEscolar> periodosEscolares, ModalidadeTipoCalendario modalidade = ModalidadeTipoCalendario.FundamentalMedio)
         {
-            if (modalidade == ModalidadeTipoCalendario.Infantil)
+            if (modalidade.EhEducacaoInfantil())
                 if (anoLetivo < 2021)
                     throw new NegocioException("Apenas é possível inserir atribuição esporádica para Educação Infantil a partir de 2021.");
             ValidarDataInicio(ehSme, anoLetivo, periodosEscolares);

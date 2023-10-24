@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             filtro.UsuarioNome = usuarioLogado.Nome;
             filtro.UsuarioRf = usuarioLogado.CodigoRf;
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
             {
                 throw new NegocioException("Não foi possível identificar o usuário");
             }

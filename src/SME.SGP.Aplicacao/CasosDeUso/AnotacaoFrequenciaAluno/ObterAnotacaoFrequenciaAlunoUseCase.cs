@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             => MapearParaDto(await mediator.Send(new ObterAnotacaoFrequenciaAlunoQuery(param.CodigoAluno, param.AulaId)));
 
         private AnotacaoFrequenciaAlunoDto MapearParaDto(AnotacaoFrequenciaAluno anotacao)
-            => anotacao == null ? null :
+            => anotacao.EhNulo() ? null :
             new AnotacaoFrequenciaAlunoDto()
             {
                 Id = anotacao.Id,

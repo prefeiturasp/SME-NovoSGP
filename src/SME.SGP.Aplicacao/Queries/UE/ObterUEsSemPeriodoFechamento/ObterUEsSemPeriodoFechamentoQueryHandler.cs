@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<Ue>> Handle(ObterUEsSemPeriodoFechamentoQuery request, CancellationToken cancellationToken)
         {
-            var modalidades = request.ModalidadeTipoCalendario.ObterModalidadesTurma();
+            var modalidades = request.ModalidadeTipoCalendario.ObterModalidades();
 
             return await repositorioUe.ObterUEsSemPeriodoFechamento(request.PeriodoEscolarId, request.Ano, modalidades.Cast<int>().ToArray(), DateTime.Now);
         }

@@ -265,7 +265,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
 
-            if (useCase != null)
+            if (useCase.NaoEhNulo())
                 retorno = await useCase.Executar(filtroListaNotasConceitos);
 
             retorno.ShouldNotBeNull();

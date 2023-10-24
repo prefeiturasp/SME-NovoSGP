@@ -29,22 +29,22 @@ namespace SME.SGP.Aplicacao
 
             var ehTurmaEdFisica = EnumExtension.EhUmDosValores(turma.TipoTurma, TipoTurma.EdFisica);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(recomendacaoDto.FechamentoTurmaId, recomendacaoDto.AlunoCodigo, turma.EhAnoAnterior()));
 
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
-
-            if (fechamentoTurma != null)
+        
+            if (fechamentoTurma.NaoEhNulo())
                 turma = fechamentoTurma?.Turma;
             else
             {
                 if (bimestre.HasValue)
                 {
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre.Value));
-
-                    if (periodoEscolar == null)
+                    
+                    if (periodoEscolar.EhNulo()) 
                         throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
                 }
             }
@@ -71,8 +71,8 @@ namespace SME.SGP.Aplicacao
                     turmasCodigos = turmasCodigos.Concat(new[] { turma.CodigoTurma }).ToArray();
 
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
-
-                if (conselhosClassesIds == null || !conselhosClassesIds.Any())
+        
+                if (conselhosClassesIds.EhNulo() || !conselhosClassesIds.Any())
                     conselhosClassesIds = Array.Empty<long>();
                 else
                     conselhosClassesIds = new long[1] { recomendacaoDto.ConselhoClasseId };
@@ -86,13 +86,13 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario =
                 await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo,
                     turma.ModalidadeTipoCalendario, turma.Semestre));
-
-            if (tipoCalendario == null)
+            
+            if (tipoCalendario.EhNulo()) 
                 throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
             var periodosLetivos = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id));
-
-            if (periodosLetivos == null || !periodosLetivos.Any())
+        
+            if (periodosLetivos.EhNulo() || !periodosLetivos.Any())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FORAM_ENCONTRADOS_PERIODOS_TIPO_CALENDARIO);
 
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
@@ -120,8 +120,8 @@ namespace SME.SGP.Aplicacao
                 emFechamento = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTime.Today, bimestre.Value));
 
             IEnumerable<FechamentoAlunoAnotacaoConselhoDto> anotacoesDoAluno = null;
-
-            if (periodoEscolar != null && periodoEscolar.Id != 0)
+        
+            if (periodoEscolar.NaoEhNulo() && periodoEscolar.Id != 0)
                 anotacoesDoAluno = await mediator.Send(new ObterAnotacaoAlunoParaConselhoQuery(recomendacaoDto.AlunoCodigo, turmasCodigos, periodoEscolar.Id));
 
             var consultasConselhoClasseRecomendacaoConsultaDto = new ConsultasConselhoClasseRecomendacaoConsultaDto();
@@ -133,8 +133,8 @@ namespace SME.SGP.Aplicacao
             foreach (var conselhoClassesIdParaTratar in conselhosClassesIds)
             {
                 var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClassesIdParaTratar, recomendacaoDto.AlunoCodigo));
-
-                if (conselhoClasseAluno == null)
+        
+                if (conselhoClasseAluno.EhNulo()) 
                     continue;
 
                 if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
@@ -174,8 +174,8 @@ namespace SME.SGP.Aplicacao
             var statusAluno = SituacaoConselhoClasse.NaoIniciado;
 
             var statusConselhoAluno = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoQuery(turma.Id, alunoCodigo));
-
-            if (statusConselhoAluno != null)
+        
+            if (statusConselhoAluno.NaoEhNulo())
                 statusAluno = statusConselhoAluno.Status;
 
             return statusAluno;

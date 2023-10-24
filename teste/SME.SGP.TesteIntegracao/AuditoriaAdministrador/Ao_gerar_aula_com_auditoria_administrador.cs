@@ -34,6 +34,9 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
         {
             await _buider.CriaItensComunsEja(true);
 
+            var tipos = ObterTodos<TipoCalendario>();
+            var periodoEscolars = ObterTodos<PeriodoEscolar>();
+
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
 
             var dto = new PersistirAulaDto()

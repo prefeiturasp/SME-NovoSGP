@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         {
             var anotacao = await mediator.Send(new ObterAnotacaoFechamentoAlunoPorFechamentoEAlunoQuery(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno));
             await MoverRemoverExcluidos(anotacaoAluno, anotacao);
-            if (anotacao == null)
+            if (anotacao.EhNulo())
                 anotacao = new AnotacaoFechamentoAluno()
                 {
                     FechamentoAlunoId = await ObterFechamentoAluno(anotacaoAluno.FechamentoId, anotacaoAluno.CodigoAluno),
@@ -70,11 +70,11 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(anotacaoAluno?.Anotacao))
             {
-                anotacaoAluno.Anotacao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FechamentoAnotacao, anotacao != null ? anotacao.Anotacao : string.Empty, anotacaoAluno.Anotacao));
+                anotacaoAluno.Anotacao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FechamentoAnotacao, anotacao.NaoEhNulo() ? anotacao.Anotacao : string.Empty, anotacaoAluno.Anotacao));
             }
             if (!string.IsNullOrEmpty(anotacao?.Anotacao))
             {
-                var aquivoNovo = anotacaoAluno?.Anotacao != null ? anotacaoAluno.Anotacao : string.Empty;
+                var aquivoNovo = (anotacaoAluno?.Anotacao).NaoEhNulo() ? anotacaoAluno.Anotacao : string.Empty;
                 await mediator.Send(new RemoverArquivosExcluidosCommand(arquivoAtual: anotacao.Anotacao, arquivoNovo: aquivoNovo, caminho: TipoArquivo.FechamentoAnotacao.Name()));
             }
         }

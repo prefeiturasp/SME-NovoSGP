@@ -11,14 +11,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQueryHandler : IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery, bool>
     {
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQueryHandler(IServicoEol servicoEOL)
+        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQueryHandler(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery request, CancellationToken cancellationToken)
-            => await servicoEOL.PodePersistirTurmaNoPeriodo(request.UsuarioRf, request.CodigoTurma, request.ComponenteCurricularId, request.DataInicio, request.DataFim);
+            => await mediator.Send(new PodePersistirTurmaNoPeriodoQuery(request.UsuarioRf, request.CodigoTurma, request.ComponenteCurricularId, request.DataInicio, request.DataFim));
     }
 }

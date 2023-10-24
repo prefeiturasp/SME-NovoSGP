@@ -6,7 +6,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
-using SME.SGP.Dominio.Constantes;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
-
+        
         public MoverArquivosTemporariosCommandHandler(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -23,13 +23,10 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<string> Handle(MoverArquivosTemporariosCommand request, CancellationToken cancellationToken)
         {
-            var regex = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
-            var regexImagensPasta = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO_COM_PASTA);
+            var novo = UtilRegex.RegexNomesArquivosUUID.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
+            var atual = UtilRegex.RegexNomesArquivosUUID.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual) ? request.TextoEditorAtual : string.Empty).Cast<Match>().Select(c => c.Value).ToList();
 
-            var novo = regex.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
-            var atual = regex.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual) ? request.TextoEditorAtual : string.Empty).Cast<Match>().Select(c => c.Value).ToList();
-
-            var imagensEditorNovo = regexImagensPasta.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
+            var imagensEditorNovo = UtilRegex.RegexNomesArquivosUUIDComPasta.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
 
             novo = imagensEditorNovo.Any() ? RetornaImagensTemporariasParaMover(imagensEditorNovo) : novo;
             var diferenca = novo.Any() ? novo.Except(atual) : Enumerable.Empty<string>();

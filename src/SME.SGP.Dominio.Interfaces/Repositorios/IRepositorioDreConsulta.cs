@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         (IEnumerable<Dre> Dres, string[] CodigosDresNaoEncontrados) MaterializarCodigosDre(string[] idDres);
 
-        Dre ObterPorCodigo(string codigo);
+        Task<Dre> ObterPorCodigo(string codigo);
 
         Task<long> ObterIdDrePorCodigo(string codigo);
 

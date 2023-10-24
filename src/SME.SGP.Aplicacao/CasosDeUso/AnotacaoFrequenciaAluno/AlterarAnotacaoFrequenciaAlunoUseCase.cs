@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
         private async Task<AnotacaoFrequenciaAluno> ObterAnotacao(long id)
         {
             var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoPorIdQuery(id));
-            if (anotacao == null)
+            if (anotacao.EhNulo())
                 throw new NegocioException("Anotação não localizada com o Id informado");
 
             return anotacao;

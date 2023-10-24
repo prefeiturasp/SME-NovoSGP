@@ -15,14 +15,6 @@ namespace SME.SGP.Infra
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }
         public Modalidade ModalidadeCodigo { get; set; }
-        public ModalidadeTipoCalendario ModalidadeTipoCalendario
-        {
-            get => ModalidadeCodigo == Modalidade.EJA ?
-            ModalidadeTipoCalendario.EJA :
-            ModalidadeCodigo == Modalidade.EducacaoInfantil ?
-                ModalidadeTipoCalendario.Infantil :
-                ModalidadeTipoCalendario.FundamentalMedio;
-        }
         public string Nome { get; set; }
         public int Semestre { get; set; }
         public int TipoTurno { get; set; }
