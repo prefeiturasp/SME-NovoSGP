@@ -147,7 +147,7 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false))).ToList();
 
                     componentesCurriculares ??= (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false, false))).ToList();
                 }
                 else
                 {
