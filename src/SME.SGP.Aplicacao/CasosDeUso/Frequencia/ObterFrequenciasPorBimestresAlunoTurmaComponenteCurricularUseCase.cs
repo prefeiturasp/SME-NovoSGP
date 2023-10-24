@@ -20,28 +20,35 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciasAlunoRetorno = new List<FrequenciaAluno>();
 
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(dto.TurmaCodigo));
+            var turma = await mediator
+                .Send(new ObterTurmaPorCodigoQuery(dto.TurmaCodigo)) ?? throw new NegocioException("Turma não encontrada!");
 
-            if (turma == null)
-                throw new NegocioException("Turma não encontrada!");
-
-            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var tipoCalendarioId = await mediator
+                .Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
 
             if (tipoCalendarioId <= 0)
                 throw new NegocioException("Tipo calendário da turma não encontrada!");
 
-            var frequenciasAluno = await mediator.Send(new ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQuery(
-                                                                                 dto.AlunoCodigo,
-                                                                                 dto.ComponenteCurricularId,
-                                                                                 turma.CodigoTurma,
-                                                                                 dto.Bimestres));
-            var turmasCodigo = new string[] { turma.CodigoTurma };
-            var componentesCurriculares = new string[] { dto.ComponenteCurricularId.ToString() };
+            var componentesConsiderados = await DefinirComponentesConsiderados(dto.ComponenteCurricularId, turma.CodigoTurma);
 
-            var aulasComponentesTurmas = await mediator.Send(new ObterAulasDadasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, componentesCurriculares, dto.Bimestres));
+            var frequenciasAluno = new List<FrequenciaAluno>();
+
+            foreach (var componenteAtual in componentesConsiderados)
+            {
+                frequenciasAluno.AddRange(await mediator
+                    .Send(new ObterFrequenciaAlunoTurmaPorComponenteCurricularPeriodosQuery(dto.AlunoCodigo,
+                                                                                            componenteAtual,
+                                                                                            turma.CodigoTurma,
+                                                                                            dto.Bimestres)));
+            }
 
             if (frequenciasAluno != null && frequenciasAluno.Any())
                 frequenciasAlunoRetorno.AddRange(frequenciasAluno);
+
+            var turmasCodigo = new string[] { turma.CodigoTurma };
+
+            var aulasComponentesTurmas = await mediator
+                .Send(new ObterAulasDadasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, componentesConsiderados.ToArray(), dto.Bimestres));            
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
             {
@@ -59,6 +66,19 @@ namespace SME.SGP.Aplicacao
             }
 
             return frequenciasAlunoRetorno;
+        }
+
+        private async Task<List<string>> DefinirComponentesConsiderados(string codigoComponenteCurricular, string codigoTurma)
+        {
+            var componentesConsiderados = new List<string> { codigoComponenteCurricular };
+
+            var componentesEquivalentesTerritorio = await mediator
+                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(codigoComponenteCurricular), codigoTurma, string.Empty));
+
+            componentesConsiderados.AddRange(componentesEquivalentesTerritorio
+                .Select(ct => ct.codigoComponente).Except(componentesConsiderados));
+
+            return componentesConsiderados;
         }
     }
 }
