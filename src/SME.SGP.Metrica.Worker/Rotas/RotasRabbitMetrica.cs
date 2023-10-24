@@ -26,5 +26,7 @@
         public const string LimpezaConsolidacaoCCAlunoTurmaDuplicado = "sgp.metricas.consolidacao.cc.aluno.turma.duplicado.limpeza";
         public const string DuplicacaoConsolidacaoCCNota = "sgp.metricas.consolidacao.cc.nota.duplicado";
         public const string LimpezaConsolidacaoCCNotaDuplicado = "sgp.metricas.consolidacao.cc.nota.duplicado.limpeza";
+        public const string ConselhoClasseNaoConsolidado = "sgp.metricas.consolidacao.cc.faltante";
+        public const string ConselhoClasseNaoConsolidadoUE = "sgp.metricas.consolidacao.cc.faltante.ue";
     }
 }

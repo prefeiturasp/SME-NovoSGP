@@ -49,6 +49,8 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.LimpezaConsolidacaoCCAlunoTurmaDuplicado, new ComandoRabbit("Limpeza de registros de consolidação de aluno/turma duplicados por UE", typeof(ILimpezaConsolidacaoConselhoClasseAlunoTurmaDuplicadoUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoConselhoClasseNota, new ComandoRabbit("Registros de consolidação de CC nota duplicados", typeof(IConsolidacaoCCNotaDuplicadoUseCase)));
             Comandos.Add(RotasRabbitMetrica.LimpezaConsolidacaoCCNotaDuplicado, new ComandoRabbit("Limpeza de registros de consolidação de CC nota duplicados", typeof(ILimpezaConsolidacaoCCNotaDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.ConselhoClasseNaoConsolidado, new ComandoRabbit("Fechamento ou Conselho de Classe que não gerou consolidação", typeof(IConselhoClasseNaoConsolidadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.ConselhoClasseNaoConsolidadoUE, new ComandoRabbit("Fechamento ou Conselho de Classe que não gerou consolidação por UE", typeof(IConselhoClasseNaoConsolidadoUEUseCase)));
         }
     }
 }
