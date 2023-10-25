@@ -75,19 +75,19 @@ namespace SME.SGP.Aplicacao
             switch (modalidade)
             {
                 case ModalidadeTipoCalendario.EJA : 
-                    return Convert.ToInt32(await ObterParametrosSistemas(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
+                    return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
                 
                 case ModalidadeTipoCalendario.CELP : 
-                    return Convert.ToInt32(await ObterParametrosSistemas(TipoParametroSistema.CelpDiasLetivos, anoLetivo));
+                    return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.CelpDiasLetivos, anoLetivo));
                 
                 default : 
-                    return Convert.ToInt32(await ObterParametrosSistemas(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
+                    return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
             }
         }
 
-        private async Task<IEnumerable<ParametrosSistema>> ObterParametrosSistemas(TipoParametroSistema tipoParametroSistema, int anoLetivo)
+        private async Task<string> ObterParametroSistemaDiasLetivos(TipoParametroSistema tipoParametroSistema, int anoLetivo)
         {
-            return await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(tipoParametroSistema, anoLetivo));
+            return (await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(tipoParametroSistema, anoLetivo))).FirstOrDefault().Valor;
         }
 
         public List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)
