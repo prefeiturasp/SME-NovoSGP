@@ -31,6 +31,16 @@ namespace SME.SGP.Infra
             return (login.ToCharArray().All(c => char.IsDigit(c)) && login.Length > 7);
         } 
         
+        public static bool EstaPreenchido(this string str)
+        {
+            return !string.IsNullOrEmpty(str) || !string.IsNullOrWhiteSpace(str);
+        }
+        
+        public static bool NaoEstaPreenchido(this string str)
+        {
+            return (string.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str));
+        }
+        
         public static bool EhExtensaoImagemParaOtimizar(this string extensao)
         {
             return (extensao.ToLower().Equals(".jpg") || extensao.ToLower().Equals(".jpeg") || extensao.ToLower().Equals(".png"));

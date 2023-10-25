@@ -75,6 +75,7 @@
         public const string MENU_NOTIFICACAO =  "Notificação";
         public const string MENU_ADESAO =  "Adesão";
         public const string MENU_LEITURA =  "Leitura";
+        public const string MENU_INFORMES = "Informes";
         public const string MENU_CADASTRO_DE_ABAE =  "Cadastro de ABAE";
         
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
@@ -128,6 +129,7 @@
         public const string ROTA_GESTAO_COMUNICADOS_NOVO = "/gestao/comunicados/novo";
         public const string ROTA_GESTAO_OCORRENCIAS = "/gestao/ocorrencias";
         public const string ROTA_GESTAO_CADASTRO_DE_ABAE = "/abae";
+        public const string ROTA_INFORMES = "/informes";
         public const string ROTA_AEE_ENCAMINHAMENTO = "/aee/encaminhamento";
         public const string ROTA_AEE_PLANO = "/aee/plano";
         public const string ROTA_AEE_REGISTRO_ITINERANCIA = "/aee/registro-itinerancia";
@@ -247,6 +249,7 @@
         public const int ORDEM_MENU_ATRIBUICAO_ESPORADICA = 12;
         public const int ORDEM_MENU_COMUNICADOS = 13;
         public const int ORDEM_MENU_OCORRENCIAS = 14;
+        public const int ORDEM_MENU_INFORMES = 15;
         public const int ORDEM_MENU_CADASTRO_DE_ABAE = 16;
         
         public const int ORDEM_MENU_ENCAMINHAMENTO_AEE = 1;

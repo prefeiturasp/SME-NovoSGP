@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 return new List<Ue>() { await mediator.Send(new ObterUeComDrePorCodigoQuery(ueCodigo)) };
 
             if (!string.IsNullOrEmpty(dreCodigo))
-                return await mediator.Send(new ObterUesComDrePorCodigoEModalidadeQuery(dreCodigo, tipoCalendario.ObterModalidadeTurma()));
+                return await mediator.Send(new ObterUesComDrePorCodigoEModalidadeQuery(dreCodigo, tipoCalendario.Modalidade.ObterModalidades()));
 
             return await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(tipoCalendario.Modalidade));
         }

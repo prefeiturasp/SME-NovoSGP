@@ -25,12 +25,12 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade != ModalidadeTipoCalendario.Infantil))
+            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade.NaoEhEducacaoInfantil()))
             {
                 try
                 {
                     var turmas = await mediator.Send(new ObterTurmasPorUeModalidadesAnoQuery(periodoEncerrando.PeriodoFechamento.UeId,
-                                                                                             periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade.ObterModalidadesTurma(),
+                                                                                             periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade.ObterModalidades(),
                                                                                              periodoEncerrando.PeriodoEscolar.TipoCalendario.AnoLetivo));
 
                     var turmasComAvaliacao = await mediator.Send(new ObterQuantidadeAvaliacoesTurmaComponentePorUeNoPeriodoQuery(periodoEncerrando.PeriodoFechamento.UeId,

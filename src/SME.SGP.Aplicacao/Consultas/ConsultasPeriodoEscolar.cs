@@ -115,9 +115,7 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             var dataAtual = DateTime.Today;
 
-            var modalidade = modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-
-            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, dataAtual.Semestre());
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo.ObterModalidadeTipoCalendario(), dataAtual.Semestre());
 
             return await ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
         }
@@ -136,11 +134,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private async Task<TipoCalendarioCompletoDto> ObterTipoCalendario(Modalidade modalidade, int anoLetivo, int semestre = 0)
         {
-            var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : 
-                                        modalidade == Modalidade.EducacaoInfantil ? ModalidadeTipoCalendario.Infantil :
-                                        ModalidadeTipoCalendario.FundamentalMedio;
-
-            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCalendario, semestre);
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade.ObterModalidadeTipoCalendario(), semestre);
             if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não encontrado calendario escolar cadastrado");
 

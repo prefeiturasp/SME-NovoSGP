@@ -35,6 +35,14 @@ namespace SME.SGP.Aplicacao
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.EJA, anoAtual, 2));
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.EJA);
+                
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.CELP, anoAtual, 1)); //Aplicar para CELP?
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.CELP);
+
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Dominio.Modalidade.CELP, anoAtual, 2));//Aplicar para CELP?
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasNoCalendario(tipoCalendarioId, Dominio.ModalidadeTipoCalendario.CELP);
 
                 return true;
             }

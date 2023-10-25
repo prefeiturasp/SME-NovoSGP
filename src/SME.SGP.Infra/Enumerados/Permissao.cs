@@ -1225,6 +1225,42 @@ namespace SME.SGP.Infra
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
             OCO_A = 196,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+        INF_C = 251,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+        INF_I = 252,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+        INF_E = 253,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+        INF_A = 254,
             
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
             Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
