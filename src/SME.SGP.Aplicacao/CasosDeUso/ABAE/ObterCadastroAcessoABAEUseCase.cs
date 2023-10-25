@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
                 Endereco = cadastroAcessoABAE.Endereco,
                 Numero = cadastroAcessoABAE.Numero,
                 Complemento = cadastroAcessoABAE.Complemento,
+                Bairro = cadastroAcessoABAE.Bairro,
                 Cidade = cadastroAcessoABAE.Cidade,
                 Estado = cadastroAcessoABAE.Estado,
                 Excluido = cadastroAcessoABAE.Excluido,
