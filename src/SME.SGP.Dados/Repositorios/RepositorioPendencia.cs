@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and p.situacao = @situacao) t 
                                     order by CriadoEm desc";
 
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
@@ -241,7 +241,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             //-> Retorno paginado
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>

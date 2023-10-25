@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException("Não foi possível obter o usuário logado");
 
             var filtro = new SalvarNotificacaoDevolutivaDto(request.TurmaId, usuarioLogado.Nome, usuarioLogado.CodigoRf, devolutiva.Id);           

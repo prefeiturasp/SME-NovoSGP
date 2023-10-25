@@ -227,7 +227,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(ueCodigo))
                 query.AppendLine("and u.ue_id  = @ueCodigo");
 
-            if (anos != null && anos.Length > 0)
+            if (anos.NaoEhNulo() && anos.Length > 0)
                 query.AppendLine("and t.ano = any(@anos) ");
 
             return await contexto.Conexao.QueryAsync<long>(query.ToString(), new { ueCodigo, anos, anoLetivo, modalidadeId });
@@ -278,7 +278,7 @@ namespace SME.SGP.Dados.Repositorios
                 turma.AdicionarUe(ue);
 
                 var turmaExistente = turmas.FirstOrDefault(c => c.Id == turma.Id);
-                if (turmaExistente == null)
+                if (turmaExistente.EhNulo())
                     turmas.Add(turma);
 
                 return turma;
@@ -636,7 +636,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var tiposTurma = new List<int>();
             var anosCondicao = new List<string>();
-            if (anos != null)
+            if (anos.NaoEhNulo())
             {
                 foreach (var ano in anos)
                 {
@@ -658,8 +658,8 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
-            if (anosCondicao != null && anosCondicao.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
-            if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
+            if (anosCondicao.NaoEhNulo() && anosCondicao.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
+            if (tiposTurma.NaoEhNulo() && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
 
             return query.ToString();
         }
@@ -677,14 +677,14 @@ namespace SME.SGP.Dados.Repositorios
             if (semestre > 0) query.AppendLine(@"  and t.semestre = @semestre");
             if (dreId > 0) query.AppendLine(@" and dre.id = @dreId");
             if (ueId > 0) query.AppendLine(@"  and ue.id = @ueId");
-            if (anos != null && anos.Any() && tiposTurma != null && tiposTurma.Any())
+            if (anos.NaoEhNulo() && anos.Any() && tiposTurma.NaoEhNulo() && tiposTurma.Any())
             {
                 query.AppendLine(@"  and (t.ano = ANY(@anosCondicao) or t.tipo_turma = ANY(@tiposTurma)) ");
             }
             else
             {
-                if (anos != null && anos.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
-                if (tiposTurma != null && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
+                if (anos.NaoEhNulo() && anos.Any()) query.AppendLine(@"  and t.ano = ANY(@anosCondicao)");
+                if (tiposTurma.NaoEhNulo() && tiposTurma.Any()) query.AppendLine(@"  and t.tipo_turma = ANY(@tiposTurma)");
             }
             query.AppendLine(@" group by dre.abreviacao 
                          order by dre.abreviacao");

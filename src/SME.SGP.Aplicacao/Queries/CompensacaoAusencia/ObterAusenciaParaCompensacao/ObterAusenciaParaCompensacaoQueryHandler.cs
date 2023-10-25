@@ -23,24 +23,14 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> Handle(ObterAusenciaParaCompensacaoQuery request, CancellationToken cancellationToken)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { request.DisciplinaId };
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), request.TurmaCodigo, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
-
-            if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
-            {
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
-                professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-            }
 
             var faltasNaoCompensadas = await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacao(
                 request.CompensacaoId,
                 request.TurmaCodigo,
                 codigosComponentesConsiderados.ToArray(),
                 request.AlunosQuantidadeCompensacoes.Select(t => t.CodigoAluno).Distinct().ToArray(),
-                request.Bimestre,
-                professorConsiderado);
+                request.Bimestre);
 
             foreach (var alunoQuantidadeCompensar in request.AlunosQuantidadeCompensacoes)
             {

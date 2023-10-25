@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAlunoPeriodos = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAluno(request.CodigoAluno, request.CodigoTurma);
 
-            if (frequenciaAlunoPeriodos == null || !frequenciaAlunoPeriodos.Any())
+            if (frequenciaAlunoPeriodos.EhNulo() || !frequenciaAlunoPeriodos.Any())
                 return 0;
 
             var frequenciaAluno = new FrequenciaAluno()

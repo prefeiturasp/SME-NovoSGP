@@ -138,7 +138,7 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     var fechamentoTurmaDisciplinaLista = fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
 
-                    if (fechamentoTurmaDisciplinaLista == null)
+                    if (fechamentoTurmaDisciplinaLista.EhNulo())
                     {
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
                         fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
@@ -196,7 +196,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<FechamentoTurma, PeriodoEscolar, FechamentoTurma>(query.ToString(),
                 (fechamentoTurma, periodoEscolar) =>
                 {
-                    if (periodoEscolar != null)
+                    if (periodoEscolar.NaoEhNulo())
                         fechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
                     
                     retornoFechamentoTurma = fechamentoTurma;

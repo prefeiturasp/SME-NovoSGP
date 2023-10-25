@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,45 +21,49 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
+        private struct TurmaDisciplina { public string TurmaId; public string DisciplinaId; }
+
+        private async Task<List<DisciplinaDto>> ObterTurmasDisciplinas(IEnumerable<TurmaDisciplina> aulasAgrupadasTurmaDisciplina)
+        {
+            var componentesCurriculares = new List<DisciplinaDto>();
+            foreach (var turmaDisciplina in aulasAgrupadasTurmaDisciplina.GroupBy(x => x.TurmaId))
+            {
+                var contemDisciplinaCodigoTerritorioSaber = turmaDisciplina.Any(x => x.DisciplinaId.EhIdComponenteCurricularTerritorioSaberAgrupado());
+                var disciplinasTurma = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(turmaDisciplina.Select(s => long.Parse(s.DisciplinaId)).Distinct().ToArray()))).ToList();
+                disciplinasTurma.ForEach(disciplina => disciplina.TurmaCodigo = turmaDisciplina.Key);
+                componentesCurriculares.AddRange(disciplinasTurma);
+            }
+            return componentesCurriculares;
+        }
+
         protected override async Task Handle(SalvarPendenciaAulasPorTipoCommand request, CancellationToken cancellationToken)
         {
             try
             {
                 var aulasAgrupadas = request.Aulas.GroupBy(x => new { x.TurmaId, x.DisciplinaId });
+                var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(request.Aulas.Select(s => s.TurmaId).Distinct().ToArray()));
 
-                var componentesCurriculares = await mediator
-                    .Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(request.Aulas.Select(s => long.Parse(s.DisciplinaId)).Distinct().ToArray()));
-
-                var turmasDreUe = await mediator
-                    .Send(new ObterTurmasDreUePorCodigosQuery(request.Aulas.Select(s => s.TurmaId).Distinct().ToArray()));
-
-                var mensagensErros = new StringBuilder();
-
+                var componentesCurriculares = await ObterTurmasDisciplinas(aulasAgrupadas.Select(x => new TurmaDisciplina { TurmaId = x.Key.TurmaId, DisciplinaId = x.Key.DisciplinaId }));
                 foreach (var item in aulasAgrupadas)
                 {
-                    var periodoEscolar = await mediator
-                        .Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(item.First().TipoCalendarioId, item.First().DataAula));
+                    var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(item.First().TipoCalendarioId, item.First().DataAula));
 
-                    if (periodoEscolar != null)
+                    if (periodoEscolar.NaoEhNulo())
                     {
-                        var turmaComDreUe = turmasDreUe
-                            .FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
+                        var turmaComDreUe = turmasDreUe.FirstOrDefault(f => f.CodigoTurma.Equals(item.Key.TurmaId));
 
-                        var componente = await DefinirComponenteCurricular(item.Key.TurmaId, item.Key.DisciplinaId, componentesCurriculares);
+                        var componente = componentesCurriculares.FirstOrDefault(f => (f.Id == long.Parse(item.Key.DisciplinaId)
+                                                                                     || f.CodigoComponenteCurricular == long.Parse(item.Key.DisciplinaId)
+                                                                                     || f.CodigoComponenteCurricularTerritorioSaber == long.Parse(item.Key.DisciplinaId)
+                                                                                && f.TurmaCodigo == item.Key.TurmaId));
 
-                        if (componente == null)
-                        {
-                            mensagensErros.AppendLine($"Não foi localizado o componente curricular com o código {item.Key.DisciplinaId} ao salvar pendência de aula.");
-                            continue;
-                        }
-
-                        var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.DescricaoInfantil) ? componente.DescricaoInfantil : componente.Descricao;
+                        var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.NomeComponenteInfantil) ? componente.NomeComponenteInfantil : componente.Nome;
 
                         var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
 
                         var descricaoUeDre = turmaComDreUe.ObterEscola();
 
-                        if (periodoEscolar != null)
+                        if (periodoEscolar.NaoEhNulo())
                         {
                             var aulasNormais = item.Where(w => !w.AulaCJ);
 
@@ -72,12 +75,12 @@ namespace SME.SGP.Aplicacao
 
                                 if (modalidadeTurma != Modalidade.EducacaoInfantil || request.TipoPendenciaAula != TipoPendencia.Frequencia)
                                 {
-                                    var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, componente.Id.ToString()));
+                                    var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, item.First().DisciplinaId));
 
-                                    if (professorTitularTurma != null)
+                                    if (professorTitularTurma.NaoEhNulo())
                                     {
-                                        if (periodoEscolar != null && !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
-                                            await SalvarPendenciaAulaUsuario(item.Key.DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                        if (periodoEscolar.NaoEhNulo() && !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
+                                            await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
                                     }
                                 }
                                 else
@@ -87,7 +90,7 @@ namespace SME.SGP.Aplicacao
                                     var professoresTitularesDaTurma =
                                         listaProfessoresTitularesDaTurma?.Select(x => x.ProfessorRf);
 
-                                    if (professoresTitularesDaTurma != null)
+                                    if (professoresTitularesDaTurma.NaoEhNulo())
                                     {
                                         string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');
 
@@ -96,10 +99,11 @@ namespace SME.SGP.Aplicacao
                                             string codigoRfProfessor = professor.Trim();
 
                                             if (!string.IsNullOrEmpty(codigoRfProfessor))
-                                                await SalvarPendenciaAulaUsuario(item.Key.DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                                await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
                                         }
                                     }
                                 }
+
                             }
 
                             if (aulasCJ.Any())
@@ -107,14 +111,11 @@ namespace SME.SGP.Aplicacao
                                 var agrupamentoAulasCJ = aulasCJ.Where(w => !string.IsNullOrEmpty(w.ProfessorRf)).GroupBy(x => new { x.ProfessorRf });
 
                                 foreach (var aulaCJ in agrupamentoAulasCJ)
-                                    await SalvarPendenciaAulaUsuario(item.Key.DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
                             }
                         }
                     }
                 }
-
-                if (mensagensErros.Length > 0)
-                    await mediator.Send(new SalvarLogViaRabbitCommand(mensagensErros.ToString(), LogNivel.Negocio, LogContexto.Aula));
             }
             catch (Exception ex)
             {
@@ -134,10 +135,9 @@ namespace SME.SGP.Aplicacao
                                 string descricaoUeDre,
                                 Turma turma)
         {
-            var pendenciaAulaProfessor = await mediator
-                .Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(disciplinaId, codigoRfProfessor, periodoEscolarId, tipoPendencia, turma.CodigoTurma, turma.UeId));
+            var pendenciaAulaProfessor = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(long.Parse(disciplinaId), codigoRfProfessor, periodoEscolarId, tipoPendencia, turma.CodigoTurma, turma.UeId));
 
-            var pendenciaIdExistente = pendenciaAulaProfessor != null && pendenciaAulaProfessor.Any() ? pendenciaAulaProfessor.FirstOrDefault().PendenciaId : 0;
+            var pendenciaIdExistente = pendenciaAulaProfessor.NaoEhNulo() && pendenciaAulaProfessor.Any() ? pendenciaAulaProfessor.FirstOrDefault().PendenciaId : 0;
 
             var aulasParaInserir = aulasIds.Except(pendenciaAulaProfessor.Select(s => s.AulaId));
 
@@ -177,46 +177,10 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private string ObterEscola(Turma turmaDreUe)
-        {
-            var ueTipo = turmaDreUe.Ue.TipoEscola;
-
-            var dreAbreviacao = turmaDreUe.Ue.Dre.Abreviacao.Replace("-", "");
-
-            var ueNome = turmaDreUe.Ue.Nome;
-
-            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
-        }
-
         private async Task SalvarPendenciaUsuario(long pendenciaId, string professorRf)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professorRf));
             await mediator.Send(new SalvarPendenciaUsuarioCommand(pendenciaId, usuarioId));
-        }
-
-        private async Task<ComponenteCurricularDescricaoDto> DefinirComponenteCurricular(string codigoTurma, string disciplinaIdAula, IEnumerable<ComponenteCurricularDescricaoDto> componentesCurriculares)
-        {
-            var componente = componentesCurriculares
-                .FirstOrDefault(f => f.Id == long.Parse(disciplinaIdAula));
-
-            if (componente == null)
-            {
-                var disciplinaEquivalenteDaTurma = (await mediator
-                    .Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma)))
-                    .FirstOrDefault(d => d.CodigoComponenteCurricular == long.Parse(disciplinaIdAula));
-
-                if (disciplinaEquivalenteDaTurma != null)
-                {
-                    componente = new ComponenteCurricularDescricaoDto()
-                    {
-                        Id = disciplinaEquivalenteDaTurma.CodigoComponenteTerritorioSaber.HasValue ? disciplinaEquivalenteDaTurma.CodigoComponenteTerritorioSaber.Value : disciplinaEquivalenteDaTurma.CodigoComponenteCurricular,
-                        Descricao = disciplinaEquivalenteDaTurma.Nome,
-                        DescricaoInfantil = disciplinaEquivalenteDaTurma.NomeComponenteInfantil
-                    };
-                }
-            }
-
-            return componente;
         }
     }
 }

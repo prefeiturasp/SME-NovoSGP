@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             long fechamentoTurmaId = 0;
             long fechamentoTurmaDisciplinaId = 0;
 
-            if (verificaFechamento == null)
+            if (verificaFechamento.EhNulo())
             {
                 var fechamentoTurma = new FechamentoTurma()
                 {

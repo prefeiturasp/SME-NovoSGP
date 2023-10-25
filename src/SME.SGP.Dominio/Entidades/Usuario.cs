@@ -41,7 +41,7 @@ namespace SME.SGP.Dominio
         public void DefinirPerfilAtual(Guid perfilAtual)
             => PerfilAtual = perfilAtual;
 
-        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<ComponenteCurricularEol> componentesUsuario, params string[] professoresDesconsideradosTerritorio)
+        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<ComponenteCurricularEol> componentesUsuario)
         {
             if (TemPerfilGestaoUes() || TemPerfilAdmUE())
                 return aulas;
@@ -54,8 +54,8 @@ namespace SME.SGP.Dominio
                     return (from a in aulas
                             from ccp in componentesUsuario
                             where ((!ccp.TerritorioSaber && a.DisciplinaId == (ccp.CodigoComponenteCurricularPai ?? ccp.Codigo).ToString()) || 
-                                   (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString()) && (professoresDesconsideradosTerritorio != null && !professoresDesconsideradosTerritorio.Contains(a.ProfessorRf)))) ||
-                                  a.DisciplinaId == ccp.Codigo.ToString()
+                                   (ccp.TerritorioSaber && (a.DisciplinaId == ccp.Codigo.ToString() || a.DisciplinaId == ccp.CodigoComponenteTerritorioSaber.ToString()))) ||
+                                  a.ProfessorRf == CodigoRf
                             select a).Distinct();
                 }
             }
@@ -187,7 +187,7 @@ namespace SME.SGP.Dominio
 
         public Guid ObterPerfilPrioritario(bool possuiTurmaAtiva, bool possuiTurmaInfantilAtiva, Guid perfilCJPrioritario)
         {
-            if (Perfis == null || !Perfis.Any())
+            if (Perfis.EhNulo() || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
 
             if (perfilCJPrioritario != Guid.Empty)
@@ -312,39 +312,39 @@ namespace SME.SGP.Dominio
         {
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
 
-            if (perfilAtual != null && perfilAtual.Tipo == TipoPerfil.UE)
+            if (perfilAtual.NaoEhNulo() && perfilAtual.Tipo == TipoPerfil.UE)
                 return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
 
             else return true;
         }
 
         public bool PossuiPerfilAdmUE()
-           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_ADMUE);
+           => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_ADMUE);
 
         public bool PossuiPerfilCJ()
-            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
+            => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
 
         public bool PossuiPerfilCJInfantil()
-           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
+           => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
 
         public bool PossuiPerfilAD()
            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
 
         public bool PossuiPerfilProfessor()
-           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
+           => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
 
         public bool PossuiPerfilComunicadosUe()
-           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_COMUNICADOS_UE);
+           => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_COMUNICADOS_UE);
 
         public bool PossuiPerfilProfessorInfantil()
-           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL);
+           => Perfis.NaoEhNulo() && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL);
 
         public bool PossuiPerfilDre()
-         => Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.DRE);
+         => Perfis.NaoEhNulo() && Perfis.Any(c => c.Tipo == TipoPerfil.DRE);
 
         public bool PossuiPerfilDreOuUe()
         {
-            if (Perfis == null || !Perfis.Any())
+            if (Perfis.EhNulo() || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
 
             return PossuiPerfilDre() || PossuiPerfilUe();
@@ -352,7 +352,7 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilCJPrioritario()
         {
-            if (Perfis != null && PossuiPerfilCJ() && PossuiPerfilProfessor())
+            if (Perfis.NaoEhNulo() && PossuiPerfilCJ() && PossuiPerfilProfessor())
             {
                 var perfilCj = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ);
 
@@ -364,7 +364,7 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilCJInfantilPrioritario()
         {
-            if (Perfis != null && PossuiPerfilCJInfantil() && PossuiPerfilProfessorInfantil())
+            if (Perfis.NaoEhNulo() && PossuiPerfilCJInfantil() && PossuiPerfilProfessorInfantil())
             {
                 var perfilCjInfantil = Perfis.FirstOrDefault(x => x.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
 
@@ -375,7 +375,7 @@ namespace SME.SGP.Dominio
         }
 
         public bool PossuiPerfilSme()
-         => Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.SME);
+         => Perfis.NaoEhNulo() && Perfis.Any(c => c.Tipo == TipoPerfil.SME);
 
         public bool EhProfessorInfantil()
          => PerfilAtual == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
@@ -385,14 +385,14 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilSmeOuDre()
         {
-            if (Perfis == null || !Perfis.Any())
+            if (Perfis.EhNulo() || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
 
             return PossuiPerfilSme() || PossuiPerfilDre();
         }
 
         public bool PossuiPerfilUe()
-         => Perfis != null && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
+         => Perfis.NaoEhNulo() && Perfis.Any(c => c.Tipo == TipoPerfil.UE);
 
         public bool TemPerfilGestaoUes() => (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR
                                           || PerfilAtual == Dominio.Perfis.PERFIL_AD

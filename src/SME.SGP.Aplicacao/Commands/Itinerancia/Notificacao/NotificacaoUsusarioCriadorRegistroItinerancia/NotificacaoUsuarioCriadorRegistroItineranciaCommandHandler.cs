@@ -22,11 +22,11 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(NotificacaoUsuarioCriadorRegistroItineranciaCommand request, CancellationToken cancellationToken)
         {
             var itinerancia = await mediator.Send(new ObterItineranciaPorIdQuery(request.ItineranciaId));
-            if (itinerancia == null)
+            if (itinerancia.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE informada");
 
             var ue = await mediator.Send(new ObterUeComDrePorIdQuery(itinerancia.UeId));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE informada");
 
             await NotificacaoUsuarioCriadorRegistroItinerancia(ue, itinerancia.CriadoRF, itinerancia.DataVisita, itinerancia.Alunos);
@@ -39,14 +39,14 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Registro de Itinerância validado - {descricaoUe} no dia {dataVisita:dd/MM/yyyy}";
 
             StringBuilder mensagem = new StringBuilder();
-            if (estudantes != null && estudantes.Any())
+            if (estudantes.NaoEhNulo() && estudantes.Any())
                 mensagem = new StringBuilder($"Registro de Itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} para os seguintes estudantes, abaixo foi validado pelos gestores da UE.");
             else
                 mensagem = new StringBuilder($"Registro de Itinerância para a {descricaoUe} no dia {dataVisita:dd/MM/yyyy} foi validado pelos gestores da UE.");
 
             var usuario = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(criadoRF));
 
-            if (estudantes != null && estudantes.Any())
+            if (estudantes.NaoEhNulo() && estudantes.Any())
                 await MontarTabelaEstudantes(estudantes, mensagem, dataVisita);
 
             await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.AEE, new long[] { usuario }));
@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             foreach (var estudante in estudantesEol.OrderBy(a => a.NomeAluno).DistinctBy(a => a.CodigoAluno))
             {
                 var turma = await mediator.Send(new ObterTurmaPorIdQuery(estudantes.FirstOrDefault(e => e.CodigoAluno == estudante.CodigoAluno.ToString()).TurmaId));
-                if (turma != null)
+                if (turma.NaoEhNulo())
                 {
                     turmas.Add(turma);
                     mensagem.AppendLine($"<tr><td>{estudante.NomeAluno} ({estudante.CodigoAluno})</td><td>{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}</td></tr>");

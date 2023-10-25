@@ -62,8 +62,8 @@ namespace SME.SGP.Dados.Repositorios
                     writer.Write(itemAula.aula.UeId);
                     writer.Write(itemAula.aula.ProfessorRf);
                     writer.Write(itemAula.aula.CriadoEm);
-                    writer.Write(itemAula.aula.CriadoPor != null ? itemAula.aula.CriadoPor : "Sistema");
-                    writer.Write(itemAula.aula.CriadoRF != null ? itemAula.aula.CriadoRF : "Sistema");
+                    writer.Write(itemAula.aula.CriadoPor.NaoEhNulo() ? itemAula.aula.CriadoPor : "Sistema");
+                    writer.Write(itemAula.aula.CriadoRF.NaoEhNulo() ? itemAula.aula.CriadoRF : "Sistema");
                 }
                 writer.Complete();
             }
@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
                 .Select(a => a.aula.Id)
                 .ToArray();
 
-            if (idsAulasAtualizacao != null && idsAulasAtualizacao.Any())
+            if (idsAulasAtualizacao.NaoEhNulo() && idsAulasAtualizacao.Any())
             {
                 try
                 {

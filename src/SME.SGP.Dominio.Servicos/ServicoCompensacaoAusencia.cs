@@ -69,21 +69,12 @@ namespace SME.SGP.Dominio.Servicos
                 if (!usuario.EhGestorEscolar())
                     await ValidaProfessorPodePersistirTurma(compensacaoDto.TurmaId, usuario, periodo.PeriodoFim);
 
-                var professorConsiderado = (string)null;
                 var codigosComponentesConsiderados = new List<string>() { compensacaoDto.DisciplinaId };
-                var codigosTerritorioEquivalentes = await
-                    mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(compensacaoDto.DisciplinaId), turma.CodigoTurma, usuario.EhProfessor() ? usuario.Login : string.Empty));
-
-                if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
-                {
-                    codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
-                    professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-                }
 
                 // Valida mesma compensação no ano
-                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray(), professorConsiderado));
+                var compensacaoExistente = await mediator.Send(new ObterCompensacaoAusenciaPorAnoTurmaENomeQuery(turma.AnoLetivo, turma.Id, compensacaoDto.Atividade, id, codigosComponentesConsiderados.ToArray()));
 
-                if (compensacaoExistente != null)
+                if (compensacaoExistente.NaoEhNulo())
                     throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
 
                 var compensacaoBanco = new CompensacaoAusencia();
@@ -103,10 +94,7 @@ namespace SME.SGP.Dominio.Servicos
                 var descricaoAtual = compensacaoBanco.Descricao;
 
                 // Persiste os dados
-                var componenteTerritorio = !string.IsNullOrWhiteSpace(professorConsiderado);
-                if (componenteTerritorio)
-                    compensacaoDto.DisciplinaId = codigosComponentesConsiderados.OrderBy(c => c.Length).Last();
-                var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco, professorConsiderado);
+                var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
                 compensacao.TurmaId = turma.Id;
                 compensacao.AnoLetivo = turma.AnoLetivo;
 
@@ -115,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
-                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, usuario, professorConsiderado);
+                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, usuario);
 
                 unitOfWork.PersistirTransacao();
 
@@ -150,20 +138,18 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
-            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
+            var disciplina = await mediator.Send(new ObterComponenteCurricularPorIdQuery(disciplinaId)); 
 
-            if (!disciplinasEOL.Any())
+            if (disciplina.EhNulo())
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
 
-            var disciplina = disciplinasEOL.FirstOrDefault();
-
-            if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds == null) || !disciplinasRegenciaIds.Any()))
+            if (!registroMigrado && disciplina.Regencia && ((disciplinasRegenciaIds.EhNulo()) || !disciplinasRegenciaIds.Any()))
                 throw new NegocioException("Regência de classe deve informar o(s) componente(s) curricular(es) relacionados a esta atividade.");
         }
 
         private async Task<PeriodoEscolarDto> BuscaPeriodo(Turma turma, int bimestre)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio, turma.Semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), turma.Semestre);
 
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
 
@@ -195,7 +181,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<Turma> BuscaTurma(string turmaId)
         {
             var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaId);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não localizada!");
 
             return turma;
@@ -203,7 +189,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task GravarDisciplinasRegencia(bool alteracao, long compensacaoId, IEnumerable<string> disciplinasRegenciaIds, Usuario usuarioLogado)
         {
-            if (disciplinasRegenciaIds == null)
+            if (disciplinasRegenciaIds.EhNulo())
                 return;
 
             var listaPersistencia = new List<CompensacaoAusenciaDisciplinaRegencia>();
@@ -278,7 +264,7 @@ namespace SME.SGP.Dominio.Servicos
                         var frequenciaAluno = consultaAlunosAlterarFaltasCompensada
                             .FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && disciplinasId.Contains(x.DisciplinaId) && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
 
-                        if (frequenciaAluno == null)
+                        if (frequenciaAluno.EhNulo())
                         {
                             mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
                             continue;
@@ -310,7 +296,7 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var alunoDto in listaAlunosDto)
                     {
                         var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && disciplinasId.Contains(x.DisciplinaId) && x.TurmaId == turmaId);
-                        if (frequenciaAluno == null)
+                        if (frequenciaAluno.EhNulo())
                         {
                             mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
                             continue;
@@ -387,7 +373,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<bool> PossuiAtribuicaoCJ(string turmaId, string codigoRf)
         {
             var componentes = await consultasDisciplina.ObterDisciplinasPerfilCJ(turmaId, codigoRf);
-            return componentes != null && componentes.Any();
+            return componentes.NaoEhNulo() && componentes.Any();
         }
     }
 }

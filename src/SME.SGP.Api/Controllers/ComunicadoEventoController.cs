@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace SME.SGP.Api.Controllers
         {
             var retorno = await useCase.Executar(filtro);
 
-            if (retorno == null || !retorno.Any())
+            if (retorno.EhNulo() || !retorno.Any())
                 return NoContent();
 
             return Ok(retorno);

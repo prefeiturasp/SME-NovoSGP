@@ -22,12 +22,12 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             var datasParametro = await ObterDatasParametroPlanoAEEEmAberto();
-            if (datasParametro == null)
+            if (datasParametro.EhNulo())
                 return false;
 
             var enviaNotificacao = datasParametro.FirstOrDefault(d => d == DateTime.Now.Date);
 
-            if (enviaNotificacao == null)
+            if (enviaNotificacao.EhNulo())
                 return false;
 
             var planosAtivos = await mediator.Send(ObterPlanosAEEAtivosComTurmaEVigenciaQuery.Instance);
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             {
                 var supervisorPlanos = ObterSupervisorComPlanos(supervisoresPlanos, supervisor);
 
-                if (supervisorPlanos == null)
+                if (supervisorPlanos.EhNulo())
                     AdicionaSupervisorEPlanos(supervisoresPlanos, supervisor, planosUe);
                 else
                     AdicionaPlanosAoSupervisor(supervisorPlanos, planosUe);
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.DiasParaNotificacarPlanoAEEAberto, DateTime.Today.Year));
 
-            if (parametros != null)
+            if (parametros.NaoEhNulo())
             {
                 return parametros.Where(a => a.Ativo).Select(a => Convert.ToDateTime($"{a.Valor}/{DateTime.Today.Year}")).ToList();
             }
@@ -140,7 +140,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarNotificacaoPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

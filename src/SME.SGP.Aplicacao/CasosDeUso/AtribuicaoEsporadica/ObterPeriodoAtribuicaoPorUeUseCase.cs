@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
 
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("UE não encontrada");
 
             if (ue.EhUnidadeInfantil())
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
-            if (periodosEscolares == null && !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() && !periodosEscolares.Any())
                 throw new NegocioException("Periodos escolares não encontrados");
 
             periodosEscolares = periodosEscolares.OrderBy(x => x.Bimestre);

@@ -31,12 +31,12 @@ namespace SME.SGP.Aplicacao
 
                 var abrangencia = await mediator.Send(new ObterAbrangenciaPorFiltroQuery(string.Empty, false, usuario));
 
-                if (abrangencia != null && abrangencia.Any())
+                if (abrangencia.NaoEhNulo() && abrangencia.Any())
                     lstAbrangencia.AddRange(abrangencia);
 
                 var abrangenciaHistorica = await mediator.Send(new ObterAbrangenciaPorFiltroQuery(string.Empty, true, usuario));
 
-                if (abrangenciaHistorica != null && abrangenciaHistorica.Any())
+                if (abrangenciaHistorica.NaoEhNulo() && abrangenciaHistorica.Any())
                     lstAbrangencia.AddRange(abrangenciaHistorica);
 
                 //TODO: MELHORAR ISSO AQUI
@@ -49,14 +49,16 @@ namespace SME.SGP.Aplicacao
 
                 var modalidadesUes = await mediator.Send(new ObterModalidadesPorCodigosUeQuery(codigosUes));
 
-                var modalidadesTipoCalendarioUes = modalidadesUes.Select(a => a == Modalidade.EJA ? (int)ModalidadeTipoCalendario.EJA :
-                                                                              a == Modalidade.EducacaoInfantil ? (int)ModalidadeTipoCalendario.Infantil :
-                                                                                (int)ModalidadeTipoCalendario.FundamentalMedio).ToArray();             
+                var modalidadesTipoCalendarioUes = modalidadesUes.Select(a => 
+                    a.EhEJA() ? (int)ModalidadeTipoCalendario.EJA :
+                    a.EhCELP() ? (int)ModalidadeTipoCalendario.CELP :
+                    a.EhEducacaoInfantil() ? (int)ModalidadeTipoCalendario.Infantil 
+                    : (int)ModalidadeTipoCalendario.FundamentalMedio).ToArray();             
 
                 return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes, descricao));
             }
             else
-                return await mediator.Send(new ObterTipoCalendarioPorBuscaQuery(descricao));
+                return await mediator.Send(new ObterTiposCalendariosPorBuscaQuery(descricao));
         }
     }
 }

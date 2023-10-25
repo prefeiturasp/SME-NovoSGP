@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAee = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(id));
 
-            if(encaminhamentoAee == null)
+            if(encaminhamentoAee.EhNulo())
                 throw new NegocioException("Encaminhamento não localizado");
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo, true));
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 PodeEditar = podeEditar,
                 PodeAtribuirResponsavel = podeAtribuirResponsavel,
                 MotivoEncerramento = encaminhamentoAee.MotivoEncerramento,
-                responsavelEncaminhamentoAEE = encaminhamentoAee.Responsavel == null ? null :
+                responsavelEncaminhamentoAEE = encaminhamentoAee.Responsavel.EhNulo() ? null :
                 new ResponsavelEncaminhamentoAEEDto()
                 {
                     Id = encaminhamentoAee.Responsavel.Id,
@@ -140,7 +140,7 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException($"Escola da turma [{turma.CodigoTurma}] não localizada.");
 
             return await mediator.Send(new EhGestorDaEscolaQuery(usuarioLogado.CodigoRf, ue.CodigoUe, usuarioLogado.PerfilAtual));

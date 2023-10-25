@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = await database.Conexao.QueryAsync<int?>(query.ToString(),
                 new { tipoCalendarioId, dreId, ueId, data = data.Date });
 
-            return retorno != null && retorno.Sum() > 0;
+            return retorno.NaoEhNulo() && retorno.Sum() > 0;
         }
 
         public async Task<bool> EhEventoLetivoPorTipoDeCalendarioDataDreUe(long tipoCalendarioId, DateTime data, string dreId, string ueId)
@@ -640,7 +640,7 @@ namespace SME.SGP.Dados.Repositorios
             bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme,
             bool consideraHistorico, bool eventosTodaRede)
         {
-            if (paginacao == null ||
+            if (paginacao.EhNulo() ||
                 (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
@@ -1343,7 +1343,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
                 query.AppendLine("and e.ue_id = @ueCodigo ");
 
-            if (modalidades != null && !modalidades.Any(c => c == -99))
+            if (modalidades.NaoEhNulo() && !modalidades.Any(c => c == -99))
                 query.AppendLine("and tc.modalidade = any(@modalidades) ");
 
             query.AppendLine(@"union select e.Id As Id,

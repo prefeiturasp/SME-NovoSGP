@@ -71,13 +71,11 @@ namespace SME.SGP.Aplicacao
                 periodoEscolar.Bimestre,
                 situacoesFechamento));
 
-            if (fechamentoTurmaDisciplina != null)
+            if (fechamentoTurmaDisciplina.NaoEhNulo())
             {
-                var disciplinasEol = await mediator.Send(new ObterDisciplinasPorIdsQuery(new[] {fechamentoTurmaDisciplina.DisciplinaId}));
+                var disciplinaEol = await mediator.Send(new ObterComponenteCurricularPorIdQuery(fechamentoTurmaDisciplina.DisciplinaId));
 
-                var disciplina = disciplinasEol is null
-                    ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")
-                    : disciplinasEol.FirstOrDefault();
+                var disciplina = disciplinaEol ?? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
                 if (fechamentoTurmaDisciplina.TipoTurma != TipoTurma.Programa)
                     await PublicarMsgGeracaoPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
@@ -101,9 +99,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<long> GerarPendenciasFechamento(FechamentoTurmaDisciplinaPendenciaDto fechamentoTurmaDisciplina)
         {
-            if (fechamentoTurmaDisciplina != null)
+            if (fechamentoTurmaDisciplina.NaoEhNulo())
             {
-                var disciplinasEol = await mediator.Send(new ObterDisciplinasPorIdsQuery(new[] { fechamentoTurmaDisciplina.DisciplinaId }));
+                var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { fechamentoTurmaDisciplina.DisciplinaId }));
 
                 var disciplina = disciplinasEol is null
                     ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")
@@ -134,17 +132,17 @@ namespace SME.SGP.Aplicacao
             var aulas = (await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.PlanoAula,
                 "plano_aula",new long[] {(int) Modalidade.Fundamental, (int) Modalidade.EJA, (int) Modalidade.Medio},
                 filtro.DreId, filtro.UeId,false)));
-            if (aulas != null)
+            if (aulas.NaoEhNulo())
                 retorno.AddRange(aulas);
 
             aulas = await mediator.Send(new ObterPendenciasAtividadeAvaliativaQuery(filtro.DreId, filtro.UeId,false));
-            if (aulas != null)
+            if (aulas.NaoEhNulo())
                 retorno.AddRange(aulas);
 
             aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.Frequencia,
                 "registro_frequencia", new long[] {(int) Modalidade.EducacaoInfantil, (int) Modalidade.Fundamental, (int) Modalidade.EJA, (int) Modalidade.Medio},
                 filtro.DreId, filtro.UeId,false));
-            if (aulas != null)
+            if (aulas.NaoEhNulo())
                 retorno.AddRange(aulas);
         }
 

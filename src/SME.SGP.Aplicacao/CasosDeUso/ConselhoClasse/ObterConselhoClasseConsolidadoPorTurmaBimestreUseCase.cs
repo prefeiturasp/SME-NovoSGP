@@ -16,11 +16,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<StatusTotalConselhoClasseDto>> Executar(FiltroConselhoClasseConsolidadoTurmaBimestreDto filtro)
         {
-            var lista = await mediator.Send(new ObterAlunosEStatusConselhoClasseConsolidadoPorTurmaEbimestreQuery(filtro.TurmaId, filtro.Bimestre, filtro.SituacaoConselhoClasse));
-            if (lista == null || !lista.Any())
+            var listaConselhosClasseConsolidado = await mediator.Send(new ObterAlunosEStatusConselhoClasseConsolidadoPorTurmaEbimestreQuery(filtro.TurmaId, filtro.Bimestre, filtro.SituacaoConselhoClasse));
+            
+            if (listaConselhosClasseConsolidado.EhNulo() || !listaConselhosClasseConsolidado.Any())
                 return Enumerable.Empty<StatusTotalConselhoClasseDto>();
 
-            var statusAgrupados = lista.GroupBy(g => g.SituacaoFechamentoCodigo);
+            var statusAgrupados = listaConselhosClasseConsolidado.GroupBy(g => g.SituacaoFechamentoCodigo);
 
             return MapearRetornoStatusAgrupado(statusAgrupados);
         }
@@ -43,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
             var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => (SituacaoConselhoClasse)s.Status).Contains(ls));
 
-            if (statusNaoEncontrados != null && statusNaoEncontrados.Any())
+            if (statusNaoEncontrados.NaoEhNulo() && statusNaoEncontrados.Any())
             {
                 foreach (var status in statusNaoEncontrados)
                 {

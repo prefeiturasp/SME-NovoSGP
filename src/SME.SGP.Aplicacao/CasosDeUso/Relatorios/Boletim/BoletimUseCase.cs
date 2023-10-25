@@ -45,19 +45,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 int codigoTurma;
                 if (int.TryParse(filtroRelatorioBoletimDto.TurmaCodigo, out codigoTurma) && codigoTurma <= 0)
                     filtroRelatorioBoletimDto.TurmaCodigo = String.Empty;
-                else if (await mediator.Send(new ObterTurmaPorCodigoQuery(filtroRelatorioBoletimDto.TurmaCodigo)) == null)
+                else if ((await mediator.Send(new ObterTurmaPorCodigoQuery(filtroRelatorioBoletimDto.TurmaCodigo))).EhNulo())
                     throw new NegocioException("Não foi possível encontrar a turma");
             }
 
-            unitOfWork.IniciarTransacao();
-
             var usuarioLogado = await mediator
                 .Send(ObterUsuarioLogadoQuery.Instance);
-            
 
             filtroRelatorioBoletimDto.Usuario = usuarioLogado;
 
-            if (filtroRelatorioBoletimDto.AlunosCodigo != null && !filtroRelatorioBoletimDto.AlunosCodigo.Any())
+            if (filtroRelatorioBoletimDto.AlunosCodigo.NaoEhNulo() && !filtroRelatorioBoletimDto.AlunosCodigo.Any())
             {
                 filtroRelatorioBoletimDto.AlunosCodigo = (await mediator
                     .Send(new ObterAlunosPorTurmaQuery(filtroRelatorioBoletimDto.TurmaCodigo, filtroRelatorioBoletimDto.ConsideraInativo)))
@@ -82,7 +79,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     .Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, rotaBoletim));
             }
 
-            unitOfWork.PersistirTransacao();
             return retorno;
         }
     }

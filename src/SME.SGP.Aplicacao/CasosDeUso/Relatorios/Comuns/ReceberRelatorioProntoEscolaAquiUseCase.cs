@@ -11,25 +11,21 @@ namespace SME.SGP.Aplicacao
     public class ReceberRelatorioProntoEscolaAquiUseCase : IReceberRelatorioProntoEscolaAquiUseCase
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IConfiguration configuration;
 
-        public ReceberRelatorioProntoEscolaAquiUseCase(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration)
+        public ReceberRelatorioProntoEscolaAquiUseCase(IMediator mediator, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var relatorioCorrelacao = await mediator.Send(new ObterCorrelacaoRelatorioQuery(mensagemRabbit.CodigoCorrelacao));
-            if (relatorioCorrelacao == null)
+            if (relatorioCorrelacao.EhNulo())
             {
                 throw new NegocioException($"Não foi possível obter a correlação do relatório pronto {mensagemRabbit.CodigoCorrelacao}");
             }
-
-            unitOfWork.IniciarTransacao();
 
             var mensagem = mensagemRabbit.ObterObjetoMensagem<MensagemRelatorioProntoDto>();
             bool relatorioEscolaAqui = true;
@@ -46,7 +42,6 @@ namespace SME.SGP.Aplicacao
                     relatorioEscolaAqui = false;
                     break;
             }
-            unitOfWork.PersistirTransacao();
 
             if (relatorioEscolaAqui)
                 return await Task.FromResult(true);

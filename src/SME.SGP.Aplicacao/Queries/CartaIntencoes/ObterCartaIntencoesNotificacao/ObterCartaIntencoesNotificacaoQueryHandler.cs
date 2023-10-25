@@ -32,18 +32,23 @@ namespace SME.SGP.Aplicacao
 
             var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turma.CodigoTurma, request.ComponenteCurricular));
 
-            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string> { turma.CodigoTurma }));
+            var professoresTitularDisciplinaEols = await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string> { turma.CodigoTurma }));
+            
+            var professoresDaTurma = professoresTitularDisciplinaEols
+                                                        .SelectMany(c => c.ProfessorRf.Split(',').AsEnumerable())
+                                                        .Where(c => !string.IsNullOrEmpty(c))
+                                                        .Select(a => a.Trim());
 
             var funcionariosDiretor = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(ue.CodigoUe, (int)Cargo.Diretor));
 
             IEnumerable<UsuarioNotificarCartaIntencoesObservacaoDto> professoresNotificar = new List<UsuarioNotificarCartaIntencoesObservacaoDto>();
 
-            if (funcionariosDiretor != null && funcionariosDiretor.Any(d => d.CodigoRF == usuarioLogado.CodigoRf) && professoresDaTurma.Any())
+            if (funcionariosDiretor.NaoEhNulo() && funcionariosDiretor.Any(d => d.CodigoRF == usuarioLogado.CodigoRf) && professoresDaTurma.Any())
             {
                 foreach (var professor in professoresDaTurma)
                 {                    
                     var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(professor));
-                    if (usuario == null)
+                    if (usuario.EhNulo())
                         throw new NegocioException("Usuário não encontrado no SGP");
 
                     var usuariosNotificar = await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(usuario.CodigoRf, usuario.Nome)));
@@ -58,7 +63,7 @@ namespace SME.SGP.Aplicacao
             {                
                 var segundoTitular = professoresDaTurma.FirstOrDefault(p => p != usuarioLogado.CodigoRf);
                 var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(segundoTitular));
-                if (usuario == null)
+                if (usuario.EhNulo())
                     throw new NegocioException("Usuário não encontrado no SGP");
 
                 return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(segundoTitular, usuario.Nome)));

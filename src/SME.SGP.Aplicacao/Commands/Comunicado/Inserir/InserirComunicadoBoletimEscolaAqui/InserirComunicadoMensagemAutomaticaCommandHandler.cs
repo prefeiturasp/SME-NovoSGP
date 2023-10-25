@@ -32,11 +32,11 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.IniciarTransacao();
                 var id = await repositorioComunicado.SalvarAsync(comunicado);
-                if (comunicado.Modalidades != null)
+                if (comunicado.Modalidades.NaoEhNulo())
                     await mediator.Send(new InserirComunicadoModalidadeCommand(comunicado));
-                if (comunicado.Turmas != null && comunicado.Turmas.Any())
+                if (comunicado.Turmas.NaoEhNulo() && comunicado.Turmas.Any())
                     await InserirComunicadoTurma(comunicado);
-                if (comunicado.Alunos != null && comunicado.Alunos.Any())
+                if (comunicado.Alunos.NaoEhNulo() && comunicado.Alunos.Any())
                     await InserirComunicadoAluno(comunicado);
 
                 await mediator.Send(new CriarNotificacaoEscolaAquiCommand(comunicado));

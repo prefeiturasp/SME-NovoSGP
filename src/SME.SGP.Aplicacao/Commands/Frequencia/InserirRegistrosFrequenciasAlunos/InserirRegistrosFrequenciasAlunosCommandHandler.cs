@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
                     var frequenciaAluno = registroFrequenciaAlunoAtual.FirstOrDefault(fr => fr.NumeroAula == aulaRegistrada.NumeroAula && fr.CodigoAluno == registroFrequenciaAlunoDto.CodigoAluno);
                     var valorFrequencia = ObterValorFrequencia(registroFrequenciaAlunoDto.TipoFrequenciaPreDefinido, aulaRegistrada.TipoFrequencia);
 
-                    if (frequenciaAluno != null)
+                    if (frequenciaAluno.NaoEhNulo())
                     {
                         if (frequenciaAluno.Valor != (int)valorFrequencia)
                         {
@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                 var frequenciaDefinida = listaDeFrequenciaDefinidaCadastrada.OrderByDescending(y => y.Id).FirstOrDefault(fr => fr.CodigoAluno == frequencia.CodigoAluno);
                 var tipoFrequencia = ObtenhaValorPreDefinido(frequencia.TipoFrequenciaPreDefinido);
 
-                if (frequenciaDefinida != null)
+                if (frequenciaDefinida.NaoEhNulo())
                 {
                     frequenciaDefinida.TipoFrequencia = tipoFrequencia;
                     dicionario[ALTERAR].Add(frequenciaDefinida);

@@ -115,7 +115,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(dreCodigo))
                 query.AppendLine(" and a.dre_id = @dreCodigo ");
 
-            if (turmaCodigos != null)
+            if (turmaCodigos.NaoEhNulo())
                 query.AppendLine(" and t.turma_id = ANY(@turmaCodigos) ");
 
             if (anoLetivo > 0)

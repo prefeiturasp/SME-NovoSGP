@@ -19,21 +19,21 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = new List<PeriodoEscolar>();
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma [{turmaId}] não localizada!");
 
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
             if (periodos.Any())
                 periodosEscolares = FiltrarPeriodosCorretos(periodos.ToList());
-            
-            return periodosEscolares?.Select(c => new PeriodoEscolarPorTurmaDto
+           
+            return periodosEscolares?.Select(async c => new PeriodoEscolarPorTurmaDto
             {
                 Bimestre = c.Bimestre,
                 Id = c.Id,
                 Migrado = c.Migrado,
-                PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, c.Bimestre, turma.AnoLetivo == DateTime.Today.Year, periodosEscolares.FirstOrDefault().TipoCalendarioId)).Result,
-        });
+                PeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, c.Bimestre, turma.AnoLetivo == DateTime.Today.Year, periodosEscolares.FirstOrDefault().TipoCalendarioId)),
+            }).Select(_task => _task.Result);
         }
 
         public List<PeriodoEscolar> FiltrarPeriodosCorretos(List<PeriodoEscolar> periodos)

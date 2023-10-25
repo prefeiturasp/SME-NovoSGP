@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Interfaces
             var dataRetornoAlterada = itinerancia.DataRetornoVerificacao != dto.DataRetornoVerificacao;
             var dataRetornoAnterior = itinerancia.DataRetornoVerificacao;
 
-            if (itinerancia == null)
+            if (itinerancia.EhNulo())
                 throw new NegocioException($"Não foi possível localizar a itinerância de Id {dto.Id}");
 
             itinerancia.AnoLetivo = dto.AnoLetivo;
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Interfaces
                 try
                 {
                     var auditoriaDto = await mediator.Send(new AlterarItineranciaCommand(itinerancia));
-                    if (auditoriaDto == null)
+                    if (auditoriaDto.EhNulo())
                         throw new NegocioException($"Não foi possível alterar a itinerância de Id {itinerancia.Id}");
 
                     await ExcluirFilhosItinerancia(dto, itinerancia);
@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao.Interfaces
         private async Task SalvarEventosItinerancia(ItineranciaDto dto)
         {
             var ue = await mediator.Send(new ObterUePorIdQuery(dto.UeId));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
 
             await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.Dre.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
@@ -106,10 +106,10 @@ namespace SME.SGP.Aplicacao.Interfaces
             var verificaWorkflow = await mediator.Send(new ObterWorkflowItineranciaPorItineranciaIdQuery(itinerancia.Id));
             WorkflowAprovacao workflow = null;
 
-            if (verificaWorkflow != null)
+            if (verificaWorkflow.NaoEhNulo())
                 workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
 
-            if (workflow == null || workflow.Niveis.Any(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado))
+            if (workflow.EhNulo() || workflow.Niveis.Any(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado))
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                     new NotificacaoSalvarItineranciaDto
                     {
@@ -188,7 +188,7 @@ namespace SME.SGP.Aplicacao.Interfaces
         {
             var turmasCodigos = itineranciaDto.Alunos.Select(a => a.TurmaId.ToString()).Distinct().ToList();
 
-            if (turmasCodigos != null && turmasCodigos.Any())
+            if (turmasCodigos.NaoEhNulo() && turmasCodigos.Any())
             {
                 var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
                 if (turmas.Count() != turmasCodigos.Count())
@@ -204,7 +204,7 @@ namespace SME.SGP.Aplicacao.Interfaces
         private async Task ExcluirArquivoItinerancia(Guid arquivoCodigo)
         {
             var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(arquivoCodigo));
-            if (entidadeArquivo == null)
+            if (entidadeArquivo.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
 
             await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));

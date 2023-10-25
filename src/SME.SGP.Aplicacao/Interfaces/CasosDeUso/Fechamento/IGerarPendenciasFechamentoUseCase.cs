@@ -1,8 +1,6 @@
-﻿using SME.SGP.Infra;
-
-namespace SME.SGP.Aplicacao.Interfaces
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IGerarPendenciasFechamentoUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IGerarPendenciasFechamentoUseCase : IRabbitUseCase
     {
     }
 }

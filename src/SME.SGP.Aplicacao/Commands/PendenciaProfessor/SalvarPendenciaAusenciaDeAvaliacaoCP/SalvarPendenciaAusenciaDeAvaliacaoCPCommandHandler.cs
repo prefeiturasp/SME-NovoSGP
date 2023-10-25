@@ -11,12 +11,10 @@ namespace SME.SGP.Aplicacao
     public class SalvarPendenciaAusenciaDeAvaliacaoCPCommandHandler : IRequestHandler<SalvarPendenciaAusenciaDeAvaliacaoCPCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarPendenciaAusenciaDeAvaliacaoCPCommandHandler(IMediator mediator, IUnitOfWork unitOfWork)
+        public SalvarPendenciaAusenciaDeAvaliacaoCPCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(SalvarPendenciaAusenciaDeAvaliacaoCPCommand request, CancellationToken cancellationToken)

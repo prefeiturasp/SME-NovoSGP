@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
 
-            if (filtro == null) 
+            if (filtro.EhNulo()) 
                 return false;            
             
             await servicoNotificacaoFrequencia.NotificarAlunosFaltosos(filtro.UeId);

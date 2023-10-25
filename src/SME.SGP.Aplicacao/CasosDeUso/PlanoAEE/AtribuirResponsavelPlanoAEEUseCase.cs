@@ -19,12 +19,12 @@ namespace SME.SGP.Aplicacao
         {
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(planoAEEId);
 
-            if (planoAEE == null)
+            if (planoAEE.EhNulo())
                 throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
             
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
             
             return await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE, responsavelRF, turma));

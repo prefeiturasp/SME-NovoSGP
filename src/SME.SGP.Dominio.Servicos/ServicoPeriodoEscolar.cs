@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio
 
             await ValidarSeTipoCalendarioPossuiPeriodoCadastrado(periodos, tipo);
 
-            bool eja = tipo.Modalidade == ModalidadeTipoCalendario.EJA;
+            bool eja = tipo.Modalidade.EhEJA();
 
             int quantidadeBimestres = tipo.Periodo == Periodo.Semestral ? 2 : 4;
 
@@ -40,12 +40,19 @@ namespace SME.SGP.Dominio
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
-                foreach (var periodo in periodos)
+                try
                 {
-                    await repositorioPeriodoEscolar.SalvarAsync(periodo);
-                }
+                    foreach (var periodo in periodos)
+                    {
+                        await repositorioPeriodoEscolar.SalvarAsync(periodo);
+                    }
 
-                unitOfWork.PersistirTransacao();
+                    unitOfWork.PersistirTransacao();
+                } catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
         }
 
@@ -80,7 +87,7 @@ namespace SME.SGP.Dominio
         {
             var tipo = await repositorioTipoCalendario.ObterPorIdAsync(tipoCalendario);
 
-            if (tipo == null || tipo.Id == 0) throw new NegocioException("O tipo de calendário informado não foi encontrado.");
+            if (tipo.EhNulo() || tipo.Id == 0) throw new NegocioException("O tipo de calendário informado não foi encontrado.");
             return tipo;
         }
 
@@ -115,7 +122,7 @@ namespace SME.SGP.Dominio
             {
                 var periodoEscolar = (await repositorioPeriodoEscolarConsulta.ObterPorTipoCalendario(tipo.Id)).ToList();
 
-                if (periodoEscolar != null && periodoEscolar.Any())
+                if (periodoEscolar.NaoEhNulo() && periodoEscolar.Any())
                     throw new NegocioException("Não é possível inserir mais de um período escolar para o tipo de calendário informado");
             }
         }

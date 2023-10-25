@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
 
             var modalidadesUe = await repositorioAbrangencia.ObterModalidadesPorUe(request.CodigoUe);
             var modalidadeSelecionada = modalidadesUe?.FirstOrDefault(c => c == request.Modalidade);
-            if (modalidadeSelecionada == null)
+            if (modalidadeSelecionada.EhNulo())
                 throw new NegocioException("Modalidade localizada na UE informada.");
 
             return ObterAnosEscolaresPorModalidade(modalidadeSelecionada.Value);

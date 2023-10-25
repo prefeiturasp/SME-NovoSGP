@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
                     if (listaValidacoesEvento.Any(a => a.gerarPedencia))
                     {
-                        var pendenciaCalendarioUeId = pendenciaCalendarioUe == null ? await GerarPendenciaCalendarioUe(tipoCalendarioId, ue) : pendenciaCalendarioUe.Id;
+                        var pendenciaCalendarioUeId = pendenciaCalendarioUe.EhNulo() ? await GerarPendenciaCalendarioUe(tipoCalendarioId, ue) : pendenciaCalendarioUe.Id;
 
                         await GerarPendenciaParametroEvento(pendenciaCalendarioUeId, listaValidacoesEvento.Where(a => a.gerarPedencia));
                     }
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
         {
             var pendenciasCalendario = await mediator.Send(new ObterPendenciasCalendarioUeQuery(tipoCalendarioId, ueId, TipoPendencia.CadastroEventoPendente));
 
-            return pendenciasCalendario != null & pendenciasCalendario.Any() ?
+            return pendenciasCalendario.NaoEhNulo() & pendenciasCalendario.Any() ?
                     pendenciasCalendario.First() : null;
         }
 
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
             if (EventosInsuficientes(eventos, int.Parse(parametroQuantidadeEventos.Valor)))
             {
                 var pendenciaParametroEvento = pendenciasParametroEventoUe.FirstOrDefault(c => c.ParametroSistemaId == parametroQuantidadeEventos.Id);
-                return (pendenciaParametroEvento == null, parametroQuantidadeEventos.Id, int.Parse(parametroQuantidadeEventos.Valor) - eventos.Count());
+                return (pendenciaParametroEvento.EhNulo(), parametroQuantidadeEventos.Id, int.Parse(parametroQuantidadeEventos.Valor) - eventos.Count());
             }
 
             return (false, 0, 0);
@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
 
         private bool EventosInsuficientes(IEnumerable<Evento> eventos, int quantidadeEventosParametro)
         {
-            return eventos == null
+            return eventos.EhNulo()
                 || eventos.Count() < quantidadeEventosParametro;
         }
 

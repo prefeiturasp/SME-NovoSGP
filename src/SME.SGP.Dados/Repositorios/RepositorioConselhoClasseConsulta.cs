@@ -391,8 +391,8 @@ namespace SME.SGP.Dados.Repositorios
             var dataAtual = DateTime.Now.ToString("yyyy-MM-dd");
 
             var sql = $@"select disciplina_id as disciplinaid,SUM(quantidade) as totalaulas from aula a
-                        join componente_curricular cc on cc.id = a.disciplina_id::int8 
-                        where cc.permite_registro_frequencia  = false 
+                        left join componente_curricular cc on cc.id = a.disciplina_id::int8 
+                        where coalesce(cc.permite_lancamento_nota, false)  = false 
                         and a.turma_id = @codigoTurma
                         and a.data_aula <= '{dataAtual}'
                         and not a.excluido 
@@ -405,8 +405,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasNaoLancamNotaPorBimestreTurma(string codigoTurma, int bimestre, string codigoAluno)
         {
             var sql = @"select fa.disciplina_id as DisciplinaID,total_aulas as TotalAulas from frequencia_aluno fa 
-                        join componente_curricular cc on cc.id = fa.disciplina_id::int8
-                        where cc.permite_lancamento_nota = false 
+                        left join componente_curricular cc on cc.id = fa.disciplina_id::int8
+                        where coalesce(cc.permite_lancamento_nota, false) = false 
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
                         and fa.tipo  = @tipo
@@ -420,8 +420,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNotaPorBimestre(string codigoTurma, int bimestre)
         {
             var sql = @"select fa.disciplina_id as DisciplinaID,total_compensacoes as TotalCompensacoes, codigo_aluno as CodigoAluno from frequencia_aluno fa 
-                        join componente_curricular cc on cc.id = fa.disciplina_id::int8
-                        where cc.permite_lancamento_nota = false 
+                        left join componente_curricular cc on cc.id = fa.disciplina_id::int8
+                        where coalesce(cc.permite_lancamento_nota, false) = false 
                         and fa.turma_id = @codigoTurma
                         and fa.bimestre = @bimestre
                         and fa.tipo  = @tipo
@@ -433,8 +433,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto>> ObterTotalCompensacoesComponenteNaoLancaNota(string codigoTurma)
         {
             var sql = @"select fa.disciplina_id as DisciplinaID,total_compensacoes as TotalCompensacoes, codigo_aluno as CodigoAluno from frequencia_aluno fa 
-                        join componente_curricular cc on cc.id = fa.disciplina_id::int8
-                        where cc.permite_lancamento_nota = false 
+                        left join componente_curricular cc on cc.id = fa.disciplina_id::int8
+                        where coalesce(cc.permite_lancamento_nota, false) = false 
                         and fa.turma_id = @codigoTurma
                         and fa.tipo  = @tipo
                         group by fa.disciplina_id, total_compensacoes, codigo_aluno ";

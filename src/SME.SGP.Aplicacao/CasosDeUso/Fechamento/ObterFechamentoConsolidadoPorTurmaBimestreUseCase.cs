@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             var listaFechamentosConsolidado = await mediator.Send(new ObterFechamentoConsolidadoPorTurmaBimestreQuery(filtro.TurmaId, filtro.Bimestre, situacoesFechamento));
 
-            if (listaFechamentosConsolidado == null || !listaFechamentosConsolidado.Any())
+            if (listaFechamentosConsolidado.EhNulo() || !listaFechamentosConsolidado.Any())
                 return Enumerable.Empty<StatusTotalFechamentoDto>();
 
             var statusAgrupados = listaFechamentosConsolidado.GroupBy(g => g.Status);
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
             var statusNaoEncontrados = lstTodosStatus.Where(ls => !lstStatus.Select(s => (SituacaoFechamento)s.Status).Contains(ls));
 
-            if (statusNaoEncontrados != null && statusNaoEncontrados.Any())
+            if (statusNaoEncontrados.NaoEhNulo() && statusNaoEncontrados.Any())
             {
                 foreach (var status in statusNaoEncontrados.Where(s => s != SituacaoFechamento.NaoIniciado && 
                                                                        s != SituacaoFechamento.EmProcessamento))

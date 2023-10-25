@@ -17,10 +17,10 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 Codigo = 444,
                 TipoTurma = 1,
                 NomeTurma = "4A",
-                SerieEnsino = "4บ ANO",
+                SerieEnsino = "4ยบ ANO",
                 Extinta = true,
                 UeCodigo = "094765",
-                NomeFiltro = "4A - 4บ ANO",
+                NomeFiltro = "4A - 4ยบ ANO",
                 Situacao = "E",
                 CodigoModalidade = Dominio.Modalidade.Medio,
                 DataStatusTurmaEscola = System.DateTime.Now.AddYears(-1)

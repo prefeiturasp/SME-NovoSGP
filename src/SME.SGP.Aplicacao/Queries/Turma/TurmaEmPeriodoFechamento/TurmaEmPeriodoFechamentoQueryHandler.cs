@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                                                             tipoCalendarioId,
                                                             dreCodigo,
                                                             ueCodigo);
-            return reaberturaPeriodo != null;
+            return reaberturaPeriodo.NaoEhNulo();
         }
     }
 }

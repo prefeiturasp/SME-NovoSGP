@@ -1,11 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -21,19 +21,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
-        public async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> Handle(ObterPorFechamentosTurmaQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> Handle(ObterPorFechamentosTurmaQuery request, CancellationToken cancellationToken)
         {
             var nomeChaveCache = string.Format(NomeChaveCache.FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, request.CodigoDisciplina, request.CodigoTurma);
 
-            var retornoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache, "Obter fechamentos da turma");
-
-            if (retornoCache != null)
-                return retornoCache;
-
-            var retornoDb = await repositorioFechamentoNota.ObterPorFechamentosTurma(request.Ids);
-            await repositorioCache.SalvarAsync(nomeChaveCache, retornoDb);
-
-            return retornoDb;
+            return repositorioCache.ObterAsync(nomeChaveCache,
+                     async () => await repositorioFechamentoNota.ObterPorFechamentosTurma(request.Ids),
+                     "Obter nota de fechamento turma");
         }
     }
 }

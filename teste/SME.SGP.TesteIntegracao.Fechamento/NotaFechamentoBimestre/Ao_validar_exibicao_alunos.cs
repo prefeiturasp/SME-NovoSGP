@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var retorno = await ExecutarTeste(filtroListaNotasConceitos);
 
             retorno.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)?
-                .Alunos.Where(c => c.Marcador != null)
+                .Alunos.Where(c => c.Marcador.NaoEhNulo())
                 .Count(c => c.Marcador.Tipo == TipoMarcadorFrequencia.Novo).ShouldBe(2);
         }
 
@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var retorno = await ExecutarTeste(filtroListaNotasConceitos);
 
             retorno.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)?
-                .Alunos.Where(c => c.Marcador != null)
+                .Alunos.Where(c => c.Marcador.NaoEhNulo())
                 .Count(c => c.Marcador.Tipo == TipoMarcadorFrequencia.Inativo).ShouldBe(7);
         }
         
@@ -153,7 +153,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             NotasConceitosRetornoDto retorno = new();
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
             
-            if (useCase != null) 
+            if (useCase.NaoEhNulo()) 
                 retorno = await useCase.Executar(filtroListaNotasConceitos);
             
             await InserirFechamentoAluno(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);            

@@ -129,7 +129,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public void SalvarBimestres(IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre, long fechamentoId)
         {
-            if (fechamentosBimestre == null || !fechamentosBimestre.Any())
+            if (fechamentosBimestre.EhNulo() || !fechamentosBimestre.Any())
             {
                 throw new NegocioException("A lista de bimestres é obrigatória.");
             }

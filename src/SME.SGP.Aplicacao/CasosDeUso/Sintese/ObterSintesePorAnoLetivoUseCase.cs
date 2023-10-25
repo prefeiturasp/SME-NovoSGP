@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             var dataReferencia = new DateTime(anoLetivo, 6, 28);
             var sinteses = repositorioSintese.ObterPorData(dataReferencia);
 
-            if (sinteses == null || !sinteses.Any())
+            if (sinteses.EhNulo() || !sinteses.Any())
                 throw new NegocioException("Não foi possível obter as sínteses");
 
             return await Task.FromResult(MapearParaDto(sinteses));

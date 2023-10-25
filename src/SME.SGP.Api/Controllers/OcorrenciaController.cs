@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Get([FromServices] IObterOcorrenciaUseCase useCase, long id)
         {
             var result = await useCase.Executar(id);
-            if (result == null)
+            if (result.EhNulo())
                 return NoContent();
 
             return Ok(result);

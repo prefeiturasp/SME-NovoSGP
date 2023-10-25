@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries
         {
 
             var planoAula = await repositorioPlanoAula.ObterPorIdAsync(request.Id);
-            if(planoAula == null)
+            if(planoAula.EhNulo())
                 throw new NegocioException("Não foi possível encontrar o plano de aula");
 
             return true;

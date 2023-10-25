@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<DiarioBordoDto> Executar(long aulaId, long componenteCurricularId)
         {
             Aula aula = await mediator.Send(new ObterAulaPorIdQuery(aulaId));
-            if (aula == null || aula.Excluido)
+            if (aula.EhNulo() || aula.Excluido)
                 throw new NegocioException($"Diário de bordo não encontrado", 204);
 
             var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             codigosComponentes.Add(componenteCurricularIdPrincipal);
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentes.Distinct().ToArray()));
 
-            if (diarioBordo != null && diarioBordoIrmao == null && componentes.Any(b => b.CodigoComponenteCurricular != b.CdComponenteCurricularPai))
+            if (diarioBordo.NaoEhNulo() && diarioBordoIrmao.EhNulo() && componentes.Any(b => b.CodigoComponenteCurricular != b.CdComponenteCurricularPai))
             {
                 var codigoComponentePai = componentes.First()?.CdComponenteCurricularPai;
 
@@ -52,10 +52,10 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (diarioBordo == null)
+            if (diarioBordo.EhNulo())
                 return MapearParaDto(new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = componenteCurricularIdPrincipal }, aberto, diarioBordoIrmao, componentes);
             
-            if (diarioBordo.DevolutivaId != null)
+            if (diarioBordo.DevolutivaId.NaoEhNulo())
                 diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
 
             var dto = MapearParaDto(diarioBordo, aberto, diarioBordoIrmao, componentes);
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma de codigo [{turmaCodigo}] não localizada!");
 
             var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(dataAula, turma));
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
                 InseridoCJ = diarioBordo.InseridoCJ,
                 PlanejamentoIrmao = diarioBordoIrmao?.Planejamento,
                 NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordo.ComponenteCurricularId)?.NomeComponenteInfantil,
-                NomeComponenteIrmao = diarioBordoIrmao != null ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordoIrmao.ComponenteCurricularId)?.NomeComponenteInfantil : string.Empty
+                NomeComponenteIrmao = diarioBordoIrmao.NaoEhNulo() ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == diarioBordoIrmao.ComponenteCurricularId)?.NomeComponenteInfantil : string.Empty
             };
         }
     }

@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<TipoFrequencia> Handle(ObterFrequenciaPreDefinidaPorAlunoETurmaQuery request, CancellationToken cancellationToken)
         {
             var retorno = await repositorioFrequenciaPreDefinida.ObterPorTurmaECCEAlunoCodigo(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo);
-            if (retorno != null)
+            if (retorno.NaoEhNulo())
                 return retorno.Tipo;
 
             return TipoFrequencia.C;
