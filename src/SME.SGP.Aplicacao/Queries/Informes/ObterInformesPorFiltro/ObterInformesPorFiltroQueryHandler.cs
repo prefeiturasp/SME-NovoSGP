@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterInformesPorFiltroQueryHandler : ConsultasBase, IRequestHandler<ObterInformesPorFiltroQuery, PaginacaoResultadoDto<InformeResumoDto>>
     {
+        private const string TODAS = "Todas";
         private readonly IRepositorioInformativo repositorio;
         private readonly IMediator mediator;
 
@@ -51,9 +52,9 @@ namespace SME.SGP.Aplicacao
                 informes.Add(new InformeResumoDto()
                 {
                     Id = informativo.Id,
-                    UeNome = informativo.Ue.NaoEhNulo() ? $"{informativo.Ue.TipoEscola.ShortName()} {informativo.Ue.Nome}" : string.Empty,
+                    UeNome = informativo.Ue.NaoEhNulo() ? $"{informativo.Ue.TipoEscola.ShortName()} {informativo.Ue.Nome}" : TODAS,
                     DataEnvio = informativo.DataEnvio.ToString("dd/MM/yyyy"),
-                    DreNome = informativo.Dre.NaoEhNulo() ? informativo.Dre.Abreviacao : string.Empty,
+                    DreNome = informativo.Dre.NaoEhNulo() ? informativo.Dre.Abreviacao : TODAS,
                     Perfis = ObterPerfils(perfils, informativo.Perfis),
                     Titulo = informativo.Titulo,
                     EnviadoPor = $"{informativo.CriadoPor} ({informativo.CriadoRF})"
