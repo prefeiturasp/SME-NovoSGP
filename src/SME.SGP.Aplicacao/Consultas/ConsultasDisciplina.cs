@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-            IMediator mediator) : base(mediator)
+        IMediator mediator) : base(mediator)
         {
             this.repositorioCache = repositorioCache ??
                 throw new ArgumentNullException(nameof(repositorioCache));
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             return componentes;
         }
 
-        public async Task<List<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurma(string codigoTurma, bool turmaPrograma, bool realizarAgrupamentoComponente = false)
+        public async Task<List<DisciplinaDto>> ObterComponentesCurricularesPorProfessorETurma(string codigoTurma, bool turmaPrograma, bool realizarAgrupamentoComponente = false, bool consideraTurmaInfantil = true)
         {
             List<DisciplinaDto> disciplinasDto;
             var disciplinasEol = new List<DisciplinaResposta>();
@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
                 disciplinasAtribuicaoCj = (await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login)).ToList();
 
                 var componentesCurricularesAtribuicaoEol = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, turma.EhTurmaInfantil || realizarAgrupamentoComponente));
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : realizarAgrupamentoComponente));
 
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
@@ -144,10 +144,10 @@ namespace SME.SGP.Aplicacao
                 if (!usuarioLogado.TemPerfilGestaoUes())
                 {
                     componentesCurriculares = (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, turma.EhTurmaInfantil || realizarAgrupamentoComponente))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false))).ToList();
 
                     componentesCurriculares ??= (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false, false))).ToList();
                 }
                 else
                 {
@@ -186,7 +186,7 @@ namespace SME.SGP.Aplicacao
                 if (componentesCurricularesJurema.EhNulo())
                     throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
 
-                disciplinasDto.ForEach(d =>
+                foreach (var d in disciplinasDto)
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = PossuiObjetivos(turma, Convert.ToInt32(dataInicioNovoSGP), componenteEOL, componentesCurricularesJurema);
@@ -194,7 +194,8 @@ namespace SME.SGP.Aplicacao
                     d.Nome = componenteEOL.Descricao;
                     d.NomeComponenteInfantil = componenteEOL.DescricaoComponenteInfantil;
                     d.Professor = componenteEOL.Professor;
-                });
+                };
+
 
                 if (usuarioLogado.TemPerfilGestaoUes())
                 {
@@ -250,7 +251,6 @@ namespace SME.SGP.Aplicacao
 
             return disciplinasDto;
         }
-
         private bool PossuiObjetivos(
                         Turma turma,
                         int anoInicioSgp,

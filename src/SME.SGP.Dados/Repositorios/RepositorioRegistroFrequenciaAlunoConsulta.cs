@@ -118,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
             return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaGeralPorDisciplinaAlunoTurmaDataDto>(query, new { ano });
         }
 
-        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> codigoAlunos, string professor = null)
+        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> codigoAlunos, string professor = null, long[] idsRegistrosFrequenciaDesconsiderados = null)
         {
             var query = @$"           
                 select
@@ -135,7 +135,8 @@ namespace SME.SGP.Dados.Repositorios
                 inner join aula a on rfa.aula_id = a.id and not a.excluido                 
                 inner join periodo_escolar p on a.tipo_calendario_id = p.tipo_calendario_id
                 where
-	                rfa.codigo_aluno = any(@codigoAlunos)	                
+                    not a.excluido
+                    and rfa.codigo_aluno = any(@codigoAlunos)	                
 	                and a.turma_id = any(@turmasId)
 	                and p.periodo_inicio <= @dataAula
 	                and p.periodo_fim >= @dataAula
@@ -143,6 +144,7 @@ namespace SME.SGP.Dados.Repositorios
 	                and a.data_aula <= p.periodo_fim                    
                     and rfa.numero_aula <= a.quantidade
                     {(!string.IsNullOrWhiteSpace(professor) ? " and a.professor_rf = @professor " : string.Empty)}
+                    {(idsRegistrosFrequenciaDesconsiderados != null && idsRegistrosFrequenciaDesconsiderados.Any() ? " and rfa.id <> any(@idsRegistrosFrequenciaDesconsiderados) " : string.Empty)}
                 group by
 	                p.id,
 	                p.periodo_inicio,
@@ -151,7 +153,7 @@ namespace SME.SGP.Dados.Repositorios
                     rfa.codigo_aluno,
                     a.disciplina_id";
 
-            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmasId, professor });
+            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmasId, professor, idsRegistrosFrequenciaDesconsiderados });
         }
 
         public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorAulaAsync(long aulaId)
@@ -255,7 +257,7 @@ namespace SME.SGP.Dados.Repositorios
                                             inner join registro_frequencia rf on rf.id  = rfa.registro_frequencia_id 
                                             inner join aula a on a.id = rf.aula_id 
                                             where a.turma_id = @turmaCodigo and rfa.codigo_aluno = @alunoCodigo
-                                            and not rfa.excluido and not a.excluido 
+                                            and not a.excluido 
                                             order by a.data_aula";
 
             var parametros = new { turmaCodigo, alunoCodigo };

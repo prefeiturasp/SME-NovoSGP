@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace SME.SGP.Infra
 {
@@ -142,26 +143,6 @@ namespace SME.SGP.Infra
             if (!typeof(TEnum).IsEnum) throw new InvalidOperationException();
 
             return ((TEnum[])Enum.GetValues(typeof(TEnum))).Cast<Enum>().ToDictionary(key => key, value => value.Name());
-        }
-        
-        public static bool EhMaiorQueZero(this long valor)
-        {
-            return valor > 0;
-        }
-        
-        public static bool EhMaiorQueZero(this int valor)
-        {
-            return valor > 0;
-        }
-        
-        public static bool EhMenorQueZero(this long valor)
-        {
-            return valor < 0;
-        }
-        
-        public static bool EhIgualZero(this long valor)
-        {
-            return valor == 0;
         }
     }
 }

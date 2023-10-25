@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                                                     request.CodigoTurma, 
                                                                     request.Login, 
                                                                     request.Perfil, 
-                                                                    request.RealizarAgrupamentoComponente) + $"?checaMotivoDisponibilizacao={request.ChecaMotivoDisponibilizacao}");
+                                                                    request.RealizarAgrupamentoComponente) + $"?checaMotivoDisponibilizacao={request.ChecaMotivoDisponibilizacao}&consideraTurmaInfantil={request.ConsideraTurmaInfantil}");
             
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {

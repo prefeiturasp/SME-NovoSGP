@@ -43,9 +43,9 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices] IConsultasDisciplina consultasDisciplina, [FromQuery] bool realizarAgrupamentoComponente = false)
+        public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices] IConsultasDisciplina consultasDisciplina, [FromQuery] bool realizarAgrupamentoComponente = false, bool consideraTurmaInfantil = true)
         {
-            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(codigoTurma, turmaPrograma, realizarAgrupamentoComponente);
+            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(codigoTurma, turmaPrograma, realizarAgrupamentoComponente, consideraTurmaInfantil);
 
             return Ok(retorno);
         }
