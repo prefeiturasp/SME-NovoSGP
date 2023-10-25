@@ -89,7 +89,7 @@ namespace SME.SGP.Dados.Repositorios
                         return informativo;
                     }, parametros);
 
-            retorno.Items = retorno.Items.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
+            retorno.Items = itens.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
             retorno.TotalRegistros = totalRegistros;
             retorno.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / paginacao.QuantidadeRegistros);
 
