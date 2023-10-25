@@ -32,9 +32,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.TCE_A, Policy = "Bearer")]
-        public async Task<IActionResult> Alterar([FromBody] TipoCalendarioDto dto, long id)
+        public async Task<IActionResult> Alterar([FromBody] TipoCalendarioDto tipoCalendarioDto, long id)
         {
-            await comandos.Alterar(dto, id);
+            await comandos.Alterar(tipoCalendarioDto, id);
             return Ok();
         }
 

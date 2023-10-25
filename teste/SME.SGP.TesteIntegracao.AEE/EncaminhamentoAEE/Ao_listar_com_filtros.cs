@@ -250,8 +250,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             };
 
             await CriarDadosBase(filtroAee);
-            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_Ano_Atual_NUMERO, false);
-            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_Ano_Atual_NUMERO, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_ANO_ATUAL, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_ANO_ATUAL, false);
 
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
@@ -305,8 +305,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             };
 
             await CriarDadosBase(filtroAee);
-            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_Ano_Atual_NUMERO, false);
-            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_Ano_Atual_NUMERO, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_2, TipoTurma.Regular, UE_ID_2, ANO_LETIVO_ANO_ATUAL, false);
+            await CriarTurma(Modalidade.Fundamental, "1", TURMA_CODIGO_3, TipoTurma.Regular, UE_ID_3, ANO_LETIVO_ANO_ATUAL, false);
 
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {

@@ -16,24 +16,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<long> Handle(ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery request, CancellationToken cancellationToken)
         {
-            ModalidadeTipoCalendario modalidade;
-
-            switch (request.Modalidade)
-            {
-                case Modalidade.EducacaoInfantil:
-                    modalidade = ModalidadeTipoCalendario.Infantil;
-                    break;
-                case Modalidade.EJA:
-                    modalidade = ModalidadeTipoCalendario.EJA;
-                    break;
-                case Modalidade.Fundamental:
-                case Modalidade.Medio:
-                default:
-                    modalidade = ModalidadeTipoCalendario.FundamentalMedio;
-                    break;
-            }
-
-            return await repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.AnoLetivo, modalidade, request.Semestre ?? 0);
+            return await repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.AnoLetivo, request.Modalidade.ObterModalidadeTipoCalendario(), request.Semestre ?? 0);
         }
     }
 }

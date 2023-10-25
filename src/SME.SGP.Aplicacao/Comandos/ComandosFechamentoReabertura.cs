@@ -11,18 +11,18 @@ namespace SME.SGP.Aplicacao
     public class ComandosFechamentoReabertura : IComandosFechamentoReabertura
     {
         public readonly IRepositorioDreConsulta repositorioDre;
-        public readonly IRepositorioTipoCalendario repositorioTipoCalendario;
+        public readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta;
         public readonly IRepositorioUeConsulta repositorioUe;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IServicoFechamentoReabertura servicoFechamentoReabertura;
 
         public ComandosFechamentoReabertura(IRepositorioDreConsulta repositorioDre, IRepositorioUeConsulta repositorioUe,
-                                            IRepositorioTipoCalendario repositorioTipoCalendario, IServicoFechamentoReabertura servicoFechamentoReabertura,
+                                            IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta, IServicoFechamentoReabertura servicoFechamentoReabertura,
                                             IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
+            this.repositorioTipoCalendarioConsulta = repositorioTipoCalendarioConsulta ?? throw new ArgumentNullException(nameof(repositorioTipoCalendarioConsulta));
             this.servicoFechamentoReabertura = servicoFechamentoReabertura ?? throw new ArgumentNullException(nameof(servicoFechamentoReabertura));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
         }
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Não foi possível localizar a UE.");
             }
 
-            var tipoCalendario = repositorioTipoCalendario.ObterPorId(fechamentoReaberturaPersistenciaDto.TipoCalendarioId);
+            var tipoCalendario = repositorioTipoCalendarioConsulta.ObterPorId(fechamentoReaberturaPersistenciaDto.TipoCalendarioId);
             if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o Tipo de Calendário.");
 

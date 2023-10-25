@@ -135,8 +135,7 @@ namespace SME.SGP.Aplicacao
             {
                 throw new NegocioException("Turma não encontrada.");
             }
-            var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario());
             if (tipoCalendario.EhNulo())
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");
@@ -159,18 +158,6 @@ namespace SME.SGP.Aplicacao
                 TurmaId = turmaId,
                 AnoLetivo = anoLetivo
             };
-        }
-
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
-        {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
         }
     }
 }

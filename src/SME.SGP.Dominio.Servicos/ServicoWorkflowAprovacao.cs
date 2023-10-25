@@ -379,7 +379,7 @@ namespace SME.SGP.Dominio.Servicos
                                                                 fechamentoReabertura.ObterBimestresNumeral().ToString(),
                                                                 fechamentoReabertura.EhParaUe(),
                                                                 fechamentoReabertura.TipoCalendario.AnoLetivo,
-                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidadesTurma().Cast<int>().ToArray());
+                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidades().Cast<int>().ToArray());
         }
 
         private async Task AprovarUltimoNivelEventoLiberacaoExcepcional(long codigoDaNotificacao, long workflowId)

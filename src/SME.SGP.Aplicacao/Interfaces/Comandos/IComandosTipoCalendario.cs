@@ -7,8 +7,8 @@ namespace SME.SGP.Aplicacao
     public interface IComandosTipoCalendario
     {
         void MarcarExcluidos(long[] ids);
-        Task Incluir(TipoCalendarioDto dto);
-        Task Alterar(TipoCalendarioDto dto, long id);
+        Task Incluir(TipoCalendarioDto tipoCalendarioDto);
+        Task Alterar(TipoCalendarioDto tipoCalendarioDto, long id);
         Task ExecutarReplicacao(TipoCalendarioDto dto, bool inclusao, TipoCalendario tipoCalendario);
     }
 }

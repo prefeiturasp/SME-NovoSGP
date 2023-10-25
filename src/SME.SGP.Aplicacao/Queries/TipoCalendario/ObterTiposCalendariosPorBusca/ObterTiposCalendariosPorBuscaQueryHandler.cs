@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTipoCalendarioPorBuscaQueryHandler : IRequestHandler<ObterTipoCalendarioPorBuscaQuery, IEnumerable<TipoCalendarioBuscaDto>>
+    public class ObterTiposCalendariosPorBuscaQueryHandler : IRequestHandler<ObterTiposCalendariosPorBuscaQuery, IEnumerable<TipoCalendarioBuscaDto>>
     {
         private IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
-        public ObterTipoCalendarioPorBuscaQueryHandler(IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
+        public ObterTiposCalendariosPorBuscaQueryHandler(IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
         {
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
-        public async Task<IEnumerable<TipoCalendarioBuscaDto>> Handle(ObterTipoCalendarioPorBuscaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TipoCalendarioBuscaDto>> Handle(ObterTiposCalendariosPorBuscaQuery request, CancellationToken cancellationToken)
         {
             return await repositorioTipoCalendario.ObterTiposCalendarioPorDescricaoAsync(request.Descricao);
         }

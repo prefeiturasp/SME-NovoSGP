@@ -175,21 +175,6 @@ namespace SME.SGP.Aplicacao
             }).OrderBy(ap => ap.Bimestre).ToList();
         }
 
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
-        {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                case Modalidade.EducacaoInfantil:
-                    return ModalidadeTipoCalendario.Infantil;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
-        }
-
         private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId, string disciplinaIdConsiderada = null, string professor = null)
         {
             return await repositorioBimestre.ObterBimestresAulasPrevistasPorId(aulaPrevistaId, disciplinaIdConsiderada, professor);
@@ -202,7 +187,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turmaModalidade.ObterModalidadeTipoCalendario(), semestre);
 
             if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo calendário não encontrado!");
