@@ -21,8 +21,11 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<IEnumerable<long>> ObterUesIds()
             => database.Conexao.QueryAsync<long>("select id from ue order by id");
 
+        public Task<IEnumerable<long>> ObterTurmasIdsPorUE(long ueId)
+            => database.Conexao.QueryAsync<long>("select id from turma where ano_letivo = extract(year from NOW()) and ue_id = @ueId", new { ueId });
+
         public Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades)
-            => database.Conexao.QueryAsync<long>("select id from turma where modalidade_codigo = @modalidades order by id", new { modalidades });
+            => database.Conexao.QueryAsync<long>("select id from turma where ano_letivo = extract(year from NOW()) and modalidade_codigo = @modalidades order by id", new { modalidades });
 
         public Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId)
             => database.Conexao.QueryAsync<ConselhoClasseAlunoDuplicado>(
@@ -257,5 +260,85 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 	                and cccatn.id is null
 	                and t.ano_letivo = extract(year from NOW())
 	                and u.id = @ueId", new { ueId });
+
+        public Task<IEnumerable<FrequenciaAlunoInconsistente>> ObterFrequenciaAlunoInconsistente(long turmaId)
+            => database.Conexao.QueryAsync<FrequenciaAlunoInconsistente>(
+				@"with consolidado as (
+				select
+						f.codigo_aluno,
+						f.periodo_escolar_id,
+						f.turma_id,
+						f.disciplina_id, 
+						sum(f.total_aulas) total_aulas, 
+						sum(f.total_ausencias) total_ausencias, 
+						sum(f.total_presencas) total_presencas, 
+						sum(f.total_remotos) total_remotos
+					from
+						frequencia_aluno f
+					inner join turma t 
+						on t.turma_id = f.turma_id
+					where
+						not f.excluido
+						and f.tipo = 1
+						and t.id = @turmaId
+					group by
+						f.codigo_aluno,
+						f.periodo_escolar_id,
+						f.turma_id,
+						f.disciplina_id
+				), frequencia as (
+				select
+					a.turma_id, 
+					a.disciplina_id,
+					rfa.codigo_aluno,
+					pe.id as periodo_escolar_id,
+					count(distinct(rfa.aula_id * rfa.numero_aula)) total_aulas,
+					count(distinct(rfa.aula_id * rfa.numero_aula)) filter (where rfa.valor = 2) total_ausencias,
+					count(distinct(rfa.aula_id * rfa.numero_aula)) filter (where rfa.valor = 1) total_presencas,
+					count(distinct(rfa.aula_id * rfa.numero_aula)) filter (where rfa.valor = 3) total_remoto
+				from
+					registro_frequencia_aluno rfa
+				inner join aula a on
+					a.id = rfa.aula_id
+				inner join periodo_escolar pe on
+					pe.tipo_calendario_id = a.tipo_calendario_id
+				inner join turma t on 
+					t.turma_id = a.disciplina_id
+				where
+					not rfa.excluido
+					and not a.excluido
+					and pe.periodo_inicio <= a.data_aula
+					and pe.periodo_fim >= a.data_aula
+					and t.id = @turmaId
+				group by
+					rfa.codigo_aluno,
+					pe.bimestre,
+					a.turma_id,
+					pe.id,
+					a.disciplina_id
+				)
+
+		select f.turma_id as TurmaCodigo, f.disciplina_id as ComponenteCurricularId
+			, f.codigo_aluno as AlunoCodigo, f.periodo_escolar_id as PeriodoEscolarId
+			, f.total_aulas as TotalAulas
+			, f.total_ausencias as TotalAusencias
+			, f.total_presencas as TotalPresencas
+			, f.total_remoto as TotalRemotos
+			, c.total_aulas as TotalAulasCalculado
+			, c.total_ausencias as TotalAusenciasCalculado
+			, c.total_presencas as TotalPresencasCalculado
+			, c.total_remotos as TotalRemotosCalculado
+		from frequencia f
+		inner join consolidado c 
+			on c.turma_id = f.turma_id 
+			and c.codigo_aluno = f.codigo_aluno 
+			and c.disciplina_id = f.disciplina_id
+			and c.periodo_escolar_id = f.periodo_escolar_id
+		where 
+			c.total_ausencias <> f.total_ausencias
+			or c.total_presencas <> f.total_presencas
+			or c.total_remotos <> f.total_remoto
+			or c.total_aulas <> f.total_aulas
+			or f.total_presencas > f.total_aulas;", new { turmaId });
     }
 }

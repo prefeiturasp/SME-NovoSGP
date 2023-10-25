@@ -28,5 +28,8 @@
         public const string LimpezaConsolidacaoCCNotaDuplicado = "sgp.metricas.consolidacao.cc.nota.duplicado.limpeza";
         public const string ConselhoClasseNaoConsolidado = "sgp.metricas.consolidacao.cc.faltante";
         public const string ConselhoClasseNaoConsolidadoUE = "sgp.metricas.consolidacao.cc.faltante.ue";
+        public const string FrequenciaAlunoInconsistente = "sgp.metricas.frequencia.inconsistente";
+        public const string FrequenciaAlunoInconsistenteUE = "sgp.metricas.frequencia.inconsistente.ue";
+        public const string FrequenciaAlunoInconsistenteTurma = "sgp.metricas.frequencia.inconsistente.turma";
     }
 }

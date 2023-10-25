@@ -9,6 +9,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
     {
         Task<IEnumerable<long>> ObterUesIds();
         Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades);
+        Task<IEnumerable<long>> ObterTurmasIdsPorUE(long ueId);
         Task<int> ObterQuantidadeAcessosDia(DateTime data);
         Task<IEnumerable<ConselhoClasseDuplicado>> ObterConselhosClasseDuplicados();
         Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
@@ -21,6 +22,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<IEnumerable<ConsolidacaoConselhoClasseAlunoTurmaDuplicado>> ObterConsolidacaoCCAlunoTurmaDuplicados(long ueId);
         Task<IEnumerable<ConsolidacaoCCNotaDuplicado>> ObterConsolidacaoCCNotasDuplicados();
         Task<IEnumerable<ConselhoClasseNaoConsolidado>> ObterConselhosClasseNaoConsolidados(long ueId);
-
+        Task<IEnumerable<FrequenciaAlunoInconsistente>> ObterFrequenciaAlunoInconsistente(long turmaId);
     }
 }
