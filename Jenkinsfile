@@ -75,7 +75,7 @@ pipeline {
             }
           }
    
-         /*stage('Sonar & Testes') {
+         stage('Sonar & Testes') {
          when { anyOf { branch 'master_'; branch 'main_'; branch "story/*"; branch 'development'; branch 'develop'; branch 'release'; branch 'homolog'; branch 'homolog-r2'; branch 'release-r2';  } }
           parallel {
           stage('TesteIntegracao & build'){
@@ -216,7 +216,7 @@ pipeline {
             }
           }
         }
-      } */
+      }
         
         stage('Build') {
           parallel {
