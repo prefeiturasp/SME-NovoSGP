@@ -89,7 +89,7 @@ namespace SME.SGP.Dados.Repositorios
                         return informativo;
                     }, parametros);
 
-            retorno.Items = itens;
+            retorno.Items = retorno.Items.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
             retorno.TotalRegistros = totalRegistros;
             retorno.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / paginacao.QuantidadeRegistros);
 
@@ -103,7 +103,6 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" WHERE 1 = 1");
             sql.AppendLine(ObterQueryFiltro(filtro));
             sql.AppendLine(" ORDER BY inf.id");
-            sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
 
             return sql.ToString();
         }
@@ -145,7 +144,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(filtro.DreId.HasValue ? " AND dre.id = @dreId" : string.Empty);
             sql.AppendLine(filtro.UeId.HasValue ? " AND ue.id = @ueId" : string.Empty);
             sql.AppendLine(filtro.DataEnvioInicio.HasValue ? " AND inf.data_envio BETWEEN @dataEnvioInicio::date AND @dataEnvioFim::date" : string.Empty);
-            sql.AppendLine(filtro.Perfis.NaoEhNulo() && filtro.Perfis.Any() ? " AND inf_p.codigo_perfil = ANY(@perfils)" : string.Empty);
+            sql.AppendLine(filtro.Perfis.NaoEhNulo() && filtro.Perfis.Any() ? " AND EXISTS (SELECT 1 FROM informativo_perfil inf_p_i WHERE inf_p_i.codigo_perfil = ANY(@perfils) AND inf_p.informativo_id = inf_p_i.informativo_id)" : string.Empty);
             sql.AppendLine(!string.IsNullOrEmpty(filtro.Titulo) ? " AND upper(f_unaccent(inf.titulo)) LIKE @titulo" : string.Empty);
 
             return sql.ToString();
