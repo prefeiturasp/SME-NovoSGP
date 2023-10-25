@@ -10,11 +10,13 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<long> Executar(MensagemRabbit mensagemRabbit)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
-            var command = mensagemRabbit.ObterObjetoMensagem<NotificarUsuarioCommand>();
+            var command = param.ObterObjetoMensagem<NotificarUsuarioCommand>();
 
-            return await mediator.Send(command);
+            await mediator.Send(command);
+
+            return true;
         }
     }
 }
