@@ -340,5 +340,24 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 			or c.total_remotos <> f.total_remoto
 			or c.total_aulas <> f.total_aulas
 			or f.total_presencas > f.total_aulas;", new { turmaId });
+
+        public Task<IEnumerable<FrequenciaAlunoDuplicado>> ObterFrequenciaAlunoDuplicados(long ueId)
+			=> database.Conexao.QueryAsync<FrequenciaAlunoDuplicado>(
+				@"select fa.turma_id as TurmaId, fa.codigo_aluno as AlunoCodigo, 
+						fa.bimestre, fa.disciplina_id as ComponenteCurricularId, 
+						fa.tipo, t.ue_id as UeId,
+						count(fa.id) Quantidade, 
+						min(fa.criado_em) as PrimeiroRegistro,
+						max(fa.criado_em) as UltimoRegistro,
+						min(fa.id) as PrimeiroId,
+						max(fa.id) as UltimoId
+				from frequencia_aluno fa 
+				inner join turma t on t.turma_id = fa.turma_id 
+				where fa.periodo_inicio >= DATE_TRUNC('year', current_date) 
+					and (fa.criado_em >= DATE_TRUNC('year', current_date)  or fa.alterado_em >= DATE_TRUNC('year', current_date) )
+					and t.ue_id = @ueId
+				group by fa.turma_id, fa.codigo_aluno, fa.bimestre, fa.tipo, fa.disciplina_id, t.ue_id
+				having count(fa.id) > 1
+				order by t.ue_id, fa.turma_id, fa.codigo_aluno, fa.bimestre, fa.tipo, fa.disciplina_id", new { ueId });
     }
 }

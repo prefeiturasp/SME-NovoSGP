@@ -31,5 +31,8 @@
         public const string FrequenciaAlunoInconsistente = "sgp.metricas.frequencia.inconsistente";
         public const string FrequenciaAlunoInconsistenteUE = "sgp.metricas.frequencia.inconsistente.ue";
         public const string FrequenciaAlunoInconsistenteTurma = "sgp.metricas.frequencia.inconsistente.turma";
+        public const string DuplicacaoFrequenciaAluno = "sgp.metricas.frequencia.aluno.duplicado";
+        public const string DuplicacaoFrequenciaAlunoUE = "sgp.metricas.frequencia.aluno.duplicado.ue";
+        public const string LimpezaFrequenciaAlunoDuplicado = "sgp.metricas.frequencia.aluno.duplicado.limpeza";
     }
 }
