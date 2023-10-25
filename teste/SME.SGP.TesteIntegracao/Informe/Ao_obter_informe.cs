@@ -64,8 +64,8 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var resultado = await useCase.Executar(INFORME_ID_1);
             resultado.ShouldNotBeNull();
-            resultado.DreNome.ShouldBeEmpty();
-            resultado.UeNome.ShouldBeEmpty();
+            resultado.DreNome.ShouldBe("Todas");
+            resultado.UeNome.ShouldBe("Todas");
             resultado.Texto.ShouldBe("teste");
             resultado.Titulo.ShouldBe("informes sem dre");
             resultado.Perfis.ShouldNotBeNull();
