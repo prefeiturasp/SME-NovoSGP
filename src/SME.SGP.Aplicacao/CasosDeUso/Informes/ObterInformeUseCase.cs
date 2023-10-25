@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterInformeUseCase : AbstractUseCase, IObterInformeUseCase
     {
+        private const string TODAS = "Todas";
         public ObterInformeUseCase(IMediator mediator) : base(mediator)
         {
         }
@@ -29,9 +30,9 @@ namespace SME.SGP.Aplicacao
             {
                 Id = informe.Id,
                 DreId = informe.DreId,
-                DreNome = informe.Dre.NaoEhNulo() ? informe.Dre.Abreviacao : string.Empty,
+                DreNome = informe.Dre.NaoEhNulo() ? informe.Dre.Abreviacao : TODAS,
                 UeId = informe.UeId,
-                UeNome = informe.Ue.NaoEhNulo() ? $"{ informe.Ue.TipoEscola.ShortName() } { informe.Ue.Nome }" : string.Empty,
+                UeNome = informe.Ue.NaoEhNulo() ? $"{ informe.Ue.TipoEscola.ShortName() } { informe.Ue.Nome }" : TODAS,
                 Texto = informe.Texto,
                 Titulo = informe.Titulo,
                 Perfis = ObterPerfils(perfils, informe.Perfis),
