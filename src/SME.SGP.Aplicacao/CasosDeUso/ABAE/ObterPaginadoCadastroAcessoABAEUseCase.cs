@@ -31,5 +31,5 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = retorno.TotalPaginas
             };
         }
-    }
-}
+	}	
+}	
