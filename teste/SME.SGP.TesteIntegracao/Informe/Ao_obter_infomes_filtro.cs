@@ -95,8 +95,8 @@ namespace SME.SGP.TesteIntegracao.Informe
             resultado.Items.ShouldNotBeNull();
             resultado.Items.Count().ShouldBe(2);
             var item1 = resultado.Items.FirstOrDefault(item => item.Id == 1);
-            item1.DreNome.ShouldBeEmpty();
-            item1.UeNome.ShouldBeEmpty();
+            item1.DreNome.ShouldBe("Todas");
+            item1.UeNome.ShouldBe("Todas");
             item1.Titulo.ShouldBe("informe 1");
             item1.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
             item1.EnviadoPor.ShouldBe($"{SISTEMA_NOME} ({SISTEMA_CODIGO_RF})");
@@ -332,8 +332,8 @@ namespace SME.SGP.TesteIntegracao.Informe
             resultado.Items.ShouldNotBeNull();
             resultado.Items.Count().ShouldBe(2);
             var item1 = resultado.Items.FirstOrDefault(item => item.Id == 1);
-            item1.DreNome.ShouldBeEmpty();
-            item1.UeNome.ShouldBeEmpty();
+            item1.DreNome.ShouldBe("Todas");
+            item1.UeNome.ShouldBe("Todas");
             item1.Titulo.ShouldBe("informe 1");
             item1.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
             item1.EnviadoPor.ShouldBe($"{SISTEMA_NOME} ({SISTEMA_CODIGO_RF})");
@@ -414,8 +414,8 @@ namespace SME.SGP.TesteIntegracao.Informe
             resultado.Items.ShouldNotBeNull();
             resultado.Items.Count().ShouldBe(2);
             var item1 = resultado.Items.FirstOrDefault(item => item.Id == 1);
-            item1.DreNome.ShouldBeEmpty();
-            item1.UeNome.ShouldBeEmpty();
+            item1.DreNome.ShouldBe("Todas");
+            item1.UeNome.ShouldBe("Todas");
             item1.Titulo.ShouldBe("informe 1");
             item1.DataEnvio.ShouldBe(DateTimeExtension.HorarioBrasilia().ToString("dd/MM/yyyy"));
             item1.EnviadoPor.ShouldBe($"{SISTEMA_NOME} ({SISTEMA_CODIGO_RF})");
