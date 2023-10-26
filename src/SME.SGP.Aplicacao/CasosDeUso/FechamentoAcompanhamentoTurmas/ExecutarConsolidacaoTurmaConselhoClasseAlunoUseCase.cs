@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private const int BIMESTRE_4 = 4;
         private const double NOTA_CONCEITO_CINCO = 5.0;
         private const double NOTA_CONCEITO_SETE = 7.0;
+        private const int EdFisica = 6;
 
         public ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase(IMediator mediator) : base(mediator)
         { }
@@ -63,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                     if (turma.EhTurmaRegular() && turma.EhEJA())
-                    componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
+                        componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
             }
 
             var statusNovo = SituacaoConselhoClasse.NaoIniciado;
@@ -85,10 +86,13 @@ namespace SME.SGP.Aplicacao
 
             if (!filtro.Inativo)
             {
-                var componentesDoAluno = await mediator
-                    .Send(new ObterComponentesParaFechamentoAcompanhamentoCCAlunoQuery(filtro.AlunoCodigo, filtro.Bimestre, filtro.TurmaId));
+                
+                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+                if(codigosComplementares.Any())
+                    turmasCodigos.AddRange(codigosComplementares);
+                var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
-                if (componentesDoAluno.NaoEhNulo() && componentesDoAluno.Any())
+                if (componentesDaTurmaES.NaoEhNulo() && componentesDaTurmaES.Any())
                 {
                     if (!filtro.Bimestre.HasValue || filtro.Bimestre == 0)
                     {
@@ -97,18 +101,13 @@ namespace SME.SGP.Aplicacao
                         var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
-
-                    var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
-                    turmasCodigos.AddRange(codigosComplementares);
-                    var componentesDaTurmaEol = await mediator
-                        .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos.ToArray()));
-
+                 
                     //Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
-                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != 6);
+                        componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != EdFisica);
 
-                    var possuiComponentesSemNotaConceito = componentesDaTurmaEol
-                        .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
+                    var possuiComponentesSemNotaConceito = componentesDaTurmaES
+                        .Where(ct => ct.LancaNota && !ct.EhTerritorioSaber)
                         .Select(ct => ct.Codigo.ToString())
                         .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
                         .Any();
