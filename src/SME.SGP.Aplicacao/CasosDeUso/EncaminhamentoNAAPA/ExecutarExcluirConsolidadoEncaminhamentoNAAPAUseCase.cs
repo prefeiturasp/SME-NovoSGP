@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtroExclusao = param.ObterObjetoMensagem<FiltroExcluirUesConsolidadoEncaminhamentoNAAPADto>();
             var idsExclusao = await mediator.Send(new ObterEncaminhamentosNAAPAIdConsolidadoExclusaoQuery(filtroExclusao.UeId, filtroExclusao.AnoLetivo, filtroExclusao.SituacoesIgnoradas));
-            if (idsExclusao != null && idsExclusao.Any())
+            if (idsExclusao.NaoEhNulo() && idsExclusao.Any())
                 foreach(var id in idsExclusao)
                     await mediator.Send(new ExcluirConsolidadoEncaminhamentoNAAPAPorIdCommand(id));
             return true;

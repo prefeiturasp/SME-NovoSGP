@@ -6,6 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioSecaoRelatorioSemestralPAP
     {
-        Task<IEnumerable<SecaoRelatorioSemestralPAP>> ObterSecoesVigentes(DateTime dataReferencia);
+        Task<IEnumerable<SecaoRelatorioSemestralPAP>> ObterSecoes();
     }
 }

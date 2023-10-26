@@ -19,7 +19,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -27,14 +26,13 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IMediator mediator;
 
         public ServicoFechamentoReabertura(IRepositorioFechamentoReabertura repositorioFechamentoReabertura, IUnitOfWork unitOfWork,
-            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoEol servicoEOL, IServicoNotificacao servicoNotificacao,
+            IComandosWorkflowAprovacao comandosWorkflowAprovacao, IServicoUsuario servicoUsuario, IServicoNotificacao servicoNotificacao,
             IRepositorioEventoTipo repositorioEventoTipo, IServicoEvento servicoEvento, IRepositorioEvento repositorioEvento, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IMediator mediator)
         {
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.comandosWorkflowAprovacao = comandosWorkflowAprovacao ?? throw new ArgumentNullException(nameof(comandosWorkflowAprovacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
@@ -98,19 +96,19 @@ namespace SME.SGP.Dominio.Servicos
 
         private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
         {
-            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
-                                                                fechamentoReabertura.Ue != null ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
+            return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Dre.CodigoDre : string.Empty,
+                                                                fechamentoReabertura.Ue.NaoEhNulo() ? fechamentoReabertura.Ue.CodigoUe : string.Empty,
                                                                 fechamentoReabertura.Id,
                                                                 usuario.CodigoRf,
                                                                 fechamentoReabertura.TipoCalendario.Nome,
-                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Ue.Nome : string.Empty,
-                                                                fechamentoReabertura.Dre != null ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
+                                                                fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Ue.Nome : string.Empty,
+                                                                fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Dre.Abreviacao : string.Empty,
                                                                 fechamentoReabertura.Inicio,
                                                                 fechamentoReabertura.Fim,
                                                                 fechamentoReabertura.ObterBimestresNumeral().ToString(),
                                                                 fechamentoReabertura.EhParaUe(),
                                                                 fechamentoReabertura.TipoCalendario.AnoLetivo,
-                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidadesTurma().Cast<int>().ToArray());
+                                                                fechamentoReabertura.TipoCalendario.Modalidade.ObterModalidades().Cast<int>().ToArray());
         }
 
         public async Task<string> ExcluirAsync(FechamentoReabertura fechamentoReabertura)
@@ -132,7 +130,7 @@ namespace SME.SGP.Dominio.Servicos
                     await ExcluirVinculosAysnc(fechamentoReabertura);
                 else
                 {
-                    if (fechamentoReaberturasParaExcluir != null && fechamentoReaberturasParaExcluir.Any())
+                    if (fechamentoReaberturasParaExcluir.NaoEhNulo() && fechamentoReaberturasParaExcluir.Any())
                         foreach (var fechamentoReaberturaParaExcluir in fechamentoReaberturasParaExcluir)
                             await ExcluirVinculosAysnc(fechamentoReaberturaParaExcluir);
                 }
@@ -209,7 +207,7 @@ namespace SME.SGP.Dominio.Servicos
                 await comandosWorkflowAprovacao.ExcluirAsync(fechamentoReaberturaParaExcluir.WorkflowAprovacaoId.Value);
 
             var notificacoesParaExcluir = await repositorioFechamentoReabertura.ObterNotificacoes(fechamentoReaberturaParaExcluir.Id);
-            if (notificacoesParaExcluir != null && notificacoesParaExcluir.Any())
+            if (notificacoesParaExcluir.NaoEhNulo() && notificacoesParaExcluir.Any())
             {
                 await repositorioFechamentoReabertura.ExcluirVinculoDeNotificacoesAsync(fechamentoReaberturaParaExcluir.Id);
                 await servicoNotificacao.ExcluirFisicamenteAsync(notificacoesParaExcluir.Select(a => a.NotificacaoId).ToArray());

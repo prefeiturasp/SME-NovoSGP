@@ -222,14 +222,14 @@ namespace SME.SGP.Dominio.Servicos
 
                     var notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache);
 
-                    if (notasFechamentoFinaisNoCache != null)
+                    if (notasFechamentoFinaisNoCache.NaoEhNulo())
                         await PersistirNotasFinaisNoCache(notasFechamentoFinaisNoCache, fechamentoNota,fechamentoAluno.AlunoCodigo, fechamentoFinal.DisciplinaId.ToString(), turma.CodigoTurma, emAprovacao);
 
                     nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(turma.CodigoTurma, fechamentoAluno.AlunoCodigo);
 
                     var notasConceitosFechamento = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
 
-                    if (notasConceitosFechamento != null)
+                    if (notasConceitosFechamento.NaoEhNulo())
                         await PersistirNotaConceitoBimestreNoCache(notasConceitosFechamento, fechamentoNota, fechamentoAluno.AlunoCodigo, turma.CodigoTurma);
                 }
             }
@@ -250,7 +250,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, alunoCodigo, consideraInativos: true));
 
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
@@ -318,14 +318,14 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task VerificaPersistenciaGeral(Turma turma)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), turma.Semestre);
-            if (tipoCalendario == null)
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), turma.Semestre);
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de calendário.");
 
             var diaAtual = DateTime.Today;
 
             var eventoFechamento = await repositorioEvento.EventosNosDiasETipo(diaAtual, diaAtual, TipoEvento.FechamentoBimestre, tipoCalendario.Id, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre);
-            if (eventoFechamento == null || !eventoFechamento.Any())
+            if (eventoFechamento.EhNulo() || !eventoFechamento.Any())
                 throw new NegocioException("Não foi possível localizar um fechamento de período ou reabertura para esta turma.");
 
             var professorRf = servicoUsuario.ObterRf();
@@ -342,7 +342,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
-            if (notaFinalAluno == null) {
+            if (notaFinalAluno.EhNulo()) {
                 notasFinais.Add(new FechamentoNotaAlunoAprovacaoDto
                 {
                     Bimestre = null,
@@ -380,7 +380,7 @@ namespace SME.SGP.Dominio.Servicos
             var notaConceitoFechamentoAluno = notasConceitosFechamento.FirstOrDefault(c => c.AlunoCodigo == codigoAluno &&
                 c.ComponenteCurricularCodigo == fechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
-            if (notaConceitoFechamentoAluno == null)
+            if (notaConceitoFechamentoAluno.EhNulo())
                 notasConceitosFechamento.Add(ObterNotaConceitoBimestreAluno(codigoAluno, fechamentoNota.DisciplinaId, codigoTurma, fechamentoNota));
             else
             {
@@ -406,8 +406,8 @@ namespace SME.SGP.Dominio.Servicos
                 ComponenteCurricularCodigo = codigoDisciplina,
                 TurmaCodigo = codigoTurma,
                 Bimestre = null,
-                ConselhoClasseNotaId = conselho != null ? conselho.ConselhoClasseNotaId : 0,
-                ConselhoClasseId = conselho != null ? conselho.ConselhoClasseId : 0
+                ConselhoClasseNotaId = conselho.NaoEhNulo() ? conselho.ConselhoClasseNotaId : 0,
+                ConselhoClasseId = conselho.NaoEhNulo() ? conselho.ConselhoClasseId : 0
             };
         }
     }

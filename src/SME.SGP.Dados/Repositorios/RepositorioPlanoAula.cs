@@ -139,7 +139,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             var objetivoComponente = retorno.ObjetivosAprendizagemComponente.FirstOrDefault(c => c.ComponenteCurricularId == componenteId);
-            if (objetivoComponente == null && componenteId.HasValue)
+            if (objetivoComponente.EhNulo() && componenteId.HasValue)
             {
                 objetivoComponente = new ObjetivosAprendizagemPorComponenteDto();
                 objetivoComponente.ComponenteCurricularId = componenteId.Value;
@@ -147,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.Adicionar(objetivoComponente);
             }
 
-            if (objetivoComponente != null && objetivoAprendizagemDto != null)
+            if (objetivoComponente.NaoEhNulo() && objetivoAprendizagemDto.NaoEhNulo())
             {
                 objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
             }

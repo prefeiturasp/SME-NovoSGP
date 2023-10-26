@@ -9,7 +9,7 @@ namespace SME.SGP.Infra
         public AuditoriaDto Auditoria { get; set; }
 
         public static explicit operator AcompanhamentoAlunoSemestreAuditoriaDto(AcompanhamentoAlunoSemestre acompanhamento)
-            => acompanhamento == null ? null :
+            => acompanhamento.EhNulo() ? null :
             new AcompanhamentoAlunoSemestreAuditoriaDto()
             {
                 AcompanhamentoAlunoId = acompanhamento.AcompanhamentoAlunoId,

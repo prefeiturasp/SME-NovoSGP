@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(request.UsuarioRf));
 
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado!");
 
             var novoRelatorioCorrelacao = new RelatorioCorrelacao()

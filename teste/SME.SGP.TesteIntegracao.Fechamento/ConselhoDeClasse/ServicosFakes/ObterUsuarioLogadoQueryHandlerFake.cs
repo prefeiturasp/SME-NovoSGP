@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -12,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
     {
         public async Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            return new Usuario()
+            var usuario = new Usuario()
             {
                 Id = 1,
                 CodigoRf = "4444444",
@@ -21,8 +22,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01)
             };
+
+            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { CodigoPerfil = Perfis.PERFIL_PROFESSOR } });
+
+            return await Task.FromResult(usuario);
         }
     }
 }

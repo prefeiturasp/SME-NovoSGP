@@ -151,7 +151,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and ue.id = @ueId ");
             if (turmaId > 0)
                 sql.AppendLine(" and t.id = @turmaId ");
-            if (turmasCodigos != null && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
+            if (turmasCodigos.NaoEhNulo() && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
                 sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
 
             sql.AppendLine(" ) ");
@@ -168,7 +168,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("                    and u2.id = @ueId ");
             if (turmaId > 0)
                 sql.AppendLine("                    and t2.id = @turmaId ");
-            if (turmasCodigos != null && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
+            if (turmasCodigos.NaoEhNulo() && turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
                 sql.AppendLine("                    and t2.turma_id = ANY(@turmasCodigos) ");
 
             sql.AppendLine("                  limit 1)) ");

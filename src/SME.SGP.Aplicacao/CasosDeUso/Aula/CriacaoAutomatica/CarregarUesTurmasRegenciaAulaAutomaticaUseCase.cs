@@ -22,15 +22,15 @@ namespace SME.SGP.Aplicacao
             Turma turma = null;
             var executarProximaPagina = false;
 
-            var mensagem = mensagemRabbit != null && mensagemRabbit.Mensagem != null ?
+            var mensagem = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
                 mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
 
-            if (mensagem?.CodigoTurma != null)
+            if ((mensagem?.CodigoTurma).NaoEhNulo())
             {
                 turma = await mediator
                     .Send(new ObterTurmaComUeEDrePorCodigoQuery(mensagem.CodigoTurma));
 
-                if (turma == null || (turma.ModalidadeCodigo != Modalidade.Fundamental && turma.ModalidadeCodigo != Modalidade.EJA))
+                if (turma.EhNulo() || (turma.ModalidadeCodigo != Modalidade.Fundamental && turma.ModalidadeCodigo != Modalidade.EJA))
                     return false;
                 else
                     modalidades = new Modalidade[] { turma.ModalidadeCodigo };
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await mediator
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
-            if (periodosEscolares == null && !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() && !periodosEscolares.Any())
             {
                 await mediator
                     .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
@@ -81,10 +81,10 @@ namespace SME.SGP.Aplicacao
             var diasLetivosENaoLetivos = await mediator
                 .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
 
-            var uesCodigos = turma != null ? new string[] { turma.Ue.CodigoUe } : await mediator
+            var uesCodigos = turma.NaoEhNulo() ? new string[] { turma.Ue.CodigoUe } : await mediator
                 .Send(new ObterUesCodigosPorModalidadeEAnoLetivoQuery(modalidade, anoAtual, pagina));
 
-            if (uesCodigos == null || !uesCodigos.Any())
+            if (uesCodigos.EhNulo() || !uesCodigos.Any())
                 return false;
 
             foreach (var ueCodigo in uesCodigos)
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
         {
             var componentesCurriculares = await mediator.Send(new ObterCodigosComponentesCurricularesRegenciaAulasAutomaticasQuery(modalidade));
             var dadosTurmaComponente = new List<DadosTurmaAulasAutomaticaDto>();
-            if (turma != null)
+            if (turma.NaoEhNulo())
                 await DefinirParaTurma(turma, componentesCurriculares, dadosTurmaComponente);
             else
             {

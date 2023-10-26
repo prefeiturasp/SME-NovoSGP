@@ -30,7 +30,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolar;
         private readonly Mock<IRepositorioParametrosSistemaConsulta> repositorioParametrosSistema;
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
-        private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioComponenteCurricularConsulta> repositorioComponenteCurricular;
@@ -47,7 +46,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolarConsulta>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistemaConsulta>();
             repositorioTipoCalendatio = new Mock<IRepositorioTipoCalendario>();
-            servicoEOL = new Mock<IServicoEol>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             consultasAbrangencia = new Mock<IConsultasAbrangencia>();
             repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
@@ -62,7 +60,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                                   comandosDiasLetivosMock.Object,
                                                                                   repositorioAula.Object,
                                                                                   servicoUsuario.Object,
-                                                                                  servicoEOL.Object,
                                                                                   repositorioComponenteCurricular.Object,
                                                                                   consultasAbrangencia.Object,
                                                                                   repositorioAtividadeAvaliativa.Object,

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaTurmas = await repositorioUe.ObterTurmas(ueCodigo, (Modalidade)modalidadeId, ano, ehHistorico);
 
-            if (listaTurmas != null && listaTurmas.Any())
+            if (listaTurmas.NaoEhNulo() && listaTurmas.Any())
             {
                 return from b in listaTurmas
                        select new TurmaRetornoDto()

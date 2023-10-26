@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorEstudanteQuery(filtroEncaminhamentoAee.EstudanteCodigo,
                 filtroEncaminhamentoAee.UeCodigo));
 
-            if (encaminhamentoAEE != null && SituacaoDiferenteIndeferidoOuEncerradoAutomaticamente(encaminhamentoAEE))
+            if (encaminhamentoAEE.NaoEhNulo() && SituacaoDiferenteIndeferidoOuEncerradoAutomaticamente(encaminhamentoAEE))
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.ESTUDANTE_JA_POSSUI_ENCAMINHAMENTO_AEE_EM_ABERTO);
 
             return true;

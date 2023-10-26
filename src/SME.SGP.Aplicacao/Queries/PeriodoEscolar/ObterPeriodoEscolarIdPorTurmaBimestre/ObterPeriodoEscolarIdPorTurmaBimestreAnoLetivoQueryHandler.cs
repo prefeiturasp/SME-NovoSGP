@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
             
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
             return await repositorioPeriodoEscolar.ObterPeriodoEscolarIdPorTurmaBimestre(request.TurmaCodigo,

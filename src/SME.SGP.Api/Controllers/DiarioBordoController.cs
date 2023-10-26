@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -24,7 +25,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Obter([FromQuery] int componenteCurricularId, [FromServices] IObterDiarioBordoUseCase useCase, long aulaId)
         {
             var result = await useCase.Executar(aulaId, componenteCurricularId);
-            if (result == null)
+            if (result.EhNulo())
                 return NoContent();
 				
 			return Ok(result);
@@ -148,7 +149,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterDatasDiarioPorPeriodo(string turmaCodigo, DateTime dataInicio, DateTime dataFim, long componenteCurricularId, [FromServices] IObterDatasDiarioBordoPorPeriodoUseCase useCase)
         {
             var result = await useCase.Executar(turmaCodigo, dataInicio, dataFim, componenteCurricularId);
-            if (result == null)
+            if (result.EhNulo())
                 return NoContent();
 
             return Ok(result);

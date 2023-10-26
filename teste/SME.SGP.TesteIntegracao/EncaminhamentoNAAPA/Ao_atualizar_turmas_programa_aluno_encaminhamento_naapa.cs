@@ -233,7 +233,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            if (turmasPrograma != null)
+            if (turmasPrograma.NaoEhNulo())
                 await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
                 {
                     QuestaoEncaminhamentoId = 3,

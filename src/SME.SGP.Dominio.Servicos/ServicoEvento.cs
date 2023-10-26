@@ -71,7 +71,7 @@ namespace SME.SGP.Dominio.Servicos
             if (evento.EventoPaiId.HasValue && evento.EventoPaiId > 0 && alterarRecorrenciaCompleta)
             {
                 IEnumerable<Evento> eventos = repositorioEvento.ObterEventosPorRecorrencia(evento.Id, evento.EventoPaiId.Value, evento.DataInicio);
-                if (eventos != null && eventos.Any())
+                if (eventos.NaoEhNulo() && eventos.Any())
                 {
                     foreach (var eventoASerAlterado in eventos)
                     {
@@ -295,7 +295,7 @@ namespace SME.SGP.Dominio.Servicos
             if (!dataFinal.HasValue)
             {
                 var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendario(evento.TipoCalendarioId);
-                if (periodoEscolar == null || !periodoEscolar.Any())
+                if (periodoEscolar.EhNulo() || !periodoEscolar.Any())
                 {
                     throw new NegocioException("Não é possível cadastrar o evento pois não existe período escolar cadastrado para este calendário.");
                 }
@@ -339,7 +339,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<bool> ValidaCadastroEvento(DateTime dataInicio, long tipoCalendarioId, bool ehLetivo, long tipoEventoId)
         {
             var periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataInicio, dataInicio);
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return false;
 
             if (ehLetivo && tipoEventoId != (int)TipoEvento.LiberacaoExcepcional)
@@ -466,7 +466,7 @@ namespace SME.SGP.Dominio.Servicos
             var feriados = feriadosFixos?.ToList();
             feriados?.AddRange(feriadosMoveis);
 
-            if (feriados == null || !feriados.Any())
+            if (feriados.EhNulo() || !feriados.Any())
                 throw new NegocioException("Nenhum feriado foi encontrado");
 
             return feriados;
@@ -476,7 +476,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoEventoFeriado = repositorioEventoTipo.ObtenhaTipoEventoFeriado();
 
-            if (tipoEventoFeriado == null || tipoEventoFeriado.Id == 0)
+            if (tipoEventoFeriado.EhNulo() || tipoEventoFeriado.Id == 0)
                 throw new NegocioException("Nenhum tipo de evento de feriado foi encontrado");
             return tipoEventoFeriado;
         }
@@ -484,7 +484,7 @@ namespace SME.SGP.Dominio.Servicos
         private TipoCalendario ObterTipoCalendario(Evento evento)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Calendário não encontrado.");
 
             evento.AdicionarTipoCalendario(tipoCalendario);
@@ -495,7 +495,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var tipoEvento = repositorioEventoTipo.ObterPorId(evento.TipoEventoId);
 
-            if (tipoEvento == null)
+            if (tipoEvento.EhNulo())
                 throw new NegocioException("O tipo do evento deve ser informado.");
 
             evento.AdicionarTipoEvento(tipoEvento);
@@ -507,7 +507,7 @@ namespace SME.SGP.Dominio.Servicos
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var escola = await repositorioAbrangencia.ObterUe(evento.UeId, loginAtual, perfilAtual);
 
-            if (escola == null)
+            if (escola.EhNulo())
                 throw new NegocioException($"Não foi possível localizar a escola da criação do evento.");
 
             var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/{evento.Id}/";

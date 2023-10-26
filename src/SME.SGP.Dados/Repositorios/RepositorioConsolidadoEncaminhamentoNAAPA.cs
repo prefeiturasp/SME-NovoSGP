@@ -39,9 +39,9 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"from consolidado_encaminhamento_naapa cen");
             sql.AppendLine(@"inner join ue u on u.id = cen.ue_id");
             sql.AppendLine(@"where cen.ano_Letivo = @anoLetivo ");
-            if(ueId != null)
+            if(ueId.NaoEhNulo())
                sql.AppendLine(@"	and cen.ue_id= @ueId ");
-            if(dreId != null)
+            if(dreId.NaoEhNulo())
                sql.AppendLine(@"	and u.dre_id = @dreId ");
             sql.AppendLine(@"group by cen.situacao;");
             return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId,anoLetivo,dreId }, commandTimeout: 60);

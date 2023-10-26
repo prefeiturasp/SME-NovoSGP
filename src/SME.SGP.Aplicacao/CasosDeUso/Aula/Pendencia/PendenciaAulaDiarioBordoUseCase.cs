@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
 
-            if (filtro != null)
+            if (filtro.NaoEhNulo())
             {
                 var turmasUe = await mediator.Send(new ObterTurmasInfantilPorUEQuery(DateTimeExtension.HorarioBrasilia().Year, filtro.CodigoUe));
 

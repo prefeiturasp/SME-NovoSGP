@@ -24,16 +24,16 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("A turma informada não foi encontrada!");
 
-            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }, codigoTurma: turma.CodigoTurma));
+            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
 
-            if (componenteCurricular == null || !componenteCurricular.Any())
+            if (componenteCurricular.EhNulo() || !componenteCurricular.Any())
                 throw new NegocioException("O componente curricular não foi encontrado");
 
             var registroIndividual = await repositorioRegistroIndividual.ObterPorIdAsync(request.Id);
-            if (registroIndividual == null)
+            if (registroIndividual.EhNulo())
                 throw new NegocioException($"Registro individual {request.Id} não encontrado!");
 
             var regristroAtual = registroIndividual.Registro;

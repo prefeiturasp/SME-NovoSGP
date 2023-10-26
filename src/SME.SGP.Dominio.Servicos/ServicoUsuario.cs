@@ -25,13 +25,11 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioPrioridadePerfil repositorioPrioridadePerfil;
         private readonly IRepositorioUsuario repositorioUsuario;
-        private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
 
         private Usuario usuarioLogado { get; set; }
 
         public ServicoUsuario(IRepositorioUsuario repositorioUsuario,
-                              IServicoEol servicoEOL,
                               IRepositorioPrioridadePerfil repositorioPrioridadePerfil,
                               IUnitOfWork unitOfWork,
                               IContextoAplicacao contextoAplicacao,
@@ -40,7 +38,6 @@ namespace SME.SGP.Dominio
                               IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioPrioridadePerfil = repositorioPrioridadePerfil;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
@@ -53,7 +50,7 @@ namespace SME.SGP.Dominio
         {
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
 
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado.");
 
             await AlterarEmail(usuario, novoEmail);
@@ -66,11 +63,17 @@ namespace SME.SGP.Dominio
         public async Task AlterarEmailUsuarioPorRfOuInclui(string codigoRf, string novoEmail)
         {
             unitOfWork.IniciarTransacao();
+            try
+            {
+                var usuario = await ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
+                await AlterarEmail(usuario, novoEmail);
 
-            var usuario = await ObterUsuarioPorCodigoRfLoginOuAdiciona(codigoRf);
-            await AlterarEmail(usuario, novoEmail);
-
-            unitOfWork.PersistirTransacao();
+                unitOfWork.PersistirTransacao();
+            } catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
 
         public string ObterClaim(string nomeClaim)
@@ -83,7 +86,7 @@ namespace SME.SGP.Dominio
         {
             var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
 
-            if (loginAtual == null)
+            if (loginAtual.EhNulo())
                 throw new NegocioException("Não foi possível localizar o login no token");
 
             return loginAtual;
@@ -92,7 +95,7 @@ namespace SME.SGP.Dominio
         public string ObterNomeLoginAtual()
         {
             var nomeLoginAtual = contextoAplicacao.ObterVariavel<string>("NomeUsuario");
-            if (nomeLoginAtual == null)
+            if (nomeLoginAtual.EhNulo())
                 throw new NegocioException("Não foi possível localizar o nome do login no token");
 
             return nomeLoginAtual;
@@ -107,9 +110,9 @@ namespace SME.SGP.Dominio
         {
             var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
 
-            var perfisPorLogin = await servicoEOL.ObterPerfisPorLogin(login);
+            var perfisPorLogin = await mediator.Send(new ObterPerfisPorLoginQuery(login));
 
-            if (perfisPorLogin == null)
+            if (perfisPorLogin.EhNulo())
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
 
             var perfisDoUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(perfisPorLogin.Perfis);
@@ -143,7 +146,7 @@ namespace SME.SGP.Dominio
 
         public async Task<Usuario> ObterUsuarioLogado()
         {
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 usuarioLogado = await IdentificaUsuarioLogado();
 
             return usuarioLogado;
@@ -157,13 +160,13 @@ namespace SME.SGP.Dominio
 
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
 
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Usuário não encontrado.");
 
             if (!string.IsNullOrEmpty(contextoAplicacao.NomeUsuario))
                 usuario.Nome = contextoAplicacao.NomeUsuario;
 
-            if (usuario.Perfis != null && usuario.Perfis.Any())
+            if (usuario.Perfis.NaoEhNulo() && usuario.Perfis.Any())
                 return usuario;
 
             var chaveCache = string.Format(NomeChaveCache.PERFIS_USUARIO, login);
@@ -182,7 +185,7 @@ namespace SME.SGP.Dominio
             codigoRf = eNumero ? codigoRf : null;
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));
 
-            if (usuario != null)
+            if (usuario.NaoEhNulo())
             {
                 var atualizouNome = AtualizouNomeDoUsuario(usuario, nome);
                 var atualizouRF = AtualizouRfDoUsuario(usuario, codigoRf);
@@ -207,8 +210,8 @@ namespace SME.SGP.Dominio
 
         public async Task PodeModificarPerfil(Guid perfilParaModificar, string login)
         {
-            var perfisDoUsuario = await servicoEOL.ObterPerfisPorLogin(login);
-            if (perfisDoUsuario == null)
+            var perfisDoUsuario = await mediator.Send(new ObterPerfisPorLoginQuery(login));
+            if (perfisDoUsuario.EhNulo())
                 throw new NegocioException($"Não foi possível obter os perfis do usuário {login}");
 
             if (!perfisDoUsuario.Perfis.Contains(perfilParaModificar))
@@ -225,19 +228,19 @@ namespace SME.SGP.Dominio
             var atribuicaoCj = repositorioAtribuicaoCJ
                 .ObterAtribuicaoAtiva(codigoRf, false);
 
-            return atribuicaoCj != null && atribuicaoCj.Any();
+            return atribuicaoCj.NaoEhNulo() && atribuicaoCj.Any();
         }
 
         public async Task<bool> PodePersistirTurmaNasDatas(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
-            if (usuario == null)
+            if (usuario.EhNulo())
                 usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(codigoRf, string.Empty));
 
             if (!usuario.EhProfessorCj())
             {
                 var validacaoData = await mediator.Send(new ObterValidacaoPodePersistirTurmaNasDatasQuery(usuario.CodigoRf, turmaId, new DateTime[] { data }, long.Parse(disciplinaId)));
 
-                if (validacaoData == null || !validacaoData.Any())
+                if (validacaoData.EhNulo() || !validacaoData.Any())
                     throw new NegocioException("Não foi possível obter a validação do professor no EOL.");
 
                 return validacaoData.FirstOrDefault().PodePersistir;
@@ -246,12 +249,12 @@ namespace SME.SGP.Dominio
             var atribuicaoCj = repositorioAtribuicaoCJ
                 .ObterAtribuicaoAtiva(usuario.CodigoRf, false);
 
-            return atribuicaoCj != null && atribuicaoCj.Any();
+            return atribuicaoCj.NaoEhNulo() && atribuicaoCj.Any();
         }
 
         public async Task<bool> PodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime data, Usuario usuario = null)
         {
-            if (usuario == null)
+            if (usuario.EhNulo())
                 usuario = await ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj())
@@ -260,7 +263,7 @@ namespace SME.SGP.Dominio
             var atribuicaoCj = repositorioAtribuicaoCJ
                 .ObterAtribuicaoAtiva(usuario.CodigoRf, false);
 
-            return atribuicaoCj != null && atribuicaoCj.Any();
+            return atribuicaoCj.NaoEhNulo() && atribuicaoCj.Any();
         }
 
         public void RemoverPerfisUsuarioAtual()
@@ -286,13 +289,13 @@ namespace SME.SGP.Dominio
 
         private async Task AlterarEmail(Usuario usuario, string novoEmail)
         {
-            var outrosUsuariosComMesmoEmail = await servicoEOL.ExisteUsuarioComMesmoEmail(usuario.Login, novoEmail);
+            var outrosUsuariosComMesmoEmail = await mediator.Send(new ExisteUsuarioComMesmoEmailQuery(usuario.Login, novoEmail));
 
             if (outrosUsuariosComMesmoEmail)
                 throw new NegocioException("Já existe outro usuário com o e-mail informado.");
 
-            var retornoEol = await servicoEOL.ObterPerfisPorLogin(usuario.Login);
-            if (retornoEol == null)
+            var retornoEol = await mediator.Send(new ObterPerfisPorLoginQuery(usuario.Login));
+            if (retornoEol.EhNulo())
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
 
@@ -300,7 +303,7 @@ namespace SME.SGP.Dominio
             usuario.DefinirPerfis(perfisUsuario);
             usuario.DefinirEmail(novoEmail);
             repositorioUsuario.Salvar(usuario);
-            await servicoEOL.AlterarEmail(usuario.Login, novoEmail);
+            await mediator.Send(new AlterarEmailUsuarioCommand(usuario.Login, novoEmail));
         }
 
         public async Task<string[]> ObterComponentesCurricularesQuePodeVisualizarHoje(string turmaCodigo, Usuario usuarioLogado)
@@ -314,7 +317,7 @@ namespace SME.SGP.Dominio
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
             {
-                if (await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje))
+                if (await mediator.Send(new PodePersistirTurmaDisciplinaQuery(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje.Ticks)))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
             }
 

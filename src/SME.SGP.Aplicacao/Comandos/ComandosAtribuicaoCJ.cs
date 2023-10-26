@@ -14,15 +14,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IMediator mediator;
         private readonly IServicoAtribuicaoCJ servicoAtribuicaoCJ;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ,
-            IServicoEol servicoEOL, IServicoUsuario servicoUsuario, IMediator mediator)
+        public ComandosAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IServicoAtribuicaoCJ servicoAtribuicaoCJ, IServicoUsuario servicoUsuario, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.servicoAtribuicaoCJ = servicoAtribuicaoCJ ?? throw new ArgumentNullException(nameof(servicoAtribuicaoCJ));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -34,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             bool atribuiuCj = false;
 
-            var professorValidoNoEol = await servicoEOL.ValidarProfessor(atribuicaoCJPersistenciaDto.UsuarioRf);
+            var professorValidoNoEol = await mediator.Send(new ValidarProfessorEOLQuery(atribuicaoCJPersistenciaDto.UsuarioRf));
             if (!professorValidoNoEol)
                 throw new NegocioException("Este professor não é válido para ser CJ.");
 
@@ -59,7 +56,7 @@ namespace SME.SGP.Aplicacao
             if (atribuiuCj)
                 return atribuiuCj;
 
-            await servicoEOL.AtribuirPerfil(atribuicaoCJPersistenciaDto.UsuarioRf, perfil);
+            await mediator.Send(new AtribuirPerfilCommand(atribuicaoCJPersistenciaDto.UsuarioRf, perfil));
 
             servicoUsuario.RemoverPerfisUsuarioAtual();
 

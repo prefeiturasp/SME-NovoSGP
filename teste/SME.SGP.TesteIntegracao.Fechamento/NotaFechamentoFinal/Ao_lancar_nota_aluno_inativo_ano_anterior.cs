@@ -21,7 +21,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_lancar_nota_aluno_inativo_ano_anterior : NotaFechamentoTesteBase
     {
-        private const string ALUNO_INATIVO_11 = "11"; 
+        private const string ALUNO_INATIVO_11 = "11";
+        private const string ALUNO_INATIVO_12 = "12";
         public Ao_lancar_nota_aluno_inativo_ano_anterior(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -56,6 +57,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             retorno.ShouldNotBeNull();
             retorno.Alunos.Any(aluno => aluno.Codigo == ALUNO_CODIGO_9).ShouldBeTrue();
             retorno.Alunos.Any(aluno => aluno.Codigo == ALUNO_INATIVO_11).ShouldBeFalse();
+        }
+
+        [Fact(DisplayName = "Nota Fechamento Final - Deve permitir lançar nota para aluno inativo durante período de fechamento")]
+        public async Task Deve_permitir_lancar_nota_para_aluno_inativo_durante_fechamento()
+        {
+            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_3, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false));
+            await CriaFechamento();
+
+            var consulta = ServiceProvider.GetService<IConsultasFechamentoFinal>();
+            var filtro = new FechamentoFinalConsultaFiltroDto()
+            {
+                DisciplinaCodigo = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                EhRegencia = false,
+                TurmaCodigo = TURMA_CODIGO_1,
+                Semestre = SEMESTRE_1
+            };
+            var retorno = await consulta.ObterFechamentos(filtro);
+            retorno.ShouldNotBeNull();
+            retorno.Alunos.FirstOrDefault(aluno => aluno.Codigo == ALUNO_INATIVO_12).PodeEditar.ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Nota Fechamento Final - Deve lançar nota no ano anterior em aprovação")]

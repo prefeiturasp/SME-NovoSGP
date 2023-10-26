@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             AulasPrevistasDadasAuditoriaDto aulaPrevistaDto = null;
             var aulaPrevista = repositorioAulaPrevistaConsulta.ObterPorId(id);
 
-            if (aulaPrevista != null)
+            if (aulaPrevista.NaoEhNulo())
             {
                 var aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
                 aulaPrevistaDto = MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres);
@@ -55,55 +55,14 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(turmaId);
             var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
             var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            var codigoTerritorioCorrespondente = (long?)null;
-            bool componenteEhTerritorio = false;
-
-            var rf = usuarioLogado.EhPerfilDRE() || usuarioLogado.EhPerfilSME() ? string.Empty : usuarioLogado.CodigoRf;
-
-            if (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar())
-            {
-                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-
-                if(componentesProfessor != null && componentesProfessor.Any())
-                {
-                    var componenteCorrespondente = componentesProfessor.OrderBy(c => string.IsNullOrEmpty(c.Professor)).ToList()
-                                                                       .FirstOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId)
-                                                                                       || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
-
-                    codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
-                    if (usuarioLogado.EhGestorEscolar())
-                        rf = componenteCorrespondente.Professor;
-
-                    componenteEhTerritorio = componenteCorrespondente?.TerritorioSaber ?? false;
-                }  
-            }
-            else if (usuarioLogado.EhProfessorCj())
-            {
-                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(disciplinaId)));
-                if (professor != null)
-                {
-                    rf = professor.ProfessorRf;
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                    var componenteProfessorAtrelado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
-                    codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
-
-                    componenteEhTerritorio = componenteProfessorAtrelado?.TerritorioSaber ?? false;
-                }
-            }
-            
-            var aulaPrevista = codigoTerritorioCorrespondente.HasValue ?
-                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.CriadoRF.Equals(rf) && (x.DisciplinaId == disciplinaId || x.DisciplinaId == codigoTerritorioCorrespondente.Value.ToString())) :
-                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
-
-            rf = componenteEhTerritorio && usuarioLogado.EhProfessor() ? rf : string.Empty;
-            
-            if (aulaPrevista == null)
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);           
+            var aulaPrevista = totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
+                        
+            if (aulaPrevista.EhNulo())
             {
                 aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
-                if(disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista == null)
+                if(disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista.EhNulo())
                     aulaPrevista = await repositorioAulaPrevistaConsulta.ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
             }
                 
@@ -114,23 +73,21 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<AulaPrevistaBimestreQuantidade> aulaPrevistaBimestres;
 
-            if (aulaPrevista != null)
-                aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id, codigoTerritorioCorrespondente?.ToString() ?? null, rf);
+            if (aulaPrevista.NaoEhNulo())
+                aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
             else
             {
                 totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId, false));
-                aulaPrevista = codigoTerritorioCorrespondente.HasValue ?
-                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.CriadoRF.Equals(usuarioLogado.CriadoRF) && (x.DisciplinaId == disciplinaId || x.DisciplinaId == codigoTerritorioCorrespondente.Value.ToString())) :
-                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
+                aulaPrevista = totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
-                if (aulaPrevista == null)
+                if (aulaPrevista.EhNulo())
                 {
                     aulaPrevista = new AulaPrevista();
                     var periodosBimestre = await ObterPeriodosEscolares(tipoCalendario.Id);
                     aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
                 }
                 else
-                    aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id, codigoTerritorioCorrespondente?.ToString() ?? null);
+                    aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
             }
 
             return MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);
@@ -156,7 +113,7 @@ namespace SME.SGP.Aplicacao
 
         private AulasPrevistasDadasAuditoriaDto MapearMensagens(AulasPrevistasDadasAuditoriaDto aulaPrevistaDto)
         {
-            if (aulaPrevistaDto.AulasPrevistasPorBimestre != null)
+            if (aulaPrevistaDto.AulasPrevistasPorBimestre.NaoEhNulo())
             {
                 foreach (var aula in aulaPrevistaDto.AulasPrevistasPorBimestre)
                 {
@@ -181,7 +138,7 @@ namespace SME.SGP.Aplicacao
         {
             var bimestre = bimestres.FirstOrDefault();
 
-            return aulaPrevista == null ? null : new AulasPrevistasDadasAuditoriaDto
+            return aulaPrevista.EhNulo() ? null : new AulasPrevistasDadasAuditoriaDto
             {
                 Id = aulaPrevista.Id,
                 AlteradoEm = bimestre?.AlteradoEm ?? DateTime.MinValue,
@@ -203,7 +160,7 @@ namespace SME.SGP.Aplicacao
                     Fim = x.Fim,
                     Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
                     Reposicoes = x.LancaFrequencia || x.Reposicoes != 0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
-                    PodeEditar = periodosAbertos != null ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
+                    PodeEditar = periodosAbertos.NaoEhNulo() ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
                 }).ToList()
             };
         }
@@ -215,19 +172,7 @@ namespace SME.SGP.Aplicacao
                 Bimestre = x.Bimestre,
                 Inicio = x.PeriodoInicio,
                 Fim = x.PeriodoFim
-            }).ToList();
-        }
-
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
-        {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
+            }).OrderBy(ap => ap.Bimestre).ToList();
         }
 
         private async Task<IEnumerable<AulaPrevistaBimestreQuantidade>> ObterBimestres(long? aulaPrevistaId, string disciplinaIdConsiderada = null, string professor = null)
@@ -242,9 +187,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<TipoCalendario> ObterTipoCalendarioPorTurmaAnoLetivo(int anoLetivo, Modalidade turmaModalidade, int semestre)
         {
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, ModalidadeParaModalidadeTipoCalendario(turmaModalidade), semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turmaModalidade.ObterModalidadeTipoCalendario(), semestre);
 
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo calendário não encontrado!");
 
             return tipoCalendario;
@@ -254,7 +199,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada!");
 
             return turma;

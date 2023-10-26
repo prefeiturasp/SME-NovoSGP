@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery : IRequest<IEnumerable<AulaConsultaDto>>
     {
-        public ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(DateTime dataAula, string codigoTurma, long[] codigosComponentesCurriculares, string codigoRfProfessor)
+        public ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(DateTime dataAula, string codigoTurma, long[] codigosComponentesCurriculares, string codigoRfProfessor = null)
         {
             DataAula = dataAula;
             CodigoTurma = codigoTurma;

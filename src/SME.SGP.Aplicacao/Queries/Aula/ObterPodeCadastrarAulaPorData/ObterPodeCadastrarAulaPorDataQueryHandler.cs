@@ -31,10 +31,10 @@ namespace SME.SGP.Aplicacao
             // Periodo Escolar
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula);
             var eventoReposicao = new PodeCadastrarAulaPorDataRetornoDto(false,"");
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
             {
                eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
-                if (eventoReposicao != null)
+                if (eventoReposicao.NaoEhNulo())
                 {
                     return eventoReposicao;
                 }
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
                  eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
 
-                if (!temEventoLetivoDeLiberacao && (eventoReposicao != null))
+                if (!temEventoLetivoDeLiberacao && (eventoReposicao.NaoEhNulo()))
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
             }
 
@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
             var mesmoAnoLetivo = DateTime.Today.Year == request.DataAula.Year;
 
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo), cancellationToken);
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo, request.TipoCalendarioId), cancellationToken);;
 
             return temPeriodoAberto
                 ? new PodeCadastrarAulaPorDataRetornoDto(true)

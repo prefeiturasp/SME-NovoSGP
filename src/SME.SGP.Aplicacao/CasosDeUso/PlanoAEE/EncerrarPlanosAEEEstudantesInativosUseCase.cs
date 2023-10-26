@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var planosAtivos = await mediator.Send(ObterPlanosAEEAtivosQuery.Instance);
             var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
 
-            if (planosAtivos != null && planosAtivos.Any())
+            if (planosAtivos.NaoEhNulo() && planosAtivos.Any())
             {
                 foreach(var plano in planosAtivos)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativosTratar, plano, Guid.NewGuid(), usuarioSistema));

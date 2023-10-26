@@ -1,13 +1,11 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Org.BouncyCastle.Crypto.Tls;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -25,24 +23,14 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<RegistroFaltasNaoCompensadaDto>> Handle(ObterAusenciaParaCompensacaoQuery request, CancellationToken cancellationToken)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { request.DisciplinaId };
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(request.DisciplinaId), request.TurmaCodigo, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
-
-            if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
-            {
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
-                professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-            }
 
             var faltasNaoCompensadas = await repositorioCompensacaoAusencia.ObterAusenciaParaCompensacao(
                 request.CompensacaoId,
                 request.TurmaCodigo,
                 codigosComponentesConsiderados.ToArray(),
                 request.AlunosQuantidadeCompensacoes.Select(t => t.CodigoAluno).Distinct().ToArray(),
-                request.Bimestre,
-                professorConsiderado);
+                request.Bimestre);
 
             foreach (var alunoQuantidadeCompensar in request.AlunosQuantidadeCompensacoes)
             {
@@ -72,34 +60,6 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(t => t.CodigoAluno)
                 .ThenBy(t => t.DataAula)
                 .ThenBy(t => t.NumeroAula);
-        }
-
-        private async Task<long> VerificarSeComponenteEhDeTerritorio(string turmaCodigo, long componenteCurricularId)
-        {
-            long codigoComponenteTerritorioCorrespondente = 0;
-            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-
-            if (usuarioLogado.EhProfessor())
-            {
-                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo);
-            }
-            else if (usuarioLogado.EhProfessorCj())
-            {
-                var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaCodigo));
-                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turmaId));
-                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
-                if (professor != null)
-                {
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaCodigo, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
-                    if (componenteProfessorRelacionado != null)
-                        codigoComponenteTerritorioCorrespondente = componenteProfessorRelacionado.Codigo;
-                }
-            }
-
-            return codigoComponenteTerritorioCorrespondente;
         }
     }
 }

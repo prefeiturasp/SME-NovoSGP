@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var versaoPlano = await repositorioPlanoAEEVersao.ObterUltimaVersaoPorPlanoId(planoId);
 
-            return versaoPlano != null ?
+            return versaoPlano.NaoEhNulo() ?
                 versaoPlano.Numero + 1 : 1;
         }
 
@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

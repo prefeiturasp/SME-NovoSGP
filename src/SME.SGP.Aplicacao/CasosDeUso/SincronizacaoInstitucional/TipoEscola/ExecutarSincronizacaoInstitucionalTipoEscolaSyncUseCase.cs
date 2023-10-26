@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
             var tiposEscola = await mediator.Send(ObterTiposEscolaEolQuery.Instance);
 
-            if (tiposEscola == null || !tiposEscola.Any())
+            if (tiposEscola.EhNulo() || !tiposEscola.Any())
             {
                 throw new NegocioException("Não foi possível localizar tipos de escolas para a sincronização instituicional");
             }

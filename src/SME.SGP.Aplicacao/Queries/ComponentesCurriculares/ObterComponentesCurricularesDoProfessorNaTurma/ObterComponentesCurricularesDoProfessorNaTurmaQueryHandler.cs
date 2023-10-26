@@ -31,10 +31,9 @@ namespace SME.SGP.Aplicacao
                 async () => await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(request.CodigoTurma, request.Login,
                                                                request.PerfilUsuario,
                                                                request.RealizarAgrupamentoComponente,
-                                                               request.ChecaMotivoDisponibilizacao))
-                , minutosParaExpirar: 240);
+                                                               request.ChecaMotivoDisponibilizacao)));
 
-            if (resultado == null)
+            if (resultado.EhNulo())
                 return Enumerable.Empty<ComponenteCurricularEol>();
 
             return resultado;

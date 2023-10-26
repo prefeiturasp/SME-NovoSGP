@@ -27,21 +27,15 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             var retorno = new RetornoBaseDto();
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
 
-            var componentesTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(request.ComponenteCurricularCodigo, turma.CodigoTurma, request.Usuario.EhProfessor() ? request.Usuario.Login : null));
-
-            var professorConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
-                                       componentesTerritorioEquivalentes.First().professor : request.Usuario.Login;
+            var professorConsiderado = !request.Usuario.EhProfessor() ?
+                                       string.Empty : request.Usuario.Login;
 
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularCodigo };
 
-            if (componentesTerritorioEquivalentes != default)
-                codigosComponentesConsiderados.AddRange(componentesTerritorioEquivalentes.Select(ce => long.Parse(ce.codigoComponente)).Except(codigosComponentesConsiderados));
-
             var aulasExistentes = await mediator
-                .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray(), professorConsiderado));
+                .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.CodigoTurma, codigosComponentesConsiderados.ToArray()));
 
-            if (aulasExistentes != null && aulasExistentes.Any())
+            if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any())
             {
                 // Exclui a aula em alteração da lista
                 aulasExistentes = aulasExistentes.Where(a => a.Id != request.Id);
@@ -56,10 +50,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
             await AplicarValidacoes(request, aula, turma, request.Usuario, aulasExistentes);
 
-            var codigoComponenteEquivalenteConsiderado = componentesTerritorioEquivalentes != default && !request.Usuario.EhProfessor() ?
-                                                         long.Parse(componentesTerritorioEquivalentes.First().codigoComponente) : (long?)null;
-
-            MapearEntidade(aula, request, codigoComponenteEquivalenteConsiderado, professorConsiderado);
+            MapearEntidade(aula, request, professorConsiderado);
 
             await ValidarAulasDeReposicao(request, turma, aulasExistentes, aula, retorno.Mensagens);
 
@@ -95,14 +86,13 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             }
         }
 
-        private void MapearEntidade(Aula aula, AlterarAulaUnicaCommand request, long? codigoComponenteTerritorioEquivalente, string professor)
+        private void MapearEntidade(Aula aula, AlterarAulaUnicaCommand request, string professor)
         {
             aula.DataAula = request.DataAula;
             aula.Quantidade = request.Quantidade;
             aula.RecorrenciaAula = RecorrenciaAula.AulaUnica;
             aula.AulaPaiId = null;
-            aula.DisciplinaId = codigoComponenteTerritorioEquivalente.HasValue && codigoComponenteTerritorioEquivalente > request.ComponenteCurricularCodigo ?
-                                codigoComponenteTerritorioEquivalente.Value.ToString() : request.ComponenteCurricularCodigo.ToString();
+            aula.DisciplinaId = request.ComponenteCurricularCodigo.ToString();
 
             if (!String.IsNullOrEmpty(professor))
                 aula.ProfessorRf = professor;

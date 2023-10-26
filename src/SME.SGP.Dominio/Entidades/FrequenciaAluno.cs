@@ -68,7 +68,7 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public string PercentualFrequenciaFormatado => FormatarPercentual(PercentualFrequencia);
+        public string PercentualFrequenciaFormatado => TotalAulas > 0 ? FormatarPercentual(PercentualFrequencia) : string.Empty;
 
         public long? PeriodoEscolarId { get; set; }
         public DateTime PeriodoFim { get; set; }
@@ -98,7 +98,7 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public string PercentualFrequenciaFinalFormatado => FormatarPercentual(PercentualFrequenciaFinal);
+        public string PercentualFrequenciaFinalFormatado => TotalAulas > 0 ? FormatarPercentual(PercentualFrequenciaFinal) : string.Empty;
 
         public FrequenciaAluno DefinirFrequencia(string disciplinaId, int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas, string professor)
         {

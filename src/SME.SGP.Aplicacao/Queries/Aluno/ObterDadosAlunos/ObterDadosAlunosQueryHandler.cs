@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoDadosBasicosDto>> Handle(ObterDadosAlunosQuery request, CancellationToken cancellationToken)
         {
             var dadosAlunos = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo, request.ConsideraInativos));
-            if (dadosAlunos == null || !dadosAlunos.Any())
+            if (dadosAlunos.EhNulo() || !dadosAlunos.Any())
                 throw new NegocioException($"Não foram localizados dados dos alunos para turma {request.TurmaCodigo} no EOL para o ano letivo {request.AnoLetivo}");
 
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
                 dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
-                if (request.PeriodoEscolar != null)
+                if (request.PeriodoEscolar.NaoEhNulo())
                     dadosBasicos.Marcador = ObterMarcadorAluno(dadoAluno, request.PeriodoEscolar);
 
                 dadosAlunosDto.Add(dadosBasicos);

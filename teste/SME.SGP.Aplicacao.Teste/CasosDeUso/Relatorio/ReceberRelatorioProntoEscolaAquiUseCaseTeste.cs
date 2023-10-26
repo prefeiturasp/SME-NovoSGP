@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             this.sgpContext = new Mock<ISgpContext>();
             this.unitOfWork = new Mock<IUnitOfWork>();
             this.configuration = new Mock<IConfiguration>();
-            this.useCase = new ReceberRelatorioProntoEscolaAquiUseCase(mediator.Object, unitOfWork.Object, configuration.Object);
+            this.useCase = new ReceberRelatorioProntoEscolaAquiUseCase(mediator.Object, configuration.Object);
             mensagemRabbiInfantilt = CriarMensagemRabbitRaa();
             mensagemRabbitBoletim = CriarMensagemRabbitBoletim();
         }

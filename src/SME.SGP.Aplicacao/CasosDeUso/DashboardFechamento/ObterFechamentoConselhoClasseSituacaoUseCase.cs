@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                                                                                           param.Semestre,
                                                                                           param.Bimestre));
 
-            if (conselhoClasse == null || !conselhoClasse.Any())
+            if (conselhoClasse.EhNulo() || !conselhoClasse.Any())
                 return default;
 
             var conselhos = new List<GraficoBaseDto>();
@@ -70,13 +70,13 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
 
-            if(turma != null)
+            if(turma.NaoEhNulo())
             {
                 var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
-                if(periodoEscolar != null)
+                if(periodoEscolar.NaoEhNulo())
                 {
                     var alunosDaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
-                    if (alunosDaTurma.Any() && alunosDaTurma != null)
+                    if (alunosDaTurma.Any() && alunosDaTurma.NaoEhNulo())
                     {
                         int alunosAtivos = RetornaAlunosAtivos(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim, alunosDaTurma).Count();
 

@@ -19,16 +19,11 @@ namespace SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
-        public async Task<string> Handle(ObterUltimaVersaoQuery request, CancellationToken cancellationToken)
+        public Task<string> Handle(ObterUltimaVersaoQuery request, CancellationToken cancellationToken)
         {
-            var versao = await repositorioCache.ObterAsync(NomeChaveCache.VERSAO, false);
-            if (string.IsNullOrWhiteSpace(versao))
-            {
-                string numeroVersao = await servicoGithub.RecuperarUltimaVersao();
-                await repositorioCache.SalvarAsync(NomeChaveCache.VERSAO, numeroVersao, 1080, false);
-                return numeroVersao;
-            }
-            return versao;
+            return repositorioCache.ObterAsync(NomeChaveCache.VERSAO,
+                     async () => await servicoGithub.RecuperarUltimaVersao(),
+                     "Obter ultima versão", 1080, false);
         }
     }
 }
