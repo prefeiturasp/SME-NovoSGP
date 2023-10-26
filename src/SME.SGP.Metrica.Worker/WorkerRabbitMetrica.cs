@@ -64,6 +64,9 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.DuplicacaoRegistroFrequenciaAlunoUE, new ComandoRabbit("Registro de registro_frequencia_aluno duplicados para mesmo registro_frequencia por UE", typeof(IRegistroFrequenciaAlunoDuplicadoUEUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoRegistroFrequenciaAlunoTurma, new ComandoRabbit("Registro de registro_frequencia_aluno duplicados para mesmo registro_frequencia por Turma", typeof(IRegistroFrequenciaAlunoDuplicadoTurmaUseCase)));
             Comandos.Add(RotasRabbitMetrica.LimpezaRegistroFrequenciaAlunoDuplicado, new ComandoRabbit("Limpeza de registro_frequencia_aluno duplicados para mesmo registro_frequencia", typeof(ILimpezaRegistroFrequenciaAlunoDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.ConsolidacaoFrequenciaAlunoMensalInconsistente, new ComandoRabbit("Registro de inconsistencia em calculo de consolidação mensal de frequencia com relação aos numeros de aula e ausencias existentes", typeof(IConsolidacaoFrequenciaAlunoMensalInconsistenteUseCase)));
+            Comandos.Add(RotasRabbitMetrica.ConsolidacaoFrequenciaAlunoMensalInconsistenteUE, new ComandoRabbit("Registro de inconsistencia em calculo de consolidação mensal de frequencia com relação aos numeros de aula e ausencias existentes", typeof(IConsolidacaoFrequenciaAlunoMensalInconsistenteUEUseCase)));
+            Comandos.Add(RotasRabbitMetrica.ConsolidacaoFrequenciaAlunoMensalInconsistenteTurma, new ComandoRabbit("Registro de inconsistencia em calculo de consolidação mensal de frequencia com relação aos numeros de aula e ausencias existentes", typeof(IConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase)));
         }
     }
 }

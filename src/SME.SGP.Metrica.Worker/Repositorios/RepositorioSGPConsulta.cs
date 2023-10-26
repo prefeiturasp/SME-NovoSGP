@@ -370,7 +370,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				from registro_frequencia rf 
 				join aula a on a.id = rf.aula_id  
 				join turma t on t.turma_id = a.turma_id 
-				where t.ue_id = p_ueid and t.ano_letivo = extract(year from NOW())
+				where t.ue_id = @ueId 
+				  and t.ano_letivo = extract(year from NOW())
 				group by rf.aula_id
 				having count(rf.id) > 1", new { ueId });
 
@@ -393,5 +394,52 @@ namespace SME.SGP.Metrica.Worker.Repositorios
  						 rfa.numero_aula,
 						 rfa.codigo_aluno
 				having count(rfa.id) > 1", new { turmaId });
+
+        public Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalInconsistente>> ObterConsolidacaoFrequenciaAlunoMensalInconsistente(long turmaId)
+			=> database.Conexao.QueryAsync<ConsolidacaoFrequenciaAlunoMensalInconsistente>(
+				@"with totalAulas as (
+					select
+						t.id as TurmaId,
+						extract(month from a.data_aula) as Mes,
+						sum(a.quantidade) as QuantidadeAulas
+					from aula a
+					INNER JOIN turma t ON t.turma_id = a.turma_id
+					where
+						not a.excluido
+						and t.id = @turmaId
+					group by t.id, extract(month from a.data_aula)
+				), totalFrequencia as (
+					select
+						rfa.codigo_aluno as AlunoCodigo,
+						extract(month from a.data_aula) as Mes,
+						count(rfa.id) as QuantidadeAusencias,
+						count(caaa.id) as QuantidadeCompensacoes
+					from aula a
+					inner join registro_frequencia_aluno rfa on rfa.aula_id = a.id and not rfa.excluido and rfa.valor = 2
+					left join compensacao_ausencia_aluno_aula caaa on caaa.registro_frequencia_aluno_id = rfa.id and not caaa.excluido
+					where
+						not a.excluido
+						and a.turma_id = @turmaId
+					group by rfa.codigo_aluno, extract(month from a.data_aula)
+				)
+ 
+				select
+					cfam.turma_id,
+					cfam.aluno_codigo,
+					cfam.mes,
+					cfam.quantidade_aulas,
+					cfam.quantidade_ausencias,
+					cfam.quantidade_compensacoes,
+					ta.QuantidadeAulas as quantidade_aulas_calculado,
+					tf.QuantidadeAusencias as quantidade_ausencias_calculado,
+					tf.QuantidadeCompensacoes quantidade_compensacoes_calculado
+				from totalFrequencia tf
+				inner join totalAulas ta on ta.mes = tf.mes
+				inner join consolidacao_frequencia_aluno_mensal cfam on cfam.turma_id = ta.TurmaId and cfam.aluno_codigo = tf.AlunoCodigo and cfam.mes = ta.mes
+				where
+					cfam.quantidade_aulas <> ta.QuantidadeAulas or
+					cfam.quantidade_ausencias <> tf.QuantidadeAusencias or
+					cfam.quantidade_compensacoes <> tf.QuantidadeCompensacoes;", new { turmaId });
+
 	}
 }
