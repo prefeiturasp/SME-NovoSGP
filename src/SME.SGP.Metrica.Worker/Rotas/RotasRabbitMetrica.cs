@@ -34,5 +34,8 @@
         public const string DuplicacaoFrequenciaAluno = "sgp.metricas.frequencia.aluno.duplicado";
         public const string DuplicacaoFrequenciaAlunoUE = "sgp.metricas.frequencia.aluno.duplicado.ue";
         public const string LimpezaFrequenciaAlunoDuplicado = "sgp.metricas.frequencia.aluno.duplicado.limpeza";
+        public const string DuplicacaoRegistroFrequencia = "sgp.metricas.registro.frequencia.duplicado";
+        public const string DuplicacaoRegistroFrequenciaUE = "sgp.metricas.registro.frequencia.duplicado.ue";
+        public const string LimpezaRegistroFrequenciaDuplicado = "sgp.metricas.registro.frequencia.duplicado.limpeza";
     }
 }

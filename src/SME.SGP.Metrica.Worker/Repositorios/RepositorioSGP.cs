@@ -299,5 +299,21 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				  and tipo = @tipo
 				  and coalesce(disciplina_id,'0') = @componenteCurricularId
 				  and id <> @ultimoId;", new { turmaCodigo, alunoCodigo, bimestre, tipo, componenteCurricularId, ultimoId });
-    }
+
+		public Task ExcluirRegistroFrequenciaDuplicado(long aulaId, long ultimoId)
+			=> database.Conexao.ExecuteAsync(
+				@"delete from registro_frequencia
+				  where aula_id = @aulaId
+					and id <> @ultimoId;", new { aulaId, ultimoId });
+
+		public Task AtualizaAlunoRegistroFrequenciaDuplicado(long aulaId, long ultimoId)
+			=> database.Conexao.ExecuteAsync(
+				@"update registro_frequencia_aluno
+				set registro_frequencia_id = @ultimoId
+				where registro_frequencia_id in (
+					select id from registro_frequencia 
+					where aula_id = @aulaId
+					  and id <> @ultimoId);", new { aulaId, ultimoId });
+
+	}
 }

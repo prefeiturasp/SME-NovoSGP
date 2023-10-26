@@ -57,6 +57,9 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.DuplicacaoFrequenciaAluno, new ComandoRabbit("Registro frequencia_aluno duplicados para o mesmo aluno, turma e bimestre", typeof(IFrequenciaAlunoDuplicadoUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoFrequenciaAlunoUE, new ComandoRabbit("Registro frequencia_aluno duplicados para o mesmo aluno, turma e bimestre por UE", typeof(IFrequenciaAlunoDuplicadoUEUseCase)));
             Comandos.Add(RotasRabbitMetrica.LimpezaFrequenciaAlunoDuplicado, new ComandoRabbit("Limpeza de registro frequencia_aluno duplicados para o mesmo aluno, turma e bimestre", typeof(ILimpezaFrequenciaAlunoDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DuplicacaoRegistroFrequencia, new ComandoRabbit("Registro de registro_frequencia duplicados para mesma aula", typeof(IRegistroFrequenciaDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DuplicacaoRegistroFrequenciaUE, new ComandoRabbit("Registro de registro_frequencia duplicados para mesma aula por UE", typeof(IRegistroFrequenciaDuplicadoUEUseCase)));
+            Comandos.Add(RotasRabbitMetrica.LimpezaRegistroFrequenciaDuplicado, new ComandoRabbit("Limpeza de registro_frequencia duplicados para mesma aula", typeof(ILimpezaRegistroFrequenciaDuplicadoUseCase)));
         }
     }
 }
