@@ -232,5 +232,7 @@
         public const string URL_COMPONENTES_CURRICULARES_UES_MODALIDADES_ANOS_ANOS_ESCOLARES = "v1/componentes-curriculares/ues/{0}/modalidades/{1}/anos/{2}/anos-escolares";
         
         public const string URL_AUTENTICACAO_SGP_CARREGAR_DADOS_ACESSO_USUARIOS_PERFIS = "AutenticacaoSgp/CarregarDadosAcesso/usuarios/{0}/perfis/{1}";
+
+        public const string URL_GRUPOS_USUARIOS = "grupos-usuarios/tipo-perfil/{0}";
     }
 }
