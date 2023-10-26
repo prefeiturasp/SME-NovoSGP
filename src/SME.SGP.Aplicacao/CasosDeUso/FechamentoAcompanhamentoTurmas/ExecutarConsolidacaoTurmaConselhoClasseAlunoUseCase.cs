@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                 if (!componentesComNotaFechamentoOuConselho.Any(cc => cc.Codigo.Equals(filtro.ComponenteCurricularId.ToString())))
                     componentesComNotaFechamentoOuConselho.Add(new ComponenteCurricularDto() { Codigo = filtro.ComponenteCurricularId.ToString(), LancaNota = true });
 
-            if (!filtro.Inativo)
+            if (!filtro.Inativo && componentesComNotaFechamentoOuConselho.Any())
             {
 
                 if (turma.ModalidadeCodigo != Modalidade.Fundamental)
