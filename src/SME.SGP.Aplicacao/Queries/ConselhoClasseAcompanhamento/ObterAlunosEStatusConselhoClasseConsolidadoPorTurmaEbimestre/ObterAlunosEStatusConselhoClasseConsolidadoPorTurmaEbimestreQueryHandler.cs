@@ -21,9 +21,13 @@ namespace SME.SGP.Aplicacao
         {
             var situacaoConselhoClasse = request.SituacaoConselhoClasse;
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+            
+            if (turma.EhNulo())
+                throw new NegocioException("Turma não encontrada");
+
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, request.Bimestre));
 
-            if (periodoEscolar == null && request.Bimestre != 0)
+            if (periodoEscolar.EhNulo() && request.Bimestre != 0)
                 throw new NegocioException("Periodo escolar não encontrado");
 
             if (request.Bimestre == 0)
@@ -33,11 +37,11 @@ namespace SME.SGP.Aplicacao
             var consolidadoConselhosClasses = await mediator.Send(new ObterConselhoClasseConsolidadoPorTurmaBimestreQuery(turma.Id, request.Bimestre, request.SituacaoConselhoClasse));
             var codigosAlunos = consolidadoConselhosClasses.Select(c => c.AlunoCodigo).ToArray();
             var alunosEol = alunosTurmaEol.Where(a => codigosAlunos.Contains(a.CodigoAluno));
-            if (periodoEscolar != null)
+            if (periodoEscolar.NaoEhNulo())
             {
                 var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(periodoEscolar.TipoCalendarioId, turma.EhTurmaInfantil, periodoEscolar.Bimestre));
 
-                if (periodoFechamento != null)
+                if (periodoFechamento.NaoEhNulo())
                     alunosEol = alunosEol.Where(a => !a.Inativo || a.Inativo && a.DataSituacao >= periodoFechamento.InicioDoFechamento);
             }
             var alunos = alunosEol.DistinctBy(a => a.CodigoAluno);
@@ -53,7 +57,7 @@ namespace SME.SGP.Aplicacao
             {
                 var consolidadoConselhoClasse = consolidadoConselhosClasses.FirstOrDefault(a => a.AlunoCodigo == aluno.CodigoAluno.ToString());
               
-                if (consolidadoConselhoClasse == null)
+                if (consolidadoConselhoClasse.EhNulo())
                     continue;
 
                 var frequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(aluno.CodigoAluno.ToString(), turma.CodigoTurma));
@@ -83,7 +87,7 @@ namespace SME.SGP.Aplicacao
         }
         public string RetornaNomeParecerConclusivoAluno(IEnumerable<ConselhoClasseParecerConclusivoDto> pareceresAtivosDoPeriodo, IEnumerable<ConselhoClasseParecerConclusivoDto> pareceresConclusivosDoPeriodoAnoAnterior, long? parecerConclusivoAlunoId)
         {
-            if (parecerConclusivoAlunoId == null)
+            if (parecerConclusivoAlunoId.EhNulo())
                 return "Sem parecer";
             else
             {

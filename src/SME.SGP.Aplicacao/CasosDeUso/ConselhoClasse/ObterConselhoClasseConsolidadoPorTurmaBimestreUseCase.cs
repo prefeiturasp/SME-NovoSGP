@@ -16,12 +16,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<StatusTotalConselhoClasseDto>> Executar(FiltroConselhoClasseConsolidadoTurmaBimestreDto filtro)
         {
-            var listaConselhosClasseConsolidado = await mediator.Send(new ObterAlunosEStatusConselhoClasseConsolidadoPorTurmaEbimestreQuery(filtro.TurmaId, filtro.Bimestre, filtro.SituacaoConselhoClasse));
-            
-            if (listaConselhosClasseConsolidado.EhNulo() || !listaConselhosClasseConsolidado.Any())
+            var lista = await mediator.Send(new ObterAlunosEStatusConselhoClasseConsolidadoPorTurmaEbimestreQuery(filtro.TurmaId, filtro.Bimestre, filtro.SituacaoConselhoClasse));
+            if (lista.EhNulo() || !lista.Any())
                 return Enumerable.Empty<StatusTotalConselhoClasseDto>();
 
-            var statusAgrupados = listaConselhosClasseConsolidado.GroupBy(g => g.SituacaoFechamentoCodigo);
+            var statusAgrupados = lista.GroupBy(g => g.SituacaoFechamentoCodigo);
 
             return MapearRetornoStatusAgrupado(statusAgrupados);
         }
