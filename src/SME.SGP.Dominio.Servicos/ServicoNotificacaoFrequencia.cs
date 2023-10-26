@@ -144,6 +144,7 @@ namespace SME.SGP.Dominio.Servicos
             await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, percentualCritico);
             await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, percentualCritico, dataReferencia.Semestre());
             await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, percentualFrequenciaMinimaInfantil);
+            await NotificaAlunosFaltososBimestreModalidade(dataReferencia, ModalidadeTipoCalendario.CELP, percentualFrequenciaMinimaInfantil);
         }
         #endregion Metodos Publicos
 

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var turmasCodigo = new List<string>();
 
             PeriodoEscolar periodoEscolar;
-            if (turmaRegular.ModalidadeTipoCalendario != ModalidadeTipoCalendario.EJA)
+            if (turmaRegular.ModalidadeTipoCalendario.NaoEhEjaOuCelp())
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turmaRegular, param.Bimestre == 0 ? BIMESTRE_4 : param.Bimestre));
             else
                 periodoEscolar = await ObterPeriodoEscolarTurmaEJA(turmaRegular, param.Bimestre);

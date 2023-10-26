@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(ListaNotasConceitosConsultaDto filtro)
         {
-            var modalidadeTipoCalendario = ObterModalidadeCalendario(filtro.Modalidade);
+            var modalidadeTipoCalendario = filtro.Modalidade.ObterModalidadeTipoCalendario();
             
             var turma = await consultasTurma.ObterComUeDrePorCodigo(filtro.TurmaCodigo);
 
@@ -443,11 +443,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possível localizar o parâmetro da nota.");
 
             return notaParametro.Arredondar(nota);
-        }
-
-        private static ModalidadeTipoCalendario ObterModalidadeCalendario(Modalidade modalidade)
-        {
-            return modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
         }
 
         private static NotaConceito ObterNotaParaVisualizacao(IEnumerable<NotaConceito> notas, AlunoPorTurmaResposta aluno, AtividadeAvaliativa atividadeAvaliativa)

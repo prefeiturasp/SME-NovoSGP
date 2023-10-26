@@ -64,15 +64,13 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendario = await mediator.Send(
                 new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(
-                    turma.ModalidadeCodigo == Modalidade.EJA
-                        ? ModalidadeTipoCalendario.EJA
-                        : ModalidadeTipoCalendario.FundamentalMedio, turma.AnoLetivo, turma.Semestre),
+                    turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), turma.AnoLetivo, turma.Semestre),
                 cancellationToken);
 
             var ue = turma.Ue;
 
-            var bimestre = fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario != ModalidadeTipoCalendario.EJA ? 4
-                : fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.Equals(ModalidadeTipoCalendario.EJA) ? 2
+            var bimestre = fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 4
+                : fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 2
                 : fechamentoTurma.Bimestre;
 
             var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, bimestre);

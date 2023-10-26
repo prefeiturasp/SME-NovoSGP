@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             codigosComponentes.Add(componenteCurricularIdPrincipal);
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentes.Distinct().ToArray()));
 
-            if (diarioBordo != null && diarioBordoIrmao == null && componentes.Any(b => b.CodigoComponenteCurricular != b.CdComponenteCurricularPai))
+            if (diarioBordo.NaoEhNulo() && diarioBordoIrmao.EhNulo() && componentes.Any(b => b.CodigoComponenteCurricular != b.CdComponenteCurricularPai))
             {
                 var codigoComponentePai = componentes.First()?.CdComponenteCurricularPai;
 
