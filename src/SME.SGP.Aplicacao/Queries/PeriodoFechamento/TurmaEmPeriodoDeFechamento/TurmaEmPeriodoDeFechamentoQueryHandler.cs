@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                                                             tipoCalendario.Id,
                                                             request.Turma.Ue.Dre.CodigoDre,
                                                             request.Turma.Ue.CodigoUe);
-            return reaberturaPeriodo != null;
+            return reaberturaPeriodo.NaoEhNulo();
         }
     }
 }

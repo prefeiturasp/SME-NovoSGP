@@ -22,13 +22,12 @@ namespace SME.SGP.Aplicacao.Integracoes
         private async Task<Guid> ObterPerfilPrioritarioCJSemTurmaTitular(string login, bool usuarioPerfilCJPrioritario, bool usuarioPerfilCJInfantilPrioritario)
         {
             IEnumerable<Dto.AbrangenciaFiltroRetorno> lstTurmasAtribuidasInfantil;
-            string PerfilCj = "8431612";
 
             if (usuarioPerfilCJInfantilPrioritario)
             {
                 lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR_INFANTIL, false);
 
-                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any())
+                if (lstTurmasAtribuidasInfantil.NaoEhNulo() && lstTurmasAtribuidasInfantil.Any())
                     return Perfis.PERFIL_PROFESSOR_INFANTIL;
                 else 
                     return Perfis.PERFIL_CJ_INFANTIL;
@@ -36,13 +35,13 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             if (usuarioPerfilCJPrioritario)
             {
-                lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_CJ, false);
+                lstTurmasAtribuidasInfantil = await repositorioAbrangencia.ObterAbrangenciaPorFiltro(String.Empty, login, Perfis.PERFIL_PROFESSOR, false);
 
-                if (lstTurmasAtribuidasInfantil != null && lstTurmasAtribuidasInfantil.Any() && login == PerfilCj)
-                    return Perfis.PERFIL_CJ;
-                else 
+                if (lstTurmasAtribuidasInfantil.NaoEhNulo() && lstTurmasAtribuidasInfantil.Any())
                     return Perfis.PERFIL_PROFESSOR;
-            }
+                else
+                    return Perfis.PERFIL_CJ;
+            }            
 
             return Guid.Empty;
 

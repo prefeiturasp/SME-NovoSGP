@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                                                                                  new string[] { },
                                                                                  bimestres.ToArray(),
                                                                                  matricula.dataMatricula,
-                                                                                 !matricula.inativo && periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
+                                                                                 !matricula.inativo && periodoEscolarAtual.NaoEhNulo() && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
             }
 
             var frequenciaAluno = new FrequenciaAluno()
@@ -77,6 +77,8 @@ namespace SME.SGP.Aplicacao
 
             if (frequenciaAluno?.TotalAulas == 0)
                 return string.Empty;
+            else if (frequenciaAluno.EhNulo() && aulasComponentesTurmas.EhNulo() || aulasComponentesTurmas.Count() == 0)
+                return FrequenciaAluno.FormatarPercentual(0);
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequenciaFormatado;
             else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)

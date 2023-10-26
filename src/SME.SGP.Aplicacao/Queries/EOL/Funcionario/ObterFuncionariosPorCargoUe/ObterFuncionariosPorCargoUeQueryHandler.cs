@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_CARGOS, request.UeId, request.CargoId));
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();

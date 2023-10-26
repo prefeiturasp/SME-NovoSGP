@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,20 +15,20 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
-                                   IServicoEol servicoEOL,
                                    IRepositorioAbrangencia repositorioAbrangencia,
                                    IServicoUsuario servicoUsuario,
                                    IRepositorioUeConsulta repositorioUe,
-                                   IRepositorioCache repositorioCache)
+                                   IRepositorioCache repositorioCache,
+                                   IMediator mediator)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<ResponsavelEscolasDto>> ObterPorDre(string dreId)
@@ -41,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
             var listaRetorno = new List<ResponsavelEscolasDto>();
 
-            TratarRegistrosComResponsaveis(escolasPorDre, supervisoresEscolasDres, listaRetorno);
+            await TratarRegistrosComResponsaveis(escolasPorDre, supervisoresEscolasDres, listaRetorno);
             TrataEscolasSemResponsaveis(escolasPorDre, listaRetorno);
 
             return listaRetorno;
@@ -67,7 +68,7 @@ namespace SME.SGP.Aplicacao
             var responsaveisEscolasDres = await repositorioSupervisorEscolaDre
                 .ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(dreId, supervisoresId, tipoResponsavel);
 
-            if (responsaveisEscolasDres == null || !responsaveisEscolasDres.Any())
+            if (responsaveisEscolasDres.EhNulo() || !responsaveisEscolasDres.Any())
                 return Enumerable.Empty<UnidadeEscolarResponsavelDto>();
             else
                 return responsaveisEscolasDres;
@@ -86,7 +87,7 @@ namespace SME.SGP.Aplicacao
             var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre
                 .ObterTodosAtribuicaoResponsavelPorDreCodigo(filtro.DreCodigo);
 
-            if (responsavelEscolaDreDto == null)
+            if (responsavelEscolaDreDto.EhNulo())
                 responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
             var escolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto, filtro);
@@ -101,7 +102,7 @@ namespace SME.SGP.Aplicacao
                             .Select(x => x.codigo);
 
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
-            var listaCodigoSupervisor = filtro.SupervisorId != null ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
+            var listaCodigoSupervisor = filtro.SupervisorId.NaoEhNulo() ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
 
             if (responsavelEscolaDreDto.Count() > 0)
             {
@@ -152,7 +153,7 @@ namespace SME.SGP.Aplicacao
                 if (listaCodigoSupervisor.Any())
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => listaCodigoSupervisor.Contains(x.SupervisorId) && !x.AtribuicaoExcluida).ToList();
 
-                if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel || filtro.UESemResponsavel)
+                if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId.EhNulo() && filtro.UESemResponsavel || filtro.UESemResponsavel)
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.AtribuicaoExcluida).ToList();
             }
 
@@ -189,7 +190,7 @@ namespace SME.SGP.Aplicacao
             var totalRegistros = supervisor.Count;
             for (int i = 0; i < totalRegistros; i++)
             {
-                if (supervisor[i].SupervisorId == null)
+                if (supervisor[i].SupervisorId.EhNulo())
                     listaResponsaveis = null;
                 else
                     switch (supervisor[i].TipoAtribuicao)
@@ -198,20 +199,20 @@ namespace SME.SGP.Aplicacao
                         case (int)TipoResponsavelAtribuicao.Psicopedagogo:
                         case (int)TipoResponsavelAtribuicao.AssistenteSocial:
                             {
-                                var nomesFuncionariosAtribuidos = await servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor[i].SupervisorId });
+                                var nomesFuncionariosAtribuidos = await mediator.Send(new ObterFuncionariosPorLoginsQuery(new List<string> { supervisor[i].SupervisorId }));
                                 if (nomesFuncionariosAtribuidos.Any())
                                     listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesFuncionariosAtribuidos.FirstOrDefault().Login, NomeServidor = nomesFuncionariosAtribuidos.FirstOrDefault().NomeServidor };
                                 break;
                             }
                         default:
                             {
-                                var nomesServidoresAtribuidos = await servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor[i].SupervisorId });
+                                var nomesServidoresAtribuidos = await mediator.Send(new ObterFuncionariosPorRFsQuery(new List<string> { supervisor[i].SupervisorId }));
                                 if (nomesServidoresAtribuidos.Any())
                                     listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesServidoresAtribuidos.FirstOrDefault().CodigoRF, NomeServidor = nomesServidoresAtribuidos.FirstOrDefault().Nome };
                                 break;
                             }
                     }
-                string nomeResponsavel = listaResponsaveis != null ? listaResponsaveis.NomeServidor + " - " + listaResponsaveis.CodigoRfOuLogin
+                string nomeResponsavel = listaResponsaveis.NaoEhNulo() ? listaResponsaveis.NomeServidor + " - " + listaResponsaveis.CodigoRfOuLogin
                                          : string.Empty;
 
                 var itemRetorno = new ResponsavelEscolasDto()
@@ -246,7 +247,7 @@ namespace SME.SGP.Aplicacao
                 .Select(d => new { descricao = d.Name() })
                 .FirstOrDefault()?.descricao;
 
-            return tipoDescricao != null ? tipoDescricao : null;
+            return tipoDescricao.NaoEhNulo() ? tipoDescricao : null;
         }
 
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
@@ -268,14 +269,14 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private void TratarRegistrosComResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<ResponsavelEscolasDto> listaRetorno)
+        private async Task TratarRegistrosComResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, List<ResponsavelEscolasDto> listaRetorno)
         {
             if (supervisoresEscolasDres.Any())
             {
                 var supervisoresIds = supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key);
-                var supervisores = servicoEOL.ObterSupervisoresPorCodigo(supervisoresIds.ToArray());
+                var supervisores = await mediator.Send(new ObterSupervisorPorCodigoSupervisorQuery(supervisoresIds.ToArray()));
 
-                if (supervisores != null && supervisores.Any())
+                if (supervisores.NaoEhNulo() && supervisores.Any())
                 {
                     foreach (var supervisorEscolaDre in supervisoresIds)
                     {
@@ -306,7 +307,7 @@ namespace SME.SGP.Aplicacao
         {
             var supervisoresSemAtribuicao = supervisoresEscolasDres;
 
-            if (supervisoresEol != null)
+            if (supervisoresEol.NaoEhNulo())
             {
                 supervisoresSemAtribuicao = supervisoresEscolasDres
                     .Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar &&
@@ -314,7 +315,7 @@ namespace SME.SGP.Aplicacao
                     .Contains(s.SupervisorId));
             }
 
-            if (supervisoresSemAtribuicao != null && supervisoresSemAtribuicao.Any())
+            if (supervisoresSemAtribuicao.NaoEhNulo() && supervisoresSemAtribuicao.Any())
             {
                 foreach (var supervisor in supervisoresSemAtribuicao)
                 {

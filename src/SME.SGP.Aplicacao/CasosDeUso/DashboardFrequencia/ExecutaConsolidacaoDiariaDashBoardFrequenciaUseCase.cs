@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
             var uesCodigos = await mediator.Send(ObterCodigosUEsQuery.Instance);
 
-            if (uesCodigos == null || !uesCodigos.Any())
+            if (uesCodigos.EhNulo() || !uesCodigos.Any())
                 return false;
 
             foreach (var ueCodigo in uesCodigos)

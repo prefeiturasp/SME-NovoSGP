@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
-                if (turma == null)
+                if (turma.EhNulo())
                     throw new NegocioException($"Turma com código [{turmaId}] não localizada");
 
                 var idsAtividadesAvaliativas = notasConceitos
@@ -49,7 +49,7 @@ namespace SME.SGP.Dominio
                 var alunos = await mediator
                 .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
 
-                if (alunos == null || !alunos.Any())
+                if (alunos.EhNulo() || !alunos.Any())
                     throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
                 var usuario = await  mediator.Send(ObterUsuarioLogadoQuery.Instance);
@@ -114,7 +114,7 @@ namespace SME.SGP.Dominio
             var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao,
                 consideraHistorico);
 
-            if (notaTipo == null)
+            if (notaTipo.EhNulo())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrado_tipo_de_nota_para_a_avaliacao);
 
             return notaTipo;
@@ -127,7 +127,7 @@ namespace SME.SGP.Dominio
             {
                 var atividadeavaliativa = avaliacoes.FirstOrDefault(avaliacao => avaliacao.Id == avalicaoAlteradaId);
 
-                if (atividadeavaliativa == null)
+                if (atividadeavaliativa.EhNulo())
                     throw new NegocioException(
                         $"Não foi encontrada atividade avaliativa com o codigo {avalicaoAlteradaId}");
             });
@@ -140,7 +140,7 @@ namespace SME.SGP.Dominio
             var aula = await mediator.Send(new ObterAulaIntervaloTurmaDisciplinaQuery(atividadeAvaliativa.DataAvaliacao,
                 dataFinal, atividadeAvaliativa.TurmaId, atividadeAvaliativa.Id));
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException(
                     $"Não encontrada aula para a atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' no dia {atividadeAvaliativa.DataAvaliacao.Date.ToString("dd/MM/yyyy")}");
 
@@ -155,7 +155,7 @@ namespace SME.SGP.Dominio
             var turma = await mediator.Send(
                 new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turmaCodigo, consideraHistorico));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrada_a_turma_informada);
 
             string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano)
@@ -163,7 +163,7 @@ namespace SME.SGP.Dominio
                 : string.Empty;
             var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, turma.Modalidade));
 
-            if (ciclo == null)
+            if (ciclo.EhNulo())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrado_o_ciclo_da_turma_informada);
 
             var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, data));
@@ -180,8 +180,8 @@ namespace SME.SGP.Dominio
             try
             {
                 notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && !String.IsNullOrEmpty(x.ObterNota())).ToList();
-                notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
-                notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota() != null).ToList();
+                notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota().EhNulo()).ToList();
+                notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota().NaoEhNulo()).ToList();
 
                 foreach (var entidade in notaConceitoParaRemover)
                     await mediator.Send(new RemoverNotaConceitoCommand(entidade));
@@ -205,7 +205,7 @@ namespace SME.SGP.Dominio
 
         private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds,IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId,bool gestorEscolar, Turma turma)
         {
-            if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
+            if (atividadesAvaliativas.EhNulo() || !atividadesAvaliativas.Any())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrada_nenhuma_da_avaliacao_informada);
 
             ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
@@ -228,7 +228,7 @@ namespace SME.SGP.Dominio
 
             if (!gestorEscolar)
             {
-                if (disciplinasEol != null && disciplinasEol.Any())
+                if (disciplinasEol.NaoEhNulo() && disciplinasEol.Any())
                     ehTitular = disciplinasEol.Any(d =>
                         d.DisciplinasId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
 
@@ -262,7 +262,7 @@ namespace SME.SGP.Dominio
                 var nota = notasConceitos.FirstOrDefault();
                 var turmaHistorica =
                     await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma, true));
-                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
+                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica.NaoEhNulo());
                 var notaParametro =
                     await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
                 var dataAtual = DateTime.Now;
@@ -275,27 +275,27 @@ namespace SME.SGP.Dominio
                 var periodoEscolarAvaliacao = periodosEscolares.FirstOrDefault(x =>
                     x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date &&
                     x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-                if (periodoEscolarAvaliacao == null)
+                if (periodoEscolarAvaliacao.EhNulo())
                     throw new NegocioException(MensagensNegocioLancamentoNota.Periodo_escolar_da_atividade_avaliativa_nao_encontrado);
 
                 var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
 
                 var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoReaberturaQuery(bimestreAvaliacao, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.TipoCalendarioId, atividadeAvaliativa.DreId, atividadeAvaliativa.UeId));
 
-                var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
-                                            || fechamentoReabertura == null;
+                var existePeriodoEmAberto = periodoEscolarAtual.NaoEhNulo() && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
+                                            || fechamentoReabertura.EhNulo();
 
                 foreach (var notaConceito in notasConceitos)
                 {
                     var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
 
-                    if (aluno == null)
+                    if (aluno.EhNulo())
                         throw new NegocioException(String.Format(MensagensNegocioLancamentoNota.Nao_foi_encontrado_aluno_com_o_codigo, notaConceito.AlunoId));
 
                     if (tipoNota.TipoNota == TipoNota.Nota)
                     {
                         notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
-                        if (notaParametro == null)
+                        if (notaParametro.EhNulo())
                             throw new NegocioException("Não foi possível localizar o parâmetro de nota.");
                     }
                     else
@@ -303,7 +303,7 @@ namespace SME.SGP.Dominio
                         var conceitos =
                             await mediator.Send(new ObterConceitoPorDataQuery(atividadeAvaliativa.DataAvaliacao));
 
-                        if (conceitos == null)
+                        if (conceitos.EhNulo())
                             throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
                     }
 
@@ -358,7 +358,7 @@ namespace SME.SGP.Dominio
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId,
             string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (usuario == null)
+            if (usuario.EhNulo())
                 usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var podePersistir =

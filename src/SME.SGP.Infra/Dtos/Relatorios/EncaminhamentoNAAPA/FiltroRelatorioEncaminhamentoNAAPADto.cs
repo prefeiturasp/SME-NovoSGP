@@ -10,6 +10,6 @@
         public int[] PortaEntradaIds { get; set; }
         public string UsuarioNome { get; set; }
         public string UsuarioRf { get; set; }
-
+        public long[] Ids { get; set; }
     }
 }

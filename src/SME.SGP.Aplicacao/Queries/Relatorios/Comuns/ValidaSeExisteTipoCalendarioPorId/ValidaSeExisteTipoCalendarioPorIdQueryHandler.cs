@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ValidaSeExisteTipoCalendarioPorIdQuery request, CancellationToken cancellationToken)
         {
-            if (await repositorioTipoCalendario.ObterPorIdAsync(request.TipoCalendarioId) == null)
+            if ((await repositorioTipoCalendario.ObterPorIdAsync(request.TipoCalendarioId)).EhNulo())
                 throw new NegocioException("Não foi possível encontrar o tipo de calendário");
 
             return true;

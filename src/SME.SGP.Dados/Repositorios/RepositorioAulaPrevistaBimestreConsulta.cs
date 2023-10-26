@@ -24,13 +24,13 @@ namespace SME.SGP.Dados.Repositorios
                                 p.periodo_inicio as inicio, 
                                 p.periodo_fim as fim,
                                 apb.aulas_previstas as Previstas,
-                                case when ap.disciplina_id in ('1060','1061') then false else cc.permite_registro_frequencia end as LancaFrequencia,
+                                case when ap.disciplina_id in ('1060','1061') then false else coalesce(cc.permite_registro_frequencia, true) end as LancaFrequencia,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = false) as CriadasTitular,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = true) as CriadasCJ,
-                                SUM(a.quantidade) filter (where a.tipo_aula = 1 and cc.permite_registro_frequencia and exists (select 1 from registro_frequencia rf where rf.aula_id = a.id)) as Cumpridas,
+                                SUM(a.quantidade) filter (where a.tipo_aula = 1 and coalesce(cc.permite_registro_frequencia, true) and exists (select 1 from registro_frequencia rf where rf.aula_id = a.id)) as Cumpridas,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.data_aula <= now()) as CumpridasSemFrequencia,
-                                SUM(a.quantidade) filter (where a.tipo_aula = 2 and cc.permite_registro_frequencia and exists (select 1 from registro_frequencia rf where rf.aula_id = a.id)) as Reposicoes,
-                                SUM(a.quantidade) filter (where a.tipo_aula = 2 and a.data_aula <= now() and not cc.permite_registro_frequencia) as ReposicoesSemFrequencia
+                                SUM(a.quantidade) filter (where a.tipo_aula = 2 and coalesce(cc.permite_registro_frequencia, true) and exists (select 1 from registro_frequencia rf where rf.aula_id = a.id)) as Reposicoes,
+                                SUM(a.quantidade) filter (where a.tipo_aula = 2 and a.data_aula <= now() and not coalesce(cc.permite_registro_frequencia, true)) as ReposicoesSemFrequencia
                            from periodo_escolar p
                           inner join tipo_calendario tp on p.tipo_calendario_id = tp.id
                           inner join aula_prevista ap on ap.tipo_calendario_id = p.tipo_calendario_id
@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
 
         const string GroupOrderBy = @" group by p.bimestre, p.periodo_inicio, p.periodo_fim, apb.aulas_previstas, apb.Id,
                          	   ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
-                               ap.alterado_rf, ap.criado_rf, cc.permite_registro_frequencia, ap.disciplina_id; ";
+                               ap.alterado_rf, ap.criado_rf, coalesce(cc.permite_registro_frequencia, true), ap.disciplina_id; ";
 
         public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {            
@@ -80,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
                             ap.turma_id = @turmaId and
                             ap.disciplina_id = any(@disciplinasId) ";
 
-            if (bimestre != null)
+            if (bimestre.NaoEhNulo())
                 sql += " and apb.bimestre = @bimestre";
 
             if (!string.IsNullOrWhiteSpace(codigoRf))

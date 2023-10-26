@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<List<AlteracaoStatusNotificacaoDto>> Excluir(IList<long> notificacoesId)
         {
-            if (notificacoesId == null)
+            if (notificacoesId.EhNulo())
             {
                 throw new NegocioException("A lista de notificações deve ser informada.");
             }
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<List<AlteracaoStatusNotificacaoDto>> MarcarComoLida(IList<long> notificacoesId)
         {
-            if (notificacoesId == null)
+            if (notificacoesId.EhNulo())
             {
                 throw new NegocioException("A lista de notificações deve ser informada.");
             }

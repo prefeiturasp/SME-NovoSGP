@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
         private readonly IConsultasUe consultasUe;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private readonly IServicoEol servicoEOL;
+        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                                             IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia,
                                             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                             IRepositorioTurmaConsulta repositorioTurmaConsulta,
-                                            IServicoEol servicoEOL,
+                                            IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IServicoUsuario servicoUsuario,
                                             IContextoAplicacao contextoAplicacao,
                                             IConsultasUe consultasUe,
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             this.consultasCompensacaoAusenciaAluno = consultasCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaAluno));
             this.consultasCompensacaoAusenciaDisciplinaRegencia = consultasCompensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaDisciplinaRegencia));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasUe = consultasUe ?? throw new ArgumentNullException(nameof(consultasUe));
@@ -49,20 +49,10 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var listaCompensacoesDto = new List<CompensacaoAusenciaListagemDto>();
-            var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { disciplinaId };
 
-            var codigosTerritoEquivalentes = await
-                mediator.Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(disciplinaId), turmaId, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
-
-            if (codigosTerritoEquivalentes != null && codigosTerritoEquivalentes.Any())
-            {
-                codigosComponentesConsiderados.AddRange(codigosTerritoEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
-                professorConsiderado = codigosTerritoEquivalentes.First().professor;
-            }
-
             var listaCompensacoes = await repositorioCompensacaoAusencia
-                .Listar(Paginacao, turmaId, codigosComponentesConsiderados.ToArray(), bimestre, nomeAtividade, professorConsiderado);
+                .Listar(Paginacao, turmaId, codigosComponentesConsiderados.ToArray(), bimestre, nomeAtividade);
 
             // Busca os nomes de alunos do EOL por turma
             var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
@@ -80,8 +70,8 @@ namespace SME.SGP.Aplicacao
                     {
                         // Adiciona nome do aluno no Dto de retorno
                         var alunoEol = alunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                        if (alunoEol != null)
-                            compensacaoDto.Alunos.Add(new CompensacaoAusenciaListagemAlunosDto(alunoEol.NomeAluno, matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)));
+                        if (alunoEol.NaoEhNulo())
+                            compensacaoDto.Alunos.Add(new CompensacaoAusenciaListagemAlunosDto(alunoEol.NomeAluno,matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)));
                     }
                 }
 
@@ -114,7 +104,7 @@ namespace SME.SGP.Aplicacao
         public async Task<CompensacaoAusenciaCompletoDto> ObterPorId(long id)
         {
             var compensacao = repositorioCompensacaoAusencia.ObterPorId(id);
-            if (compensacao == null)
+            if (compensacao.EhNulo())
                 throw new NegocioException("Compensação de ausencia não localizada.");
 
             var compensacaoDto = MapearParaDtoCompleto(compensacao);
@@ -125,23 +115,14 @@ namespace SME.SGP.Aplicacao
             compensacaoDto.TurmaId = turma.CodigoTurma;
 
             var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
-            if (alunos == null)
+            if (alunos.EhNulo())
                 throw new NegocioException("Alunos não localizados para a turma.");
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            var professorConsiderado = (string)null;
             var codigosComponentesConsiderados = new List<string>() { compensacao.DisciplinaId };
-            var codigosTerritorioEquivalentes = await mediator
-                .Send(new ObterCodigosComponentesCurricularesTerritorioSaberEquivalentesPorTurmaQuery(long.Parse(compensacao.DisciplinaId), turma.CodigoTurma, usuarioLogado.EhProfessor() ? usuarioLogado.Login : null));
 
-            if (codigosTerritorioEquivalentes != null && codigosTerritorioEquivalentes.Any())
-            {
-                codigosComponentesConsiderados.AddRange(codigosTerritorioEquivalentes.Select(c => c.codigoComponente).Except(codigosComponentesConsiderados));
-                professorConsiderado = codigosTerritorioEquivalentes.First().professor;
-            }
-
-            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(codigosComponentesConsiderados.Select(c => long.Parse(c)).ToArray());
-            if (disciplinasEOL == null || !disciplinasEOL.Any())
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentesConsiderados.Select(c => long.Parse(c)).ToArray()));
+            if (disciplinasEOL.EhNulo() || !disciplinasEOL.Any())
                 throw new NegocioException("Componente curricular informado na compensação não localizado.");
 
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
@@ -149,7 +130,7 @@ namespace SME.SGP.Aplicacao
             var alunosCodigos = compensacao.Alunos.Select(x => x.CodigoAluno).ToArray();
 
             var compensacoes =
-                (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(id, alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma, professorConsiderado)) : null) ??
+                (alunosCodigos.Any() ? await mediator.Send(new ObterAusenciaParaCompensacaoPorAlunosQuery(id, alunosCodigos, codigosComponentesConsiderados.ToArray(), compensacao.Bimestre, turma.CodigoTurma)) : null) ??
                 new List<CompensacaoDataAlunoDto>();
 
             var matriculadosTurmaPAP = alunosCodigos.Any() ? await BuscarAlunosTurmaPAP(alunosCodigos, turma) : Enumerable.Empty<AlunosTurmaProgramaPapDto>();
@@ -158,7 +139,7 @@ namespace SME.SGP.Aplicacao
             {
                 // Adiciona nome do aluno no Dto de retorno
                 var alunoEol = alunos.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
-                if (alunoEol != null)
+                if (alunoEol.NaoEhNulo())
                 {
                     var alunoDto = MapearParaDtoAlunos(aluno);
                     alunoDto.Nome = alunoEol.NomeAluno;
@@ -166,9 +147,9 @@ namespace SME.SGP.Aplicacao
                     alunoDto.EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno);
 
                     var frequenciaAluno = await mediator
-                        .Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno.CodigoAluno, compensacao.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, codigosComponentesConsiderados.ToArray(), professorConsiderado));
+                        .Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno.CodigoAluno, compensacao.Bimestre, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, codigosComponentesConsiderados.ToArray()));
 
-                    if (frequenciaAluno != null)
+                    if (frequenciaAluno.NaoEhNulo())
                     {
                         alunoDto.QuantidadeFaltasTotais = int.Parse((frequenciaAluno.NumeroFaltasNaoCompensadas + alunoDto.QuantidadeFaltasCompensadas).ToString());
                         alunoDto.PercentualFrequencia = frequenciaAluno.PercentualFrequencia;
@@ -187,9 +168,8 @@ namespace SME.SGP.Aplicacao
 
                 if (!disciplinasIds.Any())
                     return compensacaoDto;
-
-                disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(disciplinasIds.ToArray());
-
+                disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasIds.ToArray()));
+                    
                 foreach (var disciplinaEOL in disciplinasEOL)
                 {
                     compensacaoDto.DisciplinasRegencia.Add(new DisciplinaNomeDto()
@@ -204,7 +184,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private CompensacaoAusenciaAlunoCompletoDto MapearParaDtoAlunos(CompensacaoAusenciaAluno aluno)
-            => aluno == null ? null :
+            => aluno.EhNulo() ? null :
             new CompensacaoAusenciaAlunoCompletoDto()
             {
                 Id = aluno.CodigoAluno,
@@ -212,7 +192,7 @@ namespace SME.SGP.Aplicacao
             };
 
         private CompensacaoAusenciaListagemDto MapearParaDto(CompensacaoAusencia compensacaoAusencia)
-            => compensacaoAusencia == null ? null :
+            => compensacaoAusencia.EhNulo() ? null :
             new CompensacaoAusenciaListagemDto()
             {
                 Id = compensacaoAusencia.Id,
@@ -222,7 +202,7 @@ namespace SME.SGP.Aplicacao
             };
 
         private CompensacaoAusenciaCompletoDto MapearParaDtoCompleto(CompensacaoAusencia compensacaoAusencia)
-            => compensacaoAusencia == null ? null :
+            => compensacaoAusencia.EhNulo() ? null :
             new CompensacaoAusenciaCompletoDto()
             {
                 Id = compensacaoAusencia.Id,
@@ -253,7 +233,7 @@ namespace SME.SGP.Aplicacao
                 return await ObtemTurmasUsuarioCPParaCopiaCompensacao(turmaOrigem, usuario.CodigoRf);
             else
             {
-                var turmas = servicoEOL.ObterListaTurmasPorProfessor(usuario.CodigoRf);
+                var turmas = await mediator.Send(new ObterTurmasDoProfessorQuery(usuario.CodigoRf));
                 return turmas.Where(t => t.CodTurma.ToString() != turmaOrigem.CodigoTurma
                                 && t.CodEscola == ue.CodigoUe
                                 && t.AnoLetivo == turmaOrigem.AnoLetivo

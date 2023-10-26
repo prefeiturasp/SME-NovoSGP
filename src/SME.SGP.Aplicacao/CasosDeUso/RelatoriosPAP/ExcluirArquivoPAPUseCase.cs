@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(arquivoCodigo));
 
-            if (entidadeArquivo == null)
+            if (entidadeArquivo.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
 
             await mediator.Send(new ExcluirReferenciaArquivoPAPPorArquivoIdCommand(entidadeArquivo.Id));

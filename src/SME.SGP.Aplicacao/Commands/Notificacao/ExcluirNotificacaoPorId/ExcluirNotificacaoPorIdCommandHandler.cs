@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirNotificacaoPorIdCommand request, CancellationToken cancellationToken)
         {
             var notificacoes = await repositorioNotificacaoConsulta.ObterUsuariosNotificacoesPorIds(new[] { request.Id });
-            if (notificacoes == null)
+            if (notificacoes.EhNulo())
                 throw new Exception("Não localizado usuário da notificação");
 
             var notificacao = notificacoes.First();

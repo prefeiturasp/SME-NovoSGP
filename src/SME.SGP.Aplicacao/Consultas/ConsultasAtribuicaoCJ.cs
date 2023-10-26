@@ -1,4 +1,5 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -13,13 +14,13 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAtribuicaoCJ : IConsultasAtribuicaoCJ
     {
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IMediator mediator;
 
 
-        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IServicoEol servicoEOL)
+        public ConsultasAtribuicaoCJ(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> Listar(AtribuicaoCJListaFiltroDto filtroDto)
@@ -38,9 +39,7 @@ namespace SME.SGP.Aplicacao
                 .Select(a => a.DisciplinaId)
                 .Distinct<long>()
                 .ToArray();
-
-            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinas);
-
+            var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinas)); ;          
             if (!disciplinasEol.Any())
                 throw new NegocioException("Não foi possível obter as descrições das disciplinas no Eol.");
 

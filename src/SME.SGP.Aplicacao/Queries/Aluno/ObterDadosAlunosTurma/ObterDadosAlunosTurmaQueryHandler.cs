@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var dadosAlunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(request.TurmaCodigo, DateTime.Today));
 
-            if (dadosAlunos == null || !dadosAlunos.Any())
+            if (dadosAlunos.EhNulo() || !dadosAlunos.Any())
                 throw new NegocioException($"Não foram localizados dados dos alunos para turma {request.TurmaCodigo} no EOL para o ano letivo {request.AnoLetivo}");
 
             var dadosAlunosDto = new List<AlunoDadosBasicosDto>();
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
                 dadosBasicos.TipoResponsavel = ObterTipoResponsavel(dadoAluno.TipoResponsavel);
                 // se informado periodo escolar carrega marcadores no periodo
-                if (request.PeriodoEscolar != null)
+                if (request.PeriodoEscolar.NaoEhNulo())
                     dadosBasicos.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(dadoAluno, request.PeriodoEscolar.PeriodoInicio, request.EhInfantil));
 
                 dadosBasicos.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(dadoAluno.CodigoAluno, request.AnoLetivo));

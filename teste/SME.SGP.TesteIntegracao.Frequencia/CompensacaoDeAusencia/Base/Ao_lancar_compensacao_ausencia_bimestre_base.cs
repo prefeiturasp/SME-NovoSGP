@@ -109,7 +109,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
             var periodoEscolar = periodosEscolares.FirstOrDefault(c => c.Bimestre == bimestre);
             
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 return;
 
             const int totalAulas = 22;

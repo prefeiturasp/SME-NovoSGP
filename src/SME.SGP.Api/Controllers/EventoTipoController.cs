@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         {
             var eventoTipoDto = consultasEventoTipo.ObterPorId(id);
 
-            if (eventoTipoDto == null)
+            if (eventoTipoDto.EhNulo())
                 NoContent();
 
             return Ok(eventoTipoDto);

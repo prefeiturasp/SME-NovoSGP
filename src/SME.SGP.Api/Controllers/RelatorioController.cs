@@ -66,24 +66,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(await relatorioCalendarioUseCase.Executar(filtroRelatorioCalendarioDto));
         }
 
-        [HttpPost("resumopap/impressao")]
-        [ProducesResponseType(typeof(Boolean), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.RPG_C, Policy = "Bearer")]
-        public async Task<IActionResult> ResumoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioResumoPAPDto, [FromServices] IRelatorioResumoPAPUseCase relatorioResumoPAPUseCase)
-        {
-            return Ok(await relatorioResumoPAPUseCase.Executar(filtroRelatorioResumoPAPDto));
-        }
-
-        [HttpPost("graficopap/impressao")]
-        [ProducesResponseType(typeof(Boolean), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.RPG_C, Policy = "Bearer")]
-        public async Task<IActionResult> GraficoPAP([FromBody] FiltroRelatorioResumoPAPDto filtroRelatorioGraficoPAPDto, [FromServices] IRelatorioGraficoPAPUseCase relatorioGraficoPAPUseCase)
-        {
-            return Ok(await relatorioGraficoPAPUseCase.Executar(filtroRelatorioGraficoPAPDto));
-        }
-
         [HttpPost("plano-aula")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

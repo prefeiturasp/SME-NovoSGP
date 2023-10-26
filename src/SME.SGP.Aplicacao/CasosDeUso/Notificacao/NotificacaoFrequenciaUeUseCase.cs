@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var periodoEncerrado = await ObterPeriodoEncerrado();
-            if (periodoEncerrado != null)
+            if (periodoEncerrado.NaoEhNulo())
             {
                 await mediator.Send(new NotificaFrequenciaPeriodoUeCommand(periodoEncerrado));
             }

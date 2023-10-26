@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
                     }
                 };
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterTipoCalendarioPorBuscaQuery>(), It.IsAny<CancellationToken>()))
+            mediator.Setup(a => a.Send(It.IsAny<ObterTiposCalendariosPorBuscaQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(mockRetorno);
 
             var usuario = new Usuario();
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.TipoCalendario
             var retorno = await buscarTiposCalendarioPorDescricaoUseCaseTeste.Executar("2020");
 
             //Asert
-            mediator.Verify(x => x.Send(It.IsAny<ObterTipoCalendarioPorBuscaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
+            mediator.Verify(x => x.Send(It.IsAny<ObterTiposCalendariosPorBuscaQuery>(), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.True(retorno.Any());
         }

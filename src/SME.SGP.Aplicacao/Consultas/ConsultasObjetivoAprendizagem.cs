@@ -26,7 +26,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
         private readonly IServicoJurema servicoJurema;
-        private readonly IServicoEol servicoEol;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasObjetivoAprendizagem(IServicoJurema servicoJurema,
@@ -37,8 +36,7 @@ namespace SME.SGP.Aplicacao
                                                      IServicoUsuario servicoUsuario,
                                                      IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                                      IConsultasTurma consultasTurma,
-                                                     IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem,
-                                                     IServicoEol servicoEol)
+                                                     IRepositorioObjetivoAprendizagem repositorioObjetivoAprendizagem)
         {
             this.servicoJurema = servicoJurema ?? throw new ArgumentNullException(nameof(servicoJurema));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -49,7 +47,6 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioObjetivoAprendizagem = repositorioObjetivoAprendizagem ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagem));
             this.repositorioObjetivosPlano = repositorioObjetivosPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivosPlano));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
         public bool DisciplinaPossuiObjetivosDeAprendizagem(long codigoDisciplina)
@@ -128,7 +125,7 @@ namespace SME.SGP.Aplicacao
         {
             Turma turma = await consultasTurma.ObterComUeDrePorCodigo(turmaId);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada para consulta de objetivos de aprendizagem");
 
             return await consultasPeriodoEscolar.ObterBimestre(dataReferencia, turma.ModalidadeCodigo, turma.Semestre);
@@ -161,7 +158,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<ComponenteCurricularJurema> ObterComponentesCurriculares()
         {
             IEnumerable<ComponenteCurricularJurema> componentesCurriculares = repositorioComponenteCurricular.Listar();
-            if (componentesCurriculares == null)
+            if (componentesCurriculares.EhNulo())
             {
                 throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
             }

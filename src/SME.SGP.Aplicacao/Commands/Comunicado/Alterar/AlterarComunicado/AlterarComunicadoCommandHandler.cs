@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var comunicado = await mediator.Send(new ObterComunicadoSimplesPorIdQuery(request.Id));
 
-            if (comunicado == null)
+            if (comunicado.EhNulo())
                 throw new NegocioException($"Comunicado não localizado");
 
             MapearAlteracao(request, comunicado);

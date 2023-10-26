@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections;
@@ -21,7 +22,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(ReprovarWorkflowAlteracaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
             var pareceresEmAprovacao = await mediator.Send(new ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
-            if (pareceresEmAprovacao != null && pareceresEmAprovacao.Any())
+            if (pareceresEmAprovacao.NaoEhNulo() && pareceresEmAprovacao.Any())
             {
                 foreach (var parecerEmAprovacao in pareceresEmAprovacao)
                     await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.Id));

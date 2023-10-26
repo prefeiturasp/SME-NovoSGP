@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
                         Id = opcaoResposta.Id,
                         Nome = opcaoResposta.Nome,
                         Ordem = opcaoResposta.Ordem,
-                        QuestoesComplementares = opcaoResposta.QuestoesComplementares != null ?
+                        QuestoesComplementares = opcaoResposta.QuestoesComplementares.NaoEhNulo() ?
                             ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, obterRespostas)
                                 .OrderBy(a => a.Ordem)
                                 .ToList() :
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                     };
                 })
                 .OrderBy(a => a.Ordem).ToArray(),
-                Resposta = obterRespostas == null ? null :
+                Resposta = obterRespostas.EhNulo() ? null :
                     obterRespostas(questaoId)
             };
         }

@@ -17,9 +17,12 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public Task<IEnumerable<SecaoRelatorioSemestralPAP>> ObterSecoesVigentes(DateTime dataReferencia)
+        public async Task<IEnumerable<SecaoRelatorioSemestralPAP>> ObterSecoes()
         {
-            throw new NotImplementedException();
+            var query = @"select id, nome, descricao, obrigatorio 
+                          from public.secao_relatorio_semestral_pap";
+
+            return await database.Conexao.QueryAsync<SecaoRelatorioSemestralPAP>(query, new {  });
         }
     }
 }

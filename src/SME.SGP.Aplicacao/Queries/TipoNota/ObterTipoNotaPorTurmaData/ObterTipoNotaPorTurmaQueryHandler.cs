@@ -12,13 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTipoNotaPorTurmaQueryHandler : IRequestHandler<ObterTipoNotaPorTurmaQuery, TipoNota>
     {
-        private readonly IServicoEol servicoEol;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IMediator mediator;
 
-        public ObterTipoNotaPorTurmaQueryHandler(IServicoEol  servicoEol, IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IMediator mediator)
+        public ObterTipoNotaPorTurmaQueryHandler(IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IMediator mediator)
         {
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -33,12 +31,12 @@ namespace SME.SGP.Aplicacao
                 return TipoNota.Nota;
 
             var anoCicloModalidade = string.Empty;
-            if (request.Turma != null)
+            if (request.Turma.NaoEhNulo())
                 anoCicloModalidade = request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano;            
 
             var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, request.Turma.ModalidadeCodigo));
 
-            if (ciclo == null)
+            if (ciclo.EhNulo())
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
             var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, request.DataReferencia));

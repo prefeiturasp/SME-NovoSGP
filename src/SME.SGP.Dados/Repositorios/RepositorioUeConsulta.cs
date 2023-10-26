@@ -241,20 +241,20 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.Conexao.QueryAsync<long>(query, new { modalidades, anoLetivo });
         }
 
-        public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade)
+        public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade[] modalidades)
         {
             var query = @"select ue.*, dre.*
                             from ue
                            inner join dre on dre.id = ue.dre_id
-                           where dre_id = @dreCodigo
-                             and exists (select 1 from turma where modalidade_codigo = @modalidade)";
+                           where dre.dre_id = @dreCodigo
+                             and exists (select 1 from turma where modalidade_codigo = any(@modalidadesIds))";
 
             return (await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
             {
                 ue.AdicionarDre(dre);
                 return ue;
             },
-            new { dreCodigo, modalidade }));
+            new { dreCodigo, modalidadesIds = modalidades.Cast<int>().ToArray() }));
         }
 
         public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades, DateTime dataReferencia)

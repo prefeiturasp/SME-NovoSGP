@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(IEnumerable<ParametrosSistema> parametroDiasAusenciaFechamento, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var parametroPendenciaAusencia = parametroDiasAusenciaFechamento.FirstOrDefault(c => c.Ativo && c.Nome == "DiasGeracaoPendenciaAusenciaFechamento");
-            if (parametroPendenciaAusencia != null)
+            if (parametroPendenciaAusencia.NaoEhNulo())
             {
                 await mediator.Send(new ExecutarVerificacaoPendenciaAusenciaFechamentoCommand(int.Parse(parametroPendenciaAusencia.Valor), modalidadeTipoCalendario));
             }

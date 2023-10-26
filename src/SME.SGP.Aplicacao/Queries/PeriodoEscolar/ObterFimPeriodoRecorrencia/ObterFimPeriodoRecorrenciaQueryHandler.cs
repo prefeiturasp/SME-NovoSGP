@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 string.Format(NomeChaveCache.PERIODOS_ESCOLARES_CALENDARIO, request.TipoCalendarioId),
                 async () => await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(request.TipoCalendarioId));
 
-            if (periodos == null || !periodos.Any())
+            if (periodos.EhNulo() || !periodos.Any())
                 throw new NegocioException("Não foi possível obter os períodos deste tipo de calendário.");
 
             DateTime fimRecorrencia = DateTime.MinValue;

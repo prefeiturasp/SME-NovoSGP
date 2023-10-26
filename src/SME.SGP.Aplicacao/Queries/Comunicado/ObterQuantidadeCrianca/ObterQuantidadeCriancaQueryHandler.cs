@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -35,7 +36,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(request.UeId) && !request.UeId.Contains("-99"))
                 parametros += $"&ueCodigo={request.UeId}";
 
-            if (request.Modalidade != null && request.Modalidade.Count() > 0)
+            if (request.Modalidade.NaoEhNulo() && request.Modalidade.Count() > 0)
             {
                 foreach (var item in request.Modalidade)
                 {
@@ -43,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (request.AnoTurma != null && request.AnoTurma.Count() > 0)
+            if (request.AnoTurma.NaoEhNulo() && request.AnoTurma.Count() > 0)
             {
                 foreach (var item in request.AnoTurma)
                 {
@@ -51,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (request.Turma !=null  && !request.Turma.Contains("-99"))
+            if (request.Turma.NaoEhNulo() && !request.Turma.Contains("-99"))
             {
                 foreach (var item in request.Turma)
                 {

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<ObterAnoLetivoPAPRetornoDto>> Handle(ObterAnosLetivosPAPQuery request, CancellationToken cancellationToken)
         {
             var parametroAnoInicial = await mediator.Send(new ObterParametrosSistemaPorTiposQuery() { Tipos = new long[] { (long)TipoParametroSistema.PAPInicioAnoLetivo } });
-            if (parametroAnoInicial == null || !parametroAnoInicial.Any())
+            if (parametroAnoInicial.EhNulo() || !parametroAnoInicial.Any())
                 throw new NegocioException("Não foi possível localizar o parâmetro do sistema de início de ano letivo PAP.");
 
             var anoInicial = int.Parse(parametroAnoInicial.FirstOrDefault().Valor);

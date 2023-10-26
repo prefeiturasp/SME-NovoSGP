@@ -38,7 +38,7 @@ namespace SME.SGP.Infra
         public bool Desabilitado { get => EstaInativo() || TemMarcadorInativo(); }
 
         public bool TemMarcadorInativo()
-            => Marcador != null &&
+            => Marcador.NaoEhNulo() &&
                 (new[] { TipoMarcadorFrequencia.Transferido,
                         TipoMarcadorFrequencia.Remanejado,
                         TipoMarcadorFrequencia.Inativo}).Contains(Marcador.Tipo);
@@ -59,7 +59,7 @@ namespace SME.SGP.Infra
 
         public bool EstaAtivo() => !EstaInativo();
         public static explicit operator AlunoDadosBasicosDto(AlunoPorTurmaResposta dadosAluno)
-            => dadosAluno == null ? null : new AlunoDadosBasicosDto()
+            => dadosAluno.EhNulo() ? null : new AlunoDadosBasicosDto()
             {
                 Nome = dadosAluno.NomeValido(),
                 NumeroChamada = dadosAluno.ObterNumeroAlunoChamada(),

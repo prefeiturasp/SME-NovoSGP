@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var registroIndividual = await repositorioRegistroIndividual.ObterPorIdAsync(request.Id);
 
-            if (registroIndividual == null)
+            if (registroIndividual.EhNulo())
                 throw new NegocioException("Registro não foi encontrado!");
 
             return MapearParaDto(registroIndividual);

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var observacao = await repositorioObs.ObterPorIdAsync(request.ObservacaoId);
 
-            if(observacao == null)
+            if(observacao.EhNulo())
                 throw new NegocioException("Observação não encontrada");
 
             await repositorioObs.RemoverLogico(request.ObservacaoId);

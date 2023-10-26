@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             bool historico = turma.Historica;
             var emAprovacao = await EnviarParaAprovacao(turma);
 
-            if (alunoNaTurma != null)
+            if (alunoNaTurma.NaoEhNulo())
                 historico = alunoNaTurma.Inativo;
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
                 emAprovacao = await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
-                var bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar == null ? (int?)null : conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre;
+                var bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.EhNulo() ? (int?)null : conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre;
                 conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
                 var persistirParecerConclusivoDto = new PersistirParecerConclusivoDto()
                 {
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoParecerConclusivo, anoLetivo));
-            if (parametro == null)
+            if (parametro.EhNulo())
                 throw new NegocioException($"Não localizado parametro de aprovação de alteração de parecer conclusivo para o ano {anoLetivo}");
 
             return parametro.Ativo;
@@ -122,7 +122,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(Turma turma)
         {
             var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosPorTurmaQuery(turma));
-            if (pareceresConclusivos == null || !pareceresConclusivos.Any())
+            if (pareceresConclusivos.EhNulo() || !pareceresConclusivos.Any())
                 throw new NegocioException("Não foram encontrados pareceres conclusivos para a turma!");
 
             return pareceresConclusivos;
@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
             string[] turmasCodigos;
             var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance)).ToList();
 
-            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(periodoEscolarId == null && turma.EhEJA()))
+            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(periodoEscolarId.EhNulo() && turma.EhEJA()))
             {
                 var tiposTurmasParaConsulta = new List<int> { (int)turma.TipoTurma };
 
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
                 var periodoEscolar = await mediator
                     .Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolarId.Value));
 
-                if (periodoEscolar == null)
+                if (periodoEscolar.EhNulo())
                     throw new NegocioException("Não foi possível localizar o período escolar");
 
                 bimestre = periodoEscolar.Bimestre;
@@ -189,7 +189,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var notasParaVerificar = new List<NotaConceitoBimestreComponenteDto>();
-            if (conselhosClassesIds != null)
+            if (conselhosClassesIds.NaoEhNulo())
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
@@ -205,16 +205,16 @@ namespace SME.SGP.Aplicacao
             {
                 var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, alunoCodigo));
 
-                if (todasAsNotas != null && todasAsNotas.Any())
-                    notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
+                if (todasAsNotas.NaoEhNulo() && todasAsNotas.Any())
+                    notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre.EhNulo()));
             }
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
             var disciplinasDaTurma = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), codigoTurma: turma.CodigoTurma));
+                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
 
             // Checa se todas as disciplinas da turma receberam nota
-            var disciplinasLancamNota = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null);
+            var disciplinasLancamNota = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome.NaoEhNulo());
             foreach (var componenteCurricular in disciplinasLancamNota)
             {
                 if (!notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
@@ -230,7 +230,7 @@ namespace SME.SGP.Aplicacao
             Usuario usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
-            if (componentesCurriculares != null && componentesCurriculares.Any())
+            if (componentesCurriculares.NaoEhNulo() && componentesCurriculares.Any())
                 componentesTurma.AddRange(componentesCurriculares);
             else throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
 

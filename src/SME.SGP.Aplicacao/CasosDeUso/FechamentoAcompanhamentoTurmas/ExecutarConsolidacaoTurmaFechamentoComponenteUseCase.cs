@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FechamentoConsolidacaoTurmaComponenteBimestreDto>();
 
-            if (filtro == null)
+            if (filtro.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível iniciar a consolidação do fechamento da turma -> componente. O id da turma bimestre componente curricular não foram informados.", LogNivel.Negocio, LogContexto.Turma));                
                 return false;
@@ -40,10 +40,10 @@ namespace SME.SGP.Aplicacao
 
             var atualizarConsolidado = false;
 
-            if (fechamento != null && consolidadoTurmaComponente != null)
+            if (fechamento.NaoEhNulo() && consolidadoTurmaComponente.NaoEhNulo())
                 atualizarConsolidado = consolidadoTurmaComponente.Status != fechamento.Situacao;
 
-            (consolidadoTurmaComponente,atualizarConsolidado) = MapearFechamentoConsolidado(filtro, consolidadoTurmaComponente, fechamento, professoresDaTurma,atualizarConsolidado);
+            consolidadoTurmaComponente = MapearFechamentoConsolidado(filtro, consolidadoTurmaComponente, fechamento, professoresDaTurma);
 
             if (consolidadoTurmaComponente.Id == 0 || atualizarConsolidado)
                 await repositorioFechamentoConsolidado.SalvarAsync(consolidadoTurmaComponente);
@@ -51,41 +51,28 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private (FechamentoConsolidadoComponenteTurma fechamento, bool consolidacaoAtualizada) MapearFechamentoConsolidado(FechamentoConsolidacaoTurmaComponenteBimestreDto filtro, FechamentoConsolidadoComponenteTurma consolidadoTurmaComponente, FechamentoTurmaDisciplina fechamento, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma, bool atualizarConsolidado)
+        private FechamentoConsolidadoComponenteTurma MapearFechamentoConsolidado(FechamentoConsolidacaoTurmaComponenteBimestreDto filtro, FechamentoConsolidadoComponenteTurma consolidadoTurmaComponente, FechamentoTurmaDisciplina fechamento, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma)
         {
-            var statusFechamento = fechamento != null ? fechamento.Situacao : SituacaoFechamento.NaoIniciado;
+            var statusFechamento = fechamento.NaoEhNulo() ? fechamento.Situacao : SituacaoFechamento.NaoIniciado;
 
-            var professorComponente = professoresDaTurma != null ? professoresDaTurma.FirstOrDefault(p => p.DisciplinasId.Contains(filtro.ComponenteCurricularId)) : null;
-
-            if (consolidadoTurmaComponente == null)
+            if (consolidadoTurmaComponente.EhNulo())
             {
+                var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinasId.Contains(filtro.ComponenteCurricularId));
+
                 consolidadoTurmaComponente = new FechamentoConsolidadoComponenteTurma()
                 {
                     Bimestre = filtro.Bimestre,
                     ComponenteCurricularCodigo = filtro.ComponenteCurricularId,
                     TurmaId = filtro.TurmaId,
-                    ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular",
-                    ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty,                    
+                    ProfessorNome = professorComponente.NaoEhNulo() ? professorComponente.ProfessorNome : "Sem professor titular",
+                    ProfessorRf = professorComponente.NaoEhNulo() ? professorComponente.ProfessorRf : String.Empty,                    
                 };
-            }
-            else
-            {
-                if(professorComponente != null)
-                {
-                    if (((consolidadoTurmaComponente.ProfessorNome.ToUpper() != professorComponente.ProfessorNome) && professorComponente.ProfessorNome != null) ||
-                         (consolidadoTurmaComponente.ProfessorRf != professorComponente.ProfessorRf) && professorComponente.ProfessorRf != null)
-                    {
-                        consolidadoTurmaComponente.ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular";
-                        consolidadoTurmaComponente.ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty;
-                        atualizarConsolidado = true;
-                    }
-                }
             }
 
             consolidadoTurmaComponente.DataAtualizacao = DateTime.Now;
             consolidadoTurmaComponente.Status = statusFechamento;
 
-            return (consolidadoTurmaComponente, atualizarConsolidado);
+            return consolidadoTurmaComponente;
         }
     }
 }

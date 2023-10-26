@@ -40,5 +40,6 @@
         public const string QUESTIONARIO = "questionario:{0}";
         public const string NOME_CHAVE_COMPENSACAO_TURMA_BIMESTRE = "compensacao-ausencia-turma:turma-{0}-bimestre-{1}";
         public const string REGISTROS_FREQUENCIA_ALUNO_EXCLUIDOS_TURMA = "registros-frequencia-aluno-excluidos-turma:{0}";
+        public const string DRE_CODIGO = "dre-codigo:{0}";
     }
 }

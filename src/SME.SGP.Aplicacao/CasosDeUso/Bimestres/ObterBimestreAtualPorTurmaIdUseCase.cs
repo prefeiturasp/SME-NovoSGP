@@ -21,12 +21,12 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("A turma informada não foi encontrada");
             
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date));
 
-            return periodoEscolar == null? null :
+            return periodoEscolar.EhNulo() ? null :
                 new BimestreDto() { Id = periodoEscolar.Id, Numero = periodoEscolar.Bimestre };
         }
     }

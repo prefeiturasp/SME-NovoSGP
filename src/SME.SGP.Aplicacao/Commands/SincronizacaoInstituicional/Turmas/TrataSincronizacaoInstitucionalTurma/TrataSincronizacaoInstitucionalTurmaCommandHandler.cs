@@ -27,13 +27,14 @@ namespace SME.SGP.Aplicacao
             var turmaEOL = request.TurmaEOL;
             var turmaSGP = request.TurmaSGP;
 
-            if (request.TurmaSGP == null)
+            if (request.TurmaSGP.EhNulo())
                 return await IncluirTurmaAsync(turmaEOL, request.TurmaSGP);
 
             if (turmaEOL.Situacao == "C")
             {
                 Modalidade modalidade = turmaEOL.CodigoModalidade != turmaSGP.ModalidadeCodigo ? turmaEOL.CodigoModalidade : 0;
-                var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString(), modalidade);
+                int? semestre = turmaEOL.CodigoModalidade == Modalidade.CELP && turmaEOL.Semestre != turmaSGP.Semestre ? turmaEOL.Semestre : null;
+                var turmaAtualizadaComSucesso = await AtualizarTurmaParaHistoricaAsync(turmaEOL.Codigo.ToString(), modalidade, semestre);
 
                 if (turmaAtualizadaComSucesso)
                 {
@@ -71,7 +72,7 @@ namespace SME.SGP.Aplicacao
                 var periodosEscolares = await mediator
                     .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
-                if (periodosEscolares != null && periodosEscolares.Any())
+                if (periodosEscolares.NaoEhNulo() && periodosEscolares.Any())
                 {
                     var primeiroPeriodo = periodosEscolares
                         .OrderBy(x => x.Bimestre)
@@ -106,11 +107,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> AtualizarTurmaParaHistoricaAsync(string turmaId, Modalidade modalidadeEol)
+        private async Task<bool> AtualizarTurmaParaHistoricaAsync(string turmaId, Modalidade modalidadeEol, int? semestre)
         {
             var turmaAtualizada = modalidadeEol != 0 ?
-                await repositorioTurma.AtualizarTurmaModalidadeEParaHistorica(turmaId, modalidadeEol) :
-                await repositorioTurma.AtualizarTurmaParaHistorica(turmaId);
+                await repositorioTurma.AtualizarTurmaModalidadeEParaHistorica(turmaId, modalidadeEol, semestre) :
+                await repositorioTurma.AtualizarTurmaParaHistorica(turmaId, semestre);
 
             if (!turmaAtualizada)
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao atualizar a turma para histórica.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));
@@ -120,11 +121,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> IncluirTurmaAsync(TurmaParaSyncInstitucionalDto turmaEol, Turma turmaSgp)
         {
-            if (turmaSgp == null)
+            if (turmaSgp.EhNulo())
             {
                 var ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(turmaEol.UeCodigo));
 
-                if (ue == null)
+                if (ue.EhNulo())
                 {
                     await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Incluir a turma de código {turmaEol.Codigo}. Pois não foi encontrado a UE {turmaEol.UeCodigo}.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, "Atualizar Turma Para Historica Async"));
                     return false;

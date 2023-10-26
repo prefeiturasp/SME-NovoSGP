@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             if (!await mediator.Send(new VerificaSeExisteFechamentoTurmaPorIdQuery(filtroRelatorioConselhoClasseDto.FechamentoTurmaId)))
                 throw new NegocioException("O fechamento de turma não existe");
 
-            if (usuario == null)
+            if (usuario.EhNulo())
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
             filtroRelatorioConselhoClasseDto.Usuario = usuario;

@@ -30,18 +30,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPeriodoEscolar));
         }
 
-        public async Task<IEnumerable<TipoCalendarioDto>> BuscarPorAnoLetivo(int anoLetivo)
-        {
-            var retorno = await repositorio.BuscarPorAnoLetivo(anoLetivo);
-            return from t in retorno
-                   select EntidadeParaDto(t);
-        }
-
         public async Task<TipoCalendarioCompletoDto> BuscarPorAnoLetivoEModalidade(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
             var entidade = await repositorio.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, semestre);
 
-            if (entidade != null)
+            if (entidade.NaoEhNulo())
                 return EntidadeParaDtoCompleto(entidade);
 
             return null;
@@ -53,7 +46,7 @@ namespace SME.SGP.Aplicacao
 
             TipoCalendarioCompletoDto dto = new TipoCalendarioCompletoDto();
 
-            if (entidade != null)
+            if (entidade.NaoEhNulo())
                 dto = EntidadeParaDtoCompleto(entidade);
 
             return dto;
@@ -69,7 +62,8 @@ namespace SME.SGP.Aplicacao
                 Modalidade = entidade.Modalidade,
                 DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
                 Periodo = entidade.Periodo,
-                Migrado = entidade.Migrado
+                Migrado = entidade.Migrado,
+                Semestre = entidade.Semestre
             };
         }
 
@@ -90,7 +84,8 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = entidade.CriadoEm,
                 CriadoPor = entidade.CriadoPor,
                 DescricaoPeriodo = entidade.Periodo.GetAttribute<DisplayAttribute>().Name,
-                PossuiEventos = possuiEventos
+                PossuiEventos = possuiEventos,
+                Semestre = entidade.Semestre
             };
         }
 
@@ -105,7 +100,7 @@ namespace SME.SGP.Aplicacao
         {
             int[] modalidades;
             
-            if(modalidade == null || !modalidade.HasValue){
+            if(modalidade.EhNulo() || !modalidade.HasValue){
                 var login = servicoUsuario.ObterLoginAtual();
                 var perfil = servicoUsuario.ObterPerfilAtual();
 
@@ -127,7 +122,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaPeriodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioAsync(tipoCalendarioId);
 
-            if (listaPeriodoEscolar == null || !listaPeriodoEscolar.Any())
+            if (listaPeriodoEscolar.EhNulo() || !listaPeriodoEscolar.Any())
                 throw new NegocioException("Não foi possível obter os bimestres deste tipo de calendário.");
 
             return MapeiaParaDtoTipoCalendarioBimestre(listaPeriodoEscolar);
@@ -162,11 +157,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<ModalidadeTipoCalendario> MapearModalidadesUsuario(IEnumerable<Modalidade> modalidadesUsuario)
         {
             foreach (var modalidade in modalidadesUsuario)
-                yield return modalidade == Modalidade.EJA ?
-                            ModalidadeTipoCalendario.EJA :
-                            modalidade == Modalidade.EducacaoInfantil ?
-                            ModalidadeTipoCalendario.Infantil :
-                            ModalidadeTipoCalendario.FundamentalMedio;
+                yield return modalidade.ObterModalidadeTipoCalendario();
         }
 
         public async Task<TipoCalendario> ObterPorTurma(Turma turma)
@@ -176,5 +167,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> PeriodoEmAberto(TipoCalendario tipoCalendario, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false)
             => await repositorio.PeriodoEmAberto(tipoCalendario.Id, dataReferencia, bimestre, ehAnoLetivo);
+        
+        public TipoCalendario ObterPorId(long id)
+        {
+            return repositorio.ObterPorId(id);
+        }
     }
 }

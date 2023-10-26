@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 var fechamentoDaTurmaRegular = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery
                     { TurmaId = turmaRegularId, PeriodoEscolarId = fechamentoTurma.PeriodoEscolarId ?? 0 });
                 
-                if (fechamentoDaTurmaRegular != null)
+                if (fechamentoDaTurmaRegular.NaoEhNulo())
                     fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoDaTurmaRegular.Id);
 
                 turma = await ObterTurma(turmaRegularCodigo);
@@ -109,17 +109,17 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE, retornoConselhoBimestre.bimestre));
             }
 
-            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
+            var conselhoClasse = fechamentoTurma.NaoEhNulo() ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
             var periodoEscolarId = fechamentoTurma?.PeriodoEscolarId;
 
             PeriodoEscolar periodoEscolar;
 
-            if (periodoEscolarId == null)
+            if (periodoEscolarId.EhNulo())
             {
                 var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
 
-                if (tipoCalendario == null) 
+                if (tipoCalendario.EhNulo()) 
                     throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
                 periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
 
             var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
-            var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
+            var conselhoClasseAluno = conselhoClasse.NaoEhNulo() ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
             bool periodoAberto;
 
@@ -183,9 +183,9 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma);
 
-            var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
+            var conselhoClasse = fechamentoTurma.NaoEhNulo() ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
-            var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
+            var conselhoClasseAluno = conselhoClasse.NaoEhNulo() ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
             var ultimoBimestre = (await ObterPeriodoUltimoBimestre(turma));
 
@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, dataReferencia));
 
-            if (tipoNota == null)
+            if (tipoNota.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
 
             return tipoNota.TipoNota;
@@ -218,7 +218,7 @@ namespace SME.SGP.Aplicacao
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
         {
             var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (periodoEscolarUltimoBimestre == null)
+            if (periodoEscolarUltimoBimestre.EhNulo())
                 throw new NegocioException(MensagemNegocioPeriodo.NAO_FOI_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
 
             return periodoEscolarUltimoBimestre;
@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
             var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             return turma;

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery request, CancellationToken cancellationToken)
         {
             var planoAEE = await repositorioPlanoAEE.ObterPlanoPorEstudanteEAno(request.CodigoEstudante, request.AnoLetivo);
-            if (planoAEE == null)
+            if (planoAEE.EhNulo())
                 return false;
 
             return true;

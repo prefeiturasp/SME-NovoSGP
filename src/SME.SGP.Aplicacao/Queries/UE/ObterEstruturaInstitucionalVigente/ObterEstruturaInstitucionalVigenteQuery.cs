@@ -5,12 +5,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEstruturaInstitucionalVigenteQuery : IRequest<EstruturaInstitucionalRetornoEolDTO>
     {
-        public ObterEstruturaInstitucionalVigenteQuery(string codigoDre)
-        {
-            CodigoDre = codigoDre;
-        }
-
-        public string CodigoDre { get; set; }
-
+        private static ObterEstruturaInstitucionalVigenteQuery _instance;
+        public static ObterEstruturaInstitucionalVigenteQuery Instance => _instance ??= new();
     }
 }

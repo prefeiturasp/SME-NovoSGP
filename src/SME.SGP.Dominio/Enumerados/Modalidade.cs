@@ -26,7 +26,10 @@ namespace SME.SGP.Dominio
         MOVA = 8,
 
         [Display(Name = "ETEC", ShortName = "ETEC")]
-        ETEC = 9
+        ETEC = 9,
+
+        [Display(Name = "CELP", ShortName = "CELP")]
+        CELP = 10
     }
 
     public static class ModalidadeExtension
@@ -42,9 +45,46 @@ namespace SME.SGP.Dominio
                     return ModalidadeTipoCalendario.FundamentalMedio;
                 case Modalidade.EJA:
                     return ModalidadeTipoCalendario.EJA;
+                case Modalidade.CELP:
+                    return ModalidadeTipoCalendario.CELP;
                 default:
                     return ModalidadeTipoCalendario.FundamentalMedio;
             }
+        }
+        
+        public static bool EhEjaOuCelp(this Modalidade modalidade)
+        {
+            return modalidade.EhUmDosValores(Modalidade.EJA, Modalidade.CELP);
+        }
+        
+        public static bool NaoEhEjaOuCelp(this Modalidade modalidade)
+        {
+            return !EhEjaOuCelp(modalidade);
+        }
+        
+        public static bool EhEJA(this Modalidade modalidade)
+        {
+            return modalidade.EhUmDosValores(Modalidade.EJA);
+        }
+        
+        public static bool EhCELP(this Modalidade modalidade)
+        {
+            return modalidade.EhUmDosValores(Modalidade.CELP);
+        }
+        
+        public static bool EhEducacaoInfantil(this Modalidade modalidade)
+        {
+            return modalidade.EhUmDosValores(Modalidade.EducacaoInfantil);
+        }
+        
+        public static bool EhFundamental(this Modalidade modalidade)
+        {
+            return modalidade.EhUmDosValores(Modalidade.Fundamental);
+        }
+        
+        public static bool EhMedio(this Modalidade modalidade)
+        {
+            return modalidade.EhUmDosValores(Modalidade.Medio);
         }
     }
 }

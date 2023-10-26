@@ -69,9 +69,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [AllowAnonymous] //ainda nao existe perfil pra essa função
-        public IActionResult ObterPorId(long id)
+        public async Task<IActionResult> ObterPorId(long id)
         {
-            return Ok(consultaTipoAvaliacao.ObterPorId(id));
+            return Ok(await consultaTipoAvaliacao.ObterPorId(id));
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso.EscolaAqui.ObterDadosDeLeituraDeComunicadosPorAlunosDaTurma;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos.EscolaAqui.DadosDeLeituraDeComunicados;
 using System;
@@ -25,11 +26,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
             var dadosLeituraAlunosComunicadoPorTurmaDto = await mediator.Send(new ObterDadosDeLeituraDeComunicadosPorAlunosDaTurmaQuery(request.ComunicadoId, request.CodigoTurma));
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma.ToString()));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new Exception("Não foi possível localizar a turma");
 
             var periodoEscolar = await mediator.Send(new ObterUltimoPeriodoEscolarPorDataQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, DateTime.Now.Date));
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new Exception("Não foi possível localizar o periodo escolar");
 
             var dadosLeituraAlunosComunicadoPorTurmaComMarcador = new List<DadosLeituraAlunosComunicadoPorTurmaDto>();
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
             {
                 var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(item.CodigoAluno.ToString(), turma.AnoLetivo));
 
-                if (aluno == null)
+                if (aluno.EhNulo())
                     throw new Exception("Não foi possível localizar o aluno");
 
                 item.Marcador = servicoAluno.ObterMarcadorAluno(aluno, periodoEscolar, false);

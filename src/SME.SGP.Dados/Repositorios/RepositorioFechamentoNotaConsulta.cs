@@ -105,10 +105,10 @@ namespace SME.SGP.Dados.Repositorios
                            and t.turma_id = ANY(@turmasCodigos)
                            and fa.aluno_codigo = @alunoCodigo";
 
-            if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+            if (dataMatricula.HasValue && (anoLetivo.NaoEhNulo() || anoLetivo == DateTime.Now.Year))
                 query += " and @dataMatricula <= pe.periodo_fim";
 
-            if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+            if (dataSituacao.HasValue && (anoLetivo.NaoEhNulo() || anoLetivo == DateTime.Now.Year))
                 query += $@" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
                              or @dataSituacao > pe.periodo_fim)";
 
@@ -220,10 +220,10 @@ namespace SME.SGP.Dados.Repositorios
                             and pe.bimestre = @bimestre";
             if(tipoCalendario.HasValue)
                 query += " and pe.tipo_calendario_id = @tipoCalendario ";
-            if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+            if (dataMatricula.HasValue && (anoLetivo.NaoEhNulo() || anoLetivo == DateTime.Now.Year))
                 query += " and @dataMatricula <= pe.periodo_fim";
 
-            if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+            if (dataSituacao.HasValue && (anoLetivo.NaoEhNulo() || anoLetivo == DateTime.Now.Year))
             {
                 query += @" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
                              or @dataSituacao > pe.periodo_fim)";

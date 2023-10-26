@@ -37,10 +37,10 @@ namespace SME.SGP.Infra
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (Niveis == null || Niveis.Count == 0)
+            if (Niveis.EhNulo() || Niveis.Count == 0)
                 yield return new ValidationResult("No mínimo 1 nível deve ser informado.");
 
-            if (Niveis != null)
+            if (Niveis.NaoEhNulo())
             {
                 if (Niveis.Count(a => a.Cargo.HasValue) > 0)
                 {

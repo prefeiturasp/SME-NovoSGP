@@ -221,28 +221,30 @@ namespace SME.SGP.Dados.Repositorios
             return string.Join(",", arrCodigos);
         }
                 
-        public async Task<bool> AtualizarTurmaParaHistorica(string turmaId)
+        public async Task<bool> AtualizarTurmaParaHistorica(string turmaId, int? semestre = null)
         {
-            var query = @"update public.turma 
+            var query = $@"update public.turma 
                              set historica = true,
                                  data_atualizacao = @dataAtualizacao
+                                {(semestre.HasValue ? ", semestre = @semestre " : string.Empty)}
                            where turma_id = @turmaId";
 
-            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, dataAtualizacao = DateTime.Now });
+            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, dataAtualizacao = DateTime.Now, semestre });
 
             return retorno != 0;
 
         }
 
-        public async Task<bool> AtualizarTurmaModalidadeEParaHistorica(string turmaId, Modalidade modalidadeEol)
+        public async Task<bool> AtualizarTurmaModalidadeEParaHistorica(string turmaId, Modalidade modalidadeEol, int? semestre = null)
         {
-            var query = @"update public.turma 
+            var query = $@"update public.turma 
                              set historica = true,
                                  modalidade_codigo = @modalidadeEol,
                                  data_atualizacao = @dataAtualizacao
+                                 {(semestre.HasValue ? ", semestre = @semestre " : string.Empty)}
                            where turma_id = @turmaId";
 
-            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, modalidadeEol , dataAtualizacao = DateTime.Now });
+            var retorno = await contexto.Conexao.ExecuteAsync(query, new { turmaId, modalidadeEol , dataAtualizacao = DateTime.Now, semestre });
 
             return retorno != 0;
 
@@ -296,6 +298,7 @@ namespace SME.SGP.Dados.Repositorios
                                     delete from consolidacao_registros_pedagogicos where turma_id = @turmaId;
                                     delete from consolidacao_frequencia_turma where turma_id = @turmaId;
                                     delete from consolidado_fechamento_componente_turma where turma_id = @turmaId;
+                                    delete from frequencia_turma_evasao where turma_id = @turmaId;
                                     delete from turma where id = @turmaId;";
             
             var parametros = new { turmaId };

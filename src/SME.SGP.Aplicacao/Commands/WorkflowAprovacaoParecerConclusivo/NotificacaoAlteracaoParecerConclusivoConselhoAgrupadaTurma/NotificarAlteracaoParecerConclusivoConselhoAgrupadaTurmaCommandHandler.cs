@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         {
             var wfAprovacoes = await repositorioWFAprovacao.ObterPareceresAguardandoAprovacaoSemWorkflow();
             
-            if (wfAprovacoes == null || !wfAprovacoes.Any())
+            if (wfAprovacoes.EhNulo() || !wfAprovacoes.Any())
                 return false;
 
             await CarregarInformacoesParaNotificacao(wfAprovacoes);
@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
         {
             var aprovacaoParecerConclusivo = aprovacoesPorTurma.FirstOrDefault();
 
-            if (aprovacaoParecerConclusivo == null)
+            if (aprovacaoParecerConclusivo.EhNulo())
                 return 0;
             
             var turma = await ObterTurma(aprovacaoParecerConclusivo.TurmaId);

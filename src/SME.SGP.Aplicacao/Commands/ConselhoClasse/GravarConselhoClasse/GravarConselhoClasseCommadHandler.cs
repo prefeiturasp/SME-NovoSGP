@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             var nomeChaveCache = ObterChaveNotaConceitoConselhoClasseTurmaBimestre(turma.CodigoTurma,(int)Bimestre.Final,codigoAluno);
 
             var notasConceitosFechamento = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
-            if (notasConceitosFechamento != null)
+            if (notasConceitosFechamento.NaoEhNulo())
                 await PersistirNotaConceitoConselhoClasseBimestreNoCache(notasConceitosFechamento, conselhoClasseNota, codigoAluno, turma.CodigoTurma, fechamentoTurma, bimestre);  
         }
         private static string ObterChaveNotaConceitoConselhoClasseTurmaBimestre(string codigoTurma, int bimestre, string alunoCodigo)
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
             var notaConceitoFechamentoAluno = notasConceitosFechamento.FirstOrDefault(c => c.AlunoCodigo == codigoAluno &&
                 c.ComponenteCurricularCodigo == conselhoClasseNota.CodigoComponenteCurricular && c.Bimestre == bimestre);
 
-            if (notaConceitoFechamentoAluno == null)
+            if (notaConceitoFechamentoAluno.EhNulo())
                 notasConceitosFechamento.Add( await ObterNotaConceitoBimestreAluno(codigoAluno, conselhoClasseNota.CodigoComponenteCurricular, codigoTurma, conselhoClasseNota, fechamentoTurma, bimestre));
             else
             {
@@ -112,8 +112,8 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularCodigo = codigoDisciplina,
                 TurmaCodigo = codigoTurma,
                 Bimestre = bimestre,
-                ConselhoClasseNotaId = conselho != null ? conselho.ConselhoClasseNotaId : 0,
-                ConselhoClasseId = conselho != null ? conselho.ConselhoClasseId : 0
+                ConselhoClasseNotaId = conselho.NaoEhNulo() ? conselho.ConselhoClasseNotaId : 0,
+                ConselhoClasseId = conselho.NaoEhNulo() ? conselho.ConselhoClasseId : 0
             };
         }
 
