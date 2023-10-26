@@ -373,5 +373,25 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				where t.ue_id = p_ueid and t.ano_letivo = extract(year from NOW())
 				group by rf.aula_id
 				having count(rf.id) > 1", new { ueId });
-    }
+
+        public Task<IEnumerable<RegistroFrequenciaAlunoDuplicado>> ObterRegistroFrequenciaAlunoDuplicados(long turmaId)
+			=> database.Conexao.QueryAsync<RegistroFrequenciaAlunoDuplicado>(
+				@"select rfa.registro_frequencia_id as RegistroFrequenciaId, 
+					rfa.aula_id as AulaId,
+					rfa.numero_aula as NumeroAula,
+					rfa.codigo_aluno as AlunoCodigo,
+					count(rfa.id) as Quantidade,
+					min(rfa.criado_em) as PrimeiroRegistro,
+					max(rfa.criado_em) as UltimoRegistro,
+					max(rfa.id) as UltimoId
+				from registro_frequencia_aluno rfa 
+				join aula a on a.id = rfa.aula_id
+				join turma t on t.turma_id = a.turma_id
+				where t.id = @turmaId
+				group by rfa.registro_frequencia_id,
+						 rfa.aula_id,
+ 						 rfa.numero_aula,
+						 rfa.codigo_aluno
+				having count(rfa.id) > 1", new { turmaId });
+	}
 }

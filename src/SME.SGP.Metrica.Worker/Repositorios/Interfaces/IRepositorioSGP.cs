@@ -19,6 +19,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task AtualizarHistoricoNotaConselhoClasseNotaDuplicado(long conselhoClasseAlunoId, long componenteCurricularId, long ultimoId);
         Task AtualizarMaiorNotaConselhoClasseNotaDuplicado(long conselhoClasseAlunoId, long componenteCurricularId, long ultimoId);
         Task ExcluirConselhoClasseNotaDuplicado(long conselhoClasseAlunoId, long componenteCurricularId, long ultimoId);
+
         // FechamentoTurma
         Task AtualizarConselhoClasseFechamentoTurmaDuplicados(long turmaId, long periodoEscolarId, long ultimoId);
         Task AtualizarComponenteFechamentoTurmaDuplicados(long turmaId, long periodoEscolarId, long ultimoId);
@@ -46,5 +47,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         // RegistroFrequencia
         Task AtualizaAlunoRegistroFrequenciaDuplicado(long aulaId, long ultimoId);
         Task ExcluirRegistroFrequenciaDuplicado(long aulaId, long ultimoId);
+        Task<bool> AtualizarCompensacoesRegistroFrequenciaAlunoDuplicado(long registroFrequenciaId, long aulaId, int numeroAula, string alunoCodigo, long ultimoId);
+        Task AtualizarAusenciaRegistroFrequenciaAlunoDuplicado(long ultimoId);
+        Task ExcluirRegistroFrequenciaAlunoDuplicado(long registroFrequenciaId, long aulaId, int numeroAula, string alunoCodigo, long ultimoId);
     }
 }

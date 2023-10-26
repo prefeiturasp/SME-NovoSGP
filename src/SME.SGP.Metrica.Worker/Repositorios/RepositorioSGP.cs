@@ -315,5 +315,30 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 					where aula_id = @aulaId
 					  and id <> @ultimoId);", new { aulaId, ultimoId });
 
-	}
+		public async Task<bool> AtualizarCompensacoesRegistroFrequenciaAlunoDuplicado(long registroFrequenciaId, long aulaId, int numeroAula, string alunoCodigo, long ultimoId)
+			=> await (database.Conexao.ExecuteAsync(
+				@"update compensacao_ausencia_aluno_aula 
+					set registro_frequencia_aluno_id = @ultimoId
+				  where id in (
+					select caaa.id from compensacao_ausencia_aluno_aula caaa 
+					inner join registro_frequencia_aluno rfa on rfa.id = caaa.registro_frequencia_aluno_id 
+					where rfa.registro_frequencia_id = @registroFrequenciaId
+					and rfa.aula_id = @aulaId
+					and rfa.numero_aula = @numeroAula
+					and rfa.codigo_aluno = @alunoCodigo
+					and rfa.id <> @ultimoId);", new { registroFrequenciaId, aulaId, numeroAula, alunoCodigo, ultimoId })) > 0;
+
+		public Task AtualizarAusenciaRegistroFrequenciaAlunoDuplicado(long ultimoId)
+			=> database.Conexao.ExecuteAsync(
+				"update registro_frequencia_aluno set valor = 2 where valor <> 2 and id = @ultimoId", new { ultimoId });
+
+		public Task ExcluirRegistroFrequenciaAlunoDuplicado(long registroFrequenciaId, long aulaId, int numeroAula, string alunoCodigo, long ultimoId)
+			=> database.Conexao.ExecuteAsync(
+				@"delete from registro_frequencia_aluno  
+					where registro_frequencia_id = @registroFrequenciaId
+					  and aula_id = @aulaId
+					  and numero_aula = @numeroAula
+					  and codigo_aluno = @alunoCodigo
+					  and id <> @ultimoId;", new { registroFrequenciaId, aulaId, numeroAula, alunoCodigo, ultimoId });
+    }
 }

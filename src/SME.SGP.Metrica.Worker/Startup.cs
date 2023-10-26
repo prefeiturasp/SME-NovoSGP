@@ -117,6 +117,7 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRepositorioFrequenciaAlunoInconsistente, RepositorioFrequenciaAlunoInconsistente>();
             services.TryAddScoped<IRepositorioFrequenciaAlunoDuplicado, RepositorioFrequenciaAlunoDuplicado>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaDuplicado, RepositorioRegistroFrequenciaDuplicado>();
+            services.TryAddScoped<IRepositorioRegistroFrequenciaAlunoDuplicado, RepositorioRegistroFrequenciaAlunoDuplicado>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
@@ -156,6 +157,9 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRegistroFrequenciaDuplicadoUseCase, RegistroFrequenciaDuplicadoUseCase>();
             services.TryAddScoped<IRegistroFrequenciaDuplicadoUEUseCase, RegistroFrequenciaDuplicadoUEUseCase>();
             services.TryAddScoped<ILimpezaRegistroFrequenciaDuplicadoUseCase, LimpezaRegistroFrequenciaDuplicadoUseCase>();
+            services.TryAddScoped<IRegistroFrequenciaAlunoDuplicadoUseCase, RegistroFrequenciaAlunoDuplicadoUseCase>();
+            services.TryAddScoped<IRegistroFrequenciaAlunoDuplicadoUEUseCase, RegistroFrequenciaAlunoDuplicadoUEUseCase>();
+            services.TryAddScoped<IRegistroFrequenciaAlunoDuplicadoTurmaUseCase, RegistroFrequenciaAlunoDuplicadoTurmaUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

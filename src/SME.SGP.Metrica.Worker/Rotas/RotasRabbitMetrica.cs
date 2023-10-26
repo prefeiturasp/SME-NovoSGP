@@ -37,5 +37,9 @@
         public const string DuplicacaoRegistroFrequencia = "sgp.metricas.registro.frequencia.duplicado";
         public const string DuplicacaoRegistroFrequenciaUE = "sgp.metricas.registro.frequencia.duplicado.ue";
         public const string LimpezaRegistroFrequenciaDuplicado = "sgp.metricas.registro.frequencia.duplicado.limpeza";
+        public const string DuplicacaoRegistroFrequenciaAluno = "sgp.metricas.registro.frequencia.aluno.duplicado";
+        public const string DuplicacaoRegistroFrequenciaAlunoUE = "sgp.metricas.registro.frequencia.aluno.duplicado.ue";
+        public const string DuplicacaoRegistroFrequenciaAlunoTurma = "sgp.metricas.registro.frequencia.aluno.duplicado.turma";
+        public const string LimpezaRegistroFrequenciaAlunoDuplicado = "sgp.metricas.registro.frequencia.aluno.duplicado.limpeza";
     }
 }
