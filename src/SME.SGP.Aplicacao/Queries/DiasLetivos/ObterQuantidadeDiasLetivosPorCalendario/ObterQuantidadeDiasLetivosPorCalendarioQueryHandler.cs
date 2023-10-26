@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var eventos = await mediator.Send(new ObterEventosPorTipoDeCalendarioDreUeQuery(request.TipoCalendarioId, request.DreCodigo, request.UeCodigo, false, false));
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorIdQuery(request.TipoCalendarioId));
 
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Tipo de calendario não encontrado");
 
             var anoLetivo = tipoCalendario.AnoLetivo;
@@ -72,21 +72,22 @@ namespace SME.SGP.Aplicacao
 
         private async Task<int> ObterDiasLetivos(ModalidadeTipoCalendario modalidade, int anoLetivo)
         {
-            var parametros = await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
-
-            return Convert.ToInt32(modalidade == ModalidadeTipoCalendario.EJA ?
-                            await ObterParametroDiasLetivosEja(parametros) :
-                            await ObterParametroDiasLetivosFundMedio(parametros));
+            switch (modalidade)
+            {
+                case ModalidadeTipoCalendario.EJA : 
+                    return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.EjaDiasLetivos, anoLetivo));
+                
+                case ModalidadeTipoCalendario.CELP : 
+                    return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.CelpDiasLetivos, anoLetivo));
+                
+                default : 
+                    return Convert.ToInt32(await ObterParametroSistemaDiasLetivos(TipoParametroSistema.FundamentalMedioDiasLetivos, anoLetivo));
+            }
         }
 
-        private async Task<string> ObterParametroDiasLetivosEja(IEnumerable<ParametrosSistema> parametros)
+        private async Task<string> ObterParametroSistemaDiasLetivos(TipoParametroSistema tipoParametroSistema, int anoLetivo)
         {
-            return parametros.FirstOrDefault(a => a.Nome == "EjaDiasLetivos").Valor;
-        }
-
-        private async Task<string> ObterParametroDiasLetivosFundMedio(IEnumerable<ParametrosSistema> parametros)
-        {
-            return parametros.FirstOrDefault(a => a.Nome == "FundamentalMedioDiasLetivos").Valor;
+            return (await mediator.Send(new ObterParametrosSistemaPorTipoEAnoQuery(tipoParametroSistema, anoLetivo))).FirstOrDefault().Valor;
         }
 
         public List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)

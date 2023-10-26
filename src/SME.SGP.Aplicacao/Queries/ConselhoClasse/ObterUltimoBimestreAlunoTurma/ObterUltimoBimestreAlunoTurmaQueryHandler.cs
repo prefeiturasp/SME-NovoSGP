@@ -24,14 +24,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<(int bimestre, bool possuiConselho, bool concluido)> Handle(ObterUltimoBimestreAlunoTurmaQuery request, CancellationToken cancellationToken)
         {
-            var periodoEscolar = await repositorioPeriodoEscolar.ObterUltimoBimestreAsync(request.Turma.AnoLetivo, request.Turma.ObterModalidadeTipoCalendario(), request.Turma.Semestre);
+            var periodoEscolar = await repositorioPeriodoEscolar.ObterUltimoBimestreAsync(request.Turma.AnoLetivo, request.Turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), request.Turma.Semestre);
 
-            if (periodoEscolar == null)
+            if (periodoEscolar.EhNulo())
                 throw new NegocioException($"Não foi encontrado o ultimo periodo escolar para a turma {request.Turma.Nome}");
 
             var conselhoClasseUltimoBimestre = await repositorioConselhoClasseConsulta.ObterPorAlunoEPeriodoAsync(request.AlunoCodigo, periodoEscolar.Id);
 
-            return (periodoEscolar.Bimestre, conselhoClasseUltimoBimestre != null, conselhoClasseUltimoBimestre is
+            return (periodoEscolar.Bimestre, conselhoClasseUltimoBimestre.NaoEhNulo(), conselhoClasseUltimoBimestre is
             {
                 Situacao: SituacaoConselhoClasse.Concluido
             });

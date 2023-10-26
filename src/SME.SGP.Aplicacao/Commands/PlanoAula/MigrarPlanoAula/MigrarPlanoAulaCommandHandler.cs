@@ -48,14 +48,18 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var planoTurma in request.PlanoAulaMigrar.IdsPlanoTurmasDestino)
                 {
+                    var disciplinaId = aula.DisciplinaId;
+                    if (aula.DisciplinaId.EhIdComponenteCurricularTerritorioSaberAgrupado())
+                        disciplinaId = await ObterComponenteCurricularTerritorioAgrupadorOutraTurma(aula.DisciplinaId, planoTurma.TurmaId);
+
                     AulaConsultaDto aulaConsultaDto = await
                         mediator.Send(new ObterAulaDataTurmaDisciplinaQuery(
                             planoTurma.Data,
                             planoTurma.TurmaId,
-                            aula.DisciplinaId
+                            disciplinaId
                         ));
 
-                    if (aulaConsultaDto == null)
+                    if (aulaConsultaDto.EhNulo())
                         throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToString("dd/MM/yyyy")} neste componente curricular!");
 
                     var planoCopia = new PlanoAulaDto()
@@ -84,6 +88,15 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
         }
+        private async Task<string> ObterComponenteCurricularTerritorioAgrupadorOutraTurma(string codigoComponenteCurricularAgrupadorTurmaOrigem, string codigoTurmaDestino)
+        {
+            var componenteCurricularTurmaOrigem = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoComponenteCurricularAgrupadorTurmaOrigem)));
+            var componentesCurricularesTurmaDestino = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurmaDestino));
+            var componenteCurricularTurmaDestino = componentesCurricularesTurmaDestino.Where(cc => (componenteCurricularTurmaOrigem?.TerritorioSaber ?? false) &&
+                                                                                    cc.CodigoComponenteTerritorioSaber == componenteCurricularTurmaOrigem.CodigoComponenteCurricularTerritorioSaber).FirstOrDefault();
+            return componenteCurricularTurmaDestino?.CodigoComponenteCurricular.ToString() ?? codigoComponenteCurricularAgrupadorTurmaOrigem;
+        }
+
         private async Task ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto, string codigoRf, bool ehProfessorCj, string ueId, string turmaCodigo)
         {
 
@@ -99,8 +112,8 @@ namespace SME.SGP.Aplicacao
             if (turmasSelecionadas.Any(t => t.TipoTurma == TipoTurma.Programa))
             {
                 var turmasPrograma = await consultasAbrangencia.ObterTurmasPrograma(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo);
-                if (turmasPrograma != null)
-                    turmasAbrangencia = turmasAbrangencia != null ? turmasAbrangencia.Concat(turmasPrograma) : turmasPrograma;
+                if (turmasPrograma.NaoEhNulo())
+                    turmasAbrangencia = turmasAbrangencia.NaoEhNulo() ? turmasAbrangencia.Concat(turmasPrograma) : turmasPrograma;
             }
 
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(codigoRf, string.Empty));
@@ -225,12 +238,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasProfessor == null ||
+                            idsTurmasProfessor.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
                         )
 
@@ -244,12 +257,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasAbrangencia == null ||
+                            idsTurmasAbrangencia.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasAbrangencia.Contains(c))
                         )
 
@@ -273,12 +286,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasProfessor == null ||
+                            idsTurmasProfessor.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasProfessor.Contains(Convert.ToInt32(c)))
                         )
 
@@ -292,12 +305,12 @@ namespace SME.SGP.Aplicacao
                         (
                             ehProfessorCJ &&
                             (
-                                lstTurmasCJ == null ||
+                                lstTurmasCJ.EhNulo() ||
                                 idsTurmasSelecionadas.Any(c => !lstTurmasCJ.Select(tcj => tcj.TurmaId).Contains(c))
                             )
                         ) ||
                         (
-                            idsTurmasAbrangencia == null ||
+                            idsTurmasAbrangencia.EhNulo() ||
                             idsTurmasSelecionadas.Any(c => !idsTurmasAbrangencia.Contains(c))
                         )
 

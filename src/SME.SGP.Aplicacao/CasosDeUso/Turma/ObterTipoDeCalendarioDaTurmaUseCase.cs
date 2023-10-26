@@ -11,11 +11,11 @@ namespace SME.SGP.Aplicacao
         {
 
             Turma turma = await mediator.Send(new ObterTurmaPorCodigoQuery() {  TurmaCodigo = obterTipoDeCalendarioDaTurmaEntrada.TurmaCodigo }) as Turma;
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Não foi encontrado a turma {obterTipoDeCalendarioDaTurmaEntrada.TurmaCodigo}.");
 
             var tipoDeCalendario = await mediator.Send(new ObterTipoDeCalendarioDaTurmaQuery() { Turma = turma });
-            if (tipoDeCalendario == null)
+            if (tipoDeCalendario.EhNulo())
                 throw new NegocioException("Não foi encontrado tipo de calendário para esta turma.");
 
             return new TipoCalendarioSugestaoDto() { Id = tipoDeCalendario.Id, Nome = tipoDeCalendario.Nome };

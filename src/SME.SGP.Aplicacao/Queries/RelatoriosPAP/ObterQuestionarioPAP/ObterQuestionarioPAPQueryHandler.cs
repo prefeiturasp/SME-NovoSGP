@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
             var repostaPorTipo = await ObterRepostaPorTipoQuestao(request);
 
-            if (repostaPorTipo != null)
+            if (repostaPorTipo.NaoEhNulo())
                 respostasEncaminhamento.Add(repostaPorTipo);
 
             var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>

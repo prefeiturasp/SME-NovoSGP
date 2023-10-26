@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join componente_curricular cc on cc.id = fn.disciplina_id
                         where t.id = @turmaId ");
 
-            if (disciplinasId != null && disciplinasId.Length > 0)
+            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
                 query.AppendLine("and (f.disciplina_id = ANY(@disciplinasId) or cc.id = ANY(@disciplinasId))");
 
             if (bimestre > 0)
@@ -86,9 +86,9 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     var fechamentoTurmaDisciplinaLista =
                         fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
-                    if (fechamentoTurmaDisciplinaLista == null)
+                    if (fechamentoTurmaDisciplinaLista.EhNulo())
                     {
-                        if (periodoEscolar != null)
+                        if (periodoEscolar.NaoEhNulo())
                             fechamentoTurma.AdicionarPeriodoEscolar(periodoEscolar);
 
                         fechamentoTurmaDiscplina.FechamentoTurma = fechamentoTurma;
@@ -109,7 +109,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var turma = await repositorioTurma.ObterPorCodigo(turmaCodigo);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 return Enumerable.Empty<FechamentoTurmaDisciplina>();
 
             return await ObterFechamentosTurmaDisciplinas(turma.Id, disciplinasId, bimestre);
@@ -688,11 +688,11 @@ namespace SME.SGP.Dados.Repositorios
                                     where t.turma_id = @turmaCodigo
                                     and f.disciplina_id = @disciplinaId
                                     and p.bimestre = @bimestre");
-            if (situacoesFechamento != null && situacoesFechamento.Any())
+            if (situacoesFechamento.NaoEhNulo() && situacoesFechamento.Any())
                 query.Append(" and f.situacao = any(@situacoesFechamento)");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),
-                new { turmaCodigo, disciplinaId, bimestre, situacoesFechamento = (situacoesFechamento != null ? situacoesFechamento.Select(situacao => (int)situacao).ToArray() : null) });
+                new { turmaCodigo, disciplinaId, bimestre, situacoesFechamento = (situacoesFechamento.NaoEhNulo() ? situacoesFechamento.Select(situacao => (int)situacao).ToArray() : null) });
         }
 
         public async Task<bool> VerificaExistenciaFechamentoTurmaDisciplinPorTurmaDisciplinaBimestreSituacao(long turmaId, long disciplinaId, long periodoId, SituacaoFechamento[] situacoesFechamento)
@@ -730,7 +730,7 @@ namespace SME.SGP.Dados.Repositorios
                                     inner join turma t on t.id = ft.turma_id
                                     left join usuario u on u.rf_codigo = coalesce(f.alterado_rf, f.criado_rf)
                                     where f.situacao = any(@situacoesFechamento) and t.ue_id = @idUe and t.ano_letivo = @anoletivo ");
-            if (fechamentoTurmaDisciplinaIdsIgnorados != null && fechamentoTurmaDisciplinaIdsIgnorados.Any())
+            if (fechamentoTurmaDisciplinaIdsIgnorados.NaoEhNulo() && fechamentoTurmaDisciplinaIdsIgnorados.Any())
                 query.Append(" and f.id != any(@fechamentoTurmaDisciplinaIdsIgnorados) ");
 
             return database.Conexao.QueryAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),

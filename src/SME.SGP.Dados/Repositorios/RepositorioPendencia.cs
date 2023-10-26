@@ -105,7 +105,9 @@ namespace SME.SGP.Dados.Repositorios
 		                            from pendencia p 
 		                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
 		                                inner join pendencia_diario_bordo pdb on p.id = pdb.pendencia_id
+                                        inner join aula a on a.id = pdb.aula_id
 		                            where not p.excluido 
+                                    and not a.excluido
 		                            and pu.usuario_id = @usuarioId
 		                            and situacao = @situacao 
 		                            union all
@@ -127,7 +129,7 @@ namespace SME.SGP.Dados.Repositorios
                                     and p.situacao = @situacao) t 
                                     order by CriadoEm desc";
 
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>();
@@ -226,7 +228,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             //-> Retorno paginado
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
             var retornoPaginado = new PaginacaoResultadoDto<Pendencia>

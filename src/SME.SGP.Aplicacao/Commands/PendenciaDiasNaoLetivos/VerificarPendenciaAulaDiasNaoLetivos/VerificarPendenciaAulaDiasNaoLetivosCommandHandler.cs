@@ -37,6 +37,14 @@ namespace SME.SGP.Aplicacao
                 tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EJA, anoAtual, 2));
                 if (tipoCalendarioId > 0)
                     await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.EJA, anoAtual);
+                
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 1));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.CELP, anoAtual);
+
+                tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.CELP, anoAtual, 2));
+                if (tipoCalendarioId > 0)
+                    await VerificaPendenciasAulaDiasNaoLetivos(tipoCalendarioId, ModalidadeTipoCalendario.CELP, anoAtual);
 
                 return true;
 
@@ -56,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
             var diasComEventosNaoLetivos = diasLetivosENaoLetivos.Where(e => e.EhNaoLetivo);
 
-            if (aulas != null)
+            if (aulas.NaoEhNulo())
             {
                 var listaAgrupada = aulas
                     .Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data &&
@@ -77,10 +85,10 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         var professor = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmas.Key.TurmaId.ToString(), turmas.Key.DisciplinaId.ToString()));
-                        if (professor == null && turmas.Key.ProfessorRf == "Sistema") continue;
-                        var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf));
+                        if (professor.EhNulo() && turmas.Key.ProfessorRf == "Sistema") continue;
+                        var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor.NaoEhNulo() ? professor.ProfessorRf : turmas.Key.ProfessorRf));
 
-                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
+                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, professor.NaoEhNulo() ? professor.ProfessorRf : turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
                         var pendenciaExistente = pendenciaId != 0;
 
                         var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));

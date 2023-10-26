@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var alunoEOL in alunosEOL)
             {
-                var situacao = alunoEOL.SituacaoMatricula == null ? "" : $"({alunoEOL.SituacaoMatricula})";
+                var situacao = alunoEOL.SituacaoMatricula.EhNulo() ? "" : $"({alunoEOL.SituacaoMatricula})";
                 yield return new AlunoSimplesDto()
                 {
                     Codigo = alunoEOL.CodigoAluno,

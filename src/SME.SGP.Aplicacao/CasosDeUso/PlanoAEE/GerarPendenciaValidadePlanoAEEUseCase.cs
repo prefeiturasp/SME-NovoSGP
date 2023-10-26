@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
 
         private async Task GerarPendenciaValidadePlano(PlanoAEE planoEncerrado, DateTime dataFim)
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Turma [{turmaId}] não localizada para geração da pendência de validade do plano");
 
             return turma;

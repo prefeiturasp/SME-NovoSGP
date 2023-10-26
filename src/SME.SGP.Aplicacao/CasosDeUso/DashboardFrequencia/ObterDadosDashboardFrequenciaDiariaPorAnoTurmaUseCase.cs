@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             
             dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(anoLetivo, dreId, ueId, modalidade, semestre, anoTurma, dataAula, visaoDre));
 
-            if (dadosFrequenciaAlunos == null || !dadosFrequenciaAlunos.Any())
+            if (dadosFrequenciaAlunos.EhNulo() || !dadosFrequenciaAlunos.Any())
                 return null;
             
             return MapearParaDto(dadosFrequenciaAlunos, modalidade);
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                 TotalAulas = frequenciasAlunos.Select(a => a.TotalAulas).Sum(),
                 TotalFrequencias = frequenciasAlunos.Select(a => a.TotalFrequencias).Sum(),
             };
-            var totalFrequencia = dadosTotal != null ? dadosTotal.TotalFrequenciaFormatado : "";
+            var totalFrequencia = dadosTotal.NaoEhNulo() ? dadosTotal.TotalFrequenciaFormatado : "";
 
             return new GraficoFrequenciaAlunoDto()
             {

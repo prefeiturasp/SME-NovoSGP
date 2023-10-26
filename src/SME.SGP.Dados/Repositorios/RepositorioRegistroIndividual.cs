@@ -75,12 +75,12 @@ namespace SME.SGP.Dados.Repositorios
                                   inner join componente_curricular cc on ri.componente_curricular_id = cc.id
                                    where not ri.excluido 
                                     and ri.turma_id = @turmaId
-                                    {(componentePai != null? "and cc.componente_curricular_pai_id = @componentePai":"")}
+                                    {(componentePai.NaoEhNulo()? "and cc.componente_curricular_pai_id = @componentePai":"")}
                                     and ri.aluno_codigo = @alunoCodigo
                                     and ri.data_registro::date between @dataInicio and @dataFim ";
             var orderBy = "order by ri.data_registro desc";
 
-            if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
+            if (paginacao.EhNulo() || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
             var query = $"select count(0) {condicao}";

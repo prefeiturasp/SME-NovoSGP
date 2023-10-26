@@ -21,13 +21,13 @@ namespace SME.SGP.Aplicacao
         {
             var historicoEscolarObservacoes = mensagemRabbit.ObterObjetoMensagem<List<HistoricoEscolarObservacaoDto>>();
 
-            if (historicoEscolarObservacoes != null && historicoEscolarObservacoes.Any())
+            if (historicoEscolarObservacoes.NaoEhNulo() && historicoEscolarObservacoes.Any())
             {
                 foreach (var historicoEscolarObservacaoDto in historicoEscolarObservacoes)
                 {
                     var historicoEscolarObservacao = await mediator.Send(new ObterHistoricoEscolarObservacaoPorAlunoQuery(historicoEscolarObservacaoDto.CodigoAluno));
 
-                    if (historicoEscolarObservacao == null)
+                    if (historicoEscolarObservacao.EhNulo())
                     {
                         historicoEscolarObservacao = ObterNovoHistoricoObsevacao(historicoEscolarObservacaoDto);
                     }
@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                         historicoEscolarObservacao = await ObterAlteracaoHistoricoObservacao(historicoEscolarObservacao, historicoEscolarObservacaoDto);
                     }
 
-                    if (historicoEscolarObservacao != null)
+                    if (historicoEscolarObservacao.NaoEhNulo())
                     {
                         await mediator.Send(new SalvarHistoricoEscolarObservacaoCommand(historicoEscolarObservacao));
                     }

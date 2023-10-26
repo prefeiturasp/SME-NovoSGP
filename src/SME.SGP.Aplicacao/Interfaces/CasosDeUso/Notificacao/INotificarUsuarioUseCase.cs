@@ -1,8 +1,6 @@
-﻿using SME.SGP.Infra;
-
-namespace SME.SGP.Aplicacao
+﻿namespace SME.SGP.Aplicacao
 {
-    public interface INotificarUsuarioUseCase : IUseCase<MensagemRabbit, long>
+    public interface INotificarUsuarioUseCase : IRabbitUseCase
     {
     }
 }

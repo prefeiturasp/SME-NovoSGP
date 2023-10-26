@@ -67,8 +67,13 @@ namespace SME.SGP.Frequencia.Worker
             Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoAula, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por aula", typeof(ITratarRegistroFrequenciaAlunoAulaUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoProcessamento, new ComandoRabbit("Processa a carga referência de aula no registro frequência aluno", typeof(ITratarRegistroFrequenciaAlunoProcessamentoUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarFrequenciaRegistradaAlunosInativos, new ComandoRabbit("Tratar frequência registrada para alunos inativos indevidamente", typeof(IVerificaFrequenciaRegistradaAlunosInativosUseCase)));
-            
+
             Comandos.Add(RotasRabbitSgpFrequencia.RotaFrequenciaLancamentoAulaSync, new ComandoRabbit("Tratar lançamento de frequências provenientes da integração externa ao SGP", typeof(ILancarFrequenciaAulaUseCase)));
+            // Identificar e regularizar frequência aluno com presenças maior que a quantidade de aulas
+            Comandos.Add(RotasRabbitSgpFrequencia.IdentificarFrequenciaAlunoPresencasMaiorTotalAulas, new ComandoRabbit("Inicio da identificação de registros de frequência aluno que possuam a quantidade de presenças maior que a quantidade de aulas para providenciar a regularização", typeof(IIdentificarFrequenciaAlunoPresencasMaiorTotalAulasUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.IdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUe, new ComandoRabbit("Identificar registros de frequência aluno que possuam a quantidade de presenças maior que a quantidade de aulas para providenciar a regularização por UE", typeof(IIdentificarFrequenciaAlunoPresencasMaiorTotalAulasPorUeUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.RegularizarFrequenciaAlunoPresencasMaiorTotalAulas, new ComandoRabbit("Inicio da regularização dos registros de frequência aluno que estão com a quantidade de presenças maior que a quantidade de aulas", typeof(IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.RegularizarFrequenciaAlunoPresencasMaiorTotalAulasPorRegistro, new ComandoRabbit("Regularizar o registro de frequência aluno que está com a quantidade de presenças maior que a quantidade de aulas", typeof(IRegularizarFrequenciaAlunoPresencasMaiorQuantidadeAulasPorRegistroUseCase)));
         }
     }
 }

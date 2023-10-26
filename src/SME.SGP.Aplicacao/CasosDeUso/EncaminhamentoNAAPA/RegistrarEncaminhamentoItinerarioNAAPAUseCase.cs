@@ -92,7 +92,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
         private void ValidarAlteracao(EncaminhamentoNAAPASecao secaoExistente, EncaminhamentoNAAPASecaoDto secaoDto)
         {
-            if (secaoExistente == null)
+            if (secaoExistente.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.SECAO_NAO_ENCONTRADA);
 
             ValidarQuestao(secaoDto);
@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
         private void ValidarEncaminhamento(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA)
         {
-            if (encaminhamentoNAAPA == null)
+            if (encaminhamentoNAAPA.EhNulo())
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
 
             if (encaminhamentoNAAPA.Situacao == SituacaoNAAPA.Rascunho)

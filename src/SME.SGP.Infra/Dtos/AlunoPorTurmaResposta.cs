@@ -50,6 +50,8 @@ namespace SME.SGP.Infra
                              SituacaoMatriculaAluno.Concluido }.Contains(this.CodigoSituacaoMatricula));
         }
 
+        public bool Ativo { get => !Inativo; }
+
         public int Idade 
         { 
             get 
@@ -159,8 +161,8 @@ namespace SME.SGP.Infra
 
         public bool VerificaSePodeEditarAluno(PeriodoEscolar ultimoPeriodoEscolar)
         {
-            if (!PodeEditarNotaConceito() && ultimoPeriodoEscolar != null)
-                return EstaAtivo(ultimoPeriodoEscolar.PeriodoFim);
+            if (!PodeEditarNotaConceito() && ultimoPeriodoEscolar.NaoEhNulo())
+                return EstaAtivo(ultimoPeriodoEscolar.PeriodoInicio, ultimoPeriodoEscolar.PeriodoFim);
 
             return PodeEditarNotaConceito();
         }

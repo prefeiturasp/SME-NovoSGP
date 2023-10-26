@@ -26,12 +26,12 @@ namespace SME.SGP.Aplicacao
         {
             var planoAee = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(request.PlanoAeeId));
 
-            if (planoAee == null)
+            if (planoAee.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.O_plano_aee_informado_nao_foi_encontrado);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAee.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             planoAee.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
@@ -46,13 +46,11 @@ namespace SME.SGP.Aplicacao
             {
                 await repositorioPlanoAee.SalvarAsync(planoAee);
                
-                if (pendenciaPlanoAEE != null)
+                if (pendenciaPlanoAEE.NaoEhNulo())
                    await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoAee.Id));
                 
                 if (await ParametroGeracaoPendenciaAtivo())
                     await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoAee.Id, PerfilUsuario.CEFAI));
-                
-                unitOfWork.Rollback();
                 
                 unitOfWork.PersistirTransacao();
             }
@@ -69,7 +67,7 @@ namespace SME.SGP.Aplicacao
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

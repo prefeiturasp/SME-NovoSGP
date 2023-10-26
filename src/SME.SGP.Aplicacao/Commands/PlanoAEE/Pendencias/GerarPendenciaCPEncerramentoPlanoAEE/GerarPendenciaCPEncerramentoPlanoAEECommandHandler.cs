@@ -15,13 +15,11 @@ namespace SME.SGP.Aplicacao
     public class GerarPendenciaCPEncerramentoPlanoAEECommandHandler : IRequestHandler<GerarPendenciaCPEncerramentoPlanoAEECommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IConfiguration configuration;
 
-        public GerarPendenciaCPEncerramentoPlanoAEECommandHandler(IMediator mediator, IUnitOfWork unitOfWork, IConfiguration configuration)
+        public GerarPendenciaCPEncerramentoPlanoAEECommandHandler(IMediator mediator, IConfiguration configuration)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
@@ -29,7 +27,7 @@ namespace SME.SGP.Aplicacao
         {
             var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
 
-            if (planoAEE == null)
+            if (planoAEE.EhNulo())
                 throw new NegocioException("Não foi possível localizar o PlanoAEE");
 
             if (planoAEE.Situacao == SituacaoPlanoAEE.ParecerCP)

@@ -14,23 +14,20 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarFechamentoReaberturaDREUseCase : AbstractUseCase, INotificarFechamentoReaberturaDREUseCase
     {
-        private readonly IServicoEol servicoEOL;
-        public NotificarFechamentoReaberturaDREUseCase(IServicoEol servicoEOL, IMediator mediator) : base(mediator)
-        {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-        }
+        public NotificarFechamentoReaberturaDREUseCase(IMediator mediator) : base(mediator)
+        {}
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroNotificacaoFechamentoReaberturaDREDto>();
 
-            if (filtro == null)
+            if (filtro.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível gerar as notificações, pois o fechamento reabertura não possui dados", LogNivel.Informacao, LogContexto.Fechamento));
                 return false;
             }
 
-            var adminsSgpDre = await servicoEOL.ObterAdministradoresSGP(filtro.Dre);
-            if (adminsSgpDre != null && adminsSgpDre.Any())
+            var adminsSgpDre = await mediator.Send(new ObterAdministradoresPorUEQuery(filtro.Dre));
+            if (adminsSgpDre.NaoEhNulo() && adminsSgpDre.Any())
             {
                 foreach (var adminSgpUe in adminsSgpDre)
                 {

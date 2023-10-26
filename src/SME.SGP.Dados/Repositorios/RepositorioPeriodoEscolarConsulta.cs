@@ -95,25 +95,30 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoEscolar> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
-            var query = new StringBuilder(@"select p.* 
-                            from tipo_calendario t
-                         inner join periodo_escolar p on p.tipo_calendario_id = t.id
-                          where t.excluido = false and t.situacao
-                            and t.ano_letivo = @anoLetivo
-                            and t.modalidade = @modalidade ");
+            var query = $@"select p.* 
+                            from tipo_calendario tc
+                         inner join periodo_escolar p on p.tipo_calendario_id = tc.id
+                          where not tc.excluido
+                            and tc.situacao
+                            and tc.ano_letivo = @anoLetivo
+                            and tc.modalidade = @modalidade
+                            {IncluirFiltroSemestrePorModalidade(modalidade, semestre)}
+                            order by bimestre desc
+                            limit 1";
 
-            DateTime dataReferencia = DateTime.MinValue;
-            if (modalidade == ModalidadeTipoCalendario.EJA)
-            {
-                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
-                query.AppendLine($"and exists(select 0 from periodo_escolar p where tipo_calendario_id = t.id and {periodoReferencia})");
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query, new { anoLetivo, modalidade = (int)modalidade, semestre });
+        }
+        
+        private string IncluirFiltroSemestrePorModalidade(ModalidadeTipoCalendario modalidade, int semestre)
+        {
+            return modalidade.EhEjaOuCelp() && semestre.EhMaiorQueZero()
+                ? ObterFiltroSemestre() 
+                : string.Empty;
+        }
 
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
-            }
-            query.AppendLine("order by bimestre desc ");
-            query.AppendLine("limit 1");
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { anoLetivo, modalidade = (int)modalidade, dataReferencia });
+        private static string ObterFiltroSemestre()
+        {
+            return " and tc.semestre = @semestre";
         }
 
         public async Task<int> ObterBimestrePorTurma(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)
@@ -197,9 +202,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query.ToString(), new { tipoCalendarioId, bimestre });
         }
 
-        public async Task<IEnumerable<PeriodoEscolar>> ObterPorAnoLetivoEModalidadeTurma(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int semestre = 1)
+        public async Task<IEnumerable<PeriodoEscolar>> ObterPorAnoLetivoEModalidadeTurma(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int semestre = 0)
         {
-            var query = new StringBuilder($@"select
+            var query = $@"select
 	                            distinct pe.*
                             from
 	                            periodo_escolar pe
@@ -209,18 +214,10 @@ namespace SME.SGP.Dados.Repositorios
 	                            tc.modalidade = @modalidadeTipoCalendario
 	                            and tc.ano_letivo = @anoLetivo
 	                            and tc.situacao
-	                            and not tc.excluido");
+	                            and not tc.excluido
+	                            {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
 
-            var dataReferencia = DateTime.MinValue;
-            if (modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA)
-            {
-                var periodoReferencia = semestre == 1 ? "pe.periodo_inicio < @dataReferencia" : "pe.periodo_fim > @dataReferencia";
-                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
-
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
-            }
-
-            return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario, anoLetivo, dataReferencia },queryName: "ObterPorAnoLetivoEModalidadeTurma");
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { modalidadeTipoCalendario, anoLetivo, semestre },queryName: "ObterPorAnoLetivoEModalidadeTurma");
         }
 
         public async Task<long> ObterPeriodoEscolarIdPorTurma(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)
@@ -251,36 +248,27 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPorModalidadeDataFechamento(int modalidadeTipoCalendario, DateTime dataFechamento)
         {
-            string query = @"select pe.* from periodo_escolar pe inner join tipo_calendario tc on
-
-                                pe.tipo_calendario_id = tc.id
-                            where
-                                tc.modalidade = @modalidadeTipoCalendario and pe.periodo_fim = @dataFechamento";
+            string query = @"select pe.* 
+                                from periodo_escolar pe 
+                                join tipo_calendario tc on pe.tipo_calendario_id = tc.id
+                            where tc.modalidade = @modalidadeTipoCalendario and pe.periodo_fim = @dataFechamento";
 
             return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { modalidadeTipoCalendario, dataFechamento = dataFechamento.Date });
         }
 
-        public async Task<long> ObterPeriodoEscolarIdPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, int anoLetivo, int semestre)
+        public async Task<long> ObterPeriodoEscolarIdPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, int anoLetivo, int semestre = 0)
         {
-            var query = new StringBuilder(@"select pe.id
-                                              from periodo_escolar pe
-                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
-                                              left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @turmaCodigo
-                                              where tc.modalidade = @modalidade
-                                              and pe.bimestre = @bimestre
-                                              and not tc.excluido
-                                              and t.ano_letivo = @anoLetivo");
+            var query = $@"select pe.id
+                              from periodo_escolar pe
+                                  left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                  left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @turmaCodigo
+                              where tc.modalidade = @modalidade
+                              and pe.bimestre = @bimestre
+                              and not tc.excluido
+                              and t.ano_letivo = @anoLetivo
+                              {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
 
-            DateTime dataReferencia = DateTime.MinValue;
-            if (modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA)
-            {
-                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
-                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
-
-                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
-            }
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo, dataReferencia });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo, semestre });
         }
 
         public async Task<PeriodoEscolarBimestreDto> ObterPeriodoEscolarPorTurmaBimestreAulaCj(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, bool aulaCj)

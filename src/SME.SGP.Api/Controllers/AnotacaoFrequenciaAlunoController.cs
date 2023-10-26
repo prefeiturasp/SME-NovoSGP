@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace SME.SGP.Api.Controllers
         {
             var anotacao = await useCase.Executar(new FiltroAnotacaoFrequenciaAlunoDto(codigoAluno, aulaId));
 
-            if (anotacao == null)
+            if (anotacao.EhNulo())
                 return NoContent();
 
             return Ok(anotacao);

@@ -31,7 +31,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<PeriodoRelatorioPAP, ConfiguracaoRelatorioPAP, PeriodoEscolarRelatorioPAP, PeriodoEscolar, PeriodoRelatorioPAP>(sql,
                 (periodoPAP, configuracaoPAP, periodoEscolarPAP, periodoEscolar) =>
                 {
-                    if (retorno == null)
+                    if (retorno.EhNulo())
                     {
                         retorno = periodoPAP;
                         retorno.Configuracao = configuracaoPAP;
@@ -61,6 +61,21 @@ namespace SME.SGP.Dados.Repositorios
                         order by crp.tipo_periodicidade desc, prp.periodo";
 
             return await database.Conexao.QueryAsync<PeriodosPAPDto>(sql, new { anoLetivo });
+        }
+
+        public async Task<long> ObterIdPeriodoRelatorioPAP(int anoLetivo, int semestre, string tipoPeriodo)
+        {
+            var sql = @"select prp.id
+                        from configuracao_relatorio_pap crp
+                        inner join periodo_relatorio_pap prp on prp.configuracao_relatorio_pap_id = crp.id 
+                        inner join periodo_escolar_relatorio_pap perp on perp.periodo_relatorio_pap_id = prp.id
+                        inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id
+                        inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
+                        where tc.ano_letivo = @anoLetivo 
+                          and prp.periodo = @semestre
+                          and crp.tipo_periodicidade = @tipoPeriodo";
+
+             return await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { anoLetivo, semestre, tipoPeriodo });
         }
 
         public async Task<bool> PeriodoEmAberto(long periodoRelatorioId, DateTime dataReferencia)

@@ -7,8 +7,8 @@ pipeline {
            
     }
   
-      agent {
-      kubernetes { label 'builder' }
+    agent {
+      node { label 'sme' }
     }
 
     options {
@@ -20,14 +20,64 @@ pipeline {
   
     stages {
 
-        stage('CheckOut') {            
-            steps { checkout scm }            
-        }
+            stage('Checkout') {
+                agent { label "sme" }
+                steps {
+                    script {
+                     def nodes = nodesByLabel label: 'jenkinsnodes'
+                     nodes = nodes.sort()
+
+                        Map tasks = [:]
+                        
+                        for (int i = 0; i < nodes.size(); i++) {
+                            def label = nodes[i]
+                            def stageName = "Checkout ${nodes[i]}"
+                            tasks[label] = {
+                                node(label) {
+                                    stage(stageName) {
+                                      checkout scm
+                                    }
+                                }
+                            }
+                        }
+                        
+                        timeout(time: 3, unit: 'MINUTES') {
+                            parallel(tasks)
+                        }
+                    }
+                }
+            }   
+
+          stage('Build do Projeto'){
+            agent { kubernetes {
+               label 'dotnet5-sonar'
+               defaultContainer 'dotnet5-sonar'
+              }
+            }
+            steps{
+              script{
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "pwd"
+                  sh "hostname"
+                  withSonarQubeEnv('sonarqube-local'){
+                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="**/*coverage.opencover.xml"'
+                    sh 'dotnet build SME.SGP.sln'
+                    //stash includes: "**/*" , name: "bintestes"
+                    sh "tar cf - . | pigz > bintestes.tar.gz"
+                    stash includes: "bintestes.tar.gz" , name: "bintestes"
+                    sh "ls -ltra"
+                    sh 'dotnet-sonarscanner end'
+                  }
+               }
+            }
+          }
    
-   
-        stage('Sonar & Testes') {
-        when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
-        parallel {
+         stage('Sonar & Testes') {
+         when { anyOf { branch 'master_'; branch 'main_'; branch "story/*"; branch 'development'; branch 'develop'; branch 'release'; branch 'homolog'; branch 'homolog-r2'; branch 'release-r2';  } }
+          parallel {
           stage('TesteIntegracao & build'){
             agent { kubernetes {
                label 'dotnet5-sonar'
@@ -35,11 +85,16 @@ pipeline {
               }
             }
             steps{
-              checkout scm
               script{
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
-                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                    sh 'dotnet test teste/SME.SGP.TesteIntegracao /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                     sh 'dotnet-sonarscanner end'
                   }
                }
@@ -53,11 +108,16 @@ pipeline {
               }
             }
             steps{
-              checkout scm
               script{
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
-                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.AEE/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.AEE /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.AEE --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                     sh 'dotnet-sonarscanner end'
                   }
                }
@@ -71,11 +131,16 @@ pipeline {
               }
             }
             steps{
-              checkout scm
               script{
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
-                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Aula/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Aula /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Aula --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                     sh 'dotnet-sonarscanner end'
                   }
                }
@@ -89,11 +154,16 @@ pipeline {
               }
             }
             steps{
-              checkout scm
               script{
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
-                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Fechamento/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Fechamento /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Fechamento --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                     sh 'dotnet-sonarscanner end'
                   }
                }
@@ -107,11 +177,16 @@ pipeline {
               }
             }
             steps{
-              checkout scm
               script{
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
-                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Frequencia/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Frequencia /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
+                    sh 'dotnet test teste/SME.SGP.TesteIntegracao.Frequencia --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                     sh 'dotnet-sonarscanner end'
                   }
                }
@@ -125,11 +200,15 @@ pipeline {
               }
             }
             steps{
-              checkout scm
               script{
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   withSonarQubeEnv('sonarqube-local'){
-                    sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao.Pendencia/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                    sh 'dotnet build SME.SGP.sln'
+                    unstash 'bintestes'
+                    sh "unpigz bintestes.tar.gz"
+                    sh "tar -xvf bintestes.tar"
+                    sh "dotnet restore SME.SGP.sln"
                     sh 'dotnet test teste/SME.SGP.TesteIntegracao.Pendencia --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                     sh 'dotnet-sonarscanner end'
                   }
@@ -137,10 +216,9 @@ pipeline {
             }
           }
         }
-      } 
-
+      }
+        
         stage('Build') {
-          when { anyOf { branch 'master'; branch 'main'; branch 'pre-prod'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
           parallel {
             stage('sme-sgp-backend') {
               agent { kubernetes { 
@@ -149,15 +227,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
                   dockerImage1 = docker.build(imagename, "-f src/SME.SGP.Api/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
                   dockerImage1.push() } 
+                  } 
                 }
               }
-            }
+
             stage('sme-worker-geral') {
               agent { kubernetes { 
                   label 'builder'
@@ -165,15 +250,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-geral"
                   dockerImage2 = docker.build(imagename, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage2.push() }   
+                  dockerImage2.push() } 
+                  }   
                 }
               }
-            }
+
             stage('sme-worker-fechamento') {
               agent { kubernetes { 
                   label 'builder'
@@ -181,15 +273,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"
                   dockerImage3 = docker.build(imagename, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage3.push() }   
+                  dockerImage3.push() } 
+                  }   
                 }
               }
-            }
+
             stage('sme-worker-aee') {
               agent { kubernetes { 
                   label 'builder'
@@ -197,15 +296,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aee"
                   dockerImage4 = docker.build(imagename, "-f src/SME.SGP.AEE.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage4.push() }  
+                  dockerImage4.push() } 
+                  }  
                 }
               }
-            }
+
             stage('sme-worker-aula') {
               agent { kubernetes { 
                   label 'builder'
@@ -213,15 +319,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aula"
                   dockerImage5 = docker.build(imagename, "-f src/SME.SGP.Aula.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage5.push() }   
+                  dockerImage5.push() } 
+                  }   
                 }
               }
-            }
+
             stage('sme-worker-frequencia') {
               agent { kubernetes { 
                   label 'builder'
@@ -229,15 +342,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-frequencia"
                   dockerImage6 = docker.build(imagename, "-f src/SME.SGP.Frequencia.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage6.push() }   
+                  dockerImage6.push() } 
+                  }   
                 }
               }
-            }
+
             stage('sme-worker-institucional') {
               agent { kubernetes { 
                   label 'builder'
@@ -245,15 +365,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-institucional"
                   dockerImage7 = docker.build(imagename, "-f src/SME.SGP.Institucional.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage7.push() }   
+                  dockerImage7.push() } 
+                  }   
                 }
               }
-            }
+
             stage('sme-worker-pendencias') {
               agent { kubernetes { 
                   label 'builder'
@@ -261,15 +388,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-pendencias"
                   dockerImage8 = docker.build(imagename, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage8.push() }  
+                  dockerImage8.push() } 
+                  }  
                 }
               }
-            }
+
             stage('sme-worker-avaliacao') {
               agent { kubernetes { 
                   label 'builder'
@@ -277,15 +411,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-avaliacao"
                   dockerImage9 = docker.build(imagename, "-f src/SME.SGP.Avaliacao.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage9.push() }  
+                  dockerImage9.push() } 
+                  }  
                 }
               }
-            }
+
             stage('sme-worker-auditoria') {
               agent { kubernetes { 
                   label 'builder'
@@ -293,15 +434,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-auditoria"
                   dockerImage10 = docker.build(imagename, "-f src/SME.SGP.Auditoria.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage10.push() }  
+                  dockerImage10.push() } 
+                  }  
                 }
               }
-            }
+
             stage('sme-worker-notificacoes') {
               agent { kubernetes { 
                   label 'builder'
@@ -309,15 +457,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-notificacoes"
                   dockerImage11 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage11.push() }  
+                  dockerImage11.push() } 
+                  }  
                 }
               }
-            }
+
             stage('sme-worker-notificacoes-hub') {
               agent { kubernetes { 
                   label 'builder'
@@ -325,15 +480,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-notificacoes-hub"
                   dockerImage12 = docker.build(imagename, "-f src/SME.SGP.Notificacoes.Hub/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage12.push() }   
+                  dockerImage12.push() } 
+                  }   
                 }
               }
-            }            
+        
             stage('sme-worker-compressao') {
               agent { kubernetes { 
                   label 'builder'
@@ -341,15 +503,22 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-compressao"
                   dockerImage13 = docker.build(imagename, "-f src/SME.SGP.ComprimirArquivos.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage13.push() }  
+                  dockerImage13.push() } 
+                  }  
                 }
               }
-            }
+
             stage('sme-worker-naapa') {
               agent { kubernetes { 
                   label 'builder'
@@ -357,17 +526,24 @@ pipeline {
                 }
               }
               steps{
-                checkout scm
                 script {
+                  def workspacePath = env.WORKSPACE
+                  def folder = workspacePath.tokenize('/').last()
+                  def sourceDir = "/home/jenkins/agent/temp/${folder}"
+                  sh "cp -r ${sourceDir}/* ${env.WORKSPACE}"
+                  sh "ls -ltra"
+                  sh "pwd"
+                  sh "hostname"
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-naapa"
                   dockerImage14 = docker.build(imagename, "-f src/SME.SGP.NAAPA.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage14.push() }  
+                  dockerImage14.push() } 
+                  }  
                 }
               }
             }   
-          }
-    }
+          }    
+          
         stage('Deploy'){
              agent { kubernetes { 
                   label 'builder'

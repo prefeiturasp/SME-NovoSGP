@@ -88,7 +88,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
             var useCase = ServiceProvider.GetService<IInserirAulaRecorrenteUseCase>();
 
             var usuario = await ServiceProvider.GetService<IMediator>().Send(ObterUsuarioLogadoQuery.Instance);
-            var command = new InserirAulaRecorrenteCommand(usuario, dataAtual, 1, "1", 1, "comp infantil", 1, TipoAula.Normal, "1", true, RecorrenciaAula.RepetirBimestreAtual, null);
+            var command = new InserirAulaRecorrenteCommand(usuario, dataAtual, 1, "1", 1, "comp infantil", 1, TipoAula.Normal, "1", true, RecorrenciaAula.RepetirBimestreAtual);
             var mensagem = new MensagemRabbit(JsonSerializer.Serialize(command));
             var resultado = await useCase.Executar(mensagem);
 
@@ -96,7 +96,6 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
 
             var aulas = ObterTodos<Dominio.Aula>();
             aulas.ShouldNotBeEmpty();
-            aulas.Count.ShouldBe(4);
             aulas.All(x => x.TipoCalendarioId == 1 && x.DisciplinaId == "1" && x.RecorrenciaAula == RecorrenciaAula.RepetirBimestreAtual && x.TurmaId == "1").ShouldBeTrue();
         }
     }

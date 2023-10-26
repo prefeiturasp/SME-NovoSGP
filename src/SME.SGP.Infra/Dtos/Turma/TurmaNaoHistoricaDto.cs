@@ -31,7 +31,7 @@ namespace SME.SGP.Infra
         public string NomeFiltroFormatado()
         {
             var modalidadeEnum = ((Modalidade)CodigoModalidade);
-            if (nomeFiltro != null)
+            if (nomeFiltro.NaoEhNulo())
                 return $"{modalidadeEnum.ShortName()} - {nomeFiltro}";
             else
                 return $"{modalidadeEnum.ShortName()} - {Nome}";

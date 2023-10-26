@@ -8,7 +8,7 @@ namespace SME.SGP.Dto
         {
             Dres = new List<AbrangenciaDreRetornoEolDto>();
         }
-
+        
         public List<AbrangenciaDreRetornoEolDto> Dres { get; set; }
     }
 }

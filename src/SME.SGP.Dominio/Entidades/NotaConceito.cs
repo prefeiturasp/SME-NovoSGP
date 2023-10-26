@@ -37,7 +37,7 @@ namespace SME.SGP.Dominio
         {
             var conceito = conceitos.FirstOrDefault(c => c.Id == ConceitoId);
 
-            if (conceito == null || (!conceito.Ativo && Id == 0))
+            if (conceito.EhNulo() || (!conceito.Ativo && Id == 0))
                 throw new NegocioException($"O conceito informado para o aluno {nomeAluno} não existe");
         }
 

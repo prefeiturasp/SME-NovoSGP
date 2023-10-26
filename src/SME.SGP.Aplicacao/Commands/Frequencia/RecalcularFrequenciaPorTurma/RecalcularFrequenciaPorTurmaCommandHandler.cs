@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId), cancellationToken);
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo), cancellationToken);
 
-            if (periodo == null)
+            if (periodo.EhNulo())
             {
                 var mensagemErro = $"Não encontrado período escolar da aula [{request.AulaId}]";
 
@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 var eventoReposicaoDeAula = await repositorioEvento
                     .EventosNosDiasETipo(aula.DataAula, aula.DataAula, TipoEvento.ReposicaoDeAula, aula.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
 
-                if (eventoReposicaoAulaNoDia == null && eventoReposicaoDeAula == null)
+                if (eventoReposicaoAulaNoDia.EhNulo() && eventoReposicaoDeAula.EhNulo())
                     throw new NegocioException(mensagemErro);
 
                 var periodos = (await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre), cancellationToken)).OrderBy(p => p.Bimestre);

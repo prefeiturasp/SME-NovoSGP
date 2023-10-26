@@ -1,10 +1,9 @@
-﻿using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
+﻿using SME.SGP.Infra.Dtos;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface ICalculoFrequenciaTurmaDisciplinaUseCase : IUseCase<MensagemRabbit, bool>
+    public interface ICalculoFrequenciaTurmaDisciplinaUseCase : IRabbitUseCase
     {
         Task IncluirCalculoFila(CalcularFrequenciaDto calcularFrequenciaDto);
     }

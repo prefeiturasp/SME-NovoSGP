@@ -72,18 +72,18 @@ namespace SME.SGP.Aplicacao
                                                     request.DataAula,
                                                     request.TurmaCodigo,
                                                     request.ComponentesCurriculares.Select(c => c.ToString()).ToArray(),
-                                                    request.ProfessorRf,
                                                     request.TipoAula));
 
             if (existeAula)
             {
                 var perfilAtual = await mediator.Send(ObterPerfilAtualQuery.Instance);
                 var aula = await mediator
-                    .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponentesCurriculares, request.ProfessorRf));
+                    .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponentesCurriculares));
 
                 if (aula.Any() || perfilAtual != Guid.Empty)
                 {
-                    if ((perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name()) && !aula.Any(a => a.AulaCJ))
+                    var ehPerfilAtualCJ = perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name();
+                    if (aula.All(a => ehPerfilAtualCJ != a.AulaCJ))
                         return false;
                 }
 

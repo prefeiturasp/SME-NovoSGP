@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
         {
             var conselhoClasseExistente = await mediator.Send(new ObterConselhoClassePorTurmaEPeriodoQuery(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId));
 
-            if (conselhoClasseExistente != null)
+            if (conselhoClasseExistente.NaoEhNulo())
                throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA, fechamentoTurma.Turma.Nome));
 
             if (fechamentoTurma.PeriodoEscolarId.HasValue)

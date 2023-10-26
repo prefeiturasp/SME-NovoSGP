@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioConceitoConsulta> repositorioConceito;
         private readonly Mock<IServicoAluno> servicoAluno;
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
-        private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioAtividadeAvaliativaDisciplina> repositorioAtividadeAvaliativaDisciplina;
         private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolar;
@@ -41,7 +40,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
 
         public ConsultasNotasConceitosTeste()
         {
-            servicoEOL = new Mock<IServicoEol>();
             consultaAtividadeAvaliativa = new Mock<IConsultaAtividadeAvaliativa>();
             consultasFechamentoTurmaDisciplina = new Mock<IConsultasFechamentoTurmaDisciplina>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
@@ -69,7 +67,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             mediator = new Mock<IMediator>();
             consultasTurma = new Mock<IConsultasTurma>();
 
-            consultasNotasConceito = new ConsultasNotasConceitos(servicoEOL.Object,
+            consultasNotasConceito = new ConsultasNotasConceitos(
                     consultaAtividadeAvaliativa.Object,
                     consultasFechamentoTurmaDisciplina.Object,
                     consultasDisciplina.Object,

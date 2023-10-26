@@ -19,12 +19,12 @@ namespace SME.SGP.Dominio.Teste
             WorkflowAprovacao workflowAprovacao = GeraWorkflow();
             var nivel = workflowAprovacao.ObtemNiveis(5);
 
-            Assert.True(nivel != null && nivel.FirstOrDefault().Nivel == 5);
+            Assert.True(nivel.NaoEhNulo() && nivel.FirstOrDefault().Nivel == 5);
             nivel.FirstOrDefault().Adicionar(new Notificacao() { Id = 10, Mensagem = "Mensagem de teste" });
 
             var nivelDaNotificacao = workflowAprovacao.ObterNivelPorNotificacaoId(10);
 
-            Assert.True(nivelDaNotificacao != null && nivelDaNotificacao.Nivel == 5);
+            Assert.True(nivelDaNotificacao.NaoEhNulo() && nivelDaNotificacao.Nivel == 5);
         }
 
         private static WorkflowAprovacao GeraWorkflow()

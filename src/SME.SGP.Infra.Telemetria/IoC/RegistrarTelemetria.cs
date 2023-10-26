@@ -9,7 +9,7 @@ namespace SME.SGP.IoC
     {
         public static void ConfigurarTelemetria(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
+            if (configuration is null)
                 return;
 
             services.AddOptions<TelemetriaOptions>()

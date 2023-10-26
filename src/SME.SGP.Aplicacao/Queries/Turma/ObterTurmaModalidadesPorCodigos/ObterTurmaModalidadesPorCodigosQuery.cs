@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public ObterTurmaModalidadesPorCodigosQueryValidator()
         {
             RuleFor(a => a.TurmasCodigo)
-                   .Must(x => x == null || x.Length > 0)
+                   .Must(x => x.EhNulo() || x.Length > 0)
                    .WithMessage("Deve ser informado 1 ou mais turmas.");
         }
     }

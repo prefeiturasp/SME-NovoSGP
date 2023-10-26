@@ -70,8 +70,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
                                                             TipoAula.Normal,
                                                             "1",
                                                             true,
-                                                            RecorrenciaAula.AulaUnica,
-                                                            null);
+                                                            RecorrenciaAula.AulaUnica);
 
             var request = new MensagemRabbit(
                                  comando,

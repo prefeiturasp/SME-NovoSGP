@@ -42,15 +42,13 @@ namespace SME.SGP.Aplicacao
             if (!codigosTurma?.Any() ?? true) 
                 return true;
 
+            var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
             foreach (var codigoTurma in codigosTurma)
             {
                 try
                 {
                     var mensagemSyncTurma = new MensagemSyncTurmaDto(ueId, codigoTurma);
-
                     var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemSyncTurma);
-
-                    var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
 
                     var publicarFilaIncluirTurma = await mediator
                         .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, usuarioSistema));
@@ -58,9 +56,10 @@ namespace SME.SGP.Aplicacao
                     if (!publicarFilaIncluirTurma)
                         await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a turma de código : {codigoTurma} na fila de inclusão.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao sincronizar a turma de código {codigosTurma}.", LogNivel.Critico, LogContexto.SincronizacaoInstitucional));
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao sincronizar a turma de código {codigoTurma}.", LogNivel.Critico, LogContexto.SincronizacaoInstitucional,
+                                                                      ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.InnerException?.ToString()));
                 }
             }
             return true;

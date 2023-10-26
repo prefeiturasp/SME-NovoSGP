@@ -22,25 +22,25 @@ namespace SME.SGP.Aplicacao
         {
             var turmaFechamento = await this.mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(request.Turma.CodigoTurma, DateTimeExtension.HorarioBrasilia())); 
 
-            if (turmaFechamento == null || !turmaFechamento.Any())
+            if (turmaFechamento.EhNulo() || !turmaFechamento.Any())
                 throw new NegocioException($"Não foi possível obter os dados da turma {request.Turma.CodigoTurma}");
 
             var turmaFechamentoOrdenada = turmaFechamento.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
 
             var aluno = turmaFechamentoOrdenada.Last(a => a.CodigoAluno == request.AlunoCodigo);
 
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException($"Não foi possível obter os dados do aluno {request.AlunoCodigo}");
 
             var temPeriodoAberto = false;
 
-            if (request.PeriodoEscolar != null)
+            if (request.PeriodoEscolar.NaoEhNulo())
             {
                 temPeriodoAberto = await this.consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(request.Turma, DateTime.Now.Date, request.PeriodoEscolar.Bimestre);
 
                 var periodoFechamentoOriginal = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(request.PeriodoEscolar.TipoCalendarioId, request.Turma.EhTurmaInfantil, request.PeriodoEscolar.Bimestre));
 
-                if(periodoFechamentoOriginal != null)
+                if(periodoFechamentoOriginal.NaoEhNulo())
                 {
                     temPeriodoAberto = aluno.PodeEditarNotaConceito() ? temPeriodoAberto : (aluno.DataSituacao >= periodoFechamentoOriginal.InicioDoFechamento && temPeriodoAberto);
                 }

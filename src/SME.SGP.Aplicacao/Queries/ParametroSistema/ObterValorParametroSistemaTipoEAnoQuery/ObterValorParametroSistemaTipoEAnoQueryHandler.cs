@@ -1,10 +1,7 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,15 +22,9 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Handle(ObterValorParametroSistemaTipoEAnoQuery request, CancellationToken cancellationToken)
         {
             var nomeCache = string.Format(NomeChaveCache.PARAMETROS_SISTEMA_ANO, request.Ano);
-            var parametrosNoCache = repositorioCache.Obter(nomeCache);
-            IEnumerable<ParametrosSistema> parametrosDoSistema;
-
-            if (string.IsNullOrEmpty(parametrosNoCache))
-            {
-                parametrosDoSistema = await repositorioParametrosSistema.ObterParametrosPorAnoAsync(request.Ano);
-                await repositorioCache.SalvarAsync(nomeCache, parametrosDoSistema);
-            }
-            else parametrosDoSistema = JsonConvert.DeserializeObject<List<ParametrosSistema>>(parametrosNoCache);
+            var parametrosDoSistema = await repositorioCache.ObterAsync(nomeCache,
+             async () => await repositorioParametrosSistema.ObterParametrosPorAnoAsync(request.Ano),
+             "Obter valor parametro sistema");
 
             return parametrosDoSistema.FirstOrDefault(a => a.Tipo == request.Tipo)?.Valor;
         }

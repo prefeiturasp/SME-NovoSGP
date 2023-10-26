@@ -1,5 +1,6 @@
 ﻿using Microsoft.OpenApi.Models;
 using SME.SGP.Api.Middlewares;
+using SME.SGP.Dominio;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Linq;
 
@@ -14,7 +15,7 @@ namespace SME.SGP.Api.Filtros
                                     .Union(context.MethodInfo.GetCustomAttributes(true))
                                     .OfType<ChaveIntegracaoSgpApi>();
 
-            if (attributes != null && attributes.Any())
+            if (attributes.NaoEhNulo() && attributes.Any())
             {
 
                 operation.Parameters.Add(new OpenApiParameter

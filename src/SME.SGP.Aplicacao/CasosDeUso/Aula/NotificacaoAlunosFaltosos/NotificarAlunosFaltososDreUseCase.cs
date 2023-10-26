@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<DreDto>();
 
-            if (filtro == null) 
+            if (filtro.EhNulo()) 
                 return false;
             
             var uesDre = await mediator.Send(new ObterUesPorDreCodigoQuery(filtro.DreCodigo));

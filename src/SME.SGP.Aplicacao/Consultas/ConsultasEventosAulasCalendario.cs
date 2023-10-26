@@ -29,7 +29,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
@@ -39,7 +38,6 @@ namespace SME.SGP.Aplicacao
             IComandosDiasLetivos comandosDiasLetivos,
             IRepositorioAulaConsulta repositorioAula,
             IServicoUsuario servicoUsuario,
-            IServicoEol servicoEOL,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
@@ -56,7 +54,6 @@ namespace SME.SGP.Aplicacao
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
@@ -105,32 +102,31 @@ namespace SME.SGP.Aplicacao
             var idsDisciplinasCompartilhadas = aulas.Where(a => !String.IsNullOrEmpty(a.DisciplinaCompartilhadaId) && !a.DisciplinaCompartilhadaId.Equals("null"))
                 .Select(a => long.Parse(a.DisciplinaCompartilhadaId)).Distinct();
 
-            if (idsDisciplinasCompartilhadas != null && idsDisciplinasCompartilhadas.Any())
+            if (idsDisciplinasCompartilhadas.NaoEhNulo() && idsDisciplinasCompartilhadas.Any())
                 idsDisciplinasAulas.AddRange(idsDisciplinasCompartilhadas);
 
             IEnumerable<DisciplinaDto> disciplinasEol = new List<DisciplinaDto>();
-            if (idsDisciplinasAulas != null && idsDisciplinasAulas.Any())
-                disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(idsDisciplinasAulas.ToArray());
-
-            aulas
-            .ToList()
-            .ForEach(x =>
+            if (idsDisciplinasAulas.NaoEhNulo() && idsDisciplinasAulas.Any())
+                disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(idsDisciplinasAulas.ToArray()));
+                    
+            foreach(var x in aulas)
             {
                 bool podeCriarAtividade = true;
                 var listaAtividades = atividades.Where(w => w.DataAvaliacao.Date == x.DataAula.Date && w.TurmaId == x.TurmaId
                 && PossuiDisciplinas(w.Id, x.DisciplinaId)).ToList();
                 var disciplina = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaId));
                 var disciplinaCompartilhada = disciplinasEol?.FirstOrDefault(d => d.CodigoComponenteCurricular.ToString().Equals(x.DisciplinaCompartilhadaId));
-                if (atividades != null && disciplina != null)
+                if (atividades.NaoEhNulo() && disciplina.NaoEhNulo())
                 {
                     foreach (var item in listaAtividades)
                     {
                         if (disciplina.Regencia)
                         {
-                            var disciplinasRegenciasComAtividades = repositorioAtividadeAvaliativaRegencia.Listar(item.Id).Result;
-
-                            disciplinasRegenciasComAtividades.ToList().ForEach(r => r.DisciplinaContidaRegenciaNome = (repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { Convert.ToInt64(r.DisciplinaContidaRegenciaId) })).Result.ToList().FirstOrDefault()?.Nome);
-
+                            var disciplinasRegenciasComAtividades = (await repositorioAtividadeAvaliativaRegencia.Listar(item.Id)).ToList();
+                            foreach(var disciplinaRegencia in disciplinasRegenciasComAtividades)
+                            {
+                                disciplinaRegencia.DisciplinaContidaRegenciaNome = (await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(disciplinaRegencia.DisciplinaContidaRegenciaId))))?.Nome;
+                            }
                             item.AtividadeAvaliativaRegencia = new List<AtividadeAvaliativaRegencia>();
                             item.AtividadeAvaliativaRegencia.AddRange(disciplinasRegenciasComAtividades);
                             podeCriarAtividade = true;
@@ -165,7 +161,7 @@ namespace SME.SGP.Aplicacao
                         Atividade = listaAtividades
                     }
                 });
-            });
+            }
 
             var dentroDoPeriodo = await consultasAula.AulaDentroPeriodo(filtro.TurmaId, filtro.Data) || await PodeCriarAulaNoPeriodo(filtro.Data, filtro.TipoCalendarioId, filtro.UeId, filtro.DreId);
 
@@ -179,7 +175,7 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<DisciplinaResposta> MapearDto(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
         {
-            if (componentesCurriculares == null || !componentesCurriculares.Any())
+            if (componentesCurriculares.EhNulo() || !componentesCurriculares.Any())
                 return Enumerable.Empty<DisciplinaResposta>();
             return componentesCurriculares.Select(cc => new DisciplinaResposta()
             {
@@ -195,7 +191,7 @@ namespace SME.SGP.Aplicacao
                 LancaNota = cc.LancaNota,
                 BaseNacional = cc.BaseNacional,
                 TurmaCodigo = cc.TurmaCodigo,
-                GrupoMatriz = cc.GrupoMatriz != null ? new Integracoes.Respostas.GrupoMatriz() { Id = cc.GrupoMatriz.Id, Nome = cc.GrupoMatriz.Nome } : null,
+                GrupoMatriz = cc.GrupoMatriz.NaoEhNulo() ? new Integracoes.Respostas.GrupoMatriz() { Id = cc.GrupoMatriz.Id, Nome = cc.GrupoMatriz.Nome } : null,
                 NomeComponenteInfantil = cc.DescricaoComponenteInfantil,
                 Professor = cc.Professor,
                 CodigosTerritoriosAgrupamento = cc.CodigosTerritoriosAgrupamento
@@ -208,7 +204,7 @@ namespace SME.SGP.Aplicacao
             {
 
                 var periodoEscolarDaAula = await repositorioPeriodoEscolar.ObterPorTipoCalendarioData(tipoCalendarioId, dataAula);
-                if (periodoEscolarDaAula == null)
+                if (periodoEscolarDaAula.EhNulo())
                     throw new NegocioException("Não foi possível localizar o período escolar da aula.");
                 
                 
@@ -219,7 +215,7 @@ namespace SME.SGP.Aplicacao
                 if (await repositorioEvento.TemEventoNosDiasETipo(hoje, hoje, (TipoEvento)tipodeEventoReabertura.Codigo, tipoCalendarioId, ueCodigo, dreCodigo))
                 {
                     var fechamentoReabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(periodoEscolarDaAula.Bimestre, hoje, tipoCalendarioId, dreCodigo, ueCodigo);
-                    if (fechamentoReabertura == null)
+                    if (fechamentoReabertura.EhNulo())
                         return false;
                 }
             }
@@ -229,7 +225,7 @@ namespace SME.SGP.Aplicacao
         private EventoTipo ObterTipoEventoFechamentoBimestre()
         {
             EventoTipo tipoEvento = repositorioEventoTipo.ObterPorCodigo((int)TipoEvento.FechamentoBimestre);
-            if (tipoEvento == null)
+            if (tipoEvento.EhNulo())
                 throw new NegocioException($"Não foi possível localizar o tipo de evento {TipoEvento.FechamentoBimestre.GetAttribute<DisplayAttribute>().Name}.");
             return tipoEvento;
         }
@@ -352,7 +348,7 @@ namespace SME.SGP.Aplicacao
                 var disciplina = disciplinas.FirstOrDefault(d
                     => d.CodigoComponenteCurricular.ToString().Equals(aula.DisciplinaId));
 
-                var disciplinaId = disciplina == null ? "" : disciplina.CodigoComponenteCurricular.ToString();
+                var disciplinaId = disciplina.EhNulo() ? "" : disciplina.CodigoComponenteCurricular.ToString();
 
                 aula.VerificarSomenteConsulta(disciplinaId);
             });
@@ -382,7 +378,7 @@ namespace SME.SGP.Aplicacao
             foreach (var aula in aulas)
                 aula.DentroPeriodo = await consultasAula.AulaDentroPeriodo(aula.TurmaId, aula.DataAula);
             
-            if (disciplinas != null)
+            if (disciplinas.NaoEhNulo())
                 VerificarAulasSomenteConsulta(disciplinas, aulas);
 
             if (string.IsNullOrWhiteSpace(professorRf))
@@ -450,7 +446,7 @@ namespace SME.SGP.Aplicacao
             {
                 var turmaAbrangencia = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma, ehTurmaHistorico));
 
-                if (turmaAbrangencia != null)
+                if (turmaAbrangencia.NaoEhNulo())
                     turmasRetorno.Add(turmaAbrangencia);
             }
 

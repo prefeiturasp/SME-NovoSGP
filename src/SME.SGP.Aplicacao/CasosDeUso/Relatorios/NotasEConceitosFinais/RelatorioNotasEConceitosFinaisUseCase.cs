@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException("Não foi possível localizar o usuário.");
 
             filtro.UsuarioNome = usuarioLogado.Nome;

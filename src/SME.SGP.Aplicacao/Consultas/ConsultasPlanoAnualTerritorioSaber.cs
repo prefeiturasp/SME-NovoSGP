@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         public async Task<long> ObterIdPlanoAnualTerritorioSaberPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId)
         {
             var plano = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, territorioExperienciaId);
-            return plano != null ? plano.Id : 0;
+            return plano.NaoEhNulo() ? plano.Id : 0;
         }
 
         public async Task<PlanoAnualTerritorioSaberCompletoDto> ObterPorEscolaTurmaAnoEBimestre(FiltroPlanoAnualDto filtroPlanoAnualDto)
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
             var bimestres = periodos.Select(s => s.Bimestre).Distinct();
 
-            foreach (var bimestre in bimestres)
+            foreach(var bimestre in periodos.Select(s => s.Bimestre).Distinct().ToList())
             {
                 bimestresAbertoFechado.Add(new PeriodoEscolarPorTurmaDto()
                 {
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesCurricularesDoProfessorCJ.Any())
                 {
-                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                    var dadosComponentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
                     if (dadosComponentes.Any())
                     {
                         componentesCurricularesDoProfessorCj = dadosComponentes
@@ -87,8 +87,8 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
-                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId || (componenteCurricular != null && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) || cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId)
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor.NaoEhNulo() && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
+                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId || (componenteCurricular.NaoEhNulo() && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) || cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId)
                     : new ComponenteCurricularEol
                     {
                         Codigo = territorioExperienciaId > 0 ? territorioExperienciaId : 0,
@@ -96,8 +96,8 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
                     };
 
-            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
-            if (listaPlanoAnual != null && listaPlanoAnual.Any())
+            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.Codigo ?? 0, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
+            if (listaPlanoAnual.NaoEhNulo() && listaPlanoAnual.Any())
             {
                 if (listaPlanoAnual.Count() != periodos.Count())
                 {
@@ -131,19 +131,18 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PeriodoEscolar>> ObterPeriodoEscolar(string turmaId, int anoLetivo)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-            if (turma == null)
+            if (turma.EhNulo())
             {
                 throw new NegocioException("Turma não encontrada.");
             }
-            var modalidade = turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade);
-            if (tipoCalendario == null)
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario());
+            if (tipoCalendario.EhNulo())
             {
                 throw new NegocioException("Tipo de calendário não encontrado.");
             }
 
             var periodos = await repositorioPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
-            if (periodos == null)
+            if (periodos.EhNulo())
             {
                 throw new NegocioException("Período escolar não encontrado.");
             }
@@ -159,18 +158,6 @@ namespace SME.SGP.Aplicacao
                 TurmaId = turmaId,
                 AnoLetivo = anoLetivo
             };
-        }
-
-        private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)
-        {
-            switch (modalidade)
-            {
-                case Modalidade.EJA:
-                    return ModalidadeTipoCalendario.EJA;
-
-                default:
-                    return ModalidadeTipoCalendario.FundamentalMedio;
-            }
         }
     }
 }

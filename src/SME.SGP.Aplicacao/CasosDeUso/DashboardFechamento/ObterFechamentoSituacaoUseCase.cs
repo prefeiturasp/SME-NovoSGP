@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 {
                     GraficoBaseDto fechamentoExistente = fechamentos?.FirstOrDefault(f => f.Grupo == grupo && f.Descricao == fechamento.Situacao.Name());
 
-                    if (fechamentoExistente != null)
+                    if (fechamentoExistente.NaoEhNulo())
                     {
                         int quantidadeAtual = fechamentos.FirstOrDefault(f => f.Grupo == grupo && f.Descricao == fechamento.Situacao.Name()).Quantidade;
 

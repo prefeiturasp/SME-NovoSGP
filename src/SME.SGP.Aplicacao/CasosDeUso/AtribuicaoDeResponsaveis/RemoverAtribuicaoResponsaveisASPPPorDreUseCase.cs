@@ -30,13 +30,13 @@ namespace SME.SGP.Aplicacao
 
                 var funcionariosSGP = new List<SupervisorEscolasDreDto>();
 
-                if (assitenteSocialSGP != null && assitenteSocialSGP.Any())
+                if (assitenteSocialSGP.NaoEhNulo() && assitenteSocialSGP.Any())
                     funcionariosSGP.AddRange(assitenteSocialSGP);
 
-                if (psicologosSGP != null && psicologosSGP.Any())
+                if (psicologosSGP.NaoEhNulo() && psicologosSGP.Any())
                     funcionariosSGP.AddRange(psicologosSGP);
 
-                if (psicoPedagogosSGP != null && psicoPedagogosSGP.Any())
+                if (psicoPedagogosSGP.NaoEhNulo() && psicoPedagogosSGP.Any())
                     funcionariosSGP.AddRange(psicoPedagogosSGP);
 
                 if (funcionariosSGP.Any())
@@ -47,13 +47,13 @@ namespace SME.SGP.Aplicacao
                     var funcionariosPsicoPedagogosEOL = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_PSICOPEDAGOGO, dre));
                     var funcionariosAssistenteSocialEOL = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_ASSISTENTE_SOCIAL, dre));
 
-                    if (funcionariosPsicoloEscolarEOL != null && funcionariosPsicoloEscolarEOL.Any())
+                    if (funcionariosPsicoloEscolarEOL.NaoEhNulo() && funcionariosPsicoloEscolarEOL.Any())
                         funcionariosEOL.AddRange(funcionariosPsicoloEscolarEOL);
 
-                    if (funcionariosPsicoPedagogosEOL != null && funcionariosPsicoPedagogosEOL.Any())
+                    if (funcionariosPsicoPedagogosEOL.NaoEhNulo() && funcionariosPsicoPedagogosEOL.Any())
                         funcionariosEOL.AddRange(funcionariosPsicoPedagogosEOL);
 
-                    if (funcionariosAssistenteSocialEOL != null && funcionariosAssistenteSocialEOL.Any())
+                    if (funcionariosAssistenteSocialEOL.NaoEhNulo() && funcionariosAssistenteSocialEOL.Any())
                         funcionariosEOL.AddRange(funcionariosAssistenteSocialEOL);
 
                     return await RemoverASPPCoreSSoSemAtribuicao(funcionariosSGP, funcionariosEOL);
@@ -76,13 +76,13 @@ namespace SME.SGP.Aplicacao
             var psicologosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int) TipoResponsavelAtribuicao.PsicologoEscolar && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
             var psicopedagogosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int) TipoResponsavelAtribuicao.Psicopedagogo && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
 
-            if (assitenteSocialEscolasSemAtribuicao != null && assitenteSocialEscolasSemAtribuicao.Any())
+            if (assitenteSocialEscolasSemAtribuicao.NaoEhNulo() && assitenteSocialEscolasSemAtribuicao.Any())
                 listaAsspSemAtribuicao.AddRange(assitenteSocialEscolasSemAtribuicao);
 
-            if (psicologosEscolasSemAtribuicao != null && psicologosEscolasSemAtribuicao.Any())
+            if (psicologosEscolasSemAtribuicao.NaoEhNulo() && psicologosEscolasSemAtribuicao.Any())
                 listaAsspSemAtribuicao.AddRange(psicologosEscolasSemAtribuicao);
 
-            if (psicopedagogosEscolasSemAtribuicao != null && psicopedagogosEscolasSemAtribuicao.Any())
+            if (psicopedagogosEscolasSemAtribuicao.NaoEhNulo() && psicopedagogosEscolasSemAtribuicao.Any())
                 listaAsspSemAtribuicao.AddRange(psicopedagogosEscolasSemAtribuicao);
 
             foreach (var supervisor in listaAsspSemAtribuicao)

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<DreDto>();
 
-            if (filtro != null)
+            if (filtro.NaoEhNulo())
             {
                 var uesDre = await CarregarUesPorDreCodigo(filtro.DreCodigo); 
 

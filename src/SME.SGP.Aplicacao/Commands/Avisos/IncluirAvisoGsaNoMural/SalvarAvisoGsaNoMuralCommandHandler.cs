@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         private Dominio.Aviso MapearParaEntidade(SalvarAvisoGsaNoMuralCommand request, Dominio.Aviso aviso)
         {
-            if (aviso == null)
+            if (aviso.EhNulo())
                 aviso = new Dominio.Aviso();
 
             aviso.AulaId = request.AulaId;

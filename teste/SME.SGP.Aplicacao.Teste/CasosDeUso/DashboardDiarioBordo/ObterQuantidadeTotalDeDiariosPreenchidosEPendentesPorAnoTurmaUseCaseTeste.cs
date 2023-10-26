@@ -2,6 +2,7 @@
 using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,7 +146,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso.DashboardDiarioBordo
             // Act
             var dadosGrafico = await useCase.Executar(filtro);
 
-            bool validaComTurma = !Regex.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno, @"^[0-9]+$");
+            bool validaComTurma = !UtilRegex.RegexAnoTurma.IsMatch(dadosGrafico?.FirstOrDefault().TurmaAno);
             // Assert
             Assert.False(dadosGrafico?.Where(d => d.TurmaAno.Equals("1")).Any());
         }

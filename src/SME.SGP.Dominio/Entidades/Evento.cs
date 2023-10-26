@@ -38,7 +38,7 @@ namespace SME.SGP.Dominio
 
         public void AdicionarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            if (tipoCalendario == null)
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("É necessário informar um tipo de Calendário.");
 
             TipoCalendarioId = tipoCalendario.Id;
@@ -125,7 +125,7 @@ namespace SME.SGP.Dominio
 
         public void EstaNoAnoLetivoDoCalendario()
         {
-            if (TipoCalendario == null)
+            if (TipoCalendario.EhNulo())
             {
                 throw new NegocioException("O tipo de calendário não foi preenchido.");
             }
@@ -137,7 +137,7 @@ namespace SME.SGP.Dominio
 
         public void EstaNoPeriodoLetivo(IEnumerable<PeriodoEscolar> periodos)
         {
-            if (periodos == null || !periodos.Any())
+            if (periodos.EhNulo() || !periodos.Any())
             {
                 throw new NegocioException("Não é permitido cadastrar esse evento pois não existe período escolar cadastrado para o calendário informado.");
             }
@@ -362,7 +362,7 @@ namespace SME.SGP.Dominio
         {
             if (padraoRecorrenciaMensal != PadraoRecorrenciaMensal.NoDia)
             {
-                if (diasDaSemana == null)
+                if (diasDaSemana.EhNulo())
                 {
                     throw new NegocioException("Os dias da semana são obrigatórios para esse tipo de recorrência.");
                 }
@@ -425,7 +425,7 @@ namespace SME.SGP.Dominio
 
         private void TipoEventoObrigatorio()
         {
-            if (TipoEvento == null)
+            if (TipoEvento.EhNulo())
             {
                 throw new NegocioException("O tipo de evento não foi encontrado.");
             }

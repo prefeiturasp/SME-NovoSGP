@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(filtro.UsuarioRf))
             {
                 var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(filtro.UsuarioRf));
-                if (usuario == null)
+                if (usuario.EhNulo())
                     throw new NegocioException($@"Não existe usuário com o código RF {filtro.UsuarioRf}");
             }
 

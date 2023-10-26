@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,15 +15,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
 
-        public ConsultaDres(IServicoEol servicoEOL,
+        public ConsultaDres(IMediator mediator,
             IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
             IRepositorioAbrangencia repositorioAbrangencia, IServicoUsuario servicoUsuario)
 
         {
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new System.ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new System.ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
@@ -96,11 +97,9 @@ namespace SME.SGP.Aplicacao
             return retorno.OrderBy(x => x.Nome).ToList();
         }
 
-        public IEnumerable<DreConsultaDto> ObterTodos()
+        public async Task<IEnumerable<DreConsultaDto>> ObterTodos()
         {
-            var respostaEol = servicoEOL.ObterDres();
-
-            return MapearParaDto(respostaEol);
+            return MapearParaDto(await mediator.Send(ObterDresQuery.Instance));
         }
 
         private IEnumerable<DreConsultaDto> MapearParaDto(IEnumerable<DreRespostaEolDto> respostaEol)

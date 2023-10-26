@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<OpcaoDropdownDto>> Handle(ObterFiltroRelatoriosAnosPorCicloModalidadeQuery request, CancellationToken cancellationToken)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException("Não foi possível localizar o usuário logado.");
 
             var listaRetorno = await repositorioAnoEscolar.ObterPorModalidadeCicloIdAbrangencia(request.Modalidade, request.CicloId, usuarioLogado.Id, usuarioLogado.PerfilAtual);

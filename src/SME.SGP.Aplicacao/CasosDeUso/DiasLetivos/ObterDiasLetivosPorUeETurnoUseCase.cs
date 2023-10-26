@@ -24,14 +24,14 @@ namespace SME.SGP.Aplicacao
                 ?
                 ModalidadeTipoCalendario.FundamentalMedio
                 :
-                ModalidadeTipoCalendario.EJA;           
+                ModalidadeTipoCalendario.EJA;    
 
             var diasLetivos = new List<DiaLetivoSimplesDto>();
             long tipoCalendarioId = 0;
             var semestre = 0;
             var anoLetivo = param.DataInicio.Year;            
 
-            if (modalidadeCalendario == ModalidadeTipoCalendario.EJA)
+            if (modalidadeCalendario.EhEjaOuCelp())
                 tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferenciaQuery(anoLetivo, modalidadeCalendario, param.DataInicio));
             else
                 tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(modalidadeCalendario, anoLetivo, semestre));
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                 throw new Exception("Tipo calendário não encontrado");
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
-            if (periodosEscolares == null || !periodosEscolares.Any())
+            if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
                 throw new Exception("Períodos escolares não encontrados");
 
             var eventos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, param.UeCodigo, false));

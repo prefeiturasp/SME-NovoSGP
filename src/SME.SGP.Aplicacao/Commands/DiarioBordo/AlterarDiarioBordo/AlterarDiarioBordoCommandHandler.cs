@@ -15,12 +15,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IConsultasDisciplina consultasDisciplina;
 
         public AlterarDiarioBordoCommandHandler(IMediator mediator,
-                                                IRepositorioDiarioBordo repositorioDiarioBordo)
+                                                IRepositorioDiarioBordo repositorioDiarioBordo,
+                                                IConsultasDisciplina consultasDisciplina)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
+            this.consultasDisciplina = consultasDisciplina ??
+                throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<AuditoriaDto> Handle(AlterarDiarioBordoCommand request, CancellationToken cancellationToken)
@@ -28,11 +32,11 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
 
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Aula informada não existe");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma informada não encontrada");
 
             if (usuario.EhProfessorCj())
@@ -48,18 +52,29 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
+            var componenteCurricularPrincipalProfessor = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, request.ComponenteCurricularId);
 
-            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId,request.ComponenteCurricularId);
-            if (diarioBordo == null)
+            var diarioBordo = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, componenteCurricularPrincipalProfessor);
+            if (diarioBordo.EhNulo())
                 throw new NegocioException($"Diário de Bordo para a aula {request.AulaId} não encontrado!");
 
             await MoverRemoverExcluidos(request, diarioBordo);
-            MapearAlteracoes(diarioBordo, request);
+            
+            MapearAlteracoes(diarioBordo, request, componenteCurricularPrincipalProfessor);
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
             return (AuditoriaDto)diarioBordo;
         }
+        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
+        {
+            var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
+            if (disciplinas.Count() > 1)
+                return disciplinas.Any() ? disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular : 0;
+
+            return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
+        }
+
         private async Task MoverRemoverExcluidos(AlterarDiarioBordoCommand diario, DiarioBordo diarioBordo)
         {
             if (!string.IsNullOrEmpty(diario.Planejamento))
@@ -72,10 +87,10 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new RemoverArquivosExcluidosCommand(diarioBordo.Planejamento, diario.Planejamento, TipoArquivo.DiarioBordo.Name()));
             }
         }
-        private void MapearAlteracoes(DiarioBordo entidade, AlterarDiarioBordoCommand request)
+        private void MapearAlteracoes(DiarioBordo entidade, AlterarDiarioBordoCommand request, long componenteCurricularPrincipalProfessor)
         {
             entidade.Planejamento = request.Planejamento;
-            entidade.ComponenteCurricularId = request.ComponenteCurricularId;
+            entidade.ComponenteCurricularId = componenteCurricularPrincipalProfessor;
         }
     }
 }

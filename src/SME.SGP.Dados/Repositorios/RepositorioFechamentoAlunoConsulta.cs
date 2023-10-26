@@ -95,7 +95,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.QueryAsync<FechamentoAluno, FechamentoNota, FechamentoAluno>(query
                 , (fechamentoAluno, fechamentoNota) =>
                 {
-                    if (fechamentoAlunoRetorno == null)
+                    if (fechamentoAlunoRetorno.EhNulo())
                         fechamentoAlunoRetorno = fechamentoAluno;
 
                     fechamentoAlunoRetorno.FechamentoNotas.Add(fechamentoNota);
@@ -119,7 +119,7 @@ namespace SME.SGP.Dados.Repositorios
                 , (fechamentoAluno, fechamentoNota) =>
                 {
                     var fechamentoAlunoLista = fechamentosAlunos.FirstOrDefault(a => a.Id == fechamentoAluno.Id);
-                    if (fechamentoAlunoLista == null)
+                    if (fechamentoAlunoLista.EhNulo())
                     {
                         fechamentoAlunoLista = fechamentoAluno;
                         fechamentosAlunos.Add(fechamentoAluno);

@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
                                                       && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date
                                                       && (int)situacaoMatriculaAtiva == turma.CodigoSituacaoMatricula).FirstOrDefault();
 
-            if (alunoTurma != null)
-                await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
+            if (alunoTurma.NaoEhNulo()) 
+               await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
 
             return true;
         }
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
         private async Task AtualizarEncaminhamento(long encaminhamentoNAAPAId, long turmaId)
         {
             var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAComTurmaPorIdQuery(encaminhamentoNAAPAId));
-            if(encaminhamentoNAAPA != null)
+            if(encaminhamentoNAAPA.NaoEhNulo())
             {
                 var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 

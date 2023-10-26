@@ -1,8 +1,6 @@
-﻿using SME.SGP.Infra;
-
-namespace SME.SGP.Aplicacao
+﻿namespace SME.SGP.Aplicacao
 {
-    public interface IExecutarSincronizacaoConsolidacaoMatriculasTurmasUseCase : IUseCase<MensagemRabbit, bool>
+    public interface IExecutarSincronizacaoConsolidacaoMatriculasTurmasUseCase : IRabbitUseCase
     {
     }
 }

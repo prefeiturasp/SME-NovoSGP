@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(request.Turma));
 
             int bimestre = request.Bimestre > 0 ? request.Bimestre :
-                        request.Turma.ModalidadeTipoCalendario == (ModalidadeTipoCalendario.EJA) ? 2 : 4;
+                        request.Turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 2 : 4;
 
             var periodoFechamento = await mediator.Send(
                 new ObterPeriodoFechamentoPorCalendarioDreUeBimestreQuery(tipoCalendarioId,
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                                                           request.Turma.Ue.DreId,
                                                                           request.Turma.UeId));
 
-            return periodoFechamento == null || periodoFechamento.InicioDoFechamento <= request.DataReferencia;
+            return periodoFechamento.EhNulo() || periodoFechamento.InicioDoFechamento <= request.DataReferencia;
         }
     }
 }

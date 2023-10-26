@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var consolidacaoTurma = mensagemRabbit.ObterObjetoMensagem<ConsolidacaoTurmaDto>();
 
-            if (consolidacaoTurma == null)
+            if (consolidacaoTurma.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do fechamento da turma. O id da turma e o bimestre não foram informados", LogNivel.Negocio, LogContexto.Fechamento));                
                 return false;
@@ -33,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurma.TurmaId));
 
-            if (turma == null)
+            if (turma.EhNulo())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível encontrar a turma de id {consolidacaoTurma.TurmaId}.", LogNivel.Negocio, LogContexto.Fechamento));                
                 return false;
@@ -41,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
             var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
 
-            if (componentes == null || !componentes.Any())
+            if (componentes.EhNulo() || !componentes.Any())
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível encontrar os componentes curricularres da turma de id {consolidacaoTurma.TurmaId}.", LogNivel.Negocio, LogContexto.Fechamento));                
                 return false;
@@ -49,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
             var dadosTurmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(turma.CodigoTurma));
 
-            if (dadosTurmaEOL != null)
+            if (dadosTurmaEOL.NaoEhNulo())
             {
                 if (!dadosTurmaEOL.Extinta)
                 {

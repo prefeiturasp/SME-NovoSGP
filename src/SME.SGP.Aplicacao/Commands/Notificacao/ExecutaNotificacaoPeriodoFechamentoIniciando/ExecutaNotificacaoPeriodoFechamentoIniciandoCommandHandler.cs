@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var mensagem = $@"O fechamento do <b>{periodoEscolar.Bimestre}º bimestre</b> na <b>{descricaoUe}</b> irá iniciar no dia <b>{periodoFechamentoBimestre.InicioDoFechamento.Date.ToString("dd/MM/yyyy")}</b>.";
 
             var usuarios = await ObterUsuarios(ue);
-            if (usuarios != null && usuarios.Any())
+            if (usuarios.NaoEhNulo() && usuarios.Any())
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem, NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, usuarios, ue.Dre.CodigoDre, ue.CodigoUe));
 
             await mediator.Send(new EnviarNotificacaoCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, ObterCargosGestaoEscola(),
@@ -46,11 +46,11 @@ namespace SME.SGP.Aplicacao
             var listaUsuarios = new List<long>();
 
             var usuariosAdm = await ObterUsuariosAdms(ue);
-            if (usuariosAdm != null && usuariosAdm.Any())
+            if (usuariosAdm.NaoEhNulo() && usuariosAdm.Any())
                 listaUsuarios.AddRange(usuariosAdm);
 
             var usuariosProfessores = await ObterProfessores(ue);
-            if (usuariosProfessores != null && usuariosProfessores.Any())
+            if (usuariosProfessores.NaoEhNulo() && usuariosProfessores.Any())
                 listaUsuarios.AddRange(usuariosProfessores);
 
             return listaUsuarios.Distinct();

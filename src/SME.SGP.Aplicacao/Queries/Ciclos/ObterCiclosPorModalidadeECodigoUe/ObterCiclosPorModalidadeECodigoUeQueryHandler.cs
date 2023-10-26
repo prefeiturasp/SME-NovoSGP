@@ -26,12 +26,12 @@ namespace SME.SGP.Aplicacao
             if (request.ConsideraAbrangencia && request.CodigoUe != "-99")
             {
                 var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-                if (usuario == null)
+                if (usuario.EhNulo())
                     throw new NegocioException("Não foi possível obter o usuário logado.");
 
                 var ciclosAbrangencia = await repositorioCiclo.ObterCiclosPorAnoModalidadeECodigoUeAbrangencia(new FiltroCicloPorModalidadeECodigoUeDto(request.Modalidade, request.CodigoUe, request.ConsideraAbrangencia), usuario.Id, usuario.PerfilAtual);
 
-                if (ciclosAbrangencia == null || !ciclosAbrangencia.Any())
+                if (ciclosAbrangencia.EhNulo() || !ciclosAbrangencia.Any())
                     throw new NegocioException("Não foi possível obter os ciclos");
 
                 return ciclosAbrangencia;
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
             {
                 var ciclos = await repositorioCiclo.ObterCiclosPorAnoModalidadeECodigoUe(new FiltroCicloPorModalidadeECodigoUeDto(request.Modalidade, request.CodigoUe, request.ConsideraAbrangencia));
 
-                if (ciclos == null || !ciclos.Any())
+                if (ciclos.EhNulo() || !ciclos.Any())
                     throw new NegocioException("Não foi possível obter os ciclos");
 
                 return ciclos;

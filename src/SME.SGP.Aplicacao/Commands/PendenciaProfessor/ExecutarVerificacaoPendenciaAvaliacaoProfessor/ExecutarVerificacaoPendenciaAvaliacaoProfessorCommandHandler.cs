@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler : IRequestHandler<ExecutarVerificacaoPendenciaAvaliacaoProfessorCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
 
-        public ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public ExecutarVerificacaoPendenciaAvaliacaoProfessorCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
 
@@ -27,12 +25,12 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
 
             var periodosEncerrando = await mediator.Send(new ObterPeriodosFechamentoEscolasPorDataFinalQuery(DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
-            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade != ModalidadeTipoCalendario.Infantil))
+            foreach (var periodoEncerrando in periodosEncerrando.Where(w=> w.PeriodoEscolar.TipoCalendario.Modalidade.NaoEhEducacaoInfantil()))
             {
                 try
                 {
                     var turmas = await mediator.Send(new ObterTurmasPorUeModalidadesAnoQuery(periodoEncerrando.PeriodoFechamento.UeId,
-                                                                                             periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade.ObterModalidadesTurma(),
+                                                                                             periodoEncerrando.PeriodoEscolar.TipoCalendario.Modalidade.ObterModalidades(),
                                                                                              periodoEncerrando.PeriodoEscolar.TipoCalendario.AnoLetivo));
 
                     var turmasComAvaliacao = await mediator.Send(new ObterQuantidadeAvaliacoesTurmaComponentePorUeNoPeriodoQuery(periodoEncerrando.PeriodoFechamento.UeId,
@@ -55,7 +53,7 @@ namespace SME.SGP.Aplicacao
                                     var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == professorComponenteTurma.DisciplinasId.ToString()
                                                                                                && c.LancaNota);
 
-                                    if (componenteCurricular != null && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId.Contains(c.ComponenteCurricularId)))
+                                    if (componenteCurricular.NaoEhNulo() && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId.Contains(c.ComponenteCurricularId)))
                                     {
                                         if (!fechamentosDaTurma.Any(a=> professorComponenteTurma.DisciplinasId.Contains(a.DisciplinaId) && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
                                         {

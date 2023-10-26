@@ -25,11 +25,9 @@ namespace SME.SGP.Api.Controllers
         [Route("{codigoRf}/turmas")]
         [ProducesResponseType(typeof(IEnumerable<ProfessorTurmaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult Get(string codigoRf)
+        public async Task<IActionResult> Get(string codigoRf)
         {
-            var retorno = consultasProfessor.Listar(codigoRf);
-
-            return Ok(retorno);
+            return Ok(await consultasProfessor.Listar(codigoRf));
         }
 
         [HttpGet("{codigoRF}/escolas/{codigoEscola}/turmas/anos-letivos/{anoLetivo}")]
@@ -42,22 +40,12 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("turmas/{codigoTurma}/disciplinas/agrupadas")]
-        [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> GetDisciplinasAgrupadas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices] IConsultasDisciplina consultasDisciplina)
-        {
-            var retorno = await consultasDisciplina.ObterDisciplinasAgrupadasPorProfessorETurma(codigoTurma, turmaPrograma);
-
-            return Ok(retorno);
-        }
-
         [HttpGet("turmas/{codigoTurma}/disciplinas/")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices] IConsultasDisciplina consultasDisciplina, [FromQuery] bool realizarAgrupamentoComponente = false)
+        public async Task<IActionResult> ObterDisciplinas(string codigoTurma, [FromQuery] bool turmaPrograma, [FromServices] IConsultasDisciplina consultasDisciplina, [FromQuery] bool realizarAgrupamentoComponente = false, bool consideraTurmaInfantil = true)
         {
-            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(codigoTurma, turmaPrograma, realizarAgrupamentoComponente);
+            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(codigoTurma, turmaPrograma, realizarAgrupamentoComponente, consideraTurmaInfantil);
 
             return Ok(retorno);
         }

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(AprovarWorkflowAlteracaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
             var notasEmAprovacao = await ObterNotasConselhoEmAprovacao(request.WorkflowId);
-            if (notasEmAprovacao != null && notasEmAprovacao.ToArray().Any())
+            if (notasEmAprovacao.NaoEhNulo() && notasEmAprovacao.ToArray().Any())
             {
                 unitOfWork.IniciarTransacao();
                 try
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
 
                     var periodoEscolar = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
-                    var bimestre = periodoEscolar != null ? periodoEscolar.Bimestre : (int)Bimestre.Final;
+                    var bimestre = periodoEscolar.NaoEhNulo() ? periodoEscolar.Bimestre : (int)Bimestre.Final;
                     var codigoAluno = notasEmAprovacao.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo;
                     await RemoverCache(string.Format(NomeChaveCache.NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO, request.TurmaCodigo, bimestre, codigoAluno), cancellationToken);
                 }
@@ -84,14 +84,14 @@ namespace SME.SGP.Aplicacao
 
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma, notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo, consideraInativos: true));
 
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma} no Eol");
 
             var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo,
                 TurmaId = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id,
-                Bimestre = periodoEscolar == null ? (int?)null : periodoEscolar.Bimestre,
+                Bimestre = periodoEscolar.EhNulo() ? (int?)null : periodoEscolar.Bimestre,
                 AnoLetivo = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.AnoLetivo,
                 Nota = notaConselhoClasse.Nota,
                 ConceitoId = notaConselhoClasse.ConceitoId,

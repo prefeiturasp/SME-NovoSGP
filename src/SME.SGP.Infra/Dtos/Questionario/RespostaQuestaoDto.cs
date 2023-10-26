@@ -20,7 +20,7 @@ namespace SME.SGP.Infra
     {
         public static bool NaoNuloEContemRegistrosRespondidos(this IEnumerable<RespostaQuestaoDto> respostas)
         {
-            return respostas != null && respostas.Any(resposta => !string.IsNullOrEmpty(resposta.Texto) || (resposta.OpcaoRespostaId ?? 0) != 0);
+            return respostas.NaoEhNulo() && respostas.Any(resposta => !string.IsNullOrEmpty(resposta.Texto) || (resposta.OpcaoRespostaId ?? 0) != 0);
         }
     }
 }
