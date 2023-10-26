@@ -424,15 +424,15 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				)
  
 				select
-					cfam.turma_id,
-					cfam.aluno_codigo,
+					cfam.turma_id as TurmaId,
+					cfam.aluno_codigo as AlunoCodigo,
 					cfam.mes,
-					cfam.quantidade_aulas,
-					cfam.quantidade_ausencias,
-					cfam.quantidade_compensacoes,
-					ta.QuantidadeAulas as quantidade_aulas_calculado,
-					tf.QuantidadeAusencias as quantidade_ausencias_calculado,
-					tf.QuantidadeCompensacoes quantidade_compensacoes_calculado
+					cfam.quantidade_aulas as QuantidadeAulas,
+					cfam.quantidade_ausencias as QuantidadeAusencias,
+					cfam.quantidade_compensacoes as QuantidadeCompensacoes,
+					ta.QuantidadeAulas as QuantidadeAulasCalculado,
+					tf.QuantidadeAusencias as QuantidadeAusenciasCalculado,
+					tf.QuantidadeCompensacoes as QuantidadeCompensacoesCalculado,
 				from totalFrequencia tf
 				inner join totalAulas ta on ta.mes = tf.mes
 				inner join consolidacao_frequencia_aluno_mensal cfam on cfam.turma_id = ta.TurmaId and cfam.aluno_codigo = tf.AlunoCodigo and cfam.mes = ta.mes
