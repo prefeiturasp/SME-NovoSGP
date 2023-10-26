@@ -441,5 +441,20 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 					cfam.quantidade_ausencias <> tf.QuantidadeAusencias or
 					cfam.quantidade_compensacoes <> tf.QuantidadeCompensacoes;", new { turmaId });
 
-	}
+		public Task<IEnumerable<DiarioBordoDuplicado>> ObterDiariosBordoDuplicados()
+			=> database.Conexao.QueryAsync<DiarioBordoDuplicado>(
+				@"select db.aula_id as AulaId
+        			, db.componente_curricular_id as ComponenteCurricularId
+        			, count(db.id) as Quantidade
+        			, min(db.id) as PrimeiroId
+        			, max(db.id) as UltimoId
+        			, min(db.criado_em) as PrimeiroRegistro
+        			, max(db.criado_em) as UltimoRegistro
+				  from turma t 
+				 inner join diario_bordo db on db.turma_id = t.id and not db.excluido 
+				 where t.ano_letivo = extract(year from NOW())
+				group by db.aula_id
+        			, db.componente_curricular_id 
+				having count(db.id) > 1 ");
+    }
 }

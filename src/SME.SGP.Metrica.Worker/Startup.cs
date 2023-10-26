@@ -119,6 +119,7 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRepositorioRegistroFrequenciaDuplicado, RepositorioRegistroFrequenciaDuplicado>();
             services.TryAddScoped<IRepositorioRegistroFrequenciaAlunoDuplicado, RepositorioRegistroFrequenciaAlunoDuplicado>();
             services.TryAddScoped<IRepositorioConsolidacaoFrequenciaAlunoMensalInconsistente, RepositorioConsolidacaoFrequenciaAlunoMensalInconsistente>();
+            services.TryAddScoped<IRepositorioDiarioBordoDuplicado, RepositorioDiarioBordoDuplicado>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
