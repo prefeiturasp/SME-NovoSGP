@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<TrocaPerfilDto> ModificarPerfil(Guid perfil)
         {
-            var loginAtual = servicoUsuario.ObterLoginAtual();
+            var loginAtual = await mediator.Send(ObterLoginAtualQuery.Instance);
 
             await servicoUsuario.PodeModificarPerfil(perfil, loginAtual);
 
@@ -177,7 +177,7 @@ namespace SME.SGP.Aplicacao
 
             await servicoAbrangencia.Salvar(loginAtual, perfil, false);
             
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             usuario.DefinirPerfilAtual(perfil);
 
