@@ -224,10 +224,9 @@ namespace SME.SGP.Aplicacao
 
                 if (secaoAluno.NaoEhNulo() && !string.IsNullOrEmpty(secaoAluno.Valor))
                 {
-                    resposta.AppendLine($"<strong>{secao.Nome}</strong>");
                     resposta.AppendLine($"<strong>{secao.Descricao}</strong>");
                     resposta.AppendLine(secaoAluno.Valor);
-                    resposta.AppendLine("<br>");
+                    resposta.AppendLine("</br>");
                 }
             }
 

@@ -39,7 +39,8 @@ namespace SME.SGP.Dados
 
         public async Task ExcluirVarios(List<long> idsParaExcluir)
         {
-            var query = "delete from registro_frequencia_aluno where id = any(@idsParaExcluir)";
+            var query = @"delete from compensacao_ausencia_aluno_aula where registro_frequencia_aluno_id = any(@idsParaExcluir);
+                          delete from registro_frequencia_aluno where id = any(@idsParaExcluir);";
 
             await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }

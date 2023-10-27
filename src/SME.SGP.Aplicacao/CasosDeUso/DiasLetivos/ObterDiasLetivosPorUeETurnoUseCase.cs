@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 ?
                 ModalidadeTipoCalendario.FundamentalMedio
                 :
-                ModalidadeTipoCalendario.EJA; //Como fica o tratamento de CELP?          
+                ModalidadeTipoCalendario.EJA;    
 
             var diasLetivos = new List<DiaLetivoSimplesDto>();
             long tipoCalendarioId = 0;

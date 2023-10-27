@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao
 
             await ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.FundamentalMedio);
             await ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.EJA);
-            await ExecutaVerificacaoPendenciaAusenciaFechamentoPorModalidade(parametroDiasAusenciaFechamento, ModalidadeTipoCalendario.CELP);//Está correto adicionar CELP?
 
             return true;
         }

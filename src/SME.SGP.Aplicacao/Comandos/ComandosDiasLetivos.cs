@@ -40,18 +40,6 @@ namespace SME.SGP.Aplicacao
             return dias;
         }
 
-        private async Task<string> ObterParametroDiasLetivosFundMedio(int anoLetivo)
-        {
-            var parametros = await repositorioParametrosSistema.ObterParametrosPorTipoEAno(TipoParametroSistema.EjaDiasLetivos, anoLetivo);
-            return parametros.FirstOrDefault(a => a.Nome == "EjaDiasLetivos").Valor;
-        }
-
-        private async Task<string> ObterParametroDiasLetivosEja(int anoLetivo)
-        {
-            var parametros = await repositorioParametrosSistema.ObterParametrosPorTipoEAno(TipoParametroSistema.EjaDiasLetivos, anoLetivo);
-            return parametros.FirstOrDefault(a => a.Nome == "FundamentalMedioDiasLetivos").Valor;
-        }
-
         public List<DateTime> ObterDias(IEnumerable<Dominio.Evento> eventos, List<DateTime> dias, Dominio.EventoLetivo eventoTipo)
         {
             eventos

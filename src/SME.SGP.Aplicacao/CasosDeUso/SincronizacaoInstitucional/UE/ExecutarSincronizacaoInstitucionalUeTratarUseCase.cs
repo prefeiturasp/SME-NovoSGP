@@ -20,9 +20,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 throw new NegocioException("Não foi possível localizar o código da Ue para tratar o Sync.");
 
             var ueEol = await mediator.Send(new ObterUeDetalhesParaSincronizacaoInstitucionalQuery(ueCodigo));
-
             var ueSgp = await mediator.Send(new ObterUeComDrePorCodigoQuery(ueCodigo));
-
 
 
             if (await mediator.Send(new TrataSincronizacaoInstitucionalUeCommand(ueEol, ueSgp)))

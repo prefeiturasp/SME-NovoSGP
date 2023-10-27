@@ -38,6 +38,7 @@
         public const string NOTA_CONCEITO_FECHAMENTO_TURMA_ALUNO_BIMESTRES_E_FINAL = "nota-conceito-fechamento-turmacodigo-aluno-bimestres-e-final:{0}-{1}";
         public const string NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE_ALUNO = "nota-conceito-conselho-classe-turmacodigo-bimestre-aluno:{0}-{1}-{2}";      
         public const string QUESTIONARIO = "questionario:{0}";
+        public const string REGISTROS_FREQUENCIA_ALUNO_EXCLUIDOS_TURMA = "registros-frequencia-aluno-excluidos-turma:{0}";
         public const string DRE_CODIGO = "dre-codigo:{0}";
     }
 }
