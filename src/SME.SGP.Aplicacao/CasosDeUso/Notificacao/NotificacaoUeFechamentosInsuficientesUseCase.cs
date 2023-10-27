@@ -25,7 +25,6 @@ namespace SME.SGP.Aplicacao
                 var diasParaEncerramento = int.Parse(parametro.Valor);
                 await VerificaPeriodosFechamentoEncerrando(ModalidadeTipoCalendario.FundamentalMedio, diasParaEncerramento, percentualFechamentoInsuficiente);
                 await VerificaPeriodosFechamentoEncerrando(ModalidadeTipoCalendario.EJA, diasParaEncerramento, percentualFechamentoInsuficiente);
-                await VerificaPeriodosFechamentoEncerrando(ModalidadeTipoCalendario.CELP, diasParaEncerramento, percentualFechamentoInsuficiente);//Está correto adicionar CELP?
             }
 
             return true;

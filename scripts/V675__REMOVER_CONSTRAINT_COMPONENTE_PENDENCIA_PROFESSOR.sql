@@ -1,0 +1,1 @@
+ALTER TABLE pendencia_professor DROP CONSTRAINT IF exists pendencia_professor_componente_fk;

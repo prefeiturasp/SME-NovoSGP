@@ -12,8 +12,11 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDiarioBordoUseCase : AbstractUseCase, IObterDiarioBordoUseCase
     {
-        public ObterDiarioBordoUseCase(IMediator mediator) : base(mediator)
+        private readonly IConsultasDisciplina consultasDisciplina;
+        public ObterDiarioBordoUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina) : base(mediator)
         {
+            this.consultasDisciplina = consultasDisciplina ??
+                throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<DiarioBordoDto> Executar(long aulaId, long componenteCurricularId)
@@ -25,16 +28,30 @@ namespace SME.SGP.Aplicacao
             var aberto = await AulaDentroDoPeriodo(mediator, aula.TurmaId, aula.DataAula);
 
             IEnumerable<DiarioBordo> diariosBordos = await mediator.Send(new ObterDiariosDeBordosPorAulaQuery(aulaId));
+            
+            var componenteCurricularIdPrincipal = await RetornaComponenteCurricularIdPrincipalDoProfessor(aula.TurmaId, componenteCurricularId);
 
-            var diarioBordo = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularId);
-            var diarioBordoIrmao = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularId);
+            var diarioBordo = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId == componenteCurricularIdPrincipal);
+            var diarioBordoIrmao = diariosBordos.FirstOrDefault(diario => diario.ComponenteCurricularId != componenteCurricularIdPrincipal);
             
             var codigosComponentes = diariosBordos.Select(diario => diario.ComponenteCurricularId).ToList();
-            codigosComponentes.Add(componenteCurricularId);
+            codigosComponentes.Add(componenteCurricularIdPrincipal);
             var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(codigosComponentes.Distinct().ToArray()));
 
+            if (diarioBordo.NaoEhNulo() && diarioBordoIrmao.EhNulo() && componentes.Any(b => b.CodigoComponenteCurricular != b.CdComponenteCurricularPai))
+            {
+                var codigoComponentePai = componentes.First()?.CdComponenteCurricularPai;
+
+                if (codigoComponentePai != null)
+                {
+                    var codigoIrmao = codigoComponentePai != componenteCurricularIdPrincipal ? (long)codigoComponentePai : componenteCurricularIdPrincipal;
+
+                    return MapearParaDto(diarioBordo, aberto, new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = codigoIrmao }, componentes);
+                }
+            }
+
             if (diarioBordo.EhNulo())
-                return MapearParaDto(new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = componenteCurricularId }, aberto, diarioBordoIrmao, componentes);
+                return MapearParaDto(new DiarioBordo() { AulaId = aulaId, ComponenteCurricularId = componenteCurricularIdPrincipal }, aberto, diarioBordoIrmao, componentes);
             
             if (diarioBordo.DevolutivaId.NaoEhNulo())
                 diarioBordo.Devolutiva = await mediator.Send(new ObterDevolutivaPorIdQuery(diarioBordo.DevolutivaId.GetValueOrDefault()));
@@ -42,6 +59,15 @@ namespace SME.SGP.Aplicacao
             var dto = MapearParaDto(diarioBordo, aberto, diarioBordoIrmao, componentes);
 
             return dto;
+        }
+
+        private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
+        {
+            var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
+            if(disciplinas.Count() > 1)
+                return disciplinas.Any() ? disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular : 0;
+
+            return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
         }
 
         private async Task<bool> AulaDentroDoPeriodo(IMediator mediator, string turmaCodigo, DateTime dataAula)

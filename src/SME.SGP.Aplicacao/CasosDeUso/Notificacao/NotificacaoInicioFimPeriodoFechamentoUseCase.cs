@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao
 
             await VerificaPeriodosFechamento(ModalidadeTipoCalendario.FundamentalMedio, int.Parse(parametroInicio.Valor), int.Parse(parametroFim.Valor));
             await VerificaPeriodosFechamento(ModalidadeTipoCalendario.EJA, int.Parse(parametroInicio.Valor), int.Parse(parametroFim.Valor));
-            await VerificaPeriodosFechamento(ModalidadeTipoCalendario.CELP, int.Parse(parametroInicio.Valor), int.Parse(parametroFim.Valor));//Está correto adicionar CELP?
             return true;
         }
 

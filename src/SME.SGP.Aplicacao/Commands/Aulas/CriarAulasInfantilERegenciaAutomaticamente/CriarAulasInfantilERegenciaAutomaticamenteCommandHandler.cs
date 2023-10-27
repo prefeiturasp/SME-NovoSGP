@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var diasSemAula = diasLetivos
-                    .Where(c => !aulas.Any(a => !a.Excluido && a.DataAula == c.Data) && (!turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio))?
+                    .Where(c => !aulas.Any(a => !a.Excluido && a.DataAula == c.Data) && (!turma.DataInicio.HasValue || c.Data.Date >= turma.DataInicio) && !c.Data.FimDeSemana())?
                     .OrderBy(a => a.Data)?
                     .Distinct()
                     .ToList();
@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
 
             if (idsAulasAExcluir.Any())
             {                
-                foreach(var idAula in idsAulasAExcluir)
+                foreach(var idAula in idsAulasAExcluir.Distinct())
                 {
                     await mediator.Send(new ExcluirPendenciaAulaCommand(idAula, TipoPendencia.Frequencia), cancellationToken);                    
                     await mediator.Send(new ExcluirPendenciaDiarioPorAulaIdCommand(idAula));
@@ -222,7 +222,7 @@ namespace SME.SGP.Aplicacao
             return diasDoPeriodo.Where(c => !c.Data.FimDeSemana() && c.CriarAulaSME ||
                                             ((c.PossuiEventoDre(turma.Ue.Dre.CodigoDre) && !c.Data.FimDeSemana() ||
                                             c.PossuiEventoUe(turma.Ue.CodigoUe)) && !c.Data.FimDeSemana() && c.EhLetivo) ||
-                                            (c.NaoPossuiDre && !c.Data.FimDeSemana() && c.NaoPossuiUe && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)))?
+                                            ((c.NaoPossuiDre || c.NaoPossuiUe) && (!c.Data.FimDeSemana() || c.Data.FimDeSemana() && c.PossuiEvento) && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)))?
                                 .OrderBy(c => c.Data)?.ToList();
         }
 
