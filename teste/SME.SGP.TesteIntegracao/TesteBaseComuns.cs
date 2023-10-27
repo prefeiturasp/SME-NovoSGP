@@ -1625,5 +1625,107 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_10);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_10);
         }
+        protected async Task CriarConselhoClasseConsolidadoTurmaAlunos()
+        {
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 1,
+                Status = SituacaoConselhoClasse.NaoIniciado,
+                AlunoCodigo = "1",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 2,
+                Status = SituacaoConselhoClasse.NaoIniciado,
+                AlunoCodigo = "2",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 3,
+                Status = SituacaoConselhoClasse.NaoIniciado,
+                AlunoCodigo = "3",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 4,
+                Status = SituacaoConselhoClasse.NaoIniciado,
+                AlunoCodigo = "4",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 5,
+                Status = SituacaoConselhoClasse.NaoIniciado,
+                AlunoCodigo = "5",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 6,
+                Status = SituacaoConselhoClasse.EmAndamento,
+                AlunoCodigo = "6",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 7,
+                Status = SituacaoConselhoClasse.EmAndamento,
+                AlunoCodigo = "7",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 8,
+                Status = SituacaoConselhoClasse.EmAndamento,
+                AlunoCodigo = "8",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            await InserirNaBase(new ConselhoClasseConsolidadoTurmaAluno()
+            {
+                Id = 9,
+                Status = SituacaoConselhoClasse.Concluido,
+                AlunoCodigo = "9",
+                TurmaId = 1,
+                ParecerConclusivoId = null,
+                CriadoRF = "1",
+                CriadoPor = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+        }
     }
 }
