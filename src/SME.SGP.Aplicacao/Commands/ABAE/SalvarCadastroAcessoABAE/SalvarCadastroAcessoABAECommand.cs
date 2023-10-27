@@ -54,10 +54,6 @@ namespace SME.SGP.Aplicacao
                 .GreaterThan(0)
                 .WithMessage("O número do endereço do usuário deve ser informado para o cadastro de acesso ABAE.");
             
-            RuleFor(x => x.CadastroAcessoABAE.Complemento)
-                .NotEmpty()
-                .WithMessage("O complemento do endereço do usuário deve ser informado para o cadastro de acesso ABAE.");
-            
             RuleFor(x => x.CadastroAcessoABAE.Cidade)
                 .NotEmpty()
                 .WithMessage("A cidade do endereço do usuário deve ser informado para o cadastro de acesso ABAE.");

@@ -36,9 +36,8 @@ namespace SME.SGP.Infra
         [Required(ErrorMessage = "É necessário informar o número do usuário para o cadastro de acesso ABAE")]
         public int Numero { get; set; }
         
-        [Required(ErrorMessage = "É necessário informar o complemento do usuário para o cadastro de acesso ABAE")]
         [MaxLength(20, ErrorMessage = "O complemento do usuário não pode conter mais que 20 caracteres")]
-        public string Complemento { get; set; }
+        public string? Complemento { get; set; }
         
         [Required(ErrorMessage = "É necessário informar o bairro do usuário para o cadastro de acesso ABAE")]
         [MaxLength(50, ErrorMessage = "O bairro do usuário não pode conter mais que 50 caracteres")]

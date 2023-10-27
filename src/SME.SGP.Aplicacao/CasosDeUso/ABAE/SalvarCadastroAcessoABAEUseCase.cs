@@ -45,6 +45,7 @@ namespace SME.SGP.Aplicacao
             cadastroAcessoABAE.Numero = cadastroAcessoABAEDto.Numero;
             cadastroAcessoABAE.Complemento = cadastroAcessoABAEDto.Complemento;
             cadastroAcessoABAE.Cidade = cadastroAcessoABAEDto.Cidade;
+            cadastroAcessoABAE.Bairro = cadastroAcessoABAEDto.Bairro;
             cadastroAcessoABAE.Estado = cadastroAcessoABAEDto.Estado;
             cadastroAcessoABAE.Excluido = cadastroAcessoABAEDto.Excluido;
 
