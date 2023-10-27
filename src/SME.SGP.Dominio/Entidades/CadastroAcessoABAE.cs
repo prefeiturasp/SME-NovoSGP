@@ -20,6 +20,8 @@ namespace SME.SGP.Dominio
         public string Cidade { get; set; }
         public string Estado { get; set; }
         public bool Excluido { get; set; }
+        public string UeCodigo { get; set; }
+        public string DreCodigo { get; set; }
 
         public void ExcluirLogicamente()
         {

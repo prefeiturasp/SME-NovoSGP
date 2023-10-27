@@ -19,6 +19,8 @@ namespace SME.SGP.Aplicacao
             return new CadastroAcessoABAEDto()
             {
                 Id = cadastroAcessoABAE.Id,
+                DreCodigo = cadastroAcessoABAE.DreCodigo,
+                UeCodigo = cadastroAcessoABAE.UeCodigo,
                 UeId = cadastroAcessoABAE.UeId,
                 Nome = cadastroAcessoABAE.Nome,
                 Cpf = cadastroAcessoABAE.Cpf,

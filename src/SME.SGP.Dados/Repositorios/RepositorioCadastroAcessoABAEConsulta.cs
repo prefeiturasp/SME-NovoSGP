@@ -43,6 +43,38 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
+        public async Task<CadastroAcessoABAE> ObterCompletoPorId(long id)
+        {
+            var query = @"select caa.id,
+	                          dre.dre_id as DreCodigo,
+	                          ue.ue_id as UeCodigo,
+	                          caa.ue_id ueId,
+	                          caa.nome,
+	                          caa.cpf,
+	                          caa.email,
+	                          caa.telefone,
+	                          caa.situacao,
+	                          caa.cep,
+	                          caa.endereco,
+	                          caa.numero,
+	                          caa.complemento,
+	                          caa.cidade,
+	                          caa.estado,
+	                          caa.excluido,
+	                          caa.criado_em criadoEm,
+	                          caa.criado_por criadoPor,
+	                          caa.criado_rf criadoRf,
+	                          caa.alterado_em alteradoEm,
+	                          caa.alterado_por alteradoPor,
+	                          caa.alterado_rf alteradoRf
+                    from cadastro_acesso_abae caa
+                        join ue on ue.id = caa.ue_id 
+                        join dre on dre.id = ue.dre_id  
+                    where caa.id = @id and not caa.excluido";
+            
+            return await database.Conexao.QueryFirstOrDefaultAsync<CadastroAcessoABAE>(query , new {id });
+        }
+
         private string MontaQueryCompleta(Paginacao paginacao, FiltroDreIdUeIdNomeSituacaoABAEDto filtro)
         {
             var sql = new StringBuilder();

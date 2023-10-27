@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<bool> ExisteCadastroAcessoABAEPorCpf(string cpf);
         Task<PaginacaoResultadoDto<DreUeNomeSituacaoTipoEscolaDataABAEDto>> ObterPaginado(FiltroDreIdUeIdNomeSituacaoABAEDto filtro,Paginacao paginacao);
+        Task<CadastroAcessoABAE> ObterCompletoPorId(long id);
     }
 }
