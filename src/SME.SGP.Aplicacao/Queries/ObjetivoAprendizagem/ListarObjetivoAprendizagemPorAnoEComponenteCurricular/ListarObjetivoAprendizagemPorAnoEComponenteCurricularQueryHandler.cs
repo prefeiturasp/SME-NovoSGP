@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaRetorno = new List<ObjetivoAprendizagemDto>();
 
-            if (request.Anos == null || !request.Anos.Any())
+            if (request.Anos.EhNulo() || !request.Anos.Any())
             {
                 listaRetorno.AddRange(
                     await repositorioObjetivoAprendizagem

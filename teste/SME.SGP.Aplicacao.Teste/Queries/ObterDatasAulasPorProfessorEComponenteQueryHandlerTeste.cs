@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 .ReturnsAsync(usuario);
 
             // Act
-            var datasAulas = await query.Handle(new ObterDatasAulasPorProfessorEComponenteQuery("123", "123", "1105", false, false), new CancellationToken());
+            var datasAulas = await query.Handle(new ObterDatasAulasPorProfessorEComponenteQuery("123", "1105"), new CancellationToken());
 
             //// Assert
             Assert.NotNull(datasAulas);

@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            if (listaCompensacaoDescricao != null && listaCompensacaoDescricao.Any())
+            if (listaCompensacaoDescricao.NaoEhNulo() && listaCompensacaoDescricao.Any())
             {
                 foreach (var item in listaCompensacaoDescricao)
                 {
@@ -119,7 +119,8 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<PeriodoEscolarDto> BuscaPeriodo(Turma turma, int bimestre)
         {
-            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio, turma.Semestre));
+            var modalidadeTipoCalendario = turma.ModalidadeCodigo.ObterModalidadeTipoCalendario();
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, modalidadeTipoCalendario, turma.Semestre));
 
             var parametroSistema = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
 

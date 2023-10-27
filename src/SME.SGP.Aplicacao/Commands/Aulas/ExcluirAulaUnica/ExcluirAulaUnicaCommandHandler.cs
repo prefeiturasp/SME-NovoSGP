@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
         {
             var plano = await repositorioPlanoAula.ObterPlanoAulaPorAulaRegistroExcluido(aulaId);
 
-            if (plano != null)
+            if (plano.NaoEhNulo())
             {
                 await ExcluirArquivo(plano.Descricao, TipoArquivo.PlanoAula);
                 await ExcluirArquivo(plano.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var diarioDeBordo in diariosDeBordos)
             {
-                if(diarioDeBordo?.Planejamento != null)
+                if((diarioDeBordo?.Planejamento).NaoEhNulo())
                     await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
             }
         }

@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaCommand>();
 
-            if (comando == null)
+            if (comando.EhNulo())
                 return false;
 
             comando.UsuarioConsiderado = !string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF) ? 
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ValidarDadosCalculo(CalcularFrequenciaDto calcularFrequenciaDto)
         {
-            if (calcularFrequenciaDto == null)
+            if (calcularFrequenciaDto.EhNulo())
                 throw new ArgumentNullException(nameof(calcularFrequenciaDto));
 
             if (string.IsNullOrWhiteSpace(calcularFrequenciaDto.CodigoTurma))
@@ -49,15 +49,15 @@ namespace SME.SGP.Aplicacao
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(calcularFrequenciaDto.CodigoTurma));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"A turma com o código {calcularFrequenciaDto.CodigoTurma} não foi localizada.");
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
 
-            if (alunos == null || !alunos.Any())
+            if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Não foram localizados alunos para a turma informada.");
 
-            if (calcularFrequenciaDto.CodigosAlunos != null && calcularFrequenciaDto.CodigosAlunos.Any() && !alunos.Select(a => a.CodigoAluno).Intersect(calcularFrequenciaDto.CodigosAlunos).Any())
+            if (calcularFrequenciaDto.CodigosAlunos.NaoEhNulo() && calcularFrequenciaDto.CodigosAlunos.Any() && !alunos.Select(a => a.CodigoAluno).Intersect(calcularFrequenciaDto.CodigosAlunos).Any())
                 throw new NegocioException("Nenhum dos códigos de aluno informados pertence aos alunos da turma.");
 
             if (calcularFrequenciaDto.CodigosAlunos?.Length > 0)

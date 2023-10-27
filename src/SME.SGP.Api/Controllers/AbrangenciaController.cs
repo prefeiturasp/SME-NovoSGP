@@ -34,7 +34,7 @@ namespace SME.SGP.Api.Controllers
         {
             get
             {
-                if (this.RouteData != null && this.RouteData.Values != null)
+                if (this.RouteData.NaoEhNulo() && this.RouteData.Values.NaoEhNulo())
                 {
                     var consideraHistoricoParam = (string)this.RouteData.Values["consideraHistorico"];
 
@@ -142,7 +142,7 @@ namespace SME.SGP.Api.Controllers
             var retorno = await consultasAbrangencia
                 .ObterSemestres(filtroSemestreDto.Modalidade, ConsideraHistorico, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
 
-            if ((retorno == null || !retorno.Any()) && !ConsideraHistorico)
+            if ((retorno.EhNulo() || !retorno.Any()) && !ConsideraHistorico)
             {
                 retorno = await consultasAbrangencia
                     .ObterSemestres(filtroSemestreDto.Modalidade, true, filtroSemestreDto.AnoLetivo, filtroSemestreDto.DreCodigo, filtroSemestreDto.UeCodigo);
@@ -187,7 +187,7 @@ namespace SME.SGP.Api.Controllers
                     new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
                         periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
 
-                if ((turmas == null || !turmas.Any()) && !ConsideraHistorico)
+                if ((turmas.EhNulo() || !turmas.Any()) && !ConsideraHistorico)
                     turmas = await mediator.Send(
                         new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe,
                             modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil)); 

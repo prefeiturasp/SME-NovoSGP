@@ -14,7 +14,7 @@ namespace SME.SGP.Infra
         public string CriadoRF { get; set; }
 
         public static explicit operator AuditoriaDto(EntidadeBase entidade)
-            => entidade == null ? null :
+            => entidade.EhNulo() ? null :
             new AuditoriaDto()
             {
                 Id = entidade.Id,

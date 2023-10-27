@@ -32,12 +32,13 @@ namespace SME.SGP.Aplicacao
 
             if (resposta.IsSuccessStatusCode)
             {
-                var json = resposta.Content.ReadAsStringAsync().Result;
+                var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<string[]>(json);
             }
             else
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {resposta.Content?.ReadAsStringAsync()?.Result ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.Relatorios, string.Empty));
+                var httpContentResult = await resposta.Content?.ReadAsStringAsync();
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na tentativa de buscar os codigos das Dres no EOL - HttpCode {resposta.StatusCode} - Body {httpContentResult ?? string.Empty} - URL: {httpClient.BaseAddress}", LogNivel.Negocio, LogContexto.Relatorios, string.Empty));
 
                 throw new NegocioException($"Erro ao obter os códigos de DREs no EOL. URL base: {httpClient.BaseAddress}");
             }

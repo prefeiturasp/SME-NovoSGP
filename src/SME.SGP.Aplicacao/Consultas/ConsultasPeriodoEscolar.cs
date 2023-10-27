@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             var lista = await repositorio.ObterPorTipoCalendario(tipoCalendarioId);
 
-            if (lista == null || !lista.Any())
+            if (lista.EhNulo() || !lista.Any())
                 return null;
 
             return EntidadeParaDto(lista);
@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao.Consultas
         public async Task<DateTime> ObterFimPeriodoRecorrencia(long tipoCalendarioId, DateTime inicioRecorrencia, RecorrenciaAula recorrencia)
         {
             var periodos = await repositorio.ObterPorTipoCalendarioAsync(tipoCalendarioId);
-            if (periodos == null || !periodos.Any())
+            if (periodos.EhNulo() || !periodos.Any())
                 throw new NegocioException("Não foi possível obter os períodos deste tipo de calendário.");
 
             DateTime fimRecorrencia = DateTime.MinValue;
@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao.Consultas
 
             PeriodoEscolar periodoAtual = await ObterPeriodoEscolarEmAberto(modalidadeCodigo, anoLetivo);
 
-            if (periodoAtual != null)
+            if (periodoAtual.NaoEhNulo())
                 periodos.Add(periodoAtual);
 
             periodos.AddRange(await consultasPeriodoFechamento.ObterPeriodosComFechamentoEmAberto(ueId, anoLetivo));
@@ -115,9 +115,7 @@ namespace SME.SGP.Aplicacao.Consultas
         {
             var dataAtual = DateTime.Today;
 
-            var modalidade = modalidadeCodigo == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : ModalidadeTipoCalendario.FundamentalMedio;
-
-            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade, dataAtual.Semestre());
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCodigo.ObterModalidadeTipoCalendario(), dataAtual.Semestre());
 
             return await ObterPeriodoEscolarPorData(tipoCalendario.Id, dataAtual);
         }
@@ -136,12 +134,8 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private async Task<TipoCalendarioCompletoDto> ObterTipoCalendario(Modalidade modalidade, int anoLetivo, int semestre = 0)
         {
-            var modalidadeCalendario = modalidade == Modalidade.EJA ? ModalidadeTipoCalendario.EJA : 
-                                        modalidade == Modalidade.EducacaoInfantil ? ModalidadeTipoCalendario.Infantil :
-                                        ModalidadeTipoCalendario.FundamentalMedio;
-
-            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidadeCalendario, semestre);
-            if (tipoCalendario == null)
+            var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(anoLetivo, modalidade.ObterModalidadeTipoCalendario(), semestre);
+            if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não encontrado calendario escolar cadastrado");
 
             return tipoCalendario;
@@ -161,7 +155,7 @@ namespace SME.SGP.Aplicacao.Consultas
             var tipoCalendario = await consultasTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre)
                 ?? throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
 
-            if (periodosAberto != null && periodosAberto.Any())
+            if (periodosAberto.NaoEhNulo() && periodosAberto.Any())
                 return FiltraEObtemUltimoPeriodoEmAberto(periodosAberto, tipoCalendario);
 
             return await BuscaUltimoPeriodoEscolar(tipoCalendario);

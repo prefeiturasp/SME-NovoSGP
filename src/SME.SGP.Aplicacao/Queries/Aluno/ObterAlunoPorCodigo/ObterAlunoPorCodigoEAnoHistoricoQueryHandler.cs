@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoQuery request, CancellationToken cancellationToken)
         {
             var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmaAlunoPorCodigoAlunoQuery(request.CodigoAluno))).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
-            if (alunoPorTurmaResposta == null)
+            if (alunoPorTurmaResposta.EhNulo())
                 throw new NegocioException("Aluno não localizado");
 
             var alunoReduzido = new AlunoReduzidoDto()
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             var turmaNome = "";
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
-            if (turma != null)
+            if (turma.NaoEhNulo())
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
 
             return turmaNome;

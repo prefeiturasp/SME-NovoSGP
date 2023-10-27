@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var areasDoConhecimento = await repositorioAreaDoConhecimento.ObterAreasDoConhecimentoPorComponentesCurriculares(request.CodigosComponenteCurricular);
 
-            if (areasDoConhecimento == null || !areasDoConhecimento.Any())
+            if (areasDoConhecimento.EhNulo() || !areasDoConhecimento.Any())
                 throw new NegocioException("Não foi possível obter as áreas de conhecimento dos componentes informados");
 
             return areasDoConhecimento;

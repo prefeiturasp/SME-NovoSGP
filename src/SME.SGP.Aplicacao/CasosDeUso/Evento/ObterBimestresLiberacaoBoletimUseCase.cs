@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada!");
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));

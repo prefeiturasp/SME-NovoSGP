@@ -8,18 +8,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasAtribuicaoEsporadica : ConsultasBase, IConsultasAtribuicaoEsporadica
     {
         private readonly IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica;
-        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
 
-        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IServicoEol servicoEOL, IContextoAplicacao contextoAplicacao) : base(contextoAplicacao)
+        public ConsultasAtribuicaoEsporadica(IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica, IContextoAplicacao contextoAplicacao,IMediator mediator) : base(contextoAplicacao)
         {
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<AtribuicaoEsporadicaDto>> Listar(FiltroAtribuicaoEsporadicaDto filtro)
@@ -32,31 +33,31 @@ namespace SME.SGP.Aplicacao.Consultas
                 TotalRegistros = retornoConsultaPaginada.TotalRegistros
             };
 
-            bool nenhumItemEncontrado = retornoConsultaPaginada.Items == null ||
+            bool nenhumItemEncontrado = retornoConsultaPaginada.Items.EhNulo() ||
                !retornoConsultaPaginada.Items.Any() ||
                retornoConsultaPaginada.Items.ElementAt(0).Id == 0;
 
-            retorno.Items = !nenhumItemEncontrado ? ListaEntidadeParaListaDto(retornoConsultaPaginada.Items) : null;
+            retorno.Items = !nenhumItemEncontrado ? await ListaEntidadeParaListaDto(retornoConsultaPaginada.Items) : null;
 
             return retorno;
         }
 
-        public AtribuicaoEsporadicaCompletaDto ObterPorId(long id)
+        public async Task<AtribuicaoEsporadicaCompletaDto> ObterPorId(long id)
         {
-            var atribuicaoEsporadica = repositorioAtribuicaoEsporadica.ObterPorId(id);
+            var atribuicaoEsporadica = await repositorioAtribuicaoEsporadica.ObterPorIdAsync(id);
 
             if (atribuicaoEsporadica is null)
                 return null;
 
-            return EntidadeParaDtoCompleto(atribuicaoEsporadica);
+            return await EntidadeParaDtoCompleto(atribuicaoEsporadica);
         }
 
-        private AtribuicaoEsporadicaDto EntidadeParaDto(AtribuicaoEsporadica entidade, bool buscarNome = true, string nomeProfessor = "")
+        private async Task<AtribuicaoEsporadicaDto> EntidadeParaDto(AtribuicaoEsporadica entidade, bool buscarNome = true, string nomeProfessor = "")
         {
             if (buscarNome)
             {
-                var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
-                nomeProfessor = professorResumo != null ? professorResumo.Nome : "Professor não encontrado";
+                var professorResumo = await mediator.Send(new ObterResumoProfessorPorRFAnoLetivoQuery(entidade.ProfessorRf, entidade.DataInicio.Year));
+                nomeProfessor = professorResumo.NaoEhNulo() ? professorResumo.Nome : "Professor não encontrado";
             }
 
             return new AtribuicaoEsporadicaDto
@@ -74,9 +75,9 @@ namespace SME.SGP.Aplicacao.Consultas
             };
         }
 
-        private AtribuicaoEsporadicaCompletaDto EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
+        private async Task<AtribuicaoEsporadicaCompletaDto> EntidadeParaDtoCompleto(AtribuicaoEsporadica entidade)
         {
-            var professorResumo = servicoEOL.ObterResumoProfessorPorRFAnoLetivo(entidade.ProfessorRf, entidade.DataInicio.Year).Result;
+            var professorResumo = await mediator.Send(new ObterResumoProfessorPorRFAnoLetivoQuery(entidade.ProfessorRf, entidade.DataInicio.Year));
 
             return new AtribuicaoEsporadicaCompletaDto
             {
@@ -87,7 +88,7 @@ namespace SME.SGP.Aplicacao.Consultas
                 Excluido = entidade.Excluido,
                 Id = entidade.Id,
                 Migrado = entidade.Migrado,
-                ProfessorNome = professorResumo != null ? professorResumo.Nome : "Professor não encontrado",
+                ProfessorNome = professorResumo.NaoEhNulo() ? professorResumo.Nome : "Professor não encontrado",
                 ProfessorRf = entidade.ProfessorRf,
                 UeId = entidade.UeId,
                 AlteradoEm = entidade.AlteradoEm,
@@ -99,18 +100,18 @@ namespace SME.SGP.Aplicacao.Consultas
             };
         }
 
-        private IEnumerable<AtribuicaoEsporadicaDto> ListaEntidadeParaListaDto(IEnumerable<AtribuicaoEsporadica> entidades)
+        private async Task<IEnumerable<AtribuicaoEsporadicaDto>> ListaEntidadeParaListaDto(IEnumerable<AtribuicaoEsporadica> entidades)
         {
-            var professores = servicoEOL.ObterListaNomePorListaRF(entidades.Select(x => x.ProfessorRf)).Result;
+            var professores = await mediator.Send(new ObterFuncionariosPorRFsQuery(entidades.Select(x => x.ProfessorRf)));
 
-            return entidades.Select(x => EntidadeParaDto(x, false, ObterNomeProfessor(professores, x.ProfessorRf)));
+            return entidades.Select(async x => await EntidadeParaDto(x, false, ObterNomeProfessor(professores, x.ProfessorRf))).Select(_task => _task.Result);
         }
 
         private string ObterNomeProfessor(IEnumerable<ProfessorResumoDto> professores, string codigoRF)
         {
             var professor = professores.FirstOrDefault(p => p.CodigoRF == codigoRF);
 
-            if (professor == null)
+            if (professor.EhNulo())
                 return "Professor não encontrado";
 
             return professor.Nome;

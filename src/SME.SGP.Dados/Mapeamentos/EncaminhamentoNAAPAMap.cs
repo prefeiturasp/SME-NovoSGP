@@ -15,6 +15,7 @@ namespace SME.SGP.Dados
             Map(c => c.Excluido).ToColumn("excluido");
             Map(c => c.SituacaoMatriculaAluno).ToColumn("situacao_matricula_aluno");
             Map(c => c.MotivoEncerramento).ToColumn("motivo_encerramento");
+            Map(c => c.DataUltimaNotificacaoSemAtendimento).ToColumn("data_ultima_notificacao_sem_atendimento");
         }
     }
 }

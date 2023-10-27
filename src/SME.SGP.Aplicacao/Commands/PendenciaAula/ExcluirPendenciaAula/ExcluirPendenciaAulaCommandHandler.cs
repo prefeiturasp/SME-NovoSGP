@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Linq;
 using System.Threading;
@@ -35,7 +36,7 @@ namespace SME.SGP.Aplicacao
         private async Task ExcluirPendenciaSeNaoHouverMaisPendenciaAula(long pendenciaId)
         {
             var pendenciasAulasRestantes = await mediator.Send(new ObterPendenciasAulaPorIdQuery(pendenciaId));
-            if (pendenciasAulasRestantes == null || !pendenciasAulasRestantes.Any())
+            if (pendenciasAulasRestantes.EhNulo() || !pendenciasAulasRestantes.Any())
                 await mediator.Send(new ExcluirPendenciaPorIdCommand(pendenciaId));
         }
     }

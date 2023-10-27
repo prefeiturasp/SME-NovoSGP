@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, comando, Guid.NewGuid(), null), 
                 cancellationToken);
 
-            if (request.Meses != null && request.Meses.Any())
+            if (request.Meses.NaoEhNulo() && request.Meses.Any())
             {
                 foreach(var mes in request.Meses)
                     await PublicarConsolidacaoFrequenciaAlunoMensal(request.TurmaId, mes, cancellationToken);

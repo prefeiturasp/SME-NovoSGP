@@ -13,17 +13,14 @@ namespace SME.SGP.Aplicacao
     public class ExecutarVerificacaoPendenciaAusenciaFechamentoCommandHandler : IRequestHandler<ExecutarVerificacaoPendenciaAusenciaFechamentoCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEol;
-        public ExecutarVerificacaoPendenciaAusenciaFechamentoCommandHandler(IMediator mediator, IServicoEol servicoEol)
+        public ExecutarVerificacaoPendenciaAusenciaFechamentoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
-
         }
 
         public async Task<bool> Handle(ExecutarVerificacaoPendenciaAusenciaFechamentoCommand request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, request.ModalidadeTipoCalendario.ObterModalidadesTurma()));
+            var turmas = await mediator.Send(new ObterTurmasPorAnoModalidadeQuery(DateTime.Now.Year, request.ModalidadeTipoCalendario.ObterModalidades()));
 
             var periodoFechamentoBimestres = await mediator.Send(new ObterPeriodosEscolaresPorModalidadeDataFechamentoQuery((int)request.ModalidadeTipoCalendario, DateTime.Now.Date.AddDays(request.DiasParaGeracaoDePendencia)));
             var componentes = await mediator.Send(ObterComponentesCurricularesQuery.Instance);
@@ -33,14 +30,14 @@ namespace SME.SGP.Aplicacao
                 var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
                 foreach (var periodoFechamentoBimestre in periodoFechamentoBimestres)
                 {
-                    if (periodoFechamentoBimestre.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
+                    if (periodoFechamentoBimestre.PeriodoEscolar.TipoCalendario.Modalidade.EhEducacaoInfantil())
                         continue;
 
                     var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
                     foreach (var professorTurma in professoresTurma)
                     {
                         var obterComponenteCurricular = componentes.FirstOrDefault(c => professorTurma.DisciplinasId.Contains(long.Parse(c.Codigo)));
-                        if (obterComponenteCurricular != null)
+                        if (obterComponenteCurricular.NaoEhNulo())
                         {
                             if (professorTurma.ProfessorRf != "")
                             {
@@ -80,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
         private bool EhBimestreFinal(ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre)
         {
-            return (bimestre == 2 && modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA) || bimestre == 4;
+            return (bimestre == 2 && modalidadeTipoCalendario.EhEjaOuCelp()) || bimestre == 4;
         }
 
         private async Task<bool> ExistePendenciaProfessor(long turmaId, long componenteCurricularId, string professorRf, long? periodoEscolarId)

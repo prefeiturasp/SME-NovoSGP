@@ -10,6 +10,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -80,6 +81,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task ExecutarTeste(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -224,7 +226,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var notasConsolidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
             notasConsolidacao.ShouldNotBeNull();
 
-            var notaConsolidacao = componentesRegencia != null && componentesRegencia.Any() ? notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && componentesRegencia.Contains(s.ComponenteCurricularId.Value)) : notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && s.ComponenteCurricularId.Equals(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular));
+            var notaConsolidacao = componentesRegencia.NaoEhNulo() && componentesRegencia.Any() ? notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && componentesRegencia.Contains(s.ComponenteCurricularId.Value)) : notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && s.ComponenteCurricularId.Equals(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular));
             notaConsolidacao.ShouldNotBeNull();
 
             if (tipoNota == TipoNota.Nota)
@@ -1037,7 +1039,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         protected async Task CriarPeriodoEscolar(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
-            if (filtroConselhoClasseDto.Modalidade == Modalidade.EJA)
+            if (filtroConselhoClasseDto.Modalidade == Modalidade.EJA || filtroConselhoClasseDto.Modalidade == Modalidade.CELP)
             {
                 await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
                 await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);

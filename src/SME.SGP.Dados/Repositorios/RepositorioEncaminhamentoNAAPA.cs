@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
         public const string SECAO_ITINERANCIA_NOME = "QUESTOES_ITINERACIA";
+        public const string QUESTAO_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
 
         public RepositorioEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
@@ -200,7 +200,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
                         
-                        if (secao == null)
+                        if (secao.EhNulo())
                         {
                             encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
                             secao = encaminhamentoSecao;
@@ -209,7 +209,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
                         
-                        if (questaoEncaminhamento == null)
+                        if (questaoEncaminhamento.EhNulo())
                         {
                             questaoEncaminhamento = questaoEncaminhamentoNAAPA;
                             questaoEncaminhamento.Questao = questao;
@@ -218,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
                         
-                        if (resposta == null)
+                        if (resposta.EhNulo())
                         {
                             resposta = respostaEncaminhamento;
                             resposta.Resposta = opcaoResposta;
@@ -264,7 +264,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
                         
-                        if (secao == null)
+                        if (secao.EhNulo())
                         {
                             encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
                             secao = encaminhamentoSecao;
@@ -273,7 +273,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
                         
-                        if (questaoEncaminhamento == null)
+                        if (questaoEncaminhamento.EhNulo())
                         {
                             questaoEncaminhamento = questaoEncaminhamentoNAAPA;
                             questaoEncaminhamento.Questao = questao;
@@ -282,7 +282,7 @@ namespace SME.SGP.Dados.Repositorios
 
                         var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
 
-                        if (resposta != null) 
+                        if (resposta.NaoEhNulo()) 
                             return encaminhamento;
                         
                         resposta = respostaEncaminhamento;
@@ -431,6 +431,55 @@ namespace SME.SGP.Dados.Repositorios
                            and not excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { codigoAluno, situacao = (int)SituacaoNAAPA.Encerrado });
+        }
+
+        public async Task<IEnumerable<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>> ObterInformacoesDeNotificacaoDeInatividadeDeAtendimento(long ueId)
+        {
+            var situacoes = new int[] { (int)SituacaoNAAPA.AguardandoAtendimento, (int)SituacaoNAAPA.EmAtendimento };
+            var query = new StringBuilder();
+
+            query.AppendLine("WITH inatividade_atendimento AS(");
+            query.AppendLine(@$"select en.aluno_codigo AlunoCodigo, en.aluno_nome AlunoNome, en.turma_id TurmaId, en.id EncaminhamentoId
+                from encaminhamento_naapa en
+                inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
+                where not exists(select 1
+                                 from secao_encaminhamento_naapa sen
+                                 where sen.nome_componente = '{SECAO_ITINERANCIA_NOME}'
+                                   and not sen.excluido 
+                                   and sen.id = ens.secao_encaminhamento_id)
+                and en.situacao = any(@situacoes)
+                and not en.excluido
+                and not ens.excluido
+                and coalesce(en.data_ultima_notificacao_sem_atendimento, en.criado_em) + interval '30 day' <= now()");
+            query.AppendLine(" union");
+            query.AppendLine($@"select en.aluno_codigo AlunoCodigo, en.aluno_nome AlunoNome, en.turma_id TurmaId, en.id EncaminhamentoId
+                from encaminhamento_naapa en
+                inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
+                inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id and sen.nome_componente = '{SECAO_ITINERANCIA_NOME}'
+                inner join questionario qto on qto.id = sen.questionario_id
+                inner join(select max(texto::date) dataAtendimento, enq.encaminhamento_naapa_secao_id
+                           from encaminhamento_naapa_resposta enr
+                           inner join encaminhamento_naapa_questao enq on enq.id = enr.questao_encaminhamento_id
+                           inner join questao q on q.id = enq.questao_id
+                           where q.nome_componente = '{QUESTAO_DATA_DO_ATENDIMENTO}'
+                             and not enr.excluido
+                             and not enq.excluido
+                           group by enq.encaminhamento_naapa_secao_id) tab_dt_atendimento on tab_dt_atendimento.encaminhamento_naapa_secao_id = ens.id
+                where en.situacao = any(@situacoes)
+                  and not en.excluido
+                  and not ens.excluido
+                  and not sen.excluido
+                  and coalesce(en.data_ultima_notificacao_sem_atendimento, tab_dt_atendimento.dataAtendimento) + interval '30 day' <= now()");
+            query.AppendLine(")");
+            query.AppendLine($@"select ia.AlunoCodigo, ia.AlunoNome, ia.EncaminhamentoId, ia.TurmaId, t.nome TurmaNome, 
+                ue.nome UeNome, ue.ue_id UeCodigo, ue.tipo_escola TipoEscola, dre.abreviacao DreNome, dre.dre_id DreCodigo
+                from inatividade_atendimento ia
+                inner join turma t on t.id = ia.TurmaId
+                inner join ue on ue.id = t.ue_id
+                inner join dre on dre.id = ue.dre_id
+                where ue.id = @ueId");
+
+            return await database.Conexao.QueryAsync<EncaminhamentoNAAPAInformacoesNotificacaoInatividadeAtendimentoDto>(query.ToString(), new { ueId, situacoes });
         }
     }
 }

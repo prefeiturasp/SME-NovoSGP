@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao.Queries
 {
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao.Queries
 
         public Task<IEnumerable<long>> Handle(ObterUesIdsPorModalidadeCalendarioQuery request, CancellationToken cancellationToken)
         {
-            var modalidades = request.ModalidadeTipoCalendario.ObterModalidadesTurma();
+            var modalidades = request.ModalidadeTipoCalendario.ObterModalidades();
 
             return repositorioUe.ObterUesIdsPorModalidade(modalidades.Cast<int>().ToArray(), request.AnoLetivo);
         }

@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                                 }).ToList();
             
             
-            if (responsaveisDre != null && responsaveisDre.Any())
+            if (responsaveisDre.NaoEhNulo() && responsaveisDre.Any())
                 responsaveisUe.AddRange(responsaveisDre);
             return responsaveisUe.DistinctBy(resp => resp.Login).ToList();
         }

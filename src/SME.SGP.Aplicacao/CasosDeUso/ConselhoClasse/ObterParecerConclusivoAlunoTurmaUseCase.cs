@@ -55,11 +55,11 @@ namespace SME.SGP.Aplicacao
         
         private async Task VerificaEmAprovacaoParecerConclusivo(long? conselhoClasseAlunoId, ParecerConclusivoDto parecerConclusivoDto)
         {
-            if (conselhoClasseAlunoId != null && conselhoClasseAlunoId > 0)
+            if (conselhoClasseAlunoId.NaoEhNulo() && conselhoClasseAlunoId > 0)
             {
                 var wfAprovacaoParecerConclusivo = await mediator.Send(new ObterSePossuiParecerEmAprovacaoQuery(conselhoClasseAlunoId));
 
-                if (wfAprovacaoParecerConclusivo != null)
+                if (wfAprovacaoParecerConclusivo.NaoEhNulo())
                 {
                     parecerConclusivoDto.Id = wfAprovacaoParecerConclusivo.ConselhoClasseParecerId.Value;
                     parecerConclusivoDto.Nome = wfAprovacaoParecerConclusivo.ConselhoClasseParecer.Nome;

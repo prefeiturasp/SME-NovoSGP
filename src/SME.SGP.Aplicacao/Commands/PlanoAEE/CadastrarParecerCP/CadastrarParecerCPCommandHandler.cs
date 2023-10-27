@@ -34,12 +34,12 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(request.PlanoAEEId);
 
-            if (planoAEE == null)
+            if (planoAEE.EhNulo())
                 throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
             
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId), cancellationToken);
 
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao.Commands
 
             var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
 
-            var idEntidadeEncaminhamento = funcionarioPAAI != null && funcionarioPAAI.Count() == 1
+            var idEntidadeEncaminhamento = funcionarioPAAI.NaoEhNulo() && funcionarioPAAI.Count() == 1
             ? await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE, funcionarioPAAI.FirstOrDefault().CodigoRf, turma))
             : await ExcluirPendenciaCPsGerarPendenciaCEFAI(planoAEE);
 
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao.Commands
                 return;
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
-            if (turma == null)
+            if (turma.EhNulo())
                 throw new NegocioException($"Não foi possível localizar a turma [{turmaId}]");
 
             await GerarPendenciaCEFAI(plano, turma);
@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasPlanoAEE, DateTime.Today.Year));
 
-            return parametro != null && parametro.Ativo;
+            return parametro.NaoEhNulo() && parametro.Ativo;
         }
     }
 }

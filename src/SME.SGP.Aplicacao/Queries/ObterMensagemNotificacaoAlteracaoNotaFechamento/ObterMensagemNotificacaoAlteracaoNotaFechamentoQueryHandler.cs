@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         {
             var notificacao = await mediator.Send(new ObterNotificacaoPorIdQuery(request.NotificacaoId), cancellationToken);
             
-            if (notificacao == null)
+            if (notificacao.EhNulo())
                 return string.Empty;
             
             var mensagem = notificacao.Mensagem;

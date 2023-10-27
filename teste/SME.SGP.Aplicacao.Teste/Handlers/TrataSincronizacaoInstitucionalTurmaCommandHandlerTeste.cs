@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             await trataSincronizacaoInstitucionalTurmaCommandHandler.Handle(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEol, turmaSgp), new CancellationToken());
 
             //Assert
-            repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turmaEol.Codigo.ToString()), Times.Once);
+            repositorioTurma.Verify(r => r.AtualizarTurmaParaHistorica(turmaEol.Codigo.ToString(), null), Times.Once);
         }
 
         [Fact(DisplayName = "Valida o tratamento de turma para inserir na base")]

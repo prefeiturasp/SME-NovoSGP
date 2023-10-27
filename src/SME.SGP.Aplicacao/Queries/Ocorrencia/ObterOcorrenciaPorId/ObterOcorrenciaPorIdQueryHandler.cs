@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> ObterNomeUeAsync(long ueId)
         {
             var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
-            if (ue == null)
+            if (ue.EhNulo())
                 throw new NegocioException("Não foi possível encrontra a UE!");
             
             return $"{ue.TipoEscola.ShortName()} {ue.Nome}";
@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 DreId = ocorrencia.Ue.DreId,
                 AnoLetivo = ocorrencia.Turma?.AnoLetivo ?? 0,
                 UeId = ocorrencia.UeId,
-                Modalidade = ocorrencia.Turma?.ModalidadeCodigo != null ? (int)ocorrencia.Turma.ModalidadeCodigo : 0,
+                Modalidade = (ocorrencia.Turma?.ModalidadeCodigo).NaoEhNulo() ? (int)ocorrencia.Turma.ModalidadeCodigo : 0,
                 Semestre = ocorrencia.Turma?.Semestre ?? 0,
                 DreNome = dre.Nome,
                 UeNome = await ObterNomeUeAsync(ocorrencia.UeId),

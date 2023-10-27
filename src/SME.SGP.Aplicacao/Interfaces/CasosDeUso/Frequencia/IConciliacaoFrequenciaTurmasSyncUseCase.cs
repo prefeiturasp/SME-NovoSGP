@@ -1,10 +1,6 @@
-﻿using SME.SGP.Infra;
-using System.Threading.Tasks;
-
-namespace SME.SGP.Aplicacao.Interfaces
+﻿namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IConciliacaoFrequenciaTurmasSyncUseCase
+    public interface IConciliacaoFrequenciaTurmasSyncUseCase : IRabbitUseCase
     {
-        Task<bool> Executar(MensagemRabbit mensagem);
     }
 }

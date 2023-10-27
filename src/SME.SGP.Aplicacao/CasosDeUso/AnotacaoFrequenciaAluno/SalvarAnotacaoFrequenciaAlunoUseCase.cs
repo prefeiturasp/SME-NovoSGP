@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Executar(SalvarAnotacaoFrequenciaAlunoDto dto)
         {
             var aula = await mediator.Send(new ObterAulaPorIdQuery(dto.AulaId));
-            if (aula == null)
+            if (aula.EhNulo())
                 throw new NegocioException("Aula não encontrada.");
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(aula.TurmaId, dto.CodigoAluno, true));
-            if (aluno == null)
+            if (aluno.EhNulo())
                 throw new NegocioException($"{(dto.EhInfantil ? "Criança não encontrada" : "Aluno não encontrado")}.");
 
             if (aluno.EstaInativo(aula.DataAula))

@@ -49,7 +49,6 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         protected override void RegistrarServicos(IServiceCollection services)
         {
-            services.TryAddScoped<IServicoEol, ServicoEOLFake>();
             services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
             services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
             services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamentoFake>();

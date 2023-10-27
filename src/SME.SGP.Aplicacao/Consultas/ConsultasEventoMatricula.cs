@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private EventoMatriculaDto MapearParaDto(EventoMatricula eventoMatricula)
-            => eventoMatricula == null ? null : new EventoMatriculaDto()
+            => eventoMatricula.EhNulo() ? null : new EventoMatriculaDto()
             { 
                 CodigoAluno = eventoMatricula.CodigoAluno,
                 DataEvento = eventoMatricula.DataEvento,

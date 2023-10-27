@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             var lstTiposOcorrencias = repositorioOcorrenciaTipo.Listar();
 
-            if (lstTiposOcorrencias != null && lstTiposOcorrencias.Any())
+            if (lstTiposOcorrencias.NaoEhNulo() && lstTiposOcorrencias.Any())
                 return await Task.FromResult(MapearParaDto(lstTiposOcorrencias));
             else
                 return await Task.FromResult(Enumerable.Empty<OcorrenciaTipoDto>());

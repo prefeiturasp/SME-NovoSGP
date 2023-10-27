@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<bool> ExisteAulaNaDataAsync(DateTime data, string turmaCodigo, string componenteCurricular);
 
-        Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaId, string[] disciplinasId, string professorRf, TipoAula tipoAula);
+        Task<bool> ExisteAulaNaDataDataTurmaDisciplinaProfessorRfAsync(DateTime data, string turmaId, string[] disciplinasId, TipoAula tipoAula, string professorRf = null);
 
         Task<AulaConsultaDto> ObterAulaDataTurmaDisciplina(DateTime data, string turmaId, string disciplinaId);
 
@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<IEnumerable<AulaCompletaDto>> ObterAulasCompleto(long tipoCalendarioId, string turmaId, string ueId, DateTime data, Guid perfil);
 
-        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string[] disciplinasIdsConsideradas, string professorRf);
+        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string[] disciplinasIdsConsideradas, string professorRf = null);
 
         Task<bool> ObterTurmaInfantilPorAula(long aulaId);
 
@@ -85,8 +85,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         IEnumerable<DateTime> ObterUltimosDiasLetivos(DateTime dataReferencia, int quantidadeDias, long tipoCalendarioId);
 
-        bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade);
-
         Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null);
         Task<IEnumerable<AulaReduzidaDto>> ObterQuantidadeAulasReduzido(long turmaId, string componenteCurricularId, long tipoCalendarioId, int bimestre, bool professorCJ);
 
@@ -108,5 +106,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<RegistroFrequenciaAulaParcialDto>> ObterListaDeRegistroFrequenciaAulaPorTurma(string codigoTurma);
         Task<IEnumerable<PeriodoEscolarAulaDto>> ObterPeriodosEscolaresDasAulas(long[] aulasId);
         Task<bool> ExisteAulaNoPeriodoTurmaDisciplinaAsync(DateTime periodoInicio, DateTime periodoFim, string turmaCodigo, string disciplinaId);
+        Task<IEnumerable<AulaConsultaDto>> ObterAulasFuturasPorDataTurmaComponentesCurriculares(DateTime dataBase, string codigoTurma, string[] componentesCurricularesCodigo);
     }
 }

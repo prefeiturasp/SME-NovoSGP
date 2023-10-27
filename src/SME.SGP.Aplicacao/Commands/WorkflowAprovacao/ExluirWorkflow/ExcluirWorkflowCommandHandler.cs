@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         {
             var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(request.WorkflowId);
 
-            if (workflow == null)
+            if (workflow.EhNulo())
                 throw new NegocioException("Não foi possível localizar o fluxo de aprovação.");
 
             if (workflow.Niveis.Any(n => n.Status == WorkflowAprovacaoNivelStatus.Reprovado))

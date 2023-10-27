@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaId));
                 var paramTempoLimiteExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.TempoValidadeProcessoExecutandoEmSegundos, turma.AnoLetivo));
-                if(paramTempoLimiteExecucao != null)
+                if(paramTempoLimiteExecucao.NaoEhNulo())
                 {
                     var tempo = int.Parse(paramTempoLimiteExecucao.Valor);
                     if (pro.CriadoEm.AddSeconds(tempo) < HorarioBrasilia())

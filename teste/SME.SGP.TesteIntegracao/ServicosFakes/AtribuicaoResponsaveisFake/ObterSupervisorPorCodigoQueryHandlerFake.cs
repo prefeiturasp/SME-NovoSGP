@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public class ObterSupervisorPorCodigoQueryHandlerFake : IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>
+    public class ObterSupervisorPorCodigoQueryHandlerFake : IRequestHandler<ObterSupervisorPorCodigoDreQuery, IEnumerable<SupervisoresRetornoDto>>
     {
-        public async Task<IEnumerable<SupervisoresRetornoDto>> Handle(ObterSupervisorPorCodigoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SupervisoresRetornoDto>> Handle(ObterSupervisorPorCodigoDreQuery request, CancellationToken cancellationToken)
         {
             return new List<SupervisoresRetornoDto> {
                 new SupervisoresRetornoDto() {CodigoRf = "1", NomeServidor = "Jose Teste" } ,

@@ -176,7 +176,7 @@ namespace SME.SGP.Dados.Repositorios
             if(!string.IsNullOrEmpty(filtro.SupervisorId))
                 query.AppendLine(" AND sed.supervisor_id = ANY(@supervisor)  AND sed.excluido = False ");
 
-            if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel)
+            if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId.EhNulo() && filtro.UESemResponsavel)
                 query.AppendLine(" AND sed.excluido = true ");
 
             var parametros = new
@@ -204,7 +204,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where dre_id = @codigoDre " +
                 "and excluido = false ");
 
-            if (tipoResponsavelAtribuicao != null)
+            if (tipoResponsavelAtribuicao.NaoEhNulo())
                 query.AppendLine("and tipo = @tipoResponsavelAtribuicao");
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
@@ -284,7 +284,7 @@ namespace SME.SGP.Dados.Repositorios
 
             sqlQuery.AppendLine("    sed.Tipo = @tipoResponsavelAtribuicao");
 
-            if (codigoUe != null)
+            if (codigoUe.NaoEhNulo())
                 sqlQuery.AppendLine(" and vact.ue_codigo = @codigoUe");
 
             var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
@@ -342,7 +342,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and dre_id = @codigoDre");
             if (!string.IsNullOrEmpty(codigoUe))
                 query.AppendLine("and escola_id = @codigoUe ");
-            if (tiposResponsavelAtribuicao != null && tiposResponsavelAtribuicao.Any())
+            if (tiposResponsavelAtribuicao.NaoEhNulo() && tiposResponsavelAtribuicao.Any())
                 query.AppendLine("and tipo = any (@tiposResponsavelAtribuicao) ");
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new

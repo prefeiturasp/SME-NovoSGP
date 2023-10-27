@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using System;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
             var possuiAbrangenciaEmTodasAsUes = await mediator
                 .Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
 
-            if (ues != null && ues.Any())
+            if (ues.NaoEhNulo() && ues.Any())
                 ues = ues.OrderBy(c => c.Nome).ToList();
 
             if (possuiAbrangenciaEmTodasAsUes && ues.Count > 1)

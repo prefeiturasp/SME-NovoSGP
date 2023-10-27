@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 .WithMessage("O ano letivo deve ser informado para a busca de frequência global por DRE.");
 
             RuleFor(x => x.Ano)
-                .Matches("^[1-9]{1}")
+                .Matches(RegexConstants.EXPRESSAO_ANO_TURMA)
                 .When(x => !string.IsNullOrWhiteSpace(x.Ano))
                 .WithMessage("O ano escolar infomado é inválido.");
 

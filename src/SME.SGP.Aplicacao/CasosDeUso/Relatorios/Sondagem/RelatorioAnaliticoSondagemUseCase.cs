@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             filtroRelatorioAnaliticoSondagemDto.PerfilUsuarioLogado = perfil;
             filtroRelatorioAnaliticoSondagemDto.LoginUsuarioLogado = usuarioLogado.Login;
 
-            if (usuarioLogado == null)
+            if (usuarioLogado.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioAnaliticoSondagem, filtroRelatorioAnaliticoSondagemDto, usuarioLogado, 

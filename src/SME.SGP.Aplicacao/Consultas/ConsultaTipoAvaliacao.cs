@@ -25,10 +25,10 @@ namespace SME.SGP.Aplicacao
             return MapearParaDtoComPaginacao(await repositorioTipoAvaliacao.ListarPaginado(nome, descricao, situacao, Paginacao));
         }
 
-        public TipoAvaliacaoCompletaDto ObterPorId(long id)
+        public async Task<TipoAvaliacaoCompletaDto> ObterPorId(long id)
         {
-            var tipoAvaliacao = repositorioTipoAvaliacao.ObterPorId(id);
-            var possuAvaliacaoVinculada = VerificarSeExisteAtividadeVinculada(id).Result;
+            var tipoAvaliacao = await repositorioTipoAvaliacao.ObterPorIdAsync(id);
+            var possuAvaliacaoVinculada = await VerificarSeExisteAtividadeVinculada(id);
 
             return MapearParaDto(tipoAvaliacao, possuAvaliacaoVinculada);
         }
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         private TipoAvaliacaoCompletaDto MapearParaDto(TipoAvaliacao tipoAvaliacao, bool? possuiAvaliacaoVinculada)
         {
-            return tipoAvaliacao == null ? null : new TipoAvaliacaoCompletaDto
+            return tipoAvaliacao.EhNulo() ? null : new TipoAvaliacaoCompletaDto
             {
                 Id = tipoAvaliacao.Id,
                 Nome = tipoAvaliacao.Nome,
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
         private PaginacaoResultadoDto<TipoAvaliacaoCompletaDto> MapearParaDtoComPaginacao(PaginacaoResultadoDto<TipoAvaliacao> tipoAvaliacaoPaginado)
         {
-            if (tipoAvaliacaoPaginado == null)
+            if (tipoAvaliacaoPaginado.EhNulo())
             {
                 tipoAvaliacaoPaginado = new PaginacaoResultadoDto<TipoAvaliacao>();
             }

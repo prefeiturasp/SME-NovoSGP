@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool ExisteRegistroFrequenciaAluno(IEnumerable<FrequenciaAlunoSimplificadoDto> frequenciasAula, string codigoAluno, int numeroAula)
-            => frequenciasAula != null &&
+            => frequenciasAula.NaoEhNulo() &&
                frequenciasAula.Any(a => a.CodigoAluno == codigoAluno &&
                                         a.NumeroAula == numeroAula);
     }

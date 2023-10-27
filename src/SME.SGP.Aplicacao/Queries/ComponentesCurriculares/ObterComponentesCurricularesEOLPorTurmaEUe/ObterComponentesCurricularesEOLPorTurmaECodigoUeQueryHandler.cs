@@ -15,10 +15,12 @@ namespace SME.SGP.Aplicacao
     public class ObterComponentesCurricularesEOLPorTurmaECodigoUeQueryHandler : IRequestHandler<ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery, IEnumerable<ComponenteCurricularDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesEOLPorTurmaECodigoUeQueryHandler(IHttpClientFactory httpClientFactory)
+        public ObterComponentesCurricularesEOLPorTurmaECodigoUeQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery request, CancellationToken cancellationToken)
@@ -26,7 +28,7 @@ namespace SME.SGP.Aplicacao
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var queryParamTurmas = string.Empty;
 
-            if (request.CodigosDeTurmas != null && request.CodigosDeTurmas.Any())
+            if (request.CodigosDeTurmas.NaoEhNulo() && request.CodigosDeTurmas.Any())
             {
                 var codigosTurmas = String.Join("&turmas=", request.CodigosDeTurmas);
                 queryParamTurmas = $"?turmas={codigosTurmas}";
@@ -37,7 +39,18 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<ComponenteCurricularDto>>(json);
+                var componenteCurricularEol = JsonConvert.DeserializeObject<List<ComponenteCurricularEol>>(json);
+
+                var componentesCurricularesSgp = await mediator.Send(new ObterInfoPedagogicasComponentesCurricularesPorIdsQuery(componenteCurricularEol.ObterCodigos()));
+                componenteCurricularEol.PreencherInformacoesPegagogicasSgp(componentesCurricularesSgp);
+                return componenteCurricularEol.Select(cc => new ComponenteCurricularDto()
+                {
+                    Codigo = cc.Codigo.ToString(),
+                    Descricao = cc.Descricao,
+                    LancaNota = cc.LancaNota,
+                    Regencia = cc.Regencia,
+                    TerritorioSaber = cc.TerritorioSaber
+                });
             }
             else throw new NegocioException("Não foi possível obter Componentes Curriculares.");
 

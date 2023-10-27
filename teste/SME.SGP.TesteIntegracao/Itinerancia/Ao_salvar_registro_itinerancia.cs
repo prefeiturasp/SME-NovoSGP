@@ -288,11 +288,11 @@ namespace SME.SGP.TesteIntegracao.Itinerancia
                 AnoLetivo = 2023
             } ;
 
-            if (ObjetivosVisita != null)
+            if (ObjetivosVisita.NaoEhNulo())
                 itinerancia.ObjetivosVisita = ObjetivosVisita;
-            if (Questoes != null)
+            if (Questoes.NaoEhNulo())
                 itinerancia.Questoes = Questoes;
-            if (Alunos != null)
+            if (Alunos.NaoEhNulo())
                 itinerancia.Alunos = Alunos;
 
             return itinerancia;

@@ -14,10 +14,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
     public class Ao_cadastrar_editar_encaminhamento_naapa_itinerancia : EncaminhamentoNAAPATesteBase
     {
-        private const long ID_ATENDIMENTO_NAO_PRESENCIAL = 12;
-        private const long ID_GRUPO_DE_TRABALHO_NAAPA = 13;
-        private const long ID_ACOES_LUDICAS = 14;
-
         public Ao_cadastrar_editar_encaminhamento_naapa_itinerancia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

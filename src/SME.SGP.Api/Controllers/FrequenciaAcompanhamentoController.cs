@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace SME.SGP.Api.Controllers
         {
             var consulta = await  useCase.Executar(filtro);
 
-            if (consulta == null)
+            if (consulta.EhNulo())
                 return NoContent();
             
             return Ok(consulta);
