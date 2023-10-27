@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
             await mediator.Send(new PublicarFilaApiEOLCommand(RotasRabbitApiEOL.RotaManutencaoUsuarioABAECoreSSO,
-                cadastroAcessoABAE));
+                cadastroAcessoABAE.toManutencaoUsuarioABAECoreSSOAPIEolDto(await mediator.Send(new ObterUeCodigoPorIdQuery(cadastroAcessoABAE.UeId)))));
 
             return true;
         }
