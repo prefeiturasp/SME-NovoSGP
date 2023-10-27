@@ -149,6 +149,11 @@ namespace SME.SGP.Infra
             return valor > 0;
         }
         
+        public static bool EhMaiorQueZero(this int valor)
+        {
+            return valor > 0;
+        }
+        
         public static bool EhMenorQueZero(this long valor)
         {
             return valor < 0;

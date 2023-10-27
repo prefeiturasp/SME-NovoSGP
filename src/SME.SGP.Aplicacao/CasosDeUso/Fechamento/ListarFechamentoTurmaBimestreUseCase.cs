@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             if (tipoNotaTurma.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
 
-            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), semestre.HasValue ? semestre.Value : 0));
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeCodigo.ObterModalidadeTipoCalendario(), semestre.HasValue ? semestre.Value : 0));
             if (tipoCalendario.EhNulo())
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 

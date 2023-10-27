@@ -766,26 +766,6 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<DateTime>(query, new { dataReferencia, tipoCalendarioId, quantidadeDias });
         }
 
-        public bool UsuarioPodeCriarAulaNaUeTurmaEModalidade(Aula aula, ModalidadeTipoCalendario modalidade)
-        {
-            var query = new StringBuilder("select 1 from v_abrangencia where turma_id = @turmaId and ue_codigo = @ueId ");
-
-            if (modalidade == ModalidadeTipoCalendario.EJA)
-            {
-                query.AppendLine($"and modalidade_codigo = {(int)Modalidade.EJA} ");
-            }
-            else
-            {
-                query.AppendLine($"and (modalidade_codigo = {(int)Modalidade.Fundamental} or modalidade_codigo = {(int)Modalidade.Medio}) ");
-            }
-
-            return database.Conexao.QueryFirstOrDefault<bool>(query.ToString(), new
-            {
-                aula.TurmaId,
-                aula.UeId
-            });
-        }
-
         private static void MontaCabecalho(StringBuilder query)
         {
             query.AppendLine("SELECT a.id,");

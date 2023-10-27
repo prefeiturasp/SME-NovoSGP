@@ -88,7 +88,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             await CriaItensComunsEja(false);
         }
 
-        public async Task CriaItensComunsEja(bool incluirAdm)
+        public async Task CriaItensComunsEja(bool incluirAdm, int semestre = 2)
         {
             CriarClaimRegenciaEja(incluirAdm);
 
@@ -114,7 +114,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Historica = true,
                 ModalidadeCodigo = Modalidade.EJA,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                Semestre = 2,
+                Semestre = semestre,
                 Nome = "Turma Nome 1",
                 TipoTurno = 2
             });
@@ -130,7 +130,8 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,
-                Migrado = false
+                Migrado = false,
+                Semestre = semestre
             });
 
             await _teste.InserirNaBase(new Dominio.Aula
