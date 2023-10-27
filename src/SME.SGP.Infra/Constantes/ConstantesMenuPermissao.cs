@@ -128,7 +128,7 @@
         public const string ROTA_GESTAO_COMUNICADOS = "/gestao/comunicados";
         public const string ROTA_GESTAO_COMUNICADOS_NOVO = "/gestao/comunicados/novo";
         public const string ROTA_GESTAO_OCORRENCIAS = "/gestao/ocorrencias";
-        public const string ROTA_GESTAO_CADASTRO_DE_ABAE = "/abae";
+        public const string ROTA_GESTAO_CADASTRO_DE_ABAE = "/cadastro-abae";
         public const string ROTA_INFORMES = "/informes";
         public const string ROTA_AEE_ENCAMINHAMENTO = "/aee/encaminhamento";
         public const string ROTA_AEE_PLANO = "/aee/plano";
