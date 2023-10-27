@@ -16,11 +16,13 @@ namespace SME.SGP.Aplicacao
         {
             var cadastroAcessoABAE = await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(id));
 
+            var ue = await mediator.Send(new ObterUePorIdQuery(cadastroAcessoABAE.UeId));
+
             return new CadastroAcessoABAEDto()
             {
                 Id = cadastroAcessoABAE.Id,
-                DreCodigo = cadastroAcessoABAE.DreCodigo,
-                UeCodigo = cadastroAcessoABAE.UeCodigo,
+                DreCodigo = ue.Dre.CodigoDre,
+                UeCodigo = ue.CodigoUe,
                 UeId = cadastroAcessoABAE.UeId,
                 Nome = cadastroAcessoABAE.Nome,
                 Cpf = cadastroAcessoABAE.Cpf,
