@@ -51,23 +51,23 @@ namespace SME.SGP.Dados.Repositorios
             {
                 foreach (var itemAula in aulas.Where(a => a.aula.Id == 0))
                 {
-                    writer.StartRow();
-                    writer.Write(itemAula.aula.DataAula);
-                    writer.Write(itemAula.aula.DisciplinaId);
-                    writer.Write(itemAula.aula.Quantidade);
-                    writer.Write((int)itemAula.aula.RecorrenciaAula, NpgsqlDbType.Integer);
-                    writer.Write((int)itemAula.aula.TipoAula, NpgsqlDbType.Integer);
-                    writer.Write(itemAula.aula.TipoCalendarioId);
-                    writer.Write(itemAula.aula.TurmaId);
-                    writer.Write(itemAula.aula.UeId);
-                    writer.Write(itemAula.aula.ProfessorRf);
-                    writer.Write(itemAula.aula.CriadoEm);
-                    writer.Write(itemAula.aula.CriadoPor.NaoEhNulo() ? itemAula.aula.CriadoPor : "Sistema");
-                    writer.Write(itemAula.aula.CriadoRF.NaoEhNulo() ? itemAula.aula.CriadoRF : "Sistema");
+                   await writer.StartRowAsync();
+                   await writer.WriteAsync(itemAula.aula.DataAula);
+                   await writer.WriteAsync(itemAula.aula.DisciplinaId);
+                   await writer.WriteAsync(itemAula.aula.Quantidade);
+                   await writer.WriteAsync((int)itemAula.aula.RecorrenciaAula, NpgsqlDbType.Integer);
+                   await writer.WriteAsync((int)itemAula.aula.TipoAula, NpgsqlDbType.Integer);
+                   await writer.WriteAsync(itemAula.aula.TipoCalendarioId);
+                   await writer.WriteAsync(itemAula.aula.TurmaId);
+                   await writer.WriteAsync(itemAula.aula.UeId);
+                   await writer.WriteAsync(itemAula.aula.ProfessorRf);
+                   await writer.WriteAsync(itemAula.aula.CriadoEm);
+                   await writer.WriteAsync(itemAula.aula.CriadoPor != null ? itemAula.aula.CriadoPor : "Sistema");
+                   await writer.WriteAsync(itemAula.aula.CriadoRF != null ? itemAula.aula.CriadoRF : "Sistema");
                 }
-                writer.Complete();
+               await writer.CompleteAsync();
             }
-
+            
             var idsAulasAtualizacao = aulas
                 .Where(a => a.aula.Id > 0)
                 .Select(a => a.aula.Id)
