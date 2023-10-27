@@ -1073,6 +1073,13 @@ namespace SME.SGP.TesteIntegracao
                 DreId = 1,
                 Nome = UE_NOME_1,
             });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = codigoUe,
+                DreId = 1,
+                Nome = UE_NOME_2,
+            });
         }
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
         {
