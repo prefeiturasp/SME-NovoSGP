@@ -117,7 +117,7 @@ namespace SME.SGP.Aplicacao
             }
 
             if (aulasACriar.Any())
-                contadorAulasCriadas = await CriarAulas(aulasACriar, contadorAulasCriadas);
+                contadorAulasCriadas = CriarAulas(aulasACriar, contadorAulasCriadas);
 
             if (idsAulasAExcluir.Any())
             {                
@@ -148,9 +148,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<int> CriarAulas(List<(Aula aula, long? planoAulaId)> aulasACriar, int contadorAulasCriadas)
+        private int CriarAulas(List<(Aula aula, long? planoAulaId)> aulasACriar, int contadorAulasCriadas)
         {
-            await repositorioAula.SalvarVarias(aulasACriar);
+            repositorioAula.SalvarVarias(aulasACriar);
             contadorAulasCriadas = contadorAulasCriadas + aulasACriar.Count;
             aulasACriar.Clear();
             return contadorAulasCriadas;
