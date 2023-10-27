@@ -570,6 +570,10 @@ namespace SME.SGP.IoC
             //Informativo
             services.TryAddScoped<IRepositorioInformativo, RepositorioInformativo>();
             services.TryAddScoped<IRepositorioInformativoPerfil, RepositorioInformativoPerfil>();
+            
+            //CadastroAcessoABAE
+            services.TryAddScoped<IRepositorioCadastroAcessoABAE, RepositorioCadastroAcessoABAE>();
+            services.TryAddScoped<IRepositorioCadastroAcessoABAEConsulta, RepositorioCadastroAcessoABAEConsulta>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1340,6 +1344,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirInformesUseCase, ExcluirInformesUseCase>();
             services.TryAddScoped<IObterInformeUseCase, ObterInformeUseCase>();
             services.TryAddScoped<IObterInformesPorFiltroUseCase, ObterInformesPorFiltroUseCase>();
+            
+            services.TryAddScoped<ISalvarCadastroAcessoABAEUseCase, SalvarCadastroAcessoABAEUseCase>();
+            services.TryAddScoped<IBuscaCepUseCase, BuscaCepUseCase>();
+            services.TryAddScoped<IExcluirCadastroAcessoABAEUseCase, ExcluirCadastroAcessoABAEUseCase>();
+            services.TryAddScoped<IObterCadastroAcessoABAEUseCase, ObterCadastroAcessoABAEUseCase>();
+            services.TryAddScoped<IObterPaginadoCadastroAcessoABAEUseCase, ObterPaginadoCadastroAcessoABAEUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
