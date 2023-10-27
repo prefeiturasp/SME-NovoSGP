@@ -62,8 +62,8 @@ namespace SME.SGP.Dados.Repositorios
                    await writer.WriteAsync(itemAula.aula.UeId);
                    await writer.WriteAsync(itemAula.aula.ProfessorRf);
                    await writer.WriteAsync(itemAula.aula.CriadoEm);
-                   await writer.WriteAsync(itemAula.aula.CriadoPor != null ? itemAula.aula.CriadoPor : "Sistema");
-                   await writer.WriteAsync(itemAula.aula.CriadoRF != null ? itemAula.aula.CriadoRF : "Sistema");
+                   await writer.WriteAsync(itemAula.aula.CriadoPor.NaoEhNulo() ? itemAula.aula.CriadoPor : "Sistema");
+                   await writer.WriteAsync(itemAula.aula.CriadoRF.NaoEhNulo() ? itemAula.aula.CriadoRF : "Sistema");
                 }
                await writer.CompleteAsync();
             }
