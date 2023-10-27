@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioComuns.NAO_EH_PERMITIDO_ALTERACAO_UE_POS_CADASTRO);
 
             if (cadastroAcessoABAEDto.Id.EhIgualZero() &&
-                (await mediator.Send(new ExisteCadastroAcessoABAEPorCpfQuery(cadastroAcessoABAEDto.Cpf))))
+                (await mediator.Send(new ExisteCadastroAcessoABAEPorCpfQuery(cadastroAcessoABAEDto.Cpf, cadastroAcessoABAEDto.UeId))))
                 throw new NegocioException(string.Format(
                     MensagemNegocioComuns.JA_EXISTE_CADASTRO_ACESSO_ABAR_PARA_ESSE_CPF, cadastroAcessoABAEDto.Cpf));
 

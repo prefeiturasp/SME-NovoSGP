@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         
         public async Task<bool> Handle(ExisteCadastroAcessoABAEPorCpfQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCadastroAcessoABAEConsulta.ExisteCadastroAcessoABAEPorCpf(request.Cpf);
+            return await repositorioCadastroAcessoABAEConsulta.ExisteCadastroAcessoABAEPorCpf(request.Cpf, request.UeId);
         }
     }
 }
