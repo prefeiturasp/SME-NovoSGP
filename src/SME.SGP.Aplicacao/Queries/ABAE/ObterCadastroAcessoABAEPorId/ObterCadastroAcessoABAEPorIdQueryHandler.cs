@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         
         public async Task<CadastroAcessoABAE> Handle(ObterCadastroAcessoABAEPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCadastroAcessoABAEConsulta.ObterCompletoPorId(request.Id);
+            return repositorioCadastroAcessoABAEConsulta.ObterPorId(request.Id);
         }
     }
 }
