@@ -52,5 +52,7 @@ namespace SME.SGP.Infra
         public string Estado { get; set; }
         
         public bool Excluido { get; set; }
+        public string UeCodigo { get; set; }
+        public string DreCodigo { get; set; }
     }
 }
