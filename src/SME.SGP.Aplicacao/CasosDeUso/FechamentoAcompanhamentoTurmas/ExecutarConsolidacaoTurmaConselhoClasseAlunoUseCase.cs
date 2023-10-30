@@ -86,13 +86,14 @@ namespace SME.SGP.Aplicacao
 
             if (!filtro.Inativo && componentesComNotaFechamentoOuConselho.Any())
             {
-                
-                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+
                 if (turma.ModalidadeCodigo != Modalidade.Fundamental)
                 {
+                    var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
                     if (codigosComplementares.Any())
                         turmasCodigos.AddRange(codigosComplementares);
                 }
+
                 var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
                 if (componentesDaTurmaES.NaoEhNulo() && componentesDaTurmaES.Any())

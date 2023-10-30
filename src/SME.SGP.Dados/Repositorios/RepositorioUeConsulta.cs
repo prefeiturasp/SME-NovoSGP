@@ -318,7 +318,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre on dre.id = ue.dre_id
                         where ue.id = @id";
 
-            return await contexto.QueryFirstAsync<Ue>(query, new { id });
+            return await contexto.QueryFirstOrDefaultAsync<Ue>(query, new { id });
         }
 
         public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)

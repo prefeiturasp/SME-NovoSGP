@@ -143,7 +143,7 @@ namespace SME.SGP.Dados.Repositorios
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
                         fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
                     }
-                    
+
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
 
                     fechamentoTurmaDisciplinaLista.AdicionarNota(fechamentoNota);
@@ -162,7 +162,7 @@ namespace SME.SGP.Dados.Repositorios
                     where ft.turma_id = @turmaId and 
                         ftd.disciplina_id = @componenteCurricularId and 
                         ft.periodo_escolar_id = @periodoEscolarId  ");
-            
+
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { turmaId, componenteCurricularId, periodoEscolarId });
         }
 

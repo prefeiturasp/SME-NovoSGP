@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
                         var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
 
                     if (planoAnual.EhNulo())
-                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
+                        planoAnual = await MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
 
                         planoAnual.Descricao = planoAnualOrigem.Descricao;
                         await Salvar(planoCopia, planoAnual, bimestreAtual);
@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PlanoAnualCompletoDto>> Salvar(PlanoAnualDto planoAnualDto)
         {
-            var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
+            var usuarioAtual = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
             {
                 throw new NegocioException("Não foi possível obter o RF do usuário.");
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                         if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)
                             throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                     }
-                    planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
+                    planoAnual = await MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
                     await Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
                 }
                 unitOfWork.PersistirTransacao();
@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao, bool objetivosAprendizagemOpcionais)
+        private async Task<PlanoAnual> MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao, bool objetivosAprendizagemOpcionais)
         {
             if (planoAnual.EhNulo())
             {

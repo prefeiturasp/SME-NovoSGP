@@ -119,6 +119,10 @@ namespace SME.SGP.Infra
         {
             return string.IsNullOrEmpty(NomeSocialAluno) ? NomeAluno : NomeSocialAluno;
         }
+        public bool MostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
+        {
+            return EstaAtivo(dataAula, periodoInicio) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
+        }
 
         public bool PodeEditarNotaConceito()
         {

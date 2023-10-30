@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -7,7 +6,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,12 +28,14 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
             var disciplinasDto = new List<DisciplinaDto>();
+
             IEnumerable<DisciplinaResposta> disciplinas = new List<DisciplinaResposta>();
             IEnumerable<DisciplinaResposta> disciplinasCJ = new List<DisciplinaResposta>();
 
             if (request.PerfilAtual == Perfis.PERFIL_CJ || request.PerfilAtual == Perfis.PERFIL_CJ_INFANTIL)
             {
-                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(request.TurmaModalidade, string.Empty, string.Empty, 0, request.LoginAtual, string.Empty, true, string.Empty, request.TurmasCodigo);
+                var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(request.TurmaModalidade, string.Empty,
+                    string.Empty, 0, request.LoginAtual, string.Empty, true, string.Empty, request.TurmasCodigo);
 
                 if (atribuicoes.NaoEhNulo() && atribuicoes.Any())
                 {

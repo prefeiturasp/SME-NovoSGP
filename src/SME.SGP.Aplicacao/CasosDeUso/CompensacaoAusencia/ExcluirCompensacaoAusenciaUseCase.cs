@@ -1,5 +1,8 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -11,10 +14,12 @@ namespace SME.SGP.Aplicacao
     public class ExcluirCompensacaoAusenciaUseCase : AbstractUseCase, IExcluirCompensacaoAusenciaUseCase
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IRepositorioCache repositorioCache;
 
-        public ExcluirCompensacaoAusenciaUseCase(IMediator mediator, IUnitOfWork ofWork) : base(mediator)
+        public ExcluirCompensacaoAusenciaUseCase(IMediator mediator, IUnitOfWork ofWork, IRepositorioCache repositorioCache) : base(mediator)
         {
             unitOfWork = ofWork ?? throw new ArgumentNullException(nameof(ofWork));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<bool> Executar(long[] compensacoesIds)
@@ -89,9 +94,10 @@ namespace SME.SGP.Aplicacao
 
                     if (alunosDaCompensacao.Any())
                     {
+                        await AtualizarCacheCompensacaoAusenciaTurma(turma.CodigoTurma, periodo.Bimestre, compensacaoExcluir.DisciplinaId, compensacoesAlunosExcluir);
+
                         var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno);
 
-                        Task.Delay(TimeSpan.FromSeconds(5)).Wait();
                         await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos,
                             periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                     }
@@ -147,6 +153,46 @@ namespace SME.SGP.Aplicacao
             }
 
             return periodo;
+        }
+
+        private async Task AtualizarCacheCompensacaoAusenciaTurma(string codigoTurma, int bimestre, string componenteCurricularId, List<CompensacaoAusenciaAluno> compensacaoAusenciaAlunosExcluir)
+        {
+            var valorNomeChave = string.Format(NomeChaveCache.NOME_CHAVE_COMPENSACAO_TURMA_BIMESTRE, codigoTurma, bimestre);
+
+            var cacheCompensacaoTurma = await repositorioCache
+                .ObterAsync(valorNomeChave);
+
+            if (string.IsNullOrEmpty(cacheCompensacaoTurma))
+                return;
+
+            var compensacoesTurma = JsonConvert
+                .DeserializeObject<List<CompensacaoAusenciaAlunoCalculoFrequenciaDto>>(cacheCompensacaoTurma);
+
+            var compensacoesAtualizacao = from ce in compensacaoAusenciaAlunosExcluir
+                                          join c in compensacoesTurma.Where(ct => ct.ComponenteCurricularId == componenteCurricularId)
+                                          on ce.CodigoAluno equals c.AlunoCodigo
+                                          select new { compensacaoAtualizar = c, compensacaoExclusao = ce };
+
+            foreach (var compensacaoAtualizarAtual in compensacoesAtualizacao)
+            {
+                var saldoCompensacoes = compensacaoAtualizarAtual.compensacaoAtualizar.Compensacoes - compensacaoAtualizarAtual.compensacaoExclusao.QuantidadeFaltasCompensadas;
+                if (saldoCompensacoes < 1)
+                {
+                    compensacoesTurma.Remove(compensacaoAtualizarAtual.compensacaoAtualizar);
+                    continue;
+                }
+                compensacaoAtualizarAtual.compensacaoAtualizar.Compensacoes = saldoCompensacoes;
+            }
+
+            if (compensacoesTurma.Any())
+            {
+                await mediator
+                    .Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand(codigoTurma, bimestre, compensacoesTurma));
+                return;
+            }
+
+
+            await repositorioCache.RemoverAsync(valorNomeChave);
         }
     }
 }

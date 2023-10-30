@@ -470,8 +470,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaFechamentoAulaConsulta, RepositorioPendenciaFechamentoAulaConsulta>();
             services.TryAddScoped<IRepositorioPendenciaFechamentoAtividadeAvaliativa, RepositorioPendenciaFechamentoAtividadeAvaliativa>();
             services.TryAddScoped<IRepositorioPendenciaFechamentoAtividadeAvaliativaConsulta, RepositorioPendenciaFechamentoAtividadeAvaliativaConsulta>();
-            services.TryAddScoped<IRepositorioPendenciaAulaReposicaoConsulta, RepositorioPendenciaAulaReposicaoConsulta>();
-
+            
             // Itinerancia
             services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
             services.TryAddScoped<IRepositorioItineranciaAluno, RepositorioItineranciaAluno>();

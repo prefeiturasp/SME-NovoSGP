@@ -4,9 +4,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
@@ -59,11 +58,11 @@ namespace SME.SGP.Dados
                 codigoAlunos,
                 bimestre,
                 tipoFrequenciaFalta,
-				professor
+                professor
             };
 
             return await database.Conexao.QueryAsync<RegistroFaltasNaoCompensadaDto>(query, parametros);
-        }
+        }      
 
         public async Task<IEnumerable<CompensacaoDataAlunoDto>> ObterAusenciaParaCompensacaoPorAlunos(string[] codigosAlunos, string[] disciplinasId, int bimestre, string turmacodigo, string professor = null)
         {
@@ -101,8 +100,7 @@ namespace SME.SGP.Dados
                                             group by ca.id
                                             having coalesce(sum(caa.qtd_faltas_compensadas) filter (where not caa.excluido),0)  = 0 ");
 
-			return await database.Conexao.QueryAsync<long>(query.ToString(), new { ids });
-		}
-
-	}
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { ids });
+        }       
+    }
 }
