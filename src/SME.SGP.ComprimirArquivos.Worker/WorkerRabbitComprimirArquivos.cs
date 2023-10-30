@@ -121,7 +121,6 @@ namespace SME.SGP.ComprimirArquivos.Worker
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
             var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
-            
             var rota = ea.RoutingKey;
 
             var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);

@@ -9,7 +9,7 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.AEE.Worker
 {
-    public class WorkerRabbitAEE : WorkerRabbitMQBase
+    public class WorkerRabbitAEE : WorkerRabbitAplicacao
     {
         public WorkerRabbitAEE(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
@@ -23,7 +23,7 @@ namespace SME.SGP.AEE.Worker
         {
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpAEE.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para registro de conclusão do Encaminhamento AEE", typeof(INotificacaoConclusaoEncaminhamentoAEEUseCase)));
             Comandos.Add(RotasRabbitSgpAEE.RotaNotificacaoEncerramentoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para encerramento do Encaminhamento AEE", typeof(INotificacaoEncerramentoEncaminhamentoAEEUseCase)));
