@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -37,6 +37,9 @@ namespace SME.SGP.Aplicacao
             }
 
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(filtroTurmaDto.Modalidade.Value, filtroTurmaDto.AnoLetivo, filtroTurmaDto.Semestre.HasValue ? filtroTurmaDto.Semestre.Value :  1));
+
+            if (!periodoEscolar.Any())
+                throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
 
             IEnumerable<long> turmasAbrangencia = null;
 
