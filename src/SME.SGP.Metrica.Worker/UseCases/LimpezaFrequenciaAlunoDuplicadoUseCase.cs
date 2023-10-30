@@ -23,7 +23,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
                                                                  registroDuplicado.AlunoCodigo,
                                                                  registroDuplicado.Bimestre,
                                                                  registroDuplicado.Tipo,
-                                                                 registroDuplicado.ComponenteCurricularId.ToString(),
+                                                                 registroDuplicado.ComponenteCurricularId,
                                                                  registroDuplicado.UltimoId);
 
             return true;

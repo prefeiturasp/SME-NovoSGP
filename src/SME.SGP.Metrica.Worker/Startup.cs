@@ -47,6 +47,7 @@ namespace SME.SGP.Metrica.Worker
             RegistrarMapeamentos();
             RegistrarTelemetria(services);
             RegistrarRabbitMQ(services);
+            RegistrarConsumoFilas(services);
         }
 
         private void RegistrarElasticSearch(IServiceCollection services)
@@ -73,6 +74,14 @@ namespace SME.SGP.Metrica.Worker
             services.AddPolicies();
             services.ConfigurarRabbit(Configuration);
             services.ConfigurarRabbitParaLogs(Configuration);
+        }
+
+        private void RegistrarConsumoFilas(IServiceCollection services)
+        {
+            services.AddOptions<ConsumoFilasOptions>()
+                .Bind(Configuration.GetSection("ConsumoFilas"), c => c.BindNonPublicProperties = true);
+
+            services.AddSingleton<ConsumoFilasOptions>();
         }
 
         private void RegistrarMapeamentos()

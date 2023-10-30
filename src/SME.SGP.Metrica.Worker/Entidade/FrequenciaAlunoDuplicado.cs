@@ -7,7 +7,7 @@ namespace SME.SGP.Metrica.Worker.Entidade
         public string TurmaCodigo { get; set; }
         public string AlunoCodigo { get; set; }
         public int Bimestre { get; set; }
-        public long ComponenteCurricularId { get; set; }
+        public string ComponenteCurricularId { get; set; }
         public int Tipo { get; set; }
         public long UeId { get; set; }
         public int Quantidade { get; set; }

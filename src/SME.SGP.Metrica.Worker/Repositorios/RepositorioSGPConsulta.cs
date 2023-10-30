@@ -25,7 +25,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
             => database.Conexao.QueryAsync<long>("select id from turma where ano_letivo = extract(year from NOW()) and ue_id = @ueId", new { ueId });
 
         public Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades)
-            => database.Conexao.QueryAsync<long>("select id from turma where ano_letivo = extract(year from NOW()) and modalidade_codigo = @modalidades order by id", new { modalidades });
+            => database.Conexao.QueryAsync<long>("select id from turma where ano_letivo = extract(year from NOW()) and modalidade_codigo = ANY(@modalidades) order by id", new { modalidades });
 
         public Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId)
             => database.Conexao.QueryAsync<ConselhoClasseAlunoDuplicado>(
@@ -148,7 +148,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<ConsolidacaoConselhoClasseNotaNulos>> ObterConsolidacaoCCNotasNulos()
             => database.Conexao.QueryAsync<ConsolidacaoConselhoClasseNotaNulos>(
-                @"select t.turma_id as TurmaId, cccatn.bimestre, cccat.aluno_codigo as AlunoCodigo, cccatn.componente_curricular_id as ComponenteCurricularId
+				@"select cccatn.id as Id, t.turma_id as TurmaCodigo, cccatn.bimestre, cccat.aluno_codigo as AlunoCodigo, cccatn.componente_curricular_id as ComponenteCurricularId
 			        from consolidado_conselho_classe_aluno_turma_nota cccatn 
 			       inner join consolidado_conselho_classe_aluno_turma cccat on cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id  
 			       inner join turma t on t.id = cccat.turma_id  
@@ -168,7 +168,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 			    and t.ano_letivo = extract(year from NOW())
 			    and not cccat.excluido
 			    group by cccat.aluno_codigo, cccat.turma_id 
-			    having count(cccat.id) > 1");
+			    having count(cccat.id) > 1", new { ueId });
 
         public Task<IEnumerable<ConsolidacaoCCNotaDuplicado>> ObterConsolidacaoCCNotasDuplicados()
             => database.Conexao.QueryAsync<ConsolidacaoCCNotaDuplicado>(
@@ -343,7 +343,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<FrequenciaAlunoDuplicado>> ObterFrequenciaAlunoDuplicados(long ueId)
 			=> database.Conexao.QueryAsync<FrequenciaAlunoDuplicado>(
-				@"select fa.turma_id as TurmaId, fa.codigo_aluno as AlunoCodigo, 
+				@"select fa.turma_id as TurmaCodigo, fa.codigo_aluno as AlunoCodigo, 
 						fa.bimestre, fa.disciplina_id as ComponenteCurricularId, 
 						fa.tipo, t.ue_id as UeId,
 						count(fa.id) Quantidade, 
