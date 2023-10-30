@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"erro ao obter as turmas com componentes da consolidação do conselho de classe", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message, "SGP", ex.StackTrace, ex.InnerException?.ToString()));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro ao obter as turmas com componentes da consolidação do conselho de classe", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message, "SGP", ex.StackTrace, ex.InnerException?.ToString()));
                 throw;
             }
         }
