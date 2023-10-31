@@ -11,10 +11,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<ParametroQuantidadeUploadImagemDto> Executar(int ano)
+        public async Task<ParametroQuantidadeUploadImagemDto> Executar(int param)
         {
-            var parametroQuantidadeImagemPercursoColetivo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoTurma, ano));
-            var parametroQuantidadeImagemPercursoIndividual = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
+            var parametroQuantidadeImagemPercursoColetivo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoTurma, param));
+            var parametroQuantidadeImagemPercursoIndividual = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(Dominio.TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, param));
 
             var parametroQuantidadeUploadImagem = new ParametroQuantidadeUploadImagemDto();
             
