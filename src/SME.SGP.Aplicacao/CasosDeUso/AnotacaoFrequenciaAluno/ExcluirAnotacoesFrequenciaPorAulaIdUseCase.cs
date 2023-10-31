@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagem)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
-            var filtro = mensagem.ObterObjetoMensagem<FiltroIdDto>();
+            var filtro = param.ObterObjetoMensagem<FiltroIdDto>();
 
             await mediator.Send(new ExcluirAnotacoesFrequencciaDaAulaCommand(filtro.Id));
             return true;
