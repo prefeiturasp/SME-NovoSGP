@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(UsuarioPerfilDto usuarioPerfil)
+        public async Task<bool> Executar(UsuarioPerfilDto param)
         {
-            await mediator.Send(new CarregarAbrangenciaUsuarioCommand(usuarioPerfil.Login, usuarioPerfil.Perfil));
+            await mediator.Send(new CarregarAbrangenciaUsuarioCommand(param.Login, param.Perfil));
             return true;
         }
     }
