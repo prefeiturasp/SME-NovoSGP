@@ -11,10 +11,10 @@ namespace SME.SGP.Aplicacao
         public ObterAlunosPorCodigoEolNomeUseCase(IMediator mediator) : base(mediator)
         {
         }
-        public async Task<PaginacaoResultadoDto<AlunoSimplesDto>> Executar(FiltroBuscaEstudanteDto filtroEstudantes)
+        public async Task<PaginacaoResultadoDto<AlunoSimplesDto>> Executar(FiltroBuscaEstudanteDto param)
         {
             var resultado = new PaginacaoResultadoDto<AlunoSimplesDto>();
-            resultado.Items = await mediator.Send(new ObterAlunosPorCodigoEolNomeQuery(filtroEstudantes));
+            resultado.Items = await mediator.Send(new ObterAlunosPorCodigoEolNomeQuery(param));
             resultado.TotalPaginas = 1;
             resultado.TotalRegistros = resultado.Items.Count();
 
