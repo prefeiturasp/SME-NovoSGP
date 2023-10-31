@@ -14,13 +14,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DiasLetivosCalendarioController : ControllerBase
     {
-        private readonly IComandosDiasLetivos comandosDiasLetivos;
-
-        public DiasLetivosCalendarioController(IComandosDiasLetivos comandosDiasLetivos)
-        {
-            this.comandosDiasLetivos = comandosDiasLetivos ??
-              throw new System.ArgumentNullException(nameof(comandosDiasLetivos));
-        }
 
         [HttpPost]
         [ProducesResponseType(typeof(DiasLetivosDto), 200)]
