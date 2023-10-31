@@ -5,7 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
+
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<ArquivoDto>> Executar(long acompanhamentoSemestreId)
+        public async Task<IEnumerable<ArquivoDto>> Executar(long param)
         {
-            var quantidade = await ObterQuantidadeFotos(acompanhamentoSemestreId);
-            var miniaturas = await mediator.Send(new ObterMiniaturasFotosSemestreAlunoQuery(acompanhamentoSemestreId, quantidade));
+            var quantidade = await ObterQuantidadeFotos(param);
+            var miniaturas = await mediator.Send(new ObterMiniaturasFotosSemestreAlunoQuery(param, quantidade));
 
             return await DownloadMiniaturas(miniaturas);
         }
