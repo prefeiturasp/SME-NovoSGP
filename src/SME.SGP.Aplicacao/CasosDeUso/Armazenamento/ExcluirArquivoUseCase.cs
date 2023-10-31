@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(Guid codigoArquivo)
+        public async Task<bool> Executar(Guid param)
         {
-            var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(codigoArquivo));
+            var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(param));
             if (entidadeArquivo.EhNulo())
               throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
 
@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             
             var extencao = Path.GetExtension(entidadeArquivo.Nome);
 
-            var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = codigoArquivo.ToString() + extencao};
+            var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = param.ToString() + extencao};
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid(), null));
             
             return true;
