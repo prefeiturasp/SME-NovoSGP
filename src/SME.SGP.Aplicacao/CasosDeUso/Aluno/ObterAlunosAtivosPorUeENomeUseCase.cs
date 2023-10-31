@@ -14,14 +14,14 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PaginacaoResultadoDto<AlunoParaAutoCompleteAtivoDto>> Executar(FiltroBuscaEstudantesAtivoDto filtro)
+        public async Task<PaginacaoResultadoDto<AlunoParaAutoCompleteAtivoDto>> Executar(FiltroBuscaEstudantesAtivoDto param)
         {            
             var resultado = new PaginacaoResultadoDto<AlunoParaAutoCompleteAtivoDto>();
-            long alunoCodigo = filtro.AlunoCodigo ?? 0;
+            long alunoCodigo = param.AlunoCodigo ?? 0;
             
             var listaRetorno = new List<AlunoParaAutoCompleteAtivoDto>();
 
-            var listaAlunosEol = await mediator.Send(new ObterAlunosAtivosPorUeENomeQuery(filtro.UeCodigo, filtro.DataReferencia, filtro.AlunoNome, alunoCodigo));
+            var listaAlunosEol = await mediator.Send(new ObterAlunosAtivosPorUeENomeQuery(param.UeCodigo, param.DataReferencia, param.AlunoNome, alunoCodigo));
           
             //TODO: Proteção para caso a sincronização não esteja 100%
             if (listaAlunosEol.Any())
