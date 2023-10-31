@@ -10,18 +10,6 @@
             UeId = ueId;
             CodigoUe = codigoUe;
         }
-
-        public DreUeDto(long dreId)
-        {
-            DreId = dreId;
-        }
-
-        public DreUeDto(long dreId, string codigoUe = "")
-        {
-            DreId = dreId;
-            CodigoUe = codigoUe;
-        }
-
         public long DreId { get; set; }
         public long UeId { get; set; }
         public string CodigoUe { get; set; }
