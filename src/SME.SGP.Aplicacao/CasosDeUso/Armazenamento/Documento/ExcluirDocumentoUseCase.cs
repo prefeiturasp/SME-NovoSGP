@@ -18,17 +18,17 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Executar(long documentoId)
+        public async Task<bool> Executar(long param)
         {
             unitOfWork.IniciarTransacao();
             try
             {
-                var entidadeDocumento = await mediator.Send(new ObterDocumentoPorIdQuery(documentoId));
+                var entidadeDocumento = await mediator.Send(new ObterDocumentoPorIdQuery(param));
 
                 if (entidadeDocumento.EhNulo())
                     throw new NegocioException(MensagemNegocioDocumento.DOCUMENTO_INFORMADO_NAO_EXISTE);
 
-                var documentosArquivos = await mediator.Send(new ObterDocumentosArquivosPorDocumentoIdQuery(documentoId));
+                var documentosArquivos = await mediator.Send(new ObterDocumentosArquivosPorDocumentoIdQuery(param));
 
                 if (documentosArquivos.NaoEhNulo())
                 {
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var arquivoAntigo in arquivosAntigos)
                     {
-                        await mediator.Send(new ExcluirReferenciaArquivoDocumentoPorArquivoIdCommand(documentoId, arquivoAntigo.Id));
+                        await mediator.Send(new ExcluirReferenciaArquivoDocumentoPorArquivoIdCommand(param, arquivoAntigo.Id));
                         await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivoAntigo.Id));
                             
                         var extencao = Path.GetExtension(arquivoAntigo.Nome);
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                await mediator.Send(new ExcluirDocumentoPorIdCommand(documentoId));
+                await mediator.Send(new ExcluirDocumentoPorIdCommand(param));
 
                 unitOfWork.PersistirTransacao();
                 

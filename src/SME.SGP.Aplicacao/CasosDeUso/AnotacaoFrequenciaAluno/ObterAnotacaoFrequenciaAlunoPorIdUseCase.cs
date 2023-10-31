@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
     {
         public ObterAnotacaoFrequenciaAlunoPorIdUseCase(IMediator mediator) : base(mediator) { }
 
-        public async Task<AnotacaoFrequenciaAlunoCompletoDto> Executar(long id)
+        public async Task<AnotacaoFrequenciaAlunoCompletoDto> Executar(long param)
         {
-            var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoPorIdQuery(id));
+            var anotacao = await mediator.Send(new ObterAnotacaoFrequenciaAlunoPorIdQuery(param));
 
             if (anotacao.EhNulo() || anotacao.Excluido)
                 throw new NegocioException("Anotação não encontrada!");

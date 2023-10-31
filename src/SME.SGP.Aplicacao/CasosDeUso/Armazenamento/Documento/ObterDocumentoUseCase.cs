@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
         public ObterDocumentoUseCase(IMediator mediator) : base(mediator)
         { }
 
-        public async Task<ObterDocumentoResumidoDto> Executar(long documentoId)
+        public async Task<ObterDocumentoResumidoDto> Executar(long param)
         {
-            return await mediator.Send(new ObterDocumentoPorIdCompletoQuery(documentoId));
+            return await mediator.Send(new ObterDocumentoPorIdCompletoQuery(param));
         }
     }
 }
