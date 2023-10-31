@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagem)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
-            var avisoDto = mensagem.ObterObjetoMensagem<AtividadeGsaDto>();
+            var avisoDto = param.ObterObjetoMensagem<AtividadeGsaDto>();
 
             await mediator.Send(new ImportarAtividadeGsaCommand(avisoDto));
 
