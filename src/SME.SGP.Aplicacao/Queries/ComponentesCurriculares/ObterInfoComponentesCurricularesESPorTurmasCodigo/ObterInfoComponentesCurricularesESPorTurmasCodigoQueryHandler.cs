@@ -24,7 +24,8 @@ namespace SME.SGP.Aplicacao
             var componentesDaTurma = new List<RetornoConsultaListagemTurmaComponenteDto>();
             foreach (var turma in turmas)
             {
-                componentesDaTurma.AddRange((await mediator.Send(new ObterTurmasComComponentesQuery(turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, turma.CodigoTurma, turma.AnoLetivo, qtdeRegistros:0, qtdeRegistrosIgnorados:0, bimestre: null, turma.ModalidadeCodigo, turma.Semestre, false, string.Empty, turma.Historica, DateTime.Now, string.Empty))).Items);
+                var dataReferenciaInicioAnoLetivo = turma.Historica ? new DateTime(turma.AnoLetivo, 2, 5) : DateTime.Now;
+                componentesDaTurma.AddRange((await mediator.Send(new ObterTurmasComComponentesQuery(turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, turma.CodigoTurma, turma.AnoLetivo, qtdeRegistros:0, qtdeRegistrosIgnorados:0, bimestre: null, turma.ModalidadeCodigo, turma.Semestre, false, string.Empty, turma.Historica, dataReferenciaInicioAnoLetivo, string.Empty))).Items);
             }
 
             var codigosComponentes = componentesDaTurma.Select(x => x.ComponenteCurricularCodigo).Distinct().ToArray();
