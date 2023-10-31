@@ -27,12 +27,12 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<FuncionarioFuncaoExternaDTO>> Handle(ObterFuncionariosFuncoesExternasPorUeFuncoesExternasQuery request, CancellationToken cancellationToken)
         {
 
-            var funcoes = String.Join("&funcoes=", request.FuncoesExternasIds);
+            var funcoes = string.Join("&funcoes=", request.FuncoesExternasIds);
             var listaRetorno = Enumerable.Empty<FuncionarioFuncaoExternaDTO>();
 
             using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
-                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_FUNCOES_EXTERNAS, request.UeCodigo) + $"?funcoes={funcoes}&dreCodigo={request.DreCodigo}");
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_ESCOLAS_FUNCIONARIOS_FUNCOES_EXTERNAS, request.UeCodigo, $"?funcoes={funcoes}&dreCodigo={request.DreCodigo}"));
 
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
