@@ -24,18 +24,18 @@ namespace SME.SGP.Aplicacao
         public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> 
             
             
-            Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
+            Executar(AcompanhamentoAlunoDto param)
         {
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(acompanhamentoAlunoDto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(param.TurmaId));
             var parametroQuantidadeImagens = await ObterQuantidadeLimiteImagens(turma.AnoLetivo);
 
-            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
+            if (param.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
                 throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA, parametroQuantidadeImagens));
             
             if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
             
-            var bimestre = acompanhamentoAlunoDto.Semestre == 1 ? 2 : 4;
+            var bimestre = param.Semestre == 1 ? 2 : 4;
 
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
             var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataAtual, bimestre,turma.AnoLetivo == dataAtual.Year));
@@ -43,17 +43,17 @@ namespace SME.SGP.Aplicacao
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
             
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, turma.AnoLetivo, true,false, turma.CodigoTurma));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(param.AlunoCodigo, turma.AnoLetivo, true,false, turma.CodigoTurma));
             if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
             
             if (aluno.EstaInativo(dataAtual))
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_INATIVO);
             
-            if (acompanhamentoAlunoDto.TextoSugerido)
-                await CopiarArquivo(acompanhamentoAlunoDto);
+            if (param.TextoSugerido)
+                await CopiarArquivo(param);
 
-            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(acompanhamentoAlunoDto);
+            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(param);
 
             return (AcompanhamentoAlunoSemestreAuditoriaDto)acompanhamentoSemestre;
         }
