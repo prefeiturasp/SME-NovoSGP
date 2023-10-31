@@ -10,9 +10,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
-            AlterarAulaRecorrenteCommand command = mensagemRabbit.ObterObjetoMensagem<AlterarAulaRecorrenteCommand>();
+            AlterarAulaRecorrenteCommand command = param.ObterObjetoMensagem<AlterarAulaRecorrenteCommand>();
 
             return await mediator.Send(command);
         }

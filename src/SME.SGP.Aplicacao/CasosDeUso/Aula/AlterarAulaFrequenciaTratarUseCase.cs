@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
-            var filtro = mensagemRabbit.ObterObjetoMensagem<AulaAlterarFrequenciaRequestDto>();
+            var filtro = param.ObterObjetoMensagem<AulaAlterarFrequenciaRequestDto>();
 
             var aulaParaTratar = await mediator.Send(new ObterAulaPorIdQuery(filtro.AulaId));
             if (aulaParaTratar.NaoEhNulo())

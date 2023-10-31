@@ -17,15 +17,15 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator;
         }
 
-        public async Task<PaginacaoResultadoDto<AtribuicaoEsporadicaDto>> Executar(FiltroAtribuicaoEsporadicaDto filtro)
+        public async Task<PaginacaoResultadoDto<AtribuicaoEsporadicaDto>> Executar(FiltroAtribuicaoEsporadicaDto param)
         {
             var lstAtribuicoes = await mediator.Send(
                 new ListarAtribuicaoEsporadicaPorFiltrosQuery(
                     Paginacao,
-                    filtro.AnoLetivo,
-                    filtro.DreId,
-                    filtro.UeId,
-                    filtro.ProfessorRF));
+                    param.AnoLetivo,
+                    param.DreId,
+                    param.UeId,
+                    param.ProfessorRF));
 
             var retorno = new PaginacaoResultadoDto<AtribuicaoEsporadicaDto>
             {

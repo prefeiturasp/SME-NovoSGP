@@ -14,40 +14,40 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<RetornoBaseDto> Executar(PersistirAulaDto aulaDto)
+        public async Task<RetornoBaseDto> Executar(PersistirAulaDto param)
         {
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (aulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
+            if (param.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
                 return await mediator.Send(new AlterarAulaUnicaCommand(usuarioLogado,
-                                                                       aulaDto.Id,
-                                                                       aulaDto.DataAula,
-                                                                       aulaDto.Quantidade,
-                                                                       aulaDto.CodigoTurma,
-                                                                       aulaDto.CodigoComponenteCurricular,
-                                                                       aulaDto.NomeComponenteCurricular,
-                                                                       aulaDto.TipoCalendarioId,
-                                                                       aulaDto.TipoAula,
-                                                                       aulaDto.CodigoUe,
-                                                                       aulaDto.EhRegencia));
+                                                                       param.Id,
+                                                                       param.DataAula,
+                                                                       param.Quantidade,
+                                                                       param.CodigoTurma,
+                                                                       param.CodigoComponenteCurricular,
+                                                                       param.NomeComponenteCurricular,
+                                                                       param.TipoCalendarioId,
+                                                                       param.TipoAula,
+                                                                       param.CodigoUe,
+                                                                       param.EhRegencia));
             }
             else
             {
                 try
                 {
                     await mediator.Send(new IncluirFilaAlteracaoAulaRecorrenteCommand(usuarioLogado,
-                                                                         aulaDto.Id,
-                                                                         aulaDto.DataAula,
-                                                                         aulaDto.Quantidade,
-                                                                         aulaDto.CodigoTurma,
-                                                                         aulaDto.CodigoComponenteCurricular,
-                                                                         aulaDto.NomeComponenteCurricular,
-                                                                         aulaDto.TipoCalendarioId,
-                                                                         aulaDto.TipoAula,
-                                                                         aulaDto.CodigoUe,
-                                                                         aulaDto.EhRegencia,
-                                                                         aulaDto.RecorrenciaAula));
+                                                                         param.Id,
+                                                                         param.DataAula,
+                                                                         param.Quantidade,
+                                                                         param.CodigoTurma,
+                                                                         param.CodigoComponenteCurricular,
+                                                                         param.NomeComponenteCurricular,
+                                                                         param.TipoCalendarioId,
+                                                                         param.TipoAula,
+                                                                         param.CodigoUe,
+                                                                         param.EhRegencia,
+                                                                         param.RecorrenciaAula));
                     return await Task.FromResult(new RetornoBaseDto("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento."));
                 }
                 catch (Exception ex)

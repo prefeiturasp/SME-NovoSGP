@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PaginacaoResultadoDto<DreUeNomeSituacaoABAEDto>> Executar(
-            FiltroDreIdUeIdNomeSituacaoABAEDto filtro)
+            FiltroDreIdUeIdNomeSituacaoABAEDto param)
         {
-            var retorno = await mediator.Send(new ObterPaginadoCadastroAcessoABAEPorFiltroQuery(filtro));
+            var retorno = await mediator.Send(new ObterPaginadoCadastroAcessoABAEPorFiltroQuery(param));
 
             return new PaginacaoResultadoDto<DreUeNomeSituacaoABAEDto>()
             {

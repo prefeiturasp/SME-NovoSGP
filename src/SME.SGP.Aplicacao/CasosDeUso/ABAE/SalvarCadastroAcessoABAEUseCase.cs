@@ -12,55 +12,55 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<CadastroAcessoABAEDto> Executar(CadastroAcessoABAEDto cadastroAcessoABAEDto)
+        public async Task<CadastroAcessoABAEDto> Executar(CadastroAcessoABAEDto param)
         {
-            if (cadastroAcessoABAEDto.Cpf.NaoEhCpfValido())
+            if (param.Cpf.NaoEhCpfValido())
                 throw new NegocioException(MensagemNegocioComuns.CPF_INFORMADO_EH_INVALIDO);
 
-            if (cadastroAcessoABAEDto.Telefone.NaoEhTelefoneValido())
+            if (param.Telefone.NaoEhTelefoneValido())
                 throw new NegocioException(MensagemNegocioComuns.TELEFONE_DEVE_ESTAR_COM_A_SEGUINTE_MASCARA);
 
-            var cadastroAcessoABAE = cadastroAcessoABAEDto.Id.EhMaiorQueZero()
-                ? await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(cadastroAcessoABAEDto.Id))
+            var cadastroAcessoABAE = param.Id.EhMaiorQueZero()
+                ? await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(param.Id))
                 : new CadastroAcessoABAE();
 
-            if (cadastroAcessoABAEDto.Id.EhMaiorQueZero() && !cadastroAcessoABAE.Cpf.Equals(cadastroAcessoABAEDto.Cpf))
+            if (param.Id.EhMaiorQueZero() && !cadastroAcessoABAE.Cpf.Equals(param.Cpf))
                 throw new NegocioException(MensagemNegocioComuns.NAO_EH_PERMITIDO_ALTERACAO_CPF_POS_CADASTRO);
 
-            if (cadastroAcessoABAEDto.Id.EhMaiorQueZero() &&
-                !cadastroAcessoABAE.UeId.Equals(cadastroAcessoABAEDto.UeId))
+            if (param.Id.EhMaiorQueZero() &&
+                !cadastroAcessoABAE.UeId.Equals(param.UeId))
                 throw new NegocioException(MensagemNegocioComuns.NAO_EH_PERMITIDO_ALTERACAO_UE_POS_CADASTRO);
 
-            if (cadastroAcessoABAEDto.Id.EhIgualZero() &&
-                (await mediator.Send(new ExisteCadastroAcessoABAEPorCpfQuery(cadastroAcessoABAEDto.Cpf, cadastroAcessoABAEDto.UeId))))
+            if (param.Id.EhIgualZero() &&
+                (await mediator.Send(new ExisteCadastroAcessoABAEPorCpfQuery(param.Cpf, param.UeId))))
                 throw new NegocioException(string.Format(
-                    MensagemNegocioComuns.JA_EXISTE_CADASTRO_ACESSO_ABAR_PARA_ESSE_CPF, cadastroAcessoABAEDto.Cpf));
+                    MensagemNegocioComuns.JA_EXISTE_CADASTRO_ACESSO_ABAR_PARA_ESSE_CPF, param.Cpf));
 
-            cadastroAcessoABAE.Nome = cadastroAcessoABAEDto.Nome;
-            cadastroAcessoABAE.Email = cadastroAcessoABAEDto.Email;
-            cadastroAcessoABAE.Telefone = cadastroAcessoABAEDto.Telefone;
-            cadastroAcessoABAE.Situacao = cadastroAcessoABAEDto.Situacao;
-            cadastroAcessoABAE.Cep = cadastroAcessoABAEDto.Cep;
-            cadastroAcessoABAE.Endereco = cadastroAcessoABAEDto.Endereco;
-            cadastroAcessoABAE.Numero = cadastroAcessoABAEDto.Numero;
-            cadastroAcessoABAE.Complemento = cadastroAcessoABAEDto.Complemento;
-            cadastroAcessoABAE.Cidade = cadastroAcessoABAEDto.Cidade;
-            cadastroAcessoABAE.Bairro = cadastroAcessoABAEDto.Bairro;
-            cadastroAcessoABAE.Estado = cadastroAcessoABAEDto.Estado;
-            cadastroAcessoABAE.Excluido = cadastroAcessoABAEDto.Excluido;
+            cadastroAcessoABAE.Nome = param.Nome;
+            cadastroAcessoABAE.Email = param.Email;
+            cadastroAcessoABAE.Telefone = param.Telefone;
+            cadastroAcessoABAE.Situacao = param.Situacao;
+            cadastroAcessoABAE.Cep = param.Cep;
+            cadastroAcessoABAE.Endereco = param.Endereco;
+            cadastroAcessoABAE.Numero = param.Numero;
+            cadastroAcessoABAE.Complemento = param.Complemento;
+            cadastroAcessoABAE.Cidade = param.Cidade;
+            cadastroAcessoABAE.Bairro = param.Bairro;
+            cadastroAcessoABAE.Estado = param.Estado;
+            cadastroAcessoABAE.Excluido = param.Excluido;
 
-            if (cadastroAcessoABAEDto.Id.EhIgualZero())
+            if (param.Id.EhIgualZero())
             {
-                cadastroAcessoABAE.UeId = cadastroAcessoABAEDto.UeId;
-                cadastroAcessoABAE.Cpf = cadastroAcessoABAEDto.Cpf;
+                cadastroAcessoABAE.UeId = param.UeId;
+                cadastroAcessoABAE.Cpf = param.Cpf;
             }
 
-            cadastroAcessoABAEDto.Id = await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
+            param.Id = await mediator.Send(new SalvarCadastroAcessoABAECommand(cadastroAcessoABAE));
 
             await mediator.Send(new PublicarFilaApiEOLCommand(RotasRabbitApiEOL.RotaManutencaoUsuarioABAECoreSSO,
                 cadastroAcessoABAE.toManutencaoUsuarioABAECoreSSOAPIEolDto(await mediator.Send(new ObterUeCodigoPorIdQuery(cadastroAcessoABAE.UeId)))));
 
-            return cadastroAcessoABAEDto;
+            return param;
         }
     }
 }
