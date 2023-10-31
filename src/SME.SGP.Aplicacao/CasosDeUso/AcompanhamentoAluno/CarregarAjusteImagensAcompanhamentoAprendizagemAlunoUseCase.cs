@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<bool> Executar(MensagemRabbit mensagem)
+        public async Task<bool> Executar(MensagemRabbit param)
         {
-            var filtro = mensagem.ObterObjetoMensagem<FiltroPaginacaoAjusteImagensRAADto>();
+            var filtro = param.ObterObjetoMensagem<FiltroPaginacaoAjusteImagensRAADto>();
             var pagina = filtro?.Pagina ?? 1;
 
             var registrosAjustar = await repositorio.ObterRAAsParaAjusteRota(pagina);
