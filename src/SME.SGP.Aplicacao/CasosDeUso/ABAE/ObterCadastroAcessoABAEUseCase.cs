@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<CadastroAcessoABAEDto> Executar(long id)
+        public async Task<CadastroAcessoABAEDto> Executar(long param)
         {
-            var cadastroAcessoABAE = await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(id));
+            var cadastroAcessoABAE = await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(param));
 
             var ue = await mediator.Send(new ObterUePorIdQuery(cadastroAcessoABAE.UeId));
 
