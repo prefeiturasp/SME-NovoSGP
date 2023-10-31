@@ -12,13 +12,13 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AcompanhamentoTurmaDto> Executar(FiltroAcompanhamentoTurmaApanhadoGeral filtro)
+        public async Task<AcompanhamentoTurmaDto> Executar(FiltroAcompanhamentoTurmaApanhadoGeral param)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
             if (turma.EhNulo())
                 throw new NegocioException("Turma não encontrada");
 
-            var acompanhamentoTurma = await mediator.Send(new ObterApanhadoGeralPorTurmaIdESemestreQuery(filtro.TurmaId, filtro.Semestre));
+            var acompanhamentoTurma = await mediator.Send(new ObterApanhadoGeralPorTurmaIdESemestreQuery(param.TurmaId, param.Semestre));
 
             return MapearEntidadeParaDTO(acompanhamentoTurma);
         }
