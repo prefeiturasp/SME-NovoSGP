@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AtividadeInfantilDto>> Executar(long aulaId)
+        public async Task<IEnumerable<AtividadeInfantilDto>> Executar(long param)
         {
-            return await mediator.Send(new ObterAtividadesInfantilPorAulaIdQuery(aulaId));
+            return await mediator.Send(new ObterAtividadesInfantilPorAulaIdQuery(param));
         }
     }
 }
