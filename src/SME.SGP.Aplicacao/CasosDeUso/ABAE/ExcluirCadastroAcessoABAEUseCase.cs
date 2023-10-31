@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(long id)
+        public async Task<bool> Executar(long param)
         {
-            var cadastroAcessoABAE = await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(id));
+            var cadastroAcessoABAE = await mediator.Send(new ObterCadastroAcessoABAEPorIdQuery(param));
 
             if (cadastroAcessoABAE.EhNulo())
                 throw new NegocioException(MensagemNegocioComuns.CADASTRO_ACESSO_ABAE_NAO_ENCONTRADO);
