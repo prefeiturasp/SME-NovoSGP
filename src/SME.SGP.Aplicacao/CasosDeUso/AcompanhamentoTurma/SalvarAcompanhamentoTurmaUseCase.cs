@@ -19,12 +19,12 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AcompanhamentoTurma> Executar(AcompanhamentoTurmaDto dto)
+        public async Task<AcompanhamentoTurma> Executar(AcompanhamentoTurmaDto param)
         {
-            if (dto.ApanhadoGeral.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
+            if (param.ApanhadoGeral.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
                 throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
             
-            var acompanhamentoTurma = await MapearAcompanhamentoTurma(dto);
+            var acompanhamentoTurma = await MapearAcompanhamentoTurma(param);
 
             return acompanhamentoTurma;
         }
