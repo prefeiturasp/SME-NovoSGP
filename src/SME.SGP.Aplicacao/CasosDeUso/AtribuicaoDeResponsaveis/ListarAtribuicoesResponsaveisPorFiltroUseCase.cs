@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<IEnumerable<AtribuicaoResponsavelDto>> Executar(AtribuicaoResponsaveisFiltroDto filtroDto)
+        public async Task<IEnumerable<AtribuicaoResponsavelDto>> Executar(AtribuicaoResponsaveisFiltroDto param)
         {
-            return await mediator.Send(new ObterAtribuicaoResponsaveisPorUeTipoQuery(filtroDto.UeCodigo, filtroDto.Tipo));
+            return await mediator.Send(new ObterAtribuicaoResponsaveisPorUeTipoQuery(param.UeCodigo, param.Tipo));
         }
     }
 }
