@@ -13,6 +13,12 @@ namespace SME.SGP.Api.Filtros
         {
             this.sgpContext = sgpContext ?? throw new ArgumentNullException(nameof(sgpContext));
         }
+
+        public void OnActionExecuting(ActionExecutingContext context)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnActionExecuted(ActionExecutedContext context)
         {
             if (sgpContext.NaoEhNulo() && sgpContext.State == System.Data.ConnectionState.Open)
@@ -20,11 +26,6 @@ namespace SME.SGP.Api.Filtros
                 sgpContext.Close();
                 sgpContext.Dispose();
             }
-
-        }
-
-        public void OnActionExecuting(ActionExecutingContext context)
-        {
 
         }
     }
