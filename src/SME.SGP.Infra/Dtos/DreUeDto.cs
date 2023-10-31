@@ -2,8 +2,6 @@
 {
     public class DreUeDto
     {
-        public DreUeDto() { }
-
         public DreUeDto(long dreId, long ueId = 0, string codigoUe = "")
         {
             DreId = dreId;
