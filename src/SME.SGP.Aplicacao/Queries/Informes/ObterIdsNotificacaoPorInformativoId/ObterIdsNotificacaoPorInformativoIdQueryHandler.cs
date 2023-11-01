@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<long>> Handle(ObterIdsNotificacaoPorInformativoIdQuery request, CancellationToken cancellationToken)
         {
-            return repositorio.ObterIdsNotificacoesPorInformeIdAsync(request.InformativoId);
+            return repositorio.ObterIdsNotificacoesPorInformativoIdAsync(request.InformativoId);
         }
     }
 }

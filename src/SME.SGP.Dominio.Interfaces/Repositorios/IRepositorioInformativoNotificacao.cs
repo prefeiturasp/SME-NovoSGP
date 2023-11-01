@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioInformativoNotificacao : IRepositorioBase<InformativoNotificacao>
     {
-        Task<bool> RemoverLogicoPorInformeIdAsync(long informativoId);
-        Task<IEnumerable<long>> ObterIdsNotificacoesPorInformeIdAsync(long informativoId);
+        Task<bool> RemoverLogicoPorInformativoIdAsync(long informativoId);
+        Task<IEnumerable<long>> ObterIdsNotificacoesPorInformativoIdAsync(long informativoId);
     }
 }

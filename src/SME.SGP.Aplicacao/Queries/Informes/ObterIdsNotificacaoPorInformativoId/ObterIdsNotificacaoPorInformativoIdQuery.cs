@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
         public long InformativoId { get; }
     }
 
-    public class ObterIdsNotificacaoPorInformeIdQueryValidator : AbstractValidator<ObterIdsNotificacaoPorInformativoIdQuery>
+    public class ObterIdsNotificacaoPorInformativoIdQueryValidator : AbstractValidator<ObterIdsNotificacaoPorInformativoIdQuery>
     {
-        public ObterIdsNotificacaoPorInformeIdQueryValidator()
+        public ObterIdsNotificacaoPorInformativoIdQueryValidator()
         {
             RuleFor(c => c.InformativoId)
                 .GreaterThan(0)

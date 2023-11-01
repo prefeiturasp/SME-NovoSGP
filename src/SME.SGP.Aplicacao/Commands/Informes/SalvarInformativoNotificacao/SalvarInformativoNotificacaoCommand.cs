@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
         public long NotificacaoId { get; set; }
     }
 
-    public class SalvarInformesNotificacaoCommandValidator : AbstractValidator<SalvarInformativoNotificacaoCommand>
+    public class SalvarInformativoNotificacaoCommandValidator : AbstractValidator<SalvarInformativoNotificacaoCommand>
     {
-        public SalvarInformesNotificacaoCommandValidator()
+        public SalvarInformativoNotificacaoCommandValidator()
         {
             RuleFor(a => a.InformativoId)
                .NotEmpty()

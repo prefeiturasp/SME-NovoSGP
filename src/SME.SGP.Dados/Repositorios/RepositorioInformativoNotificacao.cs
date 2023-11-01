@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<long>> ObterIdsNotificacoesPorInformeIdAsync(long informativoId)
+        public async Task<IEnumerable<long>> ObterIdsNotificacoesPorInformativoIdAsync(long informativoId)
         {
             var query = @$" select notificacao_id
                             from informativo_notificacao 
@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { informativoId });
         }
 
-        public async Task<bool> RemoverLogicoPorInformeIdAsync(long informativoId)
+        public async Task<bool> RemoverLogicoPorInformativoIdAsync(long informativoId)
         {
             var query = @"update informativo_notificacao set excluido = true where informativo_id = @informativoId";
 
