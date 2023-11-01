@@ -14,20 +14,20 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<long>> ObterIdsNotificacoesPorInformeIdAsync(long informeId)
+        public async Task<IEnumerable<long>> ObterIdsNotificacoesPorInformeIdAsync(long informativoId)
         {
             var query = @$" select notificacao_id
                             from informativo_notificacao 
-                            where informativo_id = @informeId and not excluido ";
+                            where informativo_id = @informativoId and not excluido ";
 
-            return await database.Conexao.QueryAsync<long>(query, new { informeId });
+            return await database.Conexao.QueryAsync<long>(query, new { informativoId });
         }
 
-        public async Task<bool> RemoverLogicoPorInformeIdAsync(long informeId)
+        public async Task<bool> RemoverLogicoPorInformeIdAsync(long informativoId)
         {
-            var query = @"update informativo_notificacao set excluido = true where informativo_id = @informeId";
+            var query = @"update informativo_notificacao set excluido = true where informativo_id = @informativoId";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { informeId });
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { informativoId });
         }
     }
 }

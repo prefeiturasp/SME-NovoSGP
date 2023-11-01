@@ -3,23 +3,23 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarInformesNotificacaoCommand : IRequest<long>
+    public class SalvarInformativoNotificacaoCommand : IRequest<long>
     {
-        public SalvarInformesNotificacaoCommand(long informeId, long notificacaoId)
+        public SalvarInformativoNotificacaoCommand(long informativoId, long notificacaoId)
         {
-            InformeId = informeId;
+            InformativoId = informativoId;
             NotificacaoId = notificacaoId;
         }
 
-        public long InformeId { get; set; }
+        public long InformativoId { get; set; }
         public long NotificacaoId { get; set; }
     }
 
-    public class SalvarInformesNotificacaoCommandValidator : AbstractValidator<SalvarInformesNotificacaoCommand>
+    public class SalvarInformesNotificacaoCommandValidator : AbstractValidator<SalvarInformativoNotificacaoCommand>
     {
         public SalvarInformesNotificacaoCommandValidator()
         {
-            RuleFor(a => a.InformeId)
+            RuleFor(a => a.InformativoId)
                .NotEmpty()
                .WithMessage("O id do informativo deve ser informado para o cadastro do vínculo com a notificação.");
 

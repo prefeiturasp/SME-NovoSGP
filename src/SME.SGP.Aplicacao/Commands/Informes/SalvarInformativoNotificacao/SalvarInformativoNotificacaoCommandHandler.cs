@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarInformesNotificacaoCommandHandler : IRequestHandler<SalvarInformesNotificacaoCommand, long>
+    public class SalvarInformativoNotificacaoCommandHandler : IRequestHandler<SalvarInformativoNotificacaoCommand, long>
     {
         private readonly IRepositorioInformativoNotificacao repositorio;
 
-        public SalvarInformesNotificacaoCommandHandler(IRepositorioInformativoNotificacao repositorio)
+        public SalvarInformativoNotificacaoCommandHandler(IRepositorioInformativoNotificacao repositorio)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
-        public async Task<long> Handle(SalvarInformesNotificacaoCommand request, CancellationToken cancellationToken)
+        public async Task<long> Handle(SalvarInformativoNotificacaoCommand request, CancellationToken cancellationToken)
         {
             var informativoNotificacao = new InformativoNotificacao()
             {
-                InformativoId = request.InformeId,
+                InformativoId = request.InformativoId,
                 NotificacaoId = request.NotificacaoId
             };
 
