@@ -36,7 +36,7 @@ namespace SME.SGP.Dominio
         [Display(Name = "NAAPA")]
         NAAPA = 11,
 
-        [Display(Name = "Informativo")]
-        Informativo = 12        
+        [Display(Name = "Customizado")]
+        Customizado = 12        
     }
 }

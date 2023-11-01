@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
                 var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(notificacaoInformativoUsuario.Titulo,
                                                                                     notificacaoInformativoUsuario.Mensagem,
                                                                                     notificacaoInformativoUsuario.UsuarioRf,
-                                                                                    NotificacaoCategoria.Aviso,
-                                                                                    NotificacaoTipo.Informativo,
+                                                                                    NotificacaoCategoria.Informe,
+                                                                                    NotificacaoTipo.Customizado,
                                                                                     notificacaoInformativoUsuario.DreCodigo,
                                                                                     notificacaoInformativoUsuario.UeCodigo));
 
