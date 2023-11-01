@@ -113,6 +113,8 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ExecutarMigracaoRelatorioSemestralPAPPorId, new ComandoRabbit("Executar migração do relatório semestral pap por id", typeof(IExecutarMigracaoRelatorioPAPPorIdUseCase), true));
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoInformativo, new ComandoRabbit("Executar notificação de informativo aos usuários", typeof(IExecutarNotificacaoInformativoUsuariosUseCase), true));
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoInformativoUsuario, new ComandoRabbit("Executar notificação de informativo ao usuário", typeof(IExecutarNotificacaoInformativoUsuarioUseCase), true));
+            Comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoInformativo, new ComandoRabbit("Executar exclusão notificações de informativo aos usuários", typeof(IExecutarExclusaoNotificacaoInformativoUsuariosUseCase), true));
+            Comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoInformativoUsuario, new ComandoRabbit("Executar exclusão notificação de informativo ao usuário", typeof(IExecutarExclusaoNotificacaoInformativoUsuarioUseCase), true));
         }
     }
 }

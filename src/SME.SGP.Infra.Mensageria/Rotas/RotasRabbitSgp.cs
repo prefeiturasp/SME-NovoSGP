@@ -44,6 +44,8 @@
         public const string ExecutarMigracaoRelatorioSemestralPAPPorId = "sgp.executar.migracao.relatorio.semestral.pap.id";
         public const string RotaNotificacaoInformativo = "sgp.notificacao.informativo";
         public const string RotaNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario";
+        public const string RotaExcluirNotificacaoInformativo = "sgp.notificacao.informativo.excluir";
+        public const string RotaExcluirNotificacaoInformativoUsuario = "sgp.notificacao.informativo.usuario.excluir";
 
         #region Relatórios
 
