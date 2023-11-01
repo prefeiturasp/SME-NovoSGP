@@ -9,7 +9,6 @@ namespace SME.SGP.Dados.Mapeamentos
             ToTable("informativo_notificacao");
             Map(c => c.InformativoId).ToColumn("informativo_id");
             Map(c => c.NotificacaoId).ToColumn("notificacao_id");
-            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

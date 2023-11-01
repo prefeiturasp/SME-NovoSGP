@@ -18,14 +18,14 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @$" select notificacao_id
                             from informativo_notificacao 
-                            where informativo_id = @informativoId and not excluido ";
+                            where informativo_id = @informativoId ";
 
             return await database.Conexao.QueryAsync<long>(query, new { informativoId });
         }
 
-        public async Task<bool> RemoverLogicoPorInformativoIdAsync(long informativoId)
+        public async Task<bool> RemoverPorInformativoIdAsync(long informativoId)
         {
-            var query = @"update informativo_notificacao set excluido = true where informativo_id = @informativoId";
+            var query = @"delete from informativo_notificacao where informativo_id = @informativoId";
 
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { informativoId });
         }
