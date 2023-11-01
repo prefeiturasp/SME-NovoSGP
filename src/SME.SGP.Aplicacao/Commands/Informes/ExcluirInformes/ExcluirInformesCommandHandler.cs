@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     await mediator.Send(new ExcluirInformesPerfilsPorIdInformesCommad(request.Id));
+                    await mediator.Send(new ExcluirInformativosNotificacaoPorIdInformativoCommad(request.Id));
                     await repositorio.RemoverAsync(request.Id);
                     unitOfWork.PersistirTransacao();
                 }

@@ -77,6 +77,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarMigracaoRelatorioPAPPorIdUseCase, ExecutarMigracaoRelatorioPAPPorIdUseCase>();
             services.TryAddScoped<IExecutarMigracaoRelatorioPapPorAnoEletivoUseCase, ExecutarMigracaoRelatorioPapPorAnoEletivoUseCase>();
             services.TryAddScoped<IExecutarMigracaoRelatorioSemestralPAPUseCase, ExecutarMigracaoRelatorioSemestralPAPUseCase>();
+
+            services.TryAddScoped<IExecutarNotificacaoInformativoUsuariosUseCase, ExecutarNotificacaoInformativoUsuariosUseCase>();
+            services.TryAddScoped<IExecutarNotificacaoInformativoUsuarioUseCase, ExecutarNotificacaoInformativoUsuarioUseCase>();
         }
     }
 }

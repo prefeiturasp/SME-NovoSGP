@@ -2,7 +2,6 @@ CREATE table IF NOT EXISTS public.informativo_notificacao(
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	informativo_id int8 NOT NULL,
 	notificacao_id int8 NOT NULL,
-	excluido bool NOT NULL DEFAULT false,
 	CONSTRAINT informativo_notificacao_pk PRIMARY KEY (id)
 );
 
