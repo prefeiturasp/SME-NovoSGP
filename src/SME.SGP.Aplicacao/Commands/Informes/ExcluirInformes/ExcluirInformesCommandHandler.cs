@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new ExcluirInformesPerfilsPorIdInformesCommad(request.Id));
                     await mediator.Send(new ExcluirInformativosNotificacaoPorIdInformativoCommad(request.Id));
-                    await repositorio.RemoverAsync(request.Id);
+                    await repositorio.RemoverLogico(request.Id);
                     unitOfWork.PersistirTransacao();
                 }
                 catch (Exception e)

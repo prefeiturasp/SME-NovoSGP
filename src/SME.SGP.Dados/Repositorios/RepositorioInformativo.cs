@@ -46,13 +46,6 @@ namespace SME.SGP.Dados.Repositorios
             return informativo;
         }
 
-        public async Task<bool> RemoverAsync(long id)
-        {
-            var query = @"delete from informativo where id = @id";
-
-            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
-        }
-
         public async Task<PaginacaoResultadoDto<Informativo>> ObterInformesPaginado(InformeFiltroDto filtro, Paginacao paginacao)
         {
             var parametros = new
@@ -146,6 +139,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(filtro.DataEnvioInicio.HasValue ? " AND inf.data_envio BETWEEN @dataEnvioInicio::date AND @dataEnvioFim::date" : string.Empty);
             sql.AppendLine(filtro.Perfis.NaoEhNulo() && filtro.Perfis.Any() ? " AND EXISTS (SELECT 1 FROM informativo_perfil inf_p_i WHERE inf_p_i.codigo_perfil = ANY(@perfils) AND inf_p.informativo_id = inf_p_i.informativo_id)" : string.Empty);
             sql.AppendLine(!string.IsNullOrEmpty(filtro.Titulo) ? " AND upper(f_unaccent(inf.titulo)) LIKE @titulo" : string.Empty);
+            sql.AppendLine(" AND not inf.excluido AND not inf_p.excluido ");
 
             return sql.ToString();
         }

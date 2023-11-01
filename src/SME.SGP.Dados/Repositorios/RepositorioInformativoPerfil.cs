@@ -13,11 +13,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<bool> RemoverPerfisPorInformesIdAsync(long informesId)
+        public async Task<bool> RemoverLogicoPorInformativoIdAsync(long informativoId)
         {
-            var query = @"delete from informativo_perfil where informativo_id = @informesId";
+            var query = @"update informativo_perfil set excluido = true where informativo_id = @informativoId";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { informesId });
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { informativoId });
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<bool> Handle(ExcluirInformativosNotificacaoPorIdInformativoCommad request, CancellationToken cancellationToken)
         {
-            return repositorio.RemoverPorInformativoIdAsync(request.InformativoId);
+            return repositorio.RemoverLogicoPorInformativoIdAsync(request.InformativoId);
         }
     }
 }
