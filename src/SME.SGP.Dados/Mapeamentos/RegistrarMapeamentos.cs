@@ -236,6 +236,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new InformativoMap());
                config.AddMap(new InformativoPerfilMap());
                config.AddMap(new CadastroAcessoABAEMap());
+               config.AddMap(new InformativoNotificacaoMap);
 
                config.ForDommel();
            });
