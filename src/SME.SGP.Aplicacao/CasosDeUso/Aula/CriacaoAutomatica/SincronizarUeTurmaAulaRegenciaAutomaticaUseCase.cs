@@ -25,8 +25,15 @@ namespace SME.SGP.Aplicacao
                     var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadosTurma.TurmaCodigo, dadosTurma.ComponenteCurricularCodigo));
                     var dadosAulaCriada = new DadosAulaCriadaAutomaticamenteDto((dadosTurma.ComponenteCurricularCodigo, dadosTurma.ComponenteCurricularDescricao), dadosCriacao.Modalidade == Modalidade.EJA ? 5 : 1, professorTitular?.ProfessorRf);
                     var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(dadosTurma.TurmaCodigo));
+
+                    if (turma == null)
+                    {
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil, a turma de código {dadosTurma.TurmaCodigo} não foi localizada na base do SGP.", LogNivel.Critico, LogContexto.Aula));
+                        continue;
+                    }
+
                     var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(dadosCriacao.DiasLetivosENaoLetivos, turma, dadosCriacao.TipoCalendarioId, dadosCriacao.DiasForaDoPeriodoEscolar, new string[] { dadosTurma.ComponenteCurricularCodigo }, dadosAulaCriada);
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfantilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
                 }
                 return true;
             }

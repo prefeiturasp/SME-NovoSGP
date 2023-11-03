@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             {
                 mensagem.Pagina += 1;
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.CarregarDadosUeTurmaRegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
             }
 
             return true;
@@ -65,13 +65,20 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await mediator
                 .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(modalidade, anoAtual, semestre));
 
+            if (!(tipoCalendarioId > 0))
+            {
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil/Regência não iniciada pois não há Tipo Calendário cadastrado para {string.Concat(modalidade.ShortName(), semestre > 0 ? $" {semestre}º semestre" : string.Empty)}.", LogNivel.Negocio, LogContexto.Infantil));
+                return false;
+            }
+
             var periodosEscolares = await mediator
-                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));            
 
             if (periodosEscolares.EhNulo() && !periodosEscolares.Any())
             {
                 await mediator
-                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil/Regência não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
                 return false;
             }
 
@@ -88,12 +95,12 @@ namespace SME.SGP.Aplicacao
                 return false;
 
             foreach (var ueCodigo in uesCodigos)
-                await PublicarMensagens(modalidade, turma, anoAtual, tipoCalendarioId, diasForaDoPeriodoEscolar, diasLetivosENaoLetivos, ueCodigo);
+                await PublicarMensagens(modalidade, turma, anoAtual, tipoCalendarioId, diasForaDoPeriodoEscolar, diasLetivosENaoLetivos, ueCodigo, semestre);
 
             return true;
         }
 
-        private async Task PublicarMensagens(Modalidade modalidade, Turma turma, int anoAtual, long tipoCalendarioId, IList<DateTime> diasForaDoPeriodoEscolar, IList<DiaLetivoDto> diasLetivosENaoLetivos, string ueCodigo)
+        private async Task PublicarMensagens(Modalidade modalidade, Turma turma, int anoAtual, long tipoCalendarioId, IList<DateTime> diasForaDoPeriodoEscolar, IList<DiaLetivoDto> diasLetivosENaoLetivos, string ueCodigo, int? semestre)
         {
             var componentesCurriculares = await mediator.Send(new ObterCodigosComponentesCurricularesRegenciaAulasAutomaticasQuery(modalidade));
             var dadosTurmaComponente = new List<DadosTurmaAulasAutomaticaDto>();
@@ -103,7 +110,7 @@ namespace SME.SGP.Aplicacao
             {
                 dadosTurmaComponente
                     .AddRange(await mediator
-                    .Send(new ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery(anoAtual, ueCodigo, componentesCurriculares)));
+                    .Send(new ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery(anoAtual, ueCodigo, componentesCurriculares, semestre)));
             }
 
             if (dadosTurmaComponente.Any())
