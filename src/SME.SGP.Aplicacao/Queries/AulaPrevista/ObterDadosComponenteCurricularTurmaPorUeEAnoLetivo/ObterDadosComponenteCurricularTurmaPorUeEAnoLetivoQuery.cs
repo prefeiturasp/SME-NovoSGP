@@ -8,15 +8,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery : IRequest<IEnumerable<DadosTurmaAulasAutomaticaDto>>
     {
-        public ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery(int anoLetivo, string ueCodigo, string[] componentesCurriculares)
+        public ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery(int anoLetivo, string ueCodigo, string[] componentesCurriculares, int? semestre)
         {
             AnoLetivo = anoLetivo;
             UeCodigo = ueCodigo;
             ComponentesCurriculares = componentesCurriculares;
+            Semestre = semestre;
         }
 
         public int AnoLetivo { get; set; }
         public string UeCodigo { get; set; }
         public string[] ComponentesCurriculares { get; set; }
+        public int? Semestre { get; set; }
     }
 }
