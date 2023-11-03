@@ -10,6 +10,7 @@ namespace SME.SGP.Aplicacao
 {
     public class CriarAulasInfantilAutomaticamenteUseCase : ICriarAulasInfantilAutomaticamenteUseCase
     {
+        private const string CODIGO_COMPONENTE_REGENCIA_INFANTIL = "512";
         private readonly IMediator mediator;
 
         public CriarAulasInfantilAutomaticamenteUseCase(IMediator mediator)
@@ -19,20 +20,24 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var regenciaClasseInfantilId = "512";
+            var executarManutencao = await mediator
+                .Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
 
-            var executarManutencao = await mediator.Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
             if (!executarManutencao)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
                 return false;
             }
 
             var dadosCriacaoAulaInfantil = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
                 mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
+
             var anoAtual = DateTime.Now.Year;
+
             var tipoCalendarioId = await mediator
                 .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(Modalidade.EducacaoInfantil, anoAtual, null));
+
             if (tipoCalendarioId < 1)
             {
                 await mediator
@@ -42,6 +47,7 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator
                 .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+
             if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
             {
                 await mediator
@@ -67,16 +73,16 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmas)
             {
-                var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto((regenciaClasseInfantilId, "Regência de classe infantil"));
+                var dadosAulaCriadaAutomaticamente = new DadosAulaCriadaAutomaticamenteDto((CODIGO_COMPONENTE_REGENCIA_INFANTIL, "Regência de classe infantil"));
                 
-                var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { regenciaClasseInfantilId }, dadosAulaCriadaAutomaticamente);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
+                var comando = new CriarAulasInfantilERegenciaAutomaticamenteCommand(diasLetivosENaoLetivos.ToList(), turma, tipoCalendarioId, diasForaDoPeriodoEscolar, new string[] { CODIGO_COMPONENTE_REGENCIA_INFANTIL }, dadosAulaCriadaAutomaticamente);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfantilERegenciaAutomaticamente, comando, Guid.NewGuid(), null));
             }
 
             if (dadosCriacaoAulaInfantil.NaoEhNulo() && string.IsNullOrEmpty(dadosCriacaoAulaInfantil.CodigoTurma))
             {
                 dadosCriacaoAulaInfantil.Pagina += 1;
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaSincronizarAulasInfatil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaSincronizarAulasInfantil, dadosCriacaoAulaInfantil, Guid.NewGuid(), null));
             }
 
             return true;
