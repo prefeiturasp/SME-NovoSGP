@@ -12,36 +12,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutarExclusaoNotificacaoInformativoUsuarioUseCase : AbstractUseCase, IExecutarExclusaoNotificacaoInformativoUsuarioUseCase
     {
-        private readonly IUnitOfWork unitOfWork;
+        public ExecutarExclusaoNotificacaoInformativoUsuarioUseCase(IMediator mediator) : base(mediator)
+        { }
 
-        public ExecutarExclusaoNotificacaoInformativoUsuarioUseCase(IMediator mediator, IUnitOfWork unitOfWork) : base(mediator)
+        public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        }
+            var param = mensagem.ObterObjetoMensagem<string>();
+            if (string.IsNullOrEmpty(param)) return false;
+            var notificacaoId = long.Parse(param);
 
-        public async Task<bool> Executar(MensagemRabbit param)
-        {
-            var notificacaoInformativoUsuario = param.ObterObjetoMensagem<NotificacaoInformativoUsuarioFiltro>();
-            unitOfWork.IniciarTransacao();
-            try
-            {               
-                var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(notificacaoInformativoUsuario.Titulo,
-                                                                                    notificacaoInformativoUsuario.Mensagem,
-                                                                                    notificacaoInformativoUsuario.UsuarioRf,
-                                                                                    NotificacaoCategoria.Informe,
-                                                                                    NotificacaoTipo.Customizado,
-                                                                                    notificacaoInformativoUsuario.DreCodigo,
-                                                                                    notificacaoInformativoUsuario.UeCodigo));
-
-                await mediator.Send(new SalvarInformativoNotificacaoCommand(notificacaoInformativoUsuario.InformativoId, notificacaoId));
-                unitOfWork.PersistirTransacao();
-                return true;
-            }
-            catch
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
+            return await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacaoId));
         }
     }
 }
