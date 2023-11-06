@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (informativo.EhNulo())
                 throw new NegocioException("Não foi possível encontrar o Informativo informado");
 
-            var usuarios = await mediator.Send(new ObterResponsaveisPorDreUeNAAPAQuery("", ""));
+            var usuarios = new List<Usuario>() { new Usuario() { Login = "1111"}, new Usuario() { Login = "2222"} }; //await mediator.Send(new ObterResponsaveisPorDreUeNAAPAQuery("", ""));
             foreach (var usuario in usuarios)
             {
                 var notificacaoInformativoUsuario = new NotificacaoInformativoUsuarioFiltro()
