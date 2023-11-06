@@ -23,9 +23,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query, new { informativoId });
         }
 
-        public async Task<bool> RemoverPorInformativoIdAsync(long informativoId)
+        public async Task<bool> RemoverLogicoPorInformativoIdAsync(long informativoId)
         {
-            var query = @"delete from informativo_notificacao where informativo_id = @informativoId";
+            var query = @"update informativo_notificacao set excluido = true where informativo_id = @informativoId";
 
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { informativoId });
         }

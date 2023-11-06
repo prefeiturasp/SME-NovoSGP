@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Informe.Base;
+using SME.SGP.TesteIntegracao.Informe.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +19,12 @@ namespace SME.SGP.TesteIntegracao.Informe
     {
         public Ao_salvar_informes(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandFakeInforme), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Informes - Salvar informes todas dre")]
@@ -54,6 +63,14 @@ namespace SME.SGP.TesteIntegracao.Informe
             var informesPerfil = ObterTodos<InformativoPerfil>();
             informesPerfil.ShouldNotBeNull();
             informesPerfil.Count().ShouldBe(2);
+
+            var informesNotificacao = ObterTodos<InformativoNotificacao>();
+            informesNotificacao.ShouldNotBeNull();
+            informesNotificacao.Count().ShouldBe(2);
+
+            var notificacoes = ObterTodos<Notificacao>();
+            notificacoes.ShouldNotBeNull();
+            notificacoes.Count().ShouldBe(2);
         }
 
         [Fact(DisplayName = "Informes - Salvar informes por dre")]
@@ -93,6 +110,14 @@ namespace SME.SGP.TesteIntegracao.Informe
             var informesPerfil = ObterTodos<InformativoPerfil>();
             informesPerfil.ShouldNotBeNull();
             informesPerfil.Count().ShouldBe(2);
+
+            var informesNotificacao = ObterTodos<InformativoNotificacao>();
+            informesNotificacao.ShouldNotBeNull();
+            informesNotificacao.Count().ShouldBe(2);
+
+            var notificacoes = ObterTodos<Notificacao>();
+            notificacoes.ShouldNotBeNull();
+            notificacoes.Count().ShouldBe(2);
         }
 
         [Fact(DisplayName = "Informes - Salvar informes por ue")]
@@ -133,6 +158,14 @@ namespace SME.SGP.TesteIntegracao.Informe
             var informesPerfil = ObterTodos<InformativoPerfil>();
             informesPerfil.ShouldNotBeNull();
             informesPerfil.Count().ShouldBe(2);
+
+            var informesNotificacao = ObterTodos<InformativoNotificacao>();
+            informesNotificacao.ShouldNotBeNull();
+            informesNotificacao.Count().ShouldBe(2);
+
+            var notificacoes = ObterTodos<Notificacao>();
+            notificacoes.ShouldNotBeNull();
+            notificacoes.Count().ShouldBe(2);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +32,9 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new ExcluirInformesPerfilsPorIdInformesCommad(request.Id));
                     await mediator.Send(new ExcluirInformativosNotificacaoPorIdInformativoCommad(request.Id));
-                    await repositorio.RemoverAsync(request.Id);
+                    await repositorio.RemoverLogico(request.Id);
+
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoInformativo, request.Id, Guid.NewGuid()));
                     unitOfWork.PersistirTransacao();
                 }
                 catch (Exception e)

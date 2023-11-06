@@ -2,6 +2,12 @@ CREATE table IF NOT EXISTS public.informativo_notificacao(
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	informativo_id int8 NOT NULL,
 	notificacao_id int8 NOT NULL,
+	criado_em timestamp NOT NULL,
+	criado_por varchar(200) NOT NULL,
+	alterado_em timestamp NULL,
+	alterado_por varchar(200) NULL,
+	criado_rf varchar(200) NOT NULL,
+	alterado_rf varchar(200) NULL,
 	CONSTRAINT informativo_notificacao_pk PRIMARY KEY (id)
 );
 
