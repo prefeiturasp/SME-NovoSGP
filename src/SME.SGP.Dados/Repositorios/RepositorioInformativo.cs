@@ -118,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
             sql.AppendLine(@"SELECT inf.id, inf.titulo, inf.texto, inf.data_envio,
-                            inf.criado_em, inf.criado_por, inf.alterado_em,
+                            inf.criado_em, inf.criado_por, inf.alterado_em, inf.dre_id, inf.ue_id,
                             inf.alterado_por, inf.criado_rf, inf.alterado_rf,
                             dre.id, dre.nome, dre.abreviacao,
                             ue.id, ue.nome, ue.tipo_escola,
