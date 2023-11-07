@@ -130,6 +130,7 @@
         public const string RemoverAtribuicaoResponsaveisSupervisorPorDre = "sgp.remover.atribuicao.responsaveis.supervisor.dre";
         public const string RemoverAtribuicaoResponsaveisPAAIPorDre = "sgp.remover.atribuicao.responsaveis.paai.dre";
         public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.remover.atribuicao.responsaveis.aspp.dre";
+        public const string GerarCacheAtribuicaoResponsaveis = "sgp.gerar.atribuicao.responsaveis.cache";
 
         #endregion
 
