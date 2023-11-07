@@ -13,14 +13,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using SME.SGP.Auditoria.Worker;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System.IO;
 using System.Reflection;
-using ConfiguracaoRabbitOptions = SME.SGP.Auditoria.Worker.ConfiguracaoRabbitOptions;
-using TelemetriaOptions = SME.SGP.Auditoria.Worker.TelemetriaOptions;
 
 namespace SME.SGP.ComprimirArquivos.Worker
 {

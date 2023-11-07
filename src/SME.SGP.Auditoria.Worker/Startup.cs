@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Auditoria.Worker.Interfaces;
@@ -17,6 +18,8 @@ using SME.SGP.Auditoria.Worker.Repositorio;
 using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.ElasticSearch;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System.Threading;
@@ -38,8 +41,8 @@ namespace SME.SGP.Auditoria.Worker
             RegistrarElasticSearch(services);
             RegistrarDependencias(services);
             RegistrarMapeamentos();
-            RegistrarRabbitMQ(services);
             RegistrarTelemetria(services);
+            RegistrarRabbitMQ(services);
         }
 
         private void RegistrarElasticSearch(IServiceCollection services)
@@ -52,30 +55,14 @@ namespace SME.SGP.Auditoria.Worker
             services.AddOptions<TelemetriaOptions>()
                 .Bind(Configuration.GetSection(TelemetriaOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<TelemetriaOptions>();
+            services.AddSingleton<IServicoTelemetria, ServicoTelemetria>();
         }
 
         private void RegistrarRabbitMQ(IServiceCollection services)
         {
-            services.AddOptions<ConfiguracaoRabbitOptions>()
-                .Bind(Configuration.GetSection(ConfiguracaoRabbitOptions.Secao), c => c.BindNonPublicProperties = true);
-
-            var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<IOptions<ConfiguracaoRabbitOptions>>().Value;
-
-            services.AddSingleton<IConnectionFactory>(serviceProvider =>
-            {
-                var factory = new ConnectionFactory
-                {
-                    HostName = options.HostName,
-                    UserName = options.UserName,
-                    Password = options.Password,
-                    VirtualHost = options.VirtualHost,
-                    RequestedHeartbeat = System.TimeSpan.FromSeconds(options.TempoHeartBeat),
-                };
-
-                return factory;
-            });
-            services.AddSingleton<ConfiguracaoRabbitOptions>();
+            services.AddPolicies();
+            services.ConfigurarRabbit(Configuration);
+            services.ConfigurarRabbitParaLogs(Configuration);
         }
 
         private void RegistrarMapeamentos()

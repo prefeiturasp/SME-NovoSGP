@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.Auditoria.Worker.Interfaces
 {
-    public interface IRegistrarAuditoriaUseCase
+    public interface IRegistrarAuditoriaUseCase : IRabbitUseCase
     {
-        Task Executar(MensagemRabbit mensagem);
     }
 }

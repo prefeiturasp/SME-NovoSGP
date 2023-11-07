@@ -40,8 +40,38 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             retorno.Estado.ShouldBe(dtoIncluir.Estado);
         }
         
-        [Fact(DisplayName = "ABAE - Não pode inserir com cpf duplicado")]
+        [Fact(DisplayName = "ABAE - Pode inserir com cpf duplicado em Ues diferentes")]
         public async Task Ao_inserir_com_cpf_duplicado_deve_gerar_excecao()
+        {
+            await CriarDadosBasicos(true);
+            
+            var useCase = ObterServicoSalvarCadastroAcessoABAEUseCase();
+
+            var cadastros = ObterTodos<CadastroAcessoABAE>();
+            
+            var dtoIncluir = GerarCadastroAcessoABAEDto().Generate();
+            dtoIncluir.Cpf = cadastros.FirstOrDefault().Cpf;
+            dtoIncluir.UeId = UE_ID_2;
+            
+            var retorno = await useCase.Executar(dtoIncluir);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(UE_ID_2);
+            retorno.Nome.ShouldBe(dtoIncluir.Nome);
+            retorno.Cpf.ShouldBe(dtoIncluir.Cpf);
+            retorno.Email.ShouldBe(dtoIncluir.Email);
+            retorno.Telefone.ShouldBe(dtoIncluir.Telefone);
+            retorno.Situacao.ShouldBe(dtoIncluir.Situacao);
+            retorno.Cep.ShouldBe(dtoIncluir.Cep);
+            retorno.Endereco.ShouldBe(dtoIncluir.Endereco);
+            retorno.Numero.ShouldBe(dtoIncluir.Numero);
+            retorno.Complemento.ShouldBe(dtoIncluir.Complemento);
+            retorno.Bairro.ShouldBe(dtoIncluir.Bairro);
+            retorno.Cidade.ShouldBe(dtoIncluir.Cidade);
+            retorno.Estado.ShouldBe(dtoIncluir.Estado);
+        }
+        
+        [Fact(DisplayName = "ABAE - Não pode inserir com cpf duplicado em mesmas UEs")]
+        public async Task Ao_inserir_com_cpf_duplicado_em_mesma_ues_deve_gerar_excecao()
         {
             await CriarDadosBasicos(true);
             

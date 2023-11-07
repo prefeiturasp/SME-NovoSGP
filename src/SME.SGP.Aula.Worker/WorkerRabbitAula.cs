@@ -10,7 +10,7 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aula.Worker
 {
-    public class WorkerRabbitAula : WorkerRabbitMQBase
+    public class WorkerRabbitAula : WorkerRabbitAplicacao
     {
         public WorkerRabbitAula(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
@@ -24,7 +24,7 @@ namespace SME.SGP.Aula.Worker
         {
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpAula.RotaInserirAulaRecorrencia, new ComandoRabbit("Inserir aulas recorrentes", typeof(IInserirAulaRecorrenteUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaAlterarAulaRecorrencia, new ComandoRabbit("Alterar aulas recorrentes", typeof(IAlterarAulaRecorrenteUseCase)));
