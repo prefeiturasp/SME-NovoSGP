@@ -22,10 +22,11 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(PodePersistirTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var url = string.Format(ServicosEolConstants.URL_FUNCIONARIOS_TURMAS_DISCIPLINAS_ATRIBUICAO_VERIFICAR_DATA, request.CriadoRF, request.TurmaCodigo, request.ComponenteParaVerificarAtribuicao) + $"?dataConsultaTick={request.DataTick}";
             try
             {
+                var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
+                var url = string.Format(ServicosEolConstants.URL_FUNCIONARIOS_TURMAS_DISCIPLINAS_ATRIBUICAO_VERIFICAR_DATA, request.CriadoRF, request.TurmaCodigo, request.ComponenteParaVerificarAtribuicao) + $"?dataConsultaTick={request.DataTick}";
+           
                 var resposta = await httpClient.GetAsync(url);
                 if (resposta.IsSuccessStatusCode)
                 {
