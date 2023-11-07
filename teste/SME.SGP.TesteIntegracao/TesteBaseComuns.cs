@@ -346,7 +346,17 @@ namespace SME.SGP.TesteIntegracao
         protected const int AULA_ID_8 = 8;
         protected const int AULA_ID_9 = 9;
         protected const int AULA_ID_10 = 10;
-        
+        protected const int AULA_ID_11 = 11;
+        protected const int AULA_ID_12 = 12;
+        protected const int AULA_ID_13 = 13;
+        protected const int AULA_ID_14 = 14;
+        protected const int AULA_ID_15 = 15;
+        protected const int AULA_ID_16 = 16;
+        protected const int AULA_ID_17 = 17;
+        protected const int AULA_ID_18 = 18;
+        protected const int AULA_ID_19 = 19;
+        protected const int AULA_ID_20 = 20;
+
         protected const long REGISTRO_FREQUENCIA_1 = 1;
         protected const long REGISTRO_FREQUENCIA_2 = 2;
 
@@ -382,8 +392,22 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_21_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 21);
         protected readonly DateTime DATA_22_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 22);
         protected readonly DateTime DATA_23_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 23);
+        protected readonly DateTime DATA_24_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 24);
 
         protected readonly DateTime DATA_25_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
+        protected readonly DateTime DATA_26_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 26);
+        protected readonly DateTime DATA_27_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 27);
+        protected readonly DateTime DATA_28_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 28);
+        protected readonly DateTime DATA_29_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 29);
+        protected readonly DateTime DATA_30_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 30);
+        protected readonly DateTime DATA_31_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 31);
+        protected readonly DateTime DATA_01_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 01);
+        protected readonly DateTime DATA_02_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 02);
+        protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 03);
+        protected readonly DateTime DATA_04_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 04);
+        protected readonly DateTime DATA_05_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 05);
+        protected readonly DateTime DATA_06_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 06);
+
         protected readonly DateTime DATA_16_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 16);
         protected readonly DateTime DATA_30_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
 

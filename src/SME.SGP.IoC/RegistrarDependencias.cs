@@ -574,6 +574,9 @@ namespace SME.SGP.IoC
             //CadastroAcessoABAE
             services.TryAddScoped<IRepositorioCadastroAcessoABAE, RepositorioCadastroAcessoABAE>();
             services.TryAddScoped<IRepositorioCadastroAcessoABAEConsulta, RepositorioCadastroAcessoABAEConsulta>();
+
+            //Consulta Crianças Estudantes Ausentes
+            services.TryAddScoped<IRepositorioConsultaCriancasEstudantesAusentes, RepositorioConsultaCriancasEstudantesAusentes>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1344,7 +1347,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirInformesUseCase, ExcluirInformesUseCase>();
             services.TryAddScoped<IObterInformeUseCase, ObterInformeUseCase>();
             services.TryAddScoped<IObterInformesPorFiltroUseCase, ObterInformesPorFiltroUseCase>();
-            
+
+            //Consulta Crianças Estudantes Ausentes
+            services.TryAddScoped<IObterTurmasAlunosAusentesUseCase, ObterTurmasAlunosAusentesUseCase>();
+
             services.TryAddScoped<ISalvarCadastroAcessoABAEUseCase, SalvarCadastroAcessoABAEUseCase>();
             services.TryAddScoped<IBuscaCepUseCase, BuscaCepUseCase>();
             services.TryAddScoped<IExcluirCadastroAcessoABAEUseCase, ExcluirCadastroAcessoABAEUseCase>();
