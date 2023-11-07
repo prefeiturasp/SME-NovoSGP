@@ -472,8 +472,8 @@ namespace SME.SGP.Aplicacao
 
             var notaPosConselho = new NotaPosConselhoDto()
             {
-                Id = visualizaNota ? notaComponenteId : null,
-                Nota = visualizaNota ? notaComponente?.NotaConceito : null,
+                Id = notaComponenteId ?? null,
+                Nota = notaComponente?.NotaConceito ?? null,
                 PodeEditar = componenteLancaNota && visualizaNota
             };
 
