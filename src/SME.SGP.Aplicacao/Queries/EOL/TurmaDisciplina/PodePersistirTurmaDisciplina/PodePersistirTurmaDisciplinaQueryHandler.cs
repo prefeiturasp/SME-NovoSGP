@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Elasticsearch.Net;
+using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao
                 if (resposta.IsSuccessStatusCode)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Resultado da consulta no eol: JSON {json} / URL: {url}", LogNivel.Informacao, LogContexto.Aula, string.Empty));
                     return JsonConvert.DeserializeObject<bool>(json);
                 }
                 else
