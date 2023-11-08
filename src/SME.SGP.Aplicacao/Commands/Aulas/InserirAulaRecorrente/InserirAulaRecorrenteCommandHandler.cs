@@ -39,14 +39,15 @@ namespace SME.SGP.Aplicacao
         {
             AtribuicaoEsporadica atribuicao = new AtribuicaoEsporadica();
             if (!request.Usuario.EhGestorEscolar())
-                atribuicao = await ValidarComponentesProfessor(request, request.Usuario, atribuicao);
+                atribuicao = await ValidarComponentesProfessor(request, request.Usuario, atribuicao, cancellationToken);
             await GerarRecorrencia(request, request.Usuario, atribuicao);
             return true;
         }
 
         private async Task<AtribuicaoEsporadica> ValidarComponentesProfessor(InserirAulaRecorrenteCommand aulaRecorrente,
             Usuario usuarioLogado,
-            AtribuicaoEsporadica atribuicao)
+            AtribuicaoEsporadica atribuicao,
+            CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aulaRecorrente.CodigoTurma));
 
@@ -82,7 +83,8 @@ namespace SME.SGP.Aplicacao
 
             var obterUsuarioQuery = new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId,
                                                                                            aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
-            var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery);
+           
+            var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery, cancellationToken);
 
             if (!usuarioPodePersistirTurmaNaData)
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
