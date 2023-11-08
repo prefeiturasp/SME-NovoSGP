@@ -97,6 +97,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_ATENDIMENTO_NAO_PRESENCIAL = 12;
         protected const long ID_GRUPO_DE_TRABALHO_NAAPA = 13;
         protected const long ID_ACOES_LUDICAS = 14;
+        protected const long ID_GRUPO_FOCAL_TIPO_ATENDIMENTO_EXCLUIDO = 185;
 
         protected const string NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
         protected const string NOME_COMPONENTE_QUESTAO_ENDERECO_RESIDENCIAL = "ENDERECO_RESIDENCIAL";
@@ -545,6 +546,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
                     Ordem = 1,
                     Nome = "Atendimento não presencial",
+                    Excluido = true,
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF,
                     CriadoEm = DateTime.Now
@@ -2139,6 +2141,17 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     CriadoEm = DateTime.Now
                 });
 
+                //id 185
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                    Ordem = 3,
+                    Nome = "Grupo Focal",
+                    Excluido = true,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
         }
 
 
