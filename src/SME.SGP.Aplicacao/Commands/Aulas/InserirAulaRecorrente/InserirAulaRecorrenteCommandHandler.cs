@@ -15,6 +15,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Elasticsearch.Net.Specification.CrossClusterReplicationApi;
+using Elasticsearch.Net;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -83,11 +85,16 @@ namespace SME.SGP.Aplicacao
 
             var obterUsuarioQuery = new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId,
                                                                                            aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
+
            
             var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery, cancellationToken);
 
             if (!usuarioPodePersistirTurmaNaData)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Informações da consulta usuarioPodePersistirTurmaNaData com resultado igual a false = componenteCurricularId: {aulaRecorrente.ComponenteCurricularId} / codigoTurma: {aulaRecorrente.CodigoTurma} / dataAula: {aulaRecorrente.DataAula} / usuarioLogado: {usuarioLogado}", LogNivel.Negocio, LogContexto.Turma, string.Empty));
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+            }
+                
 
             return atribuicao;
         }
