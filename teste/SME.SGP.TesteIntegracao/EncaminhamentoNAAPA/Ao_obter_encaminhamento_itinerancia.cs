@@ -55,13 +55,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var questao1 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DATA_ATENDIMENTO);
             questao1.ShouldNotBeNull();
-  
+
             var questao2 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_TIPO_ATENDIMENTO);
             questao2.ShouldNotBeNull();
 
             var questao3 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_PROCEDIMENTO_TRABALHO);
             questao3.ShouldNotBeNull();
-       
+
             var questao4 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DESCRICAO_ATENDIMENTO);
             questao4.ShouldNotBeNull();
         }
