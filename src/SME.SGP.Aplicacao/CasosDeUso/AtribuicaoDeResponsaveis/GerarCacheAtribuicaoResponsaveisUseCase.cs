@@ -26,7 +26,18 @@ namespace SME.SGP.Aplicacao
             {
                 var supervisoresEscolares = await mediator.Send(new ObterResponsaveisAtribuidosUeTiposQuery(new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.SupervisorEscolar }));               
                 if (supervisoresEscolares.Any())
-                    await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.ATRIBUICOES_RESPONSAVEIS, TipoResponsavelAtribuicao.SupervisorEscolar), supervisoresEscolares));
+                    await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.ATRIBUICOES_RESPONSAVEIS_ATIVAS, TipoResponsavelAtribuicao.SupervisorEscolar), 
+                                                                             supervisoresEscolares.Select(sup => new AtribuicaoResponsavelVigenteProfDto()
+                                                                             {
+                                                                                 TipoAtribuicao = sup.TipoAtribuicao,
+                                                                                 Dre = sup.DreId,
+                                                                                 Ue = sup.UeId,
+                                                                                 UsuarioRf = sup.SupervisorId
+                                                                             })));
+
+                var atribuicoesEsporadicas = await mediator.Send(new ObterAtribuicoesVigentesPorAnoQuery(DateTimeExtension.HorarioBrasilia().Year, DateTimeExtension.HorarioBrasilia().Date));
+                if (atribuicoesEsporadicas.Any())
+                    await mediator.Send(new SalvarCachePorValorObjetoCommand(NomeChaveCache.ATRIBUICOES_ESPORADICAS_ATIVAS, atribuicoesEsporadicas));
                 return true;
             }
             catch (Exception ex)

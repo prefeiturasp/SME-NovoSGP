@@ -40,6 +40,7 @@
         public const string QUESTIONARIO = "questionario:{0}";
         public const string REGISTROS_FREQUENCIA_ALUNO_EXCLUIDOS_TURMA = "registros-frequencia-aluno-excluidos-turma:{0}";
         public const string DRE_CODIGO = "dre-codigo:{0}";
-        public const string ATRIBUICOES_RESPONSAVEIS = "atribuicoes-responsaveis-tipo:{0}";
+        public const string ATRIBUICOES_RESPONSAVEIS_ATIVAS = "atribuicoes-responsaveis-tipo:{0}";
+        public const string ATRIBUICOES_ESPORADICAS_ATIVAS = "atribuicoes-esporadicas";
     }
 }
