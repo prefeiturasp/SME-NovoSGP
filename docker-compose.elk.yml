@@ -1,85 +1,93 @@
-version: '3'
+version: "3"
+
 services:
-
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:3.7-management-alpine
-    hostname: rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=bitnami
+  setup-elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.1
+    command: >
+     bash -c '  
+       echo "Setting kibana password";
+       until curl -s -X POST -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" http://elastic:9200/_security/user/kibana_system/_password -d "{\"password\":\"${ELASTIC_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+       echo "All done!";'
     networks:
-      - sme-network
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+      - sgp-network
 
-  elasticsearch:
-    container_name: ElasticSearch
-    hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0-amd64 
-    environment: 
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - http.host=0.0.0.0
-      - transport.host=127.0.0.1
-      - network.host=0.0.0.0
-      - cluster.name="elastic_stack_logging"
-      - node.name="elastic_stack_logging_data"
-      - discovery.zen.minimum_master_nodes=1
-      - http.cors.enabled=true
-      - http.cors.allow-origin="*"
-    volumes: 
-      - elasticsearch_data:/usr/share/elasticsearch/data
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.1
+    volumes:
+      - elasticdata:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - node.name=sgp-elastic-node
+      - cluster.name=sgp-elastic
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.license.self_generated.type=basic
+    mem_limit: 1073741824
     healthcheck:
-      test: ["CMD-SHELL", "curl -I -s -L http://localhost:9200 || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 || grep -q 'missing authentication credentials'"]
       interval: 30s
       timeout: 20s
       retries: 5     
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     networks:
-      - sme-network
+      - sgp-network 
 
   kibana:
-    container_name: Kibana
-    hostname: kibana
-    image: docker.elastic.co/kibana/kibana:7.13.0-amd64
-    environment:
-      - server.name=kibana
-      - server.host="0"
-      - elasticsearch.url=http://elasticsearch:9200
-    depends_on:
-      - elasticsearch
+    image: docker.elastic.co/kibana/kibana:8.1.1
+    volumes:
+      - kibanadata:/usr/share/kibana/data
+      - ./configuracoes/kibana.yml:/usr/share/kibana/config/kibana.yml
     ports:
-      - "5601:5601"
+      - 5601:5601
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://elastic:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+    mem_limit: 1073741824
+    depends_on:
+      elastic:
+          condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -I -s -L http://localhost:5601/ || exit 1"]
+      test: ["CMD-SHELL", "curl -I -s -L http://localhost:5601 || exit 1"]
       interval: 30s
       timeout: 20s
-      retries: 5     
+      retries: 5    
     networks:
-      - sme-network
+      - sgp-network
 
-  logstash:
-    container_name: LogStash
-    hostname: logstash
-    build: 
-      context: ./logstash
-    command: logstash -f /config/logstash.conf  
+  apm:
+    image: docker.elastic.co/apm/apm-server:8.1.1
+    ports:
+      - 8200:8200
+    command: >
+      apm-server -e
+         -E output.elasticsearch.hosts=["elastic:9200"]
+         -E output.elasticsearch.protocol=http
+         -E output.elasticsearch.username=elastic
+         -E output.elasticsearch.password=${ELASTIC_PASSWORD}
+         -E output.elasticsearch.ssl.enabled=false
+         -E apm-server.secret_token=${APM_TOKEN}
+    mem_limit: 1073741824
     depends_on:
-      - rabbitmq
-      - elasticsearch
+      elastic:
+          condition: service_healthy
     networks:
-      - sme-network
+      - sgp-network
 
 volumes:
-  rabbitmq_data:
-  elasticsearch_data:
+  elasticdata:
+    driver: local
+  kibanadata:
+    driver: local
 
 networks:
-  sme-network:
-    external:
-      name: sme-network
-    driver: bridge
+  sgp-network:
