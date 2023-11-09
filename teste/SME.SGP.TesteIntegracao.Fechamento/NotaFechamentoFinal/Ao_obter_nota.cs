@@ -139,6 +139,39 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             ValideNotaRegenteAlunos(retorno, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, CODIGO_ALUNO_1, PERCENTUAL_ALUNO_1, TOTAL_FALTA, TOTAL_AUSENCIA_1, (int)ConceitoValores.P);
         }
 
+        [Fact]
+        public async Task Deve_retornar_nenhuma_nota_ao_ter_somente_fechamento_turma_disciplina_sem_fechamento_nota()
+        {
+            var filtroNotaFechamento = ObterFiltroNotas(
+                            ObterPerfilProfessor(),
+                            ANO_3,
+                            COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
+                            TipoNota.Conceito,
+                            Modalidade.Fundamental,
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            false);
+            await CriarDadosBase(filtroNotaFechamento);
+            await CriaFechamentoBimestre(COMPONENTE_CURRICULAR_ARTES_ID_139);
+            await CriaFechamentoFinal(COMPONENTE_CURRICULAR_ARTES_ID_139); 
+            await CriaAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString());
+            await CriaRegistroDeFrenquencia();
+            await CriaRegistroDeFrequenciaAluno(CODIGO_ALUNO_1, VALOR_FREQUENCIA_3);
+
+            var consulta = ServiceProvider.GetService<IConsultasFechamentoFinal>();
+            var dto = new FechamentoFinalConsultaFiltroDto()
+            {
+                DisciplinaCodigo = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                TurmaCodigo = TURMA_CODIGO_1,
+                EhRegencia = true
+            };
+            
+            var retorno = await consulta.ObterFechamentos(dto);
+
+            retorno.Alunos.ShouldNotBeNull();
+            retorno.Alunos.Any(a => a.Codigo == CODIGO_ALUNO_1).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(a => a.Codigo == CODIGO_ALUNO_1).NotasConceitoFinal.Any(n=> !string.IsNullOrEmpty(n.NotaConceito)).ShouldBeFalse();
+        }
+
         private async Task CriaAula(string componente)
         {
             await CriarAula(
