@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                         new ()
                         {
                             QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                            TipoQuestao = TipoQuestao.Combo
+                            TipoQuestao = TipoQuestao.ComboMultiplaEscolha
                         },
                         new ()
                         {
@@ -80,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe(String.Format(MensagemNegocioEncaminhamentoNAAPA.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                    "Seção: Itinerância Questões: [1, 2, 3]"));
+                                                    "Seção: Apoio e Acompanhamento Questões: [1, 2, 3]"));
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar encaminhamento NAAPA itinerância")]
@@ -231,7 +231,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                         new ()
                         {
                             QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
-                            TipoQuestao = TipoQuestao.Combo
+                            TipoQuestao = TipoQuestao.ComboMultiplaEscolha
                         },
                         new ()
                         {
@@ -246,7 +246,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe(String.Format(MensagemNegocioEncaminhamentoNAAPA.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                    "Seção: Itinerância Questões: [1, 2, 3]"));
+                                                    "Seção: Apoio e Acompanhamento Questões: [1, 2, 3]"));
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Editar encaminhamento NAAPA itinerância")]
