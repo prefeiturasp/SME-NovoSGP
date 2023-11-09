@@ -115,25 +115,29 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { fechamentoTurmaId });
         }
 
-        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId)
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId, bool ehRegencia = false)
         {
-            const string query = @"with lista as (select f.*, fa.*, fn.*, 
+            var query = new StringBuilder(@"with lista as (select ftd.*, fa.*, fn.*, 
                                                          row_number() over (partition by t.id, fa.aluno_codigo, p.id, fn.disciplina_id order by fn.id desc) sequencia
-                         from fechamento_turma_disciplina f
-                        inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
-                         left join periodo_escolar p on p.id = ft.periodo_escolar_id 
-                        inner join turma t on t.id = ft.turma_id
-                        inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
-                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id  
-                        left join componente_curricular cc on cc.id = fn.disciplina_id
-                        where t.id = @turmaId 
-                        and (f.disciplina_id = @componenteCurricularId or cc.id = @componenteCurricularId)
-                        and ft.periodo_escolar_id = @periodoEscolarId                        
-                        ORDER BY fn.alterado_em, fn.criado_em) select * from lista where sequencia = 1;";
+                                         from fechamento_turma_disciplina ftd
+                                        inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
+                                        left join periodo_escolar p on p.id = ft.periodo_escolar_id 
+                                        inner join turma t on t.id = ft.turma_id
+                                        inner join fechamento_aluno fa on ftd.id = fa.fechamento_turma_disciplina_id 
+                                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id");
+
+            if (!ehRegencia)
+                query.Append(" and ftd.disciplina_id = fn.disciplina_id");
+
+            query.AppendLine(@" left join componente_curricular cc on cc.id = fn.disciplina_id
+                                where t.id = @turmaId 
+                                and (ftd.disciplina_id = @componenteCurricularId or cc.id = @componenteCurricularId)
+                                and ft.periodo_escolar_id = @periodoEscolarId                        
+                                ORDER BY fn.alterado_em, fn.criado_em) select * from lista where sequencia = 1;");
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 
-            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoNota, FechamentoTurmaDisciplina>(query,
+            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoNota, FechamentoTurmaDisciplina>(query.ToString(),
                 (fechamentoTurmaDiscplina, fechamentoAluno, fechamentoNota) =>
                 {
                     var fechamentoTurmaDisciplinaLista = fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
