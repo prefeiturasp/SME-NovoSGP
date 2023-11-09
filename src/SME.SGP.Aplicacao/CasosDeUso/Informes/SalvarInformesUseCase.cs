@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -23,12 +25,10 @@ namespace SME.SGP.Aplicacao
                 var informes = await mediator.Send(new SalvarInformesCommand(informesDto));
 
                 foreach (var perfil in informesDto.Perfis) 
-                {
                     await mediator.Send(new SalvarInformesPerfilsCommand(informes.Id, perfil.Id));
-                }
 
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoInformativo, informes.Id, Guid.NewGuid()));
                 unitOfWork.PersistirTransacao();
-
                 return ObterAuditoria(informes);
             }
             catch
