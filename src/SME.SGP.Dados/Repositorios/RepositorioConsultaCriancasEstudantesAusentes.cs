@@ -122,10 +122,10 @@ namespace SME.SGP.Dados.Repositorios
                     return $"{HAVING} >= {(int)ausencias}";
 
                 case EnumAusencias.Entre6e10DiasSeguidos:
-                    return $"{HAVING} >= 6";
+                    return $"{HAVING} between 6 and 10";
 
                 case EnumAusencias.Entre11e15DiasSeguidos:
-                    return $"{HAVING} >= 11";
+                    return $"{HAVING} between 11 and 15";
 
                 case EnumAusencias.HaMaisDe15DiasSeguidos:
                     return $"{HAVING} > 15";
