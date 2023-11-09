@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.Turma.CodigoTurma), cancellationToken);
 
             // Periodo Escolar
-            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula);
+            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula.Date);
             var eventoReposicao = new PodeCadastrarAulaPorDataRetornoDto(false,"");
             if (periodoEscolar.EhNulo())
             {
