@@ -120,8 +120,8 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(@"SELECT inf.id, inf.titulo, inf.texto, inf.data_envio,
                             inf.criado_em, inf.criado_por, inf.alterado_em, inf.dre_id, inf.ue_id,
                             inf.alterado_por, inf.criado_rf, inf.alterado_rf,
-                            dre.id, dre.nome, dre.abreviacao,
-                            ue.id, ue.nome, ue.tipo_escola,
+                            dre.id, dre.nome, dre.abreviacao, dre.dre_id as CodigoDre,
+                            ue.id, ue.nome, ue.tipo_escola, ue.ue_id as CodigoUe,
                             inf_p.id, inf_p.informativo_id, inf_p.codigo_perfil
                             FROM informativo inf
                             INNER JOIN informativo_perfil inf_p ON inf_p.informativo_id = inf.id
