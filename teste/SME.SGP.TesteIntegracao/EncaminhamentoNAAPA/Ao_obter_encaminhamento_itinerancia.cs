@@ -325,6 +325,51 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = QuestaoEncaminhamentoId,
+                RespostaId = ID_OPCAO_RESPOSTA_REUNIAO_COMPARTILHDA,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = QuestaoEncaminhamentoId,
+                RespostaId = ID_OPCAO_RESPOSTA_REUNIAO_REDE_MARCRO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = QuestaoEncaminhamentoId,
+                RespostaId = ID_OPCAO_RESPOSTA_REUNIAO_REDE_MICRO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = QuestaoEncaminhamentoId,
+                RespostaId = ID_OPCAO_RESPOSTA_REUNIAO_REDE_MICRO_UE,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
+            {
+                QuestaoEncaminhamentoId = QuestaoEncaminhamentoId,
+                RespostaId = ID_OPCAO_RESPOSTA_REUNIAO_HORARIOS_COLETIVOS,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
             QuestaoEncaminhamentoId++;
 
             await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
@@ -359,6 +404,22 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var respostaQuestao = questao.Resposta.FirstOrDefault();
             respostaQuestao.ShouldNotBeNull();
             respostaQuestao.OpcaoRespostaId.ShouldBe(ID_GRUPO_FOCAL_TIPO_ATENDIMENTO_EXCLUIDO);
+
+            var questao2 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_PROCEDIMENTO_TRABALHO);
+            questao2.ShouldNotBeNull();
+            questao2.Resposta.ShouldNotBeNull();
+            var respostaQuestaoIds = questao2.Resposta.Select(resposta => resposta.OpcaoRespostaId.GetValueOrDefault()).ToList();
+            respostaQuestaoIds.ShouldNotBeNull();
+            var idsRespostas = new long[] {
+                ID_OPCAO_RESPOSTA_ACOES_LUDICAS,
+                ID_OPCAO_RESPOSTA_REUNIAO_COMPARTILHDA,
+                ID_OPCAO_RESPOSTA_REUNIAO_REDE_MARCRO,
+                ID_OPCAO_RESPOSTA_REUNIAO_REDE_MICRO,
+                ID_OPCAO_RESPOSTA_REUNIAO_REDE_MICRO_UE,
+                ID_OPCAO_RESPOSTA_REUNIAO_HORARIOS_COLETIVOS
+            };
+
+            respostaQuestaoIds.Except(idsRespostas.ToList()).Any().ShouldBeFalse();
         }
     }
 }
