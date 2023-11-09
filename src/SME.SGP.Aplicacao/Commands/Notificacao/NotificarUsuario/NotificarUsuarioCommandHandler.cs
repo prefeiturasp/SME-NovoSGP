@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var notificacao = new Notificacao()
             {
-                Codigo = request.Codigo == 0 ? await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1 : request.Codigo,
+                Codigo = await ObterCodigoNotificacaoPorIdQuery(request.Codigo, usuarioId),
                 Titulo = request.Titulo,
                 Mensagem = request.Mensagem,
                 DreId = request.DreCodigo,
@@ -47,5 +47,13 @@ namespace SME.SGP.Aplicacao
 
             return notificacaoId;
         }         
+
+        private async Task<long> ObterCodigoNotificacaoPorIdQuery(long codigo, long usuarioId)
+        {
+            if (codigo == 0)
+                return await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1;
+
+            return long.Parse(string.Concat(codigo, usuarioId.ToString("00000000")));
+        }
     }
 }

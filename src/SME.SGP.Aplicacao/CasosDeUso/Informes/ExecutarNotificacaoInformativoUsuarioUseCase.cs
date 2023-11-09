@@ -31,7 +31,10 @@ namespace SME.SGP.Aplicacao
                                                                                     NotificacaoCategoria.Informe,
                                                                                     NotificacaoTipo.Customizado,
                                                                                     notificacaoInformativoUsuario.DreCodigo,
-                                                                                    notificacaoInformativoUsuario.UeCodigo));
+                                                                                    notificacaoInformativoUsuario.UeCodigo,
+                                                                                    string.Empty,
+                                                                                    0,
+                                                                                    notificacaoInformativoUsuario.InformativoId));
 
                 await mediator.Send(new SalvarInformativoNotificacaoCommand(notificacaoInformativoUsuario.InformativoId, notificacaoId));
                 unitOfWork.PersistirTransacao();

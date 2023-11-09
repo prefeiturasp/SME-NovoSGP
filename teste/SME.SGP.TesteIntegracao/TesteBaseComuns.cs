@@ -260,6 +260,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
 
+        protected const long USUARIO_RF_1111111_ID_2 = 2;
         protected const string USUARIO_PROFESSOR_LOGIN_1111111 = "1111111";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_1111111 = "1111111";
         protected const string USUARIO_PROFESSOR_NOME_1111111 = "Nome do usuário 1111111";
