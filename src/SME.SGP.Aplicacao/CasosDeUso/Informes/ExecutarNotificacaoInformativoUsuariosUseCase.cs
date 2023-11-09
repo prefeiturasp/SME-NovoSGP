@@ -29,7 +29,6 @@ namespace SME.SGP.Aplicacao
 
             var guidPerfis = await ObterPerfisPorCodigos(informativo.Perfis.Select(perfil => perfil.CodigoPerfil));
             var usuarios = await mediator.Send(new ObterRfsUsuariosPorPerfisDreUeQuery(informativo.Ue?.CodigoUe, informativo.Dre?.CodigoDre, guidPerfis));
-            //new List<Usuario>() { new Usuario() { Login = "1111"}, new Usuario() { Login = "2222"} }; 
             foreach (var usuario in usuarios)
             {
                 var notificacaoInformativoUsuario = new NotificacaoInformativoUsuarioFiltro()
