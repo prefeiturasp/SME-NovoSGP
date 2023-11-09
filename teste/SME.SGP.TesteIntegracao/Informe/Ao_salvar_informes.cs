@@ -25,7 +25,8 @@ namespace SME.SGP.TesteIntegracao.Informe
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandFakeInforme), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterRfsUsuariosPorPerfisDreUeQuery, string[]>), typeof(ObterRfsUsuariosPorPerfisDreUeQueryHandlerFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterRfsUsuariosPorPerfisDreUeQuery, string[]>), typeof(ObterRfsUsuariosPorPerfisDreUeQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterGruposDeUsuariosQuery, IEnumerable<GruposDeUsuariosDto>>), typeof(ObterGruposDeUsuariosQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Informes - Salvar informes todas dre")]
