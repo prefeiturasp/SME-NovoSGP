@@ -77,13 +77,13 @@ namespace SME.SGP.Aplicacao
 
                 var primeiroRegistroMatriculaAtiva = matriculasAlunoTurma
                     .Where(mat => mat.PossuiSituacaoAtiva())
-                    .OrderBy(mat => mat.DataSituacao)
+                    .OrderBy(mat => mat.DataMatricula)
                     .FirstOrDefault();
 
-                var dataSituacao = primeiroRegistroMatriculaAtiva.NaoEhNulo() && !primeiroRegistroMatriculaAtiva.DataSituacao.Equals(DateTime.MinValue) ? primeiroRegistroMatriculaAtiva.DataSituacao : aluno.DataSituacao;
+                var dataMatricula = primeiroRegistroMatriculaAtiva.NaoEhNulo() && !primeiroRegistroMatriculaAtiva.DataMatricula.Equals(DateTime.MinValue) ? primeiroRegistroMatriculaAtiva.DataMatricula : aluno.DataMatricula;
 
                 var matriculadoDepois = !aluno.Inativo ?
-                    periodosEscolares.FirstOrDefault(p => dataSituacao > p.PeriodoFim.Date)?.Bimestre : null;
+                    periodosEscolares.FirstOrDefault(p => dataMatricula > p.PeriodoFim.Date)?.Bimestre : null;
 
                 if (!aluno.Inativo && matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                 {
