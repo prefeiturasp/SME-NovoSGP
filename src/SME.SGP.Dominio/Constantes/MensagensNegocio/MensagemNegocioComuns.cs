@@ -24,5 +24,11 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string TIPO_CALENDARIO_EJA_OU_CELP_DEVE_TER_SEMESTRE = "Semestre é obrigatório quando o calendário escolar é do tipo EJA ou CELP.";
         public const string TIPO_CALENDARIO_DIFERENTE_EJA_OU_CELP_NAO_DEVE_TER_SEMESTRE = "Semestre não pode ser informado quando o calendário escolar não é do tipo EJA ou CELP.";
         public const string TIPO_CALENDARIO_ESCOLAR_X_JA_EXISTE = "O Tipo de Calendário Escolar '{0}' já existe";
+        public const string JA_EXISTE_CADASTRO_ACESSO_ABAR_PARA_ESSE_CPF = "Já existe cadastro para esse CPF: {0}";
+        public const string NAO_EH_PERMITIDO_ALTERACAO_CPF_POS_CADASTRO = "Não é permitido alteração de CPF após cadastro.";
+        public const string NAO_EH_PERMITIDO_ALTERACAO_UE_POS_CADASTRO = "Não é permitido alteração da UE após cadastro.";
+        public const string CADASTRO_ACESSO_ABAE_NAO_ENCONTRADO = "Cadastro de Acesso ABAE não localizado!";
+        public const string CPF_INFORMADO_EH_INVALIDO = "O cpf informado é inválido";
+        public const string TELEFONE_DEVE_ESTAR_COM_A_SEGUINTE_MASCARA = "O telefone deve estar com a seguinte máscara (XX) XXXX-XXXX";
     }
 }

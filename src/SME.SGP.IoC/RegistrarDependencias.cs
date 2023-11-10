@@ -13,6 +13,7 @@ using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeCom
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicadosPorModalidade;
 using SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraDeComunicadosPorModalidadeETurma;
 using SME.SGP.Aplicacao.CasosDeUso.HistoricoEscolar;
+using SME.SGP.Aplicacao.CasosDeUso.Informes;
 using SME.SGP.Aplicacao.CasosDeUso.Turma;
 using SME.SGP.Aplicacao.Consultas;
 using SME.SGP.Aplicacao.Integracoes;
@@ -565,6 +566,18 @@ namespace SME.SGP.IoC
 
             //Relatório dinâmico NAAPA
             services.TryAddScoped<IRepositorioRelatorioDinamicoNAAPA, RepositorioRelatorioDinamicoNAAPA>();
+
+            //Informativo
+            services.TryAddScoped<IRepositorioInformativo, RepositorioInformativo>();
+            services.TryAddScoped<IRepositorioInformativoPerfil, RepositorioInformativoPerfil>();
+            services.TryAddScoped<IRepositorioInformativoNotificacao, RepositorioInformativoNotificacao>();
+
+            //CadastroAcessoABAE
+            services.TryAddScoped<IRepositorioCadastroAcessoABAE, RepositorioCadastroAcessoABAE>();
+            services.TryAddScoped<IRepositorioCadastroAcessoABAEConsulta, RepositorioCadastroAcessoABAEConsulta>();
+
+            //Consulta Crianças Estudantes Ausentes
+            services.TryAddScoped<IRepositorioConsultaCriancasEstudantesAusentes, RepositorioConsultaCriancasEstudantesAusentes>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1328,6 +1341,22 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterEventosEscolaAquiPorDreUeTurmaMesUseCase, ObterEventosEscolaAquiPorDreUeTurmaMesUseCase>();
             services.TryAddScoped<IObterDresUseCase, ObterDresUseCase>();
             services.TryAddScoped<IObterComunicadosAnoAtualUseCase, ObterComunicadosAnoAtualUseCase>();
+
+            //Informes
+            services.TryAddScoped<IObterGruposDeUsuariosUseCase, ObterGruposDeUsuariosUseCase>();
+            services.TryAddScoped<ISalvarInformesUseCase, SalvarInformesUseCase>();
+            services.TryAddScoped<IExcluirInformesUseCase, ExcluirInformesUseCase>();
+            services.TryAddScoped<IObterInformeUseCase, ObterInformeUseCase>();
+            services.TryAddScoped<IObterInformesPorFiltroUseCase, ObterInformesPorFiltroUseCase>();
+
+            //Consulta Crianças Estudantes Ausentes
+            services.TryAddScoped<IObterTurmasAlunosAusentesUseCase, ObterTurmasAlunosAusentesUseCase>();
+
+            services.TryAddScoped<ISalvarCadastroAcessoABAEUseCase, SalvarCadastroAcessoABAEUseCase>();
+            services.TryAddScoped<IBuscaCepUseCase, BuscaCepUseCase>();
+            services.TryAddScoped<IExcluirCadastroAcessoABAEUseCase, ExcluirCadastroAcessoABAEUseCase>();
+            services.TryAddScoped<IObterCadastroAcessoABAEUseCase, ObterCadastroAcessoABAEUseCase>();
+            services.TryAddScoped<IObterPaginadoCadastroAcessoABAEUseCase, ObterPaginadoCadastroAcessoABAEUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

@@ -1224,7 +1224,79 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_GESTAO_OCORRENCIAS,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhAlteracao = true)]
-            OCO_A = 196,          
+            OCO_A = 196,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+        INF_C = 251,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+        INF_I = 252,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+        INF_E = 253,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO,
+            Menu = ConstantesMenuPermissao.MENU_INFORMES,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_INFORMES,
+            Url = ConstantesMenuPermissao.ROTA_INFORMES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+        INF_A = 254,
+            
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
+            Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CADASTRO_DE_ABAE,
+            Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+            ABA_A = 255,    
+            
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
+            Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CADASTRO_DE_ABAE,
+            Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+            ABA_E = 256, 
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
+            Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CADASTRO_DE_ABAE,
+            Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+            ABA_I = 257, 
+        
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_GESTAO, 
+            Menu = ConstantesMenuPermissao.MENU_CADASTRO_DE_ABAE, 
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_GESTAO,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CADASTRO_DE_ABAE,
+            Url = ConstantesMenuPermissao.ROTA_GESTAO_CADASTRO_DE_ABAE,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+            ABA_C = 258, 
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_AEE, 
             Menu = ConstantesMenuPermissao.MENU_ENCAMINHAMENTO, 
@@ -1373,11 +1445,59 @@ namespace SME.SGP.Infra
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
             Menu = ConstantesMenuPermissao.MENU_RELATORIO_DINAMICO_NAAPA,
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
-            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_ENCAMINHAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_RELATORIO_DINAMICO_NAAPA,
             Url = ConstantesMenuPermissao.ROTA_RELATORIO_DINAMICO_NAAPA,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_PRINT,
             EhConsulta = true)]
         RDNAAPA_C = 250,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_CONS_CRIANCAS_ESTUD_AUSENTES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+        CCEA_NAAPA_A = 259,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_CONS_CRIANCAS_ESTUD_AUSENTES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+        CCEA_NAAPA_E = 260,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_CONS_CRIANCAS_ESTUD_AUSENTES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+        CCEA_NAAPA_I = 261,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_CONS_CRIANCAS_ESTUD_AUSENTES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+        CCEA_NAAPA_C = 262,
 
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA, 

@@ -1,7 +1,4 @@
-﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
