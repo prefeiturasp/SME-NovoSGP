@@ -77,7 +77,9 @@
         public const string MENU_LEITURA =  "Leitura";
         public const string MENU_INFORMES = "Informes";
         public const string MENU_CADASTRO_DE_ABAE =  "Cadastro de ABAE";
-        
+        public const string MENU_BUSCA_ATIVA = "Busca Ativa";
+        public const string MENU_CONS_CRIANCAS_ESTUD_AUSENTES = "Consulta de crianças/estudantes ausentes";
+
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
         public const string AGRUPAMENTO_DIARIO_DE_CLASSE = "Diário de Classe";
         public const string AGRUPAMENTO_FECHAMENTO = "Fechamento";
@@ -90,6 +92,7 @@
         public const string AGRUPAMENTO_CONFIGURACOES = "Configurações";
         public const string AGRUPAMENTO_MEUS_DADOS = "Meus Dados";
         public const string AGRUPAMENTO_NOTIFICACAO = "Notificação";
+
         
         public const string ROTA_PLANEJAMENTO_PLANO_ANUAL = "/planejamento/plano-anual";
         public const string ROTA_PLANEJAMENTO_PLANO_CICLO = "/planejamento/plano-ciclo";
@@ -134,6 +137,7 @@
         public const string ROTA_AEE_PLANO = "/aee/plano";
         public const string ROTA_AEE_REGISTRO_ITINERANCIA = "/aee/registro-itinerancia";
         public const string ROTA_NAAPA_ENCAMINHAMENTO = "/naapa/encaminhamento";
+        public const string ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES = "/busca-ativa/consulta-criancas-estudantes-ausentes";
         public const string ROTA_RELATORIO_DINAMICO_NAAPA = "/naapa/relatorio-dinamico";
         public const string ROTA_RELATORIOS_FREQUENCIA_FREQUENCIA = "/relatorios/frequencia/frequencia";
         public const string ROTA_RELATORIOS_FREQUENCIA_MENSAL = "/relatorios/frequencia/mensal";
@@ -256,7 +260,9 @@
         public const int ORDEM_MENU_PLANO_AEE = 2;
         public const int ORDEM_MENU_REGISTRO_DE_ITINERANCIA = 3;
         public const int ORDEM_MENU_ENCAMINHAMENTO_NAAPA = 4;
-        
+        public const int ORDEM_MENU_RELATORIO_DINAMICO_NAAPA = 5;
+        public const int ORDEM_MENU_BUSCA_ATIVA_NAAPA = 6;
+
         public const int ORDEM_MENU_RELATORIO_FREQUENCIA = 1;
         public const int ORDEM_MENU_RELATORIO_DIARIO_DE_CLASSE = 2;
         public const int ORDEM_MENU_RELATORIO_FECHAMENTO = 3;
@@ -317,7 +323,7 @@
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_ADESAO = 2;
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
 
-        public const int ORDEM_SUB_MENU_RELATORIO_DINAMICO_NAAPA = 1;
+        public const int ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES = 1;
 
     }
 }

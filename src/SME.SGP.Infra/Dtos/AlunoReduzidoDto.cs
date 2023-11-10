@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra.Dtos.Aluno;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
@@ -22,5 +21,6 @@ namespace SME.SGP.Infra.Dtos
         public DateTime? DataAtualizacaoContato { get; set; }
         public bool EhAtendidoAEE { get; set; }
         public bool EhMatriculadoTurmaPAP { get; set; }
+        public DadosResponsavelFiliacaoAlunoDto DadosResponsavelFiliacao { get; set; }
     }
 }

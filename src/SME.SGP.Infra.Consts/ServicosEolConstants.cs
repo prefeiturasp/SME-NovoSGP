@@ -194,7 +194,9 @@
         public const string URL_ALUNOS_UES_ANOS_LETIVOS_AUTOCOMPLETE = "alunos/ues/{0}/anosLetivos/{1}/autocomplete";
         
         public const string URL_ALUNOS_TURMAS_ANOS_LETIVOS_HISTORICO_FILTRAR_SITUACAO_TIPO_TURMA = "alunos/{0}/turmas/anosLetivos/{1}/historico/{2}/filtrar-situacao/{3}/tipo-turma/{4}";
-        
+
+        public const string URL_DADOS_RESPONSAVEIS_FILIACAO_ALUNO = "alunos/{0}/responsaveis/filiacao";
+
         public const string URL_DRES = "dres";
         
         public const string URL_FUNCIONARIOS = "funcionarios";
