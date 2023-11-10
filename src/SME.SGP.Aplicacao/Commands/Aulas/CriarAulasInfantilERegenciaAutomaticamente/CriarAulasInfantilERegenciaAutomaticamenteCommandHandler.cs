@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
         private async Task RecuperarDiariosBordoComAulaExcluida(string[] codigosDisciplinasConsideradas, long tipoCalendarioId, List<DiarioBordo> diariosBordoComAulaExcluida, string codigoTurma, List<DiaLetivoDto> periodoTurmaConsiderado, CancellationToken cancellationToken)
         {
             var diariosBordoComAulaExcluidaRecuperados = await mediator
-                .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(codigoTurma, codigosDisciplinasConsideradas, tipoCalendarioId, periodoTurmaConsiderado.Select(p => p.Data).ToArray()), cancellationToken);
+                .Send(new RecuperarDiarioBordoComAulasExcluidasQuery(codigoTurma, codigosDisciplinasConsideradas, tipoCalendarioId, periodoTurmaConsiderado.Select(p => p.Data).Distinct().ToArray()), cancellationToken);
 
             if (diariosBordoComAulaExcluidaRecuperados.NaoEhNulo() && diariosBordoComAulaExcluidaRecuperados.Any())
                 diariosBordoComAulaExcluida.AddRange(diariosBordoComAulaExcluidaRecuperados);
@@ -211,8 +211,9 @@ namespace SME.SGP.Aplicacao
 
         private static IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DateTime> diasNaoLetivos, Turma turma)
             => diasDoPeriodo.Where(c => !c.Data.FimDeSemana() && c.CriarAulaSME ||
-                                        ((c.PossuiEventoDre(turma.Ue.Dre.CodigoDre) && !c.Data.FimDeSemana() || c.PossuiEventoUe(turma.Ue.CodigoUe)) && !c.Data.FimDeSemana() && c.EhLetivo) ||
-                                        ((c.NaoPossuiDre || c.NaoPossuiUe) && (!c.Data.FimDeSemana() || c.Data.FimDeSemana() && c.PossuiEvento) && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)))?
+                                        ((c.PossuiEventoDre(turma.Ue.Dre.CodigoDre) && !c.Data.FimDeSemana() || c.PossuiEventoUe(turma.Ue.CodigoUe)) && !c.Data.FimDeSemana() && c.EhLetivo) ||                                         
+                                        ((c.NaoPossuiDre || c.NaoPossuiUe) && (!c.Data.FimDeSemana() || c.Data.FimDeSemana() && c.PossuiEvento) && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)) ||
+                                        (c.EhNaoLetivo && c.UesIds.Any() && !c.PossuiEventoUe(turma.Ue.CodigoUe)))?
                             .OrderBy(c => c.Data)?
                             .ToList();
 

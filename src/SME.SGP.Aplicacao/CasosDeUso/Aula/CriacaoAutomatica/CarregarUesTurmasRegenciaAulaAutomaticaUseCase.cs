@@ -42,8 +42,11 @@ namespace SME.SGP.Aplicacao
             {
                 if (modalidade == Modalidade.EJA)
                 {
-                    await ObterDados(modalidade, 1, turma, mensagem.Pagina);
-                    await ObterDados(modalidade, 2, turma, mensagem.Pagina);
+                    if (turma == null || turma.Semestre == 1)
+                        await ObterDados(modalidade, 1, turma, mensagem.Pagina);
+
+                    if (turma == null || turma.Semestre == 2)
+                        await ObterDados(modalidade, 2, turma, mensagem.Pagina);
                 }
                 else executarProximaPagina = await ObterDados(modalidade, turma: turma, pagina: mensagem.Pagina);
             }
