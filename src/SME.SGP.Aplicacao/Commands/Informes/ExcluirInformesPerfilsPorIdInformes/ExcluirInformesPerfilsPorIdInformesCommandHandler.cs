@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<bool> Handle(ExcluirInformesPerfilsPorIdInformesCommad request, CancellationToken cancellationToken)
         {
-            return repositorio.RemoverPerfisPorInformesIdAsync(request.InformesId);
+            return repositorio.RemoverLogicoPorInformativoIdAsync(request.InformesId);
         }
     }
 }

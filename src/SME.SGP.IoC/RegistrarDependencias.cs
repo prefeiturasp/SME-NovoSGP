@@ -570,7 +570,8 @@ namespace SME.SGP.IoC
             //Informativo
             services.TryAddScoped<IRepositorioInformativo, RepositorioInformativo>();
             services.TryAddScoped<IRepositorioInformativoPerfil, RepositorioInformativoPerfil>();
-            
+            services.TryAddScoped<IRepositorioInformativoNotificacao, RepositorioInformativoNotificacao>();
+
             //CadastroAcessoABAE
             services.TryAddScoped<IRepositorioCadastroAcessoABAE, RepositorioCadastroAcessoABAE>();
             services.TryAddScoped<IRepositorioCadastroAcessoABAEConsulta, RepositorioCadastroAcessoABAEConsulta>();
