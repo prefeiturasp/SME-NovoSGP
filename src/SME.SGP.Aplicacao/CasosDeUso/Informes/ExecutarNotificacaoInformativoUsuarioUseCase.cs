@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             try
             {
-                var usuarioId = (await mediator.Send(new ObterUsuariosIdPorCodigosRfQuery(notificacaoInformativoUsuario.UsuarioRf))).FirstOrDefault();
+                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(notificacaoInformativoUsuario.UsuarioRf));
                 var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(notificacaoInformativoUsuario.Titulo,
                                                                                     notificacaoInformativoUsuario.Mensagem,
                                                                                     notificacaoInformativoUsuario.UsuarioRf,
