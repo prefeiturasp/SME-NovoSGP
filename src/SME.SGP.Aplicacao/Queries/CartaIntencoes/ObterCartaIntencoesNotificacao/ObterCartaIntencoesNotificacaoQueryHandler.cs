@@ -58,8 +58,7 @@ namespace SME.SGP.Aplicacao
                 return professoresNotificar;
             }
 
-
-            if (professorTitular.ProfessorRf.Equals(usuarioLogado.CodigoRf))
+            if (professorTitular.NaoEhNulo() && professorTitular.ProfessorRf.Equals(usuarioLogado.CodigoRf))
             {                
                 var segundoTitular = professoresDaTurma.FirstOrDefault(p => p != usuarioLogado.CodigoRf);
                 var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(segundoTitular));

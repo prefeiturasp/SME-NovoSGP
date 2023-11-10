@@ -178,6 +178,9 @@ namespace SME.SGP.Aplicacao
             if (notaTipoValor.EhNulo())
                 return;
 
+            if (notaTipoValor.TipoNota == TipoNota.Nota && dto.ConselhoClasseNotaDto.Nota.NaoEhNulo() && dto.ConselhoClasseNotaDto.Nota > 10)
+                throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_NUMERICA_DEVE_SER_IGUAL_OU_INFERIOR_A_10);
+
             var turmasCodigos = new[] { dto.CodigoTurma };
 
             var notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?

@@ -14,5 +14,6 @@
         public const string SEM_RECOMENDACAO_FAMILIA_ESTUDANDE = "Ausência das recomendações a família e ao estudante";
         public const string AUSENCIA_DA_NOTA_NO_COMPONENTE = "Ausência da nota de {0}";
         public const string NAO_FOI_ENCONTRADO_CONSELHO_CLASSE_PRA_NENHUM_ESTUDANTE = "Não foi encontrado registro de conselho de classe para nenhum estudante";
+        public const string NOTA_NUMERICA_DEVE_SER_IGUAL_OU_INFERIOR_A_10 = "A nota pós-conselho deve ser menor ou igual a 10.";
     }
 }

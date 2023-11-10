@@ -36,6 +36,8 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = dadosMensagem.Usuario;
             long diarioBordoId = (long)dadosMensagem.DiarioBordoId;
             var diarioBordo = await mediator.Send(new ObterDiarioBordoComAulaETurmaPorCodigoQuery(diarioBordoId));
+            if (diarioBordo.EhNulo())
+                return false;
 
             var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação no Diário de bordo do dia {dataAtual} da turma <strong>{diarioBordo.Aula.Turma.Nome}</strong> da <strong>{diarioBordo.Aula.Turma.Ue.TipoEscola}-{diarioBordo.Aula.Turma.Ue.Nome}</strong> ({diarioBordo.Aula.Turma.Ue.Dre.Abreviacao}).");
 
