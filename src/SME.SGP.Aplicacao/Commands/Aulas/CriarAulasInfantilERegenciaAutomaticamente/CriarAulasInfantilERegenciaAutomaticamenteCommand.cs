@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.Turma)
                 .NotEmpty()
-                .WithMessage("As Turmas devem ser informadas.");
+                .WithMessage("A turma deve ser informada.");
 
             RuleFor(c => c.TipoCalendarioId)
                 .NotEmpty()

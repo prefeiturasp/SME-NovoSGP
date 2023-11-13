@@ -219,7 +219,6 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("			  where a.id = rfa.aula_id and");
             query.AppendLine("				  not a.excluido and");
             query.AppendLine("				  rfa.numero_aula between 1 and a.quantidade);");
-
             return query.ToString();
         }
 

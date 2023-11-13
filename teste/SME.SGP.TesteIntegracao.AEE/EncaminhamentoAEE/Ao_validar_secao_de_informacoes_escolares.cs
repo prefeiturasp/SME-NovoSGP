@@ -11,6 +11,7 @@ using SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;

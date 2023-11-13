@@ -481,37 +481,7 @@ namespace SME.SGP.Dados.Repositorios
                         t.turma_id,
 	                    t.nome"
                 : @"group by
-                        t.ano";
-
-        public async Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string[] codigosDisciplinas, long tipoCalendarioId, DateTime[] datasConsideradas)
-        {
-            var sqlQuery = new StringBuilder();
-            sqlQuery.AppendLine("select distinct db.id,");
-            sqlQuery.AppendLine("	             db.aula_id,");
-            sqlQuery.AppendLine("	             a.id,");
-            sqlQuery.AppendLine("	             a.data_aula");
-            sqlQuery.AppendLine("	from diario_bordo db");
-            sqlQuery.AppendLine("		inner join aula a");
-            sqlQuery.AppendLine("			on db.aula_id = a.id");
-            sqlQuery.AppendLine("where a.excluido and");
-            sqlQuery.AppendLine("	a.turma_id = @codigoTurma and");
-            sqlQuery.AppendLine("	a.disciplina_id = any(@codigosDisciplinas) and");
-            sqlQuery.AppendLine("	a.tipo_calendario_id = @tipoCalendarioId and");
-            sqlQuery.AppendLine("	a.data_aula = any(@datasConsideradas);");
-
-            return await database.Conexao
-                .QueryAsync<DiarioBordo, Aula, DiarioBordo>(sqlQuery.ToString(), (diarioBordo, aula) =>
-                {
-                    diarioBordo.AdicionarAula(aula);
-                    return diarioBordo;
-                }, new
-                {
-                    codigoTurma,
-                    codigosDisciplinas,
-                    tipoCalendarioId,
-                    datasConsideradas
-                }, splitOn: "id");
-        }
+                        t.ano";      
 
         public async Task<IEnumerable<DiarioBordoSemDevolutivaDto>> DiarioBordoSemDevolutiva(long turmaId, string componenteCodigo)
         {

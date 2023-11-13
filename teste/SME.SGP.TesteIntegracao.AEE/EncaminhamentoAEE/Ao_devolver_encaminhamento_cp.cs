@@ -75,8 +75,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var notificacoes = ObterTodos<Notificacao>();
             notificacoes.Any().ShouldBeTrue();
 
-            var pendenciaEncaminhamentoAee = ObterTodos<PendenciaEncaminhamentoAEE>();
-            pendenciaEncaminhamentoAee.Any().ShouldBeFalse();
+            var pendenciaEncaminhamentoAeeProfessor = ObterTodos<PendenciaEncaminhamentoAEE>();
+            pendenciaEncaminhamentoAeeProfessor.Any().ShouldBeTrue();
 
             var pendenciaPerfilUsuario = ObterTodos<PendenciaPerfilUsuario>();
             pendenciaPerfilUsuario.Any().ShouldBeFalse();

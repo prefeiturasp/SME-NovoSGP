@@ -81,7 +81,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             valor.ShouldBe(VALOR_8333);
         }
 
-
         [Fact(DisplayName = "Frequência - Deve obter frequencia geral vazia, na situação onde não há freq. consolidada no período ativo na turma")]
         public async Task Deve_obter_frequencia_geral_de_aluno_sem_frequencia_consolidada()
         {

@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var fechamentosNotasDaTurma = await mediator
-                .Send(new ObterFechamentosPorTurmaPeriodoCCQuery(filtro.PeriodoEscolarId, filtro.TurmaId, filtro.DisciplinaCodigo));
+                .Send(new ObterFechamentosPorTurmaPeriodoCCQuery(filtro.PeriodoEscolarId, filtro.TurmaId, filtro.DisciplinaCodigo, componenteReferencia?.Regencia ?? false));
 
             var idsFechamentoNota = fechamentosNotasDaTurma.SelectMany(a => a.FechamentoAlunos)
                 .SelectMany(a => a.FechamentoNotas)
@@ -252,7 +252,6 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
-
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma

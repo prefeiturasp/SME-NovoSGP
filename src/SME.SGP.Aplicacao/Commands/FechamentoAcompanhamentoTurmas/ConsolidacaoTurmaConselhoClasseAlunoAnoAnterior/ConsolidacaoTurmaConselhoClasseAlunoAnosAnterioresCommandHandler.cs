@@ -37,6 +37,12 @@ namespace SME.SGP.Aplicacao
                     };
                     await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoAlunoNota);
                 }
+                else
+                {
+                    consolidadoNota.Nota = request.AlunoNota.Nota;
+                    consolidadoNota.ConceitoId = request.AlunoNota.ConceitoId;
+                    await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+                }
 
                 return true;
             }

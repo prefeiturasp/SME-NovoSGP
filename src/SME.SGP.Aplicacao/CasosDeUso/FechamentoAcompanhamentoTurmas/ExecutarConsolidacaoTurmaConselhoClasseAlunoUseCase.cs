@@ -86,13 +86,14 @@ namespace SME.SGP.Aplicacao
 
             if (!filtro.Inativo && componentesComNotaFechamentoOuConselho.Any())
             {
-                
-                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+
                 if (turma.ModalidadeCodigo != Modalidade.Fundamental)
                 {
+                    var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
                     if (codigosComplementares.Any())
                         turmasCodigos.AddRange(codigosComplementares);
                 }
+
                 var componentesDaTurmaES = await mediator.Send(new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(turmasCodigos.ToArray()));
 
                 if (componentesDaTurmaES.NaoEhNulo() && componentesDaTurmaES.Any())
@@ -101,7 +102,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
                         var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
-                        var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
+                        var conselhoClasseAluno = conselhoClasse != null ? await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo)) : null;
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
                  

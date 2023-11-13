@@ -140,6 +140,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo, ueId }, commandTimeout: 60);
         }
 
+        public async Task<IEnumerable<long>> ObterTurmasInfantilComDevolutivasPorTurmaIdAula(string turmaId)
+        {
+            var query = @" SELECT  a.turma_id::int8  
+                           FROM diario_bordo db 
+                           inner join aula a on a.id = db.aula_id
+                           WHERE not db.excluido 
+                           AND NOT a.excluido 
+                           and a.turma_id = @turmaId ";
+
+            return await database.Conexao.QueryAsync<long>(query, new { turmaId });
+        }
+
         public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoComDevolutivasPorTurmaEAnoLetivo(long turmaId, int anoLetivo)
         {
             var query = @" select 
