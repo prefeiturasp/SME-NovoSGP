@@ -266,7 +266,7 @@ namespace SME.SGP.Infra
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR_CALENDARIO_PROFESSOR,
             Icone = ConstantesMenuPermissao.ICONE_FA_CALENDAR_ALT,
             IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
-            EhAlteracao = true)]
+            EhConsulta = true)]
         CP_C = 60,
         
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_DIARIO_DE_CLASSE,
