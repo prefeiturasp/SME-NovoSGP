@@ -140,6 +140,24 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
         }
 
+        [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho para estudante que saiu no primeiro bim e entrou na turma novamente no terceiro")]
+        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_fundamental_aluno_retornou_a_turma()
+        {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(0, CODIGO_ALUNO_14, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_3,
+                3);
+
+            await CriarDados(ObterPerfilProfessor(),
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                            ANO_7,
+                            Modalidade.Fundamental,
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            false,
+                            SituacaoConselhoClasse.EmAndamento,
+                            true);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
+        }
+
         private async Task CriarDados(
                         string perfil,
                         long componente,
