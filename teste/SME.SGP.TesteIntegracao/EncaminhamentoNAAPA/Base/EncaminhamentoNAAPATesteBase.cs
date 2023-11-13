@@ -1,13 +1,12 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Aplicacao;
-using System.Text.RegularExpressions;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
@@ -83,12 +82,28 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_OPCAO_RESPOSTA_ALFABETIZACAO = 179;
         protected const long ID_OPCAO_RESPOSTA_PRE_SILABICO = 181;
         protected const long ID_OPCAO_RESPOSTA_BAIXA_FREQUENCIA = 183;
+        protected const long ID_GRUPO_FOCAL_TIPO_ATENDIMENTO_EXCLUIDO = 185;
+        protected const long ID_OPCAO_RESPOSTA_REUNIAO_COMPARTILHDA = 186;
+        protected const long ID_OPCAO_RESPOSTA_REUNIAO_REDE_MARCRO = 187;
+        protected const long ID_OPCAO_RESPOSTA_REUNIAO_REDE_MICRO = 188;
+        protected const long ID_OPCAO_RESPOSTA_REUNIAO_REDE_MICRO_UE = 189;
+        protected const long ID_OPCAO_RESPOSTA_REUNIAO_HORARIOS_COLETIVOS = 190;
+        protected const long ID_OPCAO_RESPOSTA_ITINERANCIA = 191;
+        protected const long ID_OPCAO_RESPOSTA_ATENDIMENTO_PEDAGOGICO_DOMICILIAR = 192;
+        protected const long ID_OPCAO_RESPOSTA_ATENDIMENTO_ATENDIMENTO_PRESENCIAL_DRE = 193;
+        protected const long ID_OPCAO_RESPOSTA_ATENDIMENTO_REMOTO = 194;
+
+        protected const long ID_OPCAO_RESPOSTA_ANALISE_DOCUMENTAL = 195;
+        protected const long ID_OPCAO_RESPOSTA_ENTREVISTA = 196;
+        protected const long ID_OPCAO_RESPOSTA_GRUPO_FOCAL = 197;
+        protected const long ID_OPCAO_RESPOSTA_REFLEXIVO_INTERVENTIVO = 198;
+        protected const long ID_OPCAO_RESPOSTA_OBSERVACAO = 199;
+        protected const long ID_OPCAO_RESPOSTA_PROJETO_TECER = 200;
+        protected const long ID_OPCAO_RESPOSTA_VISITA_TECNICA = 201;
 
         protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE = 1;
         protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL = 2;
         protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_ITINERANCIA = 3;
-
-
 
         protected const long ID_QUESTIONARIO_INFORMACOES_ESTUDANTE = 1;
         protected const long ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL = 2;
@@ -97,6 +112,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_ATENDIMENTO_NAO_PRESENCIAL = 12;
         protected const long ID_GRUPO_DE_TRABALHO_NAAPA = 13;
         protected const long ID_ACOES_LUDICAS = 14;
+        protected const long ID_GRUPO_FOCAL_TIPO_ATENDIMENTO_EXCLUIDO = 185;
 
         protected const string NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
         protected const string NOME_COMPONENTE_QUESTAO_ENDERECO_RESIDENCIAL = "ENDERECO_RESIDENCIAL";
@@ -213,12 +229,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
-
+            
             //Id 3
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
                 QuestionarioId = 3,
-                Nome = "Itinerância",
+                Nome = "Apoio e Acompanhamento",
                 NomeComponente = "QUESTOES_ITINERACIA",
                 Etapa = 1,
                 Ordem = 3,
@@ -545,6 +561,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
                     Ordem = 1,
                     Nome = "Atendimento não presencial",
+                    Excluido = true,
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF,
                     CriadoEm = DateTime.Now
@@ -2139,6 +2156,200 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     CriadoEm = DateTime.Now
                 });
 
+                //id 185
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                    Ordem = 3,
+                    Nome = "Grupo Focal",
+                    Excluido = true,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 186
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 3,
+                    Nome = "Reunião compartilhada",
+                    Excluido = true,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+
+                //id 187
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 4,
+                    Nome = "Reunião de Rede Macro (formada pelo território)",
+                    Excluido = true,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+
+                //id 188
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 5,
+                    Nome = "Reunião de Rede Micro (formada pelo NAAPA)",
+                    Excluido = true,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 189
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 6,
+                    Nome = "Reunião de Rede Micro na UE",
+                    Excluido = true,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 190
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 7,
+                    Nome = "Reunião em Horários Coletivos",
+                    Excluido = true,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 191
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                    Ordem = 1,
+                    Nome = "Itinerância",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 192
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                    Ordem = 3,
+                    Nome = "Atendimento Pedagógico Domiciliar",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 193
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                    Ordem = 5,
+                    Nome = "Atendimento presencial na DRE",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 194
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                    Ordem = 6,
+                    Nome = "Atendimento Remoto",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 195
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 7,
+                    Nome = "Análise documental",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 196
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 8,
+                    Nome = "Entrevista",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 197
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 9,
+                    Nome = "Grupo focal",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 198
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 10,
+                    Nome = "Grupo reflexivo interventivo",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 199
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 11,
+                    Nome = "Observação",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 200
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 12,
+                    Nome = "Projeto Tecer",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
+
+                //id 201
+                await InserirNaBase(new OpcaoResposta()
+                {
+                    QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                    Ordem = 13,
+                    Nome = "Visita técnica",
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    CriadoEm = DateTime.Now
+                });
         }
 
 
@@ -2309,7 +2520,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = 3,
                 Ordem = 2,
-                Nome = "Tipo do atendimento",
+                Nome = "Modalidade de atenção",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
                 CriadoPor = SISTEMA_NOME,
@@ -2325,7 +2536,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Ordem = 3,
                 Nome = "Procedimento de trabalho",
                 Obrigatorio = true,
-                Tipo = TipoQuestao.Combo,
+                Tipo = TipoQuestao.ComboMultiplaEscolha,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
