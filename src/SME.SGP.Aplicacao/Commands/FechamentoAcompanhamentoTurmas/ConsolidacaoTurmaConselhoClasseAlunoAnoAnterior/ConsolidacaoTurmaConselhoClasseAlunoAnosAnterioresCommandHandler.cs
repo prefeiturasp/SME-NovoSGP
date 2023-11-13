@@ -36,13 +36,13 @@ namespace SME.SGP.Aplicacao
                         ConselhoClasseConsolidadoTurmaAlunoId = request.ConsolidacaoId
                     };
                     await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoAlunoNota);
-                    
-                    return true;
                 }
-
-                consolidadoNota.Nota = request.AlunoNota.Nota;
-                consolidadoNota.ConceitoId = request.AlunoNota.ConceitoId;
-                await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+                else
+                {
+                    consolidadoNota.Nota = request.AlunoNota.Nota;
+                    consolidadoNota.ConceitoId = request.AlunoNota.ConceitoId;
+                    await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+                }
 
                 return true;
             }
