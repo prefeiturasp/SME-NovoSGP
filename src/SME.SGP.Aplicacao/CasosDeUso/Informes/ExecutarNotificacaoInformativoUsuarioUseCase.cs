@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var notificacaoInformativoUsuario = param.ObterObjetoMensagem<NotificacaoInformativoUsuarioFiltro>();
-            var existeInformes = await mediator.Send(new ExisteInformePorIdQuery(notificacaoInformativoUsuario.InformativoId));
+            var informeExcluido = await mediator.Send(new InformeFoiExcluidoQuery(notificacaoInformativoUsuario.InformativoId));
             
-            if (!existeInformes)
+            if (informeExcluido)
                 return false;
 
             unitOfWork.IniciarTransacao();

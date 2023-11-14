@@ -143,5 +143,10 @@ namespace SME.SGP.Dados.Repositorios
 
             return sql.ToString();
         }
+
+        public async Task<bool> InformeFoiExcluido(long id)
+        {
+            return await database.Conexao.ExecuteScalarAsync<bool>("select count(1) from informativo where id=@id and excluido", new { id });
+        }
     }
 }
