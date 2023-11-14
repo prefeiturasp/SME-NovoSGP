@@ -52,7 +52,8 @@ namespace SME.SGP.TesteIntegracao.Informe
 
             var useCase = ServiceProvider.GetService<IExecutarNotificacaoInformativoUsuarioUseCase>();
 
-            var dto = new NotificacaoInformativoUsuarioFiltro { 
+            var dto = new NotificacaoInformativoUsuarioFiltro
+            {
                 InformativoId = INFORME_ID_1,
                 Titulo = "Informe 1",
                 UsuarioRf = USUARIO_PROFESSOR_CODIGO_RF_1111111,
@@ -70,6 +71,53 @@ namespace SME.SGP.TesteIntegracao.Informe
             var noticacao = notificacoes.FirstOrDefault();
             noticacao.Codigo.ShouldBe(ID_CODIGO);
 
+        }
+
+
+        [Fact(DisplayName = "Informes - Não deve executar notificação informes excluído")]
+        public async Task Nao_deve_executar_notificacao_Informes_excluido()
+        {
+            await CriarDadosBase();
+
+            await InserirNaBase(new Informativo()
+            {
+                Titulo = "Informe 1",
+                Texto = "Teste notificação",
+                Excluido = true,
+                DataEnvio = DateTimeExtension.HorarioBrasilia(),
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new InformativoPerfil()
+            {
+                InformativoId = INFORME_ID_1,
+                CodigoPerfil = PERFIL_ADM_SME,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var useCase = ServiceProvider.GetService<IExecutarNotificacaoInformativoUsuarioUseCase>();
+
+            var dto = new NotificacaoInformativoUsuarioFiltro
+            {
+                InformativoId = INFORME_ID_1,
+                Titulo = "Informe 1",
+                UsuarioRf = USUARIO_PROFESSOR_CODIGO_RF_1111111,
+                Mensagem = "Teste notificação",
+                DreCodigo = DRE_CODIGO_1,
+                UeCodigo = UE_CODIGO_1
+            };
+
+            var mensagem = new MensagemRabbit { Mensagem = JsonConvert.SerializeObject(dto) };
+
+            await useCase.Executar(mensagem);
+
+            var notificacoes = ObterTodos<Notificacao>();
+            notificacoes.ShouldNotBeNull();
+            notificacoes.Any().ShouldBeFalse();
         }
     }
 }

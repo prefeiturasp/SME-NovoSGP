@@ -8,5 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<Informativo> ObterInformes(long id);
         Task<PaginacaoResultadoDto<Informativo>> ObterInformesPaginado(InformeFiltroDto filtro, Paginacao paginacao);
+        Task<bool> InformeFoiExcluido(long id);
     }
 }
