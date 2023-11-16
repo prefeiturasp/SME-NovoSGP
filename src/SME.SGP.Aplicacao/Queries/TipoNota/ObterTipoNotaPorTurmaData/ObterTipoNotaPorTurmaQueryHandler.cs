@@ -30,6 +30,9 @@ namespace SME.SGP.Aplicacao
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                 return TipoNota.Nota;
 
+            if (request.Turma.NaoEhNulo() && request.Turma.EhCELP())
+                return TipoNota.Conceito;
+
             var anoCicloModalidade = string.Empty;
             if (request.Turma.NaoEhNulo())
                 anoCicloModalidade = request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano;            

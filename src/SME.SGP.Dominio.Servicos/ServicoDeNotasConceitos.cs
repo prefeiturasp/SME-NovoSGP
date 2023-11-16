@@ -1,17 +1,16 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
-using Minio.DataModel;
 
 namespace SME.SGP.Dominio
 {
@@ -111,6 +110,11 @@ namespace SME.SGP.Dominio
                     new ObterNotaTipoValorPorTurmaIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId),
                         Enumerados.TipoTurma.EdFisica));
 
+            var tipoNotaCelp = await ObterTipoNotaCelp(turmaEOL);
+
+            if (tipoNotaCelp.NaoEhNulo())
+                return tipoNotaCelp;
+
             var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao,
                 consideraHistorico);
 
@@ -118,6 +122,19 @@ namespace SME.SGP.Dominio
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrado_tipo_de_nota_para_a_avaliacao);
 
             return notaTipo;
+        }
+
+        private async Task<NotaTipoValor> ObterTipoNotaCelp(DadosTurmaEolDto turmaEOL)
+        {
+            if (turmaEOL.TipoTurma == TipoTurma.Programa)
+            {
+                var modalidade = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(turmaEOL.Codigo.ToString()));
+
+                if (modalidade == Modalidade.CELP)
+                    return new NotaTipoValor() { TipoNota = TipoNota.Conceito };
+            }
+
+            return null;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds,
