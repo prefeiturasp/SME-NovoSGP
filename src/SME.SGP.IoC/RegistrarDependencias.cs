@@ -578,6 +578,13 @@ namespace SME.SGP.IoC
 
             //Consulta Crianças Estudantes Ausentes
             services.TryAddScoped<IRepositorioConsultaCriancasEstudantesAusentes, RepositorioConsultaCriancasEstudantesAusentes>();
+
+            // Registro Ação Busca Ativa 
+            services.TryAddScoped<IRepositorioSecaoRegistroAcaoBuscaAtiva, RepositorioSecaoRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioRegistroAcaoBuscaAtiva, RepositorioRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioRegistroAcaoBuscaAtivaSecao, RepositorioRegistroAcaoBuscaAtivaSecao>();
+            services.TryAddScoped<IRepositorioQuestaoRegistroAcaoBuscaAtiva, RepositorioQuestaoRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioRespostaRegistroAcaoBuscaAtiva, RepositorioRespostaRegistroAcaoBuscaAtiva>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
