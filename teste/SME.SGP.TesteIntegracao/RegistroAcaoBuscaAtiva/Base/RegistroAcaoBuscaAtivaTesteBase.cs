@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.Setup;
@@ -59,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
         private async Task CriarSecaoQuestionario()
         {
-            await InserirNaBase(new SecaoEncaminhamentoNAAPA()
+            await InserirNaBase(new SecaoRegistroAcaoBuscaAtiva()
             {
                 QuestionarioId = QUESTIONARIO_REGISTRO_ACAO_ID_1,
                 Id = SECAO_REGISTRO_ACAO_ID_1,
@@ -77,9 +78,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 await CriarTurma(filtro.Modalidade, filtro.AnoTurma);
         }
 
-        protected IObterEncaminhamentoNAAPAUseCase ObterServicoListagemComFiltros()
+        protected IObterSecoesRegistroAcaoSecaoUseCase ObterUseCaseListagemSecoes()
         {
-            return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();
+            return ServiceProvider.GetService<IObterSecoesRegistroAcaoSecaoUseCase>();
         }
 
 
