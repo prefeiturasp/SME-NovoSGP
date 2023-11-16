@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
                     Nome = secao.Nome,
                     QuestionarioId = secao.QuestionarioId,
                     Etapa = secao.Etapa,
+                    Ordem = secao.Ordem,
                     Concluido = (secao.RegistroBuscaAtivaSecao?.Concluido ?? false),
                     NomeComponente = secao.NomeComponente,
                     Auditoria = (AuditoriaDto)secao.RegistroBuscaAtivaSecao,

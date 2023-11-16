@@ -18,9 +18,29 @@ namespace SME.SGP.Dados.Repositorios
             throw new System.NotImplementedException();
         }
 
-        public Task<IEnumerable<RespostaQuestaoRegistroAcaoBuscaAtivaDto>> ObterRespostasRegistroAcao(long registroAcaoId)
+        public async Task<IEnumerable<RespostaQuestaoRegistroAcaoBuscaAtivaDto>> ObterRespostasRegistroAcao(long registroAcaoId)
         {
-            throw new System.NotImplementedException();
+            var query = @$"select rabar.Id
+                            , rabaq.questao_id as QuestaoId
+                            , rabar.resposta_id as RespostaId
+                            , rabar.texto 
+                            , a.*
+                          from registro_acao_busca_ativa_secao rabas  
+                         inner join registro_acao_busca_ativa_questao rabaq on rabaq.registro_acao_busca_ativa_secao_id = rabas.id
+                         inner join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id
+                          left join arquivo a on a.id = rabar.arquivo_id 
+                         where not rabas.excluido 
+                           and not rabaq.excluido 
+                           and not rabar.excluido 
+                           and rabas.registro_acao_busca_ativa_id = @registroAcaoId";
+
+            return await database.Conexao.QueryAsync<RespostaQuestaoRegistroAcaoBuscaAtivaDto, Arquivo, RespostaQuestaoRegistroAcaoBuscaAtivaDto>(query,
+                (resposta, arquivo) =>
+                {
+                    resposta.Arquivo = arquivo;
+                    return resposta;
+                }, new { registroAcaoId });
         }
+
     }
 }
