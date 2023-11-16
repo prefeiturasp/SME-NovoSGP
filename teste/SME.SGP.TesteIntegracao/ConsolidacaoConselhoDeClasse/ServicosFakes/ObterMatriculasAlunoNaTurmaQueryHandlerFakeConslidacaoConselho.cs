@@ -5,15 +5,14 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes
 {
-    public class ObterMatriculasAlunoNaTurmaQueryHandlerFake : IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterMatriculasAlunoNaTurmaQueryHandlerFakeConslidacaoConselho : IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        public ObterMatriculasAlunoNaTurmaQueryHandlerFake()
+        public ObterMatriculasAlunoNaTurmaQueryHandlerFakeConslidacaoConselho()
         {
         }
 
@@ -63,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes
                     TipoResponsavel = "1"
                 }
             };
-            return lista.Where(x => x.CodigoAluno.Equals(request.CodigoAluno));
+            return await Task.FromResult(lista.Where(x => x.CodigoAluno.Equals(request.CodigoAluno)));
         }
     }
 }
