@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao
                 }
             };
 
-            return alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma);
+            return await Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma));
         }
     }
 }

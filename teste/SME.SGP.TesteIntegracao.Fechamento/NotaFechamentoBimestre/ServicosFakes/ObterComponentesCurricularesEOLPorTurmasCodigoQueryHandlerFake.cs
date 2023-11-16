@@ -1,20 +1,19 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
 {
-  public class ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake : IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>
+    public class ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake : IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>
     {
-      public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake(){}
+        public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake() { }
 
-      public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
-      {
-        return new List<ComponenteCurricularEol>()
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
+        {
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
         {
           new ComponenteCurricularEol()
           {
@@ -103,7 +102,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
               LancaNota = true,
               Regencia = true,
           }
-        };
-      }
+        });
+        }
     }
 }

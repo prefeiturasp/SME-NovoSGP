@@ -92,7 +92,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var excecao = await ExecutarComandosFechamentoTurmaDisciplinaComExcecao(fechamentoTurmaDisciplinaDto);
         }
         
-        private FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDtoFundamental(string perfil, string anoTurma, bool consideraAnorAnterior = false)
+        private static FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDtoFundamental(string perfil, string anoTurma, bool consideraAnorAnterior = false)
         {
             return new FiltroFechamentoNotaDto()
             {

@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
     {
         public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterTurmaRegularESrmPorAlunoQuery request, CancellationToken cancellationToken)
         {
-            return new List<TurmasDoAlunoDto>() { new TurmasDoAlunoDto() { CodigoTurma = 1, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo } };
+            return await Task.FromResult(new List<TurmasDoAlunoDto>() { new TurmasDoAlunoDto() { CodigoTurma = 1, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo } });
         }
     }
 }

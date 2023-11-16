@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new List<ComponenteCurricularEol>()
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
             {
                 new ComponenteCurricularEol()
                 {
@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                         Nome = "Base Nacional Comum"
                     }
                 }
-            };
+            });
         }
     }
 }

@@ -2,7 +2,6 @@
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
@@ -22,6 +21,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         ANO_7);
 
             //await ExecuteTeste(dto);
+
+            await Task.CompletedTask;
         }
 
         //[Fact]
@@ -34,6 +35,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         ANO_1);
 
             //await ExecuteTeste(dto);
+
+            await Task.CompletedTask;
         }
 
         //[Fact]
@@ -46,6 +49,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         ANO_3);
 
             //await ExecuteTeste(dto);
+
+            await Task.CompletedTask;
         }
     }
 }
