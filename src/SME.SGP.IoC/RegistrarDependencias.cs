@@ -1367,6 +1367,7 @@ namespace SME.SGP.IoC
 
             //Busca Ativa - Registro Ação
             services.TryAddScoped<IObterSecoesRegistroAcaoSecaoUseCase, ObterSecoesRegistroAcaoSecaoUseCase>();
+            services.TryAddScoped<IObterQuestionarioRegistroAcaoUseCase, ObterQuestionarioRegistroAcaoUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

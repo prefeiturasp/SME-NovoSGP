@@ -83,6 +83,10 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             return ServiceProvider.GetService<IObterSecoesRegistroAcaoSecaoUseCase>();
         }
 
+        protected IObterQuestionarioRegistroAcaoUseCase ObterUseCaseListagemQuestionario()
+        {
+            return ServiceProvider.GetService<IObterQuestionarioRegistroAcaoUseCase>();
+        }
 
         private async Task CriarRespostasComplementares()
         {
@@ -380,7 +384,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             });
         }
 
-        private IEnumerable<(long id, string descricao)> ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA()
+        protected IEnumerable<(long id, string descricao)> ObterOpcoesRespostas_JUSTIFICATIVA_MOTIVO_FALTA()
         {
             var opcoesRespostas = new List<(long id, string descricao)>();
             opcoesRespostas.Add((1, "Ausência por gripe ou resfriado (tosse, febre, dor de garganta)"));
@@ -415,7 +419,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             return opcoesRespostas;
         }
 
-        private IEnumerable<(long id, string descricao)> ObterOpcoesRespostas_QUESTOES_OBS_DURANTE_VISITA()
+        protected IEnumerable<(long id, string descricao)> ObterOpcoesRespostas_QUESTOES_OBS_DURANTE_VISITA()
         {
             var opcoesRespostas = new List<(long id, string descricao)>();
             opcoesRespostas.Add((1, "Há suspeita de negligência"));

@@ -24,5 +24,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterSecoesRegistroAcaoSecaoUseCase.Executar(filtro));
         }
 
+        [HttpGet("registros-acao/questionario/{questionarioId}")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] long? registroAcaoId, [FromServices] IObterQuestionarioRegistroAcaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(questionarioId, registroAcaoId));
+        }
+
     }
 }
