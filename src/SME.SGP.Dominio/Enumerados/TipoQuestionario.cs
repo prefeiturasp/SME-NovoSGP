@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio
         RegistroItineranciaAluno = 4,
         EncaminhamentoNAAPA = 5,
         RelatorioPAP = 6,
-        RelatorioDinamicoEncaminhamentoNAAPA = 7
+        RelatorioDinamicoEncaminhamentoNAAPA = 7,
+        RegistroAcaoBuscaAtiva = 8
     }
 }
