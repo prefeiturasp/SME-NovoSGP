@@ -110,10 +110,8 @@ namespace SME.SGP.Dominio
                     new ObterNotaTipoValorPorTurmaIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId),
                         Enumerados.TipoTurma.EdFisica));
 
-            var tipoNotaCelp = await ObterTipoNotaCelp(turmaEOL);
-
-            if (tipoNotaCelp.NaoEhNulo())
-                return tipoNotaCelp;
+            if (await ModalidadeTurmaEhCelp(turmaEOL))
+                return new NotaTipoValor() { TipoNota = TipoNota.Conceito }; 
 
             var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao,
                 consideraHistorico);
@@ -124,17 +122,16 @@ namespace SME.SGP.Dominio
             return notaTipo;
         }
 
-        private async Task<NotaTipoValor> ObterTipoNotaCelp(DadosTurmaEolDto turmaEOL)
+        private async Task<bool> ModalidadeTurmaEhCelp(DadosTurmaEolDto turmaEOL)
         {
             if (turmaEOL.TipoTurma == TipoTurma.Programa)
             {
                 var modalidade = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(turmaEOL.Codigo.ToString()));
 
-                if (modalidade == Modalidade.CELP)
-                    return new NotaTipoValor() { TipoNota = TipoNota.Conceito };
+                return modalidade == Modalidade.CELP;
             }
 
-            return null;
+            return false;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds,
