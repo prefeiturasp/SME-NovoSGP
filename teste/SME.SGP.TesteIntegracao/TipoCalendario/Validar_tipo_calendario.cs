@@ -458,6 +458,8 @@ namespace SME.SGP.TesteIntegracao.TipoCalendarioValidacoes
             Modalidade.Fundamental.ObterModalidadeTipoCalendario().EhFundamentalMedio().ShouldBeTrue();
             Modalidade.Medio.ObterModalidadeTipoCalendario().EhFundamentalMedio().ShouldBeTrue();
             Modalidade.EducacaoInfantil.ObterModalidadeTipoCalendario().EhEducacaoInfantil().ShouldBeTrue();
+
+            await Task.CompletedTask;
         }
     }
 }

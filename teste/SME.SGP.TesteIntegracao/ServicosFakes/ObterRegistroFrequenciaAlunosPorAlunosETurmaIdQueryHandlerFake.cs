@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao
     {
         public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> Handle(ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery request, CancellationToken cancellationToken)
         {
-            return new List<RegistroFrequenciaPorDisciplinaAlunoDto>()
+            return await Task.FromResult(new List<RegistroFrequenciaPorDisciplinaAlunoDto>()
             {
                 new RegistroFrequenciaPorDisciplinaAlunoDto() 
                 {
@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao
                     AlunoCodigo = "1",
                     ComponenteCurricularId = "1"
                 }
-            };
+            });
         }
     }
 }

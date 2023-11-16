@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.ExcluirTurmaExtinta.ServicosFakes
                 },
             };
 
-            return turmasParaSincronizacaoinstitucional.FirstOrDefault(f => f.Codigo == request.TurmaId);
+            return await Task.FromResult(turmasParaSincronizacaoinstitucional.FirstOrDefault(f => f.Codigo == request.TurmaId));
         }
     }
 }

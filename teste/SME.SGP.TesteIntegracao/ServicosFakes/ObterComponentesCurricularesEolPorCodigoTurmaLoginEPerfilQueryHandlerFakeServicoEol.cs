@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
-            return new List<ComponenteCurricularEol>()
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
             {
                 new ComponenteCurricularEol()
                 {
@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     GrupoMatriz = new GrupoMatriz() { Id = 1, Nome = "Base Nacional Comum" },
                     LancaNota = true
                 }
-            };
+            });
         }
     }
 }

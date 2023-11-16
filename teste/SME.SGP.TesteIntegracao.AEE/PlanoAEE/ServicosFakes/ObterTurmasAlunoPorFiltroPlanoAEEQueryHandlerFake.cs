@@ -12,8 +12,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterTurmasAlunoPorFiltroPlanoAEEQueryHandlerFake  : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        private readonly string ALUNO_CODIGO_1 = "1"; 
-
         private readonly string ATIVO = "Ativo";
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";
@@ -41,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 }
             };
-            return lista.Where(x => x.CodigoAluno == request.CodigoAluno);
+            return await Task.FromResult(lista.Where(x => x.CodigoAluno == request.CodigoAluno));
         }
     }
 }

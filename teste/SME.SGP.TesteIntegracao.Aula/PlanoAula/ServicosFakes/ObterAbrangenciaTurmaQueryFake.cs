@@ -10,7 +10,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
     {
         public async Task<AbrangenciaFiltroRetorno> Handle(ObterAbrangenciaTurmaQuery request, CancellationToken cancellationToken)
         {
-            return new AbrangenciaFiltroRetorno();
+            return await Task.FromResult(new AbrangenciaFiltroRetorno());
         }
     }
 }

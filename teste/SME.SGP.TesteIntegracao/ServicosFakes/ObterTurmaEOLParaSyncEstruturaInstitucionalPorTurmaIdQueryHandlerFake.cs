@@ -10,7 +10,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<TurmaParaSyncInstitucionalDto> Handle(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
-            return new TurmaParaSyncInstitucionalDto()
+            return await Task.FromResult(new TurmaParaSyncInstitucionalDto()
             {
                 Ano = "4",
                 AnoLetivo = 2022,
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 Situacao = "E",
                 CodigoModalidade = Dominio.Modalidade.Medio,
                 DataStatusTurmaEscola = System.DateTime.Now.AddYears(-1)
-            };
+            });
         }
     }
 }

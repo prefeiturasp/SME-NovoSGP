@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery request, CancellationToken cancellationToken)
         {
 
-            return new List<ComponenteCurricularDto>()
+            return await Task.FromResult(new List<ComponenteCurricularDto>()
         {
           new ComponenteCurricularDto()
           {
@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
             DescricaoEol = "MATEMATICA",
             TerritorioSaber = false
           }
-        };
+        });
         }
     }
 }
