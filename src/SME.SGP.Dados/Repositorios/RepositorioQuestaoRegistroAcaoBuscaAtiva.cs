@@ -2,6 +2,8 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -11,5 +13,14 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long registroAcaoSecaoId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IEnumerable<RespostaQuestaoRegistroAcaoBuscaAtivaDto>> ObterRespostasRegistroAcao(long registroAcaoId)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
