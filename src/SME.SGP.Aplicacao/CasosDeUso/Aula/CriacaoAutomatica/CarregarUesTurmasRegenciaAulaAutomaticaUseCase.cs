@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -11,13 +13,26 @@ namespace SME.SGP.Aplicacao
 {
     public class CarregarUesTurmasRegenciaAulaAutomaticaUseCase : AbstractUseCase, ICarregarUesTurmasRegenciaAulaAutomaticaUseCase
     {
-        public CarregarUesTurmasRegenciaAulaAutomaticaUseCase(IMediator mediator)
+        private readonly IRepositorioCache repositorioCache;
+
+        public CarregarUesTurmasRegenciaAulaAutomaticaUseCase(IMediator mediator, IRepositorioCache repositorioCache)
             : base(mediator)
         {
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var executarManutencao = await mediator
+                .Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
+
+            if (!executarManutencao)
+            {
+                await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTimeExtension.HorarioBrasilia():dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas de regência não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
+                return false;
+            }
+
             Modalidade[] modalidades;
             Turma turma = null;
             var executarProximaPagina = false;
@@ -63,15 +78,15 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ObterDados(Modalidade modalidade, int? semestre = null, Turma turma = null, int pagina = 1)
         {
-            var anoAtual = DateTime.Now.Year;
+            var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
 
             var tipoCalendarioId = await mediator
                 .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(modalidade, anoAtual, semestre));
 
-            if (!(tipoCalendarioId > 0))
+            if (tipoCalendarioId < 1)
             {
                 await mediator
-                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil/Regência não iniciada pois não há Tipo Calendário cadastrado para {string.Concat(modalidade.ShortName(), semestre > 0 ? $" {semestre}º semestre" : string.Empty)}.", LogNivel.Negocio, LogContexto.Infantil));
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTimeExtension.HorarioBrasilia():dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil/Regência não iniciada pois não há Tipo Calendário cadastrado para {string.Concat(modalidade.ShortName(), semestre > 0 ? $" {semestre}º semestre" : string.Empty)}.", LogNivel.Negocio, LogContexto.Infantil));
                 return false;
             }
 
@@ -81,7 +96,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares.EhNulo() && !periodosEscolares.Any())
             {
                 await mediator
-                    .Send(new SalvarLogViaRabbitCommand($"{DateTime.Now:dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil/Regência não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTimeExtension.HorarioBrasilia():dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas do Infantil/Regência não iniciada pois não há Período Escolar cadastrado.", LogNivel.Negocio, LogContexto.Infantil));
                 return false;
             }
 
@@ -118,9 +133,13 @@ namespace SME.SGP.Aplicacao
 
             if (dadosTurmaComponente.Any())
             {
+                var chaveCache = string.Format(NomeChaveCache.DADOS_CRIACAO_AULAS_AUTOMATICAS_REGENCIA_UE_TIPO_CALENDARIO_MODALIDADE, ueCodigo, tipoCalendarioId, modalidade);
                 var dados = new DadosCriacaoAulasAutomaticasDto(ueCodigo, tipoCalendarioId, diasLetivosENaoLetivos, diasForaDoPeriodoEscolar, modalidade, dadosTurmaComponente);
+
+                await repositorioCache.SalvarAsync(chaveCache, dados, 300);
+
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.SincronizarDadosUeTurmaRegenciaAutomaticamente, dados, Guid.NewGuid(), null));
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.SincronizarDadosUeTurmaRegenciaAutomaticamente, chaveCache, Guid.NewGuid(), null));
             }
         }
 

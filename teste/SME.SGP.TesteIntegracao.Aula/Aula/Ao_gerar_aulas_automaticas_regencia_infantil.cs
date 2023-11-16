@@ -5,7 +5,9 @@ using MongoDB.Bson.IO;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Aula.Aula.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
@@ -33,6 +35,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandFakeCriarAulasInfantilERegenciaAutomaticamente), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQuery, IEnumerable<DadosTurmaAulasAutomaticaDto>>), typeof(ObterDadosComponenteCurricularTurmaPorUeEAnoLetivoQueryHandlerFakeSyncRegencia), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessorTitularPorTurmaEComponenteCurricularQuery, ProfessorTitularDisciplinaEol>), typeof(ObterProfessorTitularPorTurmaEComponenteCurricularQueryHandleFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFakeAulasAutomaticas), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -145,7 +148,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
                 TurmaId = 1
             });
 
-            var resultado = await useCase.Executar(new MensagemRabbit());
+           var resultado = await useCase.Executar(new MensagemRabbit());
 
             resultado.ShouldBeTrue();
 
@@ -168,6 +171,15 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
             var dataInicioPeriodo = new DateTime(anoAtual, 2, 5);
             var dataFimPerioodo = new DateTime(anoAtual, 4, 30);
             var useCase = ServiceProvider.GetService<ICarregarUesTurmasRegenciaAulaAutomaticaUseCase>();
+
+            var camposTabelaParametros = new string[] { "nome", "tipo", "descricao", "valor", "ativo", "criado_em", "criado_por", "criado_rf" };
+            var valoresCamposTabelaParametros = new string[]
+            {
+                "'aulasregencia'", "26", "'aulas regência'", "1", "true",
+                $"'{DateTimeExtension.HorarioBrasilia():yyyy-MM-dd}'", $"'{CRIADO_ALTERADO_POR_SISTEMA}'", $"'{CRIADO_ALTERADO_RF_SISTEMA}'"
+            };
+
+            await InserirNaBase("parametros_sistema", camposTabelaParametros, valoresCamposTabelaParametros);
 
             await InserirNaBase(new TipoCalendario()
             {
@@ -330,6 +342,131 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula
             diariosBordo.Any().ShouldBeTrue();
             diariosBordo.Single(db => db.AulaId == 1).Excluido.ShouldBeFalse();
             diariosBordo.Single(db => db.AulaId == 2).Excluido.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task Deve_criar_aulas_infantil_incluindo_excluindo_evento_criando_aula_no_dia()
+        {
+            var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
+            var dataInicioPeriodo = new DateTime(anoAtual, 2, 5);
+            var dataFimPerioodo = new DateTime(anoAtual, 4, 30);
+            var useCase = ServiceProvider.GetService<ICriarAulasInfantilAutomaticamenteUseCase>();
+
+            var camposTabelaParametros = new string[] { "nome", "tipo", "descricao", "valor", "ativo", "criado_em", "criado_por", "criado_rf" };
+            var valoresCamposTabelaParametros = new string[]
+            {
+                "'aulasInfantil'", "26", "'aulas Infantil'", "1", "true",
+                $"'{DateTimeExtension.HorarioBrasilia():yyyy-MM-dd}'", $"'{CRIADO_ALTERADO_POR_SISTEMA}'", $"'{CRIADO_ALTERADO_RF_SISTEMA}'"
+            };
+
+            await InserirNaBase("parametros_sistema", camposTabelaParametros, valoresCamposTabelaParametros);
+
+            await InserirNaBase(new TipoCalendario()
+            {
+                AnoLetivo = anoAtual,
+                Nome = "tipo cal infantil",
+                Periodo = Periodo.Anual,
+                Modalidade = ModalidadeTipoCalendario.Infantil,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = CRIADO_ALTERADO_POR_SISTEMA,
+                CriadoRF = CRIADO_ALTERADO_RF_SISTEMA,
+                Situacao = true
+            });
+
+            await InserirNaBase(new PeriodoEscolar()
+            {
+                TipoCalendarioId = 1,
+                Bimestre = 1,
+                PeriodoInicio = dataInicioPeriodo,
+                PeriodoFim = dataFimPerioodo,
+                CriadoPor = CRIADO_ALTERADO_POR_SISTEMA,
+                CriadoRF = CRIADO_ALTERADO_RF_SISTEMA,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new Dre()
+            {
+                CodigoDre = "1",
+                DataAtualizacao = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new Ue()
+            {
+                CodigoUe = "1",
+                DreId = 1,
+                DataAtualizacao = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new Dominio.Turma()
+            {
+                CodigoTurma = "1",
+                AnoLetivo = anoAtual,
+                UeId = 1,
+                ModalidadeCodigo = Modalidade.EducacaoInfantil,
+                DataAtualizacao = DateTimeExtension.HorarioBrasilia(),
+                Historica = false,
+                TipoTurma = TipoTurma.Regular,
+                Ano = "1",
+            });
+
+            await InserirNaBase("componente_curricular_grupo_matriz", new string[] { "id", "nome" }, new string[] { "1", "'gm1'" });
+            await InserirNaBase("componente_curricular_area_conhecimento", new string[] { "id", "nome" }, new string[] { "1", "'ac1'" });
+            await InserirNaBase("componente_curricular", new[] { "id", "grupo_matriz_id", "area_conhecimento_id" }, new[] { "512", "1", "1" });
+
+            var dataEvento = await ObterDataNoMesConsiderandoSomenteDiasUteis(3, anoAtual);
+
+            await InserirNaBase(new EventoTipo()
+            {
+                Descricao = "tipo evento infantil",
+                LocalOcorrencia = EventoLocalOcorrencia.UE,
+                TipoData = EventoTipoData.Unico,
+                Letivo = EventoLetivo.Nao,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Codigo = 1                
+            });
+
+            await InserirNaBase(new Dominio.Evento()
+            {
+                Nome = "evento teste infantil",
+                DataInicio = dataEvento,
+                DataFim = dataEvento,
+                Letivo = EventoLetivo.Nao,
+                TipoCalendarioId = 1,
+                TipoEventoId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var quantidadeDiasUteisPeriodo = await ObterQuantidadeDiasUteisNoPeriodo(dataInicioPeriodo, dataFimPerioodo);
+            var resultado = await useCase.Executar(new MensagemRabbit());
+
+            resultado.ShouldBeTrue();
+
+            var aulasCriadas = ObterTodos<Dominio.Aula>();            
+
+            aulasCriadas.Any().ShouldBeTrue();
+            aulasCriadas.Count(a => a.CriadoPor
+                .Equals(CRIADO_ALTERADO_POR_SISTEMA, StringComparison.InvariantCultureIgnoreCase))
+                    .ShouldBe((quantidadeDiasUteisPeriodo) - 1);
+
+            var evento = ObterTodos<Dominio.Evento>().FirstOrDefault();
+            evento.ShouldNotBeNull();
+            evento.Excluido = true;
+            await AtualizarNaBase(evento);
+
+            resultado = await useCase.Executar(new MensagemRabbit());
+
+            resultado.ShouldBeTrue();
+
+            aulasCriadas = ObterTodos<Dominio.Aula>();
+
+            aulasCriadas.Any().ShouldBeTrue();
+            aulasCriadas.Count(a => a.CriadoPor
+                .Equals(CRIADO_ALTERADO_POR_SISTEMA, StringComparison.InvariantCultureIgnoreCase))
+                    .ShouldBe(quantidadeDiasUteisPeriodo);
         }
 
         private async Task InserirDados()
