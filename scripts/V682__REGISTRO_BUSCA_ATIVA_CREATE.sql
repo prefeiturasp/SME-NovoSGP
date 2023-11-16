@@ -12,6 +12,7 @@ CREATE table public.secao_registro_acao_busca_ativa (
 	nome varchar,
 	ordem int4,
 	etapa int4,
+	nome_componente varchar(50),
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
 	alterado_em timestamp NULL,
