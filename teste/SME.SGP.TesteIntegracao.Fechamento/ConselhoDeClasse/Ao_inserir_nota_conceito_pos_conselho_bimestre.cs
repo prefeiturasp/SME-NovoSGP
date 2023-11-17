@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
@@ -32,6 +33,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesRegenciaPorAnoETurnoQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesRegenciaPorAnoETurnoQueryFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesRegenciaPorAnoEolQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesRegenciaPorAnoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Theory]
@@ -92,6 +94,24 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 true);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito);
+        }
+
+        [Fact(DisplayName = "Conselho de classe - Deve alterar nota conceito de turma celp")]
+        public async Task Deve_lancar_nota_conceito_turma_celp()
+        {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_INGLES_ID_9, TipoNota.Conceito, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre: BIMESTRE_2);
+
+            await CriarDados(ObterPerfilProfessor(),
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                TipoNota.Conceito,
+                ANO_1,
+                Modalidade.CELP,
+                ModalidadeTipoCalendario.CELP,
+                false,
+                SituacaoConselhoClasse.EmAndamento,
+                true);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Conceito);
         }
 
 

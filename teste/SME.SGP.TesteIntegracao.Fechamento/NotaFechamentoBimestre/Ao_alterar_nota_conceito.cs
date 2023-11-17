@@ -5,7 +5,9 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -27,7 +29,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>),
-                typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));   
+                typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito lançada pelo Professor Titular em ano atual")]
@@ -199,6 +204,34 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             historicoNotasNotaFechamentos.Count.ShouldBe(0);
 
             retornoAlteracao.FirstOrDefault().MensagemConsistencia.ShouldBe(MensagensNegocioLancamentoNota.REGISTRADO_COM_SUCESSO_EM_24_HORAS_SERA_ENVIADO_PARA_APROVACAO);
+        }
+
+        [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito de turma celp")]
+        public async Task Deve_alterar_nota_conceito_turma_celp()
+        {
+            await CriarDadosBase(new FiltroFechamentoNotaDto()
+            {
+                Perfil = ObterPerfilDiretor(),
+                AnoTurma = ANO_1,
+                ConsiderarAnoAnterior = false,
+                Modalidade = Modalidade.CELP,
+                TipoCalendario = ModalidadeTipoCalendario.CELP,
+                TipoFrequenciaAluno = TipoFrequenciaAluno.PorDisciplina
+            });
+
+            var conceitosParaPersistir = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_INGLES_ID_9), COMPONENTE_CURRICULAR_INGLES_ID_9);
+
+            var retorno = await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Nota);
+            retorno.ShouldNotBeNull();
+
+            var fechamento = conceitosParaPersistir.FirstOrDefault();
+            fechamento.Id = retorno.FirstOrDefault().Id;
+            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_1).ConceitoId = (long)ConceitoValores.NS;
+            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_2).ConceitoId = (long)ConceitoValores.S;
+            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_3).ConceitoId = (long)ConceitoValores.S;
+            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).ConceitoId = (long)ConceitoValores.P;
+
+            await ExecutarTesteComValidacaoNota(conceitosParaPersistir, TipoNota.Conceito);
         }
 
         private List<FechamentoNotaDto> ObterListaDeFechamentoConceito(long disciplina)

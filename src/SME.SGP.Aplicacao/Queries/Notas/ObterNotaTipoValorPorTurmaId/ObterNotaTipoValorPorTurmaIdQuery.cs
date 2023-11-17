@@ -8,20 +8,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotaTipoValorPorTurmaIdQuery : IRequest<NotaTipoValor>
     {
-        public ObterNotaTipoValorPorTurmaIdQuery(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular)
+        public ObterNotaTipoValorPorTurmaIdQuery(Turma turma)
         {
-            TurmaId = turmaId;
-            TipoTurma = tipoTurma;
+            Turma = turma;
         }
-        public long TurmaId { get; set; }
-        public TipoTurma TipoTurma { get; set; }
+        public Turma Turma { get; set; }
     }
 
     public class ObterNotaTipoValorPorTurmaIdQueryValidator : AbstractValidator<ObterNotaTipoValorPorTurmaIdQuery>
     {
         public ObterNotaTipoValorPorTurmaIdQueryValidator()
         {
-            RuleFor(x => x.TurmaId).NotEmpty().WithMessage("Informe o Id da Turma para Obter a Nota Tipo Valor Por Turma");
+            RuleFor(x => x.Turma.Id)
+                .NotEmpty()
+                .When(x => x.Turma.NaoEhNulo())
+                .WithMessage("Informe o Id da Turma para Obter a Nota Tipo Valor Por Turma");
         }
     }
 }

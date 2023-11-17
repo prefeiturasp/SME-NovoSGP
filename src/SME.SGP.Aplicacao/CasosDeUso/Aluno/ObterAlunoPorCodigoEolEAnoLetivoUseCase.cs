@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 Situacao = alunoPorTurmaResposta.SituacaoMatricula,
                 TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
                 NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
-                TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
+                TipoResponsavel = ObterTipoResponsavel(alunoPorTurmaResposta.TipoResponsavel),
                 CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
                 DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(alunoPorTurmaResposta.CodigoAluno, anoLetivo)),
@@ -121,6 +121,13 @@ namespace SME.SGP.Aplicacao
                 return new TelefonesDto() { DDD = ddd, Numero = numero, TipoTelefone = tipo };
 
             return null;
+        }
+
+        private string ObterTipoResponsavel(string tipoResponsavel)
+        {
+            return !string.IsNullOrEmpty(tipoResponsavel) ?
+                 ((TipoResponsavel)Enum.Parse(typeof(TipoResponsavel), tipoResponsavel)).Name() :
+                 TipoResponsavel.Filiacao1.Name();
         }
 
     }

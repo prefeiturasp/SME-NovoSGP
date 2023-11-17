@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -22,16 +20,28 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var notificacaoInformativoUsuario = param.ObterObjetoMensagem<NotificacaoInformativoUsuarioFiltro>();
+            var informeExcluido = await mediator.Send(new InformeFoiExcluidoQuery(notificacaoInformativoUsuario.InformativoId));
+            
+            if (informeExcluido)
+                return false;
+
             unitOfWork.IniciarTransacao();
             try
-            {               
+            {
+                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(notificacaoInformativoUsuario.UsuarioRf));
                 var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(notificacaoInformativoUsuario.Titulo,
                                                                                     notificacaoInformativoUsuario.Mensagem,
                                                                                     notificacaoInformativoUsuario.UsuarioRf,
                                                                                     NotificacaoCategoria.Informe,
                                                                                     NotificacaoTipo.Customizado,
                                                                                     notificacaoInformativoUsuario.DreCodigo,
-                                                                                    notificacaoInformativoUsuario.UeCodigo));
+                                                                                    notificacaoInformativoUsuario.UeCodigo,
+                                                                                    string.Empty,
+                                                                                    0,
+                                                                                    ObterCodigoNotificacao(notificacaoInformativoUsuario.InformativoId, usuarioId),
+                                                                                    null,
+                                                                                    string.Empty,
+                                                                                    usuarioId));
 
                 await mediator.Send(new SalvarInformativoNotificacaoCommand(notificacaoInformativoUsuario.InformativoId, notificacaoId));
                 unitOfWork.PersistirTransacao();
@@ -42,6 +52,11 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 throw;
             }
+        }
+
+        private long ObterCodigoNotificacao(long informativoId, long usuarioId)
+        {
+            return long.Parse(string.Concat(informativoId, usuarioId.ToString("00000000")));
         }
     }
 }

@@ -12,6 +12,8 @@ using Xunit;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
+using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
+using Shouldly;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -33,6 +35,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTipoNotaPorTurmaQuery, TipoNota>), typeof(ObterTipoNotaPorTurmaQueryHandlerFakeNota), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterNotaTipoPorAnoModalidadeDataReferenciaQuery, NotaTipoValor>), typeof(ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandlerFakeNota), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho bimestre - Fundamental")]
@@ -136,6 +139,26 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             true);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
+        }
+
+        [Fact(DisplayName = "Conselho de Classe - Professor deve lançar nota numérica pós conselho menor ou igual a 10")]
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_maior_que_10_deve_lancar_excecao()
+        {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaMaiorQueDezDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
+
+            await CriarDados(ObterPerfilProfessor(),
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                            ANO_6,
+                            Modalidade.Fundamental,
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            false,
+                            SituacaoConselhoClasse.EmAndamento,
+                            true);
+
+            var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
+            
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Executar(salvarConselhoClasseAlunoNotaDto));
+            excecao.Message.ShouldBe("A nota pós-conselho deve ser menor ou igual a 10.");
         }
 
         private async Task CriarDados(
