@@ -25,12 +25,6 @@ namespace SME.SGP.Aplicacao
         public async Task<RetornoBaseDto> Handle(ExcluirAulaFuturaTerritorioDisponibilizadoCommand request, CancellationToken cancellationToken)
         {
             var aula = await repositorioAula.ObterPorIdAsync(request.AulaId);
-            if (aula.WorkflowAprovacaoId.HasValue)
-                await PublicarFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, null);
-
-            var filas = new [] { RotasRabbitSgpAula.PlanoAulaDaAulaExcluir };
-            await PublicarFilaSgp(filas, aula.Id, null);
-
             aula.Excluido = true;
             await repositorioAula.SalvarAsync(aula);
 
@@ -39,19 +33,5 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task PublicarFilaSgp(string fila, long id, Usuario usuario)
-        {
-            await mediator.Send(new PublicarFilaSgpCommand(fila, new FiltroIdDto(id), Guid.NewGuid(), usuario));
-        }
-
-        private async Task PublicarFilaSgp(string[] filas, long id, Usuario usuario)
-        {
-            var commands = new List<PublicarFilaSgpCommand>();
-
-            filas.ToList()
-                .ForEach(f => commands.Add(new PublicarFilaSgpCommand(f, new FiltroIdDto(id), Guid.NewGuid(), usuario)));
-
-            await mediator.Send(new PublicarFilaEmLoteSgpCommand(commands));
-        }
     }
 }
