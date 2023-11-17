@@ -88,6 +88,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             return ServiceProvider.GetService<IObterQuestionarioRegistroAcaoUseCase>();
         }
 
+        protected IRegistrarRegistroAcaoUseCase ObterUseCaseRegistroAcao()
+        {
+            return ServiceProvider.GetService<IRegistrarRegistroAcaoUseCase>();
+        }
+
         private async Task CriarRespostasComplementares()
         {
             var opcoesResposta = ObterTodos<OpcaoResposta>();
@@ -439,6 +444,103 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             public ModalidadeTipoCalendario TipoCalendario { get; set; }
             public string AnoTurma { get; set; }
             public bool CriarTurmaPadrao { get; set; }
+        }
+
+        protected async Task GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTime dataRegistro)
+        {
+            await CriarRegistroAcao();
+            await CriarRegistroAcaoSecao();
+            await CriarQuestoesRegistroAcao();
+            await CriarRespostasRegistroAcao(dataRegistro);
+        }
+
+        private async Task CriarRespostasRegistroAcao(DateTime dataRegistro)
+        {
+            await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+            {
+                QuestaoRegistroAcaoBuscaAtivaId = QUESTAO_1_ID_DATA_REGISTRO_ACAO,
+                Texto = dataRegistro.ToString("dd/MM/yyyy"),
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var opcoesResposta = ObterTodos<OpcaoResposta>();
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == "Sim").FirstOrDefault();
+            await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+            {
+                QuestaoRegistroAcaoBuscaAtivaId = QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP,
+                RespostaId = opcaoRespostaBase.Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == "Visita Domiciliar").FirstOrDefault();
+            await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+            {
+                QuestaoRegistroAcaoBuscaAtivaId = QUESTAO_3_ID_PROCEDIMENTO_REALIZADO,
+                RespostaId = opcaoRespostaBase.Id,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarQuestoesRegistroAcao()
+        {
+            await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+            {
+                RegistroAcaoBuscaAtivaSecaoId = 1,
+                QuestaoId = QUESTAO_1_ID_DATA_REGISTRO_ACAO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+            {
+                RegistroAcaoBuscaAtivaSecaoId = 1,
+                QuestaoId = QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+            {
+                RegistroAcaoBuscaAtivaSecaoId = 1,
+                QuestaoId = QUESTAO_3_ID_PROCEDIMENTO_REALIZADO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarRegistroAcaoSecao()
+        {
+            await InserirNaBase(new Dominio.RegistroAcaoBuscaAtivaSecao()
+            {
+                RegistroAcaoBuscaAtivaId = 1,
+                SecaoRegistroAcaoBuscaAtivaId = SECAO_REGISTRO_ACAO_ID_1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Concluido = false
+            });
+        }
+
+        private async Task CriarRegistroAcao()
+        {
+            await InserirNaBase(new Dominio.RegistroAcaoBuscaAtiva()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
     }
 }

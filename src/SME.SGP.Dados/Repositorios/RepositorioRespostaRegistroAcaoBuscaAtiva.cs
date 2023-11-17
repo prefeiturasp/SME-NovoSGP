@@ -18,9 +18,10 @@ namespace SME.SGP.Dados.Repositorios
             throw new System.NotImplementedException();
         }
 
-        public Task<IEnumerable<RespostaRegistroAcaoBuscaAtiva>> ObterPorQuestaoRegistroAcaoId(long questaoRegistroAcaoId)
+        public async Task<IEnumerable<RespostaRegistroAcaoBuscaAtiva>> ObterPorQuestaoRegistroAcaoId(long questaoRegistroAcaoId)
         {
-            throw new System.NotImplementedException();
+            var query = "select * from registro_acao_busca_ativa_resposta where not excluido and questao_registro_acao_id = @questaoRegistroAcaoId";
+            return await database.Conexao.QueryAsync<RespostaRegistroAcaoBuscaAtiva>(query, new { questaoRegistroAcaoId });
         }
 
         public Task<bool> RemoverPorArquivoId(long arquivoId)

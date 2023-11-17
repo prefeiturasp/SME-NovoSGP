@@ -20,9 +20,25 @@ namespace SME.SGP.Dados.Repositorios
             throw new System.NotImplementedException();
         }
 
-        public Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(long? registroAcaoId = null)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(long? registroAcaoId = null)
         {
-            throw new System.NotImplementedException();
+            var query = @"SELECT sraba.id
+                                , sraba.nome
+                                , sraba.questionario_id as questionarioId
+                                , rabas.concluido
+                                , sraba.etapa
+                                , sraba.ordem
+                                , sraba.nome_componente as nomeComponente
+                         FROM secao_registro_acao_busca_ativa sraba 
+                         inner join questionario q on q.id = sraba.questionario_id 
+                         left join registro_acao_busca_ativa_secao rabas on rabas.registro_acao_busca_ativa_id = @registroAcaoId 
+                                                                 and rabas.secao_registro_acao_id = sraba.id
+                                                                 and not rabas.excluido   
+                         WHERE not sraba.excluido 
+                               AND q.tipo = @tipoQuestionario
+                         ORDER BY sraba.etapa, sraba.ordem ";
+
+            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { tipoQuestionario = (int)TipoQuestionario.RegistroAcaoBuscaAtiva, registroAcaoId = registroAcaoId ?? 0 });
         }
 
         public async Task<IEnumerable<SecaoRegistroAcaoBuscaAtiva>> ObterSecoesRegistroAcaoBuscaAtiva(long? registroAcaoId = null)
