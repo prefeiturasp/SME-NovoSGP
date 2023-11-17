@@ -30,8 +30,8 @@ namespace SME.SGP.Aplicacao
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaCodigo));
             if (alunos.EhNulo() || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
-
-            var tipoNotaTurma = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(turma.Id, turma.TipoTurma));
+            
+            var tipoNotaTurma = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
             if (tipoNotaTurma.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
 
