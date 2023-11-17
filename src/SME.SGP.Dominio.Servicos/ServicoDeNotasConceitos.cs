@@ -106,10 +106,11 @@ namespace SME.SGP.Dominio
             var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(atividadeAvaliativa.TurmaId));
 
             if (turmaEOL.TipoTurma == Enumerados.TipoTurma.EdFisica)
-                return await mediator.Send(
-                    new ObterNotaTipoValorPorTurmaIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId),
-                        Enumerados.TipoTurma.EdFisica));
-
+            {
+                var turma = await mediator.Send(new ObterTurmaPorIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId)));
+                
+                return await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
+            }
             if (await ModalidadeTurmaEhCelp(turmaEOL))
                 return new NotaTipoValor() { TipoNota = TipoNota.Conceito }; 
 

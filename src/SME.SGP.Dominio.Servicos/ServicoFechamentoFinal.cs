@@ -71,7 +71,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
             await ObterComponenteCurricular(fechamentoFinal.DisciplinaId, turma.CodigoTurma);
-            var tipoNota = await ObterTipoNota(turma);
+            var tipoNota = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma)); 
 
             var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
             conselhosClasseAlunos = (await mediator.Send(new ObterConselhoClasseAlunosNotaPorFechamentoIdQuery(fechamentoFinal.FechamentoTurmaId))).ToList();
@@ -195,14 +195,6 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
-        }
-
-        private async Task<NotaTipoValor> ObterTipoNota(Turma turma)
-        {
-            if (turma.ModalidadeCodigo == Modalidade.CELP)
-                return new NotaTipoValor() { TipoNota = TipoNota.Conceito };
-
-            return await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turma.Id, turma.TipoTurma); 
         }
 
         private async Task SalvarHistoricoNotaFechamento(FechamentoNota fechamentoNota, TipoNota tipoNota, string criadoRf, string criadoPor,double? notaAnterior, long? conceitoIdAnterior)

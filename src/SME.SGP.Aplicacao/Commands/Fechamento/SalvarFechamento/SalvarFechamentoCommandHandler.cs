@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurmaDisciplina = await MapearParaEntidade(fechamentoTurma.Id, fechamentoTurma, turma);
 
             var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
-            var tipoNota = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(turma.Id, turma.TipoTurma), cancellationToken);
+            var tipoNota = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma), cancellationToken);
             
             if (fechamentoTurma.Justificativa.NaoEhNulo())
             {
