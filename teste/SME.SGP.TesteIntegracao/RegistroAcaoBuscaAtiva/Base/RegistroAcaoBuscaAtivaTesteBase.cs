@@ -88,6 +88,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             return ServiceProvider.GetService<IObterQuestionarioRegistroAcaoUseCase>();
         }
 
+        protected IRegistrarRegistroAcaoUseCase ObterUseCaseRegistroAcao()
+        {
+            return ServiceProvider.GetService<IRegistrarRegistroAcaoUseCase>();
+        }
+
         private async Task CriarRespostasComplementares()
         {
             var opcoesResposta = ObterTodos<OpcaoResposta>();

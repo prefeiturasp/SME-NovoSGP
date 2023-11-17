@@ -52,12 +52,10 @@ namespace SME.SGP.Aplicacao
             if (registroAcaoDto.Id.GetValueOrDefault() > 0)
             {
                 var registroAcao = await mediator.Send(new ObterRegistroAcaoPorIdQuery(registroAcaoDto.Id.GetValueOrDefault()));
-
                 if (registroAcao.NaoEhNulo())
                 {
                     await AlterarRegistroAcao(registroAcaoDto, registroAcao);
                     await RemoverArquivosNaoUtilizados(registroAcaoDto.Secoes);
-
                     return new ResultadoRegistroAcaoBuscaAtivaDto
                         { Id = registroAcao.Id, Auditoria = (AuditoriaDto)registroAcao };
                 }

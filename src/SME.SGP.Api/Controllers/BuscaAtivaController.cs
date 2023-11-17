@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class BuscaAtivaController : ControllerBase
     {
-        [HttpPost()]
+        [HttpPost("registros-acao")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
