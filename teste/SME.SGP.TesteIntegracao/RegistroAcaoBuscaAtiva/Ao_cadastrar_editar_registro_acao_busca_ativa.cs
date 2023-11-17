@@ -1,6 +1,9 @@
 using Bogus.DataSets;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
@@ -22,6 +25,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Registro de Ação - Cadastrar")]
@@ -49,8 +53,10 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             (retorno.Auditoria.CriadoEm.Year == data.Year).ShouldBeTrue();
             
             var registroAcao = ObterTodos<Dominio.RegistroAcaoBuscaAtiva>();
-            registroAcao.Count.ShouldBe(1);
-         
+            registroAcao.Count().ShouldBe(1);
+            registroAcao.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
+            registroAcao.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+
             var registroAcaoSecao = ObterTodos<RegistroAcaoBuscaAtivaSecao>();
             registroAcaoSecao.ShouldNotBeNull();
             registroAcaoSecao.FirstOrDefault()?.SecaoRegistroAcaoBuscaAtivaId.ShouldBe(SECAO_REGISTRO_ACAO_ID_1);
@@ -123,98 +129,81 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             retorno.Auditoria.AlteradoEm.HasValue.ShouldBeFalse();
         }
 
-
-        /*[Fact(DisplayName = "Registro de Ação - Editar")]
+        [Fact(DisplayName = "Registro de Ação - Editar")]
         public async Task Ao_editar_registro_acao()
         {
-            var filtroNAAPA = new FiltroNAAPADto()
+            var filtro = new FiltroRegistroAcaoDto()
             {
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Modalidade = Modalidade.Fundamental,
-                AnoTurma = "8",
-                DreId = 1,
-                CodigoUe = "1",
-                TurmaId = TURMA_ID_1,
-                Situacao = (int)SituacaoNAAPA.Rascunho,
-                Prioridade = NORMAL
+                AnoTurma = "8"
             };
+            var data = DateTimeExtension.HorarioBrasilia().Date;
 
-            await CriarDadosBase(filtroNAAPA);
+            await CriarDadosBase(filtro);
+            await GerarDadosRegistroAcao_3PrimeirasQuestoes(data);
 
-            var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
+            var questaoregistroAcao = ObterTodos<QuestaoRegistroAcaoBuscaAtiva>();
+            questaoregistroAcao.ShouldNotBeNull();
+            questaoregistroAcao.Count().ShouldBe(3);
 
-            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
-            dataQueixa.AddDays(-10);
-            
-            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+            var respostaregistroAcao = ObterTodos<RespostaRegistroAcaoBuscaAtiva>();
+            respostaregistroAcao.ShouldNotBeNull();
+            respostaregistroAcao.Count().ShouldBe(3);
 
-            dataQueixa.AddDays(4);
-            
-            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
-            {
-                Id = 1,
-                TurmaId = TURMA_ID_1,
-                Situacao = SituacaoNAAPA.Rascunho,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                AlunoNome = "Nome do aluno do naapa",
-                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
-                {
-                    new ()
-                    {
-                        SecaoId = 1,
-                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
-                        {
-                            new ()
-                            {
-                                RespostaEncaminhamentoId = 1,
-                                QuestaoId = 1,
-                                Resposta = dataQueixa.ToString("dd/MM/yyyy"),
-                                TipoQuestao = TipoQuestao.Data,
-                                
-                            },
-                            new ()
-                            {
-                                RespostaEncaminhamentoId = 2,
-                                QuestaoId = 2,
-                                Resposta = "2",
-                                TipoQuestao = TipoQuestao.Combo,
-                                
-                            }
-                        }
-                    }
-                }
-            };
+            var useCase = ObterUseCaseRegistroAcao();           
+            var dtoUseCase = ObterRegistroAcaoBuscaAtivaDtoComQuestoesObrigatoriasPreenchidas(data);
+            PreencherIdsEdicao(dtoUseCase);
 
-            var encaminhamento = ObterTodos<Dominio.EncaminhamentoNAAPA>();
-            
-            var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
+            var retorno = await useCase.Executar(dtoUseCase);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
-            retorno.Auditoria.ShouldNotBeNull();
-            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue();
-            
-            var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
-            encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
-            encaminhamentoNAAPA.Count.ShouldBe(1);
-            encaminhamentoNAAPA.FirstOrDefault()?.SituacaoMatriculaAluno.Equals(SITUACAO_MATRICULA_ALUNO_FIXA).ShouldBeTrue();
 
-            var encaminhamentoNAAPASecao = ObterTodos<EncaminhamentoNAAPASecao>();
-            encaminhamentoNAAPASecao.ShouldNotBeNull();
-            encaminhamentoNAAPASecao.FirstOrDefault().SecaoEncaminhamentoNAAPAId.ShouldBe(1);
-            
-            var questaoEncaminhamentoNAAPA = ObterTodos<QuestaoEncaminhamentoNAAPA>();
-            questaoEncaminhamentoNAAPA.ShouldNotBeNull();
-            questaoEncaminhamentoNAAPA.Count.ShouldBe(2);
-            questaoEncaminhamentoNAAPA.Any(a=> a.QuestaoId == 1).ShouldBeTrue();
-            questaoEncaminhamentoNAAPA.Any(a=> a.QuestaoId == 2).ShouldBeTrue();
-            
-            var respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
-            respostaEncaminhamentoNAAPA.ShouldNotBeNull();
-            respostaEncaminhamentoNAAPA.Count.ShouldBe(2);
-            respostaEncaminhamentoNAAPA.Any(a=> a.RespostaId == 2).ShouldBeTrue();
-            respostaEncaminhamentoNAAPA.Any(a=> a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
-        }*/
+            var registroAcao = ObterTodos<Dominio.RegistroAcaoBuscaAtiva>();
+            registroAcao.Count.ShouldBe(1);
+
+            var registroAcaoSecao = ObterTodos<RegistroAcaoBuscaAtivaSecao>();
+            registroAcaoSecao.ShouldNotBeNull();
+            registroAcaoSecao.FirstOrDefault()?.SecaoRegistroAcaoBuscaAtivaId.ShouldBe(SECAO_REGISTRO_ACAO_ID_1);
+            registroAcaoSecao.FirstOrDefault()?.Concluido.ShouldBeTrue();
+
+            questaoregistroAcao = ObterTodos<QuestaoRegistroAcaoBuscaAtiva>();
+            questaoregistroAcao.ShouldNotBeNull();
+            questaoregistroAcao.Count.ShouldBe(8);
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_1_ID_DATA_REGISTRO_ACAO).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_3_1_ID_QUESTOES_OBS_DURANTE_VISITA).ShouldBeTrue();
+            questaoregistroAcao.Any(a => a.QuestaoId == QUESTAO_4_ID_OBS_GERAL).ShouldBeTrue();
+
+            respostaregistroAcao = ObterTodos<RespostaRegistroAcaoBuscaAtiva>();
+            respostaregistroAcao.ShouldNotBeNull();
+            respostaregistroAcao.Count().ShouldBe(10);
+            respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault().Id
+                                          && a.Texto.Equals(data.ToString("dd/MM/yyyy"))).ShouldBeTrue();
+            respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_4_ID_OBS_GERAL).FirstOrDefault().Id
+                                          && a.Texto.Equals("OBS GERAL")).ShouldBeTrue();
+            respostaregistroAcao.Where(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_3_1_ID_QUESTOES_OBS_DURANTE_VISITA).FirstOrDefault().Id
+                                       ).Count().ShouldBe(2);
+            respostaregistroAcao.Where(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA).FirstOrDefault().Id
+                                       ).Count().ShouldBe(2);
+        }
+
+        private void PreencherIdsEdicao(RegistroAcaoBuscaAtivaDto dtoUseCase)
+        {
+            dtoUseCase.Id = 1;
+            var secao = dtoUseCase.Secoes.FirstOrDefault();
+            var questao = secao.Questoes.Where(q => q.QuestaoId == QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault();
+            questao.RespostaRegistroAcaoId = QUESTAO_1_ID_DATA_REGISTRO_ACAO;
+            questao = secao.Questoes.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault();
+            questao.RespostaRegistroAcaoId = QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP;
+            questao = secao.Questoes.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO).FirstOrDefault();
+            questao.RespostaRegistroAcaoId = QUESTAO_3_ID_PROCEDIMENTO_REALIZADO;
+        }
 
         private RegistroAcaoBuscaAtivaDto ObterRegistroAcaoBuscaAtivaDtoSemQuestoesObrigatoriasPreenchidas(DateTime data)
         {
