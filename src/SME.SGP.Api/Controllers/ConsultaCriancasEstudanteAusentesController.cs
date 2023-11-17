@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/consulta-criancas-estudantes-ausentes")]
+    [Route("api/v1/busca-ativa/criancas-estudantes/ausentes")]
     [Authorize("Bearer")]
     public class ConsultaCriancasEstudanteAusentesController : ControllerBase
     {
-        [HttpGet("turma/alunos")]
+        [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AlunosAusentesDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]

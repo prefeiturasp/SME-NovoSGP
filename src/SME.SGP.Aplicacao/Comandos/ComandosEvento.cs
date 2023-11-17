@@ -196,18 +196,23 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidacaoPermissaoEdicaoExclusaoPorPerfilUsuarioTipoEevento(Evento evento)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
+            var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
             if (evento.EhEventoSME() && !usuario.EhPerfilSME())
                 throw new NegocioException(evento.Nome);
 
-            var dreEstaNaAbrangencia = await servicoAbrangencia.DreEstaNaAbrangencia(usuario.Login, usuario.PerfilAtual, evento.DreId);
-            if (evento.EhEventoDRE() && ((!usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !dreEstaNaAbrangencia))
-                throw new NegocioException(evento.Nome);
-
-            var ueEstaNaAbrangecia = await servicoAbrangencia.UeEstaNaAbrangecia(usuario.Login, usuario.PerfilAtual, evento.DreId, evento.UeId);
-            if (evento.EhEventoUE() && ((!usuario.EhPerfilUE() && !usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !ueEstaNaAbrangecia))
-                throw new NegocioException(evento.Nome);
+            if (evento.EhEventoDRE())
+            {
+                var dreEstaNaAbrangencia = await servicoAbrangencia.DreEstaNaAbrangencia(usuario.Login, usuario.PerfilAtual, evento.DreId);
+                if (((!usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !dreEstaNaAbrangencia))
+                    throw new NegocioException(evento.Nome);
+            }
+            else if (evento.EhEventoUE())
+            {
+                var ueEstaNaAbrangecia = await servicoAbrangencia.UeEstaNaAbrangecia(usuario.Login, usuario.PerfilAtual, evento.DreId, evento.UeId);
+                if (((!usuario.EhPerfilUE() && !usuario.EhPerfilDRE() && !usuario.EhPerfilSME()) || !ueEstaNaAbrangecia))
+                    throw new NegocioException(evento.Nome);
+            }
         }
     }
 }

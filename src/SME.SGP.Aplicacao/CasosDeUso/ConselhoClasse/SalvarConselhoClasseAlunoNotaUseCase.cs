@@ -172,11 +172,12 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma.Turma.EhNulo())
                 return;
 
-            var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId,
-                fechamentoTurma.Turma.TipoTurma));
-
+            var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(fechamentoTurma.Turma));
             if (notaTipoValor.EhNulo())
                 return;
+
+            if (notaTipoValor.TipoNota == TipoNota.Nota && dto.ConselhoClasseNotaDto.Nota.NaoEhNulo() && dto.ConselhoClasseNotaDto.Nota > 10)
+                throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_NUMERICA_DEVE_SER_IGUAL_OU_INFERIOR_A_10);
 
             var turmasCodigos = new[] { dto.CodigoTurma };
 

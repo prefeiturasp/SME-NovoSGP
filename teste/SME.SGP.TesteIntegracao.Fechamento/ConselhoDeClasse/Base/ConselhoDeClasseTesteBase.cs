@@ -10,6 +10,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -80,6 +81,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterInfoComponentesCurricularesESPorTurmasCodigoQuery, IEnumerable<InfoComponenteCurricular>>), typeof(ObterInfoComponentesCurricularesESPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task ExecutarTeste(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -1322,6 +1324,25 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             return ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
                 bimestre);
         }
+        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaMaiorQueDezDto(long componenteCurricular,
+            TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_3, int bimestre = BIMESTRE_3)
+        {
+            return new SalvarConselhoClasseAlunoNotaDto
+            {
+                ConselhoClasseNotaDto = new ConselhoClasseNotaDto()
+                {
+                    CodigoComponenteCurricular = componenteCurricular,
+                    Justificativa = JUSTIFICATIVA,
+                    Conceito = null,
+                    Nota = 11
+                },
+                CodigoAluno = ALUNO_CODIGO_1,
+                ConselhoClasseId = 0,
+                FechamentoTurmaId = fechamentoTurma,
+                CodigoTurma = TURMA_CODIGO_1,
+                Bimestre = bimestre
+            };
+        }
 
         protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo,
             long componenteCurricular, TipoNota tipoNota, long fechamentoTurma, int bimestre)
@@ -1336,6 +1357,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Bimestre = bimestre
             };
         }
+
 
         private async Task CriarConselhoClasseParecerAno()
         {

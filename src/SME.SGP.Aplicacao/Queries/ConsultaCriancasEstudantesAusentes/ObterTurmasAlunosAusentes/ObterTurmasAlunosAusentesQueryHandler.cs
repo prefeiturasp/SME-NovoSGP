@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 dto.FrequenciaGlobal = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(dto.CodigoEol, request.Filtro.CodigoTurma));
             }
 
-            return alunosAusentes;
+            return alunosAusentes.OrderBy(aluno => aluno.Nome);
         }
     }
 }

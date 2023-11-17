@@ -19,7 +19,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<NotaTipoValor> Handle(ObterNotaTipoValorPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioNotaTipoValorConsulta.ObterPorTurmaIdAsync(request.TurmaId,request.TipoTurma);
+            if (request.Turma.EhCELP())
+                return new NotaTipoValor() { TipoNota = TipoNota.Conceito };
+
+            return await repositorioNotaTipoValorConsulta.ObterPorTurmaIdAsync(request.Turma.Id, request.Turma.TipoTurma);
         }
     }
 }
