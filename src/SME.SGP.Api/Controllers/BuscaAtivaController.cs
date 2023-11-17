@@ -14,6 +14,15 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class BuscaAtivaController : ControllerBase
     {
+        [HttpPost()]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> RegistrarRegistroAcao([FromBody] RegistroAcaoBuscaAtivaDto registroAcaoDto, [FromServices] IRegistrarRegistroAcaoUseCase registrarRegistroAcaoUseCase)
+        {
+            return Ok(await registrarRegistroAcaoUseCase.Executar(registroAcaoDto));
+        }
+
         [HttpGet("registros-acao/secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

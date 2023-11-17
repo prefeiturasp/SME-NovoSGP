@@ -13,9 +13,10 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long registroAcaoSecaoId)
+        public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long registroAcaoSecaoId)
         {
-            throw new System.NotImplementedException();
+            var query = "select id from registro_acao_busca_ativa_questao qea where registro_acao_busca_ativa_secao_id = @registroAcaoSecaoId";
+            return await database.Conexao.QueryAsync<long>(query, new { registroAcaoSecaoId });
         }
 
         public async Task<IEnumerable<RespostaQuestaoRegistroAcaoBuscaAtivaDto>> ObterRespostasRegistroAcao(long registroAcaoId)
