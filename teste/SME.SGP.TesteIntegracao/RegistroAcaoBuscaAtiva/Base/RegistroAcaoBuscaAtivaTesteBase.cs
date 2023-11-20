@@ -94,6 +94,16 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             return ServiceProvider.GetService<IRegistrarRegistroAcaoUseCase>();
         }
 
+        protected IObterRegistroAcaoPorIdUseCase ObterUseCaseObtencaoRegistroAcao()
+        {
+            return ServiceProvider.GetService<IObterRegistroAcaoPorIdUseCase>();
+        }
+
+        protected IObterRegistrosAcaoCriancaEstudanteAusenteUseCase ObterUseCaseListagemRegistrosAcao_EstudantesAusentes()
+        {
+            return ServiceProvider.GetService<IObterRegistrosAcaoCriancaEstudanteAusenteUseCase>();
+        }
+
         protected IExcluirRegistroAcaoUseCase ObterUseCaseExclusaoRegistroAcao()
         {
             return ServiceProvider.GetService<IExcluirRegistroAcaoUseCase>();
@@ -455,37 +465,42 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         protected async Task GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTime dataRegistro)
         {
             await CriarRegistroAcao();
-            await CriarRegistroAcaoSecao();
-            await CriarQuestoesRegistroAcao();
-            await CriarRespostasRegistroAcao(dataRegistro);
+            var registrosAcaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtiva>().Max(ra => ra.Id);
+            await CriarRegistroAcaoSecao(registrosAcaoId);
+            var registrosAcaoSecaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtivaSecao>().Max(ra => ra.Id);
+            await CriarQuestoesRegistroAcao(registrosAcaoSecaoId);
+            var registrosAcaoQuestaoId = ObterTodos<Dominio.QuestaoRegistroAcaoBuscaAtiva>().Where(ra => ra.RegistroAcaoBuscaAtivaSecaoId == registrosAcaoSecaoId).Min(ra => ra.Id);
+            await CriarRespostasRegistroAcao(dataRegistro, registrosAcaoQuestaoId);
         }
 
-        private async Task CriarRespostasRegistroAcao(DateTime dataRegistro)
+        private async Task CriarRespostasRegistroAcao(DateTime dataRegistro, long idRegistroAcaoQuestao = 1)
         {
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
-                QuestaoRegistroAcaoBuscaAtivaId = QUESTAO_1_ID_DATA_REGISTRO_ACAO,
-                Texto = dataRegistro.ToString("dd/MM/yyyy"),
+                QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
+                Texto = dataRegistro.ToString("yyyy-MM-dd"),
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+            idRegistroAcaoQuestao++;
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
             var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == "Sim").FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
-                QuestaoRegistroAcaoBuscaAtivaId = QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP,
+                QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
                 RespostaId = opcaoRespostaBase.Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+            idRegistroAcaoQuestao++;
 
             opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == "Visita Domiciliar").FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
-                QuestaoRegistroAcaoBuscaAtivaId = QUESTAO_3_ID_PROCEDIMENTO_REALIZADO,
+                QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
                 RespostaId = opcaoRespostaBase.Id,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -493,11 +508,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             });
         }
 
-        private async Task CriarQuestoesRegistroAcao()
+        private async Task CriarQuestoesRegistroAcao(long idRegistroAcaoSecao = 1)
         {
             await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
             {
-                RegistroAcaoBuscaAtivaSecaoId = 1,
+                RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
                 QuestaoId = QUESTAO_1_ID_DATA_REGISTRO_ACAO,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -506,7 +521,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
             {
-                RegistroAcaoBuscaAtivaSecaoId = 1,
+                RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
                 QuestaoId = QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -515,7 +530,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
 
             await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
             {
-                RegistroAcaoBuscaAtivaSecaoId = 1,
+                RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
                 QuestaoId = QUESTAO_3_ID_PROCEDIMENTO_REALIZADO,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
@@ -523,11 +538,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             });
         }
 
-        private async Task CriarRegistroAcaoSecao()
+        private async Task CriarRegistroAcaoSecao(long idRegistroAcao = 1)
         {
             await InserirNaBase(new Dominio.RegistroAcaoBuscaAtivaSecao()
             {
-                RegistroAcaoBuscaAtivaId = 1,
+                RegistroAcaoBuscaAtivaId = idRegistroAcao,
                 SecaoRegistroAcaoBuscaAtivaId = SECAO_REGISTRO_ACAO_ID_1,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,

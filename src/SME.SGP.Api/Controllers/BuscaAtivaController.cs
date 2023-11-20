@@ -68,7 +68,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RegistroAcaoBuscaAtivaRespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterRegistroAcao(long registroAcaoId, [FromServices] IObterEncaminhamentoNAAPAPorIdUseCase useCase)
+        public async Task<IActionResult> ObterRegistroAcao(long registroAcaoId, [FromServices] IObterRegistroAcaoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(registroAcaoId));
         }
