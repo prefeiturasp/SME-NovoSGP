@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -43,11 +45,30 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(questionarioId, registroAcaoId));
         }
 
-        [HttpDelete("{registroAcaoId}")]
+        [HttpDelete("registros-acao/{registroAcaoId}")]
         [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirRegistroAcao(long registroAcaoId, [FromServices] IExcluirRegistroAcaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(registroAcaoId));
+        }
+
+        [HttpGet("criancas-estudantes/ausentes/registros-acao")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistrosAcaoCriancaEstudanteAusente([FromQuery] FiltroRegistrosAcaoCriancasEstudantesAusentesDto filtro,
+            [FromServices] IObterRegistrosAcaoCriancaEstudanteAusenteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
+        [HttpGet("registros-acao/{registroAcaoId}")]
+        [ProducesResponseType(typeof(RegistroAcaoBuscaAtivaRespostaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistroAcao(long registroAcaoId, [FromServices] IObterRegistroAcaoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(registroAcaoId));
         }

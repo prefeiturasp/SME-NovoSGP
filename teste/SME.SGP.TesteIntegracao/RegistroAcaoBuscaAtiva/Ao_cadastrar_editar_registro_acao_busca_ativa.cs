@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             respostaregistroAcao.ShouldNotBeNull();
             respostaregistroAcao.Count().ShouldBe(10);
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault().Id
-                                          && a.Texto.Equals(data.ToString("dd/MM/yyyy"))).ShouldBeTrue();
+                                          && a.Texto.Equals(data.ToString("yyyy-MM-dd"))).ShouldBeTrue();
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_4_ID_OBS_GERAL).FirstOrDefault().Id
                                           && a.Texto.Equals("OBS GERAL")).ShouldBeTrue();
             respostaregistroAcao.Where(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_3_1_ID_QUESTOES_OBS_DURANTE_VISITA).FirstOrDefault().Id
@@ -184,7 +184,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             respostaregistroAcao.ShouldNotBeNull();
             respostaregistroAcao.Count().ShouldBe(10);
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault().Id
-                                          && a.Texto.Equals(data.ToString("dd/MM/yyyy"))).ShouldBeTrue();
+                                          && a.Texto.Equals(data.ToString("yyyy-MM-dd"))).ShouldBeTrue();
             respostaregistroAcao.Any(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_4_ID_OBS_GERAL).FirstOrDefault().Id
                                           && a.Texto.Equals("OBS GERAL")).ShouldBeTrue();
             respostaregistroAcao.Where(a => a.QuestaoRegistroAcaoBuscaAtivaId == questaoregistroAcao.Where(q => q.QuestaoId == QUESTAO_3_1_ID_QUESTOES_OBS_DURANTE_VISITA).FirstOrDefault().Id
@@ -226,7 +226,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             new ()
                             {
                                 QuestaoId = QUESTAO_1_ID_DATA_REGISTRO_ACAO,
-                                Resposta = data.ToString("dd/MM/yyyy"),
+                                Resposta = data.ToString("yyyy-MM-dd"),
                                 TipoQuestao = TipoQuestao.Data
                             },
                             new ()
@@ -274,7 +274,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             new ()
                             {
                                 QuestaoId = QUESTAO_1_ID_DATA_REGISTRO_ACAO,
-                                Resposta = data.ToString("dd/MM/yyyy"),
+                                Resposta = data.ToString("yyyy-MM-dd"),
                                 TipoQuestao = TipoQuestao.Data
                             },
                             new ()
@@ -330,7 +330,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             new ()
                             {
                                 QuestaoId = QUESTAO_1_ID_DATA_REGISTRO_ACAO,
-                                Resposta = data.ToString("dd/MM/yyyy"),
+                                Resposta = data.ToString("yyyy-MM-dd"),
                                 TipoQuestao = TipoQuestao.Data
                             },
                             new ()
