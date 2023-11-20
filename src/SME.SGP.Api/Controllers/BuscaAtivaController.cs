@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
@@ -12,7 +13,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/busca-ativa")]
     [ValidaDto]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class BuscaAtivaController : ControllerBase
     {
         [HttpPost("registros-acao")]
@@ -43,13 +44,23 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(questionarioId, registroAcaoId));
         }
 
-        [HttpDelete("{registroAcaoId}")]
+        [HttpDelete("registros-acao/{registroAcaoId}")]
         [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirRegistroAcao(long registroAcaoId, [FromServices] IExcluirRegistroAcaoUseCase useCase)
         {
             return Ok(await useCase.Executar(registroAcaoId));
+        }
+
+        [HttpGet("criancas-estudantes/ausentes/registros-acao/")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        //[Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistrosAcaoCriancaEstudanteAusente([FromQuery] FiltroRegistrosAcaoCriancasEstudantesAusentesDto filtro,
+            [FromServices] IObterRegistrosAcaoCriancaEstudanteAusenteUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
         }
 
     }

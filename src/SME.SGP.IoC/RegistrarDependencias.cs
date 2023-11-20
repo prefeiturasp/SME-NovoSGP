@@ -1370,7 +1370,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterQuestionarioRegistroAcaoUseCase, ObterQuestionarioRegistroAcaoUseCase>();
             services.TryAddScoped<IRegistrarRegistroAcaoUseCase, RegistrarRegistroAcaoUseCase>();
             services.TryAddScoped<IExcluirRegistroAcaoUseCase, ExcluirRegistroAcaoUseCase>();
-
+            services.TryAddScoped<IObterRegistrosAcaoCriancaEstudanteAusenteUseCase, ObterRegistrosAcaoCriancaEstudanteAusenteUseCase>();
+            
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
             RegistrarCasoDeUsoFechamentoRabbitSgp(services);

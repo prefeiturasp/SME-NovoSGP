@@ -1,17 +1,99 @@
+using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRegistroAcaoBuscaAtiva : RepositorioBase<RegistroAcaoBuscaAtiva>, IRepositorioRegistroAcaoBuscaAtiva
     {
+        public const int QUESTAO_DATA_REGISTRO_ORDEM = 1;
+        public const int SECAO_ETAPA_1 = 1;
+        public const int SECAO_ORDEM_1 = 1;
         public RepositorioRegistroAcaoBuscaAtiva(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        {}
+
+        public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>> ListarPaginadoCriancasEstudantesAusentes(string codigoAluno, long turmaId, Paginacao paginacao)
         {
+            var query = MontaQueryCompleta(paginacao, codigoAluno, turmaId);
+            var parametros = new
+            { codigoAluno, turmaId };
+
+            var retorno = new PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>();
+            using (var registroAcao = await database.Conexao.QueryMultipleAsync(query, parametros))
+            {
+                retorno.Items = registroAcao.Read<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>();
+                retorno.TotalRegistros = registroAcao.ReadFirst<int>();
+            }
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+        private string MontaQueryCompleta(Paginacao paginacao, string codigoAluno, long? turmaId)
+        {
+            var sql = new StringBuilder();
+            MontaQueryConsulta(paginacao, sql, contador: false, codigoAluno, turmaId);
+            sql.AppendLine(";");
+            MontaQueryConsulta(paginacao, sql, contador: true, codigoAluno, turmaId);
+            return sql.ToString();
+        }
+
+        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string codigoAluno, long? turmaId)
+        {
+            ObterCabecalho(sql, contador);
+            ObterFiltro(sql, codigoAluno, turmaId);
+
+            if (!contador)
+                sql.AppendLine(" order by to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
+
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
+        }
+
+        private static void ObterCabecalho(StringBuilder sql, bool contador)
+        {
+            var sqlSelect = $@"with vw_resposta_data as (
+                                select rabas.registro_acao_busca_ativa_id, 
+                                       rabar.texto DataRegistro	
+                                from registro_acao_busca_ativa_secao rabas    
+                                join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
+                                join questao q on rabaq.questao_id = q.id 
+                                join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
+                                join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.registro_acao_busca_ativa_id
+                                left join opcao_resposta opr on opr.id = rabar.resposta_id
+                                where q.ordem = {QUESTAO_DATA_REGISTRO_ORDEM} 
+                                      and sraba.etapa = {SECAO_ETAPA_1} 
+                                      and sraba.ordem = {SECAO_ORDEM_1} 
+                                )
+                                select ";
+            sql.AppendLine(sqlSelect);
+            if (contador)
+                sql.AppendLine("count(raba.id) ");
+            else
+            {
+                sql.AppendLine(@"raba.id
+                                ,case when length(qdata.DataRegistro) > 0 then to_date(qdata.DataRegistro,'yyyy-mm-dd') else null end DataRegistro
+                                ,raba.criado_por || ' (' || raba.criado_rf || ')' as usuario
+                ");
+            }
+            sql.AppendLine(@" from registro_acao_busca_ativa raba 
+                              left join vw_resposta_data qdata on qdata.registro_acao_busca_ativa_id = raba.id");
+        }
+
+        private void ObterFiltro(StringBuilder sql, string codigoAluno, long? turmaId)
+        {
+            sql.AppendLine(@" where not raba.excluido ");
+            if (turmaId.HasValue)
+                sql.AppendLine(" and raba.turma_id = @turmaId ");
+            if (!string.IsNullOrEmpty(codigoAluno))
+                sql.AppendLine(" and raba.aluno_codigo = @codigoAluno ");
         }
 
         public async Task<IEnumerable<string>> ObterCodigoArquivoPorRegistroAcaoId(long id)
