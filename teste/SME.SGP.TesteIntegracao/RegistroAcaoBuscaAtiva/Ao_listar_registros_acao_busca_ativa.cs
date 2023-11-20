@@ -138,8 +138,6 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(-1));
             await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro);
             await GerarDadosRegistroAcao_3PrimeirasQuestoes(dataRegistro.AddMonths(1));
-            //Colocar consulta no banco pra entender o problema
-
             var useCase = ObterUseCaseListagemRegistrosAcao_EstudantesAusentes();
             var retorno = await useCase.Executar(new FiltroRegistrosAcaoCriancasEstudantesAusentesDto()
             {

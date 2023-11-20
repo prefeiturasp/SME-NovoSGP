@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRegistroAcaoBuscaAtiva : RepositorioBase<RegistroAcaoBuscaAtiva>, IRepositorioRegistroAcaoBuscaAtiva
     {
-        public const string QUESTAO_DATA_REGISTRO_NOME_COMPONENTE = "DATA_REGISTRO_ACAO";
+        public const string QUESTAO_DATA_REGISTRO_NOME_COMPONENTE = "'DATA_REGISTRO_ACAO'";
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_ORDEM_1 = 1;
         public RepositorioRegistroAcaoBuscaAtiva(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
@@ -66,7 +66,7 @@ namespace SME.SGP.Dados.Repositorios
                                 join registro_acao_busca_ativa_questao rabaq on rabas.id = rabaq.registro_acao_busca_ativa_secao_id  
                                 join questao q on rabaq.questao_id = q.id 
                                 join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
-                                join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.registro_acao_busca_ativa_id
+                                join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
                                 left join opcao_resposta opr on opr.id = rabar.resposta_id
                                 where q.nome_componente = {QUESTAO_DATA_REGISTRO_NOME_COMPONENTE} 
                                       and sraba.etapa = {SECAO_ETAPA_1} 
