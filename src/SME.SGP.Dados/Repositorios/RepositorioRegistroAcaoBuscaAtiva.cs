@@ -116,14 +116,24 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<string>(sql.ToString(), new { id });
         }
 
-        public Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoCabecalhoPorId(long id)
+        public async Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoComTurmaPorId(long id)
         {
-            throw new System.NotImplementedException();
-        }
+            var query = @" select raba.*, t.*, ue.*, dre.*
+                            from registro_acao_busca_ativa raba
+                           inner join turma t on t.id = raba.turma_id
+                            join ue on ue.id = t.ue_id
+                            join dre on dre.id = ue.dre_id  
+                           where raba.id = @id";
 
-        public Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoComTurmaPorId(long id)
-        {
-            throw new System.NotImplementedException();
+            return (await database.Conexao.QueryAsync<RegistroAcaoBuscaAtiva, Turma, Ue, Dre, RegistroAcaoBuscaAtiva>(query,
+                (encaminhamentoNAAPA, turma, ue, dre) =>
+                {
+                    encaminhamentoNAAPA.Turma = turma;
+                    encaminhamentoNAAPA.Turma.Ue = ue;
+                    encaminhamentoNAAPA.Turma.Ue.Dre = dre;
+
+                    return encaminhamentoNAAPA;
+                }, new { id })).FirstOrDefault();
         }
 
         public async Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoPorId(long id)
@@ -187,11 +197,6 @@ namespace SME.SGP.Dados.Repositorios
                     }, new { id });
 
             return registroAcao;
-        }
-
-        public Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoPorIdESecao(long id, long secaoId)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }
