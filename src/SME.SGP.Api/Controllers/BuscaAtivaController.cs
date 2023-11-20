@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -40,6 +41,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] long? registroAcaoId, [FromServices] IObterQuestionarioRegistroAcaoUseCase useCase)
         {
             return Ok(await useCase.Executar(questionarioId, registroAcaoId));
+        }
+
+        [HttpDelete("{registroAcaoId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirRegistroAcao(long registroAcaoId, [FromServices] IExcluirRegistroAcaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(registroAcaoId));
         }
 
     }

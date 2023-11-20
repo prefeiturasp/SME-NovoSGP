@@ -10,8 +10,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioQuestaoRegistroAcaoBuscaAtiva : RepositorioBase<QuestaoRegistroAcaoBuscaAtiva>, IRepositorioQuestaoRegistroAcaoBuscaAtiva
     {
         public RepositorioQuestaoRegistroAcaoBuscaAtiva(ISgpContext repositorio, IServicoAuditoria servicoAuditoria) : base(repositorio, servicoAuditoria)
-        {
-        }
+        {}
 
         public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long registroAcaoSecaoId)
         {

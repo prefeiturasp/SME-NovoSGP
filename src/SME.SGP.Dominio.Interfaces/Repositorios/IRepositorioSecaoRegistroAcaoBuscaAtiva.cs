@@ -9,7 +9,5 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(long? registroAcaoId = null);
         Task<IEnumerable<SecaoRegistroAcaoBuscaAtiva>> ObterSecoesRegistroAcaoBuscaAtiva(long? registroAcaoId = null);
-        Task<SecaoQuestionarioDto> ObterSecaoQuestionarioDtoPorId(long secaoId);
-
     }
 }

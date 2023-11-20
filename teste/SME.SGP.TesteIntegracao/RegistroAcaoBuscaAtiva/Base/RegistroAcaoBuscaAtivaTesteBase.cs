@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
@@ -91,6 +92,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         protected IRegistrarRegistroAcaoUseCase ObterUseCaseRegistroAcao()
         {
             return ServiceProvider.GetService<IRegistrarRegistroAcaoUseCase>();
+        }
+
+        protected IExcluirRegistroAcaoUseCase ObterUseCaseExclusaoRegistroAcao()
+        {
+            return ServiceProvider.GetService<IExcluirRegistroAcaoUseCase>();
         }
 
         private async Task CriarRespostasComplementares()
