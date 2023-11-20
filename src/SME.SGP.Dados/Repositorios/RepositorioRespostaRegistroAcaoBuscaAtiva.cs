@@ -10,23 +10,11 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioRespostaRegistroAcaoBuscaAtiva : RepositorioBase<RespostaRegistroAcaoBuscaAtiva>, IRepositorioRespostaRegistroAcaoBuscaAtiva
     {
         public RepositorioRespostaRegistroAcaoBuscaAtiva(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        {
-        }
-
-        public Task<IEnumerable<long>> ObterArquivosPorQuestaoId(long questaoRegistroAcaoId)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        {}
         public async Task<IEnumerable<RespostaRegistroAcaoBuscaAtiva>> ObterPorQuestaoRegistroAcaoId(long questaoRegistroAcaoId)
         {
             var query = "select * from registro_acao_busca_ativa_resposta where not excluido and questao_registro_acao_id = @questaoRegistroAcaoId";
             return await database.Conexao.QueryAsync<RespostaRegistroAcaoBuscaAtiva>(query, new { questaoRegistroAcaoId });
-        }
-
-        public Task<bool> RemoverPorArquivoId(long arquivoId)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

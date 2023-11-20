@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoCabecalhoPorId(long id);
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoPorIdESecao(long id, long secaoId);
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoComTurmaPorId(long id);
+        Task<IEnumerable<string>> ObterCodigoArquivoPorRegistroAcaoId(long id);
     }
 }

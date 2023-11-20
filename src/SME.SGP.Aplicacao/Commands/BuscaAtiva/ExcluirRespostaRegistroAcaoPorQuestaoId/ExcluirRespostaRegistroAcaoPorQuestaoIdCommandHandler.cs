@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         public IMediator mediator { get; }
         public IRepositorioRespostaRegistroAcaoBuscaAtiva repositorioResposta { get; }
 
-        public ExcluirRespostaRegistroAcaoPorQuestaoIdCommandHandler(IMediator mediator, IRepositorioRespostaRegistroAcaoBuscaAtiva repositorioRespostaEncaminhamentoNAAPA)
+        public ExcluirRespostaRegistroAcaoPorQuestaoIdCommandHandler(IMediator mediator, IRepositorioRespostaRegistroAcaoBuscaAtiva repositorioResposta)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));

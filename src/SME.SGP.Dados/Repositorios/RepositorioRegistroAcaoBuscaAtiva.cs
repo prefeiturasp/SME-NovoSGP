@@ -2,6 +2,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,6 +12,26 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioRegistroAcaoBuscaAtiva(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
+        }
+
+        public async Task<IEnumerable<string>> ObterCodigoArquivoPorRegistroAcaoId(long id)
+        {
+            var sql = @"select
+                            a.codigo
+                        from
+                            registro_acao_busca_ativa raba
+                        inner join registro_acao_busca_ativa_secao rabas on
+                            raba.id = rabas.registro_acao_busca_ativa_id
+                        inner join registro_acao_busca_ativa_questao qraba on
+                            rabas.id = qraba.registro_acao_busca_ativa_secao_id
+                        inner join registro_acao_busca_ativa_resposta rraba on
+                            qraba.id = rraba.questao_registro_acao_id
+                        inner join arquivo a on
+                            rraba.arquivo_id = a.id
+                        where
+                            raba.id = @id";
+
+            return await database.Conexao.QueryAsync<string>(sql.ToString(), new { id });
         }
 
         public Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoCabecalhoPorId(long id)

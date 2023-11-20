@@ -13,14 +13,10 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public Task<AuditoriaDto> ObterAuditoriaRegistroAcaoSecao(long id)
+        public async Task<IEnumerable<long>> ObterIdsSecoesPorRegistroAcaoId(long registroAcaoId)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IEnumerable<long>> ObterIdsSecoesPorRegistroAcaoId(long registroAcaoId)
-        {
-            throw new System.NotImplementedException();
+            var query = "select id from registro_acao_busca_ativa_secao  where not excluido and registro_acao_busca_ativa_id = @registroAcaoId";
+            return await database.Conexao.QueryAsync<long>(query, new { registroAcaoId });
         }
     }
 }

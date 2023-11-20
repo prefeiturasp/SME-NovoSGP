@@ -9,6 +9,5 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioRegistroAcaoBuscaAtivaSecao : IRepositorioBase<RegistroAcaoBuscaAtivaSecao>
     {
         Task<IEnumerable<long>> ObterIdsSecoesPorRegistroAcaoId(long registroAcaoId);
-        Task<AuditoriaDto> ObterAuditoriaRegistroAcaoSecao(long id);
     }
 }
