@@ -578,6 +578,13 @@ namespace SME.SGP.IoC
 
             //Consulta Crianças Estudantes Ausentes
             services.TryAddScoped<IRepositorioConsultaCriancasEstudantesAusentes, RepositorioConsultaCriancasEstudantesAusentes>();
+
+            // Registro Ação Busca Ativa 
+            services.TryAddScoped<IRepositorioSecaoRegistroAcaoBuscaAtiva, RepositorioSecaoRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioRegistroAcaoBuscaAtiva, RepositorioRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioRegistroAcaoBuscaAtivaSecao, RepositorioRegistroAcaoBuscaAtivaSecao>();
+            services.TryAddScoped<IRepositorioQuestaoRegistroAcaoBuscaAtiva, RepositorioQuestaoRegistroAcaoBuscaAtiva>();
+            services.TryAddScoped<IRepositorioRespostaRegistroAcaoBuscaAtiva, RepositorioRespostaRegistroAcaoBuscaAtiva>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1357,6 +1364,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirCadastroAcessoABAEUseCase, ExcluirCadastroAcessoABAEUseCase>();
             services.TryAddScoped<IObterCadastroAcessoABAEUseCase, ObterCadastroAcessoABAEUseCase>();
             services.TryAddScoped<IObterPaginadoCadastroAcessoABAEUseCase, ObterPaginadoCadastroAcessoABAEUseCase>();
+
+            //Busca Ativa - Registro Ação
+            services.TryAddScoped<IObterSecoesRegistroAcaoSecaoUseCase, ObterSecoesRegistroAcaoSecaoUseCase>();
+            services.TryAddScoped<IObterQuestionarioRegistroAcaoUseCase, ObterQuestionarioRegistroAcaoUseCase>();
+            services.TryAddScoped<IRegistrarRegistroAcaoUseCase, RegistrarRegistroAcaoUseCase>();
+            services.TryAddScoped<IExcluirRegistroAcaoUseCase, ExcluirRegistroAcaoUseCase>();
+            services.TryAddScoped<IObterRegistrosAcaoCriancaEstudanteAusenteUseCase, ObterRegistrosAcaoCriancaEstudanteAusenteUseCase>();
+            services.TryAddScoped<IObterRegistroAcaoPorIdUseCase, ObterRegistroAcaoPorIdUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

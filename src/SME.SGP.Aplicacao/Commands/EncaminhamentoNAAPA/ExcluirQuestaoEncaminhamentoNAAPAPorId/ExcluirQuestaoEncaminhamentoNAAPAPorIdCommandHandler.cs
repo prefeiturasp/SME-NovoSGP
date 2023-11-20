@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var questoesIds = await repositorioQuestaoEncaminhamentoNAAPA.ObterQuestoesPorSecaoId(request.QuestaoId);
 
             foreach (var questaoId in questoesIds)
-                await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questaoId));
+                await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPAPorQuestaoIdCommand(questaoId));
 
             return true;
         }
