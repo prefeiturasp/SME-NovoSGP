@@ -4,15 +4,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake;
 using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -75,11 +69,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             .Texto.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy-MM-dd"));
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == "Sim").FirstOrDefault();
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
             retorno.Where(q => q.Id == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == "Visita Domiciliar").FirstOrDefault();
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR).FirstOrDefault();
             retorno.Where(q => q.Id == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
