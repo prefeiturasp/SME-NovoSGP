@@ -752,7 +752,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        fn.nota,
 	                        fn.conceito_id as ConceitoId,
 	                        p.bimestre,
-                            row_number() over (partition by ft.id, fa.aluno_codigo, p.bimestre, f.disciplina_id order by fn.id desc) sequencia
+                            row_number() over (partition by ft.id, fa.aluno_codigo, p.bimestre, fn.disciplina_id order by fn.id desc) sequencia
                           from fechamento_aluno fa 
                           left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
                           left join fechamento_turma_disciplina f on f.id = fa.fechamento_turma_disciplina_id
