@@ -64,7 +64,7 @@ namespace SME.SGP.Dominio.Servicos
                 await VerificaSeProfessorPodePersistirTurma(turma.CodigoTurma, fechamentoFinal.DisciplinaId, usuarioLogado);
 
             var mesmoAnoLetivo = turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
-            var bimestre = turma.EhEJA() ? BIMESTRE_2 : BIMESTRE_4;
+            var bimestre = turma.EhSemestral() ? BIMESTRE_2 : BIMESTRE_4;
             var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestre, mesmoAnoLetivo));
 
             if (!temPeriodoAberto)
