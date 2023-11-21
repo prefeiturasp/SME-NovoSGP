@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 return true;
             else
-                throw new Exception($"Não foi possivel alterar a notificação para o comunucado de id : {request.Comunicado.Id}");
+                throw new NegocioException($"Não foi possivel alterar a notificação para o comunucado de id : {request.Comunicado.Id}");
         }
 
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)

@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var httpContentResult = await resposta.Content.ReadAsStringAsync();
-                throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}", new Exception($"Erro ao enviar a notificação para o App Aluno: {httpContentResult}"));
+                throw new NegocioException($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}", new Exception($"Erro ao enviar a notificação para o App Aluno: {httpContentResult}"));
             }
 
         }
