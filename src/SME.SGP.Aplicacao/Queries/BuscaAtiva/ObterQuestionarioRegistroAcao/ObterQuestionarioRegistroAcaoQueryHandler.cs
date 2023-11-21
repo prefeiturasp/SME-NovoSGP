@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             return questoes;
         }
 
-        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto> respostasEncaminhamento)
+        QuestaoDto ObterQuestao(long questaoId, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoRegistroAcaoBuscaAtivaDto> respostasRegistroAcao)
         {
             var questao = dadosQuestionario.FirstOrDefault(c => c.Id == questaoId);
 
@@ -66,29 +66,29 @@ namespace SME.SGP.Aplicacao
                         Nome = opcaoResposta.Nome,
                         Ordem = opcaoResposta.Ordem,
                         QuestoesComplementares = opcaoResposta.QuestoesComplementares.NaoEhNulo() ?
-                            ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, respostasEncaminhamento).ToList() :
+                            ObterQuestoes(opcaoResposta.QuestoesComplementares, dadosQuestionario, respostasRegistroAcao).ToList() :
                             null
                     };
                 })
                 .OrderBy(a => a.Ordem).ToArray(),
-                Resposta = respostasEncaminhamento.Where(c => c.QuestaoId == questaoId).Select(respostaEncaminhamento =>
+                Resposta = respostasRegistroAcao.Where(c => c.QuestaoId == questaoId).Select(respostaRegistroAcao =>
                 {
                     return new RespostaQuestaoDto()
                     {
-                        Id = respostaEncaminhamento.Id,
-                        OpcaoRespostaId = respostaEncaminhamento.RespostaId,
-                        Texto = respostaEncaminhamento.Texto,
-                        Arquivo = respostaEncaminhamento.Arquivo
+                        Id = respostaRegistroAcao.Id,
+                        OpcaoRespostaId = respostaRegistroAcao.RespostaId,
+                        Texto = respostaRegistroAcao.Texto,
+                        Arquivo = respostaRegistroAcao.Arquivo
                     };
                 }).ToArray()
             };
 
         }
 
-        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto> respostasEncaminhamento)
+        private IEnumerable<QuestaoDto> ObterQuestoes(List<OpcaoQuestaoComplementar> questoesComplementares, IEnumerable<Questao> dadosQuestionario, IEnumerable<RespostaQuestaoRegistroAcaoBuscaAtivaDto> respostasRegistroAcao)
         {
             foreach (var questaoComplementar in questoesComplementares)
-                yield return ObterQuestao(questaoComplementar.QuestaoComplementarId, dadosQuestionario, respostasEncaminhamento);
+                yield return ObterQuestao(questaoComplementar.QuestaoComplementarId, dadosQuestionario, respostasRegistroAcao);
         }
     }
 }

@@ -126,13 +126,13 @@ namespace SME.SGP.Dados.Repositorios
                            where raba.id = @id";
 
             return (await database.Conexao.QueryAsync<RegistroAcaoBuscaAtiva, Turma, Ue, Dre, RegistroAcaoBuscaAtiva>(query,
-                (encaminhamentoNAAPA, turma, ue, dre) =>
+                (registroAcao, turma, ue, dre) =>
                 {
-                    encaminhamentoNAAPA.Turma = turma;
-                    encaminhamentoNAAPA.Turma.Ue = ue;
-                    encaminhamentoNAAPA.Turma.Ue.Dre = dre;
+                    registroAcao.Turma = turma;
+                    registroAcao.Turma.Ue = ue;
+                    registroAcao.Turma.Ue.Dre = dre;
 
-                    return encaminhamentoNAAPA;
+                    return registroAcao;
                 }, new { id })).FirstOrDefault();
         }
 

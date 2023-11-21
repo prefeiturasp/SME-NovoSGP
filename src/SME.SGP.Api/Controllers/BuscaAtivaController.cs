@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
     public class BuscaAtivaController : ControllerBase
     {
         [HttpPost("registros-acao")]
-        [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ResultadoRegistroAcaoBuscaAtivaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> RegistrarRegistroAcao([FromBody] RegistroAcaoBuscaAtivaDto registroAcaoDto, [FromServices] IRegistrarRegistroAcaoUseCase registrarRegistroAcaoUseCase)
@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpDelete("registros-acao/{registroAcaoId}")]
-        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(RegistroAcaoBuscaAtivaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirRegistroAcao(long registroAcaoId, [FromServices] IExcluirRegistroAcaoUseCase useCase)
