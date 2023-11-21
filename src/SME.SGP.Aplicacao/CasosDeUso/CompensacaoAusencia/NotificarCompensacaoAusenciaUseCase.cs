@@ -19,23 +19,17 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-
+        
         public NotificarCompensacaoAusenciaUseCase(IMediator mediator,
                                                    IRepositorioCompensacaoAusenciaAlunoConsulta repositorioCompensacaoAusenciaAlunoConsulta,
                                                    IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
                                                    IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
-                                                   IRepositorioTurmaConsulta repositorioTurmaConsulta,
-                                                   IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
-                                                   IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular) : base(mediator)
+                                                   IRepositorioTurmaConsulta repositorioTurmaConsulta) : base(mediator)
         {
             this.repositorioCompensacaoAusenciaAlunoConsulta = repositorioCompensacaoAusenciaAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAlunoConsulta));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)

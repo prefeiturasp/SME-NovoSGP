@@ -21,13 +21,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-        private string[] componentesParaObjetivosAprendizagemOpcionais = Array.Empty<string>();
         public ConsultasDisciplina(IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
         IMediator mediator) : base(mediator)
         {
             this.repositorioCache = repositorioCache ??
@@ -36,8 +33,6 @@ namespace SME.SGP.Aplicacao
                 throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ??
                 throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ??
-                throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioComponenteCurricularJurema = repositorioComponenteCurricularJurema ??
                 throw new ArgumentNullException(nameof(repositorioComponenteCurricularJurema));
         }

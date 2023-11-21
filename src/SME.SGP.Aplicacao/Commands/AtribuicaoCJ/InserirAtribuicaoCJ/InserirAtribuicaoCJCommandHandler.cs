@@ -14,20 +14,15 @@ namespace SME.SGP.Aplicacao
         private static readonly long[] componentesQueNaoPodemSerSubstituidos = { 1033, 1051, 1052, 1053, 1054, 1030 };
 
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioAbrangencia repositorioAbrangencia;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IRepositorioAbrangencia repositorioAbrangencia;      
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IMediator mediator;
 
         public InserirAtribuicaoCJCommandHandler(IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ, IRepositorioAbrangencia repositorioAbrangencia,
-                                                 IRepositorioTurma repositorioTurma, IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                  IRepositorioAulaConsulta repositorioAula, IMediator mediator)
         {
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
