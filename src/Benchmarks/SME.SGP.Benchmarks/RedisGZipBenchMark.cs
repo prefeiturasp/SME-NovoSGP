@@ -1,5 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
 using SME.SGP.Dominio;
+
+pusing BenchmarkDotNet.Attributes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Utilitarios;
 using StackExchange.Redis;
 using System;
