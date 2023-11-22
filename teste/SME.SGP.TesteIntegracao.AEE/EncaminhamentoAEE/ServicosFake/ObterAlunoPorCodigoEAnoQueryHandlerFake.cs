@@ -1,20 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
 {
     public class ObterAlunoPorCodigoEAnoQueryHandlerFake : IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>
     {
         
-        public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
+        public Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia();
 
@@ -31,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                 CodigoTurma = "1",
             };
 
-            return alunoReduzido;
+            return Task.FromResult(alunoReduzido);
         }
 
     }

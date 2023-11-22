@@ -1,14 +1,10 @@
-﻿using Dapper;
-using Npgsql;
+﻿using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -32,9 +28,9 @@ namespace SME.SGP.Dados
                 new { registroFrequenciaId, numeroAula, codigoAluno });
         }
 
-        public async Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
+        public Task<bool> InserirVarios(IEnumerable<RegistroFrequenciaAluno> registros)
         {
-            return await InserirVariosComLog(registros, false);
+            return Task.FromResult(InserirVariosComLog(registros, false));
         }
 
         public async Task ExcluirVarios(List<long> idsParaExcluir)
@@ -45,9 +41,9 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
 
-        public async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
+        public Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
         {
-            return await InserirVariosComLog(registros, true);
+            return Task.FromResult(InserirVariosComLog(registros, true));
         }
 
         public async Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId)
@@ -57,7 +53,7 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteAsync(query, new { aulaId, registroFrequenciaId });
         }
 
-        private async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
+        private bool InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
         {
             var sql = @"copy registro_frequencia_aluno (                                         
                                         valor, 

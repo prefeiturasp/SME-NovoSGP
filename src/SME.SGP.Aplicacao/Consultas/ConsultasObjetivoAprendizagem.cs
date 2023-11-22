@@ -118,8 +118,12 @@ namespace SME.SGP.Aplicacao
         public long ObterIdPorObjetivoAprendizagemJurema(long planoId, long objetivoAprendizagemJuremaId)
         {
             return repositorioObjetivosPlano.ObterIdPorObjetivoAprendizagemJurema(planoId, objetivoAprendizagemJuremaId);
-        }    
+        }
 
+        public bool ComponentePossuiObjetivosOpcionais(long componenteCurricularCodigo, bool regencia, bool turmaEspecial)
+        {
+            return turmaEspecial && (regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
+        }
 
         private async Task<int> ObterBimestreAtual(DateTime dataReferencia, string turmaId)
         {
@@ -173,11 +177,6 @@ namespace SME.SGP.Aplicacao
             IEnumerable<ComponenteCurricularJurema> componentesFiltro = componentesCurriculares.Where(c => componentesCurricularesIds.Contains(c.CodigoEOL));
             IEnumerable<long> componentesJurema = componentesFiltro.Select(c => c.CodigoJurema);
             return componentesJurema;
-        }
-
-        public async Task<bool> ComponentePossuiObjetivosOpcionais(long componenteCurricularCodigo, bool regencia, bool turmaEspecial)
-        {
-            return turmaEspecial && (regencia || new long[] { 218, 138, 1116 }.Contains(componenteCurricularCodigo));
         }
     }
 }

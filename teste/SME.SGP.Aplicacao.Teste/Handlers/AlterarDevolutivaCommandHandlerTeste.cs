@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Deve_Alterar_Devolutiva()
+        public Task Deve_Alterar_Devolutiva()
         {
             // Arrange
             repositorioDevolutiva.Setup(a => a.SalvarAsync(It.IsAny<Devolutiva>()))
@@ -40,15 +40,19 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioDevolutiva.Verify(x => x.SalvarAsync(It.IsAny<Devolutiva>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Obrigar_Devolutiva()
+        public Task Deve_Obrigar_Devolutiva()
         {
             var command = new AlterarDevolutivaCommand(null);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Devolutiva);
+
+            return Task.CompletedTask;
         }
 
         private TestValidationResult<AlterarDevolutivaCommand> ValidarCommand(AlterarDevolutivaCommand command)
