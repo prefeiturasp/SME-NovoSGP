@@ -14,15 +14,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ConsultasNotificacao : ConsultasBase, IConsultasNotificacao
     {
-        private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
         private readonly IRepositorioTipoRelatorio repositorioTipoRelatorio;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao,
-            IContextoAplicacao contextoAplicacao, IMediator mediator,
+        public ConsultasNotificacao(IContextoAplicacao contextoAplicacao, IMediator mediator,
             IRepositorioTipoRelatorio repositorioTipoRelatorio) : base(contextoAplicacao)
         {
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioTipoRelatorio = repositorioTipoRelatorio ?? throw new ArgumentNullException(nameof(repositorioTipoRelatorio));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
