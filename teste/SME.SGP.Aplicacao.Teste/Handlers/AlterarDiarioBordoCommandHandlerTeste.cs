@@ -79,14 +79,14 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
 
             return Task.CompletedTask;
         }
-        private List<DisciplinaDto> RetornaDisciplinaDto()
+        private Task<List<DisciplinaDto>> RetornaDisciplinaDto()
         {
             var listaDisciplinaDto = new List<DisciplinaDto>();
             var disciplinaDto = new DisciplinaDto() { Id = 1, CodigoComponenteCurricular = 1, CdComponenteCurricularPai = 1, Nome = "Matematica", TurmaCodigo = "1" };
 
             listaDisciplinaDto.Add(disciplinaDto);
 
-            return listaDisciplinaDto;
+            return Task.FromResult(listaDisciplinaDto);
         }
 
         [Fact]
