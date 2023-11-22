@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
 
         public ValidarMediaAlunosAtividadeAvaliativaUseCase(IMediator mediator, IRepositorioConceitoConsulta repositorioConceito, 
-                                                            IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAulaConsulta repositorioAula
+                                                            IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAulaConsulta repositorioAula,
                                                             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                             IRepositorioCiclo repositorioCiclo, IServicoUsuario servicoUsuario) : base(mediator)
         {

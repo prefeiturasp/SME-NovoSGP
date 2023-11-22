@@ -84,8 +84,6 @@ namespace SME.SGP.Aplicacao
             if (turma.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a turma");
 
-            await CarregueComponentesObjetivoApredizagemOpcionais(turma.AnoLetivo);
-
             if (usuarioLogado.EhProfessorCj())
             {
                 disciplinasAtribuicaoCj = (await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login)).ToList();
@@ -583,16 +581,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
-        }
-
-        private async Task CarregueComponentesObjetivoApredizagemOpcionais(int anoLetivo)
-        {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ComponentesParaObjetivosAprendizagemOpcionais, anoLetivo));
-
-            if (parametro.NaoEhNulo())
-            {
-                componentesParaObjetivosAprendizagemOpcionais = parametro.Valor.Split(",");
-            }
         }
     }
 }
