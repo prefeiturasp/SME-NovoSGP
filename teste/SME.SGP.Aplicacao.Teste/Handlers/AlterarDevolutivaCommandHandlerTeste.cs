@@ -1,15 +1,11 @@
-﻿using Moq;
+﻿using FluentValidation.TestHelper;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Excecoes;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.TestHelper;
-using Xunit;
-using MediatR;
 using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers
 {
