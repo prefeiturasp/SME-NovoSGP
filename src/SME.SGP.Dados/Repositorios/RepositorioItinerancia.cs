@@ -23,8 +23,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ItineranciaObjetivosBaseDto>> ObterObjetivosBase()
         {
             var query = @"select id as ItineranciaObjetivoBaseId,
-	                             nome,
-	                             tem_descricao as TemDescricao
+                                 nome,
+                                 tem_descricao as TemDescricao
                             from itinerancia_objetivo_base iob  
                            where not excluido 
                            order by ordem  ";
@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ItineranciaAlunoDto>> ObterItineranciaAlunoPorId(long id)
         {
             var query = @" select id,
- 		                          codigo_aluno as CodigoAluno,
+                                   codigo_aluno as CodigoAluno,
                                   turma_id as TurmaId
                              from itinerancia_aluno ia 
                             where itinerancia_id = @id
@@ -232,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
             if (dreId > 0 || ueId > 0)
             {
                 sql.AppendLine(@" inner join ue  on i.ue_id  = ue.id 
-	                              inner join dre on ue.dre_id = dre.id ");
+                                  inner join dre on ue.dre_id = dre.id ");
             }
 
             if (turmaId > 0 || !string.IsNullOrEmpty(alunoCodigo))

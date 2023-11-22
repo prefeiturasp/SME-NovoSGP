@@ -205,17 +205,17 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PeriodoEscolar>> ObterPorAnoLetivoEModalidadeTurma(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int semestre = 0)
         {
             var query = $@"select
-	                            distinct pe.*
+                                distinct pe.*
                             from
-	                            periodo_escolar pe
+                                periodo_escolar pe
                             inner join tipo_calendario tc on
-	                            pe.tipo_calendario_id = tc.id
+                                pe.tipo_calendario_id = tc.id
                             where
-	                            tc.modalidade = @modalidadeTipoCalendario
-	                            and tc.ano_letivo = @anoLetivo
-	                            and tc.situacao
-	                            and not tc.excluido
-	                            {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
+                                tc.modalidade = @modalidadeTipoCalendario
+                                and tc.ano_letivo = @anoLetivo
+                                and tc.situacao
+                                and not tc.excluido
+                                {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
 
             return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { modalidadeTipoCalendario, anoLetivo, semestre },queryName: "ObterPorAnoLetivoEModalidadeTurma");
         }
@@ -275,13 +275,13 @@ namespace SME.SGP.Dados.Repositorios
         {
 
             var sql = new StringBuilder(@"select 
-				                distinct pe.id 
-				                ,pe.tipo_calendario_id as TipoCalendarioId
-				                ,pe.bimestre
-				                ,pe.periodo_inicio as PeriodoInicio
-				                ,pe.periodo_fim as PeriodoFim
-				                ,pe.migrado
-				                ,a.aula_cj  as AulaCj
+                                distinct pe.id 
+                                ,pe.tipo_calendario_id as TipoCalendarioId
+                                ,pe.bimestre
+                                ,pe.periodo_inicio as PeriodoInicio
+                                ,pe.periodo_fim as PeriodoFim
+                                ,pe.migrado
+                                ,a.aula_cj  as AulaCj
                                 from tipo_calendario tc
                                 inner join periodo_escolar pe on tc.id = pe.tipo_calendario_id 
                                 inner join aula a  on a.tipo_calendario_id  = tc.id 
@@ -352,23 +352,23 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> ObterBimestreAtualComAberturaPorTurmaAsync(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, long ueId, DateTime dataReferencia)
         {
             var query = @"select
-	                        pe.bimestre 
+                            pe.bimestre 
                         from
-	                        periodo_fechamento pf
+                            periodo_fechamento pf
                         inner join ue u on
-	                        pf.ue_id = u.id
+                            pf.ue_id = u.id
                         inner join periodo_fechamento_bimestre pfb on
-	                        pfb.periodo_fechamento_id = pf.id
+                            pfb.periodo_fechamento_id = pf.id
                         inner join periodo_escolar pe on
-	                        pfb.periodo_escolar_id = pe.id
+                            pfb.periodo_escolar_id = pe.id
                         inner join tipo_calendario tc on
-	                        pe.tipo_calendario_id = tc.id
+                            pe.tipo_calendario_id = tc.id
                         where
-	                        tc.modalidade = @modalidadeTipoCalendario
-	                        and u.id = @ueId
-	                        and tc.ano_letivo = @anoLetivo
-	                        and not excluido
-	                        and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento ";
+                            tc.modalidade = @modalidadeTipoCalendario
+                            and u.id = @ueId
+                            and tc.ano_letivo = @anoLetivo
+                            and not excluido
+                            and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo, modalidadeTipoCalendario, dataReferencia, ueId });
         }
@@ -376,20 +376,20 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> ObterBimestreAtualComAberturaPorAnoModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)
         {
             var query = @"select
-	                        pe.bimestre 
+                            pe.bimestre 
                         from
-	                        periodo_fechamento pf
+                            periodo_fechamento pf
                         inner join periodo_fechamento_bimestre pfb on
-	                        pfb.periodo_fechamento_id = pf.id
+                            pfb.periodo_fechamento_id = pf.id
                         inner join periodo_escolar pe on
-	                        pfb.periodo_escolar_id = pe.id
+                            pfb.periodo_escolar_id = pe.id
                         inner join tipo_calendario tc on
-	                        pe.tipo_calendario_id = tc.id
+                            pe.tipo_calendario_id = tc.id
                         where
-	                        tc.modalidade = @modalidadeTipoCalendario
-	                        and tc.ano_letivo = @anoLetivo
-	                        and not excluido
-	                        and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento ";
+                            tc.modalidade = @modalidadeTipoCalendario
+                            and tc.ano_letivo = @anoLetivo
+                            and not excluido
+                            and @dataReferencia between pfb.inicio_fechamento and pfb.final_fechamento ";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { anoLetivo, modalidadeTipoCalendario, dataReferencia });
         }
@@ -397,9 +397,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PeriodoEscolarModalidadeDto>> ObterPeriodosPassadosNoAno(DateTime data)
         {
             var query = @"select tc.modalidade
- 	                    , pe.bimestre
- 	                    , pe.periodo_inicio as DataInicio
- 	                    , pe.periodo_fim as DataFim
+                         , pe.bimestre
+                         , pe.periodo_inicio as DataInicio
+                         , pe.periodo_fim as DataFim
                        from tipo_calendario tc 
                       inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                       where not tc.excluido 
