@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
 using System;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Guid> GerarFotoAluno(string alunoCodigo, IFormFile file)
         {
-            var imagem = await ObterImagem(file);
+            var imagem = ObterImagem(file);
             var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
             
             using (var transacao = unitOfWork.IniciarTransacao())
@@ -78,7 +77,7 @@ namespace SME.SGP.Aplicacao
         private string ObterNomeMiniatura(string nomeArquivo)
             => $"miniatura_{nomeArquivo}";
 
-        private async Task<Image> ObterImagem(IFormFile file)
+        private Image ObterImagem(IFormFile file)
         {
             var stream = file.OpenReadStream();
             

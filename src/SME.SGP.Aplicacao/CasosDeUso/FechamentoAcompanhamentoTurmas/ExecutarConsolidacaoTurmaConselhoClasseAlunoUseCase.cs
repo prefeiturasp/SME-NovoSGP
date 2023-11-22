@@ -1,11 +1,8 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -53,7 +50,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     if (turmaRegular.EhNulo())
-                        throw new Exception(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
+                        throw new NegocioException(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
 
                     if (turma.EhTurmaEdFisica())
                         componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));

@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         }
 
         [Fact]
-        public async Task DeveObterResultado()
+        public Task DeveObterResultado()
         {
             consultasTurma.Setup(t => t.ObterComUeDrePorCodigo(It.IsAny<string>())).Returns(Task.FromResult(ObterTurma()));
             consultasFechamentoTurma.Setup(f => f.ObterPorTurmaCodigoBimestreAsync(It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(ObterFechamentoTurma()));
@@ -61,6 +61,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(),null)).Returns(Task.FromResult("10"));
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
             Assert.NotNull(consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
+
+            return Task.CompletedTask;
         }
 
         [Fact]
@@ -118,7 +120,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         }
 
         [Fact]
-        public async Task DeveObterResultadoAnoAnterior()
+        public Task DeveObterResultadoAnoAnterior()
         {
             var turma = ObterTurma();
             turma.AnoLetivo = DateTime.Today.Year - 1;
@@ -131,6 +133,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioParametrosSistema.Setup(m => m.ObterValorPorTipoEAno(It.IsAny<TipoParametroSistema>(), null)).Returns(Task.FromResult("10"));
             repositorioConselhoClasseAluno.Setup(c => c.ObterPorConselhoClasseAlunoCodigoAsync(It.IsAny<long>(), It.IsAny<string>())).Returns(Task.FromResult(new ConselhoClasseAluno()));
             Assert.NotNull(consultasConselhoClasse.ObterConselhoClasseTurma("", "", 0, true, false));
+
+            return Task.CompletedTask;
         }
 
         private Turma ObterTurma()
