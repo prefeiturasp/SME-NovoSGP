@@ -21,8 +21,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * 
                           from prioridade_perfil pp
                           inner join (select pp.id, pp.tipo 
-			                         from prioridade_perfil pp 
-			                         where pp.codigo_perfil = @perfilUsuario) pa on pp.id = pa.id or pp.tipo >= pa.tipo";
+                                     from prioridade_perfil pp 
+                                     where pp.codigo_perfil = @perfilUsuario) pa on pp.id = pa.id or pp.tipo >= pa.tipo";
 
             return await database.Conexao.QueryAsync<PrioridadePerfil>(query, new { perfilUsuario });
         }

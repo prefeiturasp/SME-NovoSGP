@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,7 +16,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
@@ -36,7 +34,6 @@ namespace SME.SGP.Aplicacao
             IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IMediator mediator,
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
 
@@ -44,7 +41,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentException(nameof(consultasProfessor));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentException(nameof(repositorioComponenteCurricular));
             this.unitOfWork = unitOfWork ?? throw new ArgumentException(nameof(unitOfWork));
             this.repositorioAula = repositorioAula ?? throw new ArgumentException(nameof(repositorioAula));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));

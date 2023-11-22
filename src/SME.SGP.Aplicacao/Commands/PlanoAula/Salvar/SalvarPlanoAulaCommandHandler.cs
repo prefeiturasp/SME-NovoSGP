@@ -16,27 +16,21 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPlanoAulaCommandHandler : AbstractUseCase, IRequestHandler<SalvarPlanoAulaCommand, PlanoAulaDto>
     {
-        private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula;
-        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
         
         public SalvarPlanoAulaCommandHandler(IMediator mediator,
-            IRepositorioAula repositorioAula,
             IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
             IRepositorioPlanoAula repositorioPlanoAula,
-            IConsultasAbrangencia consultasAbrangencia,
             IUnitOfWork unitOfWork,
             IServicoUsuario servicoUsuario,
             IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioObjetivosAula = repositorioObjetivosAula ?? throw new ArgumentNullException(nameof(repositorioObjetivosAula));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));

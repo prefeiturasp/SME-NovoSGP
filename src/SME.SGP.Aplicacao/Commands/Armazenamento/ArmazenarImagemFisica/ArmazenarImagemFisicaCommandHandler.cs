@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ArmazenarImagemFisicaCommandHandler : IRequestHandler<ArmazenarImagemFisicaCommand, bool>
     {
         private readonly IServicoArmazenamento servicoArmazenamento;
-        private readonly IMediator mediator;
         
-        public ArmazenarImagemFisicaCommandHandler(IServicoArmazenamento servicoArmazenamento, IMediator mediator)
+        public ArmazenarImagemFisicaCommandHandler(IServicoArmazenamento servicoArmazenamento)
         {
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<bool> Handle(ArmazenarImagemFisicaCommand request, CancellationToken cancellationToken)
         {

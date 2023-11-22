@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ComponentesRegenciaComAtividadeAvaliativaDto>> TotalAtividadesAvaliativasRegenciaPorAtividadesAvaliativas(long[] atividadesAvaliativasId)
         {
             var query = @"select count(a.id) as TotalAtividades,
-                            			 aar.disciplina_contida_regencia_id as DisciplinaId
+                                         aar.disciplina_contida_regencia_id as DisciplinaId
                                     from atividade_avaliativa a 
                                    inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id 
                                      and a.id = any(@atividadesAvaliativasId) 

@@ -8,7 +8,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo.ServicosFakes
 {
     public class ObterProfessorTitularPorTurmaEComponenteCurricularQueryHandlerFakeDiarioClasse : IRequestHandler<ObterProfessorTitularPorTurmaEComponenteCurricularQuery, ProfessorTitularDisciplinaEol>
         {
-            protected const long COMPONENTE_CURRICULAR_512 = 512;
+            protected const string COMPONENTE_CURRICULAR_512 = "512";
             protected const long TURMA_ID_1 = 1;
             public ObterProfessorTitularPorTurmaEComponenteCurricularQueryHandlerFakeDiarioClasse()
             {}
@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo.ServicosFakes
             {
                 return Task.FromResult(new ProfessorTitularDisciplinaEol()
                 {
-                    DisciplinasId = new long[] { COMPONENTE_CURRICULAR_512 },
+                    CodigosDisciplinas = COMPONENTE_CURRICULAR_512,
                     ProfessorNome = "Teste",
                     ProfessorRf = "9999999",
                     TurmaId = TURMA_ID_1

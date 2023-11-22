@@ -15,9 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricular;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioPlanoAnual repositorioPlanoAnual;
-        private readonly IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
@@ -25,8 +23,6 @@ namespace SME.SGP.Aplicacao
                                    IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
                                    IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                    IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-                                   IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
-                                   IRepositorioTurma repositorioTurma,
                                    IRepositorioComponenteCurricularJurema repositorioComponenteCurricular,
                                    IServicoUsuario servicoUsuario,IMediator mediator)
         {
@@ -34,8 +30,6 @@ namespace SME.SGP.Aplicacao
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
-            this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanejamentoAnual));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

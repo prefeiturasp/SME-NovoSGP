@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -14,17 +13,14 @@ namespace SME.SGP.Aplicacao
     public class NotificarDiarioBordoObservacaoUseCase : INotificarDiarioBordoObservacaoUseCase
     {
         private readonly IMediator mediator;
-        private readonly IConfiguration configuration;
         private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
         private readonly IUnitOfWork unitOfWork;
 
         public NotificarDiarioBordoObservacaoUseCase(IMediator mediator,
-                                                      IConfiguration configuration,
                                                       IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao,
                                                       IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioDiarioBordoObservacaoNotificacao = repositorioDiarioBordoObservacaoNotificacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacaoNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }

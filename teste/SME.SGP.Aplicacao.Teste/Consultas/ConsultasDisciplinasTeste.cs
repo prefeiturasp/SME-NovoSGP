@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
         private readonly Mock<IRepositorioCache> repositorioCache;
         private readonly Mock<IRepositorioComponenteCurricularJurema> repositorioComponenteCurricularJurema;
-        private readonly Mock<IRepositorioComponenteCurricularConsulta> repositorioComponenteCurricularConsulta;
         private readonly Mock<IMediator> mediator;
 
         public ConsultasDisciplinasTeste()
@@ -24,7 +23,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             repositorioCache = new Mock<IRepositorioCache>();
             repositorioComponenteCurricularJurema = new Mock<IRepositorioComponenteCurricularJurema>();
-            repositorioComponenteCurricularConsulta = new Mock<IRepositorioComponenteCurricularConsulta>();
             mediator = new Mock<IMediator>();
         }
 
@@ -53,7 +51,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                    consultasObjetivoAprendizagem.Object,
                                                    repositorioComponenteCurricularJurema.Object,
                                                    repositorioAtribuicaoCJ.Object,
-                                                   repositorioComponenteCurricularConsulta.Object,
                                                    mediator.Object);
 
             var resultado = await consulta.ObterComponentesCurricularesPorProfessorETurma("1", false);

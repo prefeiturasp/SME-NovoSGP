@@ -16,12 +16,9 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly ConsultasAula consultas;
         private readonly Mock<IConsultasDisciplina> consultasDisciplinas;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
-        private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendário;
         private readonly Mock<IConsultasTurma> consultasTurma;
-        private readonly Mock<IRepositorioAulaConsulta> repositorioAula;
-        private readonly Mock<IRepositorioPlanoAula> repositorioPlanoAula;
-        private readonly Mock<IRepositorioTurmaConsulta> repositorioTurma;
+        private readonly Mock<IRepositorioAulaConsulta> repositorioAula;      
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IMediator> mediator;
 
@@ -30,15 +27,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioAula = new Mock<IRepositorioAulaConsulta>();
             servicoUsuario = new Mock<IServicoUsuario>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
-            repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
             consultasDisciplinas = new Mock<IConsultasDisciplina>();
-            repositorioTurma = new Mock<IRepositorioTurmaConsulta>();
             consultasTurma = new Mock<IConsultasTurma>();
-            consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasTipoCalendário = new Mock<IConsultasTipoCalendario>();
             mediator = new Mock<IMediator>();
 
-            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasTipoCalendário.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, consultasDisciplinas.Object, consultasTurma.Object, consultasPeriodoFechamento.Object, mediator.Object);
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasTipoCalendário.Object, servicoUsuario.Object, consultasDisciplinas.Object, consultasTurma.Object, mediator.Object);
 
             Setup();
         }

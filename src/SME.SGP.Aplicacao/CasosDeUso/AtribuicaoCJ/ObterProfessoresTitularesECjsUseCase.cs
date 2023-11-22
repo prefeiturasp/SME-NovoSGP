@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                     var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinasId.Contains(disciplina.CodigoComponenteCurricular));
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
-                        DisciplinasId = new long[] { disciplina.Id },
+                        CodigosDisciplinas = disciplina.Id.ToString(),
                         DisciplinaNome = disciplina.NomeComponenteInfantil,
                         ProfessorNome = dadosProfessorTitular.ProfessorNome,
                         ProfessorRf = dadosProfessorTitular.ProfessorRf
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 {
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
-                        DisciplinasId = new long[] { disciplina.Id },
+                        CodigosDisciplinas = disciplina.Id.ToString(),
                         DisciplinaNome = disciplina.NomeComponenteInfantil,
                         ProfessorNome = "Não há professor titular",
                         ProfessorRf = ""

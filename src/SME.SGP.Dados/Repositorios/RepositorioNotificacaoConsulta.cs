@@ -238,16 +238,16 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> ObterQuantidadeNotificacoesNaoLidasPorAnoLetivoEUsuarioAsync(int anoLetivo, string codigoRf)
         {
             var sql = @"select
-	                        count(*)
+                            count(*)
                         from
-	                        notificacao n
+                            notificacao n
                         left join usuario u on
-	                        n.usuario_id = u.id
+                            n.usuario_id = u.id
                         where
-	                        (u.rf_codigo = @codigoRf or u.login = @codigoRf)
-	                        and not excluida
-	                        and n.status = @naoLida
-	                        and extract(year from n.criado_em) = @anoLetivo";
+                            (u.rf_codigo = @codigoRf or u.login = @codigoRf)
+                            and not excluida
+                            and n.status = @naoLida
+                            and extract(year from n.criado_em) = @anoLetivo";
 
             return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
         }
@@ -261,14 +261,14 @@ namespace SME.SGP.Dados.Repositorios
                             n.id as NotificacaoId,
                             wan.wf_aprovacao_id as WorkflowId
                             from wf_aprovacao_nivel wan
-	                            inner join wf_aprovacao_nivel_notificacao wann 
-		                            on wann.wf_aprovacao_nivel_id  = wan.id
+                                inner join wf_aprovacao_nivel_notificacao wann 
+                                    on wann.wf_aprovacao_nivel_id  = wan.id
                                 inner join notificacao n 
-    	                            on wann.notificacao_id  = n.id                            
+                                    on wann.notificacao_id  = n.id                            
                                 inner join usuario u 
-    	                            on n.usuario_id  = u.id 
-	                            where n.status = 1
-    	                            and n.excluida = false
+                                    on n.usuario_id  = u.id 
+                                where n.status = 1
+                                    and n.excluida = false
                                     and n.tipo in (1,2)";
 
             return await database.Conexao.QueryAsync<NotificacoesParaTratamentoCargosNiveisDto>(query);
@@ -300,7 +300,7 @@ namespace SME.SGP.Dados.Repositorios
                             u.rf_codigo as UsuarioRf
                          from notificacao n 
                          left join usuario u on u.id = n.usuario_id
-	                    where n.id = any(@notificacoesIds)";
+                        where n.id = any(@notificacoesIds)";
 
             return database.Conexao.QueryAsync<NotificacaoUsuarioDto>(query, new { notificacoesIds });
         }
@@ -310,7 +310,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select u.rf_codigo
                          from notificacao n 
                          left join usuario u on u.id = n.usuario_id
-	                    where n.id = @id";
+                        where n.id = @id";
 
             return database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }

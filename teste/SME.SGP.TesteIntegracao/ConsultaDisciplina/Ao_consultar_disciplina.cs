@@ -26,7 +26,6 @@ namespace SME.SGP.TesteIntegracao.ConsultaDisciplina
     {
         private readonly Mock<IConsultasObjetivoAprendizagem> consultasObjetivoAprendizagem;
         private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCJ;
-        private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioCache> repositorioCache;
         private readonly Mock<IRepositorioComponenteCurricularJurema> repositorioComponenteCurricularJurema;
         private readonly Mock<IRepositorioComponenteCurricularConsulta> repositorioComponenteCurricularConsulta;
@@ -36,7 +35,6 @@ namespace SME.SGP.TesteIntegracao.ConsultaDisciplina
             consultasObjetivoAprendizagem = new Mock<IConsultasObjetivoAprendizagem>();
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             repositorioCache = new Mock<IRepositorioCache>();
-            servicoUsuario = new Mock<IServicoUsuario>();
             repositorioComponenteCurricularJurema = new Mock<IRepositorioComponenteCurricularJurema>();
             repositorioComponenteCurricularConsulta = new Mock<IRepositorioComponenteCurricularConsulta>();
             mediator = new Mock<IMediator>();
@@ -55,7 +53,6 @@ namespace SME.SGP.TesteIntegracao.ConsultaDisciplina
                                                    consultasObjetivoAprendizagem.Object,
                                                    repositorioComponenteCurricularJurema.Object,
                                                    repositorioAtribuicaoCJ.Object,
-                                                   repositorioComponenteCurricularConsulta.Object,
                                                    mediator.Object);
 
             var usuario = new Usuario() { Login = "1", PerfilAtual = Perfis.PERFIL_PROFESSOR_INFANTIL };

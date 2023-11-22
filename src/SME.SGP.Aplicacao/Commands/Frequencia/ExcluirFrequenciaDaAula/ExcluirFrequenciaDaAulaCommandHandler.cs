@@ -13,11 +13,9 @@ namespace SME.SGP.Aplicacao
     public class ExcluirFrequenciaDaAulaCommandHandler : IRequestHandler<ExcluirFrequenciaDaAulaCommand, bool>
     {
         private readonly IRepositorioFrequencia repositorioFrequencia;
-        private readonly IMediator mediator;
-        public ExcluirFrequenciaDaAulaCommandHandler(IRepositorioFrequencia repositorioFrequencia,IMediator mediator)
+        public ExcluirFrequenciaDaAulaCommandHandler(IRepositorioFrequencia repositorioFrequencia)
         {
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ExcluirFrequenciaDaAulaCommand request, CancellationToken cancellationToken)

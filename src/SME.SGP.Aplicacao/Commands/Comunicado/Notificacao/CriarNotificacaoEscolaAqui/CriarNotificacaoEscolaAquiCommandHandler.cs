@@ -15,12 +15,10 @@ namespace SME.SGP.Aplicacao
     public class CriarNotificacaoEscolaAquiCommandHandler : IRequestHandler<CriarNotificacaoEscolaAquiCommand, bool>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IMediator mediator;
 
-        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
+        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(CriarNotificacaoEscolaAquiCommand request, CancellationToken cancellationToken)

@@ -80,7 +80,7 @@ namespace SME.SGP.Dados
            
             var query = @";with FechamentoConselhoBase as 
                             (
-  	                        SELECT fa.aluno_codigo AlunoCodigo,
+                              SELECT fa.aluno_codigo AlunoCodigo,
                                     ft.turma_id TurmaId,
                                     comp.id DisciplinaId,
                                     coalesce(ccn.nota,fn.nota) Nota,
@@ -117,15 +117,15 @@ namespace SME.SGP.Dados
                                 WHERE  ft.turma_id = @turmaId
                             ),FechamentoAlunoNotaBase as
                             (
-  	                        select cca.aluno_codigo AlunoCodigo,
-  	                                ft.turma_id TurmaId,
+                              select cca.aluno_codigo AlunoCodigo,
+                                      ft.turma_id TurmaId,
                                     comp.id DisciplinaId,
                                     ccn.nota Nota,
                                     ccn.conceito_id ConceitoId,
                                     pe.bimestre,
                                     cca.conselho_classe_parecer_id ParecerConclusivoId,
                                     ccn.criado_em criadoEmCCN,
-		                            cca.criado_em criadoEmCCA,
+                                    cca.criado_em criadoEmCCA,
                                     ccn.criado_por CriadoPorCCN,
                                     cca.criado_por CriadoPorCCA,
                                     ccn.criado_rf CriadoRfCCN,
@@ -134,7 +134,7 @@ namespace SME.SGP.Dados
                                     ft.id FechamentoTurmaId,
            
                                     ccn.componente_curricular_codigo ComponenteCurricularCodigo           
-  	                        FROM   fechamento_turma ft
+                              FROM   fechamento_turma ft
                                         LEFT JOIN periodo_escolar pe
                                                 ON pe.id = ft.periodo_escolar_id
                                         INNER JOIN turma t
@@ -152,29 +152,29 @@ namespace SME.SGP.Dados
                             WHERE  ft.turma_id = @turmaId
                             ), fechamentoAlunoNota as 
                             (
-  	                        select fb.AlunoCodigo,
-  		                            fb.TurmaId, 
-  		                            fb.DisciplinaId, 
-  		                            coalesce(fb.nota,fn.nota) Nota,
-  		                            coalesce(fb.ConceitoId,fn.conceito_id) as ConceitoId, 
-  		                            fb.bimestre, 
-  		                            fb.ParecerConclusivoId, 
-  		                            coalesce(fb.criadoEmCCN,fn.criado_em,fb.criadoEmCCA) criadoEm,               
+                              select fb.AlunoCodigo,
+                                      fb.TurmaId, 
+                                      fb.DisciplinaId, 
+                                      coalesce(fb.nota,fn.nota) Nota,
+                                      coalesce(fb.ConceitoId,fn.conceito_id) as ConceitoId, 
+                                      fb.bimestre, 
+                                      fb.ParecerConclusivoId, 
+                                      coalesce(fb.criadoEmCCN,fn.criado_em,fb.criadoEmCCA) criadoEm,               
                                     coalesce(fb.CriadoPorCCN,fn.criado_por,fb.CriadoPorCCA) CriadoPor,  
                                     coalesce(fb.CriadoRfCCN,fn.criado_rf,fb.CriadoRfCCA) CriadoRf,      
-  		                            fb.ConselhoClasseAlunoId
-  	                        from FechamentoAlunoNotaBase fb 
-	                        LEFT JOIN fechamento_turma_disciplina ftd ON ftd.fechamento_turma_id = fb.FechamentoTurmaId
+                                      fb.ConselhoClasseAlunoId
+                              from FechamentoAlunoNotaBase fb 
+                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.fechamento_turma_id = fb.FechamentoTurmaId
                             LEFT JOIN fechamento_aluno fa ON fa.fechamento_turma_disciplina_id = ftd.id AND fb.AlunoCodigo = fa.aluno_codigo
                             LEFT JOIN fechamento_nota fn ON fn.fechamento_aluno_id = fa.id AND fb.ComponenteCurricularCodigo = fn.disciplina_id
                             WHERE  fb.TurmaId = @turmaId
                             ),
                             UnionQueries as 
                             (
-	                            select * from fechamentoAlunoNota
-	                            union all
-	                            select * from FechamentoConselhoBase
-	  
+                                select * from fechamentoAlunoNota
+                                union all
+                                select * from FechamentoConselhoBase
+      
                             )
                             select DISTINCT * from UnionQueries ORDER BY AlunoCodigo asc ,bimestre asc ,criadoEm desc";
 

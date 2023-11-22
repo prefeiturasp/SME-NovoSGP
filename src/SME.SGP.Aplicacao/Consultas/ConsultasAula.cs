@@ -15,44 +15,26 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
         private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioAulaConsulta repositorioConsulta;
-        private readonly IRepositorioPlanoAula repositorioPlanoAula;
-        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
-        private IRepositorioAula object1;
-        private IConsultasPeriodoEscolar object2;
-        private IConsultasTipoCalendario object4;
-        private IRepositorioPlanoAula object5;
-        private IRepositorioTurmaConsulta object6;
-        private IServicoUsuario object7;
-        private IConsultasDisciplina object9;
-        private IConsultasTurma object10;
-        private IConsultasPeriodoFechamento object11;
 
         public ConsultasAula(IRepositorioAulaConsulta repositorioConsulta,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
                              IConsultasTipoCalendario consultasTipoCalendario,
-                             IRepositorioPlanoAula repositorioPlanoAula,
-                             IRepositorioTurmaConsulta repositorioTurma,
                              IServicoUsuario servicoUsuario,
                              IConsultasDisciplina consultasDisciplina,
                              IConsultasTurma consultasTurma,
-                             IConsultasPeriodoFechamento consultasPeriodoFechamento,
                              IMediator mediator)
         {
             this.repositorioConsulta = repositorioConsulta ?? throw new ArgumentNullException(nameof(repositorioConsulta));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
-            this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
-            this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }               
 
