@@ -46,17 +46,17 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder();
 
             query.AppendLine(@"
-						SELECT
-							{0}
-						FROM ({1}) c
-						LEFT JOIN comunidado_grupo cg
-							on cg.comunicado_id = c.id
-						LEFT join grupo_comunicado g
-							on cg.grupo_comunicado_id = g.id
+                        SELECT
+                            {0}
+                        FROM ({1}) c
+                        LEFT JOIN comunidado_grupo cg
+                            on cg.comunicado_id = c.id
+                        LEFT join grupo_comunicado g
+                            on cg.grupo_comunicado_id = g.id
                         ");
 
             query.AppendLine(@"
-						WHERE c.excluido = false");
+                        WHERE c.excluido = false");
 
             return query.ToString();
         }
@@ -91,9 +91,9 @@ namespace SME.SGP.Dados.Repositorios
                 filtroPorDre = " and codigo_ue = @codigoUe ";
 
             var sql = $@"select
-	                        distinct 
-	                        (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao >= current_date {filtroPorDre} {filtroPorUe} ) as TotalComunicadosVigentes,
-	                        (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao < current_date {filtroPorDre} {filtroPorUe}) as TotalComunicadosExpirados 
+                            distinct 
+                            (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao >= current_date {filtroPorDre} {filtroPorUe} ) as TotalComunicadosVigentes,
+                            (select count(id) from comunicado where excluido = false and tipo_comunicado <> @tipoComunicado and ano_letivo = @anoLetivo and data_expiracao < current_date {filtroPorDre} {filtroPorUe}) as TotalComunicadosExpirados 
                         from comunicado";
             var parametros = new { anoLetivo, codigoDre, codigoUe, tipoComunicado = TipoComunicado.MENSAGEM_AUTOMATICA };
             return await database.QueryFirstAsync<ComunicadosTotaisResultado>(sql, parametros);
@@ -387,62 +387,62 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             sql.AppendLine(@" from
-	                    ( (
-	                    select
+                        ( (
+                        select
                             comunicado.id as ComunicadoId,
-		                    data_envio as DataEnvio,
-		                    tipo_comunicado as Categoria,
-		                    titulo,
-		                    '' as leitura
-	                    from
-		                    comunicado
-	                    where
-		                    not comunicado.excluido
-		                    and comunicado.tipo_comunicado = 1)
+                            data_envio as DataEnvio,
+                            tipo_comunicado as Categoria,
+                            titulo,
+                            '' as leitura
+                        from
+                            comunicado
+                        where
+                            not comunicado.excluido
+                            and comunicado.tipo_comunicado = 1)
                     union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura
                     from
-	                    comunicado
+                        comunicado
                     where
-	                    not comunicado.excluido
-	                    and comunicado.tipo_comunicado = 2 and comunicado.codigo_dre = @dreCodigo)
-	                    union (
+                        not comunicado.excluido
+                        and comunicado.tipo_comunicado = 2 and comunicado.codigo_dre = @dreCodigo)
+                        union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura
                     from
-	                    comunicado
+                        comunicado
                     where
-	                    not comunicado.excluido
-	                    and comunicado.tipo_comunicado = 3 and comunicado.codigo_ue = @ueCodigo)
-	                    union (
+                        not comunicado.excluido
+                        and comunicado.tipo_comunicado = 3 and comunicado.codigo_ue = @ueCodigo)
+                        union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura
                     from
-	                    comunicado
+                        comunicado
                     inner join comunicado_turma ct on comunicado.id = ct.comunicado_id 
                     where
-	                    not comunicado.excluido
-	                    and comunicado.tipo_comunicado = 5 and ct.turma_codigo = @turmaCodigo)
-		                    union (
+                        not comunicado.excluido
+                        and comunicado.tipo_comunicado = 5 and ct.turma_codigo = @turmaCodigo)
+                            union (
                     select
                         comunicado.id,
-	                    data_envio as DataEnvio,
-	                    tipo_comunicado as Categoria,
-	                    titulo,
-	                    '' as leitura from comunicado inner join comunicado_aluno ca on 
+                        data_envio as DataEnvio,
+                        tipo_comunicado as Categoria,
+                        titulo,
+                        '' as leitura from comunicado inner join comunicado_aluno ca on 
             comunicado.id = ca.comunicado_id where not comunicado.excluido and comunicado.tipo_comunicado = 6 and ca.aluno_codigo = @alunoCodigo)) n ");
 
 
@@ -499,10 +499,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(") tb1;");
 
             query.AppendLine(@"select temp.id,
-	                                  temp.titulo,
-	                                  temp.data_envio as DataEnvio,
-	                                  temp.data_expiracao as DataExpiracao,
-	                                  temp.modalidade as modalidadeCodigo,                                 
+                                      temp.titulo,
+                                      temp.data_envio as DataEnvio,
+                                      temp.data_expiracao as DataExpiracao,
+                                      temp.modalidade as modalidadeCodigo,                                 
                                       temp.tipoEscola as tipoEscolaCodigo
                                  from comunicadoTempPaginado temp
                                 order by temp.data_envio desc ");
@@ -555,10 +555,10 @@ namespace SME.SGP.Dados.Repositorios
         private string MontaQueryListarComunicados(string dreCodigo, string ueCodigo, int[] modalidades, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
         {
             var query = new StringBuilder(@"select distinct c.id,
-	                                               c.titulo,
-	                                               c.data_envio,
-	                                               c.data_expiracao,
-	                                               (select array_agg(modalidade) 
+                                                   c.titulo,
+                                                   c.data_envio,
+                                                   c.data_expiracao,
+                                                   (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
                                                      where cm2.comunicado_id = c.id) as Modalidade,
                                                    (select array_agg(tipo_escola) 
@@ -611,10 +611,10 @@ namespace SME.SGP.Dados.Repositorios
         private string MontaQueryListarComunicadosEja(string dreCodigo, string ueCodigo, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
         {
             var query = new StringBuilder(@"select distinct c.id,
-	                                               c.titulo,
-	                                               c.data_envio,
-	                                               c.data_expiracao,
-	                                               (select array_agg(modalidade) 
+                                                   c.titulo,
+                                                   c.data_envio,
+                                                   c.data_expiracao,
+                                                   (select array_agg(modalidade) 
                                                       from comunicado_modalidade cm2 
                                                      where cm2.comunicado_id = c.id) as Modalidade,
                                                    (select array_agg(tipo_escola) 

@@ -133,9 +133,9 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder();
             query.AppendLine(@"                 select case 
- 													   when t.tipo_turma = 3 then 'Turmas de programa' 
- 													   when t.tipo_turma = 2 then 'Ed. Física'
- 													   when t.tipo_turma = 7 then 'Itinerário'end as AnoDescricao,
+                                                        when t.tipo_turma = 3 then 'Turmas de programa' 
+                                                        when t.tipo_turma = 2 then 'Ed. Física'
+                                                        when t.tipo_turma = 7 then 'Itinerário'end as AnoDescricao,
                                                          sum(cfm.quantidade) as quantidade
                                                   from consolidacao_matricula_turma cfm
                                                  inner join turma t on t.id = cfm.turma_id
@@ -156,9 +156,9 @@ namespace SME.SGP.Dados
         private string QueryConsolidacaoPorDre(long dreId, long ueId, IEnumerable<int> tiposTurma, IEnumerable<string> anosCondicao, int? semestre)
         {
             var query = new StringBuilder(@"select dre.abreviacao as DreDescricao,
-		                                           sum(cfm.quantidade) as quantidade 
-	                                          from consolidacao_matricula_turma cfm
-	                                         inner join turma t on t.id = cfm.turma_id
+                                                   sum(cfm.quantidade) as quantidade 
+                                              from consolidacao_matricula_turma cfm
+                                             inner join turma t on t.id = cfm.turma_id
                                              inner join ue on ue.id = t.ue_id 
                                              inner join dre on dre.id = ue.dre_id 
                                              where t.ano_letivo = @anoLetivo 

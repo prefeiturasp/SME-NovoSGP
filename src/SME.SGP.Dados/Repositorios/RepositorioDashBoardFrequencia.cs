@@ -88,79 +88,79 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<DadosParaConsolidacaoDashBoardFrequenciaDto>> ObterDadosParaConsolidacao(int anoLetivo, long turmaId, int modalidade, DateTime dataAula)
         {
            var query = new StringBuilder($@"with totalAulas as (
-												select
-													t.id as TurmaId,
-													a.data_aula as DataAula, 
-													sum(a.quantidade) as TotalAulas
-												from aula a
-												join turma t on t.turma_id = a.turma_id
-												where
-													not a.excluido
-													and t.id = @turmaId 
-													and a.data_aula = @dataAula
-												group by t.id,a.data_aula
-											),
-											totalFrequencia as (
-											select
-												agrupamento_final.codigo_aluno CodigoAluno,													
-												agrupamento_final.TotalFrequencias,	
-												count(*) filter(where agrupamento_final.QuantidadePresencas > 0) as Presentes,
-												count(*) filter(where agrupamento_final.QuantidadeRemotos > 0) as Remotos,
-												count(*) filter(where agrupamento_final.QuantidadeAusencias > 0) as Ausentes
-											from
-												(
-												select
-													agrupamento_por_aluno.codigo_aluno,													
-													case when agrupamento_por_aluno.QuantidadeAusencias > 0 then 
-     													    case when agrupamento_por_aluno.QuantidadeRemotos > 0 then 0
-															else 
-															    case when agrupamento_por_aluno.QuantidadePresencas > 0 then 0
-																else agrupamento_por_aluno.QuantidadeAusencias
-    															end
-														    end
-													else 0
-													end QuantidadeAusencias,
-													case when agrupamento_por_aluno.QuantidadeRemotos > 0 then 
-     													    case when agrupamento_por_aluno.QuantidadePresencas > 0 then 0
-															else agrupamento_por_aluno.QuantidadeRemotos
-														    end
-													else 0
-													end QuantidadeRemotos,
-													agrupamento_por_aluno.QuantidadePresencas,
-													(agrupamento_por_aluno.QuantidadePresencas + agrupamento_por_aluno.QuantidadeAusencias + agrupamento_por_aluno.QuantidadeRemotos) as TotalFrequencias
-												from
-													(
-													select
-														rfa.codigo_aluno,
-														count(rfa.id) filter(where rfa.valor = 1) as QuantidadePresencas,
-														count(rfa.id) filter(where rfa.valor = 2) as QuantidadeAusencias,
-														count(rfa.id) filter(where rfa.valor = 3) as QuantidadeRemotos
-													from
-														registro_frequencia_aluno rfa
-													join aula a on a.id = rfa.aula_id
-													join turma t on t.turma_id = a.turma_id
-													join ue on ue.id = t.ue_id
-													join dre on dre.id = ue.dre_id
-													where
-														t.ano_letivo = @anoLetivo
-														and not rfa.excluido
-														and t.modalidade_codigo = @modalidade
-														and t.id = @turmaId 
-											            and a.data_aula = @dataAula
-													group by
-														rfa.codigo_aluno			
-											) as agrupamento_por_aluno
-											) as agrupamento_final
-											group by
-												agrupamento_final.codigo_aluno,												
-												agrupamento_final.TotalFrequencias
-											)
-											select 
-											codigoAluno, DataAula, Presentes, Ausentes,remotos,totalAulas, totalFrequencias
-											from
-												totalAulas
-												left join totalFrequencia on 1 = 1
-											order by codigoAluno ");
+                                                select
+                                                    t.id as TurmaId,
+                                                    a.data_aula as DataAula, 
+                                                    sum(a.quantidade) as TotalAulas
+                                                from aula a
+                                                join turma t on t.turma_id = a.turma_id
+                                                where
+                                                    not a.excluido
+                                                    and t.id = @turmaId 
+                                                    and a.data_aula = @dataAula
+                                                group by t.id,a.data_aula
+                                            ),
+                                            totalFrequencia as (
+                                            select
+                                                agrupamento_final.codigo_aluno CodigoAluno,                                                    
+                                                agrupamento_final.TotalFrequencias,    
+                                                count(*) filter(where agrupamento_final.QuantidadePresencas > 0) as Presentes,
+                                                count(*) filter(where agrupamento_final.QuantidadeRemotos > 0) as Remotos,
+                                                count(*) filter(where agrupamento_final.QuantidadeAusencias > 0) as Ausentes
+                                            from
+                                                (
+                                                select
+                                                    agrupamento_por_aluno.codigo_aluno,                                                    
+                                                    case when agrupamento_por_aluno.QuantidadeAusencias > 0 then 
+                                                             case when agrupamento_por_aluno.QuantidadeRemotos > 0 then 0
+                                                            else 
+                                                                case when agrupamento_por_aluno.QuantidadePresencas > 0 then 0
+                                                                else agrupamento_por_aluno.QuantidadeAusencias
+                                                                end
+                                                            end
+                                                    else 0
+                                                    end QuantidadeAusencias,
+                                                    case when agrupamento_por_aluno.QuantidadeRemotos > 0 then 
+                                                             case when agrupamento_por_aluno.QuantidadePresencas > 0 then 0
+                                                            else agrupamento_por_aluno.QuantidadeRemotos
+                                                            end
+                                                    else 0
+                                                    end QuantidadeRemotos,
+                                                    agrupamento_por_aluno.QuantidadePresencas,
+                                                    (agrupamento_por_aluno.QuantidadePresencas + agrupamento_por_aluno.QuantidadeAusencias + agrupamento_por_aluno.QuantidadeRemotos) as TotalFrequencias
+                                                from
+                                                    (
+                                                    select
+                                                        rfa.codigo_aluno,
+                                                        count(rfa.id) filter(where rfa.valor = 1) as QuantidadePresencas,
+                                                        count(rfa.id) filter(where rfa.valor = 2) as QuantidadeAusencias,
+                                                        count(rfa.id) filter(where rfa.valor = 3) as QuantidadeRemotos
+                                                    from
+                                                        registro_frequencia_aluno rfa
+                                                    join aula a on a.id = rfa.aula_id
+                                                    join turma t on t.turma_id = a.turma_id
+                                                    join ue on ue.id = t.ue_id
+                                                    join dre on dre.id = ue.dre_id
+                                                    where
+                                                        t.ano_letivo = @anoLetivo
+                                                        and not rfa.excluido
+                                                        and t.modalidade_codigo = @modalidade
+                                                        and t.id = @turmaId 
+                                                        and a.data_aula = @dataAula
+                                                    group by
+                                                        rfa.codigo_aluno            
+                                            ) as agrupamento_por_aluno
+                                            ) as agrupamento_final
+                                            group by
+                                                agrupamento_final.codigo_aluno,                                                
+                                                agrupamento_final.TotalFrequencias
+                                            )
+                                            select 
+                                            codigoAluno, DataAula, Presentes, Ausentes,remotos,totalAulas, totalFrequencias
+                                            from
+                                                totalAulas
+                                                left join totalFrequencia on 1 = 1
+                                            order by codigoAluno ");
 
             var parametros = new
             {
