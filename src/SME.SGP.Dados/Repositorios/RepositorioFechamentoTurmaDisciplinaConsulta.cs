@@ -748,10 +748,10 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select * from (
                             select 
                             fa.aluno_codigo as AlunoCodigo, 
-	                        fn.disciplina_id as ComponenteCurricularId,
-	                        fn.nota,
-	                        fn.conceito_id as ConceitoId,
-	                        p.bimestre,
+                            fn.disciplina_id as ComponenteCurricularId,
+                            fn.nota,
+                            fn.conceito_id as ConceitoId,
+                            p.bimestre,
                             row_number() over (partition by ft.id, fa.aluno_codigo, p.bimestre, f.disciplina_id order by fn.id desc) sequencia
                           from fechamento_aluno fa 
                           left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 

@@ -46,9 +46,9 @@ namespace SME.SGP.Dados.Repositorios
                         inner join relatorio_periodico_pap_secao rpps on rpps.id = rppq.relatorio_periodico_pap_secao_id 
                         left join arquivo a on a.id = rppr.arquivo_id 
                         where rpps.relatorio_periodico_pap_aluno_id = (select max(rppa.id) 
-												                        from relatorio_periodico_pap_aluno rppa 
-												                        inner join relatorio_periodico_pap_turma rppt on rppt.id = rppa.relatorio_periodico_pap_turma_id 
-												                        inner join periodo_relatorio_pap prp on prp.id = rppt.periodo_relatorio_pap_id 
+                                                                        from relatorio_periodico_pap_aluno rppa 
+                                                                        inner join relatorio_periodico_pap_turma rppt on rppt.id = rppa.relatorio_periodico_pap_turma_id 
+                                                                        inner join periodo_relatorio_pap prp on prp.id = rppt.periodo_relatorio_pap_id 
                                                                         inner join periodo_escolar_relatorio_pap perp on perp.periodo_relatorio_pap_id = prp.id
                                                                         inner join periodo_escolar pe on pe.id = perp.periodo_escolar_id 
                                                                         inner join configuracao_relatorio_pap crp on crp.id = prp.configuracao_relatorio_pap_id 

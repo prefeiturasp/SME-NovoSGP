@@ -193,12 +193,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AtribuicaoEsporadicaVigenteProfDto>> ObterAtribuicoesPorAno(int anoLetivo, DateTime? data)
         {
             var sql = $@"select
-	                        distinct ae.professor_rf as UsuarioRf, ae.ue_id as ue, ae.dre_id as dre
+                            distinct ae.professor_rf as UsuarioRf, ae.ue_id as ue, ae.dre_id as dre
                         from
-	                        atribuicao_esporadica ae
+                            atribuicao_esporadica ae
                         where
                             not ae.excluido 
-	                        and ae.ano_letivo = @anoLetivo ";
+                            and ae.ano_letivo = @anoLetivo ";
             if (data.HasValue)
                 sql += " and @data between ae.data_inicio and ae.data_fim ";
             return await database.Conexao
