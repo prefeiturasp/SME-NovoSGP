@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
                 , new { fechamentoId })).FirstOrDefault();
         }
 
-        public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
+        public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre = 0)
         {
             var retorno = (await UeEmFechamentoBimestreVigente(dataReferencia,tipoCalendarioId, ehModalidadeInfantil, bimestre));
             return retorno.NaoEhNulo();

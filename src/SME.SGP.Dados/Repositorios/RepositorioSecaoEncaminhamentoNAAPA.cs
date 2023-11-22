@@ -22,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
             
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId = null)
         {
             var query = @"SELECT sea.id
 	                            , sea.nome
@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { modalidade, tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPA, encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0 });
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId = null)
         {
             var query = new StringBuilder(@"SELECT sea.*, eas.*, q.*
                                             FROM secao_encaminhamento_naapa sea 
