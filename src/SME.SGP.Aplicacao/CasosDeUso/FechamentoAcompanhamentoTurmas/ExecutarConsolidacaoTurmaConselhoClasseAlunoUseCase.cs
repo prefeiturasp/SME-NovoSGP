@@ -245,8 +245,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!nota.HasValue)
                 return conceitoId;
-            else
-            if (nota < NOTA_CONCEITO_CINCO)
+            else if (nota < NOTA_CONCEITO_CINCO)
                 return (long)ConceitoValores.NS;
             else if (nota is >= NOTA_CONCEITO_CINCO and < NOTA_CONCEITO_SETE)
                 return (long)ConceitoValores.S;

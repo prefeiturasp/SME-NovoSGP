@@ -215,8 +215,7 @@ namespace SME.SGP.Aplicacao
         {
             if (EnumExtension.EhUmDosValores(questaoExistente.Questao.Tipo, new Enum[] { TipoQuestao.ComboMultiplaEscolha }))
                 return questaoExistente.Respostas.Any(resposta => !respostasEncaminhamento.Any(respostaEncaminhamento => respostaEncaminhamento.Resposta.Equals(resposta.RespostaId.ToString())));
-            else
-            if (EnumExtension.EhUmDosValores(questaoExistente.Questao.Tipo, new Enum[] { TipoQuestao.Upload }))
+            else if (EnumExtension.EhUmDosValores(questaoExistente.Questao.Tipo, new Enum[] { TipoQuestao.Upload }))
             {
                 var arquivosId = await ObterArquivosIdRespostas(respostasEncaminhamento);
                 return questaoExistente.Respostas.Any(resposta => !arquivosId.Any(id => id == (resposta.ArquivoId.Value)));

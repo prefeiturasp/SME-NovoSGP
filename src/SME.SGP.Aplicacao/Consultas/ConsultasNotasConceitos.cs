@@ -310,8 +310,7 @@ namespace SME.SGP.Aplicacao
                                         EhConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
-                        else
-                        if (disciplinaEOL.Regencia)
+                        else if (disciplinaEOL.Regencia)
                         {
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
                             if (disciplinasRegencia.NaoEhNulo())
