@@ -233,7 +233,7 @@ namespace SME.SGP.Aplicacao
                 .GroupBy(c => c.GrupoMatrizId)
                 .ToList();
 
-            var permiteEdicao = dadosAluno.EstaAtivo() || await EstaInativoDentroPeriodoAberturaReabertura(dadosAluno.DataSituacao.Date, notasFrequenciaDto.Bimestre, tipoCalendario.Id, turma);
+            var permiteEdicao = dadosAluno.EstaAtivo() || await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, notasFrequenciaDto.Bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendario.Id));
 
             var periodoMatricula = alunoNaTurma.NaoEhNulo() ? await mediator
                 .Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula)) : null;
@@ -333,7 +333,10 @@ namespace SME.SGP.Aplicacao
             }
 
             retorno.TemConselhoClasseAluno = notasFrequenciaDto.ConselhoClasseId > 0 && await VerificaSePossuiConselhoClasseAlunoAsync(notasFrequenciaDto.ConselhoClasseId, notasFrequenciaDto.AlunoCodigo);
-            retorno.PodeEditarNota = permiteEdicao && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(notasFrequenciaDto.AlunoCodigo, turma, periodoEscolar));
+            
+            var periodoEscolarParaEdicaoNota = periodoEscolar ?? periodosLetivos.OrderByDescending(p => p.Bimestre).FirstOrDefault();
+            
+            retorno.PodeEditarNota = permiteEdicao && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(notasFrequenciaDto.AlunoCodigo, turma, periodoEscolarParaEdicaoNota));
             retorno.NotasConceitos = gruposMatrizesNotas;
             retorno.DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(periodoFim));
             return retorno;
@@ -469,8 +472,8 @@ namespace SME.SGP.Aplicacao
 
             var notaPosConselho = new NotaPosConselhoDto()
             {
-                Id = visualizaNota ? notaComponenteId : null,
-                Nota = visualizaNota ? notaComponente?.NotaConceito : null,
+                Id = notaComponenteId ?? null,
+                Nota = notaComponente?.NotaConceito ?? null,
                 PodeEditar = componenteLancaNota && visualizaNota
             };
 

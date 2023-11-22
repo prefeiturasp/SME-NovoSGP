@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioInformativo : IRepositorioBase<Informativo>
     {
         Task<Informativo> ObterInformes(long id);
-        Task<bool> RemoverAsync(long id);
         Task<PaginacaoResultadoDto<Informativo>> ObterInformesPaginado(InformeFiltroDto filtro, Paginacao paginacao);
+        Task<bool> InformeFoiExcluido(long id);
     }
 }

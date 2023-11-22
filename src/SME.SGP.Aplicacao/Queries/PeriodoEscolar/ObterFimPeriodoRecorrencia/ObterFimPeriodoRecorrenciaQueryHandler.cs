@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             {
                 case RecorrenciaAula.RepetirBimestreAtual:
                     // Busca ultimo dia do periodo atual
-                    fimRecorrencia = periodos.Where(a => a.PeriodoFim >= request.DataInicio)
+                    fimRecorrencia = periodos.Where(a => a.PeriodoFim.Date >= request.DataInicio.Date)
                         .OrderBy(a => a.PeriodoInicio)
                         .FirstOrDefault().PeriodoFim;
                     break;

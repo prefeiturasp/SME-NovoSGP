@@ -149,13 +149,20 @@ namespace SME.SGP.Dominio
         public bool EhGestorEscolar()
             => EhCP()
             || EhAD()
-            || EhDiretor();
+            || EhDiretor()
+            || EhCCELP();
 
         public bool PossuiPerfilGestorEscolar()
-            => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR);
+            => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD 
+                                || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP 
+                                || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR
+                                || p.CodigoPerfil == Dominio.Perfis.PERFIL_COORDENADOR_CELP);
 
         public bool EhCP()
             => PerfilAtual == Dominio.Perfis.PERFIL_CP;
+
+        public bool EhCCELP()
+            => PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP;
 
         private bool EhAD()
             => PerfilAtual == Dominio.Perfis.PERFIL_AD;
@@ -247,7 +254,8 @@ namespace SME.SGP.Dominio
                             if (evento.TipoPerfilCadastro != ObterTipoPerfilAtual())
                                 throw new NegocioException("Você não tem permissão para alterar este evento.");
                         }
-                        else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD && PerfilAtual != Dominio.Perfis.PERFIL_CP)
+                        else if (PerfilAtual != Dominio.Perfis.PERFIL_DIRETOR && PerfilAtual != Dominio.Perfis.PERFIL_AD 
+                                 && PerfilAtual != Dominio.Perfis.PERFIL_CP && PerfilAtual != Dominio.Perfis.PERFIL_COORDENADOR_CELP)
                             throw new NegocioException("Você não tem permissão para alterar este evento.");
                     }
                 }
@@ -300,6 +308,7 @@ namespace SME.SGP.Dominio
             return (PerfilAtual == Dominio.Perfis.PERFIL_AD
                  || PerfilAtual == Dominio.Perfis.PERFIL_CP
                  || PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR
+                 || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP
                  || EhPerfilSME()
                  || EhPerfilDRE());
         }
@@ -309,7 +318,11 @@ namespace SME.SGP.Dominio
             var perfilAtual = Perfis.FirstOrDefault(a => a.CodigoPerfil == PerfilAtual);
 
             if (perfilAtual.NaoEhNulo() && perfilAtual.Tipo == TipoPerfil.UE)
-                return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR || PerfilAtual == Dominio.Perfis.PERFIL_AD || PerfilAtual == Dominio.Perfis.PERFIL_CP || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
+                return (PerfilAtual == Dominio.Perfis.PERFIL_DIRETOR 
+                                        || PerfilAtual == Dominio.Perfis.PERFIL_AD 
+                                        || PerfilAtual == Dominio.Perfis.PERFIL_CP 
+                                        || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP 
+                                        || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO);
 
             else return true;
         }
@@ -391,6 +404,7 @@ namespace SME.SGP.Dominio
                                           || PerfilAtual == Dominio.Perfis.PERFIL_AD
                                           || PerfilAtual == Dominio.Perfis.PERFIL_SECRETARIO
                                           || PerfilAtual == Dominio.Perfis.PERFIL_CP
+                                          || PerfilAtual == Dominio.Perfis.PERFIL_COORDENADOR_CELP
                                           || EhPerfilSME()
                                           || EhPerfilDRE());
 

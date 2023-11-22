@@ -46,13 +46,6 @@ namespace SME.SGP.Dados.Repositorios
             return informativo;
         }
 
-        public async Task<bool> RemoverAsync(long id)
-        {
-            var query = @"delete from informativo where id = @id";
-
-            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
-        }
-
         public async Task<PaginacaoResultadoDto<Informativo>> ObterInformesPaginado(InformeFiltroDto filtro, Paginacao paginacao)
         {
             var parametros = new
@@ -125,10 +118,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder();
             sql.AppendLine(@"SELECT inf.id, inf.titulo, inf.texto, inf.data_envio,
-                            inf.criado_em, inf.criado_por, inf.alterado_em,
+                            inf.criado_em, inf.criado_por, inf.alterado_em, inf.dre_id, inf.ue_id,
                             inf.alterado_por, inf.criado_rf, inf.alterado_rf,
-                            dre.id, dre.nome, dre.abreviacao,
-                            ue.id, ue.nome, ue.tipo_escola,
+                            dre.id, dre.nome, dre.abreviacao, dre.dre_id as CodigoDre,
+                            ue.id, ue.nome, ue.tipo_escola, ue.ue_id as CodigoUe,
                             inf_p.id, inf_p.informativo_id, inf_p.codigo_perfil
                             FROM informativo inf
                             INNER JOIN informativo_perfil inf_p ON inf_p.informativo_id = inf.id
@@ -146,8 +139,14 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(filtro.DataEnvioInicio.HasValue ? " AND inf.data_envio BETWEEN @dataEnvioInicio::date AND @dataEnvioFim::date" : string.Empty);
             sql.AppendLine(filtro.Perfis.NaoEhNulo() && filtro.Perfis.Any() ? " AND EXISTS (SELECT 1 FROM informativo_perfil inf_p_i WHERE inf_p_i.codigo_perfil = ANY(@perfils) AND inf_p.informativo_id = inf_p_i.informativo_id)" : string.Empty);
             sql.AppendLine(!string.IsNullOrEmpty(filtro.Titulo) ? " AND upper(f_unaccent(inf.titulo)) LIKE @titulo" : string.Empty);
+            sql.AppendLine(" AND not inf.excluido AND not inf_p.excluido ");
 
             return sql.ToString();
+        }
+
+        public async Task<bool> InformeFoiExcluido(long id)
+        {
+            return await database.Conexao.ExecuteScalarAsync<bool>("select count(1) from informativo where id=@id and excluido", new { id });
         }
     }
 }

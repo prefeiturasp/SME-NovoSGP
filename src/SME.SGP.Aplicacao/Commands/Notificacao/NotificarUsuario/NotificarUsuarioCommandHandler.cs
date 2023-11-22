@@ -46,6 +46,6 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao, request.UsuarioRf));
 
             return notificacaoId;
-        }         
+        }
     }
 }

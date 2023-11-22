@@ -28,6 +28,8 @@ namespace SME.SGP.Aplicacao
                 if (diarioBordoExistente.EhNulo())
                 {
                     var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(diarioBordo.CodigoTurma, diarioBordo.ComponenteCurricularId.ToString()));
+                    if (professorTitular.EhNulo())
+                        return;
 
                     var pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(diarioBordo.ComponenteCurricularId, professorTitular.ProfessorRf, diarioBordo.PeriodoEscolarId, diarioBordo.CodigoTurma));
                     if (pendenciaId == 0)

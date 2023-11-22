@@ -4,5 +4,6 @@
     {
         public long InformativoId { get; set; }
         public long CodigoPerfil { get; set; }
+        public bool Excluido { get; set; }
     }
 }

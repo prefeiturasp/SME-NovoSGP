@@ -745,12 +745,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterFechamentosTurmasCodigosEBimestreEAlunoCodigoAsync(string[] turmasCodigos, int bimestre, string alunoCodigo)
         {
-            var query = @"select 
+            var query = @"select * from (
+                            select 
                             fa.aluno_codigo as AlunoCodigo, 
-                            fn.disciplina_id as ComponenteCurricularId,
-                            fn.nota,
-                            fn.conceito_id as ConceitoId,
-                            p.bimestre 
+	                        fn.disciplina_id as ComponenteCurricularId,
+	                        fn.nota,
+	                        fn.conceito_id as ConceitoId,
+	                        p.bimestre,
+                            row_number() over (partition by ft.id, fa.aluno_codigo, p.bimestre, f.disciplina_id order by fn.id desc) sequencia
                           from fechamento_aluno fa 
                           left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
                           left join fechamento_turma_disciplina f on f.id = fa.fechamento_turma_disciplina_id
@@ -763,6 +765,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
                 query += " and p.bimestre = @bimestre";
+            
+            query += " ) t Where sequencia = 1";
 
             return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query.ToString(), new { turmasCodigos, bimestre, alunoCodigo });
         }

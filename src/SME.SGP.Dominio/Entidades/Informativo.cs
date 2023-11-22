@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio
         public string Texto { get; set; }
         public DateTime DataEnvio { get; set; }
         public List<InformativoPerfil> Perfis { get; set; }
+        public bool Excluido { get; set; }
     }
 }

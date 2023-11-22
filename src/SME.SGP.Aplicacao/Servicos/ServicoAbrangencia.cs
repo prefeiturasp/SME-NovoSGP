@@ -359,12 +359,26 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
+            bool ehPerfilProfessorInfantil = perfil == Perfis.PERFIL_PROFESSOR_INFANTIL;
             abrangenciaSintetica = RemoverAbrangenciaSinteticaDuplicada(abrangenciaSintetica);
             var abr = abrangenciaSintetica.GroupBy(x => x.CodigoTurma).Select(y => y.OrderBy(a => a.CodigoTurma));
             var idsParaAtualizar = new List<long>();
 
+            if (ehPerfilProfessorInfantil)
+               turmas = VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(turmas);              
+
             if (!turmas.Any() && abrangenciaSintetica.Any())
+            {
                 idsParaAtualizar = abrangenciaSintetica.Select(x => x.Id).ToList();
+
+                if (ehPerfilProfessorInfantil && abrangenciaSintetica.Any(a=> a.Perfil == perfil))
+                {
+                    idsParaAtualizar = abrangenciaSintetica.Where(a => a.Perfil == perfil).Select(ab => ab.Id).ToList();
+                    await repositorioAbrangencia.ExcluirAbrangencias(idsParaAtualizar);
+
+                    idsParaAtualizar = new List<long>();
+                }
+            }  
 
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
 
@@ -388,6 +402,11 @@ namespace SME.SGP.Aplicacao.Servicos
 
             await repositorioAbrangencia.AtualizaAbrangenciaHistorica(idsParaAtualizar);
         }
+
+        private IEnumerable<Turma> VerificaSeExisteTurmaNaoInfantilEmPerfilProfessorInfantil(IEnumerable<Turma> turmasAbrangenciaEol)
+           => (turmasAbrangenciaEol.NaoEhNulo() && turmasAbrangenciaEol.Any()) 
+            ? turmasAbrangenciaEol.Where(t => t.ModalidadeCodigo == Modalidade.EducacaoInfantil)?.ToList() 
+            : turmasAbrangenciaEol;
 
         public IEnumerable<long> VerificaTurmasAbrangenciaAtualParaHistorica(IEnumerable<AbrangenciaSinteticaDto> abrangenciaAtual, IEnumerable<Turma> turmasAbrangenciaEol)
         {
