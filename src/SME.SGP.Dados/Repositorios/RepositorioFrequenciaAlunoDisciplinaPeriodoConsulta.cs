@@ -267,7 +267,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string[] disciplinasId, DateTime dataAtual, string turmaCodigo, string professor = null)
+        public FrequenciaAluno ObterPorAlunoDisciplinaData(string codigoAluno, string[] disciplinasId, DateTime dataAtual, string turmaCodigo = "", string professor = null)
         {
             var query = @"select *
                           from frequencia_aluno fa
@@ -296,7 +296,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        public FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo, string professor = null)
+        public FrequenciaAluno ObterPorAlunoDisciplinaPeriodo(string codigoAluno, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo = "", string professor = null)
         {
             var query = @"select *
                         from frequencia_aluno fa
@@ -322,7 +322,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo, string professor = null)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string[] disciplinaIds, long periodoEscolarId, string turmaCodigo = "", string professor = null)
         {
             var query = @"select *
                         from frequencia_aluno fa

@@ -18,17 +18,13 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
         private readonly IConsultasUe consultasUe;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
         public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia,
                                             IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno,
                                             IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia,
-                                            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                             IRepositorioTurmaConsulta repositorioTurmaConsulta,
-                                            IRepositorioParametrosSistema repositorioParametrosSistema,
                                             IServicoUsuario servicoUsuario,
                                             IContextoAplicacao contextoAplicacao,
                                             IConsultasUe consultasUe,
@@ -38,8 +34,6 @@ namespace SME.SGP.Aplicacao
             this.consultasCompensacaoAusenciaAluno = consultasCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaAluno));
             this.consultasCompensacaoAusenciaDisciplinaRegencia = consultasCompensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaDisciplinaRegencia));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasUe = consultasUe ?? throw new ArgumentNullException(nameof(consultasUe));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
