@@ -12,6 +12,8 @@ namespace SME.SGP.TesteIntegracao.Informe.Base
         protected const long PERFIL_ADM_DRE = 14;
         protected const long PERFIL_ADM_SME = 32;
         protected const long PERFIL_ADM_UE = 8;
+        protected const long NOTIFICACAO_ID_1 = 1;
+        protected const long NOTIFICACAO_ID_2 = 2;
 
         public InformesBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
                 .Where(cc => request.ConsideraRegencia || (!request.ConsideraRegencia && !cc.Regencia))
                 .Select(a => a.CodigoComponenteCurricular).ToList();
 
-            TratarComponentesRegencia(request, listaCodigosComponentes);
+            await TratarComponentesRegencia(request, listaCodigosComponentes);
 
             if (listaCodigosComponentes.EhNulo() || !listaCodigosComponentes.Any())
                 return default;

@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Titulo).ToColumn("titulo");
             Map(c => c.Texto).ToColumn("texto");
             Map(c => c.DataEnvio).ToColumn("data_envio");
+            Map(c => c.Excluido).ToColumn("excluido");
         }
     }
 }

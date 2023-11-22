@@ -27,6 +27,9 @@ namespace SME.SGP.Aplicacao
 
             param.ComponenteCurricularId = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, param.ComponenteCurricularId);
 
+            if (param.ComponenteCurricularId == 0)
+                throw new NegocioException($"Componente Curricular não encontrado");
+
             var auditoria = await mediator.Send(new InserirDiarioBordoCommand(param.AulaId, param.Planejamento, param.ComponenteCurricularId));
             await mediator.Send(new ExcluirPendenciaDiarioBordoPorIdEComponenteIdCommand(param.AulaId, param.ComponenteCurricularId));
             return auditoria;
@@ -34,10 +37,24 @@ namespace SME.SGP.Aplicacao
         private async Task<long> RetornaComponenteCurricularIdPrincipalDoProfessor(string turmaCodigo, long componenteCurricularId)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
-            if (disciplinas.Count() > 1)
-                return disciplinas.Any() ? disciplinas.FirstOrDefault(b => b.CodigoComponenteCurricular == componenteCurricularId).CodigoComponenteCurricular : 0;
+            if (disciplinas != null && disciplinas.Any())
+            {
+                if (disciplinas.Count() > 1)
+                {
+                    var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 
-            return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
+                    if (disciplina == null)
+                        return 0;
+
+                    if (disciplina.Any())
+                        return disciplina.FirstOrDefault().CodigoComponenteCurricular;
+                    else
+                        return (long)disciplinas.FirstOrDefault().CdComponenteCurricularPai;
+                }
+
+                return disciplinas.FirstOrDefault().CodigoComponenteCurricular;
+            }
+            return 0;
         }
     }
 }

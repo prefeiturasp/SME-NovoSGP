@@ -189,5 +189,20 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QuerySingleOrDefaultAsync<bool>(sql.ToString(), new { anoLetivo, dreCodigo, ueCodigo, codigoRF, data = data.HasValue ? data.Value.Date : DateTime.MinValue });
         }
+
+        public async Task<IEnumerable<AtribuicaoEsporadicaVigenteProfDto>> ObterAtribuicoesPorAno(int anoLetivo, DateTime? data)
+        {
+            var sql = $@"select
+                            distinct ae.professor_rf as UsuarioRf, ae.ue_id as ue, ae.dre_id as dre
+                        from
+                            atribuicao_esporadica ae
+                        where
+                            not ae.excluido 
+                            and ae.ano_letivo = @anoLetivo ";
+            if (data.HasValue)
+                sql += " and @data between ae.data_inicio and ae.data_fim ";
+            return await database.Conexao
+                .QueryAsync<AtribuicaoEsporadicaVigenteProfDto>(sql, new { anoLetivo, data });
+        }
     }
 }
