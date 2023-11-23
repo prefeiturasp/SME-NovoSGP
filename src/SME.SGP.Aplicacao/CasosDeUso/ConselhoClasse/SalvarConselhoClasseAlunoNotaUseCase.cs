@@ -25,9 +25,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(dto.CodigoTurma)) ?? throw new NegocioException("Turma não encontrada");
 
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Now.Year;
-
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(dto.FechamentoTurmaId,
-                dto.CodigoAluno, ehAnoAnterior));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(dto.FechamentoTurmaId, dto.CodigoAluno));
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina;
 

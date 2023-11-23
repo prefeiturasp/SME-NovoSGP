@@ -1,4 +1,7 @@
-﻿namespace SME.SGP.Dominio
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace SME.SGP.Dominio
 {
     public static class ObjectExtension
     {
