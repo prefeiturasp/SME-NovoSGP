@@ -38,6 +38,12 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         protected const long QUESTAO_3_1_ID_QUESTOES_OBS_DURANTE_VISITA = 8;
         protected const long QUESTAO_4_ID_OBS_GERAL = 9;
 
+        protected const string QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM = "Sim";
+        protected const string QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS = "Outros";
+        protected const string QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR = "Visita Domiciliar";
+        protected const string QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_NAO = "Não";
+        protected const string QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_LIG_TELEFONICA = "Ligação telefonica";
+
 
         public RegistroAcaoBuscaAtivaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -113,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         {
             var opcoesResposta = ObterTodos<OpcaoResposta>();
 
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == "Sim").FirstOrDefault(); 
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault(); 
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
@@ -139,7 +145,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 CriadoEm = DateTime.Now
             });
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA && q.Nome == "Outros").FirstOrDefault(); 
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA && q.Nome == QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS).FirstOrDefault(); 
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
@@ -149,7 +155,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 CriadoEm = DateTime.Now
             });
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == "Visita Domiciliar").FirstOrDefault();
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR).FirstOrDefault();
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
@@ -486,7 +492,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             idRegistroAcaoQuestao++;
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == "Sim").FirstOrDefault();
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
                 QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
@@ -497,7 +503,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             });
             idRegistroAcaoQuestao++;
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == "Visita Domiciliar").FirstOrDefault();
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
                 QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
