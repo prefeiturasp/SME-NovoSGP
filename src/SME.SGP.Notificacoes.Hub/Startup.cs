@@ -65,7 +65,6 @@ namespace SME.SGP.Notificacoes.Hub
                 EventoNotificacaoExtensions.Inicializa(repositorioUsuario);
                 return repositorioUsuario;
             });
-            //services.AddSingleton<IUserIdProvider, RedisUserIdProvider>();
         }
 
         private void RegistrarEventosNotificacao(IServiceCollection services)

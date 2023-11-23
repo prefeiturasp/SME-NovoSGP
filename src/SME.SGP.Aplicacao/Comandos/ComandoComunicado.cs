@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private readonly IRepositorioEvento repositorioEvento;
-        //private readonly Mediator mediator;
+
         private const string Todas = "-99";
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
-            IRepositorioEvento repositorioEvento)//, Mediator mediator)
+            IRepositorioEvento repositorioEvento)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));            
             this.servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new System.ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
@@ -42,7 +42,6 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
-            //this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));
         }
 
         public async Task<string> Alterar(long id, ComunicadoInserirDto comunicadoDto)
@@ -222,7 +221,6 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var turma in comunicadoDto.Turmas)
             {
-                //var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma));
                 var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
 
                 if (abrangenciaTurmas.EhNulo())
