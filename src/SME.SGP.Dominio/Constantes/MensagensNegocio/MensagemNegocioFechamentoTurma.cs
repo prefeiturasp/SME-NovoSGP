@@ -2,6 +2,8 @@
 {
     public class MensagemNegocioFechamentoTurma
     {
+        protected MensagemNegocioFechamentoTurma() { }
+
         public const string NAO_EXISTE_FECHAMENTO_TURMA =
             "Não existe fechamento para a turma";
 
