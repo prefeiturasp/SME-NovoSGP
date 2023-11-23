@@ -227,7 +227,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("SELECT n.codigo");
             query.AppendLine("FROM notificacao n");
-            query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
+            query.AppendLine($"where EXTRACT(year FROM n.criado_em) = @ano and n.categoria <> {NotificacaoCategoria.Informe}");
             query.AppendLine("order by codigo desc");
             query.AppendLine("limit 1");
 

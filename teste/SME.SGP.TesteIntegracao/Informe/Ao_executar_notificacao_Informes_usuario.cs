@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.Informe
         [Fact(DisplayName = "Informes - Executar notificação informes usuário verificando código notificação")]
         public async Task Ao_executar_notificacao_Informes_usuario_verifica_codigo_notificacao()
         {
-            const long ID_CODIGO = 100000002;
+            const long ID_CODIGO = 1000002;
 
             await CriarDadosBase();
 
