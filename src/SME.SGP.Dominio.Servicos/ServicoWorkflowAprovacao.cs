@@ -227,7 +227,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
                 
-                var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma.Id, turma.TipoTurma));
+                var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
                 
                 await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId, notaTipoValor.TipoNota);
 

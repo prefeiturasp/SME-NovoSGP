@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -397,6 +397,9 @@ namespace SME.SGP.Aplicacao
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                 return TipoNota.Nota;
 
+            if (await ModalidadeTurmaEhCelp(turmaEOL)) 
+                return TipoNota.Conceito;
+
             var notaTipo = await servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
             {
                 TurmaId = turmaId.ToString(),
@@ -553,6 +556,18 @@ namespace SME.SGP.Aplicacao
                 if ((avaliacoes.EhNulo()) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                     bimestreDto.Observacoes.Add($"O componente curricular [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
+        }
+
+        private async Task<bool> ModalidadeTurmaEhCelp(DadosTurmaEolDto turmaEOL)
+        {
+            if (turmaEOL.TipoTurma == TipoTurma.Programa)
+            {
+                var modalidade = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(turmaEOL.Codigo.ToString()));
+
+                return modalidade == Modalidade.CELP;
+            }
+
+            return false;
         }
     }
 }

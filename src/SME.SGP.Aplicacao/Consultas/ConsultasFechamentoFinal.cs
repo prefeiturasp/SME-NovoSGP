@@ -88,7 +88,8 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
             var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(turma.CodigoTurma));
-            var tipoNota = repositorioNotaTipoValor.ObterPorTurmaId(turma.Id, turmaEOL.TipoTurma);
+            
+            var tipoNota = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
             if (tipoNota.EhNulo())
                 throw new NegocioException("Não foi possível localizar o tipo de nota para esta turma.");
 

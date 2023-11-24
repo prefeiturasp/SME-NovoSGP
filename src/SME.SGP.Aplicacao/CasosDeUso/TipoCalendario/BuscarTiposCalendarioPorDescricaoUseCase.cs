@@ -48,6 +48,6 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new ObterTiposCalendariosPorAnosLetivoModalidadesQuery(anosLetivosTipoCalendario.Distinct().ToArray(), modalidadesTipoCalendarioUes, descricao));
         }
 
-        private bool PossuiPermissao(Usuario usuario) => usuario.EhPerfilUE() || usuario.EhPerfilProfessor();
+        private bool PossuiPermissao(Usuario usuario) => usuario.EhPerfilUE() || usuario.EhPerfilProfessor() || usuario.EhCCELP();
     }
 }

@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
         private long ObterCodigoNotificacao(long informativoId, long usuarioId)
         {
-            return long.Parse(string.Concat(informativoId, usuarioId.ToString("00000000")));
+            return long.Parse(string.Concat(informativoId, usuarioId.ToString("000000")));
         }
     }
 }

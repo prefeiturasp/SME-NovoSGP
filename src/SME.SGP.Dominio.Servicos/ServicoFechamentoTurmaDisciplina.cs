@@ -255,7 +255,7 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplinaEOL.EhNulo())
                 throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
-            var tipoNotaOuConceito = await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turmaFechamento.Id, turmaFechamento.TipoTurma);
+            var tipoNotaOuConceito = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turmaFechamento)); 
             
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
