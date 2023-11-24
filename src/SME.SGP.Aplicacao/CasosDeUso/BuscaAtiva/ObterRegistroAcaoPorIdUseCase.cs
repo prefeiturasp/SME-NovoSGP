@@ -46,7 +46,8 @@ namespace SME.SGP.Aplicacao
                 TurmaId = registroAcao.Turma.Id,
                 TurmaCodigo = registroAcao.Turma.CodigoTurma,
                 TurmaNome = registroAcao.Turma.Nome,
-                
+                TurmaSemestre = registroAcao.Turma.Semestre,
+
                 AnoLetivo = registroAcao.Turma.AnoLetivo,
                 Modalidade = (int)registroAcao.Turma.ModalidadeCodigo
             };
