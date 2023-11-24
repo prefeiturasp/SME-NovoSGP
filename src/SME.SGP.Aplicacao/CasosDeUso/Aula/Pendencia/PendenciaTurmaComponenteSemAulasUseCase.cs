@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar.NaoEhNulo())
             {
                 var periodoInicio = periodoEscolar.PeriodoInicio.AddDays(diasAposInicioPeriodo);
-                if (periodoInicio.Date >= DateTimeExtension.HorarioBrasilia().Date)
+                if (periodoInicio.Date < DateTimeExtension.HorarioBrasilia().Date)
                     return periodoEscolar;
             }
             return null;
