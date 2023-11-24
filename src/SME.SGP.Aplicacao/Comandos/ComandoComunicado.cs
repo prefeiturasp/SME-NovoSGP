@@ -9,6 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
+using Org.BouncyCastle.Crypto;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +25,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private readonly IRepositorioEvento repositorioEvento;
-        //private readonly Mediator mediator;
         private const string Todas = "-99";
 
         public ComandoComunicado(IRepositorioComunicado repositorio,
@@ -32,7 +34,7 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
-            IRepositorioEvento repositorioEvento)//, Mediator mediator)
+            IRepositorioEvento repositorioEvento)
         {
             this.repositorio = repositorio ?? throw new System.ArgumentNullException(nameof(repositorio));            
             this.servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new System.ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
@@ -42,7 +44,6 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
-            //this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));
         }
 
         public async Task<string> Alterar(long id, ComunicadoInserirDto comunicadoDto)
@@ -82,50 +83,50 @@ namespace SME.SGP.Aplicacao
         public async Task Excluir(long[] ids)
         {
             var erros = new StringBuilder();
+            var comunicados = ObterComunicados(ids, erros);
+            await RemoverComunicados(comunicados, ids, erros);
+            if (!string.IsNullOrEmpty(erros.ToString()))
+                throw new NegocioException($"<p>Os seguintes comunicados não puderam ser excluídos:</p><br/>{erros.ToString()} por favor, tente novamente");
+        }
 
-            var comunicados = ids.Select(id =>
+        private async Task RemoverComunicados(IEnumerable<Comunicado> comunicados, long[] ids, StringBuilder erros)
+        {
+            if (!string.IsNullOrEmpty(erros.ToString()))
+                return;
+
+            await servicoAcompanhamentoEscolar.ExcluirComunicado(ids);
+            foreach (var comunicado in comunicados)
+            {
+                try
+                {
+                    await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(comunicado.Id);
+                    await repositorioComunicadoTurma.RemoverTodasTurmasComunicado(comunicado.Id);
+                    comunicado.MarcarExcluido();
+                    await repositorio.SalvarAsync(comunicado);
+                }
+                catch
+                {
+                    erros.Append($"<li>{comunicado.Id} - {comunicado.Titulo}</li>");
+                }
+            }
+        }
+
+        private IEnumerable<Comunicado> ObterComunicados(long[] ids, StringBuilder erros)
+        {
+            foreach (var id in ids)
             {
                 var comunicado = repositorio.ObterPorId(id);
                 if (comunicado.EhNulo())
-                {
                     erros.Append($"<li>{id} - comunicado não encontrado</li>");
-                }
                 else
-                {
                     if (comunicado.EventoId.HasValue)
                     {
                         var evento = repositorioEvento.ObterPorId(comunicado.EventoId.Value);
                         if (evento.NaoEhNulo() && !evento.Excluido)
-                        {
                             erros.Append($"<li>{id} - {comunicado.Titulo} - Comunicado com evento vinculado</li>");
-                        }
                     }
-                }
-                return comunicado;
-            });
-
-            if (string.IsNullOrEmpty(erros.ToString())) {
-                await servicoAcompanhamentoEscolar.ExcluirComunicado(ids);
-                foreach (var comunicado in comunicados)
-                {
-                    try
-                    {                        
-                        await repositorioComunicadoAluno.RemoverTodosAlunosComunicado(comunicado.Id);
-                        await repositorioComunicadoTurma.RemoverTodasTurmasComunicado(comunicado.Id);
-
-                        comunicado.MarcarExcluido();
-
-                        await repositorio.SalvarAsync(comunicado);
-                    }
-                    catch
-                    {
-                        erros.Append($"<li>{comunicado.Id} - {comunicado.Titulo}</li>");
-                    }
-                }
+                yield return comunicado;
             }
-
-            if (!string.IsNullOrEmpty(erros.ToString()))
-                throw new NegocioException($"<p>Os seguintes comunicados não puderam ser excluídos:</p><br/>{erros.ToString()} por favor, tente novamente");
         }
 
         public async Task<string> Inserir(ComunicadoInserirDto comunicadoDto)
