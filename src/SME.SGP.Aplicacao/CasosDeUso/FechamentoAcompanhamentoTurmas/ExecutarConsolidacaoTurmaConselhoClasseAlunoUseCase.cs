@@ -1,11 +1,8 @@
 ﻿using MediatR;
-using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -53,7 +50,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     if (turmaRegular.EhNulo())
-                        throw new Exception(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
+                        throw new NegocioException(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
 
                     if (turma.EhTurmaEdFisica())
                         componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
@@ -207,12 +204,6 @@ namespace SME.SGP.Aplicacao
                     fechamentoDisciplinaEdFisica.Nota = null;
                 }
             }
-
-            /*if (COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(filtro.ComponenteCurricularId ?? 0))
-            {
-                filtro.ConceitoId = ConverterNotaConceito(filtro.Nota, filtro.ConceitoId);
-                filtro.Nota = null;
-            }*/
         }
 
         private async Task<Turma> ObterTurmaRegular(string[] codigosTurmasComplementares, int semestre, bool ehTurmaEJA, bool ehTurmaEM)
@@ -247,8 +238,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!nota.HasValue)
                 return conceitoId;
-            else
-            if (nota < NOTA_CONCEITO_CINCO)
+            else if (nota < NOTA_CONCEITO_CINCO)
                 return (long)ConceitoValores.NS;
             else if (nota is >= NOTA_CONCEITO_CINCO and < NOTA_CONCEITO_SETE)
                 return (long)ConceitoValores.S;

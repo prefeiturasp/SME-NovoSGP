@@ -67,76 +67,57 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEolOuCoreSSO(string dreCodigo, TipoResponsavelAtribuicao? tipoResponsavelAtribuicao)
         {
-            var listaResponsaveis = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
-
             switch (tipoResponsavelAtribuicao)
             {
                 case TipoResponsavelAtribuicao.PAAI:
-                    {
-                        var funcionariosEol = await mediator.Send(new ObterFuncionariosPorDreECargoQuery(dreCodigo, 29));
-
-                        if (funcionariosEol.NaoEhNulo())
-                        {
-                            foreach (var funcionario in funcionariosEol)
-                            {
-                                listaResponsaveis.Add(new ResponsavelRetornoDto()
-                                {
-                                    CodigoRfOuLogin = funcionario.CodigoRf,
-                                    NomeServidor = funcionario.NomeServidor
-                                });
-                            }
-                        }
-
-                        break;
-                    }
+                        return (await ObterFuncionariosDreCargo(dreCodigo, 29));   
                 case TipoResponsavelAtribuicao.PsicologoEscolar:
+                        return (await ObterFuncionariosDrePerfis(dreCodigo, Perfis.PERFIL_PSICOLOGO_ESCOLAR));
                 case TipoResponsavelAtribuicao.Psicopedagogo:
+                    return (await ObterFuncionariosDrePerfis(dreCodigo, Perfis.PERFIL_PSICOPEDAGOGO));
                 case TipoResponsavelAtribuicao.AssistenteSocial:
-                    {
-                        var perfil = Perfis.PERFIL_PSICOLOGO_ESCOLAR;
-
-                        if (tipoResponsavelAtribuicao == TipoResponsavelAtribuicao.Psicopedagogo)
-                            perfil = Perfis.PERFIL_PSICOPEDAGOGO;
-                        else if (tipoResponsavelAtribuicao == TipoResponsavelAtribuicao.AssistenteSocial)
-                            perfil = Perfis.PERFIL_ASSISTENTE_SOCIAL;
-
-                        var funcionariosUnidades = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(dreCodigo,
-                            new List<Guid> { perfil }))).ToList();
-
-                        if (funcionariosUnidades.NaoEhNulo())
-                        {
-                            foreach (var funcionario in funcionariosUnidades)
-                            {
-                                listaResponsaveis.Add(new ResponsavelRetornoDto()
-                                {
-                                    CodigoRfOuLogin = funcionario.Login,
-                                    NomeServidor = funcionario.NomeServidor
-                                });
-                            }
-                        }
-
-                        break;
-                    }
+                    return (await ObterFuncionariosDrePerfis(dreCodigo, Perfis.PERFIL_ASSISTENTE_SOCIAL));
                 default:
-                    var supervisoresEol = (await mediator.Send(new ObterSupervisoresPorDreEolQuery(dreCodigo))).ToList();
-
-                    if(supervisoresEol.NaoEhNulo())
-                    {
-                        foreach (var supervisor in supervisoresEol)
-                        {
-                            listaResponsaveis.Add(new ResponsavelRetornoDto()
-                            {
-                                CodigoRfOuLogin = supervisor.CodigoRf,
-                                NomeServidor = supervisor.NomeServidor
-                            });
-                        }
-                    }
-                    
-
-                    break;
+                    return (await ObterSupervisoresDre(dreCodigo));
             }
+        }
 
-            return await Task.FromResult(listaResponsaveis);
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterSupervisoresDre(string codigoDRE)
+        {
+            var supervisoresEol = await mediator.Send(new ObterSupervisoresPorDreEolQuery(codigoDRE));
+            if (supervisoresEol.PossuiRegistros())
+                return supervisoresEol.Select(spr => new ResponsavelRetornoDto()
+                {
+                    CodigoRfOuLogin = spr.CodigoRf,
+                    NomeServidor = spr.NomeServidor
+                });
+            return Enumerable.Empty<ResponsavelRetornoDto>();
+        }
+
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterFuncionariosDrePerfis(string codigoDRE, Guid perfil)
+        {
+            var funcionariosUnidades = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDRE,
+                            new List<Guid> { perfil }));
+
+            if (funcionariosUnidades.PossuiRegistros())
+                return funcionariosUnidades.Select(fnc => new ResponsavelRetornoDto()
+                {
+                    CodigoRfOuLogin = fnc.Login,
+                    NomeServidor = fnc.NomeServidor
+                });
+            return Enumerable.Empty<ResponsavelRetornoDto>();
+        }
+
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterFuncionariosDreCargo(string codigoDRE, int codigoCargo)
+        {
+            var funcionariosEol = await mediator.Send(new ObterFuncionariosPorDreECargoQuery(codigoDRE, codigoCargo));
+            if (funcionariosEol.PossuiRegistros())
+                return funcionariosEol.Select(fnc => new ResponsavelRetornoDto()
+                {
+                    CodigoRfOuLogin = fnc.CodigoRf,
+                    NomeServidor = fnc.NomeServidor
+                });
+            return Enumerable.Empty<ResponsavelRetornoDto>();
         }
 
         public async Task<IEnumerable<SupervisorDto>> Executar(ObterResponsaveisPorDreDto filtro)

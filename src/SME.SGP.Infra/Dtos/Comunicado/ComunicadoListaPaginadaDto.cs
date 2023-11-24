@@ -13,14 +13,11 @@ namespace SME.SGP.Infra
         public DateTime DataExpiracao { get; set; }
         public int[] ModalidadeCodigo { get; set; }
         public int[] TipoEscolaCodigo { get; set; }
-        public List<Modalidade> Modalidades
-        {
-            get => ModalidadeCodigo.Length > 0 
+        public List<Modalidade> Modalidades => ModalidadeCodigo.Length > 0 
                 ?
                 ModalidadeCodigo.Select(a => (Modalidade)a).ToList()
                 :
                 default;
-        }       
 
         public string Modalidade
         {

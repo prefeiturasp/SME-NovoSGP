@@ -92,15 +92,15 @@ namespace SME.SGP.Dados
                 query.AppendLine("t.ano as DescricaoAnoTurma, ");
 
             query.AppendLine(@"t.modalidade_codigo as ModalidadeCodigo,
-           		               sum(caa.qtd_faltas_compensadas) as Quantidade           		   
-	                      from compensacao_ausencia_aluno caa 
-	                     inner join compensacao_ausencia ca on ca.id = caa.compensacao_ausencia_id
-	                     inner join turma t on t.id = ca.turma_id 
-     		             inner join ue on ue.id = t.ue_id 
-     		             inner join dre on dre.id = ue.dre_id 
-     		             where t.ano_letivo = @anoLetivo
-     		               and not caa.excluido
-       		               and t.modalidade_codigo = @modalidade ");
+                                  sum(caa.qtd_faltas_compensadas) as Quantidade                      
+                          from compensacao_ausencia_aluno caa 
+                         inner join compensacao_ausencia ca on ca.id = caa.compensacao_ausencia_id
+                         inner join turma t on t.id = ca.turma_id 
+                          inner join ue on ue.id = t.ue_id 
+                          inner join dre on dre.id = ue.dre_id 
+                          where t.ano_letivo = @anoLetivo
+                            and not caa.excluido
+                              and t.modalidade_codigo = @modalidade ");
 
             if (dreId != -99)
                 query.AppendLine("and dre.id = @dreId ");
@@ -136,19 +136,19 @@ namespace SME.SGP.Dados
         {
             var query = new StringBuilder(@"select max(totalaulas) as totalaulas, max(totalcompensacoes) as totalcompensacoes from ");
             query.AppendLine(@"(select
-	                                    t.ano_letivo as anoLetivo,
-	                                    sum(0) as TotalAulas,
-	                                    sum(caa.qtd_faltas_compensadas) as TotalCompensacoes
+                                        t.ano_letivo as anoLetivo,
+                                        sum(0) as TotalAulas,
+                                        sum(caa.qtd_faltas_compensadas) as TotalCompensacoes
                                     from
-	                                    compensacao_ausencia_aluno caa
+                                        compensacao_ausencia_aluno caa
                                     inner join compensacao_ausencia ca on
-	                                    ca.id = caa.compensacao_ausencia_id
+                                        ca.id = caa.compensacao_ausencia_id
                                     inner join turma t on
-	                                    t.id = ca.turma_id
+                                        t.id = ca.turma_id
                                     inner join ue on
-	                                    ue.id = t.ue_id
+                                        ue.id = t.ue_id
                                     inner join dre on
-	                                    dre.id = ue.dre_id
+                                        dre.id = ue.dre_id
                                     where t.ano_letivo = @anoLetivo and not caa.excluido ");
             if (dreId != -99)
                 query.AppendLine(" and dre.id = @dreId ");
@@ -167,23 +167,23 @@ namespace SME.SGP.Dados
             query.AppendLine(@"group by t.ano_letivo 
                                     union
                                     select
-	                                    t.ano_letivo as anoLetivo,
-	                                    count(a.id) as TotalAulas,
-	                                    sum(0) as TotalCompensacoes
+                                        t.ano_letivo as anoLetivo,
+                                        count(a.id) as TotalAulas,
+                                        sum(0) as TotalCompensacoes
                                     from
-	                                    aula a
+                                        aula a
                                     inner join turma t on
-	                                    a.turma_id = t.turma_id
+                                        a.turma_id = t.turma_id
                                     left join registro_frequencia rf on
-	                                    a.id = rf.aula_id
+                                        a.id = rf.aula_id
                                     inner join ue on
-	                                    ue.id = t.ue_id
+                                        ue.id = t.ue_id
                                     inner join dre on
-	                                    dre.id = ue.dre_id                                   
+                                        dre.id = ue.dre_id                                   
                                     inner join periodo_escolar pe on
                                         a.tipo_calendario_id = pe.tipo_calendario_id 
                                     left join componente_curricular cc on
-	                                    cc.id = cast(a.disciplina_id as bigint)
+                                        cc.id = cast(a.disciplina_id as bigint)
                                     where t.ano_letivo = @anoLetivo and not a.excluido and coalesce(cc.permite_registro_frequencia, true) ");
 
             if (dreId != -99)
@@ -215,14 +215,14 @@ namespace SME.SGP.Dados
                 query.AppendLine("t.ano as DescricaoAnoTurma, ");
 
             query.AppendLine(@"t.modalidade_codigo as ModalidadeCodigo,
-           		               count(ca.id) as Quantidade FROM
+                                  count(ca.id) as Quantidade FROM
                             compensacao_ausencia ca
-	                     inner join turma t on t.id = ca.turma_id 
-     		             inner join ue on ue.id = t.ue_id 
-     		             inner join dre on dre.id = ue.dre_id 
-     		             where t.ano_letivo = @anoLetivo
-     		               and not ca.excluido
-       		               and t.modalidade_codigo = @modalidade ");
+                         inner join turma t on t.id = ca.turma_id 
+                          inner join ue on ue.id = t.ue_id 
+                          inner join dre on dre.id = ue.dre_id 
+                          where t.ano_letivo = @anoLetivo
+                            and not ca.excluido
+                              and t.modalidade_codigo = @modalidade ");
 
             if (dreId != -99)
                 query.AppendLine("and dre.id = @dreId ");

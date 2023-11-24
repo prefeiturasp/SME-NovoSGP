@@ -13,9 +13,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFake
     {
         private const int ALUNO_1 = 1;
 
-        public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            return new List<TurmasDoAlunoDto>()
+            return Task.FromResult<IEnumerable<TurmasDoAlunoDto>>(new List<TurmasDoAlunoDto>()
             {
                 new TurmasDoAlunoDto
                 {
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFake
                     AnoLetivo= DateTimeExtension.HorarioBrasilia().Year,
                     CodigoTipoTurma= (int)TipoTurma.EdFisica,
                 },
-            };
+            });
         }
     }
 }

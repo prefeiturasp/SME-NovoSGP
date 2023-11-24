@@ -251,19 +251,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 {
                     questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
                 }
-                else
-                if (NaoNuloEContemRegistros(questao.OpcaoResposta)
-                    && NaoNuloEContemRegistros(questao.Resposta))
-                {
-                    foreach (var resposta in questao.Resposta)
+                else if (NaoNuloEContemRegistros(questao.OpcaoResposta)
+                        && NaoNuloEContemRegistros(questao.Resposta))
                     {
-                        var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
-                        if (opcao.NaoEhNulo() && opcao.QuestoesComplementares.Any())
+                        foreach (var resposta in questao.Resposta)
                         {
-                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                            var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
+                            if (opcao.NaoEhNulo() && opcao.QuestoesComplementares.Any())
+                            {
+                                ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                            }
                         }
                     }
-                }
             }
         }
 

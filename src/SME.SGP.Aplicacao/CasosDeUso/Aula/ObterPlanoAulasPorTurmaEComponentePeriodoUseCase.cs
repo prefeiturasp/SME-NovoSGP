@@ -9,12 +9,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAulasPorTurmaEComponentePeriodoUseCase : AbstractUseCase, IObterPlanoAulasPorTurmaEComponentePeriodoUseCase
     {
-        private readonly IServicoUsuario servicoUsuario;
-
-        public ObterPlanoAulasPorTurmaEComponentePeriodoUseCase(IMediator mediator, IServicoUsuario servicoUsuario) : base(mediator) 
-        {
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-        }
+        public ObterPlanoAulasPorTurmaEComponentePeriodoUseCase(IMediator mediator) : base(mediator) 
+        {}
 
         public async Task<IEnumerable<PlanoAulaRetornoDto>> Executar(FiltroObterPlanoAulaPeriodoDto param)
         {

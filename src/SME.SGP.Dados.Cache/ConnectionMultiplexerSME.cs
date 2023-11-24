@@ -26,11 +26,9 @@ namespace SME.SGP.Infra.Contexto
             }
             catch (RedisConnectionException rcex)
             {
-                //servicoLog.Registrar($"Erro de conexão com o servidor Redis. {rcex}");
             }
             catch (Exception ex)
             {
-                //servicoLog.Registrar(ex);
             }
         }
 

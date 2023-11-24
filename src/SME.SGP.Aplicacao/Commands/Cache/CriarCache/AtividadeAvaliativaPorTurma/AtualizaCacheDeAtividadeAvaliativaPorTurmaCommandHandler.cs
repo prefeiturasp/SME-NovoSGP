@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class AtualizaCacheDeAtividadeAvaliativaPorTurmaCommandHandler : IRequestHandler<AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand, IEnumerable<NotaConceito>>
     {
         private readonly IRepositorioCache repositorioCache;
-        private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
 
-        public AtualizaCacheDeAtividadeAvaliativaPorTurmaCommandHandler(IRepositorioCache repositorioCache, IRepositorioNotasConceitosConsulta repositorioNotasConceitos)
+        public AtualizaCacheDeAtividadeAvaliativaPorTurmaCommandHandler(IRepositorioCache repositorioCache)
         {
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
-            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }
 
         public async Task<IEnumerable<NotaConceito>> Handle(AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand request, CancellationToken cancellationToken)

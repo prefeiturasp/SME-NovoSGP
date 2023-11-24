@@ -177,10 +177,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudante(string codigoEstudante)
         {
             var query = @"select distinct   pa.Id,
-	                                        pa.aluno_numero as numero,
-	                                        pa.aluno_nome as nome,
-	                                        tu.nome as turma,
-	                                        pa.situacao 
+                                            pa.aluno_numero as numero,
+                                            pa.aluno_nome as nome,
+                                            tu.nome as turma,
+                                            pa.situacao 
                                         from plano_aee pa
                                         inner join turma tu on tu.id = pa.turma_id 
                                         where pa.aluno_codigo = @codigoEstudante 
@@ -198,10 +198,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PlanoAEEResumoDto> ObterPlanoPorEstudanteEAno(string codigoEstudante, int ano)
         {
             var query = new StringBuilder(@$"select distinct  pa.Id,
-	                                        pa.aluno_numero as numero,
-	                                        pa.aluno_nome as nome,
-	                                        tu.nome as turma,
-	                                        pa.situacao 
+                                            pa.aluno_numero as numero,
+                                            pa.aluno_nome as nome,
+                                            tu.nome as turma,
+                                            pa.situacao 
                                         from plano_aee pa
                                         inner join turma tu on tu.id = pa.turma_id 
                                         inner join plano_aee_versao pav on pav.plano_aee_id = pa.id and not pav.excluido 
@@ -221,11 +221,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PlanoAEEResumoDto>> ObterPlanosPorAlunosEAno(string[] codigoEstudante, int ano)
         {
             var query = new StringBuilder(@"select distinct   pa.Id,
-	                                        pa.aluno_numero as numero,
-	                                        pa.aluno_nome as nome,
-	                                        tu.nome as turma,
-	                                        pa.situacao,
-	                                        pa.aluno_codigo as CodigoAluno 
+                                            pa.aluno_numero as numero,
+                                            pa.aluno_nome as nome,
+                                            tu.nome as turma,
+                                            pa.situacao,
+                                            pa.aluno_codigo as CodigoAluno 
                                         from plano_aee pa
                                         inner join turma tu on tu.id = pa.turma_id 
                                         inner join plano_aee_versao pav on pav.plano_aee_id = pa.id and not pav.excluido
@@ -301,38 +301,38 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PlanoAEEReduzidoDto>> ObterPlanosAEEAtivosComTurmaEVigencia()
         {
             var query = @"select
-	                    pa.id as Id,
-	                    pa.aluno_nome as EstudanteNome,
-	                    pa.aluno_codigo as EstudanteCodigo,
-	                    t.nome as TurmaNome,
-	                    dre.dre_id as DRECodigo,
+                        pa.id as Id,
+                        pa.aluno_nome as EstudanteNome,
+                        pa.aluno_codigo as EstudanteCodigo,
+                        t.nome as TurmaNome,
+                        dre.dre_id as DRECodigo,
                         dre.abreviacao as DREAbreviacao,
-	                    t.modalidade_codigo as TurmaModalidade,
-	                    ue.ue_id as UECodigo,
-	                    ue.nome as UENome,
-	                    ue.tipo_escola as UETipo,
-	                    pa.situacao as Situacao,
-	                    pav.numero as VersaoNumero,
-	                    par.periodo_inicio as VigenciaInicio,
+                        t.modalidade_codigo as TurmaModalidade,
+                        ue.ue_id as UECodigo,
+                        ue.nome as UENome,
+                        ue.tipo_escola as UETipo,
+                        pa.situacao as Situacao,
+                        pav.numero as VersaoNumero,
+                        par.periodo_inicio as VigenciaInicio,
                         par.periodo_fim as VigenciaFim
                     from
-	                    plano_aee pa
+                        plano_aee pa
                     inner join turma t on
-	                    pa.turma_id = t.id
+                        pa.turma_id = t.id
                     inner join ue on
-	                    t.ue_id = ue.id
+                        t.ue_id = ue.id
                     inner join dre on 
-	                    dre.id = ue.dre_id 
+                        dre.id = ue.dre_id 
                     inner join plano_aee_versao pav on
-	                    pav.id in (select max(id) from plano_aee_versao where plano_aee_id = pa.id)
+                        pav.id in (select max(id) from plano_aee_versao where plano_aee_id = pa.id)
                     inner join plano_aee_questao paq on
-	                    pav.id = paq.plano_aee_versao_id
+                        pav.id = paq.plano_aee_versao_id
                     inner join plano_aee_resposta par on
-	                    paq.id = par.plano_questao_id
+                        paq.id = par.plano_questao_id
                     where
-	                    par.periodo_inicio is not null
-	                    and pa.situacao not in (3,
-	                    7)
+                        par.periodo_inicio is not null
+                        and pa.situacao not in (3,
+                        7)
                     order by dre.dre_id, ue.nome, t.nome ";
 
             return await database.Conexao.QueryAsync<PlanoAEEReduzidoDto>(query);
@@ -480,11 +480,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<Pendencia> ObterUltimaPendenciaPlano(long planoId)
         {
             var query = @"select p.*
-	                        from pendencia_plano_aee ppa
-		                        inner join pendencia p 
-			                        on ppa.pendencia_id = p.id
+                            from pendencia_plano_aee ppa
+                                inner join pendencia p 
+                                    on ppa.pendencia_id = p.id
                           where ppa.plano_aee_id = @planoId and
-	                        not p.excluido
+                            not p.excluido
                           order by ppa.id desc
                           limit 1;";
 
@@ -494,7 +494,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsaveis(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, bool exibirEncerrados)
         {
             var sql = new StringBuilder(@"select distinct u.rf_codigo as CodigoRf
-	                                    , u.nome as NomeServidor
+                                        , u.nome as NomeServidor
                                       from plano_aee pa 
                                      inner join turma t on t.id = pa.turma_id
                                      inner join ue on t.ue_id = ue.id

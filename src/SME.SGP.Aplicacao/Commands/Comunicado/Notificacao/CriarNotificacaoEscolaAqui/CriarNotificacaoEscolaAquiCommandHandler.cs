@@ -15,12 +15,10 @@ namespace SME.SGP.Aplicacao
     public class CriarNotificacaoEscolaAquiCommandHandler : IRequestHandler<CriarNotificacaoEscolaAquiCommand, bool>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IMediator mediator;
 
-        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
+        public CriarNotificacaoEscolaAquiCommandHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(CriarNotificacaoEscolaAquiCommand request, CancellationToken cancellationToken)
@@ -39,7 +37,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var httpContentResult = await resposta.Content.ReadAsStringAsync();
-                throw new Exception($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}", new Exception($"Erro ao enviar a notificação para o App Aluno: {httpContentResult}"));
+                throw new NegocioException($"Não foi possivel criar a notificação para o comunucado de id : {request.Comunicado.Id}", new NegocioException($"Erro ao enviar a notificação para o App Aluno: {httpContentResult}"));
             }
 
         }

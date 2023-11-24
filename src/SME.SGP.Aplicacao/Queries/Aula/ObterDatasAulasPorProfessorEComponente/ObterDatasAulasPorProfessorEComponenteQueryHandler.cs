@@ -1,7 +1,5 @@
-﻿using MailKit;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -49,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesCurricularesDoProfessorCJ.Any())
                 {
-                    componentesCurricularesDoProfessorCJ.ToList().ForEach(async ccj =>
+                    componentesCurricularesDoProfessorCJ.ToList().ForEach(ccj =>
                     {
                         var componenteListaProfessor = componentesCurricularesEolProfessor
                             .Any(ccp => ccp.Codigo == ccj.DisciplinaId || ccp.CodigoComponenteTerritorioSaber == ccj.DisciplinaId);

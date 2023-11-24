@@ -18,26 +18,21 @@ namespace SME.SGP.Aplicacao
     public class ValidarMediaAlunosAtividadeAvaliativaUseCase : AbstractUseCase, IValidarMediaAlunosAtividadeAvaliativaUseCase
     {
         private readonly IRepositorioConceitoConsulta repositorioConceito;
-        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioAulaConsulta repositorioAula;
-        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IServicoUsuario servicoUsuario;
 
         public ValidarMediaAlunosAtividadeAvaliativaUseCase(IMediator mediator, IRepositorioConceitoConsulta repositorioConceito, 
-                                                            IConsultasAbrangencia consultasAbrangencia, IRepositorioNotaParametro repositorioNotaParametro,
-                                                            IRepositorioAulaConsulta repositorioAula, IRepositorioTurmaConsulta repositorioTurma,
+                                                            IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAulaConsulta repositorioAula,
                                                             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                                             IRepositorioCiclo repositorioCiclo, IServicoUsuario servicoUsuario) : base(mediator)
         {
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));

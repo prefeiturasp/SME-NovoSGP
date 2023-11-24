@@ -11,13 +11,11 @@ namespace SME.SGP.Aplicacao
     public class ComandosEventoTipo : IComandosEventoTipo
     {
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioEvento repositorioEvento;
 
-        public ComandosEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IUnitOfWork unitOfWork, IRepositorioEvento repositorioEvento)
+        public ComandosEventoTipo(IRepositorioEventoTipo repositorioEventoTipo, IRepositorioEvento repositorioEvento)
         {
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
         }
 

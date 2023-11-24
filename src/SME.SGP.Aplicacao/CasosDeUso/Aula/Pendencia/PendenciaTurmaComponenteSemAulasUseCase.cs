@@ -1,8 +1,11 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,26 +23,24 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<TurmaDTO>();
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(filtro.TurmaId, DateTimeExtension.HorarioBrasilia()));
+            var periodoEscolar = await ObterPeriodoEscolarLetivoValido(filtro.TurmaId);
             if (periodoEscolar.EhNulo())
                 return false;
+            var turmaDreUe = await ObterTurmaDreUe(filtro.TurmaCodigo);
+            var componentes = await ObterComponentesCurricularesTurma(filtro.TurmaCodigo);
 
-            var diasAposInicioPeriodo = await mediator.Send(DiasAposInicioPeriodoLetivoComponenteSemAulaQuery.Instance);
-            var periodoInicio = periodoEscolar.PeriodoInicio.AddDays(diasAposInicioPeriodo);
-            if (periodoInicio.Date >= DateTimeExtension.HorarioBrasilia().Date)
+            if (componentes.Any(cc => cc.Regencia))
                 return false;
 
-            var turmasCodigo = new string[1] { filtro.TurmaCodigo };
-            var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(turmasCodigo));
-            var turmaDreUe = turmasDreUe.FirstOrDefault();
+            return await GerarPendencia(periodoEscolar, turmaDreUe, componentes);
+        }
 
+        private async Task<bool> GerarPendencia(PeriodoEscolar periodoEscolar, Turma turmaDreUe, IEnumerable<ComponenteCurricularEol> componentes)
+        {
+            
             var gerouPendencia = false;
-            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigo));
             foreach (var componente in componentes)
             {
-                if (componente.Regencia)
-                    return false;
-
                 var possuiAulaNoPeriodo = await mediator.Send(new PossuiAulaCadastradaPorPeriodoTurmaDisciplinaQuery(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim, turmaDreUe.CodigoTurma, componente.Codigo.ToString()));
                 if (!possuiAulaNoPeriodo)
                 {
@@ -47,15 +48,14 @@ namespace SME.SGP.Aplicacao
                     if (professorTitular.EhNulo())
                         continue;
 
-                    //-> TODO caso não tenha o professor titular gerar a pendencia para o CP? 
-
-                    var possuiPendencia = await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaDreUe.Id, componente.Codigo, periodoEscolar.Id, professorTitular.ProfessorRf, TipoPendencia.ComponenteSemAula));
+                    var possuiPendencia = await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turmaDreUe.Id, componente.Codigo, 
+                                                                                                                   periodoEscolar.Id, professorTitular.ProfessorRf, 
+                                                                                                                   TipoPendencia.ComponenteSemAula));
                     if (!possuiPendencia)
                     {
                         try
                         {
                             unitOfWork.IniciarTransacao();
-
                             var pendenciaId = await mediator.Send(new SalvarPendenciaCommand
                             {
                                 TipoPendencia = TipoPendencia.ComponenteSemAula,
@@ -68,11 +68,8 @@ namespace SME.SGP.Aplicacao
                             });
 
                             await mediator.Send(new SalvarPendenciaProfessorCommand(pendenciaId, turmaDreUe.Id, componente.Codigo, professorTitular.ProfessorRf, periodoEscolar.Id));
-
                             await SalvarPendenciaUsuario(pendenciaId, professorTitular.ProfessorRf);
-
                             unitOfWork.PersistirTransacao();
-
                             gerouPendencia = true;
                         }
                         catch
@@ -85,6 +82,32 @@ namespace SME.SGP.Aplicacao
             }
 
             return gerouPendencia;
+        }
+
+        private async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesTurma(string turmaCodigo)
+        {
+            var turmasCodigo = new string[1] { turmaCodigo };
+            return await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigo));
+        }
+
+        private async Task<Turma> ObterTurmaDreUe(string turmaCodigo)
+        {
+            var turmasCodigo = new string[1] { turmaCodigo };
+            var turmasDreUe = await mediator.Send(new ObterTurmasDreUePorCodigosQuery(turmasCodigo));
+            return turmasDreUe.FirstOrDefault();
+        }
+
+        private async Task<PeriodoEscolar> ObterPeriodoEscolarLetivoValido(long turmaId)
+        {
+            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTimeExtension.HorarioBrasilia()));
+            var diasAposInicioPeriodo = await mediator.Send(DiasAposInicioPeriodoLetivoComponenteSemAulaQuery.Instance);
+            if (periodoEscolar.NaoEhNulo())
+            {
+                var periodoInicio = periodoEscolar.PeriodoInicio.AddDays(diasAposInicioPeriodo);
+                if (periodoInicio.Date >= DateTimeExtension.HorarioBrasilia().Date)
+                    return periodoEscolar;
+            }
+            return null;
         }
 
         private async Task SalvarPendenciaUsuario(long pendenciaId, string professorRf)

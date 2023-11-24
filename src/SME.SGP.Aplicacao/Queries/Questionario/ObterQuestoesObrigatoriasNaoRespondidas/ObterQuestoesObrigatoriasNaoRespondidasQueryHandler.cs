@@ -61,8 +61,7 @@ namespace SME.SGP.Aplicacao
                 {
                     questoesObrigatoriasAConsistir.Add(new QuestaoObrigatoriaNaoRespondidaDto(secao.Id, secao.Nome, ordem));
                 }
-                else
-                if (questao.OpcaoResposta.NaoNuloEContemRegistros() && questao.Resposta.NaoNuloEContemRegistrosRespondidos())
+                else if (questao.OpcaoResposta.NaoNuloEContemRegistros() && questao.Resposta.NaoNuloEContemRegistrosRespondidos())
                 {
                     foreach (var resposta in questao.Resposta)
                     {

@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao.Workers
             await RegistrarErro(mensagem, logNivel, observacao, ex?.StackTrace, ex?.InnerException?.Message);
         }
 
-        protected override Task RegistrarErro(string mensagem, LogNivel logNivel, string observacao, string rastreamento, string excecaoInterna)
+        protected override Task RegistrarErro(string mensagem, LogNivel logNivel, string observacao = "", string rastreamento = "", string excecaoInterna = "")
             => mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao, rastreamento: rastreamento, excecaoInterna: excecaoInterna));
 
         protected override void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)

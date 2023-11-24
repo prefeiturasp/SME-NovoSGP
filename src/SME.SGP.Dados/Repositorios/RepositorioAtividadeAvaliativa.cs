@@ -139,7 +139,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join notas_conceito n on n.atividade_avaliativa = av.id
                        where not av.excluido
                          and av.turma_id = @turmaCodigo
-	                     and aad.disciplina_id = @disciplinaId
+                         and aad.disciplina_id = @disciplinaId
                          and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
                          and n.id is null
                          and ta.codigo <> @tipoAtividadeAvaliativa";
@@ -514,13 +514,13 @@ namespace SME.SGP.Dados.Repositorios
                            and a.tipo_calendario_id = @tipoCalendarioId
                            and a.data_aula between @dataInicio and @dataFim
                            and not exists (
-   		                        select 1 
-		                        from atividade_avaliativa aa
-	                           inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
-	                           where not aa.excluido
+                                   select 1 
+                                from atividade_avaliativa aa
+                               inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
+                               where not aa.excluido
                                  and aa.turma_id = a.turma_id
-	                             and ad.disciplina_id = a.disciplina_id
-	                             and aa.data_avaliacao between @dataInicio and @dataFim)";
+                                 and ad.disciplina_id = a.disciplina_id
+                                 and aa.data_avaliacao between @dataInicio and @dataFim)";
 
             return await database.Conexao.QueryAsync<TurmaEComponenteDto>(query, new { tipoCalendarioId, dataInicio, dataFim });
         }
@@ -603,8 +603,8 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
         {
             var query = @"SELECT distinct aa.nome_avaliacao as Nome
-	                        , aa.data_avaliacao as data
-	                        , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
+                            , aa.data_avaliacao as data
+                            , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
                             , eh_regencia as Regencia
                             , aa.id as Id
                             , aa.categoria_id = 2 as EhInterdisciplinar

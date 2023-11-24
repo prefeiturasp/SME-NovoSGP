@@ -115,19 +115,19 @@ namespace SME.SGP.Dados.Repositorios
         public AtribuicaoEsporadica ObterUltimaPorRF(string codigoRF, bool somenteInfantil)
         {
             var sql = $@"select
-	                        ae.*
+                            ae.*
                         from
-	                        atribuicao_esporadica ae
+                            atribuicao_esporadica ae
                         inner join ue u on
-	                        u.ue_id = ae.ue_id
+                            u.ue_id = ae.ue_id
                         inner join turma t on
-	                        t.ue_id = u.id
+                            t.ue_id = u.id
                         where
                             not ae.excluido and 
-	                        ae.professor_rf = @codigoRF
-	                        {(somenteInfantil ? "and t.modalidade_codigo = @infantil " : string.Empty)}
+                            ae.professor_rf = @codigoRF
+                            {(somenteInfantil ? "and t.modalidade_codigo = @infantil " : string.Empty)}
                         order by
-	                        ae.data_fim desc";
+                            ae.data_fim desc";
 
             var infantil = Modalidade.EducacaoInfantil;
             return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { codigoRF, infantil });
@@ -136,18 +136,18 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AtribuicaoEsporadica>> ObterAtribuicoesPorRFEAno(string codigoRF, bool somenteInfantil, int anoLetivo, string dreCodigo, string ueCodigo, bool historico)
         {
             var sql = $@"select
-	                        distinct ae.*
+                            distinct ae.*
                         from
-	                        atribuicao_esporadica ae
+                            atribuicao_esporadica ae
                         inner join ue u on
-	                        u.ue_id = ae.ue_id
+                            u.ue_id = ae.ue_id
                         inner join turma t on
-	                        t.ue_id = u.id
+                            t.ue_id = u.id
                         where
                             not ae.excluido and
-	                        ae.professor_rf = @codigoRF and
+                            ae.professor_rf = @codigoRF and
                             t.historica = @historico
-	                        {(somenteInfantil ? " and t.modalidade_codigo = @infantil " : string.Empty)}";
+                            {(somenteInfantil ? " and t.modalidade_codigo = @infantil " : string.Empty)}";
 
             if (anoLetivo > 0)
                 sql += " and ae.ano_letivo = @anoLetivo";
@@ -193,12 +193,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AtribuicaoEsporadicaVigenteProfDto>> ObterAtribuicoesPorAno(int anoLetivo, DateTime? data)
         {
             var sql = $@"select
-	                        distinct ae.professor_rf as UsuarioRf, ae.ue_id as ue, ae.dre_id as dre
+                            distinct ae.professor_rf as UsuarioRf, ae.ue_id as ue, ae.dre_id as dre
                         from
-	                        atribuicao_esporadica ae
+                            atribuicao_esporadica ae
                         where
                             not ae.excluido 
-	                        and ae.ano_letivo = @anoLetivo ";
+                            and ae.ano_letivo = @anoLetivo ";
             if (data.HasValue)
                 sql += " and @data between ae.data_inicio and ae.data_fim ";
             return await database.Conexao

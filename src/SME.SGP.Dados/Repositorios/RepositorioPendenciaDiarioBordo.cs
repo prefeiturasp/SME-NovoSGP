@@ -44,7 +44,7 @@ namespace SME.SGP.Dados
                               from aula a
                                    join turma t on a.turma_id = t.turma_id and t.modalidade_codigo = @modalidadeCodigo
                                    join ue on t.ue_id = ue.id
-                                   join periodo_escolar pe on a.data_aula between pe.periodo_inicio and pe.periodo_fim 	
+                                   join periodo_escolar pe on a.data_aula between pe.periodo_inicio and pe.periodo_fim     
                                    left join diario_bordo db on db.aula_id = a.id and db.componente_curricular_id = ANY(@componentesCurricularesId) and not db.excluido
                                    left join pendencia_diario_bordo pdb on pdb.aula_id = a.id and pdb.componente_curricular_id = ANY(@componentesCurricularesId)
                                    left join pendencia p on p.id = pdb.pendencia_id and not p.excluido and p.tipo = @tipoPendencia

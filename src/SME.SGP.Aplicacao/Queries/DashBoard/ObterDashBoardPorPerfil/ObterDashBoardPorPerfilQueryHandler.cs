@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +22,7 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
-        public async Task<IEnumerable<DashBoard>> Handle(ObterDashBoardPorPerfilQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<DashBoard>> Handle(ObterDashBoardPorPerfilQuery request, CancellationToken cancellationToken)
         {
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var roles = servicoUsuario.ObterPermissoes();
@@ -52,7 +51,7 @@ namespace SME.SGP.Aplicacao
                 listaDashBoard.Add(CarregaDashBoard(Permissao.E_C, roles, false));
             }
 
-            return listaDashBoard;
+            return Task.FromResult<IEnumerable<DashBoard>>(listaDashBoard);
 
         }
 

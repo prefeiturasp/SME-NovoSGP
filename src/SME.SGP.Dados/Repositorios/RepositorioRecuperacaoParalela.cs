@@ -62,27 +62,27 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
             query.Append(@"select
-	                            count(distinct aluno_id) as total,
-	                            turma.ano,
-	                            tipo_ciclo.descricao as Ciclo,
+                                count(distinct aluno_id) as total,
+                                turma.ano,
+                                tipo_ciclo.descricao as Ciclo,
                                 tipo_ciclo.id as CicloId,
                                 rpr.id as RespostaId,
-	                            rpr.nome as frequencia
+                                rpr.nome as frequencia
                             from recuperacao_paralela rp
-	                            inner join turma on rp.turma_id = turma.id
-	                            inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
-	                            inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
-	                            inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
-	                            inner join recuperacao_paralela_resposta rpr on rpp.resposta_id = rpr.id
+                                inner join turma on rp.turma_id = turma.id
+                                inner join tipo_ciclo_ano tca on turma.modalidade_codigo = tca.modalidade and turma.ano = tca.ano
+                                inner join tipo_ciclo on tca.tipo_ciclo_id = tipo_ciclo.id
+                                inner join recuperacao_paralela_periodo_objetivo_resposta rpp on rp.id = rpp.recuperacao_paralela_id
+                                inner join recuperacao_paralela_resposta rpr on rpp.resposta_id = rpr.id
                                 inner join  ue on ue.id = turma.ue_id
                                 inner join dre on dre.id = ue.dre_id");
             MontarWhere(query, dreId, ueId, cicloId, ano, periodoId, turmaId, null);
             query.AppendLine("and rpp.objetivo_id = 4");
             query.Append(@"group by
-	                            turma.nome,
-	                            turma.ano,
-	                            tipo_ciclo.descricao,
-	                            rpr.nome,
+                                turma.nome,
+                                turma.ano,
+                                tipo_ciclo.descricao,
+                                rpr.nome,
                                 rpr.id,
                                 tipo_ciclo.id
                             order by rpr.ordem");
@@ -228,17 +228,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             return @"select
                         rec.id ,
-	                    rec.aluno_id AS AlunoId,
-	                    rec.turma_id AS TurmaId,
+                        rec.aluno_id AS AlunoId,
+                        rec.turma_id AS TurmaId,
                         rec.criado_por,
                         rec.criado_em,
                         rec.criado_rf,
                         rec.alterado_por,
                         rec.alterado_em,
                         rec.alterado_rf,
-	                    recRel.objetivo_id AS ObjetivoId,
-	                    recRel.resposta_id AS RespostaId,
-	                    recRel.periodo_recuperacao_paralela_id AS PeriodoRecuperacaoParalelaId,
+                        recRel.objetivo_id AS ObjetivoId,
+                        recRel.resposta_id AS RespostaId,
+                        recRel.periodo_recuperacao_paralela_id AS PeriodoRecuperacaoParalelaId,
                         re.ordem as OrdenacaoResposta,
                         rpp.bimestre_edicao as BimestreEdicao";
         }
