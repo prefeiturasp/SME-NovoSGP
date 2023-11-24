@@ -11,12 +11,10 @@ namespace SME.SGP.Aplicacao
     public class RegistrarRegistroAcaoCommandHandler : IRequestHandler<RegistrarRegistroAcaoCommand, ResultadoRegistroAcaoBuscaAtivaDto>
     {
         private readonly IRepositorioRegistroAcaoBuscaAtiva repositorioRegistroAcao;
-        private readonly IMediator mediator;
 
-        public RegistrarRegistroAcaoCommandHandler(IRepositorioRegistroAcaoBuscaAtiva repositorioRegistroAcao, IMediator mediator)
+        public RegistrarRegistroAcaoCommandHandler(IRepositorioRegistroAcaoBuscaAtiva repositorioRegistroAcao)
         {
             this.repositorioRegistroAcao = repositorioRegistroAcao ?? throw new ArgumentNullException(nameof(repositorioRegistroAcao));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<ResultadoRegistroAcaoBuscaAtivaDto> Handle(RegistrarRegistroAcaoCommand request, CancellationToken cancellationToken)
