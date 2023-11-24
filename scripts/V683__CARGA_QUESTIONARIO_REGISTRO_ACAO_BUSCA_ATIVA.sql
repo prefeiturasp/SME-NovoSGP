@@ -17,8 +17,8 @@ begin
 
 	--Data
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 1, 'Data', '', true, 14, '', NOW(), 'SISTEMA', '0', 3, 'Data', 'DATA_REGISTRO_ACAO');
-		
+		values(questionarioId, 1, 'Data', '', true, 14, '{"desabilitarDataFutura":true,"desabilitarDataAnosAnteriores":true}', NOW(), 'SISTEMA', '0', 3, 'Data', 'DATA_REGISTRO_ACAO');
+		 
 	--Conseguiu contato com o responsável?
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
 		values(questionarioId, 2, 'Conseguiu contato com o responsável?', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'CONSEGUIU_CONTATO_RESP')
