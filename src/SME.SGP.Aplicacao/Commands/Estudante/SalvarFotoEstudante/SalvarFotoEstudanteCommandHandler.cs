@@ -22,9 +22,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Guid> Handle(SalvarFotoEstudanteCommand request, CancellationToken cancellationToken)
         {
-            //if (!(await ValidarAlunoNaTurma(request.AlunoCodigo, request.TurmaCodigo)))
-            //    throw new NegocioException("O aluno informado não foi encontrado");
-            
             return await GerarFotoAluno(request.AlunoCodigo, request.File);
         }
 

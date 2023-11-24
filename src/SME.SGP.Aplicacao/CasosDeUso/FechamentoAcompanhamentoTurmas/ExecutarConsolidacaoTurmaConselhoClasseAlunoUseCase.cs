@@ -204,12 +204,6 @@ namespace SME.SGP.Aplicacao
                     fechamentoDisciplinaEdFisica.Nota = null;
                 }
             }
-
-            /*if (COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(filtro.ComponenteCurricularId ?? 0))
-            {
-                filtro.ConceitoId = ConverterNotaConceito(filtro.Nota, filtro.ConceitoId);
-                filtro.Nota = null;
-            }*/
         }
 
         private async Task<Turma> ObterTurmaRegular(string[] codigosTurmasComplementares, int semestre, bool ehTurmaEJA, bool ehTurmaEM)

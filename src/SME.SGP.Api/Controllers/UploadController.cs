@@ -38,8 +38,6 @@ namespace SME.SGP.Api.Controllers
             var files = Request.Form.Files;
             if (files.NaoEhNulo())
             {
-                //Foi adicionado fixo o valor https pois será discutido com a infra o problema de SSL
-                //Depois que corrigir, colocar: {Request.Protocol.Split('/')[0].ToLower()}
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 

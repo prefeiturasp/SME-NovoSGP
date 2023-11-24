@@ -8,10 +8,6 @@ namespace SME.SGP.Dominio
 
         public static DateTime Local(this DateTime data)
         {
-            // TODO Resolver o problema de regionalização no servidor
-            //if (data.TimeOfDay.TotalSeconds > 0)
-            //    return TimeZoneInfo.ConvertTimeFromUtc(data, fusoHorarioBrasil);
-            //else
             return data;
         }
        
