@@ -53,14 +53,9 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = ObterPeriodoEscolarFechamento(fechamentoTurma, turma, conselhoClasseSinteseDto.Bimestre);
 
             var codigosComponentesCurriculares = disciplinas.Select(d => d.CodigoComponenteCurricular.ToString());
-            var registrosFrequencia = await mediator
-                .Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(conselhoClasseSinteseDto.AlunoCodigo, 
-                                                                                           new string[] { turma.CodigoTurma }, 
-                                                                                           codigosComponentesCurriculares.ToArray(), 
-                                                                                           periodoEscolar?.Id));
 
             return await ObterConselhosClassesGrupoMatriz(disciplinas, turma,
-                                                          frequenciasAluno, registrosFrequencia,
+                                                          frequenciasAluno, 
                                                           totalAulasComponentesNaoLancamNota,
                                                           totalCompensacoesComponentesNaoLancamNotas,
                                                           conselhoClasseSinteseDto.AlunoCodigo, 
@@ -70,7 +65,6 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterConselhosClassesGrupoMatriz(IEnumerable<DisciplinaResposta> disciplinas, 
                                                                                                          Turma turma, 
                                                                                                          IEnumerable<FrequenciaAluno> frequenciasAluno,
-                                                                                                         IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequenciaAluno,
                                                                                                          IEnumerable<TotalAulasNaoLancamNotaDto> totalAulasComponentesNaoLancamNota,
                                                                                                          IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoesComponentesNaoLancamNotas,
                                                                                                          string codigoAluno, int bimestre)
@@ -106,7 +100,7 @@ namespace SME.SGP.Aplicacao
                                 { DisciplinaId = Convert.ToInt32(x.DisciplinaId), TotalAulas = x.TotalAulas });
                         }
 
-                    var componenteCurricularDto = await MapearDto(frequenciasAluno, componenteCurricular, bimestre, registrosFrequenciaAluno,
+                    var componenteCurricularDto = await MapearDto(frequenciasAluno, componenteCurricular, bimestre,
                         turma.ModalidadeCodigo, turma.AnoLetivo, totalAulasComponentesNaoLancamNota,
                         totalCompensacoesComponentesNaoLancamNotas);
 
@@ -153,7 +147,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia, Modalidade modalidade, int anoLetivo, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoes)
+        private async Task<ConselhoDeClasseComponenteSinteseDto> MapearDto(IEnumerable<FrequenciaAluno> frequenciaAluno, DisciplinaResposta componenteCurricular, int bimestre, Modalidade modalidade, int anoLetivo, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacoes)
         {
             var dto = MapearDisciplinasDto(componenteCurricular);
             
