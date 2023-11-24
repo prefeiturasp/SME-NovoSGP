@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                     string.Empty,
                     request.CodigoDisciplina,
                     usuario.Login);
-                disciplinasDto = (await MapearParaDto(componentesCJ, request.TurmaPrograma))?.OrderBy(c => c.Nome)?.ToList();
+                disciplinasDto = (MapearParaDto(componentesCJ, request.TurmaPrograma))?.OrderBy(c => c.Nome)?.ToList();
             }
             else
             {
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
             return componentes;
         }
 
-        private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
+        private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
         {
             var retorno = new List<DisciplinaDto>();
 
@@ -154,13 +154,13 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var disciplina in disciplinas)
                 {
-                    retorno.Add(await MapearParaDto(disciplina, ensinoEspecial));
+                    retorno.Add(MapearParaDto(disciplina, ensinoEspecial));
                 }
             }
             return retorno;
         }
 
-        private async Task<DisciplinaDto> MapearParaDto(DisciplinaResposta disciplina, bool ensinoEspecial = false) => new DisciplinaDto()
+        private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool ensinoEspecial = false) => new DisciplinaDto()
         {
             Id = disciplina.Id,
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
@@ -173,7 +173,7 @@ namespace SME.SGP.Aplicacao
             RegistraFrequencia = disciplina.RegistroFrequencia,
             LancaNota = disciplina.LancaNota,
             PossuiObjetivos = consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular),
-            ObjetivosAprendizagemOpcionais = await consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial)
+            ObjetivosAprendizagemOpcionais = consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial)
         };
 
         private IEnumerable<DisciplinaResposta> TransformarListaDisciplinaEolParaRetornoDto(IEnumerable<DisciplinaDto> disciplinasEol)

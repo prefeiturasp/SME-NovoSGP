@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.ElasticSearch
                                                                                         parametro?.ToString());
 
             if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
 
             return response.Exists;
         }
@@ -87,7 +87,7 @@ namespace SME.SGP.Dados.ElasticSearch
                                                                                        parametro?.ToString());
 
             if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
 
             listaDeRetorno.AddRange(response.Documents);
 
@@ -118,7 +118,7 @@ namespace SME.SGP.Dados.ElasticSearch
                                                                                 parametro?.ToString());
 
             if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
 
             return response.Hits.Select(hit => hit.Source).ToList();
         }
@@ -153,7 +153,7 @@ namespace SME.SGP.Dados.ElasticSearch
                     JsonConvert.SerializeObject(entidade));
 
                 if (!response.IsValid)
-                    throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                    throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
             }
 
             return true;
@@ -190,7 +190,7 @@ namespace SME.SGP.Dados.ElasticSearch
                 indice);
 
             if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
         }
     }
 }

@@ -223,7 +223,6 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var turma in comunicadoDto.Turmas)
             {
-                //var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma));
                 var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(turma);
 
                 if (abrangenciaTurmas.EhNulo())

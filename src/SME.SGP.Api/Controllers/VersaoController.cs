@@ -18,7 +18,7 @@ namespace SME.SGP.Api.Controllers
 
         [HttpGet("ping-test")]
         [AllowAnonymous]
-        public async Task<IActionResult> TesteVelocidadePing()
+        public IActionResult TesteVelocidadePing()
         {
             return Ok();
         }

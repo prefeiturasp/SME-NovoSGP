@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,10 +15,11 @@ namespace SME.SGP.Aplicacao
             this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
         }
 
-        public async Task<bool> Handle(SalvarPendenciasAulasCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(SalvarPendenciasAulasCommand request, CancellationToken cancellationToken)
         {
             repositorioPendenciaAula.SalvarVarias(request.PendenciaId, request.AulasIds);
-            return true;
+            
+            return Task.FromResult(true);
         }
     }
 }

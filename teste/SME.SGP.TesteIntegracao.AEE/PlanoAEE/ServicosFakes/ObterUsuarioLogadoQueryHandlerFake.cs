@@ -10,9 +10,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterUsuarioLogadoQueryHandlerFake : IRequestHandler<ObterUsuarioLogadoQuery, Usuario>
     {
-        public async Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
+        public Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            return new Usuario()
+            return Task.FromResult(new Usuario()
             {
                 Id = 1,
                 CodigoRf = "4444444",
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-            };
+            });
         }
     }
 }

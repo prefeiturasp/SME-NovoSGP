@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Infra.Escopo
 {
-    public class WorkerServiceScope
+    public static class WorkerServiceScope
     {
         static WorkerServiceScope()
         {

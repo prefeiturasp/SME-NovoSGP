@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -271,16 +270,6 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTime.Now;
 
             return periodo.PeriodoInicio <= dataAtual && periodo.PeriodoFim >= dataAtual;
-        }
-
-        public async Task<PlanoAnualResumoDto> ObterPlanoAnualPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long disciplinaId)
-        {
-            var plano = repositorioPlanoAnual.ObterPlanoAnualSimplificadoPorAnoEscolaBimestreETurma(ano, escolaId, turmaId, bimestre, disciplinaId);
-            return plano.EhNulo() ? null : new PlanoAnualResumoDto()
-            {
-                Id = plano.Id,
-                ObjetivosAprendizagemOpcionais = plano.ObjetivosAprendizagemOpcionais
-            };
         }
     }
 }

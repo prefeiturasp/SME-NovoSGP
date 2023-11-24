@@ -1,12 +1,9 @@
-﻿using Dapper;
-using Npgsql;
+﻿using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -59,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
                });
         }
         
-        public async Task<bool> InserirVarios(IEnumerable<FrequenciaPreDefinida> registros)
+        public Task<bool> InserirVarios(IEnumerable<FrequenciaPreDefinida> registros)
         {
             var sql = @"copy frequencia_pre_definida (                                         
                                         componente_curricular_id, 
@@ -82,7 +79,7 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Complete();
             }
 
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

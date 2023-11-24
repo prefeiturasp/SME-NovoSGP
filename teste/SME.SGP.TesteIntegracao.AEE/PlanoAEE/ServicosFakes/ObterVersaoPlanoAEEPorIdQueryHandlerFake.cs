@@ -9,9 +9,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterVersaoPlanoAEEPorIdQueryHandlerFake : IRequestHandler<ObterVersaoPlanoAEEPorIdQuery, PlanoAEEVersaoDto>
     {
-        public async Task<PlanoAEEVersaoDto> Handle(ObterVersaoPlanoAEEPorIdQuery request, CancellationToken cancellationToken)
+        public Task<PlanoAEEVersaoDto> Handle(ObterVersaoPlanoAEEPorIdQuery request, CancellationToken cancellationToken)
         {
-            return new PlanoAEEVersaoDto()
+            return Task.FromResult(new PlanoAEEVersaoDto()
             {
                 Id = 1,
                 Numero = 1,
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 PlanoAEEId = 1
-            };
+            });
         }
     }
 }

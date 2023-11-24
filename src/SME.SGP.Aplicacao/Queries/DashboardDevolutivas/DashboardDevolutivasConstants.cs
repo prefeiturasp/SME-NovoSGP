@@ -2,6 +2,8 @@
 {
     internal class DashboardDevolutivasConstants
     {
+        protected DashboardDevolutivasConstants() { }
+
         internal const string QuantidadeComDevolutiva = "Qtd. com devolutiva";
         internal const string QuantidadeComDevolutivaPendente = "Qtd. com devolutiva pendente";
         internal const string QuantidadeDeDevolutivasEstimadas = "Qtd. estimativa de devolutivas";

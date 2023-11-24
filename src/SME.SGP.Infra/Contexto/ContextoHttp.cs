@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace SME.SGP.Infra.Contexto
 
         public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)
         {
-            throw new Exception("Este tipo de conexto não permite atribuição");
+            throw new NotImplementedException("Este tipo de conexto não permite atribuição");
         }
 
         public override void AdicionarVariaveis(IDictionary<string, object> variaveis)

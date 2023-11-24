@@ -10,7 +10,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterVersoesPlanoAEEQueryHandlerFake : IRequestHandler<ObterVersoesPlanoAEEQuery, IEnumerable<PlanoAEEVersaoDto>>
     {
-        public async Task<IEnumerable<PlanoAEEVersaoDto>> Handle(ObterVersoesPlanoAEEQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<PlanoAEEVersaoDto>> Handle(ObterVersoesPlanoAEEQuery request, CancellationToken cancellationToken)
         {
             var versoes = new List<PlanoAEEVersaoDto>()
             {
@@ -27,7 +27,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     PlanoAEEId = 1
                 }
             };
-            return versoes;
+
+            return Task.FromResult<IEnumerable<PlanoAEEVersaoDto>>(versoes);
         }
     }
 }
