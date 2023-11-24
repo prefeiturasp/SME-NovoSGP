@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
 
-            if (usuario.EhPerfilUE() || usuario.EhPerfilProfessor())
+            if (usuario.EhPerfilUE() || usuario.EhPerfilProfessor() || usuario.EhCCELP())
             {
                 var lstAbrangencia = new List<AbrangenciaFiltroRetorno>();
 
