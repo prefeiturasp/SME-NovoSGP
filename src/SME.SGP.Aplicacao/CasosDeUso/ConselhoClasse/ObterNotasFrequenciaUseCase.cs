@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             var turmaItinerarioPercurso = turma.EhTurmaPercurso() ? turma.CodigoTurma : "";
 
             var anoLetivo = turma.AnoLetivo;
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(notasFrequenciaDto.FechamentoTurmaId, notasFrequenciaDto.AlunoCodigo, notasFrequenciaDto.ConsideraHistorico));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(notasFrequenciaDto.FechamentoTurmaId, notasFrequenciaDto.AlunoCodigo));
             var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
 
             if (fechamentoTurma.NaoEhNulo())
