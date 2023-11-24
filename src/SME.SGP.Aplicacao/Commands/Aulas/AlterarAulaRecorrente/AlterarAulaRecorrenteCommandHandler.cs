@@ -47,7 +47,6 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarComponentesProfessor(AlterarAulaRecorrenteCommand aulaRecorrente)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aulaRecorrente.CodigoTurma));
-
             var componentesCurricularesDoProfessor = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aulaRecorrente.CodigoTurma, aulaRecorrente.Usuario.Login, aulaRecorrente.Usuario.PerfilAtual, turma.EhTurmaInfantil));
 
@@ -55,24 +54,49 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(aulaRecorrente.Usuario.Login));
-
-                if (componentesCurricularesDoProfessorCJ.EhNulo() || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == aulaRecorrente.CodigoTurma && c.DisciplinaId == aulaRecorrente.ComponenteCurricularId))
-                {
-                    if (componentesCurricularesDoProfessor.EhNulo() || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
-                        throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
-                }
+                ValidarProfCJSemPermissaoCriacaoAulas(componentesCurricularesDoProfessor, componentesCurricularesDoProfessorCJ, aulaRecorrente.CodigoTurma, aulaRecorrente.ComponenteCurricularId);
             }
             else
             {
-                if (componentesCurricularesDoProfessor.EhNulo() || !componentesCurricularesDoProfessor.Any(c => c.Codigo == aulaRecorrente.ComponenteCurricularId || c.CodigoComponenteTerritorioSaber == aulaRecorrente.ComponenteCurricularId))
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);                
-
-                var usuarioPodePersistirTurmaNaData = await mediator
-                    .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario));
-
-                if (!usuarioPodePersistirTurmaNaData)
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+                ValidarProfSemPermissaoCriacaoAulas(componentesCurricularesDoProfessor, aulaRecorrente.ComponenteCurricularId);
+                await ValidarUsuarioSemPermissaoTurmaDisciplina(aulaRecorrente.ComponenteCurricularId, aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, aulaRecorrente.Usuario);
             }
+        }
+
+        private async Task ValidarUsuarioSemPermissaoTurmaDisciplina(long componenteCurricularId, string codigoTurma, DateTime dataAula, Usuario usuario)
+        {
+            var usuarioPodePersistirTurmaNaData = await mediator
+                    .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, codigoTurma, dataAula, usuario));
+
+            if (!usuarioPodePersistirTurmaNaData)
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+        }
+
+        private void ValidarProfSemPermissaoCriacaoAulas(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor,
+                                                         long componenteCurricularId)
+        {
+            if (!ContemComponenteCurricularProfTurmaDisciplina(componentesCurricularesDoProfessor, componenteCurricularId))
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+        }
+
+        private void ValidarProfCJSemPermissaoCriacaoAulas(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor,
+                                                           IEnumerable<AtribuicaoCJ> atribuicoesProfessorCJ, string codigoTurma, long componenteCurricularId)
+        {
+            if (!ContemComponenteCurricularProfCJTurmaDisciplina(atribuicoesProfessorCJ, codigoTurma, componenteCurricularId))
+                if (!ContemComponenteCurricularProfTurmaDisciplina(componentesCurricularesDoProfessor, componenteCurricularId))
+                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+        }
+
+        private bool ContemComponenteCurricularProfTurmaDisciplina(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor, long componenteCurricularId)
+        {
+            return componentesCurricularesDoProfessor.NaoEhNulo() &&
+                   componentesCurricularesDoProfessor.Any(c => c.Codigo == componenteCurricularId || c.CodigoComponenteTerritorioSaber == componenteCurricularId);
+        }
+
+        private bool ContemComponenteCurricularProfCJTurmaDisciplina(IEnumerable<AtribuicaoCJ> atribuicoesProfessorCJ, string codigoTurma, long componenteCurricularId)
+        {
+            return atribuicoesProfessorCJ.NaoEhNulo() &&
+                  atribuicoesProfessorCJ.Any(c => c.TurmaId == codigoTurma && c.DisciplinaId == componenteCurricularId);
         }
 
         private async Task AlterarRecorrencia(AlterarAulaRecorrenteCommand request, Aula aulaOrigem, Turma turma)
