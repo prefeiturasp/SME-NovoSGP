@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -36,7 +35,6 @@ namespace SME.SGP.Aplicacao
                             IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
                             IServicoAluno servicoAluno,
                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo, 
-                            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IServicoUsuario servicoUsuario,
                             IConsultasDisciplina consultasDisciplina, IConsultasPeriodoFechamento consultasPeriodoFechamento,
                             IMediator mediator)
         {
@@ -47,7 +45,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoNota));
             this.servicoAluno = servicoAluno ?? throw new System.ArgumentNullException(nameof(servicoAluno));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new System.ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
-            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new System.ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));

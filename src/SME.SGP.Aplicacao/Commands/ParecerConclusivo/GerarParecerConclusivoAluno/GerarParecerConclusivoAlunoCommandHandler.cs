@@ -35,8 +35,8 @@ namespace SME.SGP.Aplicacao
                 historico = alunoNaTurma.Inativo;
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null,
-                    historico))
+            if (turma.EhCELP() || 
+                !await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, historico))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma);
