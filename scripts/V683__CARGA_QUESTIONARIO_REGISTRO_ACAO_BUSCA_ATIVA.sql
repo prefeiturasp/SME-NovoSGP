@@ -21,7 +21,7 @@ begin
 		
 	--Conseguiu contato com o responsável?
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 2, 'Conseguiu contato com o responsável?', '', true, 5, '', NOW(), 'SISTEMA', '0', 6, '', 'CONSEGUIU_CONTATO_RESP')
+		values(questionarioId, 2, 'Conseguiu contato com o responsável?', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'CONSEGUIU_CONTATO_RESP')
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0')
@@ -31,7 +31,7 @@ begin
 	
 	--Procedimento realizado	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 3, 'Procedimento realizado:', '', true, 5, '', NOW(), 'SISTEMA', '0', 6, '', 'PROCEDIMENTO_REALIZADO')
+		values(questionarioId, 3, 'Procedimento realizado:', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'PROCEDIMENTO_REALIZADO')
 		RETURNING id INTO questaoId;
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 1, 'Ligação telefonica', NOW(), 'SISTEMA', '0');
@@ -41,7 +41,7 @@ begin
 		
 	--O contato ocorreu com o responsável pela criança?
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 1, 'O contato ocorreu com o responsável pela criança?', '', true, 5, '', NOW(), 'SISTEMA', '0', 6, '', 'CONTATO_COM_RESPONSAVEL')
+		values(questionarioId, 1, 'O contato ocorreu com o responsável pela criança?', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'CONTATO_COM_RESPONSAVEL')
 		RETURNING id INTO questaoId;
 	insert into opcao_questao_complementar (opcao_resposta_id, questao_complementar_id, criado_em, criado_por, criado_rf)
 		values(opcaoresposta_sim_conseguiu_contato, questaoId, NOW(), 'SISTEMA', '0');
@@ -52,7 +52,7 @@ begin
 		
 	--Após a ligação/visita a criança retornou para escola?	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 2, 'Após a ligação/visita a criança retornou para escola?', '', true, 5, '', NOW(), 'SISTEMA', '0', 6, '', 'APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA')
+		values(questionarioId, 2, 'Após a ligação/visita a criança retornou para escola?', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, '', 'APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA')
 		RETURNING id INTO questaoId;
 	insert into opcao_questao_complementar (opcao_resposta_id, questao_complementar_id, criado_em, criado_por, criado_rf)
 		values(opcaoresposta_sim_conseguiu_contato, questaoId, NOW(), 'SISTEMA', '0');
