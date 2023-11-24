@@ -378,7 +378,7 @@ namespace SME.SGP.Aplicacao
             foreach (var d in disciplinasEol)
             {
                 d.Professor = professoresTitulares
-                    .FirstOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
+                    .FirstOrDefault(pt => pt.DisciplinasId().Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
 
                 if (!string.IsNullOrWhiteSpace(d.Professor))
                 {

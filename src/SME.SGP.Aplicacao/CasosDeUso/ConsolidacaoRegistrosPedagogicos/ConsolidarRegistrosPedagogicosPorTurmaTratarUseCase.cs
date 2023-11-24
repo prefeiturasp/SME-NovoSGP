@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagemRabbit.ObterObjetoMensagem<FiltroConsolidacaoRegistrosPedagogicosPorTurmaDto>();
             var componentesCurriculares = (from ptd in filtro.ProfessorTitularDisciplinaEols
-                                           from d in ptd.DisciplinasId
+                                           from d in ptd.DisciplinasId()
                                            select d).ToArray();
 
             var consolidacoes = await mediator.Send(new ObterConsolidacaoRegistrosComSeparacaoDiarioBordoQuery(filtro.TurmaCodigo, 
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (consolidacao.ModalidadeCodigo == (int)Modalidade.EducacaoInfantil)
                 {
-                    var professor = filtro.ProfessorTitularDisciplinaEols.FirstOrDefault(c => c.DisciplinasId.Contains(consolidacao.ComponenteCurricularId));
+                    var professor = filtro.ProfessorTitularDisciplinaEols.FirstOrDefault(c => c.DisciplinasId().Contains(consolidacao.ComponenteCurricularId));
 
                     if (!string.IsNullOrEmpty(professor.ProfessorRf))
                     {

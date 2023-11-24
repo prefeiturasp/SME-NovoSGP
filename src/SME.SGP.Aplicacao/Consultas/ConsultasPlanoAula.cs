@@ -11,34 +11,16 @@ namespace SME.SGP.Aplicacao.Consultas
 {
     public class ConsultasPlanoAula : IConsultasPlanoAula
     {
-        private readonly IConsultasAula consultasAula;
-        private readonly IConsultasObjetivoAprendizagemAula consultasObjetivosAula;
-        private readonly IConsultasPlanoAnual consultasPlanoAnual;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioPlanoAula repositorio;
-        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
         private readonly IMediator mediator;
 
         public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
-                                IConsultasPlanoAnual consultasPlanoAnual,
-                                IConsultasObjetivoAprendizagemAula consultasObjetivosAprendizagemAula,
-                                IConsultasAula consultasAula,
-                                IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                                 IServicoUsuario servicoUsuario,
-                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
                                 IMediator mediator)
         {
             this.repositorio = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
-            this.consultasObjetivosAula = consultasObjetivosAprendizagemAula ?? throw new ArgumentNullException(nameof(consultasObjetivosAprendizagemAula));
-            this.consultasPlanoAnual = consultasPlanoAnual ?? throw new ArgumentNullException(nameof(consultasPlanoAnual));
-            this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
-            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

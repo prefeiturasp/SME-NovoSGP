@@ -15,12 +15,10 @@ namespace SME.SGP.Aplicacao
  
     public class ObterQuestoesObrigatoriasNaoRespondidasQueryHandler : IRequestHandler<ObterQuestoesObrigatoriasNaoRespondidasQuery, IEnumerable<QuestaoObrigatoriaNaoRespondidaDto>>
     {
-        private readonly IRepositorioQuestionario repositorioQuestionario;
         private readonly IMediator mediator;
 
-        public ObterQuestoesObrigatoriasNaoRespondidasQueryHandler(IMediator mediator, IRepositorioQuestionario repositorioQuestionario)
+        public ObterQuestoesObrigatoriasNaoRespondidasQueryHandler(IMediator mediator)
         {
-            this.repositorioQuestionario = repositorioQuestionario ?? throw new ArgumentNullException(nameof(repositorioQuestionario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

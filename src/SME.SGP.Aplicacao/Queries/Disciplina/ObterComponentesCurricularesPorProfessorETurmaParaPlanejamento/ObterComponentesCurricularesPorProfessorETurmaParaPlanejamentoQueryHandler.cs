@@ -20,7 +20,6 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema;
         private readonly IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem;
 
@@ -28,14 +27,12 @@ namespace SME.SGP.Aplicacao
                                                            IMediator mediator,
                                                            IRepositorioCache repositorioCache,
                                                            IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-                                                           IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                            IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
                                                            IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioComponenteCurricularJurema = repositorioComponenteCurricularJurema ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricularJurema));
             this.consultasObjetivoAprendizagem = consultasObjetivoAprendizagem ?? throw new System.ArgumentNullException(nameof(consultasObjetivoAprendizagem));
         }
@@ -62,7 +59,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesJurema = await repositorioCache.ObterAsync(NomeChaveCache.COMPONENTES_JUREMA, () => Task.FromResult(repositorioComponenteCurricularJurema.Listar()));
             if (componentesCurricularesJurema.EhNulo())
             {
-                throw new NegocioException("Não foi possível recuperar a lista de componentes curriculares.");
+                throw new NegocioException("Não foi possível recuperar a lista de componentes   curriculares.");
             }
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.CodigoTurma));
