@@ -229,34 +229,16 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<(Aula aula, long? planoAulaId)>> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
             var lista = new List<(Aula aula, long? planoAulaId)>();
-            if (diasLetivos.NaoEhNulo() && diasLetivos.Any())
+            if (diasLetivos.PossuiRegistros())
             {
-                for (int d = 0; d < diasLetivos.Count; d++)
+                foreach (var diaLetivo in diasLetivos)
                 {
-                    var diaLetivo = diasLetivos.ElementAt(d);
-
                     if (lista.Select(l => l.aula.DataAula.Date).Contains(diaLetivo.Data.Date)) continue;
 
-                    var aulaExcluida = aulasCriadasPeloSistema
-                        .Where(a => a.DataAula.Date.Equals(diaLetivo.Data.Date) && a.Excluido)
-                        .OrderByDescending(a => a.CriadoEm)
-                        .ThenBy(a => a.DadosComplementares.PossuiFrequencia)
-                        .ThenBy(a => !a.DadosComplementares.RegistroFrequenciaExcluido)
-                        .FirstOrDefault();
-
+                    var aulaExcluida = ObterAulaExcluidaDiaLetivo(aulasCriadasPeloSistema, diaLetivo);
                     if (aulaExcluida.NaoEhNulo())
                     {
-                        var aulaComPlano = (from a in aulasCriadasPeloSistema
-                                            where a.DataAula.Date.Equals(diaLetivo.Data) &&
-                                                 !aulaExcluida.DadosComplementares.PossuiPlanoAula &&
-                                                 a.Excluido &&
-                                                 a.DadosComplementares.PossuiPlanoAula &&
-                                                 !a.Id.Equals(aulaExcluida.Id)
-                                            select a)
-                                            .OrderByDescending(a => a.CriadoEm)
-                                            .FirstOrDefault();
-
-                        var planoAula = aulaComPlano.NaoEhNulo() ? (await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComPlano.Id))) : null;
+                        var planoAula = await ObterPlanoAulaExcluidaDiaLetivo(aulasCriadasPeloSistema, aulaExcluida, diaLetivo);
                         lista.Add((aulaExcluida, planoAula?.Id));
                     }
                     else
@@ -279,6 +261,30 @@ namespace SME.SGP.Aplicacao
             }
 
             return lista;
+        }
+
+        private Aula ObterAulaExcluidaDiaLetivo(IEnumerable<Aula> aulasCriadasPeloSistema, DiaLetivoDto diaLetivo)
+        {
+            return aulasCriadasPeloSistema
+                        .Where(a => a.DataAula.Date.Equals(diaLetivo.Data.Date) && a.Excluido)
+                        .OrderByDescending(a => a.CriadoEm)
+                        .ThenBy(a => a.DadosComplementares.PossuiFrequencia)
+                        .ThenBy(a => !a.DadosComplementares.RegistroFrequenciaExcluido)
+                        .FirstOrDefault();
+        }
+        private async Task<PlanoAula> ObterPlanoAulaExcluidaDiaLetivo(IEnumerable<Aula> aulasCriadasPeloSistema, Aula aula, DiaLetivoDto diaLetivo)
+        {
+            var aulaComPlano = (from a in aulasCriadasPeloSistema
+                                where a.DataAula.Date.Equals(diaLetivo.Data) &&
+                                     !aula.DadosComplementares.PossuiPlanoAula &&
+                                     a.Excluido &&
+                                     a.DadosComplementares.PossuiPlanoAula &&
+                                     !a.Id.Equals(aula.Id)
+                                select a)
+                                            .OrderByDescending(a => a.CriadoEm)
+                                            .FirstOrDefault();
+
+            return aulaComPlano.NaoEhNulo() ? (await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComPlano.Id))) : null;
         }
     }
 }
