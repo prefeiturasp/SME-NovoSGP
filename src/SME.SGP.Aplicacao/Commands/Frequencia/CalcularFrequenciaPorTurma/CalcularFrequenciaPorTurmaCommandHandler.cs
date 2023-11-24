@@ -235,7 +235,7 @@ namespace SME.SGP.Aplicacao
             if (frequenciasParaPersistir.NaoEhNulo() && frequenciasParaPersistir.Any())
             {
                 if (frequenciasParaPersistir.Any(a => a.FrequenciaNegativa()))
-                    throw new Exception($"Erro ao calcular frequencia da turma {frequenciasParaPersistir.First().TurmaId} : Número de ausências maior do que o número de aulas");
+                    throw new NegocioException($"Erro ao calcular frequencia da turma {frequenciasParaPersistir.First().TurmaId} : Número de ausências maior do que o número de aulas");
 
                 foreach (var frequenciaAluno in frequenciasParaPersistir)
                     await repositorioFrequenciaAlunoDisciplinaPeriodo.SalvarAsync(frequenciaAluno);

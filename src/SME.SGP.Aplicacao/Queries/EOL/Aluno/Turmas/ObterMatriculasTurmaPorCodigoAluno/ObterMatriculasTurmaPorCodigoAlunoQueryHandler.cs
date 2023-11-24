@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                     string respostaHttp = $"HttpCode {(int)resposta.StatusCode} - HttpMessage: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
                     var httpContentResult = (await resposta?.Content?.ReadAsStringAsync())?.ToString();
                     var respostaErro = (resposta?.Content).NaoEhNulo() ? httpContentResult : respostaHttp;
-                    throw new Exception(respostaErro);
+                    throw new ErroInternoException(respostaErro);
                 }
             }
             catch (Exception e)

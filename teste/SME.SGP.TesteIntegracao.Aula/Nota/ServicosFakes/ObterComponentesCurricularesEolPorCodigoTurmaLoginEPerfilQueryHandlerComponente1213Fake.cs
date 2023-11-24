@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
 {
-        public class ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerComponente1213Fake : IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>
+    public class ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerComponente1213Fake : IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>
+    {
+        public Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
-            public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
-            {
-                return new List<ComponenteCurricularEol>()
+            var componentes = new List<ComponenteCurricularEol>()
             {
                 new ComponenteCurricularEol()
                 {
@@ -19,6 +19,8 @@ namespace SME.SGP.TesteIntegracao.Nota.ServicosFakes
                     TerritorioSaber = false
                 }
             };
-            }
+
+            return Task.FromResult<IEnumerable<ComponenteCurricularEol>>(componentes);
         }
     }
+}

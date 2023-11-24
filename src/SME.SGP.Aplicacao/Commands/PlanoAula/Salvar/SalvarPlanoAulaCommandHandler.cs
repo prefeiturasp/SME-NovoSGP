@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
                                                    usuario.EhProfessorCj() ||  // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
                                                    periodoEscolar.TipoCalendario.AnoLetivo < DateTime.Now.Year || // Para anos anteriores não obrigatória seleção de objetivos
                                                    !possuiObjetivos || // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
-                                                   turma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
+                                                   turma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos
 
                     if (!permitePlanoSemObjetivos)
                         throw new NegocioException(MensagemNegocioPlanoAula.OBRIGATORIO_SELECIONAR_OBJETIVOS_APRENDIZAGEM);

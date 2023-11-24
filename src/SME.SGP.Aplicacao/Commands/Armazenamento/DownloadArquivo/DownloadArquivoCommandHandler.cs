@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
             var nomeArquivoComExtensao = $"{request.Codigo}{extensao}";
 
-            var enderecoArquivo = await servicoArmazenamento.Obter(nomeArquivoComExtensao, request.Tipo == TipoArquivo.temp);
+            var enderecoArquivo = servicoArmazenamento.Obter(nomeArquivoComExtensao, request.Tipo == TipoArquivo.temp);
 
             if (!string.IsNullOrEmpty(enderecoArquivo))
             {

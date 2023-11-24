@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             catch (PostgresException ex)
             {
                 await LogarExcecao(ex);
-                throw new Exception("Erro ao salvar o conselho de classe do aluno.");
+                throw new ErroInternoException("Erro ao salvar o conselho de classe do aluno.");
             }
 
             await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);

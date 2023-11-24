@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Enumerados;
@@ -70,7 +69,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception)
             {
-                throw new Exception($"Erro na remoção de atribuição de Pendência Perfil Usuário por UE.");
+                throw new NegocioException($"Erro na remoção de atribuição de Pendência Perfil Usuário por UE.");
             }
             return true;
         }

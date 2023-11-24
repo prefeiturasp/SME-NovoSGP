@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao.Commands
             }
             catch (Exception e)
             {
-                throw new Exception($"Erro ao salvar evento da itinerância: {e.Message}");
+                throw new ErroInternoException($"Erro ao salvar evento da itinerância: {e.Message}");
             }        
         }
 

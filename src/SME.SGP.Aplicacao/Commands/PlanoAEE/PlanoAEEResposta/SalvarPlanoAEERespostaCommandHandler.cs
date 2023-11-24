@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Commands
             {
                 ConveterRespostaPeriodoEmDatas(request, resposta);
 
-                await ValidarIntervaloDeDatas(resposta, request.PlanoId);
+                ValidarIntervaloDeDatas(resposta, request.PlanoId);
             }
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Commands
             resposta.PeriodoInicio = DateTime.Parse(periodos[0]).Date;
             resposta.PeriodoFim = DateTime.Parse(periodos[1]).Date;
         }
-        private async Task ValidarIntervaloDeDatas(PlanoAEEResposta resposta, long planoId)
+        private void ValidarIntervaloDeDatas(PlanoAEEResposta resposta, long planoId)
         {
             // Data inicial deve ser menor que a data final
             if (resposta.PeriodoInicio.Value > resposta.PeriodoFim.Value)

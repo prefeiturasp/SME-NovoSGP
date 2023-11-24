@@ -1,7 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Infra.Interface;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,11 +13,9 @@ namespace SME.SGP.Aplicacao
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
         } 
 
-        public async Task<string> Executar(string nomeArquivo, bool ehPastaTemporaria)
+        public string Executar(string nomeArquivo, bool ehPastaTemporaria)
         {
-            var retorno = await servicoArmazenamento.Obter(nomeArquivo,ehPastaTemporaria);
-            
-            return retorno;
+            return servicoArmazenamento.Obter(nomeArquivo,ehPastaTemporaria);
         }
     }
 }
