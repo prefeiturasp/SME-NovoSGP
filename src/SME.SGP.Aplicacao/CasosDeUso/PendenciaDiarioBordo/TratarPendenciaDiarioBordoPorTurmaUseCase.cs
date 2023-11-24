@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                         var codigoRfProfessor = professor.Trim();
                         if (!string.IsNullOrEmpty(codigoRfProfessor))
                         {
-                            professoresEComponentes.AddRange(professorDaTurma.DisciplinasId
+                            professoresEComponentes.AddRange(professorDaTurma.DisciplinasId()
                                 .Select(disciplinaId => new ProfessorEComponenteInfantilDto()
                             {
                                 CodigoRf = codigoRfProfessor,

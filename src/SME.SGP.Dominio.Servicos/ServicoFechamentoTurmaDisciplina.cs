@@ -37,8 +37,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IServicoUsuario servicoUsuario;        
         private readonly IRepositorioCache repositorioCache;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
@@ -52,7 +51,6 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioFechamentoAlunoConsulta repositorioFechamentoAlunoConsulta,
                                                 IRepositorioFechamentoAluno repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
-                                                IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                 IRepositorioTurmaConsulta repositorioTurma,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
                                                 IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -89,7 +87,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

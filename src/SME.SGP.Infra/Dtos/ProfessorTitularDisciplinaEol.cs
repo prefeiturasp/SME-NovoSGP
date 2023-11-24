@@ -8,10 +8,9 @@ namespace SME.SGP.Infra
 
         [JsonProperty("disciplinas_Id")]
         public string CodigosDisciplinas { get; set; }
-        public long[] DisciplinasId => string.IsNullOrEmpty(CodigosDisciplinas) ?
+        public long[] DisciplinasId() => string.IsNullOrEmpty(CodigosDisciplinas) ?
                                        Enumerable.Empty<long>().ToArray() :
                                        CodigosDisciplinas.Split(",").Select(x => long.Parse(x)).ToArray();
-
         [JsonProperty("disciplina")]
         public string DisciplinaNome { get; set; }
 
@@ -22,6 +21,6 @@ namespace SME.SGP.Infra
         public string ProfessorRf { get; set; }
 
         [JsonProperty("turma_id")]
-        public long TurmaId { get; set; }
+        public long TurmaId { get; set; }      
     }
 }

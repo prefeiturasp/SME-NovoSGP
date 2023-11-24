@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ConsultasWorkflowAprovacao : IConsultasWorkflowAprovacao
     {
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
-        private readonly IMediator mediator;
 
-        public ConsultasWorkflowAprovacao(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao, IMediator mediator)
+        public ConsultasWorkflowAprovacao(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<List<WorkflowAprovacaoTimeRespostaDto>> ObtemTimelinePorCodigoNotificacao(long notificacaoId)

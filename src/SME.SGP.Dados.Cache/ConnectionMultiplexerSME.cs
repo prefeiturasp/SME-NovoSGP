@@ -26,9 +26,11 @@ namespace SME.SGP.Infra.Contexto
             }
             catch (RedisConnectionException rcex)
             {
+                //Ignorar exceção
             }
             catch (Exception ex)
             {
+                //Ignorar exceção
             }
         }
 

@@ -18,14 +18,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAbrangencia repositorioAbrangencia;
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
-        private readonly IMediator mediator;
 
         public string CodigoUe { get; }
-        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IMediator mediator)
+        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQueryHandler(IRepositorioAbrangencia repositorioAbrangencia, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<IEnumerable<OpcaoDropdownDto>> Handle(ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery request, CancellationToken cancellationToken)
         {

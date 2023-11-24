@@ -19,7 +19,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -31,7 +30,6 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                             IRepositorioFrequenciaConsulta repositorioFrequencia,
-                                            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                             IRepositorioTurmaConsulta repositorioTurma,
                                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
@@ -51,7 +49,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
