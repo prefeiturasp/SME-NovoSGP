@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
 
-        public ExisteConselhoClasseUltimoBimestreQueryHandler(IMediator mediator,IConsultasPeriodoEscolar consultasPeriodoEscolar,IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
+        public ExisteConselhoClasseUltimoBimestreQueryHandler(IMediator mediator,IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
         }
         

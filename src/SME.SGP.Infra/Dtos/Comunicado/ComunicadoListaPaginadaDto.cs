@@ -1,6 +1,8 @@
-﻿using SME.SGP.Dominio;
+﻿using Newtonsoft.Json.Linq;
+using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace SME.SGP.Infra
@@ -13,15 +15,5 @@ namespace SME.SGP.Infra
         public DateTime DataExpiracao { get; set; }
         public int[] ModalidadeCodigo { get; set; }
         public int[] TipoEscolaCodigo { get; set; }
-        public List<Modalidade> Modalidades => ModalidadeCodigo.Length > 0 
-                ?
-                ModalidadeCodigo.Select(a => (Modalidade)a).ToList()
-                :
-                default;
-
-        public string Modalidade
-        {
-            get => string.Join(", ", Modalidades.Select(c => c.ShortName()));
-        }        
     }
 }

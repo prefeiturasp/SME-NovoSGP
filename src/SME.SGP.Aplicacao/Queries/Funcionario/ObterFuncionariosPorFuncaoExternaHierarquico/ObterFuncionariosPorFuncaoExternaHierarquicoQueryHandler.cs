@@ -16,12 +16,10 @@ namespace SME.SGP.Aplicacao
     public class ObterFuncionariosPorFuncaoExternaHierarquicoQueryHandler : IRequestHandler<ObterFuncionariosPorFuncaoExternaHierarquicoQuery, IEnumerable<FuncionarioFuncaoExternaDTO>>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
 
-        public ObterFuncionariosPorFuncaoExternaHierarquicoQueryHandler(IMediator mediator, IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
+        public ObterFuncionariosPorFuncaoExternaHierarquicoQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
         public async Task<IEnumerable<FuncionarioFuncaoExternaDTO>> Handle(ObterFuncionariosPorFuncaoExternaHierarquicoQuery request, CancellationToken cancellationToken)

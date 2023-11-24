@@ -74,10 +74,10 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var bimestre in consolidacaoAgrupado.Select(c => c.PeriodoEscolarId).Distinct())
                     {
-                        foreach (var professor in professoresDaTurma.GroupBy(pt => pt.DisciplinasId))
+                        foreach (var professor in professoresDaTurma.GroupBy(pt => pt.DisciplinasId()))
                         {
                             var dadosProfessor = professor.FirstOrDefault();
-                            bool possuiConsolidacaoParaADisciplina = consolidacaoAgrupado.Any(p => dadosProfessor.DisciplinasId.Contains(p.ComponenteCurricularId) && p.PeriodoEscolarId == bimestre);
+                            bool possuiConsolidacaoParaADisciplina = consolidacaoAgrupado.Any(p => dadosProfessor.DisciplinasId().Contains(p.ComponenteCurricularId) && p.PeriodoEscolarId == bimestre);
 
                             if (possuiConsolidacaoParaADisciplina)
                             {
@@ -85,10 +85,10 @@ namespace SME.SGP.Aplicacao
                                 string rfProfessor = string.Empty;
                                 bool possui2Professores = false;
 
-                                var consolidacao = consolidacaoAgrupado.FirstOrDefault(c => dadosProfessor.DisciplinasId.Contains(c.ComponenteCurricularId) && c.PeriodoEscolarId == bimestre);
-                                var consolidacaoInfantil = consolidacaoAgrupado.Where(c => dadosProfessor.DisciplinasId.Contains(c.ComponenteCurricularId) && c.PeriodoEscolarId == bimestre);
+                                var consolidacao = consolidacaoAgrupado.FirstOrDefault(c => dadosProfessor.DisciplinasId().Contains(c.ComponenteCurricularId) && c.PeriodoEscolarId == bimestre);
+                                var consolidacaoInfantil = consolidacaoAgrupado.Where(c => dadosProfessor.DisciplinasId().Contains(c.ComponenteCurricularId) && c.PeriodoEscolarId == bimestre);
 
-                                var dadosProfessorTitularDisciplina = professoresDaTurma.Where(p => p.DisciplinasId.Contains(consolidacao.ComponenteCurricularId))
+                                var dadosProfessorTitularDisciplina = professoresDaTurma.Where(p => p.DisciplinasId().Contains(consolidacao.ComponenteCurricularId))
                                                             .Select(pt => new ProfessorTitularDisciplinaDto()
                                                             {
                                                                 RFProfessor = pt.ProfessorRf,
@@ -187,7 +187,7 @@ namespace SME.SGP.Aplicacao
                                     TurmaId = dadosConsolidadosTurma.TurmaId,
                                     PeriodoEscolarId = bimestre,
                                     AnoLetivo = dadosConsolidadosTurma.AnoLetivo,
-                                    ComponenteCurricularId = dadosProfessor.DisciplinasId.First(),
+                                    ComponenteCurricularId = dadosProfessor.DisciplinasId().First(),
                                     QuantidadeAulas = 0,
                                     FrequenciasPendentes = 0,
                                     DataUltimaFrequencia = null,

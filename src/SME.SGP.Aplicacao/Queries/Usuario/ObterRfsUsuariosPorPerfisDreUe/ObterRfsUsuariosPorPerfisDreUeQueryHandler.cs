@@ -19,15 +19,12 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterRfsUsuariosPorPerfisDreUeQueryHandler : IRequestHandler<ObterRfsUsuariosPorPerfisDreUeQuery, string[]>
     {
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
         private readonly IHttpClientFactory httpClientFactory;
 
-        public ObterRfsUsuariosPorPerfisDreUeQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, 
-                                                              IMediator mediator,
+        public ObterRfsUsuariosPorPerfisDreUeQueryHandler(IMediator mediator,
                                                               IHttpClientFactory httpClientFactory)
         {
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }

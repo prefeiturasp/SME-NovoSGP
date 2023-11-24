@@ -15,12 +15,10 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioPendenciaAulaConsulta : IRepositorioPendenciaAulaConsulta
     {
         private readonly ISgpContextConsultas database;
-        private readonly IRepositorioDreConsulta repositorioDre;
 
-        public RepositorioPendenciaAulaConsulta(ISgpContextConsultas database, IRepositorioDreConsulta repositorioDre)
+        public RepositorioPendenciaAulaConsulta(ISgpContextConsultas database)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo,bool exibirRegistroSemPendencia = true)
@@ -193,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
             if(exibirRegistroSemPendencia)
                 sqlQuery += "  and p.id is null ";
 
-                if (ueId > 0)
+            if (ueId > 0)
                 sqlQuery += " and u.id = @ueId";
 
             return await database.Conexao

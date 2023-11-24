@@ -36,9 +36,9 @@ namespace SME.SGP.Aplicacao
             var listaProfessorDisciplina = new List<ProfessorTitularDisciplinaEol>();
             foreach (var disciplina in disciplinas)
             {
-                if (professoresTitularesEol.Any(p => p.DisciplinasId.Contains(disciplina.CodigoComponenteCurricular)))
+                if (professoresTitularesEol.Any(p => p.DisciplinasId().Contains(disciplina.CodigoComponenteCurricular)))
                 {
-                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinasId.Contains(disciplina.CodigoComponenteCurricular));
+                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinasId().Contains(disciplina.CodigoComponenteCurricular));
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
                         CodigosDisciplinas = disciplina.Id.ToString(),
@@ -68,12 +68,12 @@ namespace SME.SGP.Aplicacao
 
             foreach (var disciplinaProfessorTitular in professoresTitularesDisciplinasEol)
             {
-                var atribuicao = listaAtribuicoes.FirstOrDefault(b => disciplinaProfessorTitular.DisciplinasId.Contains(b.DisciplinaId));
+                var atribuicao = listaAtribuicoes.FirstOrDefault(b => disciplinaProfessorTitular.DisciplinasId().Contains(b.DisciplinaId));
 
                 listaRetorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
                 {
                     Disciplina = disciplinaProfessorTitular.DisciplinaNome,
-                    DisciplinaId = disciplinaProfessorTitular.DisciplinasId.First(),
+                    DisciplinaId = disciplinaProfessorTitular.DisciplinasId().First(),
                     ProfessorTitular = disciplinaProfessorTitular.ProfessorNome,
                     ProfessorTitularRf = disciplinaProfessorTitular.ProfessorRf,
                     Substituir = atribuicao is {Substituir: true}
