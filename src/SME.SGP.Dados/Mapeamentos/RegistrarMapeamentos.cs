@@ -237,6 +237,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new InformativoPerfilMap());
                config.AddMap(new CadastroAcessoABAEMap());
                config.AddMap(new InformativoNotificacaoMap());
+               config.AddMap(new SecaoRegistroAcaoBuscaAtivaMap());
+               config.AddMap(new RegistroAcaoBuscaAtivaMap());
+               config.AddMap(new RegistroAcaoBuscaAtivaSecaoMap());
+               config.AddMap(new QuestaoRegistroAcaoBuscaAtivaMap());
+               config.AddMap(new RespostaRegistroAcaoBuscaAtivaMap());
+
 
                config.ForDommel();
            });
