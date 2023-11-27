@@ -105,6 +105,17 @@ namespace SME.SGP.Aplicacao
             var disciplinaEOL = await consultasDisciplina.ObterDisciplina(filtros.DisciplinaCodigo);
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
 
+            var periodoFechamentoFinal = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendario.Id, turma.EhTurmaInfantil, turma.EhEJA() ? 2 : 4));
+
+            if(periodoFechamentoFinal.EhNulo())
+                throw new NegocioException("Não foi possível localizar o período de fechamento final para essa turma.");
+
+            var datasFechamentoFinal = new PeriodoEscolar()
+            {
+                PeriodoInicio = periodoFechamentoFinal.InicioDoFechamento,
+                PeriodoFim = periodoFechamentoFinal.FinalDoFechamento
+            };
+
             if (filtros.EhRegencia)
             {
                 var disciplinasRegencia = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
@@ -204,7 +215,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(ultimoPeriodoEscolar) : false;
+                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(datasFechamentoFinal) : false;
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
