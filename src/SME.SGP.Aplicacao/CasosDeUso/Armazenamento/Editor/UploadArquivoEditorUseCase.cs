@@ -13,11 +13,11 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<RetornoArquivoEditorDto> Executar(IFormFile file,string caminho, TipoArquivo tipoArquivo = TipoArquivo.Geral)
+        public async Task<RetornoArquivoEditorDto> Executar(IFormFile arquivo,string caminho, TipoArquivo tipoArquivo = TipoArquivo.Geral)
         {
-            var resposta = await mediator.Send(new UploadArquivoCommand(file, tipoArquivo));
+            var resposta = await mediator.Send(new UploadArquivoCommand(arquivo, tipoArquivo));
             
-            var fileName = $"{resposta.Codigo}{Path.GetExtension(file.FileName)}";
+            var fileName = $"{resposta.Codigo}{Path.GetExtension(arquivo.FileName)}";
 
             return new RetornoArquivoEditorDto()
             {
@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                     Message = "",
                     Error = "",
                     Path = $"{resposta.Path}",
-                    ContentType = file.ContentType
+                    ContentType = arquivo.ContentType
                 }
             };
         }

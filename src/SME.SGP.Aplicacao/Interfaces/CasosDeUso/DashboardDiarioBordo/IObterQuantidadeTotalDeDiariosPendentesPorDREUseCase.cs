@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterQuantidadeTotalDeDiariosPendentesPorDREUseCase
     {
-        Task<IEnumerable<GraficoTotalDiariosEDevolutivasPorDreDTO>> Executar(int anoLetivo, string ano = "");
+        Task<IEnumerable<GraficoTotalDiariosEDevolutivasPorDreDTO>> Executar(int anoLetivo, string ano);
     }
 }

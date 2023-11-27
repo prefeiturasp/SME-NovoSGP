@@ -16,11 +16,6 @@ namespace SME.SGP.Benchmarks
 
         private SgpContext ObterConexao()
         {
-            //IConfigurationRoot configuration = new ConfigurationBuilder()
-            //.AddEnvironmentVariables()
-            //.Build();
-
-            //return new SgpContext(configuration, new ContextoBenchmark());
             return default;
         }
         [GlobalSetup]
@@ -38,8 +33,6 @@ namespace SME.SGP.Benchmarks
             try
             {
                 var retorno = conexao.Query(query);
-                //var repositorioUsuario = new RepositorioUsuario(conexao);
-                //repositorioUsuario.ObterPorId(1);
             }
             catch (Exception)
             {
@@ -47,7 +40,6 @@ namespace SME.SGP.Benchmarks
             }
             finally
             {
-                //   Dispose(conexao);
             }
         }
 

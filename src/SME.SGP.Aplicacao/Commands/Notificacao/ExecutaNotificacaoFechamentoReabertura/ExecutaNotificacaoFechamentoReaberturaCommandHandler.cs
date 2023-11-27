@@ -25,53 +25,38 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExecutaNotificacaoFechamentoReaberturaCommand request, CancellationToken cancellationToken)
         {
             var fechamentoReabertura = request.FechamentoReabertura;
-
             var adminsSgpUe = await mediator.Send(new ObterAdministradoresPorUEQuery(fechamentoReabertura.UeCodigo));
-            if (adminsSgpUe.NaoEhNulo() && adminsSgpUe.Any())
-            {
-                foreach (var adminSgpUe in adminsSgpUe)
-                {
-                    fechamentoReabertura.CodigoRf = adminSgpUe;
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
-                }
-                    
-            }
+            if (adminsSgpUe.PossuiRegistros())
+                await NotificarUsuariosCadastroFechamentoReabertura(adminsSgpUe, fechamentoReabertura);
 
             var diretores =
                 await mediator.Send(
                     new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long) Cargo.Diretor));
-            if (diretores.NaoEhNulo() && diretores.Any())
-            {
-                foreach (var diretor in diretores)
-                {
-                    fechamentoReabertura.CodigoRf = diretor.CodigoRf;
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
-                }
-                    
-            }
+            if (diretores.PossuiRegistros())
+                await NotificarUsuariosCadastroFechamentoReabertura(diretores.Select(d => d.CodigoRf).ToArray(), fechamentoReabertura);
+            
+
             var ads = await mediator.Send(
                 new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.AD));
-            if (ads.NaoEhNulo() && ads.Any())
-            {
-                foreach (var ad in ads)
-                {
-                    fechamentoReabertura.CodigoRf = ad.CodigoRf;
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
-                }
-                    
-            }
+            if (ads.PossuiRegistros())
+                await NotificarUsuariosCadastroFechamentoReabertura(ads.Select(a => a.CodigoRf).ToArray(), fechamentoReabertura);
+
+
             var cps = await mediator.Send(
                 new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.CP));
-            if (cps.NaoEhNulo() && cps.Any())
-            {
-                foreach (var cp in cps)
-                {
-                    fechamentoReabertura.CodigoRf = cp.CodigoRf;
-                    await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
-                }
-                    
-            }
+            if (cps.PossuiRegistros())
+                await NotificarUsuariosCadastroFechamentoReabertura(cps.Select(c => c.CodigoRf).ToArray(), fechamentoReabertura);
+
             return true;
+        }
+
+        private async Task NotificarUsuariosCadastroFechamentoReabertura(string[] adminsSgpUe, FiltroFechamentoReaberturaNotificacaoDto fechamentoReabertura)
+        {
+            foreach (var adminSgpUe in adminsSgpUe)
+            {
+                fechamentoReabertura.CodigoRf = adminSgpUe;
+                await mediator.Send(new ExecutaNotificacaoCadastroFechamentoReaberturaCommand(fechamentoReabertura));
+            }
         }
     }
 }

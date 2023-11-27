@@ -13,7 +13,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IConsultaAtividadeAvaliativa> consultaAtividadeAvaliativa;
         private readonly Mock<IConsultasFechamentoTurmaDisciplina> consultasFechamentoTurmaDisciplina;
         private readonly Mock<IConsultasDisciplina> consultasDisciplina;
-        private readonly Mock<IConsultasPeriodoFechamento> consultasFechamento;
         private readonly ConsultasNotasConceitos consultasNotasConceito;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
         private readonly Mock<IRepositorioFrequenciaConsulta> repositorioFrequencia;
@@ -21,13 +20,11 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioNotasConceitosConsulta> repositorioNotasConceitos;
         private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
         private readonly Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta> repositorioFrequenciaAluno;
-        private readonly Mock<IRepositorioConceitoConsulta> repositorioConceito;
         private readonly Mock<IServicoAluno> servicoAluno;
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IRepositorioAtividadeAvaliativaDisciplina> repositorioAtividadeAvaliativaDisciplina;
         private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolar;
-        private readonly Mock<IRepositorioParametrosSistema> repositorioParametrosSistema;
         private readonly Mock<IRepositorioTipoAvaliacao> repositorioTipoAvaliacao;
         private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly Mock<IRepositorioUe> repositorioUe;
@@ -43,7 +40,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultaAtividadeAvaliativa = new Mock<IConsultaAtividadeAvaliativa>();
             consultasFechamentoTurmaDisciplina = new Mock<IConsultasFechamentoTurmaDisciplina>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
-            consultasFechamento = new Mock<IConsultasPeriodoFechamento>();
             servicoDeNotasConceitos = new Mock<IServicoDeNotasConceitos>();
             repositorioNotasConceitos = new Mock<IRepositorioNotasConceitosConsulta>();
             repositorioFrequencia = new Mock<IRepositorioFrequenciaConsulta>();
@@ -55,8 +51,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
             repositorioAtividadeAvaliativaDisciplina = new Mock<IRepositorioAtividadeAvaliativaDisciplina>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolarConsulta>();
-            repositorioConceito = new Mock<IRepositorioConceitoConsulta>();
-            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistema>();
             repositorioTipoAvaliacao = new Mock<IRepositorioTipoAvaliacao>();
             repositorioTurma = new Mock<IRepositorioTurma>();
             repositorioUe = new Mock<IRepositorioUe>();
@@ -71,7 +65,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     consultaAtividadeAvaliativa.Object,
                     consultasFechamentoTurmaDisciplina.Object,
                     consultasDisciplina.Object,
-                    consultasFechamento.Object,
                     servicoDeNotasConceitos.Object,
                     repositorioNotasConceitos.Object,
                     repositorioFrequencia.Object,
@@ -81,21 +74,12 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                     repositorioTipoCalendario.Object,
                     repositorioNotaParametro.Object,
                     repositorioAtividadeAvaliativa.Object,
-                    repositorioConceito.Object,
                     repositorioPeriodoEscolar.Object,
-                    repositorioParametrosSistema.Object,
                     repositorioTipoAvaliacao.Object,
                     repositorioAtividadeAvaliativaDisciplina.Object,
-                    repositorioTurma.Object,
-                    repositorioUe.Object,
-                    repositorioDre.Object,
-                    repositorioEvento.Object,
                     repositorioAtividadeAvaliativaRegencia.Object,
-                    repositorioComponenteCurricular.Object,
                     mediator.Object,
                     consultasTurma.Object);
-
-            
         }
 
         [Theory]

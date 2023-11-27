@@ -57,35 +57,35 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AlunosFaltososDto>> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId, long ueId)
         {
             const string query = @"select a.TurmaCodigo
-	                                     , a.ModalidadeCodigo
-	                                     , a.Ano
-	                                     , a.DataAula
-	                                     , a.CodigoAluno
-	                                     , Sum(a.Aulas) as QuantidadeAulas
-	                                     , Sum(a.Ausencias) as QuantidadeFaltas
+                                         , a.ModalidadeCodigo
+                                         , a.Ano
+                                         , a.DataAula
+                                         , a.CodigoAluno
+                                         , Sum(a.Aulas) as QuantidadeAulas
+                                         , Sum(a.Ausencias) as QuantidadeFaltas
                                     from (
-	                                    select a.turma_id as TurmaCodigo
-	                                         , t.modalidade_codigo as modalidadeCodigo
-	                                         , t.ano
-	                                         , a.id as AulaId
-	                                         , a.data_aula as DataAula
-	                                         , a.quantidade as Aulas
-	                                         , raa.codigo_aluno as CodigoAluno
-	                                         , count(raa.id) as Ausencias
-	                                    from aula a
-	                                      inner join turma t on t.turma_id = a.turma_id
-	                                      left join registro_frequencia_aluno raa on raa.aula_id = a.id and not raa.excluido and raa.valor = @tipoFrequencia
-	                                    where not a.excluido
-	                                      and a.data_aula >= @dataReferencia
-	                                      and a.tipo_calendario_id = @tipoCalendarioId
-	                                      and t.ue_id = @ueId
-	                                    group by a.turma_id, t.modalidade_codigo, t.ano, a.id, a.data_aula, a.quantidade, raa.codigo_aluno
+                                        select a.turma_id as TurmaCodigo
+                                             , t.modalidade_codigo as modalidadeCodigo
+                                             , t.ano
+                                             , a.id as AulaId
+                                             , a.data_aula as DataAula
+                                             , a.quantidade as Aulas
+                                             , raa.codigo_aluno as CodigoAluno
+                                             , count(raa.id) as Ausencias
+                                        from aula a
+                                          inner join turma t on t.turma_id = a.turma_id
+                                          left join registro_frequencia_aluno raa on raa.aula_id = a.id and not raa.excluido and raa.valor = @tipoFrequencia
+                                        where not a.excluido
+                                          and a.data_aula >= @dataReferencia
+                                          and a.tipo_calendario_id = @tipoCalendarioId
+                                          and t.ue_id = @ueId
+                                        group by a.turma_id, t.modalidade_codigo, t.ano, a.id, a.data_aula, a.quantidade, raa.codigo_aluno
                                     ) a
                                     group by a.TurmaCodigo
-	                                     , a.ModalidadeCodigo
-	                                     , a.Ano
-	                                     , a.DataAula
-	                                     , a.CodigoAluno";
+                                         , a.ModalidadeCodigo
+                                         , a.Ano
+                                         , a.DataAula
+                                         , a.CodigoAluno";
 
             return await database.Conexao.QueryAsync<AlunosFaltososDto>(query,
                 new
@@ -117,33 +117,33 @@ namespace SME.SGP.Dados.Repositorios
         public IEnumerable<AulasPorTurmaDisciplinaDto> ObterAulasSemRegistroFrequencia(string turmaId, string disciplinaId, TipoNotificacaoFrequencia tipoNotificacao)
         {
             var query = @"select
-	                        a.id,
-	                        a.professor_rf as professorId,
-	                        a.data_aula as dataAula,
-	                        a.quantidade
+                            a.id,
+                            a.professor_rf as professorId,
+                            a.data_aula as dataAula,
+                            a.quantidade
                         from
-	                        aula a
+                            aula a
                         where
-	                        not a.excluido
-	                        and not a.migrado
-	                        and not exists (
-	                        select
-		                        1
-	                        from
-		                        notificacao_frequencia n
-	                        where
-		                        n.aula_id = a.id
-		                        and n.tipo = @tipoNotificacao)
-	                        and not exists (
-	                        select
-		                        1
-	                        from
-		                        registro_frequencia r
-	                        where
-		                        r.aula_id = a.id)
-	                        and a.data_aula < date(now())
-	                        and a.turma_id = @turmaId
-	                        and a.disciplina_id = @disciplinaId";
+                            not a.excluido
+                            and not a.migrado
+                            and not exists (
+                            select
+                                1
+                            from
+                                notificacao_frequencia n
+                            where
+                                n.aula_id = a.id
+                                and n.tipo = @tipoNotificacao)
+                            and not exists (
+                            select
+                                1
+                            from
+                                registro_frequencia r
+                            where
+                                r.aula_id = a.id)
+                            and a.data_aula < date(now())
+                            and a.turma_id = @turmaId
+                            and a.disciplina_id = @disciplinaId";
 
             return database.Conexao.Query<AulasPorTurmaDisciplinaDto>(query, new { turmaId, disciplinaId, tipoNotificacao });
         }
@@ -250,22 +250,22 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = @"
                 select
-	                a.data_aula dataAusencia,
-	                afa.criado_por registradoPor,
-	                ma.descricao motivoAusencia,
-	                afa.anotacao justificativaAusencia
+                    a.data_aula dataAusencia,
+                    afa.criado_por registradoPor,
+                    ma.descricao motivoAusencia,
+                    afa.anotacao justificativaAusencia
                 from 
-	                anotacao_frequencia_aluno afa 
+                    anotacao_frequencia_aluno afa 
                 inner join aula a on a.id = afa.aula_id 
                 inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
                 inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                  left join motivo_ausencia ma on afa.motivo_ausencia_id = ma.id 
                 where 
-	                not afa.excluido and not a.excluido and 
-	                afa.codigo_aluno = @codigoAluno and
-	                a.turma_id = @turma and
-	                tc.ano_letivo = @anoLetivo and 
-	                pe.bimestre = @bimestre
+                    not afa.excluido and not a.excluido and 
+                    afa.codigo_aluno = @codigoAluno and
+                    a.turma_id = @turma and
+                    tc.ano_letivo = @anoLetivo and 
+                    pe.bimestre = @bimestre
                     and (a.data_aula >= pe.periodo_inicio and a.data_aula <= pe.periodo_fim ) 
                 order by a.data_aula desc
                 limit 5
@@ -342,9 +342,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<AulaComFrequenciaNaDataDto>> ObterAulasComRegistroFrequenciaPorTurma(string turmaCodigo)
         {
             var query = @"select a.id as AulaId
-	                        , a.data_aula as DataAula
-	                        , a.quantidade as QuantidadeAulas
-	                        , rf.id as RegistroFrequenciaId
+                            , a.data_aula as DataAula
+                            , a.quantidade as QuantidadeAulas
+                            , rf.id as RegistroFrequenciaId
                           from aula a 
                          inner join registro_frequencia rf on rf.aula_id = a.id
                          where not a.excluido 
@@ -410,9 +410,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select d.Abreviacao as Descricao,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
-	                            inner join turma t on t.id = fte.turma_id 
-	                            inner join ue u on u.id = t.ue_id 
-	                            inner join dre d on d.id = u.dre_id 
+                                inner join turma t on t.id = fte.turma_id 
+                                inner join ue u on u.id = t.ue_id 
+                                inner join dre d on d.id = u.dre_id 
                             where t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_abaixo_50_porcento > 0)
                             and t.ano_letivo = @anoLetivo
@@ -438,9 +438,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select coalesce(te.descricao || '-', '') || coalesce(u.nome, '') as Descricao,
                                 sum(fte.quantidade_alunos_abaixo_50_porcento) as Quantidade
                             from frequencia_turma_evasao fte
-	                            inner join turma t on t.id = fte.turma_id 
-	                            inner join ue u on u.id = t.ue_id 
-	                            inner join dre d on d.id = u.dre_id 
+                                inner join turma t on t.id = fte.turma_id 
+                                inner join ue u on u.id = t.ue_id 
+                                inner join dre d on d.id = u.dre_id 
                                 left join tipo_escola te on te.cod_tipo_escola_eol = u.tipo_escola
                             where d.dre_id = @dreCodigo
                             and t.modalidade_codigo = @modalidade
@@ -517,9 +517,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select d.Abreviacao as Descricao,
                                 sum(fte.quantidade_alunos_0_porcento) as Quantidade
                             from frequencia_turma_evasao fte
-	                            inner join turma t on t.id = fte.turma_id 
-	                            inner join ue u on u.id = t.ue_id 
-	                            inner join dre d on d.id = u.dre_id 
+                                inner join turma t on t.id = fte.turma_id 
+                                inner join ue u on u.id = t.ue_id 
+                                inner join dre d on d.id = u.dre_id 
                             where t.modalidade_codigo = @modalidade
                             and (fte.quantidade_alunos_0_porcento > 0)
                             and t.ano_letivo = @anoLetivo";
@@ -548,9 +548,9 @@ namespace SME.SGP.Dados.Repositorios
                                  te.descricao as DescricaoTipo,
                                 sum(fte.quantidade_alunos_0_porcento) as Quantidade
                             from frequencia_turma_evasao fte
-	                            inner join turma t on t.id = fte.turma_id 
-	                            inner join ue u on u.id = t.ue_id 
-	                            inner join dre d on d.id = u.dre_id 
+                                inner join turma t on t.id = fte.turma_id 
+                                inner join ue u on u.id = t.ue_id 
+                                inner join dre d on d.id = u.dre_id 
                                 left join tipo_escola te on te.cod_tipo_escola_eol = u.tipo_escola
                             where d.dre_id = @dreCodigo
                             and t.modalidade_codigo = @modalidade
@@ -582,9 +582,9 @@ namespace SME.SGP.Dados.Repositorios
                             select t.nome as Descricao,
                                 sum(fte.quantidade_alunos_0_porcento) as Quantidade
                             from TurmaEvasao fte
-	                            inner join turma t on t.id = fte.turma_id 
-	                            inner join ue u on u.id = t.ue_id 
-	                            inner join dre d on d.id = u.dre_id 
+                                inner join turma t on t.id = fte.turma_id 
+                                inner join ue u on u.id = t.ue_id 
+                                inner join dre d on d.id = u.dre_id 
                             where d.dre_id = @dreCodigo
                             and u.ue_id = @ueCodigo
                             and t.modalidade_codigo = @modalidade
@@ -611,33 +611,33 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaPorTurmaPeriodo(string codigoTurma, DateTime dataInicio, DateTime dataFim)
         {
             var query = @"with totalAulas as (
-	                        select  t.id as TurmaId,
-		                            sum(a.quantidade) as TotalAulas
-	                        from aula a
-	                            join turma t on t.turma_id = a.turma_id
-	                        where
-		                        not a.excluido
-		                        and a.turma_id = @codigoTurma
-		                        and a.data_aula >= @dataInicio
-		                        and a.data_aula <= @dataFim
-	                        group by t.id
+                            select  t.id as TurmaId,
+                                    sum(a.quantidade) as TotalAulas
+                            from aula a
+                                join turma t on t.turma_id = a.turma_id
+                            where
+                                not a.excluido
+                                and a.turma_id = @codigoTurma
+                                and a.data_aula >= @dataInicio
+                                and a.data_aula <= @dataFim
+                            group by t.id
                         ),
                         totalFrequencia as (
-	                        select rfa.codigo_aluno as AlunoCodigo,
-		                           (count(distinct(a.id)) filter (	where rfa.valor = 1)* a.quantidade) as TotalPresencas,
-		                           (count(distinct(a.id)) filter (where rfa.valor = 2)* a.quantidade) as TotalAusencias,
-		                           (count(distinct(a.id)) filter (where rfa.valor = 3)* a.quantidade) as TotalRemotos
-	                        from registro_frequencia rf
-	                          join registro_frequencia_aluno rfa on rf.id = rfa.registro_frequencia_id
-	                          join aula a on a.id = rf.aula_id
-	                        where
-		                        not rfa.excluido
-		                        and not a.excluido
-		                        and a.turma_id = @codigoTurma
-		                        and a.data_aula >= @dataInicio
-		                        and a.data_aula <= @dataFim
-		                        and rfa.numero_aula <= a.quantidade
-	                        group by rfa.codigo_aluno, a.quantidade
+                            select rfa.codigo_aluno as AlunoCodigo,
+                                   (count(distinct(a.id)) filter (    where rfa.valor = 1)* a.quantidade) as TotalPresencas,
+                                   (count(distinct(a.id)) filter (where rfa.valor = 2)* a.quantidade) as TotalAusencias,
+                                   (count(distinct(a.id)) filter (where rfa.valor = 3)* a.quantidade) as TotalRemotos
+                            from registro_frequencia rf
+                              join registro_frequencia_aluno rfa on rf.id = rfa.registro_frequencia_id
+                              join aula a on a.id = rf.aula_id
+                            where
+                                not rfa.excluido
+                                and not a.excluido
+                                and a.turma_id = @codigoTurma
+                                and a.data_aula >= @dataInicio
+                                and a.data_aula <= @dataFim
+                                and rfa.numero_aula <= a.quantidade
+                            group by rfa.codigo_aluno, a.quantidade
                         )
                         select alunoCodigo, 
                                totalPresencas, 
@@ -645,7 +645,7 @@ namespace SME.SGP.Dados.Repositorios
                                totalRemotos,
                                totalAulas
                         from totalAulas
-	                      left join totalFrequencia on 1 = 1
+                          left join totalFrequencia on 1 = 1
                         order by AlunoCodigo ";
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { codigoTurma, dataInicio, dataFim });
@@ -654,13 +654,13 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<long[]> ObterFrequenciasAlunosIdsComPresencasMaiorTotalAulas(long ueId, int anoLetivo)
         {
             var query = @"select fa.id
-                          	from frequencia_aluno fa
-                          		inner join turma t 
-                          			on fa.turma_id = t.turma_id 		
+                              from frequencia_aluno fa
+                                  inner join turma t 
+                                      on fa.turma_id = t.turma_id         
                           where not fa.excluido and
-                          	    t.ano_letivo = @anoLetivo and
-                          	    fa.total_presencas > fa.total_aulas and
-                          	    t.ue_id = @ueId;";
+                                  t.ano_letivo = @anoLetivo and
+                                  fa.total_presencas > fa.total_aulas and
+                                  t.ue_id = @ueId;";
 
             var resultado = await database.Conexao
                 .QueryAsync<long>(query, new { ueId, anoLetivo });

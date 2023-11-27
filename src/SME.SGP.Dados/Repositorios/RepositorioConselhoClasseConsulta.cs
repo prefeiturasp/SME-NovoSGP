@@ -107,7 +107,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> ObterBimestreComConselhoClasseTurmaAsync(long turmaId)
         {
-            var query = new StringBuilder(@"select   	   
+            var query = new StringBuilder(@"select          
                                                min(cc.id) as conselhoClasseId,
                                                cc.fechamento_turma_id as fechamentoTurmaId,
                                                coalesce(pe.bimestre, 0) as bimestre
@@ -261,7 +261,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"    insert into temp_dados
                                                 select t.nome as TurmaAnoNome,
-				                                    pe.bimestre, 
+                                                    pe.bimestre, 
                                                     fn.disciplina_id as ComponenteCurricularCodigo, 
                                                     null as ConselhoClasseNotaId, 
                                                     fn.conceito_id as ConceitoId, 
@@ -283,7 +283,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     fa.fechamento_turma_disciplina_id = ftd.id
                                                 inner join fechamento_nota fn on
                                                     fn.fechamento_aluno_id = fa.id
-				                                inner join conceito_valores cv on fn.conceito_id = cv.id
+                                                inner join conceito_valores cv on fn.conceito_id = cv.id
                                                 where t.ano_letivo = @anoLetivo ");
 
             if (ueId > 0)
@@ -311,29 +311,29 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"    insert into temp_dados
                                                 select t.nome as TurmaAnoNome,  
                                                     pe.bimestre, 
-		                                            ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
-		                                            ccn.id as ConselhoClasseNotaId, 
-		                                            ccn.conceito_id as ConceitoId, 
-		                                            ccn.nota as Nota, 
-		                                            cca.aluno_codigo as AlunoCodigo,
-		                                            cv.valor as Conceito,
-		                                            1 as prioridade
-	                                            from
-		                                            fechamento_turma ft
-	                                            inner join periodo_escolar pe on
-		                                            pe.id = ft.periodo_escolar_id
-	                                            inner join turma t on
-		                                            t.id = ft.turma_id
-	                                            inner join ue on
-		                                            ue.id = t.ue_id
-	                                            inner join conselho_classe cc on
-		                                            cc.fechamento_turma_id = ft.id
-	                                            inner join conselho_classe_aluno cca on
-		                                            cca.conselho_classe_id = cc.id
-	                                            inner join conselho_classe_nota ccn on
-		                                            ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
-	                                            inner join conceito_valores cv on ccn.conceito_id = cv.id
-	                                            where t.ano_letivo = @anoLetivo ");
+                                                    ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
+                                                    ccn.id as ConselhoClasseNotaId, 
+                                                    ccn.conceito_id as ConceitoId, 
+                                                    ccn.nota as Nota, 
+                                                    cca.aluno_codigo as AlunoCodigo,
+                                                    cv.valor as Conceito,
+                                                    1 as prioridade
+                                                from
+                                                    fechamento_turma ft
+                                                inner join periodo_escolar pe on
+                                                    pe.id = ft.periodo_escolar_id
+                                                inner join turma t on
+                                                    t.id = ft.turma_id
+                                                inner join ue on
+                                                    ue.id = t.ue_id
+                                                inner join conselho_classe cc on
+                                                    cc.fechamento_turma_id = ft.id
+                                                inner join conselho_classe_aluno cca on
+                                                    cca.conselho_classe_id = cc.id
+                                                inner join conselho_classe_nota ccn on
+                                                    ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
+                                                inner join conceito_valores cv on ccn.conceito_id = cv.id
+                                                where t.ano_letivo = @anoLetivo ");
 
             if (ueId > 0)
                 query.Append(" and ue.id = @ueId ");

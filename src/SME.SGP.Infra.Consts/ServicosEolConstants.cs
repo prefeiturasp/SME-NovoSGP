@@ -2,6 +2,8 @@
 {
     public class ServicosEolConstants
     {
+        protected ServicosEolConstants() { }
+
         public const string SERVICO = "servicoEOL";
 
         public const string URL_AUTENTICACAO_ALTERAR_SENHA = "v1/autenticacao/AlterarSenha/";

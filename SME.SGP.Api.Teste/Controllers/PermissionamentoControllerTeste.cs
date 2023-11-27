@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SME.SGP.Api.Controllers;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -20,7 +19,7 @@ namespace SME.SGP.Api.Teste.Controllers
         }
 
         [Fact(DisplayName = "Verificar se os Controllers que Herdam de  ControllerBase possuem permissionamento e authorize")]
-        public async Task Verificar_Se_Existe_Permissao_Ou_AllowAnonymou_Authorize_ControllerBase()
+        public Task Verificar_Se_Existe_Permissao_Ou_AllowAnonymou_Authorize_ControllerBase()
         {
             var listaApiMethod = new List<ApiMethodDto>();
             var assembly = Assembly.Load(AssemblyName);
@@ -35,9 +34,10 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.True(semAuthorizeAttribute.Count() == 0, $"Existe {listAutorizecontrollerName.Count()} Controller(s) Sem AuthorizeAttribute ou ChaveIntegracaoSgpApi\n {string.Join("\n,", listAutorizecontrollerName.Select(c => c.First().ControllerName))}");
             Assert.True(listcontrollerName.Count == 0, $"{listMetodos.Count()} Método(s) em {listcontrollerName.Count} controller(s) sem permissionamento\n {string.Join("\n,", listcontrollerName.Select(c => c.First().ControllerName))}");
+            return Task.CompletedTask;
         }
         [Fact(DisplayName = "Verificar se os Controllers que Herdam de  Controller possuem permissionamento e authorize")]
-        public async Task Verificar_Se_Existe_Permissao_Ou_AllowAnonymou_Authorize_Controller()
+        public Task Verificar_Se_Existe_Permissao_Ou_AllowAnonymou_Authorize_Controller()
         {
             var listaApiMethod = new List<ApiMethodDto>();
             var assembly = Assembly.Load(AssemblyName);
@@ -52,6 +52,7 @@ namespace SME.SGP.Api.Teste.Controllers
 
             Assert.True(semAuthorizeAttribute.Count() == 0, $"Existe {listAutorizecontrollerName.Count()} Controller(s) Sem AuthorizeAttribute ou ChaveIntegracaoSgpApi\n {string.Join("\n,", listAutorizecontrollerName.Select(c => c.First().ControllerName))}");
             Assert.True(listcontrollerName.Count == 0, $"{listMetodos.Count()} Método(s) em {listcontrollerName.Count} controller(s) sem permissionamento\n {string.Join("\n,", listcontrollerName.Select(c => c.First().ControllerName))}");
+            return Task.CompletedTask;
         }
         private static void ObterDadosControllers(List<ApiMethodDto> listaApiMethod, IEnumerable<TypeInfo> apiControllers, string assemblyName)
         {

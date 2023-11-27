@@ -22,7 +22,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
@@ -37,7 +36,6 @@ namespace SME.SGP.Dominio.Servicos
                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                       IRepositorioEvento repositorioEvento,
                                       IServicoUsuario servicoUsuario,
-                                      IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
                                       IUnitOfWork unitOfWork,
                                       IMediator mediator,
                                       IRepositorioCache repositorioCache)
@@ -49,7 +47,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
@@ -304,8 +301,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (notaDto.ConceitoId.HasValue && notaDto.ConceitoId.Value == 3)
                 throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
-            else
-            if (!notaDto.SinteseId.HasValue && notaDto.Nota < 5)
+            else if (!notaDto.SinteseId.HasValue && notaDto.Nota < 5)
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
         }
 

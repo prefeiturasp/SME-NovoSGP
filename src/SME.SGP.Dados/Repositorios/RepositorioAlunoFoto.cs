@@ -22,28 +22,28 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<MiniaturaFotoDto> ObterFotosPorAlunoCodigo(string alunoCodigo)
         {
             var query = @"select
-	                    a2.Codigo,
-	                    a.Codigo as CodigoFotoOriginal,
-	                    a.Tipo,
-	                    a.tipo_conteudo,
-	                    a.Nome,
+                        a2.Codigo,
+                        a.Codigo as CodigoFotoOriginal,
+                        a.Tipo,
+                        a.tipo_conteudo,
+                        a.Nome,
                         af.id as FotoId,
                         af.arquivo_id as ArquivoId,
                         af2.id as MiniaturaId,
                         af2.arquivo_id as MiniaturaArquivoId,
                         af.criado_rf as CriadoRf
                     from
-	                    arquivo a
+                        arquivo a
                     inner join aluno_foto af on
-	                    af.arquivo_id = a.id
+                        af.arquivo_id = a.id
                     inner join aluno_foto af2 on
-	                    af.miniatura_id = af2.id
+                        af.miniatura_id = af2.id
                     inner join arquivo a2 on
-	                    a2.id = af2.arquivo_id
+                        a2.id = af2.arquivo_id
                     where
-	                    not af.excluido and
-	                    not af2.excluido and
-	                    af.aluno_codigo = @alunoCodigo
+                        not af.excluido and
+                        not af2.excluido and
+                        af.aluno_codigo = @alunoCodigo
                     order by af.id desc";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<MiniaturaFotoDto>(query, new { alunoCodigo });

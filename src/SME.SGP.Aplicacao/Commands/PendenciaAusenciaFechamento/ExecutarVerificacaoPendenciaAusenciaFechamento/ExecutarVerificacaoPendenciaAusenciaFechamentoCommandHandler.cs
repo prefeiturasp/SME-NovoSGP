@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                     var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
                     foreach (var professorTurma in professoresTurma)
                     {
-                        var obterComponenteCurricular = componentes.FirstOrDefault(c => professorTurma.DisciplinasId.Contains(long.Parse(c.Codigo)));
+                        var obterComponenteCurricular = componentes.FirstOrDefault(c => professorTurma.DisciplinasId().Contains(long.Parse(c.Codigo)));
                         if (obterComponenteCurricular.NaoEhNulo())
                         {
                             if (professorTurma.ProfessorRf != "")

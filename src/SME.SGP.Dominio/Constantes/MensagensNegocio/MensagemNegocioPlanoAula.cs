@@ -2,6 +2,8 @@
 {
     public class MensagemNegocioPlanoAula
     {
+        protected MensagemNegocioPlanoAula() { }
+
         public const string NAO_EXISTE_PLANO_ANUAL_CADASTRADO = "Não foi possível concluir o cadastro, pois não existe plano anual cadastrado";
 
         public const string NAO_FOI_LOCALIZADO_BIMESTRE_DA_AULA =

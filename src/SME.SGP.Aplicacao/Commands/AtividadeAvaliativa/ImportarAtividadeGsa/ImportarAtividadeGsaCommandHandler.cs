@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
 
             var parametroInicioImportacao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AtualizacaoDeAtividadesAvaliativas, anoAtual));
             if (!DateTime.TryParse(parametroInicioImportacao.Valor, out var dataInicioImportacao))
-                throw new Exception("Erro ao obter parâmetro de data de início de integração das atividades classroom");
+                throw new NegocioException("Erro ao obter parâmetro de data de início de integração das atividades classroom");
 
             if (dataCriacao < dataInicioImportacao)
                 throw new NegocioException($"Atividade Avaliativa Classroom com data anterior ao parâmetro de início da integração de atividades não será importada para o SGP. Data Atividade: {dataCriacao:dd/MM/yyyy}");

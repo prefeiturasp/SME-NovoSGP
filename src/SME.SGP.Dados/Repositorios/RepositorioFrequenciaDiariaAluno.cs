@@ -52,10 +52,10 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@$"
                 FROM(SELECT count(rfa.id) AS TotalAulasNoDia,
-	                        a.data_aula AS DataAula,
-	                        a.id AS AulasId,
-	                        rfa.codigo_aluno AS AlunoCodigo,
-	                        an.id AS AnotacaoId,
+                            a.data_aula AS DataAula,
+                            a.id AS AulasId,
+                            rfa.codigo_aluno AS AlunoCodigo,
+                            an.id AS AnotacaoId,
                             count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (WHERE rfa.valor = 1) AS TotalPresencas,
                             count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (WHERE rfa.valor = 2) AS TotalAusencias,
                             count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (WHERE rfa.valor = 3) AS TotalRemotos,
@@ -68,10 +68,10 @@ namespace SME.SGP.Dados.Repositorios
                         LEFT JOIN anotacao_frequencia_aluno an ON a.id = an.aula_id AND an.codigo_aluno  = rfa.codigo_aluno AND an.excluido = false
                         LEFT JOIN motivo_ausencia ma ON an.motivo_ausencia_id = ma.id
                         WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
-	                        AND rfa.codigo_aluno = @codigoAluno
-	                        AND t.id = @turmaId AND a.disciplina_id = any(@aulaDisciplinasIds)
+                            AND rfa.codigo_aluno = @codigoAluno
+                            AND t.id = @turmaId AND a.disciplina_id = any(@aulaDisciplinasIds)
                             {(considerarProfessor ? "AND a.professor_rf = @professor" : string.Empty)}
- 						GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.codigo_aluno
+                         GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.codigo_aluno
                         order by a.data_aula desc)n
                 ");
 

@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorIdsUsuarioLogadoQueryHandler : IRequestHandler<ObterComponentesCurricularesPorIdsUsuarioLogadoQuery, IEnumerable<DisciplinaDto>>
     {
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesPorIdsUsuarioLogadoQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IMediator mediator)
+        public ObterComponentesCurricularesPorIdsUsuarioLogadoQueryHandler(IMediator mediator)
         {
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

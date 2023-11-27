@@ -1,16 +1,13 @@
-﻿using Moq;
+﻿using FluentValidation.TestHelper;
+using MediatR;
+using Moq;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Excecoes;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.TestHelper;
-using Xunit;
-using MediatR;
-using System.Threading;
 using SME.SGP.Infra;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.Handlers
 {
@@ -30,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Deve_Alterar_Diario_De_Bordo()
+        public Task Deve_Alterar_Diario_De_Bordo()
         {
             // Arrange
             var mockEntity = new DiarioBordo
@@ -79,42 +76,50 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioDiarioBordo.Verify(x => x.SalvarAsync(It.IsAny<DiarioBordo>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
-        private async Task<List<DisciplinaDto>> RetornaDisciplinaDto()
+        private Task<List<DisciplinaDto>> RetornaDisciplinaDto()
         {
             var listaDisciplinaDto = new List<DisciplinaDto>();
             var disciplinaDto = new DisciplinaDto() { Id = 1, CodigoComponenteCurricular = 1, CdComponenteCurricularPai = 1, Nome = "Matematica", TurmaCodigo = "1" };
 
             listaDisciplinaDto.Add(disciplinaDto);
 
-            return await Task.FromResult(listaDisciplinaDto);
+            return Task.FromResult(listaDisciplinaDto);
         }
 
         [Fact]
-        public async Task Deve_Obrigar_Id()
+        public Task Deve_Obrigar_Id()
         {
             var command = new AlterarDiarioBordoCommand(0, 1, "",1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Id);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Obrigar_Planejamento()
+        public Task Deve_Obrigar_Planejamento()
         {
             var command = new AlterarDiarioBordoCommand(1, 1, "", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Exigir_Planejamento_Com_200_Caracteres()
+        public Task Deve_Exigir_Planejamento_Com_200_Caracteres()
         {
             var command = new AlterarDiarioBordoCommand(1, 1, "0123456789", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Planejamento);
+
+            return Task.CompletedTask;
         }
 
         private TestValidationResult<AlterarDiarioBordoCommand> ValidarCommand(AlterarDiarioBordoCommand command)

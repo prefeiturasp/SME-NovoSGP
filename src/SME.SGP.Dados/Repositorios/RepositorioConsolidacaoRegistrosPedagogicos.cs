@@ -55,7 +55,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicos(long ueId, int anoLetivo)
         {
-            const string query = @"select 					      
+            const string query = @"select                           
                                     pe.id as PeriodoEscolarId 
                                     , pe.bimestre as Bimestre
                                     , t.id as TurmaId
@@ -154,7 +154,7 @@ namespace SME.SGP.Dados
                                     ),
                                     countDiarioBordo as (
                                         select cc.AulaId,
-                                               cc.ComponenteCurricularId,	       
+                                               cc.ComponenteCurricularId,           
                                                cc.data_aula,
                                                db.criado_em,
                                                db.id

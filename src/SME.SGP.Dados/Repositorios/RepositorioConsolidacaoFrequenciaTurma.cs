@@ -51,25 +51,25 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<ConsolidacaoDashBoardFrequencia> ObterConsolidacaoDashboardPorTurmaAulaModalidadeAnoLetivoDreUeTipo(long turmaId, DateTime dataAula, Modalidade modalidadeCodigo, int anoLetivo, long dreId, long ueId, TipoPeriodoDashboardFrequencia tipo)
         {
             var query = new StringBuilder(@"SELECT id, 
-			                                     turma_nome, 
-			                                     turma_id,
-			                                     turma_ano, 
-			                                     semestre, 
-			                                     data_aula, 
-			                                     modalidade_codigo, 
-			                                     data_inicio_semana, 
-			                                     data_fim_semana, 
-			                                     mes, 
-			                                     tipo, 
-			                                     ano_letivo, 
-			                                     dre_id, 
-			                                     ue_id, 
-			                                     dre_codigo, 
-			                                     dre_abreviacao, 
-			                                     quantidade_presencas, 
-			                                     quantidade_ausencias, 
-			                                     quantidade_remotos, 
-			                                     criado_em
+                                                 turma_nome, 
+                                                 turma_id,
+                                                 turma_ano, 
+                                                 semestre, 
+                                                 data_aula, 
+                                                 modalidade_codigo, 
+                                                 data_inicio_semana, 
+                                                 data_fim_semana, 
+                                                 mes, 
+                                                 tipo, 
+                                                 ano_letivo, 
+                                                 dre_id, 
+                                                 ue_id, 
+                                                 dre_codigo, 
+                                                 dre_abreviacao, 
+                                                 quantidade_presencas, 
+                                                 quantidade_ausencias, 
+                                                 quantidade_remotos, 
+                                                 criado_em
                                     FROM consolidado_dashboard_frequencia
                                     where turma_id = @turmaId 
                                        and data_aula = @dataAula 
@@ -94,31 +94,31 @@ namespace SME.SGP.Dados.Repositorios
         
         public async Task<long> SalvarConsolidacaoFrequenciaTurma(ConsolidacaoFrequenciaTurma consolidacaoFrequenciaTurma)
         {
-	        if (consolidacaoFrequenciaTurma.Id > 0)
-		        await database.Conexao.UpdateAsync(consolidacaoFrequenciaTurma);
-	        else
-		        consolidacaoFrequenciaTurma.Id = (long)(await database.Conexao.InsertAsync(consolidacaoFrequenciaTurma));
+            if (consolidacaoFrequenciaTurma.Id > 0)
+                await database.Conexao.UpdateAsync(consolidacaoFrequenciaTurma);
+            else
+                consolidacaoFrequenciaTurma.Id = (long)(await database.Conexao.InsertAsync(consolidacaoFrequenciaTurma));
 
-	        return consolidacaoFrequenciaTurma.Id;
+            return consolidacaoFrequenciaTurma.Id;
         }
 
         public async Task<ConsolidacaoFrequenciaTurma> ObterConsolidacaoDashboardPorTurmaETipoPeriodo(long turmaId, TipoConsolidadoFrequencia tipoConsolidacao, DateTime? periodoInicio, DateTime? periodoFim)
         {
             var query = new StringBuilder(@"SELECT id, 
-			                                       turma_id,
-			                                       quantidade_acima_minimo_frequencia,
-			                                       quantidade_abaixo_minimo_frequencia,
-			                                       tipo_consolidacao,
-			                                       periodo_inicio,
-			                                       periodo_fim,
-			                                       total_aulas,
-			                                       total_frequencias
+                                                   turma_id,
+                                                   quantidade_acima_minimo_frequencia,
+                                                   quantidade_abaixo_minimo_frequencia,
+                                                   tipo_consolidacao,
+                                                   periodo_inicio,
+                                                   periodo_fim,
+                                                   total_aulas,
+                                                   total_frequencias
                                     FROM consolidacao_frequencia_turma
-									where turma_id = @turmaId 
-									      and tipo_consolidacao = @tipo ");
+                                    where turma_id = @turmaId 
+                                          and tipo_consolidacao = @tipo ");
 
             if (periodoInicio.HasValue && periodoFim.HasValue)
-	            query.Append(" and periodo_inicio = @periodoInicio and periodo_fim = @periodoFim ");
+                query.Append(" and periodo_inicio = @periodoInicio and periodo_fim = @periodoFim ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoFrequenciaTurma>(query.ToString(), new { turmaId, tipo = (int)tipoConsolidacao, periodoInicio, periodoFim });
 

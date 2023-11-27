@@ -16,14 +16,14 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<CartaIntencoes>> ObterPorTurmaEComponente(string turmaCodigo, long componenteCurricularId)
         {
             var query = @"select c.id
-	                         , c.planejamento
-	                         , c.periodo_escolar_id
-	                         , c.criado_em
-	                         , c.criado_por
-	                         , c.criado_rf
-	                         , c.alterado_em
-	                         , c.alterado_por
-	                         , c.alterado_rf
+                             , c.planejamento
+                             , c.periodo_escolar_id
+                             , c.criado_em
+                             , c.criado_por
+                             , c.criado_rf
+                             , c.alterado_em
+                             , c.alterado_por
+                             , c.alterado_rf
                           from carta_intencoes c
                          inner join turma t on t.id = c.turma_id
                          where not c.excluido 

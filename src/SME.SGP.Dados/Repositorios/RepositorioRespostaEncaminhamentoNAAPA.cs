@@ -27,10 +27,10 @@ namespace SME.SGP.Dados.Repositorios
 
             var sql =
                 $@"
-					update encaminhamento_naapa_resposta 
+                    update encaminhamento_naapa_resposta 
                         set excluido = true,
                             arquivo_id = null
-					where arquivo_id = @arquivoId 
+                    where arquivo_id = @arquivoId 
                 ";
 
             return (

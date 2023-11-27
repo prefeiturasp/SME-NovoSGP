@@ -17,16 +17,13 @@ namespace SME.SGP.Aplicacao
     public class GravarConselhoClasseCommadHandler : IRequestHandler<GravarConselhoClasseCommad, ConselhoClasseNotaRetornoDto>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
         private readonly IRepositorioCache repositorioCache;
 
         public GravarConselhoClasseCommadHandler(
                         IMediator mediator,
-                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta,
                         IRepositorioCache repositorioCache)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 

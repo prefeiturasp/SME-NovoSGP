@@ -10,9 +10,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterTurmaRegularESrmPorAlunoQueryHandlerFake : IRequestHandler<ObterTurmaRegularESrmPorAlunoQuery, IEnumerable<TurmasDoAlunoDto>>
     {
-        public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterTurmaRegularESrmPorAlunoQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterTurmaRegularESrmPorAlunoQuery request, CancellationToken cancellationToken)
         {
-            return new List<TurmasDoAlunoDto>() { new TurmasDoAlunoDto() { CodigoTurma = 1, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo } };
+            var turmasDoAluno = new List<TurmasDoAlunoDto>() { new TurmasDoAlunoDto() { CodigoTurma = 1, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo } };
+
+            return Task.FromResult<IEnumerable<TurmasDoAlunoDto>>(turmasDoAluno);
         }
     }
 }

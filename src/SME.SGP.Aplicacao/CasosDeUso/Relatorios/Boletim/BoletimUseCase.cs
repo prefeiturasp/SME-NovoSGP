@@ -13,14 +13,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     public class BoletimUseCase : IBoletimUseCase
     {
         private readonly IMediator mediator;
-        private readonly IUnitOfWork unitOfWork;
         private const int DOIS_BOLETIM = 2;
 
-        public BoletimUseCase(IMediator mediator,
-                              IUnitOfWork unitOfWork)
+        public BoletimUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)

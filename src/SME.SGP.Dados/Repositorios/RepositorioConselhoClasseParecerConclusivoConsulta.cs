@@ -55,9 +55,9 @@ namespace SME.SGP.Dados.Repositorios
             return @"select ccp.* from conselho_classe_parecer ccp 
                         inner join conselho_classe_parecer_ano ccpa on ccp.id = ccpa.parecer_id 
                         inner join turma t on ccpa.modalidade = t.modalidade_codigo 
-	                                                                and ((t.ano = 'S' and ccpa.ano_turma = 1) OR cast(ccpa.ano_turma as varchar) = t.ano) 
+                                                                    and ((t.ano = 'S' and ccpa.ano_turma = 1) OR cast(ccpa.ano_turma as varchar) = t.ano) 
                                                                     and ((t.modalidade_codigo = 3 and t.etapa_eja = ccpa.etapa_eja) 
-	                              										 or (t.modalidade_codigo <> 3 and ccpa.etapa_eja is null))
+                                                                           or (t.modalidade_codigo <> 3 and ccpa.etapa_eja is null))
                         where {0} and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
         }
 
@@ -67,9 +67,9 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine(@"SELECT t.turma_id as TurmaCodigo,              
                                       ccp.nome as Situacao,
                                       count(cca.id) AS Quantidade,
- 			                          t.Nome AS AnoTurma,
+                                       t.Nome AS AnoTurma,
                                       cca.aluno_codigo as AlunoCodigo
- 		                         FROM conselho_classe_aluno cca
+                                  FROM conselho_classe_aluno cca
                                 INNER JOIN conselho_classe_parecer ccp ON cca.conselho_classe_parecer_id = ccp.id
                                 INNER JOIN conselho_classe cc ON cca.conselho_classe_id = cc.id
                                 INNER JOIN fechamento_turma ft ON cc.fechamento_turma_id = ft.id
@@ -77,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
                                 INNER JOIN ue u ON t.ue_id = u.id  
                                  LEFT JOIN periodo_escolar pe ON ft.periodo_escolar_id = pe.id
                                 WHERE t.tipo_turma in (1) 
-		                          AND t.ano_letivo = @ano ");
+                                  AND t.ano_letivo = @ano ");
 
             if (ueId > 0)
                 query.AppendLine(" AND t.ue_id = @ueId ");

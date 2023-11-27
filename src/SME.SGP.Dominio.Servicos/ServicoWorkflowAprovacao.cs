@@ -82,8 +82,8 @@ namespace SME.SGP.Dominio.Servicos
             await AtualizaNiveis(niveisParaPersistir);
 
             if (aprovar)
-                await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao);
-            else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
+                await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao!);
+            else await ReprovarNivel(workflow, (long)codigoDaNotificacao!, observacao, nivel.Cargo, nivel);
 
             foreach (var notificacao in nivel.Notificacoes)
                 await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao, notificacao.Usuario.CodigoRf));

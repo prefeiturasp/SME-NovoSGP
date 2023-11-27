@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao
                     ProfessorRf ="111111",
                     ProfessorNome ="PROFESSOR DE PORTUGUES",
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
-                    DisciplinasId = new long[] { 138 }
+                    CodigosDisciplinas = "138"
                 },
             };
         }
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao
                     ProfessorRf ="2222222",
                     ProfessorNome ="PROFESSOR DE PORTUGUES",
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
-                    DisciplinasId = new long[] { 138 }
+                    CodigosDisciplinas = "138"
                 },
             };
         }

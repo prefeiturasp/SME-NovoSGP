@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Deve_Inserir_Aula()
+        public Task Deve_Inserir_Aula()
         {
             // Arrange
             var usuario = new Usuario() { Id = 1, CodigoRf = "1234", PerfilAtual = Perfis.PERFIL_PROFESSOR };
@@ -59,6 +59,8 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioAula.Verify(x => x.SalvarAsync(It.IsAny<Aula>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
@@ -164,7 +166,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Diretor_Deve_Inserir_Aula_Reposicao()
+        public Task Diretor_Deve_Inserir_Aula_Reposicao()
         {
             // Arrange
             var usuario = new Usuario() { Id = 1, CodigoRf = "1234", PerfilAtual = Perfis.PERFIL_DIRETOR };
@@ -203,6 +205,8 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioAula.Verify(x => x.SalvarAsync(It.IsAny<Aula>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
 
         [Fact(DisplayName = "Valida o cadastro de 2 aulas de reposição com 1 existente deve inviar para aprovação > 3")]

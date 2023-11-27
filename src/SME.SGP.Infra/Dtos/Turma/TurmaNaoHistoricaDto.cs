@@ -1,13 +1,10 @@
 ﻿using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
     public class TurmaNaoHistoricaDto
     {
-        private string nomeFiltro;
+        private string nomeFiltroFormatado;
         public long Id { get; set; }
         public string Codigo { get; set; }
         public int CodigoModalidade { get; set; }
@@ -26,15 +23,12 @@ namespace SME.SGP.Infra
         public string NomeFiltro
         {
             get => NomeFiltroFormatado();
-            set => nomeFiltro = value;
+            set => nomeFiltroFormatado = value;
         }
-        public string NomeFiltroFormatado()
+        private string NomeFiltroFormatado()
         {
             var modalidadeEnum = ((Modalidade)CodigoModalidade);
-            if (nomeFiltro.NaoEhNulo())
-                return $"{modalidadeEnum.ShortName()} - {nomeFiltro}";
-            else
-                return $"{modalidadeEnum.ShortName()} - {Nome}";
+            return $"{modalidadeEnum.ShortName()} - {(!string.IsNullOrEmpty(nomeFiltroFormatado) ? nomeFiltroFormatado : Nome)}";
         }
     }
 }
