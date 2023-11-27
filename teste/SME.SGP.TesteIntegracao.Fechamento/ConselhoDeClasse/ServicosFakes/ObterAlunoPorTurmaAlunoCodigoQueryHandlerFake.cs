@@ -73,6 +73,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     DataNascimento = DateTimeExtension.HorarioBrasilia().AddYears(-1).Date,
                     NumeroAlunoChamada = 5
                 },
+                 new AlunoPorTurmaResposta()
+                {
+                    CodigoAluno = "14",
+                    NomeAluno = "Nome aluno 14",
+                    DataMatricula = DateTimeExtension.HorarioBrasilia().AddYears(-1).Date,
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.RemanejadoSaida,
+                    SituacaoMatricula = "REMANEJADO SAÍDA",
+                    DataSituacao = DateTimeExtension.HorarioBrasilia().AddMonths(-4).Date,
+                    DataNascimento = DateTimeExtension.HorarioBrasilia().AddYears(-1).Date,
+                    NumeroAlunoChamada = 14
+                }
             };
 
             return await Task.FromResult(alunosPorTurmaResposta.FirstOrDefault(f => f.CodigoAluno.Equals(request.AlunoCodigo)));
