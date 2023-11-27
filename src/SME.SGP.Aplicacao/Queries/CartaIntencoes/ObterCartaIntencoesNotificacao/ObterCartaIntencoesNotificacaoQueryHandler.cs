@@ -69,12 +69,16 @@ namespace SME.SGP.Aplicacao
                 return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(segundoTitular, usuario.Nome)));
 
             }
-            else if (professoresDaTurma.Any(p => p == usuarioLogado.CodigoRf))
+            else if (professorTitular.NaoEhNulo())
             {
                 return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(professorTitular.ProfessorRf, professorTitular.ProfessorNome)));
             }
-            else
-                return default;
+            else if(professoresDaTurma.NaoEhNulo() && professoresDaTurma.Any(p=> p.Equals(usuarioLogado.CodigoRf)))
+            {
+                return await mediator.Send(new ObterUsuariosNotificarCartaIntencoesObservacaoQuery(ObterProfessorTitular(usuarioLogado.CodigoRf, usuarioLogado.Nome)));
+            }
+               
+            return default;
         }
 
         private List<ProfessorTitularDisciplinaEol> ObterProfessorTitular(string codigoRf, string nome)
