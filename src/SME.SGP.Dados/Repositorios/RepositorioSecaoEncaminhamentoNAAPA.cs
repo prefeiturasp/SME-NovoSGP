@@ -22,13 +22,13 @@ namespace SME.SGP.Dados.Repositorios
             
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(int modalidade, long? encaminhamentoNAAPAId = null)
         {
             var query = @"SELECT sea.id
-	                            , sea.nome
-	                            , sea.questionario_id as questionarioId
-	                            , eas.concluido
-	                            , sea.etapa
+                                , sea.nome
+                                , sea.questionario_id as questionarioId
+                                , eas.concluido
+                                , sea.etapa
                                 , sea.ordem
                                 , sea.nome_componente as nomeComponente
                          FROM secao_encaminhamento_naapa sea
@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { modalidade, tipoQuestionario = (int)TipoQuestionario.EncaminhamentoNAAPA, encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0 });
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int? modalidade, long? encaminhamentoNAAPAId = null)
         {
             var query = new StringBuilder(@"SELECT sea.*, eas.*, q.*
                                             FROM secao_encaminhamento_naapa sea 
@@ -125,9 +125,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<SecaoQuestionarioDto> ObterSecaoQuestionarioDtoPorId(long secaoId)
         {
             var query = @"SELECT sea.id
-	                            , sea.nome
-	                            , sea.questionario_id as questionarioId
-	                            , sea.etapa
+                                , sea.nome
+                                , sea.questionario_id as questionarioId
+                                , sea.etapa
                                 , sea.ordem
                                 , sea.nome_componente as nomeComponente
                          FROM secao_encaminhamento_naapa sea
@@ -227,7 +227,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<EncaminhamentoNAAPAItineranciaAtendimentoDto> ObterAtendimentoSecaoItinerancia(long secaoId)
         {
             var query = @"select ens.encaminhamento_naapa_id EncaminhamentoId, 
-                        		ens.secao_encaminhamento_id SecaoEncaminhamentoNAAPAId, 
+                                ens.secao_encaminhamento_id SecaoEncaminhamentoNAAPAId, 
                                 to_date(enr.texto,'yyyy-mm-dd') DataAtendimento    
                         from encaminhamento_naapa_secao ens   
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  

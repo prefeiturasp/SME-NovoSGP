@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao
 {
     public class ObterAlunosPorTurmaQueryHandlerFake : IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaQuery request, CancellationToken cancellationToken)
         {
            var alunos = new List<AlunoPorTurmaResposta>();
             if (!request.ConsideraInativos)
@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao
                     }
                 };
             }
-            return alunos.Where(x => x.CodigoTurma.ToString() == request.TurmaCodigo);
+            return Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.TurmaCodigo));
         }
     }
 }

@@ -12,13 +12,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ExcluirAulaFuturaTerritorioDisponibilizadoCommandHandler : IRequestHandler<ExcluirAulaFuturaTerritorioDisponibilizadoCommand, RetornoBaseDto>
     {
-        private readonly IMediator mediator;
         private readonly IRepositorioAula repositorioAula;
         
-        public ExcluirAulaFuturaTerritorioDisponibilizadoCommandHandler(IMediator mediator,
-                                              IRepositorioAula repositorioAula)
+        public ExcluirAulaFuturaTerritorioDisponibilizadoCommandHandler(IRepositorioAula repositorioAula)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
 
@@ -32,6 +29,5 @@ namespace SME.SGP.Aplicacao
             retorno.Mensagens.Add("Aula excluída com sucesso.");
             return retorno;
         }
-
     }
 }

@@ -245,7 +245,8 @@ namespace SME.SGP.Dominio
             {
                 if (disciplinasEol.NaoEhNulo() && disciplinasEol.Any())
                     ehTitular = disciplinasEol.Any(d =>
-                        d.DisciplinasId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
+                        d.DisciplinasId().Contains(long.Parse(disciplinaId))
+                        && d.ProfessorRf == professorRf);
 
                 var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
 

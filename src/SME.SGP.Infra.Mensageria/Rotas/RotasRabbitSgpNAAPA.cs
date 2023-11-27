@@ -2,6 +2,8 @@
 {
     public class RotasRabbitSgpNAAPA
     {
+        protected RotasRabbitSgpNAAPA() { }
+
         public const string ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA = "sgp.atualizar.informacoes.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA = "sgp.atualizar.turma.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA = "sgp.atualizar.endereco.encaminhamento.naapa";

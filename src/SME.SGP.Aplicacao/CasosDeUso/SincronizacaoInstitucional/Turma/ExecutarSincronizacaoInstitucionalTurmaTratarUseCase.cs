@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                 var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEOL, turmaSGP));
 
                 if (!turmaTratada)
-                    throw new Exception($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.");
+                    throw new NegocioException($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.");
                 
             }
             catch (Exception ex)

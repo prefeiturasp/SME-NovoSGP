@@ -11,11 +11,10 @@ namespace SME.SGP.Aplicacao
     {
        
         private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequenciaAluno;
-        private readonly IMediator mediator;
-        public ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommandHandler(IRepositorioRegistroFrequenciaAluno repositorioFrequencia, IMediator mediator)
+
+        public ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommandHandler(IRepositorioRegistroFrequenciaAluno repositorioFrequencia)
         {
             this.repositorioRegistroFrequenciaAluno = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ExcluirFrequenciaPorRegistroFrequenciaIdAlunoCodigoNumeroAulaCommand request, CancellationToken cancellationToken)

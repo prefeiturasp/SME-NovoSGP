@@ -31,23 +31,23 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<PlanejamentoAnualPeriodoEscolar> ObterPlanejamentoAnualPeriodoEscolarPorTurmaEComponenteCurricular(long turmaId, long componenteCurricularId, long periodoEscolarId)
         {
             var sql = @"select
-	                        distinct pape.*,
+                            distinct pape.*,
                             pe.*,
-	                        pac.*,
-	                        paoa.*
+                            pac.*,
+                            paoa.*
                         from
-	                        planejamento_anual pa
+                            planejamento_anual pa
                         inner join planejamento_anual_periodo_escolar pape on
-	                        pape.planejamento_anual_id = pa.id
+                            pape.planejamento_anual_id = pa.id
                         inner join planejamento_anual_componente pac on
-	                        pac.planejamento_anual_periodo_escolar_id = pape.id
+                            pac.planejamento_anual_periodo_escolar_id = pape.id
                         left join planejamento_anual_objetivos_aprendizagem paoa on
-	                        paoa.planejamento_anual_componente_id = pac.id
+                            paoa.planejamento_anual_componente_id = pac.id
                         inner join periodo_escolar pe on pape.periodo_escolar_id = pe.id
                         where
-	                        turma_id = @turmaId
-	                        and pac.componente_curricular_id = @componenteCurricularId
-	                        and pape.periodo_escolar_id = @periodoEscolarId
+                            turma_id = @turmaId
+                            and pac.componente_curricular_id = @componenteCurricularId
+                            and pape.periodo_escolar_id = @periodoEscolarId
                             and pape.excluido = false 
                             and pa.excluido = false 
                             and pac.excluido = false
@@ -97,32 +97,32 @@ namespace SME.SGP.Dados.Repositorios
 
             var sql = @"select
                             id,
-	                        periodo_escolar_id,
-	                        planejamento_anual_id
+                            periodo_escolar_id,
+                            planejamento_anual_id
                         from
-	                        planejamento_anual_periodo_escolar
+                            planejamento_anual_periodo_escolar
                         where
-	                        planejamento_anual_periodo_escolar.id = ANY(@ids) and excluido = false;
+                            planejamento_anual_periodo_escolar.id = ANY(@ids) and excluido = false;
 
                         select
                             id,
-	                        componente_curricular_id,
-	                        descricao,
-	                        planejamento_anual_periodo_escolar_id
+                            componente_curricular_id,
+                            descricao,
+                            planejamento_anual_periodo_escolar_id
                         from
-	                        planejamento_anual_componente
+                            planejamento_anual_componente
                         where planejamento_anual_periodo_escolar_id = ANY(@ids) and excluido = false;
 
                         select
                             planejamento_anual_objetivos_aprendizagem.id,
-	                        planejamento_anual_objetivos_aprendizagem.planejamento_anual_componente_id,
-	                        planejamento_anual_objetivos_aprendizagem.objetivo_aprendizagem_id
+                            planejamento_anual_objetivos_aprendizagem.planejamento_anual_componente_id,
+                            planejamento_anual_objetivos_aprendizagem.objetivo_aprendizagem_id
                         from
-	                        planejamento_anual_objetivos_aprendizagem
+                            planejamento_anual_objetivos_aprendizagem
                         inner join planejamento_anual_componente on
-	                        planejamento_anual_objetivos_aprendizagem.planejamento_anual_componente_id = planejamento_anual_componente.id
+                            planejamento_anual_objetivos_aprendizagem.planejamento_anual_componente_id = planejamento_anual_componente.id
                         where
-	                        planejamento_anual_componente.planejamento_anual_periodo_escolar_id = ANY(@ids) 
+                            planejamento_anual_componente.planejamento_anual_periodo_escolar_id = ANY(@ids) 
                             and planejamento_anual_objetivos_aprendizagem.excluido = false 
                             and planejamento_anual_componente.excluido = false;";
 
@@ -205,30 +205,30 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PlanejamentoAnualPeriodoEscolarResumoDto>> ObterPlanejamentosAnuaisPeriodosTurmaPorPlanejamentoAnualId(long planejamentoAnualId)
         {
             var sql = @"select distinct pape.id,
-                        	            pe.bimestre
-                        	from planejamento_anual_periodo_escolar pape
-                        		inner join planejamento_anual pa
-                        			on pape.planejamento_anual_id = pa.id
-                        		inner join periodo_escolar pe
-                        			on pape.periodo_escolar_id = pe.id
-                        		inner join (select pa2.turma_id,
-                        						   pa2.componente_curricular_id
-                        						from planejamento_anual_periodo_escolar pape2
-                        							inner join planejamento_anual pa2
-                        								on pape2.planejamento_anual_id = pa2.id
-                        					where pape2.planejamento_anual_id = @planejamentoAnualId and
-                        						  not pape2.excluido and
-                        						  not pa2.excluido) tc
-                        			on pa.turma_id = tc.turma_id and
-                        			   pa.componente_curricular_id = tc.componente_curricular_id
+                                        pe.bimestre
+                            from planejamento_anual_periodo_escolar pape
+                                inner join planejamento_anual pa
+                                    on pape.planejamento_anual_id = pa.id
+                                inner join periodo_escolar pe
+                                    on pape.periodo_escolar_id = pe.id
+                                inner join (select pa2.turma_id,
+                                                   pa2.componente_curricular_id
+                                                from planejamento_anual_periodo_escolar pape2
+                                                    inner join planejamento_anual pa2
+                                                        on pape2.planejamento_anual_id = pa2.id
+                                            where pape2.planejamento_anual_id = @planejamentoAnualId and
+                                                  not pape2.excluido and
+                                                  not pa2.excluido) tc
+                                    on pa.turma_id = tc.turma_id and
+                                       pa.componente_curricular_id = tc.componente_curricular_id
                                 inner join turma t on t.id = pa.turma_id 
                                 inner join tipo_calendario c on c.id = pe.tipo_calendario_id
                         where not pape.excluido and
-                        	  not pape.excluido and
-                        	  not pa.excluido and
+                              not pape.excluido and
+                              not pa.excluido and
                               c.modalidade = case when t.modalidade_codigo = 3 then 2 
-							      when t.modalidade_codigo in (5,6) then 1
-							      when t.modalidade_codigo = 1 then 3 end
+                                  when t.modalidade_codigo in (5,6) then 1
+                                  when t.modalidade_codigo = 1 then 3 end
                         order by pe.bimestre;";
             return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }

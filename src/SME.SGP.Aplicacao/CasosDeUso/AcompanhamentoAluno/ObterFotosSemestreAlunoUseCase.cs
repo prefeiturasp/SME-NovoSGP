@@ -1,11 +1,10 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -56,7 +55,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                throw new Exception($"Falha ao carregar miniaturas das fotos do aluno", ex);
+                throw new ErroInternoException($"Falha ao carregar miniaturas das fotos do aluno", ex);
             }
 
             return arquivos;

@@ -13,13 +13,10 @@ namespace SME.SGP.Aplicacao
             public TipoCalendarioDto Dto { get; set; }
             public TipoCalendario TipoCalendario { get; set; }
         }
-
-        private readonly IMediator mediator;
         private readonly IComandosTipoCalendario comandosTipoCalendario;
 
-        public ExecutarTipoCalendarioUseCase(IMediator mediator, IComandosTipoCalendario comandosTipoCalendario)
+        public ExecutarTipoCalendarioUseCase(IComandosTipoCalendario comandosTipoCalendario)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.comandosTipoCalendario = comandosTipoCalendario;
         }
 

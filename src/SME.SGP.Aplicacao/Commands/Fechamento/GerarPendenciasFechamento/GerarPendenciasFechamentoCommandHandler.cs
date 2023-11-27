@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
@@ -17,13 +16,11 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
     {
         private readonly IMediator mediator;
         private readonly IServicoPendenciaFechamento servicoPendenciaFechamento;
-        private readonly IConfiguration configuration;
-
-        public GerarPendenciasFechamentoCommandHandler(IMediator mediator, IServicoPendenciaFechamento servicoPendenciaFechamento, IConfiguration configuration)
+        
+        public GerarPendenciasFechamentoCommandHandler(IMediator mediator, IServicoPendenciaFechamento servicoPendenciaFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoPendenciaFechamento = servicoPendenciaFechamento ?? throw new ArgumentNullException(nameof(servicoPendenciaFechamento));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public async Task<bool> Handle(GerarPendenciasFechamentoCommand request, CancellationToken cancellationToken)

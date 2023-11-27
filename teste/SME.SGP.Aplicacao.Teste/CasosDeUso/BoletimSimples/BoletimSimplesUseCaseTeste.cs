@@ -18,13 +18,10 @@ namespace SME.SGP.Aplicacao
     {
         private readonly BoletimUseCase boletimSimplesUseCase;
         private readonly Mock<IMediator> mediator;
-        private readonly Mock<IUnitOfWork> unitOfWork;
-
         public BoletimSimplesUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            unitOfWork = new Mock<IUnitOfWork>();
-            boletimSimplesUseCase = new BoletimUseCase(mediator.Object, unitOfWork.Object);
+            boletimSimplesUseCase = new BoletimUseCase(mediator.Object);
         }
 
         [Fact]

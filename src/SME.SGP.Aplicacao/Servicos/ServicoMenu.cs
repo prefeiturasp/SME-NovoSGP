@@ -119,10 +119,7 @@ namespace SME.SGP.Aplicacao
         private string ObterUrlComRedirect(PermissaoMenuAttribute permissaoMenuAttribute)
         {
             var url = permissaoMenuAttribute.Url;
-            //if (!string.IsNullOrWhiteSpace(permissaoMenuAttribute.Redirect))
-            //{
-            //    url = $"{url}?redirect={permissaoMenuAttribute.Redirect}";
-            //}
+
             return url;
         }
     }

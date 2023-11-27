@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioCadastroAcessoABAEConsulta = repositorioCadastroAcessoABAEConsulta ?? throw new ArgumentNullException(nameof(repositorioCadastroAcessoABAEConsulta));
         }
         
-        public async Task<CadastroAcessoABAE> Handle(ObterCadastroAcessoABAEPorIdQuery request, CancellationToken cancellationToken)
+        public Task<CadastroAcessoABAE> Handle(ObterCadastroAcessoABAEPorIdQuery request, CancellationToken cancellationToken)
         {
-            return repositorioCadastroAcessoABAEConsulta.ObterPorId(request.Id);
+            return Task.FromResult(repositorioCadastroAcessoABAEConsulta.ObterPorId(request.Id));
         }
     }
 }

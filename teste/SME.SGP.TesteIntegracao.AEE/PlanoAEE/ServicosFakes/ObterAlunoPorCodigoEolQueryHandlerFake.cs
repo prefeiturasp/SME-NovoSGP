@@ -3,9 +3,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,9 +16,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";
         private readonly string CELULAR_RESPONSAVEL = "11111111111";
-        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
+        public Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
         {
-            return new AlunoPorTurmaResposta
+            return Task.FromResult(new AlunoPorTurmaResposta
             {
                 Ano = 0,
                 CodigoAluno = request.CodigoAluno,
@@ -38,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 TipoResponsavel = TIPO_RESPONSAVEL_4,
                 CelularResponsavel = CELULAR_RESPONSAVEL,
                 DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-            };
+            });
         }
     }
 }

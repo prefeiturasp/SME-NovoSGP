@@ -14,12 +14,10 @@ namespace SME.SGP.Aplicacao
     public class GerarParecerConclusivoAlunoCommandHandler : IRequestHandler<GerarParecerConclusivoAlunoCommand, ParecerConclusivoDto>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
-
-        public GerarParecerConclusivoAlunoCommandHandler(IMediator mediator, IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno)
+        
+        public GerarParecerConclusivoAlunoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
 
         public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request,

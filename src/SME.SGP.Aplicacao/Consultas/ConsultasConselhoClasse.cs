@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IConsultasTurma consultasTurma;
-        private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -32,7 +31,6 @@ namespace SME.SGP.Aplicacao
                                        IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                        IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
                                        IConsultasTurma consultasTurma,
-                                       IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                        IConsultasFechamentoTurma consultasFechamentoTurma,
                                        IMediator mediator)
@@ -44,7 +42,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
-            this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

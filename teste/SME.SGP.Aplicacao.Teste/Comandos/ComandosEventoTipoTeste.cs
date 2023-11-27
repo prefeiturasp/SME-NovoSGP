@@ -13,22 +13,20 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
     {
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
-        private readonly Mock<IUnitOfWork> unitOfWork;
         private IComandosEventoTipo comandosEventoTipo;
 
         public ComandosEventoTipoTeste()
         {
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
             repositorioEvento = new Mock<IRepositorioEvento>();
-            unitOfWork = new Mock<IUnitOfWork>();
-            comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, unitOfWork.Object, repositorioEvento.Object);
+            comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, repositorioEvento.Object);
         }
 
         [Fact(DisplayName = "Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencia")]
         public void Deve_Disparar_Excecao_Ao_Instanciar_Sem_Dependencia()
         {
-            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(null, unitOfWork.Object, repositorioEvento.Object));
-            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, null, repositorioEvento.Object));
+            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(null, repositorioEvento.Object));
+            Assert.Throws<ArgumentNullException>(() => comandosEventoTipo = new ComandosEventoTipo(repositorioEventoTipo.Object, repositorioEvento.Object));
         }
 
         [Fact(DisplayName = "Deve_Disparer_Excecao_Ao_Remover_Evento_Inexistente")]

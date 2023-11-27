@@ -156,10 +156,10 @@ namespace SME.SGP.Dados.Repositorios
                                                     LEFT JOIN opcao_resposta opr ON opr.id = enr.resposta_id
                                                     WHERE questio.tipo = {(int)TipoQuestionario.EncaminhamentoNAAPA}
                                                       and not ens.excluido 
-													  and not enq.excluido 
-												      and not enr.excluido 
+                                                      and not enq.excluido 
+                                                      and not enr.excluido 
                                                     group by ens.encaminhamento_naapa_id, q.nome_componente, q.tipo
-													order by ens.encaminhamento_naapa_id',
+                                                    order by ens.encaminhamento_naapa_id',
 
                                                     'SELECT DISTINCT nome_componente 
                                                      FROM questionario q

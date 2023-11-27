@@ -173,7 +173,7 @@ namespace SME.SGP.Dados.Repositorios
         public Task<FechamentoTurmaPeriodoEscolarDto> ObterIdEPeriodoPorTurmaBimestre(long turmaId, int? bimestre)
         {
             var query = @"select ft.id as FechamentoTurmaId
-	                        , pe.id as PeriodoEscolarId
+                            , pe.id as PeriodoEscolarId
                           from fechamento_turma ft
                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                         where ft.turma_id = @turmaId

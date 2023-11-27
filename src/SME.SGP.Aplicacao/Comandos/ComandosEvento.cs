@@ -19,14 +19,12 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
-        private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
 
         public ComandosEvento(IRepositorioEvento repositorioEvento,
                               IRepositorioEventoTipo repositorioEventoTipo,
                               IServicoEvento servicoEvento,
                               IServicoWorkflowAprovacao servicoWorkflowAprovacao,
-                              IServicoUsuario servicoUsuario,
                               IServicoAbrangencia servicoAbrangencia,
                               IRepositorioComunicado repositorioComunicado,
                               IMediator mediator)
@@ -37,7 +35,6 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator;
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
         }
 

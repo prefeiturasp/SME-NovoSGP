@@ -12,12 +12,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAcompanhamentoAlunoUseCase : AbstractUseCase, IObterAcompanhamentoAlunoUseCase
     {
-        private readonly IConsultasPeriodoFechamento consultaPeriodoFechamento;
-
-        public ObterAcompanhamentoAlunoUseCase(IMediator mediator, IConsultasPeriodoFechamento consultaPeriodoFechamento) : base(mediator)
-        {
-            this.consultaPeriodoFechamento = consultaPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultaPeriodoFechamento));
-        }
+        public ObterAcompanhamentoAlunoUseCase(IMediator mediator) : base(mediator)
+        {}
 
         public async Task<AcompanhamentoAlunoTurmaSemestreDto> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
         {

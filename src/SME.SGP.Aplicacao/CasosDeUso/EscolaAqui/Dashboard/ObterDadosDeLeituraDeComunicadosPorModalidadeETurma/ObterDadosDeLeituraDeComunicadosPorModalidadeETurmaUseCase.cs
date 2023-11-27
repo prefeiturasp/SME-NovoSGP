@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(item.CodigoTurma));
                 if (turma.EhNulo())
-                    throw new Exception("Não foi possível localizar a turma");
+                    throw new NegocioException("Não foi possível localizar a turma");
 
                 item.SiglaModalidade = turma.ModalidadeCodigo.ShortName();
                 dadosLeituraComunicados.Add(item);

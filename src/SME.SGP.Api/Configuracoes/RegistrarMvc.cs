@@ -32,7 +32,7 @@ namespace SME.SGP.Api.Configuracoes
             })
                 .AddNewtonsoftJson()
                 .AddFluentValidation()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
     }
 }
