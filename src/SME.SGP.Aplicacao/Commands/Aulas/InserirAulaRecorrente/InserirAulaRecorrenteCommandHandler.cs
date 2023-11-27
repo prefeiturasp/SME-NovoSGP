@@ -90,12 +90,8 @@ namespace SME.SGP.Aplicacao
             var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery, cancellationToken);
 
             if (!usuarioPodePersistirTurmaNaData)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Informações da consulta usuarioPodePersistirTurmaNaData com resultado igual a false = componenteCurricularId: {aulaRecorrente.ComponenteCurricularId} / codigoTurma: {aulaRecorrente.CodigoTurma} / dataAula: {aulaRecorrente.DataAula} / usuarioLogado: {usuarioLogado}", LogNivel.Negocio, LogContexto.Turma, string.Empty));
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
-            }
                 
-
             return atribuicao;
         }
 
