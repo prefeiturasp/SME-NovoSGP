@@ -34,7 +34,8 @@ namespace SME.SGP.Aplicacao
                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
                             IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
                             IServicoAluno servicoAluno,
-                            IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo, 
+                            IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
+                            IServicoUsuario servicoUsuario,
                             IConsultasDisciplina consultasDisciplina, IConsultasPeriodoFechamento consultasPeriodoFechamento,
                             IMediator mediator)
         {
