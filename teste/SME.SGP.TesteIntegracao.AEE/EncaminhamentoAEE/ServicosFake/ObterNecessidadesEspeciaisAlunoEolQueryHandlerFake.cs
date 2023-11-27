@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake
     {
         public async Task<InformacoesEscolaresAlunoDto> Handle(ObterNecessidadesEspeciaisAlunoEolQuery request, CancellationToken cancellationToken)
         {
-            return new InformacoesEscolaresAlunoDto()
+            return await Task.FromResult(new InformacoesEscolaresAlunoDto()
             {
                 CodigoAluno = "1",
                 FrequenciaGlobal = "95",
@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake
                         TotalAulas = 30
                     }
                 }
-            };
+            });
         }
     }
 }

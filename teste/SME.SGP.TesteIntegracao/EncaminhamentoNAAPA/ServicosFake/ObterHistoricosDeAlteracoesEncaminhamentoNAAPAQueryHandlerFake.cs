@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {
@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
     {
         public async Task<EncaminhamentoNAAPAHistoricoAlteracoes> Handle(ObterHistoricosDeAlteracoesEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
-            return new EncaminhamentoNAAPAHistoricoAlteracoes
+            return await Task.FromResult(new EncaminhamentoNAAPAHistoricoAlteracoes
             {
                 Id = 1,
                 EncaminhamentoNAAPAId = 1,
@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
                 DataAtendimento = DateTime.Now.ToString(),
                 DataHistorico = DateTime.Now,
                 TipoHistorico = TipoHistoricoAlteracoesEncaminhamentoNAAPA.Impressao
-            };
+            });
         }
     }
 }

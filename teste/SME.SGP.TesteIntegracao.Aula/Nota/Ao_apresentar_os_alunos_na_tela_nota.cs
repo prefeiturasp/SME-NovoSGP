@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 {
     public class Ao_apresentar_os_alunos_na_tela_nota : NotaTesteBase
     {
-        private const string ALUNO_CODIGO_12 = "12";
+        private new const string ALUNO_CODIGO_12 = "12";
 
         public Ao_apresentar_os_alunos_na_tela_nota(CollectionFixture collectionFixture) : base(collectionFixture)
         {

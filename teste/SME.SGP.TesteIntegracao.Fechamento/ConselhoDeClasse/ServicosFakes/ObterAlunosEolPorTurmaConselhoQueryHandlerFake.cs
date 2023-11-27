@@ -198,7 +198,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 }
             };
 
-            return alunos.Where(x => x.CodigoTurma.ToString() == request.TurmaId);
+            return await Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.TurmaId));
         }
     }
 }

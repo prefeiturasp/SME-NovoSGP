@@ -11,13 +11,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
     {
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesRegenciaPorAnoETurnoQuery request, CancellationToken cancellationToken)
         {
-            return new List<DisciplinaDto>()
+            return await Task.FromResult(new List<DisciplinaDto>()
             {
                 new DisciplinaDto()
                 {
                     CodigoComponenteCurricular = 2
                 }
-            };
+            });
         }
     }
 }

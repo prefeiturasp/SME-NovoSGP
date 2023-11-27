@@ -5,33 +5,31 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Elastic.Apm.Api;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class ObterAlunoPorCodigoEolQueryHandlerFake : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
     {
-          private readonly string ALUNO_CODIGO_1 = "1";
-          private readonly string ALUNO_CODIGO_2 = "2";
-          private readonly string ALUNO_CODIGO_3 = "3";
-          private readonly string ALUNO_CODIGO_4 = "4";
-          private readonly string ALUNO_CODIGO_5 = "5";
-          private readonly string ALUNO_CODIGO_6 = "6";
-          private readonly string ALUNO_CODIGO_7 = "7";
-          private readonly string ALUNO_CODIGO_8 = "8";
-          private readonly string ALUNO_CODIGO_9 = "9";
-          private readonly string ALUNO_CODIGO_10 = "10";
-          private readonly string ATIVO = "Ativo";
-          private readonly string RESPONSAVEL = "RESPONSAVEL";
-          private readonly string TIPO_RESPONSAVEL_4 = "4";
-          private readonly string CELULAR_RESPONSAVEL = "11111111111";
-          private const int CODIGO_TURMA_1 = 1;
+        private readonly string ALUNO_CODIGO_1 = "1";
+        private readonly string ALUNO_CODIGO_2 = "2";
+        private readonly string ALUNO_CODIGO_3 = "3";
+        private readonly string ALUNO_CODIGO_4 = "4";
+        private readonly string ALUNO_CODIGO_5 = "5";
+        private readonly string ALUNO_CODIGO_6 = "6";
+        private readonly string ALUNO_CODIGO_7 = "7";
+        private readonly string ALUNO_CODIGO_8 = "8";
+        private readonly string ALUNO_CODIGO_9 = "9";
+        private readonly string ALUNO_CODIGO_10 = "10";
+        private readonly string ATIVO = "Ativo";
+        private readonly string RESPONSAVEL = "RESPONSAVEL";
+        private readonly string TIPO_RESPONSAVEL_4 = "4";
+        private readonly string CELULAR_RESPONSAVEL = "11111111111";
+        private const int CODIGO_TURMA_1 = 1;
         public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
         {
-            var alunos = new List<AlunoPorTurmaResposta> 
+            var alunos = new List<AlunoPorTurmaResposta>
             {
                 new AlunoPorTurmaResposta
                 {
@@ -294,11 +292,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                 }
             };
-            
-          if (string.IsNullOrEmpty(request.CodigoTurma))
-            return alunos.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
-      
-          return alunos.FirstOrDefault(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma)); 
+
+            if (string.IsNullOrEmpty(request.CodigoTurma))
+                return await Task.FromResult(alunos.OrderByDescending(a => a.DataSituacao).FirstOrDefault());
+
+            return await Task.FromResult(alunos.FirstOrDefault(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma)));
         }
     }
 }

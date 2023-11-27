@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 {
     public abstract class NotaTesteBase : TesteBaseComuns
     {
-        protected const long AULA_ID_1 = 1;
+        protected new const long AULA_ID_1 = 1;
 
         protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
@@ -25,27 +25,27 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected const string CODIGO_ALUNO_99999 = "99999";
 
-        protected readonly string ALUNO_CODIGO_1 = "1";
-        protected readonly string ALUNO_CODIGO_2 = "2";
-        protected readonly string ALUNO_CODIGO_3 = "3";
-        protected readonly string ALUNO_CODIGO_4 = "4";
-        protected readonly string ALUNO_CODIGO_5 = "5";
-        protected readonly string ALUNO_CODIGO_6 = "6";
-        protected readonly string ALUNO_CODIGO_7 = "7";
-        protected readonly string ALUNO_CODIGO_8 = "8";
-        protected readonly string ALUNO_CODIGO_9 = "9";
-        protected readonly string ALUNO_CODIGO_10 = "10";
+        protected new readonly string ALUNO_CODIGO_1 = "1";
+        protected new readonly string ALUNO_CODIGO_2 = "2";
+        protected new readonly string ALUNO_CODIGO_3 = "3";
+        protected new readonly string ALUNO_CODIGO_4 = "4";
+        protected new readonly string ALUNO_CODIGO_5 = "5";
+        protected new readonly string ALUNO_CODIGO_6 = "6";
+        protected new readonly string ALUNO_CODIGO_7 = "7";
+        protected new readonly string ALUNO_CODIGO_8 = "8";
+        protected new readonly string ALUNO_CODIGO_9 = "9";
+        protected new readonly string ALUNO_CODIGO_10 = "10";
 
-        protected readonly double NOTA_1 = 1;
-        protected readonly double NOTA_2 = 2;
-        protected readonly double NOTA_3 = 3;
-        protected readonly double NOTA_4 = 4;
-        protected readonly double NOTA_5 = 5;
-        protected readonly double NOTA_6 = 6;
-        protected readonly double NOTA_7 = 7;
-        protected readonly double NOTA_8 = 8;
-        protected readonly double NOTA_9 = 9;
-        protected readonly double NOTA_10 = 10;
+        protected new readonly double NOTA_1 = 1;
+        protected new readonly double NOTA_2 = 2;
+        protected new readonly double NOTA_3 = 3;
+        protected new readonly double NOTA_4 = 4;
+        protected new readonly double NOTA_5 = 5;
+        protected new readonly double NOTA_6 = 6;
+        protected new readonly double NOTA_7 = 7;
+        protected new readonly double NOTA_8 = 8;
+        protected new readonly double NOTA_9 = 9;
+        protected new readonly double NOTA_10 = 10;
 
         protected readonly string AVALIACAO_NOME_1 = "Avaliação 1";
         protected readonly string AVALIACAO_NOME_2 = "Avaliação 2";
@@ -53,10 +53,10 @@ namespace SME.SGP.TesteIntegracao.Nota
         protected readonly long TIPO_AVALIACAO_CODIGO_1 = 1;
         protected readonly long TIPO_AVALIACAO_CODIGO_2 = 2;
 
-        protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        protected new readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
 
-        protected readonly string NOTA = "NOTA";
-        protected readonly string CONCEITO = "CONCEITO";
+        protected new readonly string NOTA = "NOTA";
+        protected new readonly string CONCEITO = "CONCEITO";
 
         protected NotaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {

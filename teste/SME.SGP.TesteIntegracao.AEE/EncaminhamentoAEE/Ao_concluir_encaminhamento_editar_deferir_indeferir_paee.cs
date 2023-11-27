@@ -190,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            CriarPendenciasEncaminhamento(PerfilUsuario.PAEE);
+             await CriarPendenciasEncaminhamento(PerfilUsuario.PAEE);
 
             var pendenciasPaee = ObterTodos<Pendencia>();
             pendenciasPaee.ShouldNotBeNull();

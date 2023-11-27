@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao
     {
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorTitularDisciplinaEol>()
+            return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>()
             {
                 new ProfessorTitularDisciplinaEol
                 {
@@ -23,12 +23,12 @@ namespace SME.SGP.TesteIntegracao
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
                     DisciplinasId = new long[] { 138 }
                 },
-            };
+            });
         }
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorTitularDisciplinaEol>()
+            return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>()
             {
                 new ProfessorTitularDisciplinaEol
                 {
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
                     DisciplinasId = new long[] { 138 }
                 },
-            };
+            });
         }
     }
 }
