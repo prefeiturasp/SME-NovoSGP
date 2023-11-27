@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes
             var dataMatriculaAluno2 = new DateTime(2023, 08, 08);
             var dataSituacaoAluno = new DateTime(2023, 10, 31);
 
-            return new List<AlunoPorTurmaResposta> {
+            return await Task.FromResult(new List<AlunoPorTurmaResposta> {
                 new AlunoPorTurmaResposta
                 {
                     CodigoAluno = "1",
@@ -60,8 +60,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes
                     ParecerConclusivo = null,
                     TipoResponsavel = "1"
                 }
-            };
-
+            });
         }
     }
 }
