@@ -70,7 +70,9 @@ namespace SME.SGP.Aplicacao
                 PlaceHolder = questao.PlaceHolder,
                 Mascara = questao.Mascara,
                 NomeComponente = questao.NomeComponente,
-                OpcaoResposta = questao.OpcoesRespostas.Select(opcaoResposta =>
+                OpcaoResposta = questao.OpcoesRespostas.Where(opcaoResposta => !opcaoResposta.Excluido || 
+                                                              ExisteOpcaoResposta(obterRespostas(questaoId), opcaoResposta.Id))
+                                                        .Select(opcaoResposta =>
                 {
                     return new OpcaoRespostaDto()
                     {
@@ -88,6 +90,16 @@ namespace SME.SGP.Aplicacao
                 Resposta = obterRespostas.EhNulo() ? null :
                     obterRespostas(questaoId)
             };
+        }
+
+        private bool ExisteOpcaoResposta(IEnumerable<RespostaQuestaoDto> respostas, long opcaoRespostaId)
+        {
+            if (respostas.EhNulo())
+                return false;
+
+            var opcoesRespostasIds = respostas.Select(resposta => resposta.OpcaoRespostaId);
+
+            return opcoesRespostasIds.Contains(opcaoRespostaId);
         }
     }
 }
