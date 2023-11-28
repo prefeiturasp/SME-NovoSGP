@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                     if (turma.EhTurmaRegular() && turma.EhEJA())
-                        componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
+                    componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turma, (filtro.Bimestre ?? 0));
             }
 
             var statusNovo = SituacaoConselhoClasse.NaoIniciado;
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
 
             if (!filtro.Inativo && componentesComNotaFechamentoOuConselho.Any())
             {
-                
+
                 var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
                 if (turma.ModalidadeCodigo != Modalidade.Fundamental)
                 {
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
                         var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo));
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
-                 
+
                     //Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turma.EhEJA())
                         componentesDaTurmaES = componentesDaTurmaES.Where(a => a.Codigo != EdFisica);
@@ -226,10 +226,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurmaRegularPorConselhoClasseComplementar(Turma turmaComplementar, string aluno)
         {
-            var turmasAluno = await mediator.Send(new ObterTurmasFechamentoConselhoPorAlunosQuery(new long[] {long.Parse(aluno)}, turmaComplementar.AnoLetivo));
+            var turmasAluno = await mediator.Send(new ObterTurmasFechamentoConselhoPorAlunosQuery(new long[] { long.Parse(aluno) }, turmaComplementar.AnoLetivo));
             if (!turmasAluno.Any())
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
-            var turmaRegularCodigo = turmasAluno.Count() == 1 && turmasAluno.Any(x=>x.TipoTurma == TipoTurma.Regular) ? turmasAluno.FirstOrDefault().TurmaCodigo : turmasAluno.FirstOrDefault(t => t.TurmaCodigo == turmaComplementar.CodigoTurma && !string.IsNullOrEmpty(t.RegularCodigo))?.RegularCodigo ;
+            var turmaRegularCodigo = turmasAluno.FirstOrDefault(x => x.TipoTurma == TipoTurma.Regular)?.TurmaCodigo ?? turmasAluno.FirstOrDefault(t => t.TurmaCodigo == turmaComplementar.CodigoTurma && !string.IsNullOrEmpty(t.RegularCodigo))?.RegularCodigo;
             if (!string.IsNullOrEmpty(turmaRegularCodigo))
                 return (await mediator.Send(new ObterTurmasPorCodigosQuery(new string[] { turmaRegularCodigo }))).FirstOrDefault();
             return null;
