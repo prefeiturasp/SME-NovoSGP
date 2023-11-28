@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
                 if (componentesObtidos != null && componentesObtidos.Any())
                     componentesDaTurma.AddRange(componentesObtidos);
                 else
-                    throw new NegocioException($"Não foi possível obter turma com componentes da turma: {turma.CodigoTurma}.");
+                    throw new NegocioException($"Não foram retornados items ao obter turmas com componentes. Turma: {turma.CodigoTurma}.");
             }
 
             var codigosComponentes = componentesDaTurma.Select(x => x.ComponenteCurricularCodigo).Distinct().ToArray();

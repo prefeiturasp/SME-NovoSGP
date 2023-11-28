@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.ComponentesCurriculares.ObterInfoCompo
 
             var query = new ObterInfoComponentesCurricularesESPorTurmasCodigoQuery(codigosTurmas);
 
-            Assert.Equal("Não foi possível obter turma com componentes da turma: 2.", 
+            Assert.Equal("Não foram retornados items ao obter turmas com componentes. Turma: 2.", 
                 (await Assert.ThrowsAsync<NegocioException>(async () => await obterInfoComponentesCurricularesESPorTurmasCodigoQueryHandler.Handle(query, It.IsAny<CancellationToken>()))).Message);            
         }
     }
