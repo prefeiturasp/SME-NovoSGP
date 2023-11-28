@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
 
         public async Task<bool> Handle(IncluirFilaGeracaoPendenciasFechamentoCommand request, CancellationToken cancellationToken)
         {
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

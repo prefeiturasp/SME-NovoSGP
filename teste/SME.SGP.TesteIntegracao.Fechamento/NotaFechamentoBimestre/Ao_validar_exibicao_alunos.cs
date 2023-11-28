@@ -148,7 +148,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 .Alunos.Any(c => !alunosNaoExibir.Contains(c.Id)).ShouldBeTrue();
         }
         
-        private async Task<NotasConceitosRetornoDto> ExecutarTeste(ListaNotasConceitosDto filtroListaNotasConceitos)
+        private new async Task<NotasConceitosRetornoDto> ExecutarTeste(ListaNotasConceitosDto filtroListaNotasConceitos)
         {
             NotasConceitosRetornoDto retorno = new();
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();

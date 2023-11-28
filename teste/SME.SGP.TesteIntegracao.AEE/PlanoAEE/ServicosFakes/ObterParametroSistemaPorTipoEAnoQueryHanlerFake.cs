@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
     {
         public async Task<ParametrosSistema> Handle(ObterParametroSistemaPorTipoEAnoQuery request, CancellationToken cancellationToken)
         {
-            return new ParametrosSistema()
+            return await Task.FromResult(new ParametrosSistema()
             {
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "GerarPendenciasPlanoAEE",
@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 Valor = string.Empty,
                 Ativo = true,
                 Tipo = TipoParametroSistema.GerarPendenciasPlanoAEE
-            };
+            });
         }
     }
 }

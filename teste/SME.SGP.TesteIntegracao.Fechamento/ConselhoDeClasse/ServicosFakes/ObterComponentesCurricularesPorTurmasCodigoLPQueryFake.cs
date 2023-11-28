@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         private const string LINGUA_PORTUGUESA = "LINGUA PORTUGUESA";
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new List<DisciplinaDto>()
+            return await Task.FromResult(new List<DisciplinaDto>()
             {
                 new DisciplinaDto()
                 {
@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     LancaNota = true,
                     TurmaCodigo = TURMA_CODIGO_1
                 }
-            };
+            });
         }
     }
 }

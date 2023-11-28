@@ -17,14 +17,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<TurmaItinerarioEnsinoMedioDto>> Handle(ObterTurmaItinerarioEnsinoMedioQuery request, CancellationToken cancellationToken)
         {
-            return new List<TurmaItinerarioEnsinoMedioDto>()
+            return await Task.FromResult(new List<TurmaItinerarioEnsinoMedioDto>()
             {
                 new TurmaItinerarioEnsinoMedioDto()
                 {
                     Serie = SERIE,
                     Nome = NOME_SERIE,
                 }
-            };
+            });
         }
     }
 }

@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                       DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                 }
             };
-            return alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma);
+            return await Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma));
         }
     }
 }

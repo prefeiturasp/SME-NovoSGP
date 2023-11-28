@@ -1,27 +1,27 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake
+namespace SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes
 {
-    public class ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues : IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
+    public class ObterProfessoresTitularesDisciplinasEolQueryHandlerFake: IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
+        private const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
+        private const long DISCIPLINA_PORTUGUES_138 = 138;
+
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>()
             {
                 new ProfessorTitularDisciplinaEol
                 {
-                    ProfessorRf ="222222",
+                    ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
                     ProfessorNome ="PROFESSOR DE PORTUGUES",
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
-                    DisciplinasId = new long[] { 138 }
+                    DisciplinasId = new long[] { DISCIPLINA_PORTUGUES_138 }
                 },
             });
         }

@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
         
         public async Task<IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>> Handle(ProfessoresTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorAtribuidoTurmaDisciplinaDTO>()
+            return await Task.FromResult(new List<ProfessorAtribuidoTurmaDisciplinaDTO>()
             {
                 new ()
                 {
@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
                     DisciplinaId = DISCIPLINA_LEITURA_OSL_1061,
                     NomeProfessor = NOME_PROFESSOR_1
                 }
-            };
+            });
         }
     }
 }

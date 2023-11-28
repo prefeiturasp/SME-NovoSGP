@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia();
 
-            return new List<AlunoPorTurmaResposta>()
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>()
               {
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -158,7 +158,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       NomeAluno = "NOME ALUNO 13",
                       CodigoTurma = 1
                   },  
-              }; 
+              }); 
         }
     }
 }

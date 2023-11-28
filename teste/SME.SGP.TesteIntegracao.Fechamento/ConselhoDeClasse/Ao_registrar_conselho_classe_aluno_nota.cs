@@ -151,7 +151,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 await InserirConselhoClassePadrao(filtro);
         }
         
-        private async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
+        private new async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
             var fechamentoTurmas = ObterTodos<FechamentoTurma>();
 
@@ -195,7 +195,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 conselhoClasseId++;
             }
         }
-        private IEnumerable<long> ObterComponentesCurriculares()
+        private static new IEnumerable<long> ObterComponentesCurriculares()
         {
             return new List<long>()
             {
