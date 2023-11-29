@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
             var disciplinaEOL = await consultasDisciplina.ObterDisciplina(filtros.DisciplinaCodigo);
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
 
-            var periodoFechamentoFinal = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendario.Id, turma.EhTurmaInfantil, turma.EhEJA() ? 2 : 4));
+            var periodoFechamentoFinal = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendario.Id, turma.EhTurmaInfantil, turma.EhTurmaModalidadeSemestral() ? 2 : 4));
 
             if(periodoFechamentoFinal.EhNulo())
                 throw new NegocioException("Não foi possível localizar o período de fechamento final para essa turma.");
