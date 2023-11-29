@@ -142,28 +142,33 @@ namespace SME.SGP.Aplicacao
                 tiposTurmasParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
 
-                var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
+                var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, 1));
 
-                if (turma.Historica == true)
+                if(periodoEscolar.NaoEhNulo() && periodoEscolar.Any())
                 {
-                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+                    var turmasCodigosEOL = await mediator
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.First(x => x.Bimestre == 1).PeriodoInicio,  ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
-                    if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                    if (turma.Historica == true)
                     {
-                        turmasCodigos = turmasCodigosEOL;
-                        turmasCodigos = turmasCodigos
-                        .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                        var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+
+                        if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                        {
+                            turmasCodigos = turmasCodigosEOL;
+                            turmasCodigos = turmasCodigos
+                            .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                        }
+                        else
+                        {
+                            turmasCodigos = new string[] { turma.CodigoTurma };
+                        }
                     }
                     else
-                    {
-                        turmasCodigos = new string[] { turma.CodigoTurma };
-                    }
+                        turmasCodigos = turmasCodigosEOL
+                            .Concat(new string[] { turma.CodigoTurma }).ToArray();
                 }
-                else
-                    turmasCodigos = turmasCodigosEOL
-                        .Concat(new string[] { turma.CodigoTurma }).ToArray();
-
+                else turmasCodigos = new string[] { turma.CodigoTurma };
             }
             else turmasCodigos = new string[] { turma.CodigoTurma };
 
