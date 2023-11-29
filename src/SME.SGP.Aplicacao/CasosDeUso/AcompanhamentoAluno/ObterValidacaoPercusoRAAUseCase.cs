@@ -56,13 +56,22 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<AlunosComInconsistenciaPercursoIndividualRAADto>> ObterInconsistenciaDeAlunosSemPercurso(List<AcompanhamentoAluno> acompanhamentoAlunos, FiltroInconsistenciaPercursoRAADto param)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, param.Semestre * 2));
+            
+            if(turma.EhNulo())
+                throw new NegocioException("Turma não encontrada.");
+
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(turma.ModalidadeTipoCalendario, turma.AnoLetivo, turma.Semestre));
+            
+            if(tipoCalendarioId.EhNulo())
+                throw new NegocioException("Tipo de calendário não encontrado para a turma informada.");
+
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, false, param.Semestre * 2));          
             var alunos = await mediator.Send(new ObterDadosAlunosFechamentoQuery(turma.CodigoTurma, turma.AnoLetivo, param.Semestre));
             var inconsistencias = new List<AlunosComInconsistenciaPercursoIndividualRAADto>();
 
             foreach (var aluno in alunos)
             {
-                var alunoAtivo = aluno.EstaAtivo() || aluno.DataSituacao.Date >= periodoEscolar?.PeriodoInicio;
+                var alunoAtivo = aluno.EstaAtivo() || aluno.DataSituacao.Date >= periodoFechamento?.InicioDoFechamento;
                 if (alunoAtivo && !acompanhamentoAlunos.Exists(alunoPercurso => alunoPercurso.AlunoCodigo == aluno.CodigoEOL))
                 {
                     inconsistencias.Add(new AlunosComInconsistenciaPercursoIndividualRAADto()
