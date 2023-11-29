@@ -56,8 +56,16 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<AlunosComInconsistenciaPercursoIndividualRAADto>> ObterInconsistenciaDeAlunosSemPercurso(List<AcompanhamentoAluno> acompanhamentoAlunos, FiltroInconsistenciaPercursoRAADto param)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(param.TurmaId));
+            
+            if(turma.EhNulo())
+                throw new NegocioException("Turma não encontrada.");
+
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(turma.ModalidadeTipoCalendario, turma.AnoLetivo, turma.Semestre));
-            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, false, param.Semestre * 2));
+            
+            if(tipoCalendarioId.EhNulo())
+                throw new NegocioException("Tipo de calendário não encontrado para a turma informada.");
+
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, false, param.Semestre * 2));          
             var alunos = await mediator.Send(new ObterDadosAlunosFechamentoQuery(turma.CodigoTurma, turma.AnoLetivo, param.Semestre));
             var inconsistencias = new List<AlunosComInconsistenciaPercursoIndividualRAADto>();
 
