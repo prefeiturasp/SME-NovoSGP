@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
                     if (!filtro.Bimestre.HasValue || filtro.Bimestre == 0)
                     {
                         var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
-                        var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id));
+                        var conselhoClasse = fechamento != null ? await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamento.Id)) : null;
                         var conselhoClasseAluno = conselhoClasse != null ? await mediator.Send(new ObterConselhoClasseAlunoPorAlunoCodigoConselhoIdQuery(conselhoClasse.Id, filtro.AlunoCodigo)) : null;
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
