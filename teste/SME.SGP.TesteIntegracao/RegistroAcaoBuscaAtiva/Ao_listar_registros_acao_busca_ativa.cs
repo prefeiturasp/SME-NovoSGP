@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             var useCase = ObterUseCaseListagemQuestionario();
             var retorno = await useCase.Executar(QUESTIONARIO_REGISTRO_ACAO_ID_1, 1);
             retorno.ShouldNotBeNull();
-            retorno.Count().ShouldBe(4);
+            retorno.Count().ShouldBe(3);
             retorno.Where(q => q.Id == QUESTAO_1_ID_DATA_REGISTRO_ACAO).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .Texto.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy-MM-dd"));
@@ -73,10 +73,10 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             retorno.Where(q => q.Id == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO && q.Nome == QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR).FirstOrDefault();
-            retorno.Where(q => q.Id == QUESTAO_3_ID_PROCEDIMENTO_REALIZADO).FirstOrDefault()
+            
+            retorno.Where(q => q.Id == QUESTAO_3_ID_OBS_GERAL).FirstOrDefault()
                             .Resposta.FirstOrDefault()
-                            .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
+                            .Texto.ShouldBe("OBS GERAL");
         }
 
         [Fact(DisplayName = "Registro de Ação - Obter registro de ação por id")]
