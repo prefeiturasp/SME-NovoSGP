@@ -440,7 +440,7 @@ namespace SME.SGP.Aplicacao
         {
             // Busca nota do conselho de classe consultado
             var notaComponente = dto.NotasConselhoClasseAluno.OrderByDescending(x => x.ConselhoClasseNotaId).FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo
-            && c.TurmaCodigo.Equals(dto.CodigosTurma));
+            && dto.CodigosTurma.Contains(c.TurmaCodigo));
             var notaComponenteId = notaComponente?.ConselhoClasseNotaId;
 
             if (notaComponente.EhNulo() || !notaComponente.NotaConceito.HasValue)
