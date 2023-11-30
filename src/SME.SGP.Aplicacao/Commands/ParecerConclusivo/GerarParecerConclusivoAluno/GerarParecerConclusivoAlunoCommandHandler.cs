@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
 
-                        if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                        if (turmasCodigosHistorico.NaoEhNulo() && turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
                         {
                             turmasCodigos = turmasCodigosEOL;
                             turmasCodigos = turmasCodigos
