@@ -26,10 +26,6 @@ namespace SME.SGP.Aplicacao
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
 
-            //TODO: >>> Robson - Remover após verificação
-            if (request.CodigoAluno == "7645152")
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Obter Matriculas Aluno: URL API EOL: {httpClient.BaseAddress}", Dominio.Enumerados.LogNivel.Informacao, Dominio.Enumerados.LogContexto.ApiEol), cancellationToken);
-
             var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_ALUNO_MATRICULAS, request.CodigoTurma, request.CodigoAluno));
             if (resposta.IsSuccessStatusCode)
             {
