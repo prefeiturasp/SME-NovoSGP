@@ -59,6 +59,10 @@ namespace SME.SGP.Aplicacao
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
 
+                //TODO: >>> Robson - Remover após verificação
+                if (aluno.CodigoAluno == "7645152")
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"1 - Consolidação Conselho: Aluno {aluno.CodigoAluno} - Inativo: {aluno.Inativo}, Data Situação: {aluno.DataSituacao:d}, Ultimo bimestre ativo: {ultimoBimestreAtivo}, bimestre processado: {consolidacaoTurmaConselhoClasse.Bimestre}", LogNivel.Informacao, LogContexto.ConselhoClasse));
+
                 if (ultimoBimestreAtivo.EhNulo())
                 {
                     await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id);
@@ -82,7 +86,14 @@ namespace SME.SGP.Aplicacao
                                          where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) < p.PeriodoFim.Date
                                          orderby m.DataMatricula
                                          select (int?)p.Bimestre).FirstOrDefault() ?? null;
-                }                
+
+                    //TODO: >>> Robson - Remover após verificação
+                    if (aluno.CodigoAluno == "7645152")
+                    {
+                        var jsonMatriculasAluno = JsonConvert.SerializeObject(matriculasAlunoTurma);
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"2 - Consolidação Conselho: Aluno {aluno.CodigoAluno} - Matriculado depois: {matriculadoDepois}, Dados matricula aluno: {jsonMatriculasAluno}", LogNivel.Informacao, LogContexto.ConselhoClasse));
+                    }
+                }
 
                 if (matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                 {
