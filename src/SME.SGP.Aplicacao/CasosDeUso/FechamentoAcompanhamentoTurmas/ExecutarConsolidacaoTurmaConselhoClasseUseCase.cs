@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static SME.SGP.Dominio.DateTimeExtension;
 
 namespace SME.SGP.Aplicacao
 {
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma não foi informado", LogNivel.Critico, LogContexto.ConselhoClasse));
                 return false;
             }
-
+            
             var turma = await mediator
                 .Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
 
@@ -84,7 +85,7 @@ namespace SME.SGP.Aplicacao
                     matriculadoDepois = (from m in matriculasAlunoTurma
                                          from p in periodosEscolares
                                          where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) < p.PeriodoFim.Date
-                                         orderby m.DataMatricula
+                                         orderby p.Bimestre
                                          select (int?)p.Bimestre).FirstOrDefault() ?? null;
 
                     //TODO: >>> Robson - Remover após verificação
