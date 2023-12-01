@@ -12,8 +12,6 @@ namespace SME.SGP.Aplicacao
 {
     public class ExecutarConsolidacaoTurmaConselhoClasseUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaConselhoClasseUseCase
     {
-        private readonly IConsultasDisciplina consultasDisciplina;
-
         public ExecutarConsolidacaoTurmaConselhoClasseUseCase(IMediator mediator) : base(mediator)
         {
         }
@@ -73,19 +71,20 @@ namespace SME.SGP.Aplicacao
                     continue;
                 }
 
-                var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
+                var matriculadoDepois = (int?)null;
 
-                var primeiroRegistroMatriculaAtiva = matriculasAlunoTurma
-                    .Where(mat => mat.PossuiSituacaoAtiva())
-                    .OrderBy(mat => mat.DataMatricula)
-                    .FirstOrDefault();
+                if (aluno.Ativo)
+                {
+                    var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
 
-                var dataMatricula = primeiroRegistroMatriculaAtiva.NaoEhNulo() && !primeiroRegistroMatriculaAtiva.DataMatricula.Equals(DateTime.MinValue) ? primeiroRegistroMatriculaAtiva.DataMatricula : aluno.DataMatricula;
+                    matriculadoDepois = (from m in matriculasAlunoTurma
+                                         from p in periodosEscolares
+                                         where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) < p.PeriodoFim.Date
+                                         orderby m.DataMatricula
+                                         select (int?)p.Bimestre).FirstOrDefault() ?? null;
+                }                
 
-                var matriculadoDepois = !aluno.Inativo ?
-                    periodosEscolares.FirstOrDefault(p => dataMatricula > p.PeriodoFim.Date)?.Bimestre : null;
-
-                if (!aluno.Inativo && matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
+                if (matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                 {
                     await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
                     continue;
