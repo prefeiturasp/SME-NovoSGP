@@ -17,11 +17,7 @@ namespace SME.SGP.Aplicacao
         
         public async Task<bool> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery request, CancellationToken cancellationToken)
         {
-
-            bool podePersistir = await mediator.Send(new PodePersistirTurmaDisciplinaQuery(request.Usuario.CodigoRf, request.CodigoTurma, request.ComponenteCurricularId.ToString(), request.Data.Ticks));
-            await mediator.Send(new SalvarLogViaRabbitCommand($"Pode persistir o professor {request.Usuario.CodigoRf} na turma {request.CodigoTurma} ? {podePersistir} ", LogNivel.Informacao, LogContexto.Aula, string.Empty));
-
-            return podePersistir;
+            return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(request.Usuario.CodigoRf, request.CodigoTurma, request.ComponenteCurricularId.ToString(), request.Data.Ticks));     
         }
     }
 }

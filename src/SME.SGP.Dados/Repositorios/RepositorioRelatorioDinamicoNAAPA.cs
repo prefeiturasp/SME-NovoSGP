@@ -47,7 +47,11 @@ namespace SME.SGP.Dados.Repositorios
                 retornoPaginado.TotalRegistros = retornoTotalDeRegitros.Sum(registro => (int)registro.Total);
             }
             var encaminhamentosNAAPAIds = retornoPaginado.Items.Select(s => s.Id).Distinct().ToArray();
-            retornoPaginado.Items = retornoPaginado.Items.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
+            retornoPaginado.Items = retornoPaginado.Items.OrderBy(rr => rr.Dre)
+                                                            .ThenBy(rr => rr.UnidadeEscolar)
+                                                            .ThenBy(rr => rr.Estudante)
+                                                            .Skip(paginacao.QuantidadeRegistrosIgnorados)
+                                                            .Take(paginacao.QuantidadeRegistros);
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return new RelatorioDinamicoNAAPADto()
@@ -73,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
         private string ObterQueryPaginada(string filtro, Paginacao paginacao, string queryTabelaResposta)
         {
             var sql = new StringBuilder();
-            var camposRetorno = @"distinct np.id, dre.abreviacao as Dre, ue.nome as UnidadeEscolar, 
+            var camposRetorno = @"distinct np.id, dre.abreviacao as Dre, ue.nome as NomeEscola, ue.tipo_escola as TipoEscola, 
                                   concat(np.aluno_nome, ' (', np.aluno_codigo, ')') as Estudante,
                                   t.modalidade_codigo as Modalidade, t.ano";
 
