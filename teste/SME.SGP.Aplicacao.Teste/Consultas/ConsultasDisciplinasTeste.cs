@@ -29,8 +29,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         [Fact(DisplayName = "Consultas Disciplina - Obter considerando componentes do infantil agrupados")]
         public async Task ObterComponentesCurricularesPorProfessorETurmaConsiderandoComponentesInfantilAgrupados()
         {
-            var usuario = new Usuario() { Login = "1", PerfilAtual = Perfis.PERFIL_CJ_INFANTIL };
-            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { CodigoPerfil = Perfis.PERFIL_CJ_INFANTIL } });
+            var usuario = new Usuario() { Login = "1", PerfilAtual = Perfis.PERFIL_PROFESSOR_INFANTIL };
+            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { CodigoPerfil = Perfis.PERFIL_PROFESSOR_INFANTIL } });
 
             mediator.Setup(x => x.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(usuario);
@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             var resultado = await consulta.ObterComponentesCurricularesPorProfessorETurma("1", false);
 
             mediator.Verify(x =>
-                x.Send(It.Is<ObterComponentesCurricularesDoProfessorNaTurmaQuery>(x => x.RealizarAgrupamentoComponente), It.IsAny<CancellationToken>()), Times.Once);
+                x.Send(It.Is<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery>(x => x.RealizarAgrupamentoComponente), It.IsAny<CancellationToken>()), Times.Once);
 
             Assert.NotNull(resultado);
         }

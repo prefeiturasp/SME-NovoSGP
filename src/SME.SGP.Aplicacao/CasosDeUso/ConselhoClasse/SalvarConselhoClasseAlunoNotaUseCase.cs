@@ -74,8 +74,9 @@ namespace SME.SGP.Aplicacao
 
             await ValidaProfessorPodePersistirTurma(turma, periodoEscolarValidacao, usuario);
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
-            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);
+            var matriculasDoAlunoNaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(Convert.ToInt32(turma.CodigoTurma), Convert.ToInt32(dto.CodigoAluno)));
+
+            var alunoConselho = matriculasDoAlunoNaTurma.FirstOrDefault(t => t.DataMatricula < periodoEscolarValidacao.PeriodoFim) ?? matriculasDoAlunoNaTurma.FirstOrDefault();
 
             await VerificaSePodeEditarNota(periodoEscolarValidacao, turma, alunoConselho, dto.Bimestre);
             await ValidarConceitoOuNota(dto, fechamentoTurma, alunoConselho, periodoEscolarValidacao);

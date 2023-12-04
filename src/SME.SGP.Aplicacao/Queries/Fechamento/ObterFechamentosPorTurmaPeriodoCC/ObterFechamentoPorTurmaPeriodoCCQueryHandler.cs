@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                 return retornoCache;
             
             var dadosBd = await repositorioFechamentoTurma.ObterPorTurmaPeriodoCCAsync(request.TurmaId,
-                request.PeriodoEscolarId, request.ComponenteCurricularId);
+                request.PeriodoEscolarId, request.ComponenteCurricularId, request.EhRegencia);
 
             var retornoDb = await MapearDadosDbParaCache(dadosBd);
             await repositorioCache.SalvarAsync(nomeChave, retornoDb);

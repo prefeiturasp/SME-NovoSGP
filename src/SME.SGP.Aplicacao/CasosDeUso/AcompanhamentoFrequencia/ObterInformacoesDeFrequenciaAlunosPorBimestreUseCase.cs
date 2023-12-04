@@ -193,7 +193,7 @@ namespace SME.SGP.Aplicacao
          => new PeriodoEscolar()
          {
              PeriodoInicio = periodos.FirstOrDefault(p=> p.Bimestre == 1).PeriodoInicio,
-             PeriodoFim = periodos.FirstOrDefault(p => modalidadeTurma == Modalidade.EJA ? p.Bimestre == 2 : p.Bimestre == 4).PeriodoFim
+             PeriodoFim = periodos.FirstOrDefault(p => modalidadeTurma.EhEjaOuCelp() ? p.Bimestre == 2 : p.Bimestre == 4).PeriodoFim
          };
 
         private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosRegistradaFinalAsync(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, IEnumerable<AlunoPorTurmaResposta> alunos, string professor = null)
