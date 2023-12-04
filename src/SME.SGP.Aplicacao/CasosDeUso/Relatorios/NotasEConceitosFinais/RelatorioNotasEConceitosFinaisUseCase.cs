@@ -39,6 +39,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                         filtro.Bimestres.AddRange(new int[] { 0, 1, 2, 3, 4 });
                         break;
                     case Modalidade.EJA:
+                    case Modalidade.CELP:
                         filtro.Bimestres.AddRange(new int[] { 0, 1, 2 });
                         break;
                 }
