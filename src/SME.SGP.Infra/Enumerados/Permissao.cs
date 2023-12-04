@@ -1499,6 +1499,54 @@ namespace SME.SGP.Infra
             EhConsulta = true)]
         CCEA_NAAPA_C = 262,
 
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_REGISTRO_ACOES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_REGISTRO_ACOES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhAlteracao = true)]
+        RABA_NAAPA_A = 263,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_REGISTRO_ACOES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_REGISTRO_ACOES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhExclusao = true)]
+        RABA_NAAPA_E = 264,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_REGISTRO_ACOES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_REGISTRO_ACOES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhInclusao = true)]
+        RABA_NAAPA_I = 265,
+
+        [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_NAAPA,
+            Menu = ConstantesMenuPermissao.MENU_BUSCA_ATIVA,
+            OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_NAAPA,
+            OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_BUSCA_ATIVA_NAAPA,
+            EhSubMenu = true,
+            SubMenu = ConstantesMenuPermissao.MENU_REGISTRO_ACOES,
+            OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES,
+            Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_REGISTRO_ACOES,
+            Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            EhConsulta = true)]
+        RABA_NAAPA_C = 266,
+
         [PermissaoMenu(Agrupamento = ConstantesMenuPermissao.AGRUPAMENTO_RELATORIOS, 
             Menu = ConstantesMenuPermissao.MENU_FREQUENCIA, 
             OrdemAgrupamento = ConstantesMenuPermissao.ORDEM_AGRUPAMENTO_RELATORIOS,
