@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
             var url = string.Format(ServicosEolConstants.URL_ALUNOS_ATUALIZAR_RESPONSAVEIS, request.DadosResponsavelAluno.CodigoAluno, request.DadosResponsavelAluno.Cpf);
-            var resposta = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(request.DadosResponsavelAluno), Encoding.UTF8, "application/json"));
+            var resposta = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(request.DadosResponsavelAluno), Encoding.UTF8, "application/json"));
 
             if (!resposta.IsSuccessStatusCode && resposta.StatusCode == HttpStatusCode.NoContent)
                 throw new NegocioException("Não foi possível atualizar os dados do responsável no eol.");
