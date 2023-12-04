@@ -5,6 +5,6 @@
         protected ServicosProdamConstants() { }
 
         public const string SERVICO = "servicoAtualizacaoCadastralProdam";
-        public const string URL_ATUALIZAR_RESPONSAVEL_ALUNO = "AtualizarResponsavelAluno";
+        public const string URL_ATUALIZAR_RESPONSAVEL_ALUNO = "responsavelAluno/AtualizarResponsavelAluno";
     }
 }
