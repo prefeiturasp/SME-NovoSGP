@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Queries.Bimestre.ObterPorModalidade
                 listaBimestres.Add(primeiro);
                 listaBimestres.Add(segundoBimestre);
 
-                if (request.Modalidade.NaoEhEjaOuCelp())
+                if (request.Modalidade.NaoEhSemestral())
                 {
                     var terceiroBimestre = new FiltroBimestreDto()
                     {
