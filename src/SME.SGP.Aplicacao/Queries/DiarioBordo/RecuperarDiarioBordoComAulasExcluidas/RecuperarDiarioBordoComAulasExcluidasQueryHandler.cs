@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class RecuperarDiarioBordoComAulasExcluidasQueryHandler : IRequestHandler<RecuperarDiarioBordoComAulasExcluidasQuery, IEnumerable<DiarioBordo>>
     {
-        private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
+        private readonly IRepositorioDiarioBordoConsulta repositorioDiarioBordo;
 
-        public RecuperarDiarioBordoComAulasExcluidasQueryHandler(IRepositorioDiarioBordo repositorioDiarioBordo)
+        public RecuperarDiarioBordoComAulasExcluidasQueryHandler(IRepositorioDiarioBordoConsulta repositorioDiarioBordo)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
         }

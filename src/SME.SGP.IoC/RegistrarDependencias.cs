@@ -372,6 +372,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComunicadoTipoEscola, RepositorioComunicadoTipoEscola>();
             services.TryAddScoped<IRepositorioComunicadoAnoEscolar, RepositorioComunicadoAnoEscolar>();
             services.TryAddScoped<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
+            services.TryAddScoped<IRepositorioDiarioBordoConsulta, RepositorioDiarioBordoConsulta>();
             services.TryAddScoped<IRepositorioDevolutiva, RepositorioDevolutiva>();
             services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScoped<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();
@@ -470,8 +471,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaFechamentoAulaConsulta, RepositorioPendenciaFechamentoAulaConsulta>();
             services.TryAddScoped<IRepositorioPendenciaFechamentoAtividadeAvaliativa, RepositorioPendenciaFechamentoAtividadeAvaliativa>();
             services.TryAddScoped<IRepositorioPendenciaFechamentoAtividadeAvaliativaConsulta, RepositorioPendenciaFechamentoAtividadeAvaliativaConsulta>();
-            services.TryAddScoped<IRepositorioPendenciaAulaReposicaoConsulta, RepositorioPendenciaAulaReposicaoConsulta>();
-
+            
             // Itinerancia
             services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
             services.TryAddScoped<IRepositorioItineranciaAluno, RepositorioItineranciaAluno>();

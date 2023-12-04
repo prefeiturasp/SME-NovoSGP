@@ -65,6 +65,19 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new { fechamentoId, tipoPendencia });
         }
 
+        private async Task<IEnumerable<long>> ObterIdPendenciasParaExclusao(long fechamentoId, TipoPendencia tipoPendencia)
+        {
+            var query = @"SELECT p.id    
+                                 from pendencia_fechamento f
+                                 JOIN pendencia p ON f.pendencia_id =p.id 
+                            where not p.excluido
+                              and p.situacao = 1
+                              and p.id = f.pendencia_id
+                              and p.tipo = @tipoPendencia
+	                          and f.fechamento_turma_disciplina_id = @fechamentoId ";
+            return await database.Conexao.QueryAsync<long>(query, new { fechamentoId, tipoPendencia });
+        }
+
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)
         {
             const SituacaoPendencia situacao = SituacaoPendencia.Pendente;

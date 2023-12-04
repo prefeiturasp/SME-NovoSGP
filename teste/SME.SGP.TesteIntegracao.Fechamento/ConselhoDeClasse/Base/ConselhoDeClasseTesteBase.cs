@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
     public abstract class ConselhoDeClasseTesteBase : TesteBaseComuns
     {
-        protected const long AULA_ID_1 = 1;
+        protected new const long AULA_ID_1 = 1;
 
         protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
@@ -32,24 +32,24 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         protected const string CODIGO_ALUNO_99999 = "99999";
 
-        protected const string ALUNO_CODIGO_1 = "1";
-        protected const string ALUNO_CODIGO_2 = "2";
-        protected const string ALUNO_CODIGO_3 = "3";
-        protected const string ALUNO_CODIGO_4 = "4";
+        protected new const string ALUNO_CODIGO_1 = "1";
+        protected new const string ALUNO_CODIGO_2 = "2";
+        protected new const string ALUNO_CODIGO_3 = "3";
+        protected new const string ALUNO_CODIGO_4 = "4";
 
-        protected const double NOTA_1 = 1;
-        protected const double NOTA_2 = 2;
-        protected const double NOTA_3 = 3;
-        protected const double NOTA_4 = 4;
-        protected const double NOTA_5 = 5;
-        protected const double NOTA_6 = 6;
-        protected const double NOTA_7 = 7;
-        protected const double NOTA_8 = 8;
-        protected const double NOTA_9 = 9;
-        protected const double NOTA_10 = 10;
+        protected new const double NOTA_1 = 1;
+        protected new const double NOTA_2 = 2;
+        protected new const double NOTA_3 = 3;
+        protected new const double NOTA_4 = 4;
+        protected new const double NOTA_5 = 5;
+        protected new const double NOTA_6 = 6;
+        protected new const double NOTA_7 = 7;
+        protected new const double NOTA_8 = 8;
+        protected new const double NOTA_9 = 9;
+        protected new const double NOTA_10 = 10;
 
-        protected const string NOTA = "NOTA";
-        protected const string CONCEITO = "CONCEITO";
+        protected new const string NOTA = "NOTA";
+        protected new const string CONCEITO = "CONCEITO";
 
         protected const int CONSELHO_CLASSE_ID_1 = 1;
         protected const int FECHAMENTO_TURMA_ID_1 = 1;
@@ -1055,7 +1055,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
         }
 
-        protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
+        protected new async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 

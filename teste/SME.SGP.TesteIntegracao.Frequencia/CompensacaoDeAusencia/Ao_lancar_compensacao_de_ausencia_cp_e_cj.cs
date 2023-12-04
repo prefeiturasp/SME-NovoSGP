@@ -20,6 +20,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             var dto = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             //await ExecuteTeste(dto);
+
+            await Task.CompletedTask;
         }
 
         //[Fact]
@@ -28,6 +30,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             var dto = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             //await ExecuteTeste(dto);
+
+            await Task.CompletedTask;
         }
 
         //[Fact]
@@ -46,6 +50,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 
             //await ExecuteTeste(dto, ObtenhaListaDeRegencia());
             TesteDisciplinasRegentes();
+
+            await Task.CompletedTask;
         }
 
         //[Fact]
@@ -55,6 +61,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 
             //await ExecuteTeste(dto, ObtenhaListaDeRegencia());
             TesteDisciplinasRegentes();
+
+            await Task.CompletedTask;
         }
 
         private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)

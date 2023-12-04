@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes
         private const string NOME_PROFESSOR_1 = "NOME_PROFESSOR_1";
         public async Task<IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>> Handle(ProfessoresTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorAtribuidoTurmaDisciplinaDTO>()
+            return await Task.FromResult(new List<ProfessorAtribuidoTurmaDisciplinaDTO>()
             {
                 new ()
                 {
@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.ServicosFakes
                     DisciplinaId = DISCIPLINA_PORTUGUES_138,
                     NomeProfessor = NOME_PROFESSOR_1
                 }
-            };
+            });
         }
     }
 }

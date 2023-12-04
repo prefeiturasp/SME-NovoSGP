@@ -227,7 +227,7 @@ namespace SME.SGP.TesteIntegracao
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
                       DataSituacao= dataSituacao,
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
-                      NomeAluno= ALUNO_CODIGO_10,
+                      NomeAluno= ALUNO_CODIGO_11,
                       NumeroAlunoChamada=1,
                       SituacaoMatricula= ATIVO,
                       NomeResponsavel= RESPONSAVEL,
@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao
                 }
             };
 
-            return alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma);
+            return await Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma));
         }
     }
 }

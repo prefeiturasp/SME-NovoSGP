@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
@@ -23,10 +22,9 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
     public class Ao_registrar_aula_verifica_se_pode_cadastrar_aula : AulaTeste
     {
         private const long TIPO_CALENDARIO_999999 = 999999;
-        private const string USUARIO_PROFESSOR_NOME_2222222 = "2222222";
         private const string NOME_TOKEN_TESTE = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiUHJvZmVzc29yIiwiSXNzdWVyIjoiSXNzdWVyIiwiVXNlcm5hbWUiOiJUZXN0ZVByb2Zlc3NvciIsImlhdCI6MTY3MDUyNTQyMSwicGVyZmlsIjoiNDBFMUUwNzQtMzdENi1FOTExLUFCRDYtRjgxNjU0RkU4OTVEIn0.da2rLBX_esGtdudii1bZpSG6SQK264bQ_oKm74BkA6M";
 
-        private readonly DateTime DATA_19_06 = new(DateTimeExtension.HorarioBrasilia().Year, 06, 19);        
+        private readonly DateTime DATA_19_06 = new(DateTimeExtension.HorarioBrasilia().Year, 06, 19);
 
         public Ao_registrar_aula_verifica_se_pode_cadastrar_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
@@ -64,10 +62,10 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!";
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1, false);
- 
+
             CriarClaimProfessorComToken();
 
-            await InserirNaBase(new Dominio.Aula() 
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 UeId = UE_CODIGO_1,
@@ -190,7 +188,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1, false);
 
-            await CriarEventoTipoResumido(SUSPENSAO_DE_ATIVIDADES, 
+            await CriarEventoTipoResumido(SUSPENSAO_DE_ATIVIDADES,
                                           EventoLocalOcorrencia.SMEUE,
                                           false,
                                           EventoTipoData.Unico,
@@ -385,8 +383,8 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
             var aulaExistente = ObterTodos<Dominio.Aula>();
             aulaExistente.ShouldNotBeNull();
-            aulaExistente.FirstOrDefault(a=> a.DataAula.Day == 16).DataAula.FimDeSemana().ShouldBeTrue();
-            
+            aulaExistente.FirstOrDefault(a => a.DataAula.Day == 16).DataAula.FimDeSemana().ShouldBeTrue();
+
         }
 
         private async Task<MensagemRabbit> ObterMensagemRabbit()
@@ -478,7 +476,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
                 Turma = turma,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 DiasForaDoPeriodoEscolar = diasForaPeriodoEscolar,
-                
+
                 CodigosDisciplinasConsideradas = codigoDisciplinaConsiderada,
                 DadosAulaCriadaAutomaticamente = dadosAulaCriadaAutomaticamente
             };
@@ -502,7 +500,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
                 DataAula = DATA_16_09,
                 TurmaId = TURMA_CODIGO_1,
                 DisciplinaId = COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(),
-                DadosComplementares = new AulaDadosComplementares() { PossuiFrequencia = true},
+                DadosComplementares = new AulaDadosComplementares() { PossuiFrequencia = true },
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,

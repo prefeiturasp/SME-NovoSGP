@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula.ServicosFake
     {
         public async Task<IEnumerable<Dominio.Aula>> Handle(ObterAulasDaTurmaPorTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
-            return new List<Dominio.Aula>()
+            return await Task.FromResult(new List<Dominio.Aula>()
             {
                 new Dominio.Aula()
                 {
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula.ServicosFake
                     RecorrenciaAula = RecorrenciaAula.AulaUnica,
                     TipoAula = TipoAula.Normal
                 }
-            };
+            });
         }
     }
 }

@@ -318,7 +318,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre on dre.id = ue.dre_id
                         where ue.id = @id";
 
-            return await contexto.QueryFirstAsync<Ue>(query, new { id });
+            return await contexto.QueryFirstOrDefaultAsync<Ue>(query, new { id });
         }
 
         public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)
@@ -347,7 +347,7 @@ namespace SME.SGP.Dados.Repositorios
                            inner join ue on ue.id = t.ue_id
                            where modalidade_codigo = @modalidadeInt
                              and t.ano_letivo = @anoLetivo
-                          offset (@pagina * 10) rows fetch next 10 rows only;";
+                          offset ((@pagina - 1) * 10) rows fetch next 10 rows only;";
             var modalidadeInt = (int)modalidade;
             return await contexto.Conexao.QueryAsync<string>(query, new { modalidadeInt, anoLetivo, pagina });
         }

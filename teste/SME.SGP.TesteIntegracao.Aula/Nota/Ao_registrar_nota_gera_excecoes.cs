@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 {
     public class Ao_registrar_nota_gera_excecoes : NotaTesteBase
     {
-        private DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+        private new DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         private const string CODIGO_ALUNO_INATIVO = "999";
 
         public Ao_registrar_nota_gera_excecoes(CollectionFixture collectionFixture) : base(collectionFixture)

@@ -18,8 +18,5 @@ namespace SME.SGP.Notificacoes.Hub
             await iClientProxy?.SendAsync("NotificacaoCriada", mensagem.Codigo, mensagem.Data,
                 mensagem.Titulo, mensagem.Id);
         }
-
-
-
     }
 }

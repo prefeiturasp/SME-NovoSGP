@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<DadosTurmaEolDto> Handle(ObterDadosTurmaEolPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new DadosTurmaEolDto { TipoTurma = TipoTurma.Regular};
+            return await Task.FromResult(new DadosTurmaEolDto { TipoTurma = TipoTurma.Regular});
         }
     }
 }
