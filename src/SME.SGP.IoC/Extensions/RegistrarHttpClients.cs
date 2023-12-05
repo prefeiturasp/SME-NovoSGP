@@ -1,13 +1,15 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Mensageria;
 using System;
 using System.Net;
 using System.Net.Http;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.IoC
 {
@@ -82,6 +84,25 @@ namespace SME.SGP.IoC
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
+
+            services.AdicionarHttpClientsProdam(configuration);
+        }
+
+        private static void AdicionarHttpClientsProdam(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddOptions<ConfiguracaoProdamOptions>()
+                .Bind(configuration.GetSection(ConfiguracaoProdamOptions.Secao), c => c.BindNonPublicProperties = true);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<IOptions<ConfiguracaoProdamOptions>>().Value;
+
+            var basicAuth = $"{options.Usuario}:{options.Senha}".EncodeTo64();
+            services.AddHttpClient(name: "servicoAtualizacaoCadastralProdam", c =>
+            {
+                c.BaseAddress = new Uri(options.Url);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("Authorization", $"Basic {basicAuth}");
+            }).AddPolicyHandler(GetRetryPolicy());
         }
 
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()

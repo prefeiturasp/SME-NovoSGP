@@ -88,6 +88,10 @@
 
         public const string URL_ALUNOS_TURMAS_ATIVOS = "alunos/turmas/{0}/ativos";
 
+        public const string URL_ALUNOS_RESPONSAVEIS = "alunos/responsaveis/{0}";
+
+        public const string URL_ALUNOS_ATUALIZAR_RESPONSAVEIS = "alunos/{0}/responsaveis/{1}";
+
         public const string URL_ALUNOS_TURMAS_ANO_LETIVO_MATRICULA_TURMA_TIPO_TURMA = "alunos/{0}/turmas/anosLetivos/{1}/matriculaTurma/{2}/tipoTurma/{3}";
 
         public const string URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA = "/api/v1/componentes-curriculares/dados-aula-turma";
