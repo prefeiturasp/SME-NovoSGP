@@ -73,7 +73,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(registroAcaoId));
         }
 
-        [HttpPut("crianca-estudante/responsaveis")]
+        [HttpPut("criancas-estudantes/responsaveis")]
         [ProducesResponseType(typeof(RegistroAcaoBuscaAtivaRespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_A, Policy = "Bearer")]
