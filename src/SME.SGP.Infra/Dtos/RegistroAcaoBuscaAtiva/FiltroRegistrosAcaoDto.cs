@@ -11,9 +11,9 @@ namespace SME.SGP.Infra
         public long? TurmaId { get; set; }
         public string NomeAluno { get; set; }
         public int? Modalidade { get; set; }
-        public int? Semestre { get; set; }
+        public int Semestre { get; set; }
         public DateTime? DataRegistroInicio { get; set; }
         public DateTime? DataRegistroFim { get; set; }
-        public int ProcedimentoRealizado { get; set; }
+        public int? OrdemProcedimentoRealizado { get; set; }
     }
 }

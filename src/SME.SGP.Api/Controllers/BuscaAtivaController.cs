@@ -14,7 +14,7 @@ namespace SME.SGP.Api.Controllers
     [ApiController]
     [Route("api/v1/busca-ativa")]
     [ValidaDto]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class BuscaAtivaController : ControllerBase
     {
         [HttpPost("registros-acao")]
@@ -67,7 +67,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("registros-acao")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.RABA_NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.RABA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRegistrosAcao([FromQuery] FiltroRegistrosAcaoDto filtro,
             [FromServices] IObterRegistrosAcaoUseCase useCase)
         {

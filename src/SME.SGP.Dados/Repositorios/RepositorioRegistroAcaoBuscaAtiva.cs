@@ -21,6 +21,8 @@ namespace SME.SGP.Dados.Repositorios
         public const string QUESTAO_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA_NOME_COMPONENTE = "'APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA'";
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_ORDEM_1 = 1;
+        public const int FILTRO_TODOS = -99;
+
         public RepositorioRegistroAcaoBuscaAtiva(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {}
 
@@ -49,8 +51,8 @@ namespace SME.SGP.Dados.Repositorios
             return sql.ToString();
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int? semestre,
-                                          string NomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? procedimentoRealizado)
+        private string MontaQueryCompleta(Paginacao paginacao, int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre,
+                                          string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado)
         {
             var sql = new StringBuilder();
             MontaQueryConsulta(paginacao, sql, contador: false, 
@@ -60,10 +62,10 @@ namespace SME.SGP.Dados.Repositorios
                                turmaId,
                                modalidade,
                                semestre,
-                               NomeAluno,
+                               nomeAluno,
                                dataRegistroInicio,
                                dataRegistroFim,
-                               procedimentoRealizado);
+                               ordemRespostaQuestaoProcedimentoRealizado);
             sql.AppendLine(";");
             MontaQueryConsulta(paginacao, sql, contador: true,
                                anoLetivo,
@@ -72,10 +74,10 @@ namespace SME.SGP.Dados.Repositorios
                                turmaId,
                                modalidade,
                                semestre,
-                               NomeAluno,
+                               nomeAluno,
                                dataRegistroInicio,
                                dataRegistroFim,
-                               procedimentoRealizado);
+                               ordemRespostaQuestaoProcedimentoRealizado);
             return sql.ToString();
         }
 
@@ -92,8 +94,8 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, 
-                                        int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int? semestre,
-                                        string NomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? procedimentoRealizado)
+                                        int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre,
+                                        string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado)
         {
             ObterCabecalhoRegistrosAcao(sql, contador);
             ObterFiltro(sql, anoLetivo,
@@ -102,10 +104,10 @@ namespace SME.SGP.Dados.Repositorios
                             turmaId,
                             modalidade,
                             semestre,
-                            NomeAluno,
+                            nomeAluno,
                             dataRegistroInicio,
                             dataRegistroFim,
-                            procedimentoRealizado);
+                            ordemRespostaQuestaoProcedimentoRealizado);
 
             if (!contador)
                 sql.AppendLine(" order by to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
@@ -221,8 +223,8 @@ namespace SME.SGP.Dados.Repositorios
                                 ,raba.criado_por as NomeUsuarioCriador
                                 ,raba.criado_em as DataCriacao
                                 ,qProcedRealizado.ProcedimentoRealizado
-                                ,qContatoEfetuadoComResponsavel.ContatoRealizado as ContatoEfetuadoResponsavel
-                                ,qRetornouEscolaAposLigacao.RetornouAposLigacao as CriancaRetornouEscolaAposContato
+                                ,coalesce(qContatoEfetuadoComResponsavel.ContatoRealizado, 'Não') as ContatoEfetuadoResponsavel
+                                ,coalesce(qRetornouEscolaAposLigacao.RetornouAposLigacao, 'Não') as CriancaRetornouEscolaAposContato
                 ");
             }
             sql.AppendLine(@" from registro_acao_busca_ativa raba 
@@ -244,14 +246,30 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and raba.aluno_codigo = @codigoAluno ");
         }
 
-        private void ObterFiltro(StringBuilder sql, int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int? semestre,
-                                 string NomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? procedimentoRealizado)
+        private void ObterFiltro(StringBuilder sql, int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre,
+                                 string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado)
         {
             sql.AppendLine(@" where not raba.excluido ");
-            if (turmaId.HasValue)
+            if (anoLetivo > 0)
+                sql.AppendLine(" and t.ano_letivo = @anoLetivo ");
+            if (dreId.HasValue && dreId.Value != FILTRO_TODOS)
+                sql.AppendLine(" and d.id = @dreId ");
+            if (ueId.HasValue && ueId.Value != FILTRO_TODOS)
+                sql.AppendLine(" and u.id = @ueId ");
+            if (turmaId.HasValue && turmaId.Value != FILTRO_TODOS)
                 sql.AppendLine(" and raba.turma_id = @turmaId ");
-            /*if (!string.IsNullOrEmpty(codigoAluno))
-                sql.AppendLine(" and raba.aluno_codigo = @codigoAluno ");*/
+            if (modalidade.HasValue && modalidade.Value != FILTRO_TODOS)
+                sql.AppendLine(" and t.modalidade_codigo = @modalidade ");
+            if (semestre != 0)
+                sql.AppendLine(" and t.semestre = @semestre ");
+            if (!string.IsNullOrEmpty(nomeAluno))
+                sql.AppendLine(" and lower(raba.aluno_nome) like @nomeAluno ");
+            if (dataRegistroInicio.HasValue)
+                sql.AppendLine(" and to_date(qdata.DataRegistro,'yyyy-mm-dd') >= @dataRegistroInicio ");
+            if (dataRegistroFim.HasValue)
+                sql.AppendLine(" and to_date(qdata.DataRegistro,'yyyy-mm-dd') <= @dataRegistroFim ");
+            if (ordemRespostaQuestaoProcedimentoRealizado.HasValue)
+                sql.AppendLine(" and qProcedRealizado.ProcedimentoRealizadoOrdem = @ordemRespostaQuestaoProcedimentoRealizado ");
         }
 
         public async Task<IEnumerable<string>> ObterCodigoArquivoPorRegistroAcaoId(long id)
@@ -357,8 +375,8 @@ namespace SME.SGP.Dados.Repositorios
             return registroAcao;
         }
 
-        public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> ListarPaginado(int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int? semestre, 
-                                                                                                   string NomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int procedimentoRealizado,
+        public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> ListarPaginado(int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre, 
+                                                                                                   string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado,
                                                                                                    Paginacao paginacao)
         {
             var query = MontaQueryCompleta(paginacao, anoLetivo,
@@ -367,10 +385,13 @@ namespace SME.SGP.Dados.Repositorios
                                             turmaId,
                                             modalidade,
                                             semestre,
-                                            NomeAluno,
+                                            nomeAluno,
                                             dataRegistroInicio,
                                             dataRegistroFim,
-                                            procedimentoRealizado);
+                                            ordemRespostaQuestaoProcedimentoRealizado);
+            if (!string.IsNullOrWhiteSpace(nomeAluno))
+                nomeAluno = $"%{nomeAluno.ToLower()}%";
+
             var parametros = new
             {
                 anoLetivo,
@@ -379,10 +400,10 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 modalidade,
                 semestre,
-                NomeAluno,
+                nomeAluno,
                 dataRegistroInicio,
                 dataRegistroFim,
-                procedimentoRealizado
+                ordemRespostaQuestaoProcedimentoRealizado
             };
 
             var retorno = new PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>();

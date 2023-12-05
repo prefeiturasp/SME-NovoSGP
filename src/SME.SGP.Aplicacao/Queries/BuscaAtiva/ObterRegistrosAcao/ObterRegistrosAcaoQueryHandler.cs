@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                                                                             request.Filtros.NomeAluno,
                                                                             request.Filtros.DataRegistroInicio,
                                                                             request.Filtros.DataRegistroFim,
-                                                                            request.Filtros.ProcedimentoRealizado,
+                                                                            request.Filtros.OrdemProcedimentoRealizado,
                                                                               Paginacao);
         }
     }

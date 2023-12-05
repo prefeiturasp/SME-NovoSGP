@@ -12,9 +12,9 @@ namespace SME.SGP.Dominio.Interfaces
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoComTurmaPorId(long id);
         Task<IEnumerable<string>> ObterCodigoArquivoPorRegistroAcaoId(long id);
         Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> ListarPaginado(int anoLetivo, long? dreId, long? ueId, long? turmaId, 
-                                                                                      int? modalidade, int? semestre,
-                                                                                      string NomeAluno, DateTime? dataRegistroInicio,
-                                                                                      DateTime? dataRegistroFim, int? procedimentoRealizado, 
+                                                                                      int? modalidade, int semestre,
+                                                                                      string nomeAluno, DateTime? dataRegistroInicio,
+                                                                                      DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado, 
                                                                                       Paginacao paginacao);
     }
 }
