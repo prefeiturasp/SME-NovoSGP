@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                             .Texto.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.ToString("yyyy-MM-dd"));
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
             retorno.Where(q => q.Id == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP).FirstOrDefault()
                             .Resposta.FirstOrDefault()
                             .OpcaoRespostaId.ShouldBe(opcaoRespostaBase.Id);
