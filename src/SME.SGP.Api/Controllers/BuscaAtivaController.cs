@@ -65,7 +65,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("registros-acao")]
-        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaCriancaEstudanteAusenteDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RABA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRegistrosAcao([FromQuery] FiltroRegistrosAcaoDto filtro,
