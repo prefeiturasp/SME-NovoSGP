@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 
-            return new AlunoPorTurmaResposta()
+            return await Task.FromResult(new AlunoPorTurmaResposta()
             {
                 CodigoAluno = "1",
                 NomeAluno = "Nome aluno 1",
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 DataSituacao = dataReferencia,
                 DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
                 NumeroAlunoChamada = 1
-            };
+            });
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Dapper;
+﻿using Npgsql;
+using NpgsqlTypes;
+using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;

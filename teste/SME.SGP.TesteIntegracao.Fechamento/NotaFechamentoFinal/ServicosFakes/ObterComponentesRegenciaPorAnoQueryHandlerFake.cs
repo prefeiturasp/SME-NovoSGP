@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoEolQuery request, CancellationToken cancellationToken)
         {
-            return new List<ComponenteCurricularEol>()
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
             {
                 new ComponenteCurricularEol()
                 {
@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
                 {
                     Codigo = COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105
                 }
-            };
+            });
         }
     }
 }

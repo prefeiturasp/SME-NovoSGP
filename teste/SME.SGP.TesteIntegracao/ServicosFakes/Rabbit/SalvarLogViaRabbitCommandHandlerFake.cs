@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.Rabbit
         {
             var retorno = false;
 
-            return retorno;
+            return await Task.FromResult(retorno);
         }       
     }
 }

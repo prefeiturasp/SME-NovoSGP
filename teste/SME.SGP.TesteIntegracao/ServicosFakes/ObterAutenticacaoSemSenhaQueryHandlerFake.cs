@@ -14,10 +14,10 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<AutenticacaoApiEolDto> Handle(ObterAutenticacaoSemSenhaQuery request, CancellationToken cancellationToken)
         {
-            return new AutenticacaoApiEolDto()
+            return await Task.FromResult(new AutenticacaoApiEolDto()
             {
                 CodigoRf = request.Login
-            };
+            });
         }
     }
 }

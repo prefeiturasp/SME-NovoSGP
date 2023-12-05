@@ -14,13 +14,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterUsuarioFuncionarioQuery request, CancellationToken cancellationToken)
         {
-            return new List<UsuarioEolRetornoDto>()
+            return await Task.FromResult(new List<UsuarioEolRetornoDto>()
             {
                 new UsuarioEolRetornoDto()
                 {
                     CodigoRf = "2222222"
                 }
-            };
+            });
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 
         public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            return new List<TurmasDoAlunoDto>()
+            return await Task.FromResult(new List<TurmasDoAlunoDto>()
             {
                 new TurmasDoAlunoDto
                 {
@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
                     CodigoTipoTurma= (int)TipoTurma.Regular,
                     SituacaoMatricula = "Ativo"
                 },
-            }.Where(x => x.CodigoAluno == request.CodigosAluno.FirstOrDefault());
+            }.Where(x => x.CodigoAluno == request.CodigosAluno.FirstOrDefault()));
         }
     }
 }

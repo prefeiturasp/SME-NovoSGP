@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -83,6 +82,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarCompensacaoAusenciaCommand(compensacao));
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
+                IEnumerable<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos = null;
                 IEnumerable<string> codigosAlunosCompensacao = new List<string>();
                 var ehAlteracao = id > 0;
 
@@ -94,7 +94,7 @@ namespace SME.SGP.Aplicacao
 
                 if (compensacaoDto.Alunos.Any() || (ehAlteracao && compensacoesJaExistentes.Any()))
                 {
-                    var compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes);
+                    compensacaoAusenciaAlunos = await GravarCompensacaoAlunos(ehAlteracao, compensacao.Id, turma, codigosComponentesConsiderados.ToArray(), compensacaoDto.Alunos, periodo, compensacoesJaExistentes);
                     codigosAlunosCompensacao = await GravarCompensacaoAlunoAulas(ehAlteracao, compensacao, turma, compensacaoAusenciaAlunos, compensacaoDto.Alunos);
                 }
 
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
 
                 if (codigosAlunosCompensacao.Any())
                 {
-                    Task.Delay(TimeSpan.FromSeconds(5)).Wait();
+                    await GravarDadosCacheParaCalculoFrequencia(turma.CodigoTurma, periodo.Bimestre, codigosComponentesConsiderados.ToArray(), codigosAlunosCompensacao.ToArray(), compensacao.Id, compensacaoAusenciaAlunos.Where(c => !c.Excluido));
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
                 }
 
@@ -380,7 +380,7 @@ namespace SME.SGP.Aplicacao
         private static void AdicionarCompensacaoAlunoAula(IEnumerable<CompensacaoAusenciaAlunoAula> compensacaoAusenciaAlunoAulas, List<CompensacaoAusenciaAlunoAula> listaPersistencia, CompensacaoAusenciaAluno compensacaoAusenciaAluno, RegistroFaltasNaoCompensadaDto falta)
         {
             var compensacaoAusenciaAlunoAula = compensacaoAusenciaAlunoAulas
-                                        .FirstOrDefault(t => t.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id && t.RegistroFrequenciaAlunoId == falta.RegistroFrequenciaAlunoId);
+                                        .FirstOrDefault(t => t.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id && t.RegistroFrequenciaAlunoId == falta?.RegistroFrequenciaAlunoId);
 
             if (compensacaoAusenciaAlunoAula.EhNulo())
                 compensacaoAusenciaAlunoAula = new CompensacaoAusenciaAlunoAula()
@@ -456,5 +456,62 @@ namespace SME.SGP.Aplicacao
             return componentes.NaoEhNulo() && componentes.Any();
         }
 
+        private async Task GravarDadosCacheParaCalculoFrequencia(string codigoTurma, int bimestre, string[] codigoComponentesConsiderados, string[] codigosAlunos, long idCompensacaoDesconsiderado, IEnumerable<CompensacaoAusenciaAluno> compensacaoAusenciaAlunos, string professorConsiderado = null)
+        {
+            var totaisCompensacoesExistentes = (await mediator
+                .Send(new ObterTotalCompensacoesAusenciaPorBimestreTurmaAlunosDesconsiderandoIdQuery(codigoTurma, bimestre, codigosAlunos, idCompensacaoDesconsiderado))).ToList();
+
+            foreach (var compensacaoAtual in compensacaoAusenciaAlunos)
+            {
+                var totaisCompensacoesExistenteParaAluno = totaisCompensacoesExistentes
+                    .FirstOrDefault(t => t.AlunoCodigo == compensacaoAtual.CodigoAluno &&
+                                         codigoComponentesConsiderados.Contains(t.ComponenteCurricularId) &&
+                                         t.Professor == professorConsiderado);
+                if (totaisCompensacoesExistenteParaAluno != null)
+                {
+                    totaisCompensacoesExistenteParaAluno.Compensacoes += compensacaoAtual.QuantidadeFaltasCompensadas;
+                    continue;
+                }
+
+                totaisCompensacoesExistentes.Add(new CompensacaoAusenciaAlunoCalculoFrequenciaDto()
+                {
+                    AlunoCodigo = compensacaoAtual.CodigoAluno,
+                    Bimestre = bimestre,
+                    Compensacoes = compensacaoAtual.QuantidadeFaltasCompensadas,
+                    ComponenteCurricularId = codigoComponentesConsiderados.OrderBy(c => c.Length).Last(),
+                    Professor = professorConsiderado
+                });
+            };
+
+            await mediator
+                .Send(new CriaAtualizaCacheCompensacaoAusenciaTurmaBimestreCommand(codigoTurma, bimestre, totaisCompensacoesExistentes));
+        }
+
+        private async Task<(long codigo, string rf)> VerificarSeComponenteEhDeTerritorio(Turma turma, long componenteCurricularId)
+        {
+            var codigoComponenteTerritorioCorrespondente = ((long)0, (string)null);
+            var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+
+            if (usuarioLogado.EhProfessor())
+            {
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                codigoComponenteTerritorioCorrespondente = (componenteCorrespondente.TerritorioSaber && componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(componenteCurricularId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo, usuarioLogado.CodigoRf);
+            }
+            else if (usuarioLogado.EhProfessorCj())
+            {
+                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(componenteCurricularId));
+                if (professor != null)
+                {
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+                    var componenteProfessorRelacionado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                    if (componenteProfessorRelacionado != null)
+                        codigoComponenteTerritorioCorrespondente = (componenteProfessorRelacionado.Codigo, professor.ProfessorRf);
+                }
+            }
+
+            return codigoComponenteTerritorioCorrespondente;
+        }
     }
 }

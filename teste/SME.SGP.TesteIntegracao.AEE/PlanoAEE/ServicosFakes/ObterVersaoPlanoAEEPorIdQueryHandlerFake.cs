@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
     {
         public async Task<PlanoAEEVersaoDto> Handle(ObterVersaoPlanoAEEPorIdQuery request, CancellationToken cancellationToken)
         {
-            return new PlanoAEEVersaoDto()
+            return await Task.FromResult(new PlanoAEEVersaoDto()
             {
                 Id = 1,
                 Numero = 1,
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 PlanoAEEId = 1
-            };
+            });
         }
     }
 }

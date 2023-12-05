@@ -115,6 +115,6 @@ namespace SME.SGP.Aplicacao
 
             }
             return frequenciaGeralObtida;
-        }
+        }        
     }
 }
