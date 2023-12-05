@@ -102,6 +102,8 @@ namespace SME.SGP.Aplicacao
                     retorno.Endereco = responsaveis.Endereco;
 
                 retorno.CodigoAluno = codigoAluno;
+                retorno.Cpf = responsaveis.Cpf;
+                retorno.Email = responsaveis.Email;
             }
 
             return retorno;

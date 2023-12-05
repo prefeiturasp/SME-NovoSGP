@@ -7,6 +7,8 @@ namespace SME.SGP.Infra.Dtos.Aluno
     {
         public string CodigoAluno { get; set; }
         public string NomeResponsavel { get; set; }
+        public string Cpf { get; set; }
+        public string Email { get; set; }
         public string DDDCelular { get; set; }
         public string NumeroCelular { get; set; }
         public string DDDResidencial { get; set; }
