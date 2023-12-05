@@ -73,13 +73,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(registroAcaoId));
         }
 
-        [HttpPut("atualizar/dados-usuario")]
+        [HttpPut("crianca-estudante/responsaveis")]
         [ProducesResponseType(typeof(RegistroAcaoBuscaAtivaRespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CCEA_NAAPA_A, Policy = "Bearer")]
-        public async Task<ObjectResult> AtualizarDadosUsuario([FromBody] AtualizarDadosUsuarioDto usuarioDto, [FromServices] IAtualizarDadosUsuarioUseCase atualizarDadosUsuarioUseCase)
+        public async Task<ObjectResult> AtualizarDadosResponsaveis([FromBody] AtualizarDadosResponsavelDto usuarioDto, [FromServices] IAtualizarDadosResponsaveisUseCase atualizarDadosResponsaveisUseCase)
         {
-            return Ok(await atualizarDadosUsuarioUseCase.Executar(usuarioDto));
+            return Ok(await atualizarDadosResponsaveisUseCase.Executar(usuarioDto));
         }
     }
 }

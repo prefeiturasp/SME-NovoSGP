@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class AtualizarDadosUsuarioDto
+    public class AtualizarDadosResponsavelDto
     {
         public string CPF { get; set; }
         public string Email { get; set; }

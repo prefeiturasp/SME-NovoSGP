@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         public async Task Ao_converter_valores_atualizacao_dados_usuário()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
-            var dto = new AtualizarDadosUsuarioDto()
+            var dto = new AtualizarDadosResponsavelDto()
             {
                 CPF = "1",
                 Celular = "(99) 9876-5432",
