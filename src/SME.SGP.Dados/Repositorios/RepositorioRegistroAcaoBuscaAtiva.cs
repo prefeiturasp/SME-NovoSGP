@@ -51,33 +51,17 @@ namespace SME.SGP.Dados.Repositorios
             return sql.ToString();
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre,
-                                          string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado)
+        private string MontaQueryCompleta(Paginacao paginacao, FiltroTurmaRegistrosAcaoDto filtroTurma,
+                                          FiltroRespostaRegistrosAcaoDto filtroRespostas)
         {
             var sql = new StringBuilder();
             MontaQueryConsulta(paginacao, sql, contador: false, 
-                               anoLetivo,
-                               dreId,
-                               ueId,
-                               turmaId,
-                               modalidade,
-                               semestre,
-                               nomeAluno,
-                               dataRegistroInicio,
-                               dataRegistroFim,
-                               ordemRespostaQuestaoProcedimentoRealizado);
+                               filtroTurma,
+                               filtroRespostas);
             sql.AppendLine(";");
             MontaQueryConsulta(paginacao, sql, contador: true,
-                               anoLetivo,
-                               dreId,
-                               ueId,
-                               turmaId,
-                               modalidade,
-                               semestre,
-                               nomeAluno,
-                               dataRegistroInicio,
-                               dataRegistroFim,
-                               ordemRespostaQuestaoProcedimentoRealizado);
+                               filtroTurma,
+                               filtroRespostas);
             return sql.ToString();
         }
 
@@ -93,21 +77,12 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
 
-        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, 
-                                        int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre,
-                                        string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado)
+        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador,
+                                        FiltroTurmaRegistrosAcaoDto filtroTurma,
+                                        FiltroRespostaRegistrosAcaoDto filtroRespostas)
         {
             ObterCabecalhoRegistrosAcao(sql, contador);
-            ObterFiltro(sql, anoLetivo,
-                            dreId,
-                            ueId,
-                            turmaId,
-                            modalidade,
-                            semestre,
-                            nomeAluno,
-                            dataRegistroInicio,
-                            dataRegistroFim,
-                            ordemRespostaQuestaoProcedimentoRealizado);
+            ObterFiltro(sql, filtroTurma, filtroRespostas);
 
             if (!contador)
                 sql.AppendLine(" order by to_date(qdata.DataRegistro,'yyyy-mm-dd') desc ");
@@ -246,29 +221,29 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and raba.aluno_codigo = @codigoAluno ");
         }
 
-        private void ObterFiltro(StringBuilder sql, int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre,
-                                 string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado)
+        private void ObterFiltro(StringBuilder sql, FiltroTurmaRegistrosAcaoDto filtroTurma,
+                                 FiltroRespostaRegistrosAcaoDto filtroRespostas)
         {
             sql.AppendLine(@" where not raba.excluido ");
-            if (anoLetivo > 0)
+            if (filtroTurma.AnoLetivo > 0)
                 sql.AppendLine(" and t.ano_letivo = @anoLetivo ");
-            if (dreId.HasValue && dreId.Value != FILTRO_TODOS)
+            if (filtroTurma.DreId.HasValue && filtroTurma.DreId.Value != FILTRO_TODOS)
                 sql.AppendLine(" and d.id = @dreId ");
-            if (ueId.HasValue && ueId.Value != FILTRO_TODOS)
+            if (filtroTurma.UeId.HasValue && filtroTurma.UeId.Value != FILTRO_TODOS)
                 sql.AppendLine(" and u.id = @ueId ");
-            if (turmaId.HasValue && turmaId.Value != FILTRO_TODOS)
+            if (filtroTurma.TurmaId.HasValue && filtroTurma.TurmaId.Value != FILTRO_TODOS)
                 sql.AppendLine(" and raba.turma_id = @turmaId ");
-            if (modalidade.HasValue && modalidade.Value != FILTRO_TODOS)
+            if (filtroTurma.Modalidade.HasValue && filtroTurma.Modalidade.Value != FILTRO_TODOS)
                 sql.AppendLine(" and t.modalidade_codigo = @modalidade ");
-            if (semestre != 0)
+            if (filtroTurma.Semestre != 0)
                 sql.AppendLine(" and t.semestre = @semestre ");
-            if (!string.IsNullOrEmpty(nomeAluno))
+            if (!string.IsNullOrEmpty(filtroRespostas.NomeAluno))
                 sql.AppendLine(" and lower(raba.aluno_nome) like @nomeAluno ");
-            if (dataRegistroInicio.HasValue)
+            if (filtroRespostas.DataRegistroInicio.HasValue)
                 sql.AppendLine(" and to_date(qdata.DataRegistro,'yyyy-mm-dd') >= @dataRegistroInicio ");
-            if (dataRegistroFim.HasValue)
+            if (filtroRespostas.DataRegistroFim.HasValue)
                 sql.AppendLine(" and to_date(qdata.DataRegistro,'yyyy-mm-dd') <= @dataRegistroFim ");
-            if (ordemRespostaQuestaoProcedimentoRealizado.HasValue)
+            if (filtroRespostas.OrdemRespostaQuestaoProcedimentoRealizado.HasValue)
                 sql.AppendLine(" and qProcedRealizado.ProcedimentoRealizadoOrdem = @ordemRespostaQuestaoProcedimentoRealizado ");
         }
 
@@ -375,35 +350,27 @@ namespace SME.SGP.Dados.Repositorios
             return registroAcao;
         }
 
-        public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> ListarPaginado(int anoLetivo, long? dreId, long? ueId, long? turmaId, int? modalidade, int semestre, 
-                                                                                                   string nomeAluno, DateTime? dataRegistroInicio, DateTime? dataRegistroFim, int? ordemRespostaQuestaoProcedimentoRealizado,
+        public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> ListarPaginado(FiltroTurmaRegistrosAcaoDto filtroTurma,
+                                                                                                   FiltroRespostaRegistrosAcaoDto filtroRespostas,
                                                                                                    Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, anoLetivo,
-                                            dreId,
-                                            ueId,
-                                            turmaId,
-                                            modalidade,
-                                            semestre,
-                                            nomeAluno,
-                                            dataRegistroInicio,
-                                            dataRegistroFim,
-                                            ordemRespostaQuestaoProcedimentoRealizado);
-            if (!string.IsNullOrWhiteSpace(nomeAluno))
-                nomeAluno = $"%{nomeAluno.ToLower()}%";
+            var query = MontaQueryCompleta(paginacao, filtroTurma,
+                                            filtroRespostas);
+            if (!string.IsNullOrWhiteSpace(filtroRespostas.NomeAluno))
+                filtroRespostas.NomeAluno = $"%{filtroRespostas.NomeAluno.ToLower()}%";
 
             var parametros = new
             {
-                anoLetivo,
-                dreId,
-                ueId,
-                turmaId,
-                modalidade,
-                semestre,
-                nomeAluno,
-                dataRegistroInicio,
-                dataRegistroFim,
-                ordemRespostaQuestaoProcedimentoRealizado
+                filtroTurma.AnoLetivo,
+                filtroTurma.DreId,
+                filtroTurma.UeId,
+                filtroTurma.TurmaId,
+                filtroTurma.Modalidade,
+                filtroTurma.Semestre,
+                filtroRespostas.NomeAluno,
+                filtroRespostas.DataRegistroInicio,
+                filtroRespostas.DataRegistroFim,
+                filtroRespostas.OrdemRespostaQuestaoProcedimentoRealizado
             };
 
             var retorno = new PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>();

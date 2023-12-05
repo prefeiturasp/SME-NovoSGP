@@ -24,17 +24,19 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> Handle(ObterRegistrosAcaoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioRegistroAcao.ListarPaginado(request.Filtros.AnoLetivo,
-                                                                            request.Filtros.DreId,
-                                                                            request.Filtros.UeId,
-                                                                            request.Filtros.TurmaId,
-                                                                            request.Filtros.Modalidade,
-                                                                            request.Filtros.Semestre,
-                                                                            request.Filtros.NomeAluno,
-                                                                            request.Filtros.DataRegistroInicio,
-                                                                            request.Filtros.DataRegistroFim,
-                                                                            request.Filtros.OrdemProcedimentoRealizado,
-                                                                              Paginacao);
+            return await repositorioRegistroAcao.ListarPaginado(new FiltroTurmaRegistrosAcaoDto() {
+                                                                  AnoLetivo = request.Filtros.AnoLetivo,
+                                                                  DreId =  request.Filtros.DreId,
+                                                                  UeId =  request.Filtros.UeId,
+                                                                  TurmaId =  request.Filtros.TurmaId,
+                                                                  Modalidade =  request.Filtros.Modalidade,
+                                                                  Semestre =  request.Filtros.Semestre },
+                                                                new FiltroRespostaRegistrosAcaoDto() {
+                                                                  NomeAluno = request.Filtros.NomeAluno,
+                                                                  DataRegistroInicio = request.Filtros.DataRegistroInicio,
+                                                                  DataRegistroFim = request.Filtros.DataRegistroFim,
+                                                                  OrdemRespostaQuestaoProcedimentoRealizado = request.Filtros.OrdemProcedimentoRealizado },
+                                                                  Paginacao);
         }
     }
 }
