@@ -21,6 +21,6 @@ namespace SME.SGP.Infra
         public string CriancaRetornouEscolaAposContato { get; set; }
         private string NomeUsuarioCriador { get; set; }
         private DateTime DataCriacao { get; set; }
-        public string InseridoPor => $"{NomeUsuarioCriador} em {DataCriacao.ToString("dd/MM/yyyy")} as {DataCriacao.ToString("HH/mm")}";
+        public string InseridoPor => $"{NomeUsuarioCriador} em {DataCriacao.ToString("dd/MM/yyyy")} as {DataCriacao.ToString("HH:mm")}";
     }
 }
