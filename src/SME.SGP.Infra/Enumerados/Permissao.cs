@@ -763,6 +763,7 @@ namespace SME.SGP.Infra
             OrdemMenu = ConstantesMenuPermissao.ORDEM_MENU_CALENDARIO_ESCOLAR,
             Url = ConstantesMenuPermissao.ROTA_CALENDARIO_ESCOLAR,
             Icone = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAR_FA_CALENDAR_ALT,
             EhConsulta = true)]
             C_C = 10,
            
@@ -1496,6 +1497,7 @@ namespace SME.SGP.Infra
             OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES,
             Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
         CCEA_NAAPA_C = 262,
 
@@ -1544,6 +1546,7 @@ namespace SME.SGP.Infra
             OrdemSubMenu = ConstantesMenuPermissao.ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES,
             Url = ConstantesMenuPermissao.ROTA_NAAPA_BUSCA_ATIVA_REGISTRO_ACOES,
             Icone = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
+            IconeDashBoard = ConstantesMenuPermissao.ICONE_FAS_FA_TASKS,
             EhConsulta = true)]
         RABA_NAAPA_C = 266,
 
