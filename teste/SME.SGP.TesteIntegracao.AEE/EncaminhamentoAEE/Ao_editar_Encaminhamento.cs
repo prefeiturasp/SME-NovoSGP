@@ -113,6 +113,30 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         }
 
         [Fact]
+        public async Task Ao_editar_encaminhamento_rascunho_perfil_gestor_ue()
+        {
+            await CriarDadosBase(ObterFiltro(ObterPerfilDiretor()));
+            await InserirEncaminhamentoAEEBase(SituacaoAEE.Rascunho);
+
+            var dto = ObterPreenchimentoQuestionarioEncaminhamento();
+
+            var useCase = ObterRegistrarEncaminhamentoAee();
+            var dtoResumo = await useCase.Executar(dto);
+
+            var listaDeResposta = ObterTodos<RespostaEncaminhamentoAEE>();
+            listaDeResposta.ShouldNotBeNull();
+            var resposta1 = listaDeResposta.Find(resposta => resposta.QuestaoEncaminhamentoId == 1);
+            resposta1.ShouldNotBeNull();
+            resposta1.Texto.ShouldBe(RESPOSTA_RADIO_NAO);
+            var resposta2 = listaDeResposta.Find(resposta => resposta.QuestaoEncaminhamentoId == 2);
+            resposta2.ShouldNotBeNull();
+            resposta2.Texto.ShouldBe($"{RESPOSTA_TEXTO} - 2");
+            var resposta3 = listaDeResposta.Find(resposta => resposta.QuestaoEncaminhamentoId == 3);
+            resposta3.ShouldNotBeNull();
+            resposta3.Texto.ShouldBe(RESPOSTA_RADIO_NAOSEI);
+        }
+
+        [Fact]
         public async Task Ao_editar_encaminhamento_rascunho_e_enviar_professor_cp()
         {
             await CriarDadosBase(ObterFiltro(ObterPerfilCP()));
