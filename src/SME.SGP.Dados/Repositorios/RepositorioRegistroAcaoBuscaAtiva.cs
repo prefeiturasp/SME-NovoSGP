@@ -198,8 +198,8 @@ namespace SME.SGP.Dados.Repositorios
                                 ,raba.criado_por as NomeUsuarioCriador
                                 ,raba.criado_em as DataCriacao
                                 ,qProcedRealizado.ProcedimentoRealizado
-                                ,coalesce(qContatoEfetuadoComResponsavel.ContatoRealizado, 'Não') as ContatoEfetuadoResponsavel
-                                ,coalesce(qRetornouEscolaAposLigacao.RetornouAposLigacao, 'Não') as CriancaRetornouEscolaAposContato
+                                ,qContatoEfetuadoComResponsavel.ContatoRealizado as ContatoEfetuadoResponsavel
+                                ,qRetornouEscolaAposLigacao.RetornouAposLigacao as CriancaRetornouEscolaAposContato
                 ");
             }
             sql.AppendLine(@" from registro_acao_busca_ativa raba 
@@ -376,7 +376,15 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = new PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>();
             using (var registroAcao = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                retorno.Items = registroAcao.Read<RegistroAcaoBuscaAtivaListagemDto>();
+                var items = registroAcao.Read<RegistroAcaoBuscaAtivaListagemDto>().ToList();
+                items.ForEach(i =>
+                {
+                    if (string.IsNullOrEmpty(i.ContatoEfetuadoResponsavel))
+                        i.ContatoEfetuadoResponsavel = "Não";
+                    if (string.IsNullOrEmpty(i.CriancaRetornouEscolaAposContato))
+                        i.CriancaRetornouEscolaAposContato = "Não";
+                });
+                retorno.Items = items;
                 retorno.TotalRegistros = registroAcao.ReadFirst<int>();
             }
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
