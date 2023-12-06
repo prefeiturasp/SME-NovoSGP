@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PodeCadastrarAulaPorDataRetornoDto> Handle(ObterPodeCadastrarAulaPorDataQuery request, CancellationToken cancellationToken)
         {
-            return new PodeCadastrarAulaPorDataRetornoDto(true);
+            return await Task.FromResult(new PodeCadastrarAulaPorDataRetornoDto(true));
         }
     }
 }

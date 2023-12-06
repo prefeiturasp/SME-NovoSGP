@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
     public class SalvarConselhoClasseAlunoRecomendacaoUseCase : AbstractUseCase, ISalvarConselhoClasseAlunoRecomendacaoUseCase
     {
         private const int BIMESTRE_FINAL_FUNDAMENTAL_MEDIO = 4;
-        private const int BIMESTRE_FINAL_EJA = 2;
+        private const int BIMESTRE_FINAL_EJA_CELP = 2;
         private const int BIMESTRE_FINAL_CONSULTA_NOTA = 0;
 
         public SalvarConselhoClasseAlunoRecomendacaoUseCase(IMediator mediator) : base(mediator)
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioFechamentoNota.FECHAMENTO_TURMA_NAO_LOCALIZADO);
 
             var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue ? fechamentoTurma.PeriodoEscolar.Bimestre :
-                fechamentoTurma.Turma.EhEJA() ? BIMESTRE_FINAL_EJA : BIMESTRE_FINAL_FUNDAMENTAL_MEDIO;
+                fechamentoTurma.Turma.EhTurmaModalidadeSemestral() ? BIMESTRE_FINAL_EJA_CELP : BIMESTRE_FINAL_FUNDAMENTAL_MEDIO;
 
             var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(fechamentoTurma.Turma, dataAtual.Date, bimestre,
                 fechamentoTurma.Turma.AnoLetivo == dataAtual.Year));
@@ -48,11 +48,13 @@ namespace SME.SGP.Aplicacao
             if (alunoConselho.EhNulo())
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_ENCONTRADO_PARA_SALVAR_CONSELHO_CLASSE);
 
-            var permiteEdicao = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim) || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
+            var alunoEstaAtivo = alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim);
+            
+            var permiteEdicao = alunoEstaAtivo || await EstaInativoDentroPeriodoAberturaReabertura(alunoConselho, bimestre, periodoEscolar.TipoCalendarioId, fechamentoTurma.Turma);
 
             if (!permiteEdicao)
                 throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
-            
+
             var bimestreParaValidacaoNotasPreenchidas = fechamentoTurma.PeriodoEscolarId.HasValue ? bimestre : BIMESTRE_FINAL_CONSULTA_NOTA;
 
             var existeConselhoClasseBimestre = await mediator

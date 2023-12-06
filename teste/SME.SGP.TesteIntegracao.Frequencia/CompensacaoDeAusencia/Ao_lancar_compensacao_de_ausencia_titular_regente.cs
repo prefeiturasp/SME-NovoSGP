@@ -23,6 +23,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 
             //await ExecuteTeste(dto, ObtenhaListaDeRegencia());
             TesteDisciplinasRegentes();
+
+            await Task.CompletedTask;
         }
 
         //[Fact]
@@ -36,6 +38,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 
             //await ExecuteTeste(dto, ObtenhaListaDeRegencia());
             TesteDisciplinasRegentes();
+
+            await Task.CompletedTask;
         }
     }
 }

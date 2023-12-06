@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -265,11 +265,10 @@ namespace SME.SGP.Dados.Repositorios
 	                            u.dre_id = d.id
                             where
 	                            t.modalidade_codigo = @modalidade
-	                            and t.historica = false
+	                            and not t.historica
 	                            and t.ano_letivo = @anoLetivo
                                 and tipo_turma = @tipoTurma
-	                            and ano ~ E'^[0-9\.]+$'
-                              
+	                            and ano ~ E'^[0-9\.]+$'                              
                                 {(!string.IsNullOrEmpty(codigoTurma) ? " and t.turma_id = @codigoTurma" : " offset (@pagina * 10) rows fetch next 10 rows only")}";
 
             await contexto.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>

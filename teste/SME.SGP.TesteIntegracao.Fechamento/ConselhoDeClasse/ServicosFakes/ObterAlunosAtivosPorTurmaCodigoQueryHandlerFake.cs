@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosAtivosPorTurmaCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new List<AlunoPorTurmaResposta>()
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>()
             {
                 new AlunoPorTurmaResposta()
                 {
@@ -111,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     NomeResponsavel = NOME_RESPONSAVEL_ALUNO_CODIGO_1,
                     TipoResponsavel = TIPO_RESPONSAVEL_1,
                 }
-            };
+            });
         }
     }
 }

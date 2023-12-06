@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dto;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {
@@ -12,14 +12,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
     {
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery request, CancellationToken cancellationToken)
         {
-            return new List<AbrangenciaTurmaRetorno>()
+            return await Task.FromResult(new List<AbrangenciaTurmaRetorno>()
             {
                 new AbrangenciaTurmaRetorno()
                 {
                     Id = 1,
                     Codigo = "1"
                 }
-            };
+            });
         }
     }
 }

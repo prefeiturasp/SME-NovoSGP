@@ -48,12 +48,13 @@ namespace SME.SGP.Aplicacao
                     AjustarMatrizes(planoCiclo, planoCicloDto);
                     AjustarObjetivos(planoCiclo, planoCicloDto);
                     unitOfWork.PersistirTransacao();
-                } catch
+                }
+                catch
                 {
                     unitOfWork.Rollback();
                     throw;
                 }
-                await MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
+                await MoverRemoverExcluidos(planoCicloDto, descricaoAtual);
             }
         }
 
@@ -103,27 +104,21 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto,out string descricaoAtual)
+        private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto, out string descricaoAtual)
         {
             descricaoAtual = string.Empty;
             if (planoCicloDto.EhNulo())
-            {
                 throw new ArgumentNullException(nameof(planoCicloDto));
-            }
+
             if (planoCicloDto.Id == 0 && repositorioPlanoCiclo.ObterPlanoCicloPorAnoCicloEEscola(planoCicloDto.Ano, planoCicloDto.CicloId, planoCicloDto.EscolaId))
-            {
                 throw new NegocioException("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.");
-            }
 
             var planoCiclo = repositorioPlanoCiclo.ObterPorId(planoCicloDto.Id);
             if (planoCiclo.EhNulo())
-            {
                 planoCiclo = new PlanoCiclo();
-            }
             else
-            {
                 descricaoAtual = planoCiclo.Descricao;
-            }
+
             if (!planoCiclo.Migrado)
             {
                 if (planoCicloDto.IdsMatrizesSaber.EhNulo() || !planoCicloDto.IdsMatrizesSaber.Any())
@@ -143,6 +138,8 @@ namespace SME.SGP.Aplicacao
         }
         private async Task MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo.Descricao))
             {
                 var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));

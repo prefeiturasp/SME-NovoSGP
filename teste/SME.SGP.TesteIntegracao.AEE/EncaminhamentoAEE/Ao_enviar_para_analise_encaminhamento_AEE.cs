@@ -14,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.TesteIntegracao.EncaminhamentoAEE;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
@@ -23,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
     {
         private const string SISTEMA = "Sistema";
 
-        private const string ALUNO_CODIGO_11 = "11";
+        private new const string ALUNO_CODIGO_11 = "11";
 
         private const long TURMA_ID = 1;
 
@@ -59,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
         private const long ID_ENCAMINHAMENTO_AEE_NAO_EXISTENTE = 99;
 
-        private readonly CollectionFixture collectionFixture;
+        private new readonly CollectionFixture collectionFixture;
 
         public Ao_enviar_para_analise_encaminhamento_AEE(CollectionFixture collectionFixture) : base(collectionFixture)
         {

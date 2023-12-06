@@ -82,6 +82,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (fechamentoReabertura.Status == EntidadeStatus.AguardandoAprovacao)
             {
+                await RemoverNotificacaoExistente(fechamentoReabertura.Id);
                 fechamentoReabertura.WorkflowAprovacaoId = await PersistirWorkflowFechamentoReabertura(fechamentoReabertura);
                 await repositorioFechamentoReabertura.SalvarAsync(fechamentoReabertura);
                 mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
@@ -89,11 +90,18 @@ namespace SME.SGP.Dominio.Servicos
             else
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
 
+            
             unitOfWork.PersistirTransacao();
 
             return mensagemRetorno;
         }
 
+        private async Task RemoverNotificacaoExistente(long fechamentoReaberturaId)
+        {
+            var notificacaoId = await mediator.Send(new ObterNotificacaoParaExcluirPorFechamentoReaberturaIdQuery(fechamentoReaberturaId));
+            if(notificacaoId>0)
+               await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacaoId));
+        }
         private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
         {
             return new FiltroFechamentoReaberturaNotificacaoDto(fechamentoReabertura.Dre.NaoEhNulo() ? fechamentoReabertura.Dre.CodigoDre : string.Empty,

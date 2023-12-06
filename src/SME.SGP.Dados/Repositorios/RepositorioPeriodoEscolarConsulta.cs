@@ -295,17 +295,18 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolarBimestreDto>(sql.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre });
         }
 
-        public async Task<PeriodoEscolar> ObterPeriodoEscolarPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre)
+        public async Task<PeriodoEscolar> ObterPeriodoEscolarPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, int semestre)
         {
-            const string sql = @"select pe.*
+            string sql = $@"select pe.*
                                 from periodo_escolar pe
                                 inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
                                 inner join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @turmaCodigo
                                 where tc.modalidade = @modalidade
                                 and pe.bimestre = @bimestre
+                                {(modalidadeTipoCalendario.EhEjaOuCelp() && semestre > 0 ? "and tc.semestre = @semestre" : string.Empty)}
                                 and not tc.excluido";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, semestre });
         }
 
         public async Task<long> ObterPeriodoEscolarIdPorTurmaId(long turmaId, ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)

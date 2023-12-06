@@ -18,10 +18,10 @@ namespace SME.SGP.TesteIntegracao.Fechamento.ConselhoDeClasse.ServicosFakes
 
         public async Task<IEnumerable<InfoComponenteCurricular>> Handle(ObterInfoComponentesCurricularesESPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new List<InfoComponenteCurricular>(){
+            return await Task.FromResult(new List<InfoComponenteCurricular>(){
                 new InfoComponenteCurricular(){ Codigo= 138, CodigoComponenteCurricularPai=null, Nome="138", EhRegencia = false, EhTerritorioSaber = false, RegistraFrequencia = true, LancaNota = true},
                 new InfoComponenteCurricular(){ Codigo= 139, CodigoComponenteCurricularPai=null, Nome="139", EhRegencia = false, EhTerritorioSaber = false, RegistraFrequencia = true, LancaNota = true},
-            };
+            });
         }
     }
 }

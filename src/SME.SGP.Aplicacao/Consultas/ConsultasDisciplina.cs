@@ -120,7 +120,7 @@ namespace SME.SGP.Aplicacao
 
                     if (!componentesCurriculares.Any())
                     {
-                        var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
+                       var componentesCurricularesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
 
                         if (componentesCurricularesDaTurma.Any() && componentesCurricularesDaTurma.NaoEhNulo())
                         {

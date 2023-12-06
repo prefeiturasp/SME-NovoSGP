@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
     {
         public async Task<Usuario> Handle(ObterUsuarioLogadoQuery request, CancellationToken cancellationToken)
         {
-            return new Usuario()
+            return await Task.FromResult(new Usuario()
             {
                 Id = 1,
                 CodigoRf = "2222222",
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-            };
+            });
         }
     }
 }

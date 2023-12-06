@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 
         public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosQuery request, CancellationToken cancellationToken)
         {
-            return new List<TurmasDoAlunoDto>()
+            return await Task.FromResult(new List<TurmasDoAlunoDto>()
             {
                 new TurmasDoAlunoDto
                 {
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
                     AnoLetivo= DateTimeExtension.HorarioBrasilia().Year,
                     CodigoTipoTurma= (int)TipoTurma.EdFisica,
                 },
-            };
+            });
         }
     }
 }

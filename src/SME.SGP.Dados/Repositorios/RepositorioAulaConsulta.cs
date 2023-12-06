@@ -614,14 +614,13 @@ namespace SME.SGP.Dados.Repositorios
                                                             a.professor_rf AS ProfessorRf,
                                                             a.criado_por AS CriadoPor, 
                                                             a.tipo_aula AS TipoAula,
-                                                            CASE WHEN rf.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
+                                                            CASE WHEN rfa.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
             query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
-            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
-            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
-            query.AppendLine(" LEFT JOIN registro_frequencia rf ON rf.aula_id = a.id ");
+            query.AppendLine("                and a.data_aula::date between pe.periodo_inicio and pe.periodo_fim");
+            query.AppendLine("LEFT JOIN registro_frequencia_aluno rfa ON rfa.aula_id = a.id and not rfa.excluido");
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
             query.AppendLine("and a.turma_id = @turmaCodigo ");
@@ -920,15 +919,15 @@ namespace SME.SGP.Dados.Repositorios
                           where a.tipo_calendario_id = @tipoCalendarioId and
                                 a.turma_id = @turmaId";
 
-            var criadoRf = new string[] { criadoPor };
+            var criadoRf = new string[] { criadoPor?.ToUpper() };
 
             if (!string.IsNullOrWhiteSpace(criadoPor))
             {
                 if (criadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase))
-                    criadoRf = criadoRf.Concat(new string[] { "0" }).ToArray();
+                    criadoRf = criadoRf.Concat(new string[] { "0", string.Empty }).ToArray();
 
-                query += @" and a.criado_por = @criadoPor 
-                            and a.criado_rf = any(@criadoRf) ";
+                query += @" and upper(a.criado_por) = upper(@criadoPor)
+                            and upper(a.criado_rf) = any(@criadoRf) ";
             }
 
             query += " order by a.data_aula, a.id;";
