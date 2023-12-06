@@ -82,8 +82,8 @@ namespace SME.SGP.Dominio.Servicos
             await AtualizaNiveis(niveisParaPersistir);
 
             if (aprovar)
-                await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao);
-            else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
+                await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao!);
+            else await ReprovarNivel(workflow, (long)codigoDaNotificacao!, observacao, nivel.Cargo, nivel);
 
             foreach (var notificacao in nivel.Notificacoes)
                 await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao, notificacao.Usuario.CodigoRf));
@@ -227,7 +227,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
                 
-                var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma.Id, turma.TipoTurma));
+                var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma));
                 
                 await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId, notaTipoValor.TipoNota);
 

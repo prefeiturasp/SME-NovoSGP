@@ -27,30 +27,30 @@ namespace SME.SGP.Dados.Repositorios
 
             var query = @"select
                     e.id,
-	                e.nome,
-	                e.descricao,
-	                e.data_inicio,
-	                e.data_fim,
-	                e.dre_id,
-	                e.ue_id,
-	                e.letivo,
-	                e.feriado_id,
-	                e.tipo_calendario_id,
-	                e.tipo_evento_id,
-	                e.criado_em,
-	                e.criado_por,
-	                e.alterado_em,
-	                e.alterado_por,
-	                e.criado_rf,
-	                e.alterado_rf,
-	                e.status,
+                    e.nome,
+                    e.descricao,
+                    e.data_inicio,
+                    e.data_fim,
+                    e.dre_id,
+                    e.ue_id,
+                    e.letivo,
+                    e.feriado_id,
+                    e.tipo_calendario_id,
+                    e.tipo_evento_id,
+                    e.criado_em,
+                    e.criado_por,
+                    e.alterado_em,
+                    e.alterado_por,
+                    e.criado_rf,
+                    e.alterado_rf,
+                    e.status,
                     e.wf_aprovacao_id as WorkflowAprovacaoId,
-	                et.id as TipoEventoId,
-	                et.codigo,
-	                et.ativo,
-	                et.tipo_data,
-	                et.descricao,
-	                et.excluido,
+                    et.id as TipoEventoId,
+                    et.codigo,
+                    et.ativo,
+                    et.tipo_data,
+                    et.descricao,
+                    et.excluido,
                     tc.id as TipoCalendarioId,
                     tc.Nome,
                     tc.Ano_Letivo,
@@ -452,44 +452,44 @@ namespace SME.SGP.Dados.Repositorios
         public Evento ObterPorWorkflowId(long workflowId)
         {
             var query = @"select
-	                e.id,
-	                e.nome,
-	                e.descricao,
-	                e.data_inicio,
-	                e.data_fim,
-	                e.dre_id,
-	                e.ue_id,
-	                e.letivo,
-	                e.feriado_id,
-	                e.tipo_calendario_id,
-	                e.tipo_evento_id,
-	                e.criado_em,
-	                e.criado_por,
-	                e.alterado_em,
-	                e.alterado_por,
-	                e.criado_rf,
-	                e.alterado_rf,
-	                e.status,
+                    e.id,
+                    e.nome,
+                    e.descricao,
+                    e.data_inicio,
+                    e.data_fim,
+                    e.dre_id,
+                    e.ue_id,
+                    e.letivo,
+                    e.feriado_id,
+                    e.tipo_calendario_id,
+                    e.tipo_evento_id,
+                    e.criado_em,
+                    e.criado_por,
+                    e.alterado_em,
+                    e.alterado_por,
+                    e.criado_rf,
+                    e.alterado_rf,
+                    e.status,
                     e.wf_aprovacao_id as WorkflowAprovacaoId,
-	                et.id as TipoEventoId,
-	                et.codigo,
-	                et.ativo,
-	                et.tipo_data,
-	                et.descricao,
-	                et.excluido,
+                    et.id as TipoEventoId,
+                    et.codigo,
+                    et.ativo,
+                    et.tipo_data,
+                    et.descricao,
+                    et.excluido,
                     tc.id as TipoCalendarioId,
                     tc.Nome,
                     tc.Ano_Letivo,
                     tc.Situacao
                 from
-	                evento e
+                    evento e
                 inner join evento_tipo et on
-	                e.tipo_evento_id = et.id
+                    e.tipo_evento_id = et.id
                 inner join tipo_calendario tc
                 on e.tipo_calendario_id = tc.id
                 where et.ativo = true
-	            and et.excluido = false
-	            and e.excluido = false
+                and et.excluido = false
+                and e.excluido = false
                 and e.wf_aprovacao_id = @workflowId ";
 
             return database.Conexao.Query<Evento, EventoTipo, TipoCalendario, Evento>(query.ToString(), (evento, tipoEvento, tipoCalendario) =>
@@ -659,30 +659,30 @@ namespace SME.SGP.Dados.Repositorios
 
             var queryEventos = new StringBuilder(@"select f_eventos_listar_sem_paginacao.eventoid,
                                  f_eventos_listar_sem_paginacao.eventoid id,
-								 f_eventos_listar_sem_paginacao.nome,
-								 f_eventos_listar_sem_paginacao.descricaoevento descricao,
-								 f_eventos_listar_sem_paginacao.data_inicio,
-								 f_eventos_listar_sem_paginacao.data_fim,
-								 f_eventos_listar_sem_paginacao.dre_id,
-								 f_eventos_listar_sem_paginacao.letivo,
-								 f_eventos_listar_sem_paginacao.feriado_id,
-								 f_eventos_listar_sem_paginacao.tipo_calendario_id,
-								 f_eventos_listar_sem_paginacao.tipo_evento_id,
-								 f_eventos_listar_sem_paginacao.ue_id,
-								 f_eventos_listar_sem_paginacao.criado_em,
-								 f_eventos_listar_sem_paginacao.criado_por,
-							     f_eventos_listar_sem_paginacao.alterado_em,
-							     f_eventos_listar_sem_paginacao.alterado_por,
-							     f_eventos_listar_sem_paginacao.criado_rf,
-								 f_eventos_listar_sem_paginacao.alterado_rf,
-								 f_eventos_listar_sem_paginacao.status,	
-								 f_eventos_listar_sem_paginacao.tipoeventoid,
+                                 f_eventos_listar_sem_paginacao.nome,
+                                 f_eventos_listar_sem_paginacao.descricaoevento descricao,
+                                 f_eventos_listar_sem_paginacao.data_inicio,
+                                 f_eventos_listar_sem_paginacao.data_fim,
+                                 f_eventos_listar_sem_paginacao.dre_id,
+                                 f_eventos_listar_sem_paginacao.letivo,
+                                 f_eventos_listar_sem_paginacao.feriado_id,
+                                 f_eventos_listar_sem_paginacao.tipo_calendario_id,
+                                 f_eventos_listar_sem_paginacao.tipo_evento_id,
+                                 f_eventos_listar_sem_paginacao.ue_id,
+                                 f_eventos_listar_sem_paginacao.criado_em,
+                                 f_eventos_listar_sem_paginacao.criado_por,
+                                 f_eventos_listar_sem_paginacao.alterado_em,
+                                 f_eventos_listar_sem_paginacao.alterado_por,
+                                 f_eventos_listar_sem_paginacao.criado_rf,
+                                 f_eventos_listar_sem_paginacao.alterado_rf,
+                                 f_eventos_listar_sem_paginacao.status,    
+                                 f_eventos_listar_sem_paginacao.tipoeventoid,
                                  f_eventos_listar_sem_paginacao.tipoeventoid id,
-								 f_eventos_listar_sem_paginacao.ativo,
-								 f_eventos_listar_sem_paginacao.tipo_data,
-								 f_eventos_listar_sem_paginacao.descricaotipoevento descricao,
-								 f_eventos_listar_sem_paginacao.excluido,
-								 f_eventos_listar_sem_paginacao.total_registros,
+                                 f_eventos_listar_sem_paginacao.ativo,
+                                 f_eventos_listar_sem_paginacao.tipo_data,
+                                 f_eventos_listar_sem_paginacao.descricaotipoevento descricao,
+                                 f_eventos_listar_sem_paginacao.excluido,
+                                 f_eventos_listar_sem_paginacao.total_registros,
                                  ue.ue_id ue,
                                  ue.nome,
                                  dre.dre_id as dre,
@@ -1079,21 +1079,21 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> DataPossuiEventoLiberacaoExcepcionalAsync(long tipoCalendarioId, DateTime dataAula, string ueId)
         {
             var query = @"SELECT
-	                        1
+                            1
                         FROM
-	                        evento e
+                            evento e
                         INNER JOIN evento_tipo et ON
-	                        e.tipo_evento_id = et.id
+                            e.tipo_evento_id = et.id
                         INNER JOIN tipo_calendario tc ON
-	                        e.tipo_calendario_id = tc.id
+                            e.tipo_calendario_id = tc.id
                         WHERE
-	                        e.excluido = false
-	                        AND e.tipo_calendario_id = @tipoCalendarioId
-	                        AND e.ue_id = @ueId
-	                        AND e.data_inicio <= @dataAula
-	                        AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
-	                        AND et.codigo <> @codigoLiberacaoExcepcional
-	                        AND e.letivo = @eventoLetivo";
+                            e.excluido = false
+                            AND e.tipo_calendario_id = @tipoCalendarioId
+                            AND e.ue_id = @ueId
+                            AND e.data_inicio <= @dataAula
+                            AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
+                            AND et.codigo <> @codigoLiberacaoExcepcional
+                            AND e.letivo = @eventoLetivo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new
             {
@@ -1110,16 +1110,16 @@ namespace SME.SGP.Dados.Repositorios
             bool possuiUeCodigo = !string.IsNullOrEmpty(ueCodigo);
 
             var query = new StringBuilder(@"select
-	                                            data_inicio,
-	                                            data_fim,
-	                                            letivo,
+                                                data_inicio,
+                                                data_fim,
+                                                letivo,
                                                 e.ue_id,
                                                 e.dre_id,
                                                 e.nome,
                                                 e.feriado_id,
                                                 e.tipo_evento_id TipoEventoId
                                             from
-	                                            evento e
+                                                evento e
                                                     inner join tipo_calendario tc
                                                         on e.tipo_calendario_id = tc.id");
             if (possuiUeCodigo)
@@ -1159,16 +1159,16 @@ namespace SME.SGP.Dados.Repositorios
             var whereModalidade = !modalidade.HasValue ? "" : "and tc.modalidade = @modalidade";
             var query = $@"
                 select 
-                	e.Id As Id,
+                    e.Id As Id,
                     e.Nome as Nome,
                     te.descricao as TipoEvento
                 from
-	                evento e
-				inner join 
-					tipo_calendario tc on tc.id = e.tipo_calendario_id 	    
-					inner join evento_tipo te on te.id = e.tipo_evento_id 
+                    evento e
+                inner join 
+                    tipo_calendario tc on tc.id = e.tipo_calendario_id         
+                    inner join evento_tipo te on te.id = e.tipo_evento_id 
                 where
-	                e.tipo_calendario_id = @tipoCalendario
+                    e.tipo_calendario_id = @tipoCalendario
                     {whereDre}
                     {whereUe}
                     {whereModalidade}
@@ -1193,27 +1193,27 @@ namespace SME.SGP.Dados.Repositorios
         {
             var filtroTurma = !turmaId.HasValue ? "" :
                 @"inner join (
-    	                select ue.ue_id, dre.dre_id from turma t
-    	                inner join ue on ue.id = t.ue_id
-    	                inner join dre on dre.id = ue.dre_id
-    	                where t.id = @turmaId
+                        select ue.ue_id, dre.dre_id from turma t
+                        inner join ue on ue.id = t.ue_id
+                        inner join dre on dre.id = ue.dre_id
+                        where t.id = @turmaId
                     ) x on e.dre_id is null 
-    	                or (e.dre_id = x.dre_id and (e.ue_id is null or e.ue_id = x.ue_id))";
+                        or (e.dre_id = x.dre_id and (e.ue_id is null or e.ue_id = x.ue_id))";
 
             var query = $@"select
                             e.id,
-	                        data_inicio as DataInicio,
-	                        data_fim as DataFim,
-	                        e.letivo,
-	                        e.nome,
-	                        e.descricao,
+                            data_inicio as DataInicio,
+                            data_fim as DataFim,
+                            e.letivo,
+                            e.nome,
+                            e.descricao,
                             e.ue_id as UeId,
                             e.dre_id as DreId,
                             e.tipo_evento_id as TipoEvento,
                             et.id,
                             et.descricao
                         from
-	                        evento e
+                            evento e
                         inner join evento_tipo et on et.id = e.tipo_evento_id
                         {filtroTurma}
                         where
@@ -1270,34 +1270,34 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<EventoDataDto>> ListarEventosItinerancia(long tipoCalendarioId, long itineranciaId, string codigoUE, string login, Guid perfil, bool historico = false)
         {
             var query = @"select distinct e.id,
-		                    e.data_inicio as Data,
-		                    e.nome,
-		                    case
-			                    when e.dre_id is not null and e.ue_id is null then 'DRE'
-	      	                    when e.dre_id is not null and e.ue_id is not null then 'UE'
-			                    else 'SME'
-		                    end tipoEvento,
-		                    au.Nome as UeNome,
+                            e.data_inicio as Data,
+                            e.nome,
+                            case
+                                when e.dre_id is not null and e.ue_id is null then 'DRE'
+                                  when e.dre_id is not null and e.ue_id is not null then 'UE'
+                                else 'SME'
+                            end tipoEvento,
+                            au.Nome as UeNome,
                             au.TipoEscola
                     from evento e
-	                    inner join evento_tipo et
-		                    on e.tipo_evento_id = et.id 
-	                    inner join tipo_calendario tc
-		                    on e.tipo_calendario_id = tc.id
-	                    inner join f_abrangencia_ues(@login, @perfil, @historico) au
-		                    on e.ue_id = au.codigo
-		                    and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) 
-		                      or (tc.modalidade = 2 and au.modalidade_codigo = 3)
-		                      or (tc.modalidade = 3 and au.modalidade_codigo = 1))
+                        inner join evento_tipo et
+                            on e.tipo_evento_id = et.id 
+                        inner join tipo_calendario tc
+                            on e.tipo_calendario_id = tc.id
+                        inner join f_abrangencia_ues(@login, @perfil, @historico) au
+                            on e.ue_id = au.codigo
+                            and ((tc.modalidade = 1 and au.modalidade_codigo in (5, 6)) 
+                              or (tc.modalidade = 2 and au.modalidade_codigo = 3)
+                              or (tc.modalidade = 3 and au.modalidade_codigo = 1))
                         left join itinerancia i on i.evento_id = e.id
                     where et.ativo 
-	                    and not et.excluido
-	                    and not e.excluido
+                        and not et.excluido
+                        and not e.excluido
                         and e.ue_id = @codigoUE
-	                    and (i.id is null or i.id = @itineranciaId)
-	                    and extract(year from e.data_inicio) = tc.ano_letivo
-	                    and et.codigo = 28
-	                    and e.tipo_calendario_id = @tipoCalendarioId";
+                        and (i.id is null or i.id = @itineranciaId)
+                        and extract(year from e.data_inicio) = tc.ano_letivo
+                        and et.codigo = 28
+                        and e.tipo_calendario_id = @tipoCalendarioId";
             return await database.Conexao.QueryAsync<EventoDataDto>(query, new { tipoCalendarioId, itineranciaId, codigoUE, login, perfil, historico });
         }
 
@@ -1329,8 +1329,8 @@ namespace SME.SGP.Dados.Repositorios
                                                    te.descricao as TipoEvento,
                                                    e.data_inicio as DataInicio
                                               from evento e
-				                             inner join tipo_calendario tc on tc.id = e.tipo_calendario_id 	    
-					                         inner join evento_tipo te on te.id = e.tipo_evento_id 
+                                             inner join tipo_calendario tc on tc.id = e.tipo_calendario_id         
+                                             inner join evento_tipo te on te.id = e.tipo_evento_id 
                                              where e.tipo_calendario_id = @tipoCalendario
                                                and not e.excluido
                                                and e.status = 1
@@ -1395,7 +1395,7 @@ namespace SME.SGP.Dados.Repositorios
                             AND e.tipo_calendario_id = @tipoCalendarioId
                             AND ((e.dre_id is null and e.ue_id is null) OR (e.ue_id = @ueId))
                             AND e.data_inicio <= @dataAula
-	                        AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
+                            AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
                             HAVING Count(liberacao.id) >= 1 OR Count(outros.id) >= 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new

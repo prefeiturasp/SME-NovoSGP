@@ -201,11 +201,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TipoCalendarioRetornoDto>> ListarPorAnoLetivoDescricaoEModalidades(int anoLetivo, string descricao, IEnumerable<int> modalidades)
         {
             var query = new StringBuilder(@"select tc.id,
-   		                                           tc.ano_letivo as AnoLetivo,   		  
-   		                                           tc.nome,
-   		                                           tc.ano_letivo ||' - '|| tc.nome as descricao,
-   		                                           tc.modalidade,
-   		                                           tc.semestre
+                                                      tc.ano_letivo as AnoLetivo,             
+                                                      tc.nome,
+                                                      tc.ano_letivo ||' - '|| tc.nome as descricao,
+                                                      tc.modalidade,
+                                                      tc.semestre
                                               from tipo_calendario tc
                                              where not tc.excluido
                                                and tc.ano_letivo = @anoLetivo ");
@@ -222,10 +222,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TipoCalendarioBuscaDto>> ObterTiposCalendarioPorDescricaoAsync(string descricao)
         {
             var query = $@"select id, 
-	                                 ano_letivo,
-	                                 nome,
+                                     ano_letivo,
+                                     nome,
                                      modalidade,
-	                                 ano_letivo ||' - '|| nome as descricao,
+                                     ano_letivo ||' - '|| nome as descricao,
                                      migrado,
                                      periodo,
                                      situacao,
@@ -268,17 +268,17 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>> ObterPeriodoTipoCalendarioBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, int semestre = 0)
         {
             var query = $@"select
-	                        pe.id as periodoEscolarId,
-	                        pe.bimestre,
-	                        pe.periodo_inicio as PeriodoInicio,
-	                        pe.periodo_fim as PeriodoFim
+                            pe.id as periodoEscolarId,
+                            pe.bimestre,
+                            pe.periodo_inicio as PeriodoInicio,
+                            pe.periodo_fim as PeriodoFim
                         from tipo_calendario tc
                         join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                         where
-	                        tc.ano_letivo = @anoLetivo
-	                        and tc.modalidade = @modalidadeTipoCalendario
-	                        and not tc.excluido 
-	                        {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
+                            tc.ano_letivo = @anoLetivo
+                            and tc.modalidade = @modalidadeTipoCalendario
+                            and not tc.excluido 
+                            {IncluirFiltroSemestrePorModalidade(modalidadeTipoCalendario, semestre)}";
 
             return await database.Conexao.QueryAsync<PeriodoCalendarioBimestrePorAnoLetivoModalidadeDto>(query, new { anoLetivo, modalidadeTipoCalendario = (int)modalidadeTipoCalendario, semestre });
         }
@@ -306,9 +306,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> ObterAnoLetivoUltimoTipoCalendarioPorDataReferencia(int anoReferencia, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var sqlQuery = @"select ano_letivo
-	                            from tipo_calendario tc 
+                                from tipo_calendario tc 
                              where ano_letivo < @anoReferencia and
-	                               modalidade = @modalidadeTipoCalendario
+                                   modalidade = @modalidadeTipoCalendario
                              order by ano_letivo desc
                              limit 1;";
 

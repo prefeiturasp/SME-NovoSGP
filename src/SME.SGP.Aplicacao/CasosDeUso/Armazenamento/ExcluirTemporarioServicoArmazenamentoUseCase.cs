@@ -14,9 +14,9 @@ namespace SME.SGP.Aplicacao
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
         } 
 
-        public async Task<bool> Executar(string nomeArquivo, string bucketTemp)
+        public async Task<bool> Executar(string nomeArquivo, string bucketTemporario)
         {
-            var retorno = await servicoArmazenamento.Excluir(nomeArquivo, bucketTemp);
+            var retorno = await servicoArmazenamento.Excluir(nomeArquivo, bucketTemporario);
             
             return retorno;
         }

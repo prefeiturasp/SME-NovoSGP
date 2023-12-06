@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
     public class ObterAtribuicoesPorTurmaEProfessorQuery : IRequest<IEnumerable<AtribuicaoCJ>>
     {
         public ObterAtribuicoesPorTurmaEProfessorQuery(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId, string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null, 
-            int? anoLetivo = null, bool? historico = null)
+            int anoLetivo = 0, bool? historico = null)
         {
             Modalidade = modalidade;
             TurmaId = turmaId;
@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         public bool? Substituir { get; set; }
         public string DreCodigo { get; set; }
         public string[] TurmaIds { get; set; }
-        public int? AnoLetivo { get; set; }
+        public int AnoLetivo { get; set; }
         public bool? Historico { get; set; }
     }
 }

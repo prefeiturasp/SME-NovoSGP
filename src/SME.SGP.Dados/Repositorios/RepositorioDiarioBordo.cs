@@ -298,7 +298,7 @@ namespace SME.SGP.Dados.Repositorios
                         from diario_bordo db
                              inner join turma t on t.id = db.turma_id
                              inner join ue on ue.id = t.ue_id 
-	                         inner join dre on dre.id = ue.dre_id 
+                             inner join dre on dre.id = ue.dre_id 
                        where not db.excluido
                              and t.ano_letivo = @anoLetivo
                              and t.modalidade_codigo = @modalidade
@@ -314,7 +314,7 @@ namespace SME.SGP.Dados.Repositorios
                         from diario_bordo db
                              inner join turma t on t.id = db.turma_id
                              inner join ue on ue.id = t.ue_id 
-	                         inner join dre on dre.id = ue.dre_id 
+                             inner join dre on dre.id = ue.dre_id 
                        where not db.excluido
                              and t.ano_letivo = @anoLetivo
                              and t.modalidade_codigo = @modalidade
@@ -375,7 +375,7 @@ namespace SME.SGP.Dados.Repositorios
                         and t.ano <> '0'
                         and t.ano_letivo = @anoLetivo
                         and dre.id = @dreId
-	                    and t.ue_id = @ueId
+                        and t.ue_id = @ueId
                         and t.modalidade_codigo = @modalidade
                     group by t.ano ";
             }
@@ -425,23 +425,23 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@"
                 from 
-	                diario_bordo db 
+                    diario_bordo db 
                 left join
-	                devolutiva d 
-	                on db.devolutiva_id  = d.id 
+                    devolutiva d 
+                    on db.devolutiva_id  = d.id 
                 inner join 
-	                aula a 
-	                on db.aula_id = a.id 
+                    aula a 
+                    on db.aula_id = a.id 
                 inner join 
-	                turma t 
-	                on a.turma_id  = t.turma_id
+                    turma t 
+                    on a.turma_id  = t.turma_id
                 inner join 
-	                ue u 
-	                on t.ue_id  = u.id
+                    ue u 
+                    on t.ue_id  = u.id
                 where not db.excluido 
                     and t.ano_letivo = @anoLetivo
-	                and t.modalidade_codigo = @modalidade
-	                and a.data_aula < @dataAula ");
+                    and t.modalidade_codigo = @modalidade
+                    and a.data_aula < @dataAula ");
 
             if (dreId.HasValue)
                 query.AppendLine("and u.dre_id = @dreId ");
@@ -469,17 +469,17 @@ namespace SME.SGP.Dados.Repositorios
                         t.turma_id,
                         t.nome as TurmaAno,
                         count(*) filter (where db.devolutiva_id is null) as DiariosComDevolutivasPendentes,
-	                    count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas"
+                        count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas"
                 : @"select
                         t.ano as TurmaAno,
                         count(*) filter (where db.devolutiva_id is null) as DiariosComDevolutivasPendentes,
-	                    count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas";
+                        count(*) filter (where db.devolutiva_id is not null) as DiariosComDevolutivas";
 
         private string DefinirAgrupamentoQueryDiariosDeBordoComDevolutivaEDevolutivaPendente(bool possuiFiltroDeUe)
             => possuiFiltroDeUe
                 ? @"group by
                         t.turma_id,
-	                    t.nome"
+                        t.nome"
                 : @"group by
                         t.ano";
 
@@ -487,17 +487,17 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.AppendLine("select distinct db.id,");
-            sqlQuery.AppendLine("	             db.aula_id,");
-            sqlQuery.AppendLine("	             a.id,");
-            sqlQuery.AppendLine("	             a.data_aula");
-            sqlQuery.AppendLine("	from diario_bordo db");
-            sqlQuery.AppendLine("		inner join aula a");
-            sqlQuery.AppendLine("			on db.aula_id = a.id");
+            sqlQuery.AppendLine("                 db.aula_id,");
+            sqlQuery.AppendLine("                 a.id,");
+            sqlQuery.AppendLine("                 a.data_aula");
+            sqlQuery.AppendLine("    from diario_bordo db");
+            sqlQuery.AppendLine("        inner join aula a");
+            sqlQuery.AppendLine("            on db.aula_id = a.id");
             sqlQuery.AppendLine("where a.excluido and");
-            sqlQuery.AppendLine("	a.turma_id = @codigoTurma and");
-            sqlQuery.AppendLine("	a.disciplina_id = any(@codigosDisciplinas) and");
-            sqlQuery.AppendLine("	a.tipo_calendario_id = @tipoCalendarioId and");
-            sqlQuery.AppendLine("	a.data_aula = any(@datasConsideradas);");
+            sqlQuery.AppendLine("    a.turma_id = @codigoTurma and");
+            sqlQuery.AppendLine("    a.disciplina_id = any(@codigosDisciplinas) and");
+            sqlQuery.AppendLine("    a.tipo_calendario_id = @tipoCalendarioId and");
+            sqlQuery.AppendLine("    a.data_aula = any(@datasConsideradas);");
 
             return await database.Conexao
                 .QueryAsync<DiarioBordo, Aula, DiarioBordo>(sqlQuery.ToString(), (diarioBordo, aula) =>
@@ -517,29 +517,29 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = $@"WITH DiarioBordo AS(
                             SELECT 
-	                            min(a.data_aula) AS DataAula,
-	                            a.tipo_calendario_id AS TipoCalendarioId
+                                min(a.data_aula) AS DataAula,
+                                a.tipo_calendario_id AS TipoCalendarioId
                             FROM
-	                            diario_bordo db
+                                diario_bordo db
                             INNER JOIN aula a ON
-	                            db.aula_id = a.id
+                                db.aula_id = a.id
                             WHERE
-	                            db.devolutiva_id ISNULL
-	                            AND db.turma_id = @turmaId
-	                            AND a.disciplina_id = @componenteCodigo
+                                db.devolutiva_id ISNULL
+                                AND db.turma_id = @turmaId
+                                AND a.disciplina_id = @componenteCodigo
                                 AND NOT db.excluido
                             GROUP BY
-	                            a.tipo_calendario_id
+                                a.tipo_calendario_id
                             )
                             SELECT 
-	                            pe.bimestre,
-	                            pe.periodo_inicio AS PeriodoInicio,
-	                            pe.periodo_fim  AS PeriodoFim,
-	                            db.DataAula
+                                pe.bimestre,
+                                pe.periodo_inicio AS PeriodoInicio,
+                                pe.periodo_fim  AS PeriodoFim,
+                                db.DataAula
                             FROM
-	                            periodo_escolar pe
+                                periodo_escolar pe
                             inner JOIN DiarioBordo db ON
-	                            pe.tipo_calendario_id = db.TipoCalendarioId
+                                pe.tipo_calendario_id = db.TipoCalendarioId
                                 WHERE pe.periodo_inicio <= now() ";
 
             return await database.Conexao.QueryAsync<DiarioBordoSemDevolutivaDto>(sql, new { turmaId, componenteCodigo });
@@ -549,7 +549,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = $@"select db.id, 
                                u.nome as nomeEscola, 
-	                           coalesce(cc.descricao_sgp, cc.descricao) as descricaocomponenteCurricular,
+                               coalesce(cc.descricao_sgp, cc.descricao) as descricaocomponenteCurricular,
                                a.professor_rf as ProfessorRf,
                                db.componente_curricular_id as componenteCurricularId, db.turma_id as turmaId, 
                                db.aula_id as aulaId, a.data_aula as dataAula,

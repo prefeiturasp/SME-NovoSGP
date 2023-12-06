@@ -10,7 +10,7 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Pendencias.Worker
 {
-    public class WorkerRabbitPendencias : WorkerRabbitMQBase
+    public class WorkerRabbitPendencias : WorkerRabbitAplicacao
     {
         public WorkerRabbitPendencias(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
@@ -24,7 +24,7 @@ namespace SME.SGP.Pendencias.Worker
         {
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgpPendencias.PendenciasGerais, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisUseCase), true));
             Comandos.Add(RotasRabbitSgpPendencias.PendenciasGeraisCalendario, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisCalendarioUseCase), true));

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
         }
 
         [Fact]
-        public async Task Deve_Inserir_Devolutiva()
+        public Task Deve_Inserir_Devolutiva()
         {
             // Arrange
             mediator.Setup(a => a.Send(It.IsAny<AulaExisteQuery>(), It.IsAny<CancellationToken>()))
@@ -41,33 +41,41 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             // Assert
             repositorioDevolutiva.Verify(x => x.SalvarAsync(It.IsAny<Devolutiva>()), Times.Once);
             Assert.True(auditoriaDto.Id > 0);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Obrigar_Descricao()
+        public Task Deve_Obrigar_Descricao()
         {
             var command = new InserirDevolutivaCommand(1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.Today.AddDays(15), "", 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.Descricao);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Obrigar_PeriodoInicio()
+        public Task Deve_Obrigar_PeriodoInicio()
         {
             var command = new InserirDevolutivaCommand(1, new List<long> { 1, 2, 3, 4 }, DateTime.MinValue, DateTime.Today.AddDays(15), textoDescricao, 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.PeriodoInicio);
+
+            return Task.CompletedTask;
         }
 
         [Fact]
-        public async Task Deve_Obrigar_PeriodoFim()
+        public Task Deve_Obrigar_PeriodoFim()
         {
             var command = new InserirDevolutivaCommand(1, new List<long> { 1, 2, 3, 4 }, DateTime.Today.AddDays(-15), DateTime.MinValue, textoDescricao, 1);
             var result = ValidarCommand(command);
 
             result.ShouldHaveValidationErrorFor(a => a.PeriodoFim);
+
+            return Task.CompletedTask;
         }
 
         private TestValidationResult<InserirDevolutivaCommand> ValidarCommand(InserirDevolutivaCommand command)

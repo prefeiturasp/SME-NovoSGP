@@ -37,14 +37,12 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
-        private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IServicoUsuario servicoUsuario;        
         private readonly IRepositorioCache repositorioCache;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
         private readonly IMediator mediator;
-        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -52,7 +50,6 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioFechamentoAlunoConsulta repositorioFechamentoAlunoConsulta,
                                                 IRepositorioFechamentoAluno repositorioFechamentoAluno,
                                                 IRepositorioFechamentoNota repositorioFechamentoNota,
-                                                IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                                 IRepositorioTurmaConsulta repositorioTurma,
                                                 IServicoPeriodoFechamento servicoPeriodoFechamento,
                                                 IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -67,7 +64,6 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioEventoTipo repositorioEventoTipo,
                                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                                 IRepositorioCache repositorioCache,
-                                                IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
                                                 IMediator mediator)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -89,9 +85,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
-            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -258,7 +252,7 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplinaEOL.EhNulo())
                 throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
-            var tipoNotaOuConceito = await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turmaFechamento.Id, turmaFechamento.TipoTurma);
+            var tipoNotaOuConceito = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turmaFechamento)); 
             
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)

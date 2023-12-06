@@ -2,6 +2,8 @@
 {
     public class RotasRabbitSgpPendencias
     {
+        protected RotasRabbitSgpPendencias() { }
+
         public const string PendenciasGeraisCalendario = "sgp.pendencias.gerais.calendario";
         public const string PendenciasGeraisEventos = "sgp.pendencias.gerais.evento";
         public const string RotaRemoverAtribuicaoPendenciaUsuarios = "sgp.pendencias.perfil.usuario.remover.atribuicao";

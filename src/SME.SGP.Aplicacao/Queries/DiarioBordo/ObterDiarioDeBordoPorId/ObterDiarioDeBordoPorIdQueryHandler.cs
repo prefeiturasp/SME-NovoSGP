@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
                 NomeComponente = disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular == componenteCurricularIdPrincipal)?.NomeComponenteInfantil,
                 NomeComponenteIrmao = diarioBordoIrmao.NaoEhNulo() ? disciplinas.FirstOrDefault(disciplina => disciplina.CodigoComponenteCurricular != componenteCurricularIdPrincipal)?.NomeComponenteInfantil : string.Empty,
                 PlanejamentoIrmao = diarioBordoIrmao?.Planejamento,
-                Observacoes = observacoes != null ? observacoes.Select(obs =>
+                Observacoes = observacoes.NaoEhNulo() ? observacoes.Select(obs =>
                 {
                     return new ObservacaoNotificacoesDiarioBordoDto()
                     {

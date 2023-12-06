@@ -15,11 +15,12 @@ namespace SME.SGP.Aplicacao
             this.servicoFechamentoTurmaDisciplina = servicoFechamentoTurmaDisciplina;
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public Task<bool> Executar(MensagemRabbit param)
         {
             var data = param.ObterObjetoMensagem<PendenciaFechamentoCompletoDto>();
             servicoFechamentoTurmaDisciplina.VerificarPendenciasEmAbertoPorFechamento(data.FechamentoId);
-            return true;
+            
+            return Task.FromResult(true); 
         }
     }
 }

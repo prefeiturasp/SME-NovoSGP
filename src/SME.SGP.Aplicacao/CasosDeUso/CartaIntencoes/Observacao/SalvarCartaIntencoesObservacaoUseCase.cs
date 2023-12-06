@@ -17,14 +17,14 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<AuditoriaDto> Executar(string turmaCodigo, long componenteCurricularId, SalvarCartaIntencoesObservacaoDto dto)
+        public async Task<AuditoriaDto> Executar(string turmaCodigo, long componenteCurricularId, SalvarCartaIntencoesObservacaoDto salvarCartaIntencoesObservacaoDto)
         {
             var usuarioLogadoId = await mediator.Send(ObterUsuarioLogadoIdQuery.Instance);
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaCodigo));
             if (turmaId == 0)
                 throw new NegocioException("Turma não encontrada.");
 
-            return await mediator.Send(new SalvarCartaIntencoesObservacaoCommand(turmaId, componenteCurricularId, usuarioLogadoId, dto.Observacao));
+            return await mediator.Send(new SalvarCartaIntencoesObservacaoCommand(turmaId, componenteCurricularId, usuarioLogadoId, salvarCartaIntencoesObservacaoDto.Observacao));
             throw new NotImplementedException();
         }
     }

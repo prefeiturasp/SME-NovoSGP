@@ -147,21 +147,21 @@ namespace SME.SGP.Dados.Repositorios
 
         private string GerarQueryCodigosTurmasForaLista(int anoLetivo, bool definirTurmasComoHistorica) =>
             $@"select distinct t.turma_id
-	                from turma t
-		                inner join tipo_calendario tc
-			                on t.ano_letivo = tc.ano_letivo and
-			                   t.modalidade_codigo = t.modalidade_codigo 
-		                inner join periodo_escolar pe
-			                on tc.id = pe.tipo_calendario_id 			
-		                inner join (select id, data_inicio, modalidade_codigo
-					                    from turma
-					                where ano_letivo = {anoLetivo} and
-						                  turma_id not in (#idsTurmas)) t2
-			                on t.id = t2.id and
-			                   t.modalidade_codigo = t2.modalidade_codigo
+                    from turma t
+                        inner join tipo_calendario tc
+                            on t.ano_letivo = tc.ano_letivo and
+                               t.modalidade_codigo = t.modalidade_codigo 
+                        inner join periodo_escolar pe
+                            on tc.id = pe.tipo_calendario_id             
+                        inner join (select id, data_inicio, modalidade_codigo
+                                        from turma
+                                    where ano_letivo = {anoLetivo} and
+                                          turma_id not in (#idsTurmas)) t2
+                            on t.id = t2.id and
+                               t.modalidade_codigo = t2.modalidade_codigo
                 where t.ano_letivo = {anoLetivo} and                      
-	                  pe.bimestre = 1 and                      
-	                  t.dt_fim_eol is not null and 
+                      pe.bimestre = 1 and                      
+                      t.dt_fim_eol is not null and 
                       t.dt_fim_eol {(definirTurmasComoHistorica ? ">=" : "<")} pe.periodo_inicio"; //Turmas extintas após o 1º bimestre do ano letivo considerado serão marcadas como histórica
 
         public async Task<IEnumerable<string>> ObterCodigosTurmasParaQueryAtualizarTurmasComoHistoricas(int anoLetivo, bool definirTurmasComoHistorica, string listaTurmas, IDbTransaction transacao)
@@ -253,9 +253,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId)
         {
             var query = @"INSERT INTO public.turma
-				                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma, nome_filtro)
-	                        values
-	                            (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma, @NomeFiltro);";
+                                (turma_id, ue_id, nome, ano, ano_letivo, modalidade_codigo, semestre, qt_duracao_aula, tipo_turno, data_atualizacao, historica, dt_fim_eol, ensino_especial, etapa_eja, data_inicio, serie_ensino, tipo_turma, nome_filtro)
+                            values
+                                (@Codigo, @ueId, @NomeTurma, @Ano, @AnoLetivo, @CodigoModalidade, @Semestre, @DuracaoTurno, @TipoTurno, @DataAtualizacao, @historica, @DataFim, @EnsinoEspecial, @EtapaEJA, @DataInicioTurma, @SerieEnsino, @TipoTurma, @NomeFiltro);";
 
             var parametros = new
             {
@@ -311,16 +311,16 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false)
         {
             var query = @"update
-	                            public.turma
+                                public.turma
                             set
-	                            nome = @nomeTurma,
-	                            ano = @ano,
-	                            ano_letivo = @anoLetivo,
-	                            modalidade_codigo = @codigoModalidade,
-	                            semestre = @semestre,
-	                            qt_duracao_aula = @duracaoTurno,
-	                            tipo_turno = @tipoTurno,
-	                            data_atualizacao = @dataAtualizacao,
+                                nome = @nomeTurma,
+                                ano = @ano,
+                                ano_letivo = @anoLetivo,
+                                modalidade_codigo = @codigoModalidade,
+                                semestre = @semestre,
+                                qt_duracao_aula = @duracaoTurno,
+                                tipo_turno = @tipoTurno,
+                                data_atualizacao = @dataAtualizacao,
                                 ensino_especial = @ensinoEspecial,
                                 etapa_eja = @etapaEja,
                                 data_inicio = @dataInicioTurma,
@@ -330,7 +330,7 @@ namespace SME.SGP.Dados.Repositorios
                                 historica = @historica,
                                 nome_filtro = @nomeFiltro
                             where
-	                            turma_id = @turmaId";
+                                turma_id = @turmaId";
 
             var parametros = new
             {
@@ -359,38 +359,38 @@ namespace SME.SGP.Dados.Repositorios
 
         private const string QuerySincronizacao = @"
                     select
-	                    id,
-	                    turma_id,
-	                    ue_id,
-	                    nome,
-	                    ano,
-	                    ano_letivo,
-	                    modalidade_codigo,
-	                    semestre,
-	                    qt_duracao_aula,
-	                    tipo_turno,
-	                    data_atualizacao,
+                        id,
+                        turma_id,
+                        ue_id,
+                        nome,
+                        ano,
+                        ano_letivo,
+                        modalidade_codigo,
+                        semestre,
+                        qt_duracao_aula,
+                        tipo_turno,
+                        data_atualizacao,
                         ensino_especial,
                         etapa_eja,
                         data_inicio,
                         dt_fim_eol,
                         tipo_turma
                     from
-	                    public.turma
+                        public.turma
                     where turma_id in (#ids);";
 
         private const string Update = @"
                     update
-	                    public.turma
+                        public.turma
                     set
-	                    nome = @nome,
-	                    ano = @ano,
-	                    ano_letivo = @anoLetivo,
-	                    modalidade_codigo = @modalidadeCodigo,
-	                    semestre = @semestre,
-	                    qt_duracao_aula = @qtDuracaoAula,
-	                    tipo_turno = @tipoTurno,
-	                    data_atualizacao = @dataAtualizacao,
+                        nome = @nome,
+                        ano = @ano,
+                        ano_letivo = @anoLetivo,
+                        modalidade_codigo = @modalidadeCodigo,
+                        semestre = @semestre,
+                        qt_duracao_aula = @qtDuracaoAula,
+                        tipo_turno = @tipoTurno,
+                        data_atualizacao = @dataAtualizacao,
                         ensino_especial = @ensinoEspecial,
                         etapa_eja = @etapaEja,
                         data_inicio = @dataInicio,
@@ -398,7 +398,7 @@ namespace SME.SGP.Dados.Repositorios
                         dt_fim_eol = @dataFim,
                         tipo_turma = @tipoTurma
                     where
-	                    id = @id;";
+                        id = @id;";
 
         private const string Delete = @"
                     delete from public.compensacao_ausencia_aluno

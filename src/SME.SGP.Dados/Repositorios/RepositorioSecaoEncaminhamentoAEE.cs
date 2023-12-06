@@ -16,10 +16,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoDtoPorEtapa(List<int> etapas, long encaminhamentoAeeId = 0)
         {
             var query = @"SELECT sea.id
-	                            , sea.nome
-	                            , sea.questionario_id as questionarioId
-	                            , eas.concluido
-	                            , sea.etapa
+                                , sea.nome
+                                , sea.questionario_id as questionarioId
+                                , eas.concluido
+                                , sea.etapa
                          FROM secao_encaminhamento_aee sea
                         left join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = @encaminhamentoAeeId and eas.secao_encaminhamento_id = sea.id
                          WHERE not sea.excluido 
@@ -32,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<SecaoEncaminhamentoAEE>> ObterSecoesEncaminhamentoPorEtapa(List<int> etapas, long encaminhamentoAeeId = 0)
         {
             var query = @"SELECT sea.*
-	                            , eas.*
+                                , eas.*
                          FROM secao_encaminhamento_aee sea
                         left join encaminhamento_aee_secao eas on eas.encaminhamento_aee_id = @encaminhamentoAeeId and eas.secao_encaminhamento_id = sea.id
                          WHERE not sea.excluido 

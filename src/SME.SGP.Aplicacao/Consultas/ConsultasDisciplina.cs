@@ -21,13 +21,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-        private string[] componentesParaObjetivosAprendizagemOpcionais = Array.Empty<string>();
         public ConsultasDisciplina(IRepositorioCache repositorioCache,
             IConsultasObjetivoAprendizagem consultasObjetivoAprendizagem,
             IRepositorioComponenteCurricularJurema repositorioComponenteCurricularJurema,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
-            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
         IMediator mediator) : base(mediator)
         {
             this.repositorioCache = repositorioCache ??
@@ -36,8 +33,6 @@ namespace SME.SGP.Aplicacao
                 throw new ArgumentNullException(nameof(consultasObjetivoAprendizagem));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ??
                 throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ??
-                throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioComponenteCurricularJurema = repositorioComponenteCurricularJurema ??
                 throw new ArgumentNullException(nameof(repositorioComponenteCurricularJurema));
         }
@@ -89,8 +84,6 @@ namespace SME.SGP.Aplicacao
             if (turma.EhNulo())
                 throw new NegocioException("Não foi possível encontrar a turma");
 
-            await CarregueComponentesObjetivoApredizagemOpcionais(turma.AnoLetivo);
-
             if (usuarioLogado.EhProfessorCj())
             {
                 disciplinasAtribuicaoCj = (await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login)).ToList();
@@ -99,7 +92,7 @@ namespace SME.SGP.Aplicacao
                     disciplinasAtribuicaoCj?.DistinctBy(s => (s.Nome.ToUpper(), s.TerritorioSaber ? s.Professor : null)).OrderBy(s => s.Nome) :
                     disciplinasAtribuicaoCj.OrderBy(s => s.Nome);
 
-                disciplinasDto = (await MapearParaDto(disciplinasEolTratadas, ehEnsinoMedio, turmaPrograma, turma.EnsinoEspecial))?.OrderBy(c => c.Nome)?.ToList();
+                disciplinasDto = (MapearParaDto(disciplinasEolTratadas, ehEnsinoMedio, turmaPrograma, turma.EnsinoEspecial))?.OrderBy(c => c.Nome)?.ToList();
             }
             else
             {
@@ -111,7 +104,7 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false))).ToList();
 
                     componentesCurriculares ??= (await mediator
-                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false))).ToList();
+                        .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, consideraTurmaInfantil ? turma.EhTurmaInfantil || realizarAgrupamentoComponente : false, false))).ToList();
                 }
                 else
                 {
@@ -177,7 +170,7 @@ namespace SME.SGP.Aplicacao
                         .Where(d => !codigosTerritorioAgrupamentos.Contains(d.CodigoComponenteCurricular) && (d.CodigoComponenteCurricularPai.HasValue && d.CodigoComponenteCurricularPai.Value > 0 && !codigosComponentesPai.Contains(d.CodigoComponenteCurricularPai.Value)));
 
                     if (disciplinasAdicionar.NaoEhNulo() && disciplinasAdicionar.Any())
-                        disciplinasDto.AddRange(await MapearParaDto(disciplinasAdicionar, turmaPrograma, turma.EnsinoEspecial));
+                        disciplinasDto.AddRange(MapearParaDto(disciplinasAdicionar, turmaPrograma, turma.EnsinoEspecial));
 
                     disciplinasDto = disciplinasDto.NaoEhNulo() && disciplinasDto.Any() ? disciplinasDto.Where(d => d.TerritorioSaber).DistinctBy(d => (d.CodigoComponenteCurricular, d.Professor))
                         .Concat(disciplinasDto.Where(d => !d.TerritorioSaber).DistinctBy(d => d.CodigoComponenteCurricular))
@@ -306,7 +299,7 @@ namespace SME.SGP.Aplicacao
                     string.Empty,
                     codigoDisciplina,
                     usuario.Login);
-                disciplinasDto = (await MapearParaDto(componentesCJ, ehEnsinoMedio, turmaPrograma))?.OrderBy(c => c.Nome)?.ToList();
+                disciplinasDto = (MapearParaDto(componentesCJ, ehEnsinoMedio, turmaPrograma))?.OrderBy(c => c.Nome)?.ToList();
             }
             else
             {
@@ -385,7 +378,7 @@ namespace SME.SGP.Aplicacao
             foreach (var d in disciplinasEol)
             {
                 d.Professor = professoresTitulares
-                    .FirstOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
+                    .FirstOrDefault(pt => pt.DisciplinasId().Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
 
                 if (!string.IsNullOrWhiteSpace(d.Professor))
                 {
@@ -449,7 +442,7 @@ namespace SME.SGP.Aplicacao
             if (disciplinas.EhNulo() || !disciplinas.Any())
                 return disciplinasDto;
 
-            disciplinasDto = await MapearParaDto(disciplinas, ehEnsinoMedio, turmaPrograma);
+            disciplinasDto = MapearParaDto(disciplinas, ehEnsinoMedio, turmaPrograma);
 
             await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
 
@@ -484,7 +477,7 @@ namespace SME.SGP.Aplicacao
                     });
 
                     var disciplinasResposta = MapearDisciplinaResposta(disciplinasEol);
-                    disciplinasDto = await MapearParaDto(disciplinasResposta, ehEnsinoMedio, turmaPrograma);
+                    disciplinasDto = MapearParaDto(disciplinasResposta, ehEnsinoMedio, turmaPrograma);
                 }
             }
             else
@@ -496,7 +489,7 @@ namespace SME.SGP.Aplicacao
                 var disciplinasResposta = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
                 if (disciplinasResposta.NaoEhNulo() && disciplinasResposta.Any())
                 {
-                    disciplinasDto = await MapearParaDto(disciplinasResposta, ehEnsinoMedio, turmaPrograma);
+                    disciplinasDto = MapearParaDto(disciplinasResposta, ehEnsinoMedio, turmaPrograma);
                     await repositorioCache.SalvarAsync(chaveCache, JsonConvert.SerializeObject(disciplinasDto));
                 }
             }
@@ -535,19 +528,19 @@ namespace SME.SGP.Aplicacao
             Professor = disciplinaEol.Professor
         };
 
-        private async Task<List<DisciplinaDto>> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool ehEnsinoMedio = false, bool turmaPrograma = false, bool ensinoEspecial = false)
+        private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool ehEnsinoMedio = false, bool turmaPrograma = false, bool ensinoEspecial = false)
         {
             var retorno = new List<DisciplinaDto>();
 
             if (disciplinas.NaoEhNulo())
             {
                 foreach (var disciplina in disciplinas)
-                    retorno.Add(await MapearParaDto(disciplina, ehEnsinoMedio, turmaPrograma, ensinoEspecial));
+                    retorno.Add(MapearParaDto(disciplina, ehEnsinoMedio, turmaPrograma, ensinoEspecial));
             }
             return retorno;
         }
 
-        private async Task<DisciplinaDto> MapearParaDto(DisciplinaResposta disciplina, bool ehEnsinoMedio = false, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
+        private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool ehEnsinoMedio = false, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
             Id = (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
@@ -561,7 +554,7 @@ namespace SME.SGP.Aplicacao
             RegistraFrequencia = disciplina.RegistroFrequencia,
             LancaNota = disciplina.LancaNota,
             PossuiObjetivos = !turmaPrograma && !ehEnsinoMedio && consultasObjetivoAprendizagem.DisciplinaPossuiObjetivosDeAprendizagem(disciplina.CodigoComponenteCurricular),
-            ObjetivosAprendizagemOpcionais = await consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial),
+            ObjetivosAprendizagemOpcionais = consultasObjetivoAprendizagem.ComponentePossuiObjetivosOpcionais(disciplina.CodigoComponenteCurricular, disciplina.Regencia, ensinoEspecial),
             Professor = disciplina.Professor
         };
 
@@ -588,16 +581,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
-        }
-
-        private async Task CarregueComponentesObjetivoApredizagemOpcionais(int anoLetivo)
-        {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ComponentesParaObjetivosAprendizagemOpcionais, anoLetivo));
-
-            if (parametro.NaoEhNulo())
-            {
-                componentesParaObjetivosAprendizagemOpcionais = parametro.Valor.Split(",");
-            }
         }
     }
 }

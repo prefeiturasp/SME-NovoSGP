@@ -1,21 +1,18 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Aula.Aula.ServicosFake
 {
-    internal class ObterAulasDaTurmaPorTipoCalendarioQueryHandlerFake : IRequestHandler<ObterAulasDaTurmaPorTipoCalendarioQuery, IEnumerable<Dominio.Aula>>
+    public class ObterAulasDaTurmaPorTipoCalendarioQueryHandlerFake : IRequestHandler<ObterAulasDaTurmaPorTipoCalendarioQuery, IEnumerable<Dominio.Aula>>
     {
-        public async Task<IEnumerable<Dominio.Aula>> Handle(ObterAulasDaTurmaPorTipoCalendarioQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<Dominio.Aula>> Handle(ObterAulasDaTurmaPorTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
-            return new List<Dominio.Aula>()
+            return Task.FromResult<IEnumerable<Dominio.Aula>>(new List<Dominio.Aula>()
             {
                 new Dominio.Aula()
                 {
@@ -71,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Aula.ServicosFake
                     RecorrenciaAula = RecorrenciaAula.AulaUnica,
                     TipoAula = TipoAula.Normal
                 }
-            };
+            });
         }
     }
 }

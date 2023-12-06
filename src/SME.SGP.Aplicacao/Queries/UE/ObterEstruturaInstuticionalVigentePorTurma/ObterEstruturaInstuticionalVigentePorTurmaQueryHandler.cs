@@ -14,12 +14,10 @@ namespace SME.SGP.Aplicacao
     public class ObterEstruturaInstuticionalVigentePorTurmaQueryHandler : IRequestHandler<ObterEstruturaInstuticionalVigentePorTurmaQuery, EstruturaInstitucionalRetornoEolDTO>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IMediator mediator;
-
-        public ObterEstruturaInstuticionalVigentePorTurmaQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
+        
+        public ObterEstruturaInstuticionalVigentePorTurmaQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new System.ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<EstruturaInstitucionalRetornoEolDTO> Handle(ObterEstruturaInstuticionalVigentePorTurmaQuery request, CancellationToken cancellationToken)

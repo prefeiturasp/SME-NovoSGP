@@ -50,15 +50,14 @@ namespace SME.SGP.Aplicacao
                             {
                                 try
                                 {
-                                    var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == professorComponenteTurma.DisciplinasId.ToString()
+                                    var componenteCurricular = componentesCurriculares.FirstOrDefault(c => professorComponenteTurma.DisciplinasId().Contains(long.Parse(c.Codigo))
                                                                                                && c.LancaNota);
-
-                                    if (componenteCurricular.NaoEhNulo() && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId.Contains(c.ComponenteCurricularId)))
+                                    if (componenteCurricular.NaoEhNulo() && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId().Contains(c.ComponenteCurricularId)))
                                     {
-                                        if (!fechamentosDaTurma.Any(a=> professorComponenteTurma.DisciplinasId.Contains(a.DisciplinaId) && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
+                                        if (!fechamentosDaTurma.Any(a=> professorComponenteTurma.DisciplinasId().Contains(a.DisciplinaId) && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
                                         {
                                             if (!await ExistePendenciaProfessor(turma, professorComponenteTurma, periodoEncerrando.PeriodoEscolar.Id))
-                                                await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinasId.First(), professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
+                                                await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinasId().First(), professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
                                         }
                                     }
                                 }
@@ -85,7 +84,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ExistePendenciaProfessor(Turma turma, ProfessorTitularDisciplinaEol professorComponente, long periodoEscolarId)
             => await mediator.Send(new ExistePendenciaProfessorPorTurmaEComponenteQuery(turma.Id,
-                                                                                        professorComponente.DisciplinasId.First(),
+                                                                                        professorComponente.DisciplinasId().First(),
                                                                                         periodoEscolarId,
                                                                                         professorComponente.ProfessorRf,
                                                                                         TipoPendencia.AusenciaDeAvaliacaoProfessor));

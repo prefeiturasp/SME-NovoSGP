@@ -23,8 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanoAula repositorioPlanoAula;
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno;
-        private readonly IRepositorioDevolutiva repositorioDevolutiva;
-
+        
         public ExcluirAulaRecorrenteCommandHandler(IMediator mediator,
                                                    IRepositorioAulaConsulta repositorioAulaConsulta,
                                                    IRepositorioAula repositorioAula,
@@ -32,7 +31,6 @@ namespace SME.SGP.Aplicacao
                                                    IRepositorioPlanoAula repositorioPlanoAula,
                                                    IRepositorioDiarioBordo repositorioDiarioBordo,
                                                    IRepositorioAnotacaoFrequenciaAlunoConsulta repositorioAnotacaoFrequenciaAluno,
-                                                   IRepositorioDevolutiva repositorioDevolutiva,
                                                    IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -42,7 +40,6 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
-            this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));
             this.repositorioAnotacaoFrequenciaAluno = repositorioAnotacaoFrequenciaAluno ?? throw new ArgumentNullException(nameof(repositorioAnotacaoFrequenciaAluno));
         }
 

@@ -9,12 +9,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTipoCalendarioIdPorCodigoUEQueryHandler : IRequestHandler<ObterTipoCalendarioIdPorCodigoUEQuery, long>
     {
-        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IMediator mediator;
 
-        public ObterTipoCalendarioIdPorCodigoUEQueryHandler(IRepositorioTipoCalendario repositorioTipoCalendario, IMediator mediator)
+        public ObterTipoCalendarioIdPorCodigoUEQueryHandler(IMediator mediator)
         {
-            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

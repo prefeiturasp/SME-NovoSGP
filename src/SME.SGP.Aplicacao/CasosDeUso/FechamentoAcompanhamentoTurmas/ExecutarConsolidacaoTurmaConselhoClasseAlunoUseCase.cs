@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     if (turmaRegular.EhNulo())
-                        throw new Exception(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
+                        throw new NegocioException(MensagemNegocioTurma.TURMA_REGULAR_NAO_ENCONTRADA);
 
                     if (turma.EhTurmaEdFisica())
                         componenteEdFisicaEJANecessitaConversaoNotaConceito = await TipoNotaEhConceito(turmaRegular, (filtro.Bimestre ?? 0));
@@ -237,8 +237,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!nota.HasValue)
                 return conceitoId;
-            else
-            if (nota < NOTA_CONCEITO_CINCO)
+            else if (nota < NOTA_CONCEITO_CINCO)
                 return (long)ConceitoValores.NS;
             else if (nota is >= NOTA_CONCEITO_CINCO and < NOTA_CONCEITO_SETE)
                 return (long)ConceitoValores.S;

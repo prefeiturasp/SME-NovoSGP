@@ -25,33 +25,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         public async Task<RetornoBaseDto> Handle(InserirAulaUnicaCommand request, CancellationToken cancellationToken)
         {
             var retorno = new RetornoBaseDto();
-
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
 
             if (request.Usuario.EhProfessorCj())
-            {
-                var possuiAtribuicaoCJ = await mediator
-                    .Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre,
-                    turma.Ue.CodigoUe,
-                    turma.CodigoTurma,
-                    request.Usuario.CodigoRf));
-
-                var atribuicoesEsporadica = await mediator
-                    .Send(new ObterAtribuicoesPorRFEAnoQuery(request.Usuario.CodigoRf,
-                                                             false,
-                                                             request.DataAula.Year,
-                                                             turma.Ue.Dre.CodigoDre,
-                                                             turma.Ue.CodigoUe));
-
-                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
-                {
-                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= request.DataAula.Date
-                                                       && a.DataFim >= request.DataAula.Date
-                                                       && a.DreId == turma.Ue.Dre.CodigoDre
-                                                       && a.UeId == turma.Ue.CodigoUe).Any())
-                        throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
-                }
-            }
+                await ValidarPermissaoCJCadastroAulas(turma, request.DataAula, request.Usuario.CodigoRf);
 
             var aulasExistentes = await mediator
                 .Send(new ObterAulasPorDataTurmaComponenteCurricularCJQuery(request.DataAula,
@@ -59,22 +36,14 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                                             request.CodigoComponenteCurricular,
                                                                             request.Usuario.EhProfessorCj()));
 
-            if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
-            {
-                if (request.Usuario.EhProfessorCj())
-                {
-                    if (aulasExistentes.Any(a => a.ProfessorRf == request.Usuario.CodigoRf))
-                        throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
-                }
-            }
+            if (request.Usuario.EhProfessorCj())
+                ValidarAulasExistentes(aulasExistentes, request.TipoAula, request.Usuario.CodigoRf);
 
             await AplicarValidacoes(request, turma, request.Usuario, aulasExistentes);
 
             var aula = MapearEntidade(request);
 
-            if (request.Usuario.PerfilAtual == Perfis.PERFIL_DIRETOR)
-                aula.Status = EntidadeStatus.Aprovado;
-
+            aula.Status = ObterStatusAprovadoDiretor(request.Usuario.PerfilAtual, aula.Status);
             aula.Id = await repositorioAula.SalvarAsync(aula);
 
             if (request.Usuario.PerfilAtual != Perfis.PERFIL_DIRETOR)
@@ -92,6 +61,44 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             retorno.Mensagens.Add("Aula cadastrada com sucesso.");
 
             return retorno;
+        }
+
+        private EntidadeStatus ObterStatusAprovadoDiretor(Guid perfilUsuario, EntidadeStatus statusAtual)
+        {
+            if (perfilUsuario == Perfis.PERFIL_DIRETOR)
+                return EntidadeStatus.Aprovado;
+            return statusAtual;
+        }
+
+        private void ValidarAulasExistentes(IEnumerable<AulaConsultaDto> aulasExistentes, TipoAula tipoAula, string codigoRf)
+        {
+            if (aulasExistentes.PossuiRegistros(c => c.TipoAula == tipoAula && c.ProfessorRf == codigoRf))
+                throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
+        }
+
+        private async Task ValidarPermissaoCJCadastroAulas(Turma turma, DateTime dataAula, string codigoRf)
+        {
+            var possuiAtribuicaoCJ = await mediator
+                    .Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre,
+                    turma.Ue.CodigoUe,
+                    turma.CodigoTurma,
+                    codigoRf));
+
+            if (possuiAtribuicaoCJ)
+            {
+                var atribuicoesEsporadica = await mediator
+                .Send(new ObterAtribuicoesPorRFEAnoQuery(codigoRf,
+                                                         false,
+                                                         dataAula.Year,
+                                                         turma.Ue.Dre.CodigoDre,
+                                                         turma.Ue.CodigoUe));
+
+                if (atribuicoesEsporadica.Any() && !atribuicoesEsporadica.Where(a => a.DataInicio <= dataAula.Date
+                                                   && a.DataFim >= dataAula.Date
+                                                   && a.DreId == turma.Ue.Dre.CodigoDre
+                                                   && a.UeId == turma.Ue.CodigoUe).Any())
+                    throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
+            }
         }
 
         private async Task ValidarAulasDeReposicao(InserirAulaUnicaCommand request,

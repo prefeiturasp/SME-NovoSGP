@@ -87,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sqlSelect = $@"with vw_resposta_data as (
                         select ens.encaminhamento_naapa_id, 
-		                       enr.texto DataAberturaQueixaInicio	
+                               enr.texto DataAberturaQueixaInicio    
                         from encaminhamento_naapa_secao ens   
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
@@ -98,8 +98,8 @@ namespace SME.SGP.Dados.Repositorios
                         ),
                         vw_resposta_prioridade as (
                         select ens.encaminhamento_naapa_id, 
-		                        opr.nome as Prioridade,
-		                        enr.resposta_id  as PrioridadeId
+                                opr.nome as Prioridade,
+                                enr.resposta_id  as PrioridadeId
                         from encaminhamento_naapa_secao ens   
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
@@ -298,19 +298,19 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
         {
             var sql = @"select
-	                        a.codigo
+                            a.codigo
                         from
-	                        encaminhamento_naapa ea
+                            encaminhamento_naapa ea
                         inner join encaminhamento_naapa_secao eas on
-	                        ea.id = eas.encaminhamento_naapa_id
+                            ea.id = eas.encaminhamento_naapa_id
                         inner join encaminhamento_naapa_questao qea on
-	                        eas.id = qea.encaminhamento_naapa_secao_id
+                            eas.id = qea.encaminhamento_naapa_secao_id
                         inner join encaminhamento_naapa_resposta rea on
-	                        qea.id = rea.questao_encaminhamento_id
+                            qea.id = rea.questao_encaminhamento_id
                         inner join arquivo a on
-	                        rea.arquivo_id = a.id
+                            rea.arquivo_id = a.id
                         where
-	                        ea.id = @encaminhamentoId";
+                            ea.id = @encaminhamentoId";
 
             return await database.Conexao.QueryAsync<EncaminhamentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
         }   
@@ -349,10 +349,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
         {
            var query =@"select 
-	                        t.ue_id UeId,
-	                        t.ano_letivo AnoLetivo, 
-	                        en.situacao,
-	                        count(en.id)quantidade
+                            t.ue_id UeId,
+                            t.ano_letivo AnoLetivo, 
+                            en.situacao,
+                            count(en.id)quantidade
                         from encaminhamento_naapa en
                         inner join turma t on en.turma_id = t.id 
                         where not en.excluido  

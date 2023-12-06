@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var componenteCurricularNaTurma in turmaSemAvaliacao)
             {
-                var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinasId.Contains(componenteCurricularNaTurma.ComponenteCurricularId));
+                var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinasId().Contains(componenteCurricularNaTurma.ComponenteCurricularId));
                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
                 if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))

@@ -1,7 +1,5 @@
 ﻿using Dapper.FluentMap;
 using Dapper.FluentMap.Dommel;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.Dados.Mapeamentos
 {
@@ -235,6 +233,16 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RelatorioPeriodicoPAPSecaoMap());
                config.AddMap(new RelatorioPeriodicoPAPQuestaoMap());
                config.AddMap(new RelatorioPeriodicoPAPRespostaMap());
+               config.AddMap(new InformativoMap());
+               config.AddMap(new InformativoPerfilMap());
+               config.AddMap(new CadastroAcessoABAEMap());
+               config.AddMap(new InformativoNotificacaoMap());
+               config.AddMap(new SecaoRegistroAcaoBuscaAtivaMap());
+               config.AddMap(new RegistroAcaoBuscaAtivaMap());
+               config.AddMap(new RegistroAcaoBuscaAtivaSecaoMap());
+               config.AddMap(new QuestaoRegistroAcaoBuscaAtivaMap());
+               config.AddMap(new RespostaRegistroAcaoBuscaAtivaMap());
+
 
                config.ForDommel();
            });
