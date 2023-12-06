@@ -332,7 +332,10 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 }
             };
 
-            return await Task.FromResult(alunos.Where(x => x.CodigoTurma == request.CodigoTurma && (!request.CodigoAluno.HasValue || (request.CodigoAluno.HasValue && request.CodigoAluno.ToString() == x.CodigoAluno))));
+            if(request.CodigoAluno.NaoEhNulo())
+                return await Task.FromResult(alunos.Where(x => x.CodigoTurma == request.CodigoTurma && Convert.ToInt32(x.CodigoAluno) == request.CodigoAluno.Value));
+            else
+                return await Task.FromResult(alunos.Where(x => x.CodigoTurma == request.CodigoTurma));
         }
     }
 }

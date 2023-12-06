@@ -30,7 +30,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         private const string CODIGO_ALUNO_14 = "14";
         private const string NOME_ALUNO_CODIGO_14 = "NOME_ALUNO_CODIGO_14";
 
-
         private const string ATIVO = "ATIVO";
         private const string NOME_RESPONSAVEL_ALUNO_CODIGO_1 = "NOME_RESPONSAVEL_ALUNO_CODIGO_1";
         private const string TIPO_RESPONSAVEL_1 = "TIPO_RESPONSAVEL_1";
@@ -97,7 +96,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     NumeroAlunoChamada = 4,
                     NomeResponsavel = NOME_RESPONSAVEL_ALUNO_CODIGO_1,
                     TipoResponsavel = TIPO_RESPONSAVEL_1,
-                },
+                } ,
                 new AlunoPorTurmaResposta()
                 {
                     CodigoAluno = CODIGO_ALUNO_14,
@@ -108,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     SituacaoMatricula = ATIVO,
                     DataSituacao = DateTime.Now.AddMonths(-6).Date,
                     DataMatricula = DateTime.Now.AddMonths(-11).Date,
-                    NumeroAlunoChamada = 4,
+                    NumeroAlunoChamada = 14,
                     NomeResponsavel = NOME_RESPONSAVEL_ALUNO_CODIGO_1,
                     TipoResponsavel = TIPO_RESPONSAVEL_1,
                 }
