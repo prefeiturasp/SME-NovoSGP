@@ -1,4 +1,4 @@
-using Dapper;
+ï»¿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -380,9 +380,9 @@ namespace SME.SGP.Dados.Repositorios
                 items.ForEach(i =>
                 {
                     if (string.IsNullOrEmpty(i.ContatoEfetuadoResponsavel))
-                        i.ContatoEfetuadoResponsavel = "Não";
+                        i.ContatoEfetuadoResponsavel = "NÃ£o";
                     if (string.IsNullOrEmpty(i.CriancaRetornouEscolaAposContato))
-                        i.CriancaRetornouEscolaAposContato = "Não";
+                        i.CriancaRetornouEscolaAposContato = "NÃ£o";
                 });
                 retorno.Items = items;
                 retorno.TotalRegistros = registroAcao.ReadFirst<int>();
