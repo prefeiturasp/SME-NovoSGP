@@ -9,7 +9,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake
     {
         public async Task<bool> Handle(ProfessorPodePersistirTurmaQuery request, CancellationToken cancellationToken)
         {
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

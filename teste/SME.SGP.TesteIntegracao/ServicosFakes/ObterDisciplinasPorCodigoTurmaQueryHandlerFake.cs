@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<IEnumerable<DisciplinaResposta>> Handle(ObterDisciplinasPorCodigoTurmaQuery request, CancellationToken cancellationToken)
         {
-            return new List<DisciplinaResposta>()
+            return await Task.FromResult(new List<DisciplinaResposta>()
             {
                 new DisciplinaResposta()
                 {
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     BaseNacional = true,
                     GrupoMatriz = new GrupoMatriz() { Id = 1, Nome = "Base Nacional Comum" },
                 }
-            };
+            });
         }
     }
 }

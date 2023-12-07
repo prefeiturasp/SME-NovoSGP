@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
-            return new List<ComponenteCurricularEol>()
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
             {
                 new()
                 {
@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     Codigo = 1105,
                     TerritorioSaber = false
                 }
-            };
+            });
         }
     }
 }

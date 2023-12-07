@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake
     {
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorTitularDisciplinaEol>()
+            return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>()
             {
                 new ProfessorTitularDisciplinaEol
                 {
@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
                     DisciplinasId = new long[] { 138 }
                 },
-            };
+            });
         }
     }
 }

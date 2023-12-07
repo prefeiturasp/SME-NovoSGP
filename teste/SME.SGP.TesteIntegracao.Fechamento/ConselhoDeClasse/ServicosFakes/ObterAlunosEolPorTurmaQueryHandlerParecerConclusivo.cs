@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 
-            return new List<AlunoPorTurmaResposta> {
+            return await Task.FromResult(new List<AlunoPorTurmaResposta> {
 
                 new AlunoPorTurmaResposta
                 {
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                       CelularResponsavel="111111",
                       DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                 }
-            };
+            });
         }
     }
 }

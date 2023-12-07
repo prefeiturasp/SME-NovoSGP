@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
 
             var ue = turma.Ue;
 
-            var bimestre = fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 4
+            var bimestre = fechamentoTurma.EhFinal && !turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 4
                 : fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 2
                 : fechamentoTurma.Bimestre;
 

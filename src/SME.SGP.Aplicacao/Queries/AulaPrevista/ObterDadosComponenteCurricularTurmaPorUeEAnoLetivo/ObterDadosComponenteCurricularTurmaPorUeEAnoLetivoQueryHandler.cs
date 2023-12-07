@@ -26,14 +26,13 @@ namespace SME.SGP.Aplicacao
             using (var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO))
             {
                 var componentesCurriculares = String.Join("&componentesCurriculares=", request.ComponentesCurriculares);
-                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA + $"?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}");
+                var resposta = await httpClient.GetAsync(ServicosEolConstants.URL_COMPONENTES_CURRICULARES_DADOS_AULA_TURMA + $"?anoLetivo={request.AnoLetivo}&ueCodigo={request.UeCodigo}&componentesCurriculares={componentesCurriculares}&semestre={request.Semestre}", cancellationToken);
 
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
                     listaRetornoEOL = JsonConvert.DeserializeObject<IEnumerable<DadosTurmaAulasAutomaticaDto>>(json) as List<DadosTurmaAulasAutomaticaDto>;
                 }
-
             }
 
             return listaRetornoEOL;

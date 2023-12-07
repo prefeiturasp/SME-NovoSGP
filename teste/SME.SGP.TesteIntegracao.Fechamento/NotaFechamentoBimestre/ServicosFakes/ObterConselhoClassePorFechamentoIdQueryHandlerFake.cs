@@ -2,9 +2,6 @@
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,8 +15,7 @@ namespace SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFake
 
         public async Task<ConselhoClasse> Handle(ObterConselhoClassePorFechamentoIdQuery request, CancellationToken cancellationToken)
         {
-
-            return new ConselhoClasse()
+            return await Task.FromResult(new ConselhoClasse()
             {
                 FechamentoTurmaId = 2,
                 Situacao = SituacaoConselhoClasse.EmAndamento,
@@ -35,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Fechamento.NotaFechamentoBimestre.ServicosFake
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
-            };
+            });
         }
     }
 }

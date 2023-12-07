@@ -108,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         }
 
 
-        private async Task CriarDreUe(string codigoDre,string codigoUe)
+        private new async Task CriarDreUe(string codigoDre,string codigoUe)
         {
             await InserirNaBase(new Dre
             {

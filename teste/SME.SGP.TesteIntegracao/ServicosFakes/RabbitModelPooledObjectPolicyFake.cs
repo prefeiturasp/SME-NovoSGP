@@ -6,13 +6,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class RabbitModelPooledObjectPolicyFake : IPooledObjectPolicy<IModel>
     {
-        private readonly IConnection conexao;
-
         public RabbitModelPooledObjectPolicyFake(ConfiguracaoRabbit configuracaoRabbitOptions)
         {
         }
 
-        private IConnection GetConnection(ConfiguracaoRabbit configuracaoRabbit)
+        private static IConnection GetConnection(ConfiguracaoRabbit configuracaoRabbit)
         {
             return new ConnectionFake();
         }

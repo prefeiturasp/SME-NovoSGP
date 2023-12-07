@@ -7,11 +7,11 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ServicosFake
 {
     public class ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaFreqGeralQueryHandlerFake : IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>
     {
-        private string CODIGO_TURMA_1 = "1";
-        private string CODIGO_TURMA_2 = "2";
+        private const string CODIGO_TURMA_1 = "1";
+        private const string CODIGO_TURMA_2 = "2";
         public async Task<string[]> Handle(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery request, CancellationToken cancellationToken)
         {
-            return new string[] { CODIGO_TURMA_1, CODIGO_TURMA_2 };
+            return await Task.FromResult(new string[] { CODIGO_TURMA_1, CODIGO_TURMA_2 });
         }
     }
 }
