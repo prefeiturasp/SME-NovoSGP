@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia.ServicosFake
                 },
             };
 
-            return alunosPorTurmaResposta.FirstOrDefault(f => f.CodigoAluno.Equals(request.AlunoCodigo) && f.CodigoTurma.ToString().Equals(request.TurmaCodigo));
+            return await Task.FromResult(alunosPorTurmaResposta.FirstOrDefault(f => f.CodigoAluno.Equals(request.AlunoCodigo) && f.CodigoTurma.ToString().Equals(request.TurmaCodigo)));
         }
     }
 }

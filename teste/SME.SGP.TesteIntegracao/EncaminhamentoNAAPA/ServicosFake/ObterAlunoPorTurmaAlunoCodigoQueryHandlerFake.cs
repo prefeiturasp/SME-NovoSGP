@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes
                 }
             };
 
-            return alunosPorTurmaResposta.FirstOrDefault(f => f.CodigoAluno.Equals(request.AlunoCodigo));
+            return await Task.FromResult(alunosPorTurmaResposta.FirstOrDefault(f => f.CodigoAluno.Equals(request.AlunoCodigo)));
         }
     }
 

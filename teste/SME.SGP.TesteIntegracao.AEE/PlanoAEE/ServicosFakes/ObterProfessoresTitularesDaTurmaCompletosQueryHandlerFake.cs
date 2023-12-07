@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,13 +13,13 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorTitularDisciplinaEol>
+            return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>
             {
                 new ProfessorTitularDisciplinaEol()
                 {
                     ProfessorRf = USUARIO_CP_LOGIN_3333333
                 }
-            };
+            });
         }
     }
 }

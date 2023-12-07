@@ -10,7 +10,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     public class ServicoArmazenamentoFake : IServicoArmazenamento
     {
         private readonly string urlImagemArquivo = "http://sgp.com.br/Arquivos/imagem.png";
-        private readonly string nomeArquivo = "imagem.png";
         private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
         public ServicoArmazenamentoFake()

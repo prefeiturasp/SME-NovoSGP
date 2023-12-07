@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     }
                 }
             };
-            return listaUsuarios.FirstOrDefault(x => x.CodigoRf == request.Login.ToUpper());
+            return await Task.FromResult(listaUsuarios.FirstOrDefault(x => x.CodigoRf == request.Login.ToUpper()));
         }
     }
 }

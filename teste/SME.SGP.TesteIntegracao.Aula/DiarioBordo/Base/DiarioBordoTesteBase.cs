@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
     public abstract class DiarioBordoTesteBase : TesteBaseComuns
     {
         protected const long DIARIO_BORDO_ID_1 = 1;
-        protected const long AULA_ID_1 = 1;
+        protected new const long AULA_ID_1 = 1;
         protected const long DIARIO_BORDO_OBS_ID_1 = 1;
         protected const long DIARIO_BORDO_OBS_ID_2 = 2;
         protected const long DEVOLUTIVA_DIARIO_BORDO_ID_1 = 1;

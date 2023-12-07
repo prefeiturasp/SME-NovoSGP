@@ -920,15 +920,15 @@ namespace SME.SGP.Dados.Repositorios
                           where a.tipo_calendario_id = @tipoCalendarioId and
                                 a.turma_id = @turmaId";
 
-            var criadoRf = new string[] { criadoPor };
+            var criadoRf = new string[] { criadoPor?.ToUpper() };
 
             if (!string.IsNullOrWhiteSpace(criadoPor))
             {
                 if (criadoPor.Equals("Sistema", StringComparison.InvariantCultureIgnoreCase))
-                    criadoRf = criadoRf.Concat(new string[] { "0" }).ToArray();
+                    criadoRf = criadoRf.Concat(new string[] { "0", string.Empty }).ToArray();
 
-                query += @" and a.criado_por = @criadoPor 
-                            and a.criado_rf = any(@criadoRf) ";
+                query += @" and upper(a.criado_por) = upper(@criadoPor)
+                            and upper(a.criado_rf) = any(@criadoRf) ";
             }
 
             query += " order by a.data_aula, a.id;";

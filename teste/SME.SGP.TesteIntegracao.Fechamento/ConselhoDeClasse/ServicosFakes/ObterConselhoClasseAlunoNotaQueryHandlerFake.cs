@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     Descricao = "INGLES"
                 },
             };
-            return lista;
+            return await Task.FromResult(lista);
         }
     }
 }

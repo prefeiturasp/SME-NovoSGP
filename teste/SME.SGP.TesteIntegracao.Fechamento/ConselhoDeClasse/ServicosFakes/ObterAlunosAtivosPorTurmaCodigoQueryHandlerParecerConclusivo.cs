@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 
-            return new List<AlunoPorTurmaResposta>()
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>()
             {
                 new AlunoPorTurmaResposta()
                 {
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     NomeResponsavel = NOME_RESPONSAVEL_ALUNO_CODIGO_1,
                     TipoResponsavel = TIPO_RESPONSAVEL_1,
                 }
-            };
+            });
         }
     }
 }

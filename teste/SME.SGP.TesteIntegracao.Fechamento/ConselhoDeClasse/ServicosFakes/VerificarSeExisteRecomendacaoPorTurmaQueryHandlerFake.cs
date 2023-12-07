@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     TemRecomendacao = false
                 }
             };
-           return lista;
+           return await Task.FromResult(lista);
         }
     }
 }

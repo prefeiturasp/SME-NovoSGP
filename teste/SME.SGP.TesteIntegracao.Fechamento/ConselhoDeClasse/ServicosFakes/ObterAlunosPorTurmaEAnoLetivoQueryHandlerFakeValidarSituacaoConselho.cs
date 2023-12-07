@@ -20,13 +20,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";
         private readonly string CELULAR_RESPONSAVEL = "11111111111";
-        private readonly string NAO_COMPARECEU = "Não Compareceu";
-        private readonly string DESISTENTE = "Desistente";
-        private readonly string VINCULO_INDEVIDO = "Vínculo indevido";
-        private readonly string FALECIDO = "Falecido";
-        private readonly string DESLOCAMENTO = "Deslocamento";
-        private readonly string CESSADO = "Cessado";
-        private readonly string RECLASSIFICADO_SAIDA = "Reclassificado saída";
         
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
