@@ -131,10 +131,10 @@ namespace SME.SGP.Dados.Repositorios
                                 join questao q on rabaq.questao_id = q.id 
                                 join registro_acao_busca_ativa_resposta rabar on rabar.questao_registro_acao_id = rabaq.id 
                                 join secao_registro_acao_busca_ativa sraba on sraba.id = rabas.secao_registro_acao_id
-                                left join opcao_resposta opr on opr.id = rabar.resposta_id
                                 where q.nome_componente = {QUESTAO_DATA_REGISTRO_NOME_COMPONENTE} 
                                       and sraba.etapa = {SECAO_ETAPA_1} 
                                       and sraba.ordem = {SECAO_ORDEM_1} 
+                                      and not rabar.excluido
                                 )
                               , vw_resposta_procedimento_realizado as (
                                 select rabas.registro_acao_busca_ativa_id, 
@@ -239,10 +239,10 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and t.semestre = @semestre ");
             if (!string.IsNullOrEmpty(filtroRespostas.NomeAluno))
                 sql.AppendLine(" and lower(raba.aluno_nome) like @nomeAluno ");
-            if (filtroRespostas.DataRegistroInicio.HasValue)
-                sql.AppendLine(" and to_date(qdata.DataRegistro,'yyyy-mm-dd') >= @dataRegistroInicio ");
-            if (filtroRespostas.DataRegistroFim.HasValue)
-                sql.AppendLine(" and to_date(qdata.DataRegistro,'yyyy-mm-dd') <= @dataRegistroFim ");
+            if (filtroRespostas.DataRegistroInicio.HasValue && filtroRespostas.DataRegistroFim.HasValue)
+                sql.AppendLine(@" and CASE WHEN qdata.DataRegistro ~'^[0-9]{4}-[0-9]{2}-[0-9]*'
+                                        THEN to_date(qdata.DataRegistro, 'YYYY-MM-dd') between @dataRegistroInicio and @dataRegistroFim
+                                      ELSE FALSE END");
             if (filtroRespostas.OrdemRespostaQuestaoProcedimentoRealizado.HasValue)
                 sql.AppendLine(" and qProcedRealizado.ProcedimentoRealizadoOrdem = @ordemRespostaQuestaoProcedimentoRealizado ");
         }
