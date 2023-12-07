@@ -79,6 +79,7 @@
         public const string MENU_CADASTRO_DE_ABAE =  "Cadastro de ABAE";
         public const string MENU_BUSCA_ATIVA = "Busca Ativa";
         public const string MENU_CONS_CRIANCAS_ESTUD_AUSENTES = "Consulta de crianças/estudantes ausentes";
+        public const string MENU_REGISTRO_ACOES = "Registro de ações";
 
         public const string AGRUPAMENTO_PLANEJAMENTO = "Planejamento";
         public const string AGRUPAMENTO_DIARIO_DE_CLASSE = "Diário de Classe";
@@ -138,6 +139,7 @@
         public const string ROTA_AEE_REGISTRO_ITINERANCIA = "/aee/registro-itinerancia";
         public const string ROTA_NAAPA_ENCAMINHAMENTO = "/naapa/encaminhamento";
         public const string ROTA_NAAPA_BUSCA_ATIVA_CONS_CRIAN_ESTUD_AUSENTES = "/busca-ativa/criancas-estudantes/ausentes";
+        public const string ROTA_NAAPA_BUSCA_ATIVA_REGISTRO_ACOES = "/busca-ativa/registro-acoes";
         public const string ROTA_RELATORIO_DINAMICO_NAAPA = "/naapa/relatorio-dinamico";
         public const string ROTA_RELATORIOS_FREQUENCIA_FREQUENCIA = "/relatorios/frequencia/frequencia";
         public const string ROTA_RELATORIOS_FREQUENCIA_MENSAL = "/relatorios/frequencia/mensal";
@@ -324,6 +326,7 @@
         public const int ORDEM_SUB_MENU_RELATORIO_RELATORIO_LEITURA = 3;
 
         public const int ORDEM_SUB_MENU_BUSCA_ATIVA_CONS_CRIANCAS_ESTUD_AUSENTES = 1;
+        public const int ORDEM_SUB_MENU_BUSCA_ATIVA_REGISTRO_ACOES = 2;
 
     }
 }

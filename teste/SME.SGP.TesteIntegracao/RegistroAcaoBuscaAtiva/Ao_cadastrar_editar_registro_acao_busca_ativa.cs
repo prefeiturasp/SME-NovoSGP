@@ -207,7 +207,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         private RegistroAcaoBuscaAtivaDto ObterRegistroAcaoBuscaAtivaDtoSemQuestoesObrigatoriasPreenchidas(DateTime data)
         {
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaQ2 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
+            var opcaoRespostaQ2 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
             var opcaoRespostaQ3 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO && q.Nome == QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR).FirstOrDefault();
 
             return new RegistroAcaoBuscaAtivaDto()
@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         private RegistroAcaoBuscaAtivaDto ObterRegistroAcaoBuscaAtivaDtoSemQuestoesObrigatoriasComplementares(DateTime data)
         {
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaQ2 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_NAO).FirstOrDefault();
+            var opcaoRespostaQ2 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_NAO).FirstOrDefault();
             var opcaoRespostaQ3 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP && q.Nome == QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_LIG_TELEFONICA).FirstOrDefault();
 
             return new RegistroAcaoBuscaAtivaDto()
@@ -303,9 +303,9 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         private RegistroAcaoBuscaAtivaDto ObterRegistroAcaoBuscaAtivaDtoComQuestoesObrigatoriasPreenchidas(DateTime data)
         {
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaQ2 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
-            var opcaoRespostaQ21 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
-            var opcaoRespostaQ22 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
+            var opcaoRespostaQ2 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+            var opcaoRespostaQ21 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+            var opcaoRespostaQ22 = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
             var opcaoRespostaQ23a = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA && q.Nome == "Ausência por estarem cuidando de irmãos, pais ou avós").FirstOrDefault();
             var opcaoRespostaQ23b = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA && q.Nome == "Há suspeita de ausência por estar realizando trabalho infantil").FirstOrDefault();
 

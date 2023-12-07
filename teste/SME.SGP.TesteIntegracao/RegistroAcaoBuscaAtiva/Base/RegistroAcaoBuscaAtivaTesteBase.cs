@@ -40,11 +40,12 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         protected const long QUESTAO_3_ID_OBS_GERAL = 9;
         protected const long QUESTAO_2_1_ID_PROCEDIMENTO_REALIZADO_NAO_CONTATOU_RESP = 10;
 
-        protected const string QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM = "Sim";
+        protected const string QUESTAO_OPCAO_RESPOSTA_SIM = "Sim";
         protected const string QUESTAO_JUSTIFICATIVA_MOTIVO_FALTA_RESPOSTA_OUTROS = "Outros";
         protected const string QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_VISITA_DOMICILIAR = "Visita Domiciliar";
-        protected const string QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_NAO = "Não";
+        protected const string QUESTAO_OPCAO_RESPOSTA_NAO = "Não";
         protected const string QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_LIG_TELEFONICA = "Ligação telefonica";
+        protected const int QUESTAO_PROCEDIMENTO_REALIZADO_ORDEM_RESPOSTA_LIG_TELEFONICA = 1;
 
 
         public RegistroAcaoBuscaAtivaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -112,6 +113,11 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             return ServiceProvider.GetService<IObterRegistrosAcaoCriancaEstudanteAusenteUseCase>();
         }
 
+        protected IObterRegistrosAcaoUseCase ObterUseCaseListagemRegistrosAcao()
+        {
+            return ServiceProvider.GetService<IObterRegistrosAcaoUseCase>();
+        }
+
         protected IExcluirRegistroAcaoUseCase ObterUseCaseExclusaoRegistroAcao()
         {
             return ServiceProvider.GetService<IExcluirRegistroAcaoUseCase>();
@@ -121,7 +127,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
         {
             var opcoesResposta = ObterTodos<OpcaoResposta>();
 
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault(); 
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault(); 
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
@@ -175,7 +181,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 CriadoEm = DateTime.Now
             });
 
-            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_NAO).FirstOrDefault();
+            opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_NAO).FirstOrDefault();
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
                 OpcaoRespostaId = opcaoRespostaBase.Id,
@@ -521,18 +527,18 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             public bool CriarTurmaPadrao { get; set; }
         }
 
-        protected async Task GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTime dataRegistro)
+        protected async Task GerarDadosRegistroAcao_3PrimeirasQuestoes(DateTime dataRegistro, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
         {
             await CriarRegistroAcao();
             var registrosAcaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtiva>().Max(ra => ra.Id);
             await CriarRegistroAcaoSecao(registrosAcaoId);
             var registrosAcaoSecaoId = ObterTodos<Dominio.RegistroAcaoBuscaAtivaSecao>().Max(ra => ra.Id);
-            await CriarQuestoesRegistroAcao(registrosAcaoSecaoId);
+            await CriarQuestoesRegistroAcao(registrosAcaoSecaoId, adicionarRespostasComplementarConseguiuContatoResponsavel);
             var registrosAcaoQuestaoId = ObterTodos<Dominio.QuestaoRegistroAcaoBuscaAtiva>().Where(ra => ra.RegistroAcaoBuscaAtivaSecaoId == registrosAcaoSecaoId).Min(ra => ra.Id);
-            await CriarRespostasRegistroAcao(dataRegistro, registrosAcaoQuestaoId);
+            await CriarRespostasRegistroAcao(dataRegistro, registrosAcaoQuestaoId, adicionarRespostasComplementarConseguiuContatoResponsavel);
         }
 
-        private async Task CriarRespostasRegistroAcao(DateTime dataRegistro, long idRegistroAcaoQuestao = 1)
+        private async Task CriarRespostasRegistroAcao(DateTime dataRegistro, long idRegistroAcaoQuestao = 1, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
         {
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
@@ -545,7 +551,7 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
             idRegistroAcaoQuestao++;
 
             var opcoesResposta = ObterTodos<OpcaoResposta>();
-            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_CONSEGUIU_CONTATO_RESP_RESPOSTA_SIM).FirstOrDefault();
+            var opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_ID_CONSEGUIU_CONTATO_RESP && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
             await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
             {
                 QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
@@ -564,9 +570,58 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+            idRegistroAcaoQuestao++;
+
+            if (adicionarRespostasComplementarConseguiuContatoResponsavel)
+            {
+                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+                {
+                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
+                    RespostaId = opcaoRespostaBase.Id,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                idRegistroAcaoQuestao++;
+
+                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA && q.Nome == QUESTAO_OPCAO_RESPOSTA_SIM).FirstOrDefault();
+                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+                {
+                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
+                    RespostaId = opcaoRespostaBase.Id,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                idRegistroAcaoQuestao++;
+
+                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA && q.Nome == "Há suspeita de ausência por estar realizando trabalho infantil").FirstOrDefault();
+                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+                {
+                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
+                    RespostaId = opcaoRespostaBase.Id,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                idRegistroAcaoQuestao++;
+
+                opcaoRespostaBase = opcoesResposta.Where(q => q.QuestaoId == QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO && q.Nome == QUESTAO_PROCEDIMENTO_REALIZADO_RESPOSTA_LIG_TELEFONICA).FirstOrDefault();
+                await InserirNaBase(new Dominio.RespostaRegistroAcaoBuscaAtiva()
+                {
+                    QuestaoRegistroAcaoBuscaAtivaId = idRegistroAcaoQuestao,
+                    RespostaId = opcaoRespostaBase.Id,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                idRegistroAcaoQuestao++;
+            }
+
         }
 
-        private async Task CriarQuestoesRegistroAcao(long idRegistroAcaoSecao = 1)
+        private async Task CriarQuestoesRegistroAcao(long idRegistroAcaoSecao = 1, bool adicionarRespostasComplementarConseguiuContatoResponsavel = false)
         {
             await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
             {
@@ -594,6 +649,45 @@ namespace SME.SGP.TesteIntegracao.RegistroAcaoBuscaAtiva
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+
+            if (adicionarRespostasComplementarConseguiuContatoResponsavel)
+            {
+                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+                {
+                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
+                    QuestaoId = QUESTAO_2_1_ID_CONTATO_COM_RESPONSAVEL,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+                {
+                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
+                    QuestaoId = QUESTAO_2_2_ID_APOS_CONTATO_CRIANCA_RETORNOU_ESCOLA,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+                {
+                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
+                    QuestaoId = QUESTAO_2_3_ID_JUSTIFICATIVA_MOTIVO_FALTA,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new Dominio.QuestaoRegistroAcaoBuscaAtiva()
+                {
+                    RegistroAcaoBuscaAtivaSecaoId = idRegistroAcaoSecao,
+                    QuestaoId = QUESTAO_2_4_ID_PROCEDIMENTO_REALIZADO,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+            }
         }
 
         private async Task CriarRegistroAcaoSecao(long idRegistroAcao = 1)
