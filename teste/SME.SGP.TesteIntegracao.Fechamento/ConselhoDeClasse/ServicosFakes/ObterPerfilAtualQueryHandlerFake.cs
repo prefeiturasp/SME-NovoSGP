@@ -10,7 +10,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
     {
         public async Task<Guid> Handle(ObterPerfilAtualQuery request, CancellationToken cancellationToken)
         {
-            return Guid.Parse("48e1e074-37d6-e911-abd6-f81654fe895d");
+            return await Task.FromResult(Guid.Parse("48e1e074-37d6-e911-abd6-f81654fe895d"));
         }
     }
 }

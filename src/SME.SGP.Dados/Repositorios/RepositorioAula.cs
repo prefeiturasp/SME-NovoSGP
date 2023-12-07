@@ -1,7 +1,4 @@
-﻿using Dapper;
-using Npgsql;
-using NpgsqlTypes;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -14,6 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAula : RepositorioBase<Aula>, IRepositorioAula
     {
+        private const string NOME_USUARIO_SISTEMA = "Sistema";
         private readonly IUnitOfWork unitOfWork;
 
         public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
@@ -24,49 +22,16 @@ namespace SME.SGP.Dados.Repositorios
         public async Task ExcluirPeloSistemaAsync(long[] idsAulas)
         {
             var sql = "update aula set excluido = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where id = any(@idsAulas)";
-            await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
+            await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = NOME_USUARIO_SISTEMA, alteradoEm = DateTimeExtension.HorarioBrasilia(), alteradoRf = NOME_USUARIO_SISTEMA });
 
             sql = "update diario_bordo set excluido = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where aula_id = any(@idsAulas)";
-            await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
+            await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = NOME_USUARIO_SISTEMA, alteradoEm = DateTimeExtension.HorarioBrasilia(), alteradoRf = NOME_USUARIO_SISTEMA });
         }
 
         public async Task SalvarVarias(IEnumerable<(Aula aula, long? planoAulaId)> aulas)
         {
-            var sql = @"copy aula ( 
-                                        data_aula, 
-                                        disciplina_id, 
-                                        quantidade, 
-                                        recorrencia_aula, 
-                                        tipo_aula, 
-                                        tipo_calendario_id, 
-                                        turma_id, 
-                                        ue_id, 
-                                        professor_rf,
-                                        criado_em,
-                                        criado_por,
-                                        criado_rf)
-                            from
-                            stdin (FORMAT binary)";
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
-            {
-                foreach (var itemAula in aulas.Where(a => a.aula.Id == 0))
-                {
-                    writer.StartRow();
-                    writer.Write(itemAula.aula.DataAula);
-                    writer.Write(itemAula.aula.DisciplinaId);
-                    writer.Write(itemAula.aula.Quantidade);
-                    writer.Write((int)itemAula.aula.RecorrenciaAula, NpgsqlDbType.Integer);
-                    writer.Write((int)itemAula.aula.TipoAula, NpgsqlDbType.Integer);
-                    writer.Write(itemAula.aula.TipoCalendarioId);
-                    writer.Write(itemAula.aula.TurmaId);
-                    writer.Write(itemAula.aula.UeId);
-                    writer.Write(itemAula.aula.ProfessorRf);
-                    writer.Write(itemAula.aula.CriadoEm);
-                    writer.Write(itemAula.aula.CriadoPor.NaoEhNulo() ? itemAula.aula.CriadoPor : "Sistema");
-                    writer.Write(itemAula.aula.CriadoRF.NaoEhNulo() ? itemAula.aula.CriadoRF : "Sistema");
-                }
-                writer.Complete();
-            }
+            var sqlInsercao = ObterConsultaInsercaoVariasAulas(aulas.Where(a => a.aula.Id == 0).Select(a => a.aula));
+            var sqlAtualizacao = string.Empty;
 
             var idsAulasAtualizacao = aulas
                 .Where(a => a.aula.Id > 0)
@@ -75,56 +40,23 @@ namespace SME.SGP.Dados.Repositorios
 
             if (idsAulasAtualizacao.NaoEhNulo() && idsAulasAtualizacao.Any())
             {
-                try
-                {
-                    sql = @"update aula 
-                        set excluido = false, 
-                            alterado_por = 'Sistema', 
-                            alterado_em = current_timestamp, 
-                            alterado_rf = 'Sistema'
-                        where id = any(@idsAulas);";
-
-                    unitOfWork.IniciarTransacao();
-
-                    await database.Conexao
-                        .ExecuteAsync(sql, new { idsAulas = idsAulasAtualizacao });
-
-                    sql = @"update registro_frequencia
-                        set excluido = false,
-                            alterado_por = 'Sistema', 
-                            alterado_em = current_timestamp, 
-                            alterado_rf = 'Sistema'
-                        where aula_id = any(@idsAulas) and
-                              excluido;";
-
-                    await database.Conexao
-                        .ExecuteAsync(sql, new { idsAulas = idsAulasAtualizacao });
-
-                    sql = @"update registro_frequencia_aluno
-                        set excluido = false,
-                            alterado_por = 'Sistema', 
-                            alterado_em = current_timestamp, 
-                            alterado_rf = 'Sistema'
-                        where aula_id = any(@idsAulas) and excluido;";
-
-                    await database.Conexao
-                        .ExecuteAsync(sql, new { idsAulas = idsAulasAtualizacao });
-
-                    sql = @"update plano_aula set aula_id = @aulaId where id = @planoAulaId;";
-
-                    var aulasPlano = aulas.Where(a => a.planoAulaId.HasValue).ToList();
-                    foreach (var aula in aulasPlano)
-                        await database.Conexao.ExecuteAsync(sql, new { aulaId = aula.aula.Id, planoAulaId = aula.planoAulaId.Value });
-
-                    unitOfWork.PersistirTransacao();
-                }
-                catch
-                {
-                    unitOfWork.Rollback();
-                    throw;
-                }
+                sqlAtualizacao = ObterConsultaAtualizacaoAulaEReferencias();
+                sqlAtualizacao = ObterConsultaAtualizacaoPlanoAula(aulas, sqlAtualizacao);
             }
-        }
+
+            if (!string.IsNullOrEmpty(sqlInsercao) || !string.IsNullOrEmpty(sqlAtualizacao))                
+            {
+                unitOfWork.IniciarTransacao();
+
+                if (!string.IsNullOrEmpty(sqlInsercao))
+                    await database.Conexao.ExecuteAsync(sqlInsercao);
+
+                if (!string.IsNullOrEmpty(sqlAtualizacao))
+                    await database.Conexao.ExecuteAsync(sqlAtualizacao, new { sistema = NOME_USUARIO_SISTEMA, idsAulas = idsAulasAtualizacao });
+
+                unitOfWork.PersistirTransacao();
+            }            
+        }       
 
         public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterDatasAulaDiarioBordoPorPeriodo(string turmaCodigo, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
         {
@@ -178,6 +110,61 @@ namespace SME.SGP.Dados.Repositorios
                                                         dataFim,
                                                         dataInicio
                                                     });
+        }
+
+        private static string ObterConsultaInsercaoVariasAulas(IEnumerable<Aula> aulas)
+            => aulas.Any() ? string.Concat(@"insert into aula (data_aula, 
+                                                               disciplina_id,
+                                                               quantidade,
+                                                               recorrencia_aula,
+                                                               tipo_aula,
+                                                               tipo_calendario_id,
+                                                               turma_id,
+                                                               ue_id,
+                                                               professor_rf,
+                                                               criado_em,
+                                                               criado_por,
+                                                               criado_rf) 
+                                             values ", string.Join(",", aulas.Select(a => $"('{a.DataAula:yyyy-MM-dd}', '{a.DisciplinaId}', {a.Quantidade}, {(int)a.RecorrenciaAula}, {(int)a.TipoAula}, {a.TipoCalendarioId}, '{a.TurmaId}', '{a.UeId}', '{a.ProfessorRf}', '{a.CriadoEm:yyyy-MM-dd HH:mm:ss}', '{a.CriadoPor}', '{a.CriadoRF}')")),";") : string.Empty;
+
+        private static string ObterConsultaAtualizacaoAulaEReferencias()
+            => @"update aula 
+                 set excluido = false, 
+                     alterado_por = @sistema, 
+                     alterado_em = current_timestamp, 
+                     alterado_rf = @sistema
+                 where id = any(@idsAulas);
+
+                 update registro_frequencia
+                 set excluido = false,
+                     alterado_por = @sistema, 
+                     alterado_em = current_timestamp, 
+                     alterado_rf = @sistema
+                     where aula_id = any(@idsAulas) and excluido;
+
+                 update registro_frequencia_aluno
+                 set excluido = false,
+                     alterado_por = @sistema, 
+                     alterado_em = current_timestamp, 
+                     alterado_rf = @sistema
+                     where aula_id = any(@idsAulas) and excluido;";
+
+        private static string ObterConsultaAtualizacaoPlanoAula(IEnumerable<(Aula aula, long? planoAulaId)> aulas, string sqlAtualizacao)
+        {
+            var sqlUpdatePlanoAula = @"update plano_aula 
+                                       set aula_id = {0},
+                                           alterado_por = @sistema, 
+                                           alterado_em = current_timestamp, 
+                                           alterado_rf = @sistema
+                                       where id = {1};
+                                       ";
+
+            var aulasPlano = aulas.Where(a => a.planoAulaId.HasValue);
+
+            foreach (var aula in aulasPlano)
+                sqlAtualizacao += string.Format(sqlUpdatePlanoAula, aula.aula.Id, aula.planoAulaId.Value);
+
+            return sqlAtualizacao;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> SincronizarAulasTurma([FromQuery] long? codigoTurma)
         {
             var dados = new DadosCriacaoAulasAutomaticasCarregamentoDto() { CodigoTurma = codigoTurma?.ToString() };
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaSincronizarAulasInfatil, dados, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaSincronizarAulasInfantil, dados, Guid.NewGuid(), null));
             return Ok();
         }
     }

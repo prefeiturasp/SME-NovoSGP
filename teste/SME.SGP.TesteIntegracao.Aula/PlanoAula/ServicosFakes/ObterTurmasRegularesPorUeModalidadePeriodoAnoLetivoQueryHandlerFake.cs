@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
                 }
             };
 
-            return retorno;
+            return await Task.FromResult(retorno);
         }
     }
 }

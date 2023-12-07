@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         
         public async Task<IEnumerable<ProfessorTurmaReposta>> Handle(ObterTurmasDoProfessorQuery request, CancellationToken cancellationToken)
         {
-            return  new List<ProfessorTurmaReposta>()
+            return await Task.FromResult(new List<ProfessorTurmaReposta>()
             {
                 new ProfessorTurmaReposta(){
                     CodEscola = ESCOLA_CODIGO_1,
@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     TipoEscola = TIPO_ESCOLA_CEU_EMEF,
                     CodTipoEscola = TIPO_ESCOLA_CODIGO_16,
                 }
-            };
+            });
         }
     }
 }

@@ -260,7 +260,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 },
             };
 
-            return alunoPorTurmaResposta.Where(x => x.CodigoAluno == request.CodigoAluno);
+            return await Task.FromResult(alunoPorTurmaResposta.Where(x => x.CodigoAluno == request.CodigoAluno));
         }
     }
 }

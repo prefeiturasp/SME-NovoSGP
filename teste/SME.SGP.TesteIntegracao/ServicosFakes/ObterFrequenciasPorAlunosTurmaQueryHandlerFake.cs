@@ -10,14 +10,14 @@ namespace SME.SGP.TesteIntegracao
     {
         public async Task<IEnumerable<Dominio.FrequenciaAluno>> Handle(ObterFrequenciasPorAlunosTurmaQuery request, CancellationToken cancellationToken)
         {
-            return new List<Dominio.FrequenciaAluno>()
+            return await Task.FromResult(new List<Dominio.FrequenciaAluno>()
             {
                 new Dominio.FrequenciaAluno()
                 {
                     CodigoAluno = "1234",
                     DisciplinaId = "1"
                 }
-            };
+            });
         }
     }
 }

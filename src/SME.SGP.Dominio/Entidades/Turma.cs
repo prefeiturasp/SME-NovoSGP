@@ -70,6 +70,7 @@ namespace SME.SGP.Dominio
 
         public bool EhTurmaModalidadeSemestral()
             => ModalidadeCodigo == Modalidade.EJA || ModalidadeCodigo == Modalidade.CELP;
+
         public int ObterHorasGradeRegencia()
             => EhEJA() ? 5 : 1;
 
