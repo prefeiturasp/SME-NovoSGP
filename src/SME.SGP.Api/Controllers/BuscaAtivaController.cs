@@ -20,7 +20,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("registros-acao")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoRegistroAcaoBuscaAtivaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.CCEA_NAAPA_C, Permissao.RABA_NAAPA_I, Policy = "Bearer")]
         public async Task<IActionResult> RegistrarRegistroAcao([FromBody] RegistroAcaoBuscaAtivaDto registroAcaoDto, [FromServices] IRegistrarRegistroAcaoUseCase registrarRegistroAcaoUseCase)
         {
             return Ok(await registrarRegistroAcaoUseCase.Executar(registroAcaoDto));
@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("registros-acao/secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.CCEA_NAAPA_C, Permissao.RABA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSecoesDeRegistroAcao([FromQuery] FiltroSecoesDeRegistroAcao filtro,
             [FromServices] IObterSecoesRegistroAcaoSecaoUseCase obterSecoesRegistroAcaoSecaoUseCase)
         {
@@ -39,7 +39,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("registros-acao/questionario/{questionarioId}")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.CCEA_NAAPA_C, Permissao.RABA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestionario(long questionarioId, [FromQuery] long? registroAcaoId, [FromServices] IObterQuestionarioRegistroAcaoUseCase useCase)
         {
             return Ok(await useCase.Executar(questionarioId, registroAcaoId));
@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("registros-acao/{registroAcaoId}")]
         [ProducesResponseType(typeof(RegistroAcaoBuscaAtivaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.CCEA_NAAPA_C, Permissao.RABA_NAAPA_E, Policy = "Bearer")]
         public async Task<IActionResult> ExcluirRegistroAcao(long registroAcaoId, [FromServices] IExcluirRegistroAcaoUseCase useCase)
         {
             return Ok(await useCase.Executar(registroAcaoId));
@@ -64,10 +64,20 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
+        [HttpGet("registros-acao")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.RABA_NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterRegistrosAcao([FromQuery] FiltroRegistrosAcaoDto filtro,
+            [FromServices] IObterRegistrosAcaoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
         [HttpGet("registros-acao/{registroAcaoId}")]
         [ProducesResponseType(typeof(RegistroAcaoBuscaAtivaRespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
+        [Permissao(Permissao.CCEA_NAAPA_C, Permissao.RABA_NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterRegistroAcao(long registroAcaoId, [FromServices] IObterRegistroAcaoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(registroAcaoId));

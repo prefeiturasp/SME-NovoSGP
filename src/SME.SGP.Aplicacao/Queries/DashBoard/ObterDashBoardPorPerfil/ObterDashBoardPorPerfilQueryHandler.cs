@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Constantes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,11 @@ namespace SME.SGP.Aplicacao
                 listaDashBoard.Add(CarregaDashBoard(Permissao.PA_C, roles));
                 listaDashBoard.Add(CarregaDashBoard(Permissao.C_C, roles, false));
                 listaDashBoard.Add(CarregaDashBoard(Permissao.E_C, roles, false));
+                if (perfilAtual == Perfis.PERFIL_ABAE)
+                {
+                    listaDashBoard.Add(CarregaDashBoard(Permissao.RABA_NAAPA_C, roles, false, ConstantesMenuPermissao.MENU_REGISTRO_ACOES));
+                    listaDashBoard.Add(CarregaDashBoard(Permissao.CCEA_NAAPA_C, roles, false, ConstantesMenuPermissao.MENU_CONS_CRIANCAS_ESTUD_AUSENTES));
+                }
             }
 
             return Task.FromResult<IEnumerable<DashBoard>>(listaDashBoard);

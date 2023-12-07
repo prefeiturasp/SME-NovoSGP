@@ -11,5 +11,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoPorId(long id);
         Task<RegistroAcaoBuscaAtiva> ObterRegistroAcaoComTurmaPorId(long id);
         Task<IEnumerable<string>> ObterCodigoArquivoPorRegistroAcaoId(long id);
+        Task<PaginacaoResultadoDto<RegistroAcaoBuscaAtivaListagemDto>> ListarPaginado(FiltroTurmaRegistrosAcaoDto filtroTurma,
+                                                                                      FiltroRespostaRegistrosAcaoDto filtroRespostas, 
+                                                                                      Paginacao paginacao);
     }
 }
