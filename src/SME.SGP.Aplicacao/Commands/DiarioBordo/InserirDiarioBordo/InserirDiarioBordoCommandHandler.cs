@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
-                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
+                    if (!atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
                         throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");   
                 }
                 inseridoCJ = true;

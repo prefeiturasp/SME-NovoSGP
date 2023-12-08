@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
             var perfilAtual = servicoUsuario.ObterPerfilAtual();
             var listaCodigoSupervisor = filtro.SupervisorId.NaoEhNulo() ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
 
-            if (responsavelEscolaDreDto.Count() > 0)
+            if (responsavelEscolaDreDto.Count > 0)
             {
                 for (int i = 0; i < responsavelEscolaDreDto.Count; i++)
                 {

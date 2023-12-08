@@ -172,11 +172,11 @@ namespace SME.SGP.Aplicacao
                     retorno.Add(retornoCacheMapeado);
             }
 
-            var notaConselhoClasse = retorno.Where(x => x.NotaConselhoClasse.HasValue || x.ConceitoIdConselhoClasse.HasValue).FirstOrDefault();
+            var notaConselhoClasse = retorno.FirstOrDefault(x => x.NotaConselhoClasse.HasValue || x.ConceitoIdConselhoClasse.HasValue);
             if (notaConselhoClasse.NaoEhNulo())
                 return (notaConselhoClasse.NotaConselhoClasse, notaConselhoClasse.ConceitoIdConselhoClasse, true);
 
-            var notaFechamento = retorno.Where(x => x.NotaFechamento.HasValue || x.ConceitoIdFechamento.HasValue).FirstOrDefault();
+            var notaFechamento = retorno.FirstOrDefault(x => x.NotaFechamento.HasValue || x.ConceitoIdFechamento.HasValue);
             if (notaFechamento.NaoEhNulo())
             {
                 var nota = notaFechamento.NotaFechamento;
@@ -207,11 +207,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Turma> ObterTurmaRegular(string[] codigosTurmasComplementares, int semestre, bool ehTurmaEJA, bool ehTurmaEM)
         {
-            return (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosTurmasComplementares))).Where(t => t.EhTurmaRegular()
+            return (await mediator.Send(new ObterTurmasPorCodigosQuery(codigosTurmasComplementares))).FirstOrDefault(t => t.EhTurmaRegular()
                                                                                                             && t.Semestre == semestre
                                                                                                             && t.EhEJA() == ehTurmaEJA
                                                                                                             && t.EhTurmaEnsinoMedio == ehTurmaEM
-                                                                                                            ).FirstOrDefault();
+                                                                                                            );
         }
 
         private async Task<Turma> ObterTurmaRegularPorConselhoClasseComplementar(Turma turmaComplementar, string aluno)

@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(AprovarWorkflowAlteracaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
             var notasEmAprovacao = await ObterNotasConselhoEmAprovacao(request.WorkflowId);
-            if (notasEmAprovacao.NaoEhNulo() && notasEmAprovacao.ToArray().Any())
+            if (notasEmAprovacao.NaoEhNulo() && notasEmAprovacao.Any())
             {
                 unitOfWork.IniciarTransacao();
                 try

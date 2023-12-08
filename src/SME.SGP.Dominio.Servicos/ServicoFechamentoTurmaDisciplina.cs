@@ -498,8 +498,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
-                    var frequencia = frequencias.Where(c => c.CodigoAluno == fechamentoAluno.AlunoCodigo &&
-                        c.DisciplinaId == fechamentoNota.DisciplinaId.ToString()).FirstOrDefault();
+                    var frequencia = frequencias.FirstOrDefault(c => c.CodigoAluno == fechamentoAluno.AlunoCodigo &&
+                        c.DisciplinaId == fechamentoNota.DisciplinaId.ToString());
 
                     var percentualFrequencia = frequencia.EhNulo() ? 0 : frequencia.PercentualFrequencia;
                     var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, anoLetivo));

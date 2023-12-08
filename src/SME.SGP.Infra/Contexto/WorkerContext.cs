@@ -46,9 +46,4 @@ namespace SME.SGP.Infra.Contexto
             Variaveis = variaveis;
         }
     }
-
-    public class NoHttpContext : IHttpContextAccessor
-    {
-        public HttpContext HttpContext { get => null; set { } }
-    }
 }

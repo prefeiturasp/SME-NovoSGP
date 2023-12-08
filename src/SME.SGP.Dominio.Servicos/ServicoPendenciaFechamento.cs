@@ -164,7 +164,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
 
-                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId().Contains(disciplinaId)).FirstOrDefault()?.ProfessorRf;
+                var professorRf = professoresTitularesDaTurma.FirstOrDefault(professor => professor.DisciplinasId().Contains(disciplinaId))?.ProfessorRf;
                 if (string.IsNullOrWhiteSpace(professorRf) || aulasCJ)
                     professorRf = aulas.FirstOrDefault()?.ProfessorRf;
 
@@ -214,7 +214,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
 
-                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId().Contains(disciplinaId)).FirstOrDefault()?.ProfessorRf;
+                var professorRf = professoresTitularesDaTurma.FirstOrDefault(professor => professor.DisciplinasId().Contains(disciplinaId))?.ProfessorRf;
                 if (string.IsNullOrWhiteSpace(professorRf) || aulasCJ)
                     professorRf = atividades.FirstOrDefault()?.ProfessorRf;
 
@@ -365,7 +365,7 @@ namespace SME.SGP.Dominio.Servicos
                 var rfProfTitularTurma = string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(professorRF.disciplnaId))
-                    rfProfTitularTurma = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId().Contains(long.Parse(professorRF.disciplnaId))).FirstOrDefault()?.ProfessorRf;
+                    rfProfTitularTurma = professoresTitularesDaTurma.FirstOrDefault(professor => professor.DisciplinasId().Contains(long.Parse(professorRF.disciplnaId)))?.ProfessorRf;
                 else
                     rfProfTitularTurma = professoresTitularesDaTurma.FirstOrDefault()?.ProfessorRf;
                 

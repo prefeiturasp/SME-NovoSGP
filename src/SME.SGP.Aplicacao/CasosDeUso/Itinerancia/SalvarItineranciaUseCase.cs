@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
             if (turmasCodigos.NaoEhNulo() && turmasCodigos.Any())
             {
                 var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-                if (turmas.Count() != turmasCodigos.Count())
+                if (turmas.Count() != turmasCodigos.Count)
                     throw new NegocioException("Não foi possível localizar as turmas no SGP.");
 
                 foreach (var item in itineranciaDto.Alunos)

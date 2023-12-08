@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
-                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
+                    if (!atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
                         throw new NegocioException($"Você não possui permissão para alterar o registro de diário de bordo neste período");
                 }
             }
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
             if (disciplinas != null && disciplinas.Any())
             {
-                if (disciplinas.Count() > 1)
+                if (disciplinas.Count > 1)
                 {
                     var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 
