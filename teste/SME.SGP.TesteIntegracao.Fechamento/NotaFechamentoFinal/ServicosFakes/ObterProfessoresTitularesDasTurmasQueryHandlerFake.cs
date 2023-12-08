@@ -15,10 +15,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.ServicosFakes
         private const string CODIGO_RF_1111111 = "1111111";
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDasTurmasQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorTitularDisciplinaEol>()
+            return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>()
             {
                 new () { ProfessorRf = CODIGO_RF_1111111 }
-            };
+            });
         }
     }
 }

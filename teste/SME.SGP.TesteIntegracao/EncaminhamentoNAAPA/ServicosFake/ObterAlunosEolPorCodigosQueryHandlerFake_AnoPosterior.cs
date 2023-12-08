@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
                 }
             };
 
-            return lista.FindAll(aluno => aluno.CodigoAluno == request.CodigosAluno.FirstOrDefault());
+            return await Task.FromResult(lista.FindAll(aluno => aluno.CodigoAluno == request.CodigosAluno.FirstOrDefault()));
         }
     }
 }

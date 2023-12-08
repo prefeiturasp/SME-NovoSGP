@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao
 
         public async Task<bool> Handle(VerificaPodePersistirTurmaDisciplinaEOLQuery request, CancellationToken cancellationToken)
         {
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

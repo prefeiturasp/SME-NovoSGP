@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         public void CriarConexaoEAbrir()
         {
-            Conexao = new NpgsqlConnection(_postgresRunner.GetConnectionString());
+            Conexao = new NpgsqlConnection(string.Concat(_postgresRunner.GetConnectionString(), ";Include Error Detail=true;"));
             Conexao.Open();
         }
 

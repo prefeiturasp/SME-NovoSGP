@@ -9,7 +9,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.Query
     {
         public async Task<bool> Handle(PodePersistirTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

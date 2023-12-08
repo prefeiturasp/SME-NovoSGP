@@ -10,11 +10,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.ServicosFakes
 {
     public class ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake : IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularEol>>
     {
-      public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake(){}
+        public ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake() { }
 
-      public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
-      {
-        return new List<ComponenteCurricularEol>()
+        public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
+        {
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
         {
           new ComponenteCurricularEol()
           {
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.ServicosFakes
               LancaNota = true,
               Regencia = true,
           }
-        };
-      }
+        });
+        }
     }
 }

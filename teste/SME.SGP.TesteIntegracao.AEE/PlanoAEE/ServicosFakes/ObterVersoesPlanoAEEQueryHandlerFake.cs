@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                     PlanoAEEId = 1
                 }
             };
-            return versoes;
+            return await Task.FromResult(versoes);
         }
     }
 }

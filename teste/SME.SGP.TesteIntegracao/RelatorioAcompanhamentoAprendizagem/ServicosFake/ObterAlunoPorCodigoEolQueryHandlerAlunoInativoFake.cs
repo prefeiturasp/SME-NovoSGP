@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,12 +19,12 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFa
         public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.CodigoTurma))
-                return Obter(request.CodigoTurma).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
+                return await Task.FromResult(Obter(request.CodigoTurma).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault());
 
-            return Obter(request.CodigoTurma).Where(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma)).FirstOrDefault(); ; 
+            return await Task.FromResult(Obter(request.CodigoTurma).Where(da => da.CodigoTurma.ToString().Equals(request.CodigoTurma)).FirstOrDefault());
         }
 
-        private List<AlunoPorTurmaResposta> Obter(string turmaId)
+        private static List<AlunoPorTurmaResposta> Obter(string turmaId)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 

@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<DadosTurmaEolDto> Handle(ObterDadosTurmaEolPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new DadosTurmaEolDto
+            return await Task.FromResult(new DadosTurmaEolDto
             {
                 Ano = '\u0000',
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 SerieEnsino = null,
                 TipoTurma = TipoTurma.Regular,
                 TipoTurno = 5,
-            };
+            });
         }
     }
 }

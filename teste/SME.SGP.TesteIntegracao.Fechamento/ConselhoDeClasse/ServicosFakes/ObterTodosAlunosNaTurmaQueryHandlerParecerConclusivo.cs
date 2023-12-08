@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01)
             });
 
-            return alunos;
+            return await Task.FromResult(alunos);
         }
     }
 }

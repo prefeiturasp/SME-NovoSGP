@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
         
         public async Task<AbrangenciaFiltroRetorno> Handle(ObterAbrangenciaPorTurmaEConsideraHistoricoQuery request,CancellationToken cancellationToken)
         {
-            return new AbrangenciaFiltroRetorno()
+            return await Task.FromResult(new AbrangenciaFiltroRetorno()
             {
                 Modalidade = Modalidade.Fundamental,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
                 Semestre = 0,
                 QtDuracaoAula = 7,
                 TipoTurno = 6
-            };
+            });
         }
     }
 }

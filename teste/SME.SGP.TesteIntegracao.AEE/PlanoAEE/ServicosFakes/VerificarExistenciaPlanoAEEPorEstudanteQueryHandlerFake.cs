@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
     {
         public async Task<PlanoAEEResumoDto> Handle(VerificarExistenciaPlanoAEEPorEstudanteQuery request, CancellationToken cancellationToken)
         {
-            return new PlanoAEEResumoDto()
+            return await Task.FromResult(new PlanoAEEResumoDto()
             {
                 Id =1,
                 Numero = 1,
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 Versao = "1",
                 CodigoAluno = "22222"
-            };
+            });
         }
     }
 }

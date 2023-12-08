@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
     {
         public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoPlanoAeeQuery request, CancellationToken cancellationToken)
         {
-            return new AlunoReduzidoDto()
+            return await Task.FromResult(new AlunoReduzidoDto()
             {
                 CodigoAluno = "1",
                 Nome = "Nome Aluno",
@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 CelularResponsavel = "999999999999",
                 DataAtualizacaoContato = DateTimeExtension.HorarioBrasilia(),
                 EhAtendidoAEE = false
-            };
+            });
         }
     }
 }

@@ -9,7 +9,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.ServicosFakes
     {
         public async Task<bool> Handle(RemoverArquivosExcluidosCommand request, CancellationToken cancellationToken)
         {
-            return true;
+            return await Task.FromResult(true);
         }
     }
 }

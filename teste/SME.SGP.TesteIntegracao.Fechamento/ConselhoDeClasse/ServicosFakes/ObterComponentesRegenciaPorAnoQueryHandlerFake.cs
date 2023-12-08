@@ -14,13 +14,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
     {
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoEolQuery request, CancellationToken cancellationToken)
         {
-            return new List<ComponenteCurricularEol>()
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
             {
                 new ComponenteCurricularEol()
                 {
                     Codigo = 2
                 }
-            };
+            });
         }
     }
 }

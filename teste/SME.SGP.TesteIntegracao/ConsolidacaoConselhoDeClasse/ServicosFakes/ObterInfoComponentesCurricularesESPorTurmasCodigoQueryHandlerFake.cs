@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,11 +15,11 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse.ServicosFakes
 
         public async Task<IEnumerable<InfoComponenteCurricular>> Handle(ObterInfoComponentesCurricularesESPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new List<InfoComponenteCurricular>(){
+            return await Task.FromResult(new List<InfoComponenteCurricular>(){
                 new InfoComponenteCurricular(){ Codigo= 1, CodigoComponenteCurricularPai=null, Nome="1", EhRegencia = false, EhTerritorioSaber = false, RegistraFrequencia = true, LancaNota = true},
                 new InfoComponenteCurricular(){ Codigo= 2, CodigoComponenteCurricularPai=null, Nome="2", EhRegencia = false, EhTerritorioSaber = false, RegistraFrequencia = true, LancaNota = true},
                 new InfoComponenteCurricular(){ Codigo= 3, CodigoComponenteCurricularPai=null, Nome="3", EhRegencia = false, EhTerritorioSaber = false, RegistraFrequencia = true, LancaNota = true},
-            };
+            });
         }
     }
 }

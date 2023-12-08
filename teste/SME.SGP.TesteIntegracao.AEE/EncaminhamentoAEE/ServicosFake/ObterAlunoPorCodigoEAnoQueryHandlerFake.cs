@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                 CodigoTurma = "1",
             };
 
-            return alunoReduzido;
+            return await Task.FromResult(alunoReduzido);
         }
 
     }
