@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -184,6 +186,90 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             };
 
             await Assert.ThrowsAsync<NegocioException>(async () => await useCase.Executar(dto));
+        }
+
+        [Fact]
+        public async Task Deve_obter_calendario_correto_de_turma_eja_celp_considerando_semestre()
+        {
+            await DadosInsercaoRecomendacoesConselho();
+
+            var turma = new Dominio.Turma()
+            {
+                Id = 1,
+                Nome = "1A",
+                CodigoTurma = "1234",
+                Ano = "1",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
+                ModalidadeCodigo = Modalidade.EJA,
+                UeId = 1,
+                Semestre = 1
+            };
+
+            var mediator = await ServiceProvider.GetService<IMediator>().Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, BIMESTRE_2));
+
+            mediator.ShouldNotBeNull();
+            mediator.PeriodoFim.ShouldBe(new DateTime(DateTimeExtension.HorarioBrasilia().Year, 6, 30));
+            mediator.PeriodoInicio.ShouldBe(new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1));
+        }
+
+        private async Task DadosInsercaoRecomendacoesConselho()
+        {
+            await InserirNaBase(new TipoCalendario()
+            {
+                Id = 1,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Calendário Teste Ano Atual",
+                Modalidade = ModalidadeTipoCalendario.EJA,
+                Periodo = Periodo.Anual,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "",
+                CriadoRF = "",
+                Semestre = 1
+            });
+
+            await InserirNaBase(new PeriodoEscolar()
+            {
+                Id = 1,
+                Bimestre = 2,
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 6, 30),
+                TipoCalendarioId = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+
+            await InserirNaBase(new Dre()
+            {
+                Id = 1,
+                Nome = "Dre Teste",
+                CodigoDre = "11",
+                Abreviacao = "DT"
+            });
+
+            await InserirNaBase(new Ue()
+            {
+                Id = 1,
+                Nome = "Ue Teste",
+                DreId = 1,
+                TipoEscola = TipoEscola.EMEF,
+                CodigoUe = "22"
+            });
+
+            await InserirNaBase(new Dominio.Turma()
+            {
+                Id = 1,
+                Nome = "1A",
+                CodigoTurma = "1234",
+                Ano = "1",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
+                ModalidadeCodigo = Modalidade.EJA,
+                UeId = 1,
+                Semestre = 1
+            });
+
         }
 
         private ConselhoClasseAlunoAnotacoesDto ObterConselhoAlunoAnotacaoDto()

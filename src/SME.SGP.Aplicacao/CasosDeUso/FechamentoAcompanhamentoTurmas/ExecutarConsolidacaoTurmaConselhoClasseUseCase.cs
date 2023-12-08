@@ -7,13 +7,12 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static SME.SGP.Dominio.DateTimeExtension;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExecutarConsolidacaoTurmaConselhoClasseUseCase : AbstractUseCase, IExecutarConsolidacaoTurmaConselhoClasseUseCase
     {
-        private readonly IConsultasDisciplina consultasDisciplina;
-
         public ExecutarConsolidacaoTurmaConselhoClasseUseCase(IMediator mediator) : base(mediator)
         {
         }
@@ -33,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a consolidação do conselho de clase da turma. O id da turma não foi informado", LogNivel.Critico, LogContexto.ConselhoClasse));
                 return false;
             }
-
+            
             var turma = await mediator
                 .Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
 
@@ -60,7 +59,7 @@ namespace SME.SGP.Aplicacao
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
-
+                
                 if (ultimoBimestreAtivo.EhNulo())
                 {
                     await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id);
@@ -73,26 +72,26 @@ namespace SME.SGP.Aplicacao
                     continue;
                 }
 
-                var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
+                var matriculadoDepois = (int?)null;
 
-                var primeiroRegistroMatriculaAtiva = matriculasAlunoTurma
-                    .Where(mat => mat.PossuiSituacaoAtiva())
-                    .OrderBy(mat => mat.DataMatricula)
-                    .FirstOrDefault();
+                if (aluno.Ativo)
+                {
+                    var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
 
-                var dataMatricula = primeiroRegistroMatriculaAtiva.NaoEhNulo() && !primeiroRegistroMatriculaAtiva.DataMatricula.Equals(DateTime.MinValue) ? primeiroRegistroMatriculaAtiva.DataMatricula : aluno.DataMatricula;
+                    matriculadoDepois = (from m in matriculasAlunoTurma
+                                         from p in periodosEscolares
+                                         where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) < p.PeriodoFim.Date
+                                         orderby p.Bimestre
+                                         select (int?)p.Bimestre).FirstOrDefault() ?? null;                    
+                }
 
-                var matriculadoDepois = !aluno.Inativo ?
-                    periodosEscolares.FirstOrDefault(p => dataMatricula > p.PeriodoFim.Date)?.Bimestre : null;
-
-                if (!aluno.Inativo && matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
+                if (matriculadoDepois.NaoEhNulo() && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                 {
                     await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
                     continue;
                 }
 
-                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);
-                 
+                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, 0, mensagemRabbit.CodigoCorrelacao);                 
             }
 
             return true;

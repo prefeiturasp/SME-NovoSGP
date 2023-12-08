@@ -234,7 +234,7 @@ namespace SME.SGP.Dados.Repositorios
                 ComponenteCurricularDescricao = documentoCompleto.ComponenteCurricularDescricao
             };
 
-            documentoResumido.Arquivos.AddRange(documentosCompleto.ToList().Select(s => new ArquivoResumidoDto
+            documentoResumido.Arquivos.AddRange(documentosCompleto.Select(s => new ArquivoResumidoDto
             {
                 Codigo = s.CodigoArquivo,
                 Nome = s.NomeArquivo

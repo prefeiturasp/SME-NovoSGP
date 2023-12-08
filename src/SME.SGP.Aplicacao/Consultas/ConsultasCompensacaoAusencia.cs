@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             // Mostrar apenas 3 alunos
             foreach (var compensacaoDto in listaCompensacoesDto.Where(c => c.Alunos.Count > 3))
             {
-                var qtd = compensacaoDto.Alunos.Count();
+                var qtd = compensacaoDto.Alunos.Count;
                 compensacaoDto.Alunos = compensacaoDto.Alunos.GetRange(0, 3);
                 compensacaoDto.Alunos.Add(new CompensacaoAusenciaListagemAlunosDto($"mais {qtd - 3} alunos"));
             }

@@ -93,10 +93,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                          turma.Ue.Dre.CodigoDre,
                                                          turma.Ue.CodigoUe));
 
-                if (atribuicoesEsporadica.Any() && !atribuicoesEsporadica.Where(a => a.DataInicio <= dataAula.Date
+                if (atribuicoesEsporadica.Any() && !atribuicoesEsporadica.Any(a => a.DataInicio <= dataAula.Date
                                                    && a.DataFim >= dataAula.Date
                                                    && a.DreId == turma.Ue.Dre.CodigoDre
-                                                   && a.UeId == turma.Ue.CodigoUe).Any())
+                                                   && a.UeId == turma.Ue.CodigoUe))
                     throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
             }
         }

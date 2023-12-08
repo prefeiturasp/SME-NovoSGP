@@ -27,4 +27,14 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Aguardando atribuição de PAAI")]
         AtribuicaoPAAI = 11,
     }
+
+    public static class SituacaoAEEExtension
+    {
+        static public bool PermiteExclusaoPendenciasEncaminhamentoAEE(this SituacaoAEE situacaoAEE)
+        {
+            return (situacaoAEE != SituacaoAEE.Encaminhado &&
+                situacaoAEE != SituacaoAEE.Analise &&
+                situacaoAEE != SituacaoAEE.Rascunho);
+        }
+    }
 }

@@ -235,7 +235,7 @@ namespace SME.SGP.Dominio
             string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol,
             bool gestorEscolar)
         {
-            if (atividadesAvaliativas.Where(x => x.DataAvaliacao.Date > DateTime.Today).Any())
+            if (atividadesAvaliativas.Any(x => x.DataAvaliacao.Date > DateTime.Today))
                 throw new NegocioException(
                     "Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 

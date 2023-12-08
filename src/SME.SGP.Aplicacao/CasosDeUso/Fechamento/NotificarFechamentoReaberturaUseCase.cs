@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var verificarUesTipoCalendario = await mediator.Send(new ObterUEsComDREsPorModalidadeTipoCalendarioQuery(filtro.Modalidades, filtro.AnoLetivo));
-                var agrupamentoUeporDre = verificarUesTipoCalendario.GroupBy(d => d.Dre.CodigoDre).ToDictionary(group => group.Key, group => group.ToList().Select(s => s.CodigoUe));
+                var agrupamentoUeporDre = verificarUesTipoCalendario.GroupBy(d => d.Dre.CodigoDre).ToDictionary(group => group.Key, group => group.Select(s => s.CodigoUe));
 
                 foreach (var valores in agrupamentoUeporDre)
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaDRE, new FiltroNotificacaoFechamentoReaberturaDREDto(valores.Key, valores.Value, filtro), new Guid(), null));

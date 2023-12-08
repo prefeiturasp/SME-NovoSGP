@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class DadosResponsavelAlunoProdamDto
     {
-        public DadosResponsavelAlunoProdamDto(DadosResponsavelAlunoEolDto dadosResponsavel, AtualizarDadosUsuarioDto atualizarDados)
+        public DadosResponsavelAlunoProdamDto(DadosResponsavelAlunoEolDto dadosResponsavel, AtualizarDadosResponsavelDto atualizarDados)
         {
             AutorizaEnvioSMS = dadosResponsavel.AutorizaEnvioSMS;
             CodigoAluno = dadosResponsavel.CodigoAluno;

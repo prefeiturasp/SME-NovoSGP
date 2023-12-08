@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AtualizarDadosUsuarioUseCase : AbstractUseCase, IAtualizarDadosUsuarioUseCase
+    public class AtualizarDadosResponsaveisUseCase : AbstractUseCase, IAtualizarDadosResponsaveisUseCase
     {
-        public AtualizarDadosUsuarioUseCase(IMediator mediator) : base(mediator)
+        public AtualizarDadosResponsaveisUseCase(IMediator mediator) : base(mediator)
         {
         }
 
-        public async Task<bool> Executar(AtualizarDadosUsuarioDto param)
+        public async Task<bool> Executar(AtualizarDadosResponsavelDto param)
         {
             var dadosResponsaveis = await mediator.Send(new ObterDadosResponsavelQuery(param.CPF));
 

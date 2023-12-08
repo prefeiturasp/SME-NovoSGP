@@ -24,6 +24,41 @@ namespace SME.SGP.Aplicacao
             return await SalvarItinerancia(itineranciaDto);
         }
 
+        private async Task SalvarItineranciaAlunos(long itineranciaId, ItineranciaDto itineranciaDto)
+        {
+            if (itineranciaDto.PossuiAlunos)
+                foreach (var aluno in itineranciaDto.Alunos)
+                    await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itineranciaId));
+        }
+
+        private async Task SalvarItineranciaObjetivos(long itineranciaId, ItineranciaDto itineranciaDto)
+        {
+            if (itineranciaDto.PossuiObjetivos)
+                foreach (var objetivo in itineranciaDto.ObjetivosVisita)
+                    await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itineranciaId, objetivo.Descricao, objetivo.TemDescricao));
+        }
+
+        private async Task SalvarItineranciaQuestoes(long itineranciaId, ItineranciaDto itineranciaDto)
+        {
+            if (itineranciaDto.PossuiQuestoes)
+                foreach (var questao in itineranciaDto.Questoes)
+                {
+                    await SalvarItineranciaQuestaoUpload(questao);
+                    if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
+                        await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itineranciaId, questao.Resposta, questao.ArquivoId));
+                }
+        }
+
+        private async Task SalvarItineranciaQuestaoUpload(ItineranciaQuestaoDto questao)
+        {
+            if (questao.QuestaoTipoUploadRespondida() &&
+                        questao.QuestaoSemArquivoId())
+            {
+                var arquivoCodigo = Guid.Parse(questao.Resposta);
+                questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
+            }
+        }
+
         public async Task<AuditoriaDto> SalvarItinerancia(ItineranciaDto itineranciaDto)
         {
             using (var transacao = unitOfWork.IniciarTransacao())
@@ -31,33 +66,14 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     if (itineranciaDto.Alunos.Any())
-                    {
                         await TrataTurmasCodigos(itineranciaDto);
-                    }
                     var itinerancia = await mediator.Send(new SalvarItineranciaCommand(itineranciaDto.AnoLetivo, itineranciaDto.DataVisita, itineranciaDto.DataRetornoVerificacao, itineranciaDto.EventoId, itineranciaDto.DreId, itineranciaDto.UeId));
                     if (itinerancia.EhNulo())
                         throw new NegocioException("Erro ao Salvar a itinerancia");
 
-                    if (itineranciaDto.PossuiAlunos)
-                        foreach (var aluno in itineranciaDto.Alunos)
-                            await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
-
-                    if (itineranciaDto.PossuiObjetivos)
-                        foreach (var objetivo in itineranciaDto.ObjetivosVisita)
-                            await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao, objetivo.TemDescricao));
-
-                    if (itineranciaDto.PossuiQuestoes)
-                        foreach (var questao in itineranciaDto.Questoes)
-                        {
-                            if (questao.QuestaoTipoUploadRespondida() &&
-                                questao.QuestaoSemArquivoId())
-                            {
-                                var arquivoCodigo = Guid.Parse(questao.Resposta);
-                                questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
-                            }
-                            if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
-                                await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
-                        }
+                    await SalvarItineranciaAlunos(itinerancia.Id, itineranciaDto);
+                    await SalvarItineranciaObjetivos(itinerancia.Id, itineranciaDto);
+                    await SalvarItineranciaQuestoes(itinerancia.Id, itineranciaDto);
                     unitOfWork.PersistirTransacao();
 
                     await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
@@ -107,7 +123,7 @@ namespace SME.SGP.Aplicacao
             if (turmasCodigos.NaoEhNulo() && turmasCodigos.Any())
             {
                 var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-                if (turmas.Count() != turmasCodigos.Count())
+                if (turmas.Count() != turmasCodigos.Count)
                     throw new NegocioException("Não foi possível localizar as turmas no SGP.");
 
                 foreach (var item in itineranciaDto.Alunos)
