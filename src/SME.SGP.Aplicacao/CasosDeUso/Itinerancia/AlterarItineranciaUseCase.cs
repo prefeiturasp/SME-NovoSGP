@@ -124,13 +124,13 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         public async Task<bool> ExcluirFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
-            await ExcluirItineranciaAluno(itineranciaDto, itinerancia);
+            await ExcluirItineranciaAlunos(itineranciaDto, itinerancia);
             await ExcluirItineranciaObjetivos(itineranciaDto, itinerancia);
             await ExcluirItineranciaQuestoes(itineranciaDto, itinerancia);
             return true;
         }
 
-        public async Task ExcluirItineranciaQuestaoUpload(ItineranciaQuestaoDto questao)
+        private async Task ExcluirItineranciaQuestaoUpload(ItineranciaQuestaoDto questao)
         {
             if (questao.Excluido && questao.QuestaoTipoUploadRespondida())
             {
@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao.Interfaces
             }
         }
 
-        public async Task ExcluirItineranciaQuestoes(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        private async Task ExcluirItineranciaQuestoes(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
             if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao.Interfaces
                 }
         }
 
-        public async Task ExcluirItineranciaObjetivos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        private async Task ExcluirItineranciaObjetivos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
             if (itineranciaDto.PossuiObjetivos)
                 foreach (var objetivo in itinerancia.ObjetivosVisita)
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao.Interfaces
                         throw new NegocioException($"Não foi possível excluir o objetivo da itinerância de Id {objetivo.Id}");
         }
 
-        public async Task ExcluirItineranciaAluno(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        private async Task ExcluirItineranciaAlunos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
             if (itineranciaDto.PossuiAlunos)
                 foreach (var aluno in itinerancia.Alunos)
@@ -169,35 +169,51 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         public async Task<bool> SalvarFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
+            await SalvarItineranciaAlunos(itineranciaDto, itinerancia);
+            await SalvarItineranciaObjetivos(itineranciaDto, itinerancia);
+            await SalvarItineranciaQuestoes(itineranciaDto, itinerancia);
+            return true;
+        }
+
+        private async Task SalvarItineranciaQuestaoUpload(ItineranciaQuestaoDto questao)
+        {
+            if (questao.QuestaoTipoUploadRespondida() &&
+                            questao.QuestaoSemArquivoId())
+            {
+                var arquivoCodigo = Guid.Parse(questao.Resposta);
+                questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
+            }
+        }
+
+        private async Task SalvarItineranciaObjetivos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
+            if (itineranciaDto.PossuiObjetivos)
+                foreach (var objetivo in itineranciaDto.ObjetivosVisita)
+                    await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao, objetivo.TemDescricao));
+        }
+
+        private async Task SalvarItineranciaQuestoes(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
+            if (itineranciaDto.PossuiQuestoes)
+                foreach (var questao in itineranciaDto.Questoes)
+                {
+                    if (!questao.Excluido)
+                    {
+                        await SalvarItineranciaQuestaoUpload(questao);
+                        if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
+                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
+                    }
+                }
+        }
+
+        private async Task SalvarItineranciaAlunos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
             if (itineranciaDto.PossuiAlunos)
             {
                 await TrataTurmasCodigos(itineranciaDto);
                 foreach (var aluno in itineranciaDto.Alunos)
                     await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
             }
-
-            if (itineranciaDto.PossuiObjetivos)
-                foreach (var objetivo in itineranciaDto.ObjetivosVisita)
-                    await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao, objetivo.TemDescricao));
-
-            if (itineranciaDto.PossuiQuestoes)
-                foreach (var questao in itineranciaDto.Questoes)
-                {
-                    if (!questao.Excluido)
-                    {
-                        if (questao.QuestaoTipoUploadRespondida() &&
-                            questao.QuestaoSemArquivoId())
-                        {
-                            var arquivoCodigo = Guid.Parse(questao.Resposta);
-                            questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
-                        }
-
-                        if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
-                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
-                    }
-                }
-
-            return true;
         }
 
         private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
