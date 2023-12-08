@@ -137,15 +137,14 @@ namespace SME.SGP.Aplicacao.Interfaces
             if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
                 {
-                    if (questao.Id != 0)
-                        if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
-                            throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
+                    if (questao.Id != 0 && !await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
+                        throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
+                    
                     if (questao.Excluido && questao.QuestaoTipoUploadRespondida())
                     {
                         var arquivoCodigo = Guid.Parse(questao.Resposta);
                         await ExcluirArquivoItinerancia(arquivoCodigo);
                     }
-                    
                 }
 
             return true;

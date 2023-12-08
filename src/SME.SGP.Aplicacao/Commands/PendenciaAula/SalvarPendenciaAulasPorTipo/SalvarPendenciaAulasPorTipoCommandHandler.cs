@@ -1,15 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Aplicacao.Integracoes;
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -80,11 +77,10 @@ namespace SME.SGP.Aplicacao
                                 {
                                     var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, item.First().DisciplinaId));
 
-                                    if (professorTitularTurma.NaoEhNulo())
-                                    {
-                                        if (periodoEscolar.NaoEhNulo() && !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
-                                            await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
-                                    }
+                                    if (professorTitularTurma.NaoEhNulo() &&
+                                        periodoEscolar.NaoEhNulo() && 
+                                        !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
+                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
                                 }
                                 else
                                 {

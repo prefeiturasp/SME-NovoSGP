@@ -310,20 +310,17 @@ namespace SME.SGP.Aplicacao
                                         EhConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
-                        else if (disciplinaEOL.Regencia)
+                        else if (disciplinaEOL.Regencia && disciplinasRegencia.NaoEhNulo())
                         {
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            if (disciplinasRegencia.NaoEhNulo())
+                            foreach (var disciplinaRegencia in disciplinasRegencia)
                             {
-                                foreach (var disciplinaRegencia in disciplinasRegencia)
+                                notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
                                 {
-                                    notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
-                                    {
-                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
-                                        Disciplina = disciplinaRegencia.Nome,
-                                    });
-                                }
-                            }
+                                    DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                    Disciplina = disciplinaRegencia.Nome,
+                                });
+                            } 
                         }
 
                         // Carrega Frequencia Aluno
