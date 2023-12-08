@@ -35,35 +35,10 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var pendenciaFuncionario in filtro.PendenciasFuncionarios)
                 {
-                    var validaExistenciaFunc = dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}");
-                    bool eraCefai = false;
-                    bool eraAdmUe = false;
-
-                    FuncionarioCargoDTO funcionarioAtual = null;
-                    if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CP || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.AD || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.DIRETOR)
-                    {
-                        funcionarioAtual = (dicUePerfilCodigoFuncionarios.NaoEhNulo() && dicUePerfilCodigoFuncionarios.Any()) 
-                                            ? dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
-                                                                                                    .Value
-                                                                                                    .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf))
-                                                                                                    : null;
-                    }
-                    else if(pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)
-                    {
-                        if(lstCefais.Count > 0)
-                            eraCefai = lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId);               
-                        else
-                            eraCefai = true;   
-                    }        
-                    else if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.ADMUE)
-                    {
-                        if (lstAdmUes.Count > 0)
-                            eraAdmUe = lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId);
-                        else
-                            eraAdmUe = true;
-                    }               
-
-                    var filtroPendenciaPerfilUsuarioCefaiAdmUeDto = new FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(funcionarioAtual, eraCefai, eraAdmUe, pendenciaFuncionario);
+                    var dadosFuncionarioPendencia = ObterDadosFuncionarioPendencia(pendenciaFuncionario, dicUePerfilCodigoFuncionarios, lstCefais, lstAdmUes);
+                    var filtroPendenciaPerfilUsuarioCefaiAdmUeDto = new FiltroPendenciaPerfilUsuarioCefaiAdmUeDto(dadosFuncionarioPendencia.FuncionarioAtual,
+                                                                                                                  dadosFuncionarioPendencia.EraCefai,
+                                                                                                                  dadosFuncionarioPendencia.EraAdmUe, pendenciaFuncionario);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaRemoverAtribuicaoPendenciaUsuariosUeFuncionario, filtroPendenciaPerfilUsuarioCefaiAdmUeDto, Guid.NewGuid(), null));
                 }
             }
@@ -72,6 +47,33 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Erro na remoção de atribuição de Pendência Perfil Usuário por UE.");
             }
             return true;
+        }
+
+        private (FuncionarioCargoDTO FuncionarioAtual, bool EraCefai, bool EraAdmUe) ObterDadosFuncionarioPendencia(PendenciaPerfilUsuarioDto pendenciaFuncionario,
+                                                                                                                    Dictionary<string, IEnumerable<FuncionarioCargoDTO>> dicUePerfilCodigoFuncionarios,
+                                                                                                                    List<long> lstCefais, List<long> lstAdmUes)
+        {
+            if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CP || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.AD || pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.DIRETOR)
+            {
+                var funcionarioAtual = (dicUePerfilCodigoFuncionarios.PossuiRegistros())
+                                    ? dicUePerfilCodigoFuncionarios.FirstOrDefault(w => w.Key == $"{pendenciaFuncionario.UeId}_{pendenciaFuncionario.PerfilCodigo}")
+                                                                                            .Value
+                                                                                            .FirstOrDefault(s => s.FuncionarioRF.Equals(pendenciaFuncionario.CodigoRf))
+                                                                                            : null;
+                return (funcionarioAtual, false, false);
+            }
+
+            if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)
+                return (null, 
+                        lstCefais.NaoPossuiRegistros() || lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId), 
+                        false);
+            
+            if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.ADMUE)
+                return (null,
+                        false, 
+                        lstAdmUes.NaoPossuiRegistros() || lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId));
+
+            return (null, false, false);
         }
 
         private async Task VerificaPerfisNovosEOL(Dictionary<string, IEnumerable<FuncionarioCargoDTO>> dicUePerfilCodigoFuncionarios, IEnumerable<PendenciaPerfilUsuarioDto> filtro)
