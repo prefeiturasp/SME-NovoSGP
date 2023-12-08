@@ -616,7 +616,7 @@ namespace SME.SGP.Aplicacao
             var compensacoes = await mediator.Send(new ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery(bimestre, new List<string>() { codigoAluno }, turmaCodigo));
             if (compensacoes.Any())
             {
-                var compensacoesDisciplina = compensacoes.Where(c => c.ComponenteCurricularId == disciplinaCodigo).FirstOrDefault();
+                var compensacoesDisciplina = compensacoes.FirstOrDefault(c => c.ComponenteCurricularId == disciplinaCodigo);
 
                 if (compensacoesDisciplina.NaoEhNulo())
                     return compensacoesDisciplina.Compensacoes;

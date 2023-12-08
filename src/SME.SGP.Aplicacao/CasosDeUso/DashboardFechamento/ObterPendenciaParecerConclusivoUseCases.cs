@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                     if (quantidadeParecer > 0)
                         parecerConclusivos.Add(new GraficoBaseDto(grupo, quantidadeParecer, parecerPorSituacao.FirstOrDefault().Situacao));
                 }
-                var quantidadePareceres = parecerAgrupado.Where(p => p.TurmaCodigo == parecerAgrupado.Key).Count();
+                var quantidadePareceres = parecerAgrupado.Count(p => p.TurmaCodigo == parecerAgrupado.Key);
                 var alunosAtivosComParecer = quantidadePareceres > 0
                     ?
                     quantidadePareceres - alunosInativosComParecer

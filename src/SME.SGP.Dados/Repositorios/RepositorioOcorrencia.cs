@@ -119,7 +119,7 @@ namespace SME.SGP.Dados
 
             return new PaginacaoResultadoDto<Ocorrencia>()
             {
-                Items = lstOcorrencias.Values.ToList().OrderByDescending(x=>x.DataOcorrencia),
+                Items = lstOcorrencias.Values.OrderByDescending(x=>x.DataOcorrencia),
                 TotalRegistros = lstOcorrencias.Values.Count,
                 TotalPaginas = (int)Math.Ceiling((double)lstOcorrencias.Values.Count / paginacao.QuantidadeRegistros)
             };

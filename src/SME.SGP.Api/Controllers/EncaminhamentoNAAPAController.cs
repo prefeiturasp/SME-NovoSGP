@@ -74,7 +74,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
         public IActionResult ObterSituacoes()
         {
-            var lista = EnumExtensao.ListarDto<SituacaoNAAPA>().ToList().OrderBy(situacao => situacao.Descricao);
+            var lista = EnumExtensao.ListarDto<SituacaoNAAPA>().OrderBy(situacao => situacao.Descricao);
 
             return Ok(lista);
         }

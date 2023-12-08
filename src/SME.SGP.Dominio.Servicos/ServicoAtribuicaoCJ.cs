@@ -88,7 +88,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (abrangenciasAtuais.NaoEhNulo())
                 {
-                    var abrangenciaDaTurma = abrangenciasAtuais.Where(x => x.TurmaId == turma.Id).FirstOrDefault();
+                    var abrangenciaDaTurma = abrangenciasAtuais.FirstOrDefault(x => x.TurmaId == turma.Id);
                     if (abrangenciaDaTurma.NaoEhNulo() && abrangenciaDaTurma.Historico != turma.Historica)
                     {
                         var abangencia = new long[] { abrangenciaDaTurma.Id };

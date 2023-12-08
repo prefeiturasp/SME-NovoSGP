@@ -256,7 +256,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     {
                         foreach (var resposta in questao.Resposta)
                         {
-                            var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
+                            var opcao = questao.OpcaoResposta.FirstOrDefault(opcao => opcao.Id == Convert.ToInt64(resposta.Texto));
                             if (opcao.NaoEhNulo() && opcao.QuestoesComplementares.Any())
                             {
                                 ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);

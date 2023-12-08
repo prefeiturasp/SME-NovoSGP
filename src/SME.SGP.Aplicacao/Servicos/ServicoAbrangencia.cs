@@ -206,7 +206,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     if (turmaId > 0)
                     {
-                        var abragenciaSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico).FirstOrDefault();
+                        var abragenciaSGP = abrangenciaGeralSGP.FirstOrDefault(a => a.TurmaId == turmaId && !a.Historico);
                         if (abragenciaSGP.NaoEhNulo())
                         {
                             var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));

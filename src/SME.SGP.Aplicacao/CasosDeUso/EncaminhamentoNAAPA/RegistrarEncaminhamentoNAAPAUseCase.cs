@@ -249,13 +249,13 @@ namespace SME.SGP.Aplicacao
 
         private QuestaoDto ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(IEnumerable<QuestaoDto> questoes)
         {
-            return questoes.Where(questao => (questao.NomeComponente == QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS)
-                                              && !questao.Resposta.NaoNuloEContemRegistrosRespondidos()).FirstOrDefault();
+            return questoes.FirstOrDefault(questao => (questao.NomeComponente == QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS)
+                                              && !questao.Resposta.NaoNuloEContemRegistrosRespondidos());
         }
 
         private QuestaoDto ObterQuestaoAgrupamentoPromocaoCuidados(IEnumerable<QuestaoDto> questoes)
         {
-            return questoes.Where(questao => (questao.NomeComponente == QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS)).FirstOrDefault();
+            return questoes.FirstOrDefault(questao => questao.NomeComponente == QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS);
         }
 
         private IEnumerable<QuestaoDto> ObterQuestoesComplementaresAgrupamentoPromocaoCuidados(QuestaoDto questaoAgrupamentoPromocaoCuidados)
@@ -267,12 +267,12 @@ namespace SME.SGP.Aplicacao
 
         private QuestaoDto ObterQuestaoComplementarTipoAdoeceComFrequenciaSemCuidadosMedicos(IEnumerable<QuestaoDto> questoesComplementares)
         {
-            return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS).FirstOrDefault();
+            return questoesComplementares.FirstOrDefault(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS);
         }
 
         private QuestaoDto ObterQuestaoComplementarTipoDoencaCronicaTratamentoLongaDuracao(IEnumerable<QuestaoDto> questoesComplementares)
         {
-            return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).FirstOrDefault();
+            return questoesComplementares.FirstOrDefault(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO);
         }
 
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasEncaminhamentoNAAPA(long? encaminhamentoNAAPAId)

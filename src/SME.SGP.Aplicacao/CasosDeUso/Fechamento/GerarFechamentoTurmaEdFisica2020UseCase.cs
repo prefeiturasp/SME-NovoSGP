@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
-                        var dadosAlunoEdFisica = dadosEolAlunoTurma.Where(d => d.CodigoAluno.ToString().Equals(codigoRfAluno)).FirstOrDefault();
+                        var dadosAlunoEdFisica = dadosEolAlunoTurma.FirstOrDefault(d => d.CodigoAluno.ToString().Equals(codigoRfAluno));
                        
                         if (dadosAlunoEdFisica.NaoEhNulo())
                         {

@@ -297,7 +297,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (turmasAluno.Count() > 0)
                 {
-                    var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
+                    var alunoComMatriculaAtiva = turmasAluno.FirstOrDefault(t => t.PossuiSituacaoAtiva());
 
                     if (alunoComMatriculaAtiva.EhNulo())
                         return null;

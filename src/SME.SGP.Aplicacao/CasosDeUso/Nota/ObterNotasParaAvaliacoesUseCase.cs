@@ -309,10 +309,10 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             //para casos onde teve uma inserção de nota, saiu da tela, e inseriu outra nota, mas em outro aluno.
-                            if (fechamentoTurma.FechamentoAlunos.Count() > 1)
+                            if (fechamentoTurma.FechamentoAlunos.Count > 1)
                             {
                                 var ultimoDadoDeAuditoria = fechamentoTurma.FechamentoAlunos
-                                                               .SelectMany(a => a.FechamentoNotas).ToList()
+                                                               .SelectMany(a => a.FechamentoNotas)
                                                                .OrderByDescending(nc => nc.CriadoEm)
                                                                .Select(nc => new
                                                                {
