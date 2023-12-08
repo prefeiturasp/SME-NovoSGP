@@ -31,7 +31,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.CCEA_NAAPA_C, Policy = "Bearer")]
         public IActionResult ObterAusencias()
         {
-            var lista = EnumExtensao.ListarDto<EnumAusencias>().ToList().OrderBy(ausencia => ausencia.Id);
+            var lista = EnumExtensao.ListarDto<EnumAusencias>().OrderBy(ausencia => ausencia.Id);
 
             return Ok(lista);
         }

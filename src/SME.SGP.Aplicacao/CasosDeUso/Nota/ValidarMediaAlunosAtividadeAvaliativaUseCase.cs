@@ -42,41 +42,23 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroValidarMediaAlunosAtividadeAvaliativaDto>();
-
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-
-            var atividadeAvaliativa = filtro.AtividadesAvaliativas.FirstOrDefault(x => x.Id == filtro.ChaveNotasPorAvaliacao);
-            
+            var atividadeAvaliativa = filtro.AtividadesAvaliativas.FirstOrDefault(x => x.Id == filtro.ChaveNotasPorAvaliacao);          
             var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-            
-            var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaTurmaQuery(atividadeAvaliativa.TurmaId, filtro.Usuario.Login, filtro.Usuario.PerfilAtual, filtro.ConsideraHistorico, filtro.TemAbrangenciaUeOuDreOuSme));
-                
+            var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaTurmaQuery(atividadeAvaliativa.TurmaId, filtro.Usuario.Login, filtro.Usuario.PerfilAtual, filtro.ConsideraHistorico, filtro.TemAbrangenciaUeOuDreOuSme));              
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, filtro.Usuario, abrangenciaTurma, abrangenciaTurma.NaoEhNulo());
-            
-            var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
-            
-            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-            
+            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);          
             var quantidadeAlunos = filtro.NotasPorAvaliacao.Count();
             
-            var quantidadeAlunosSuficientes = 0;
-
+            var quantidadeAlunosSuficientes = ObterQuantidadeAlunosSuficientes(filtro.NotasPorAvaliacao, tipoNota.TipoNota, valoresConceito, notaParametro);
             var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
             var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
 
-            foreach (var nota in filtro.NotasPorAvaliacao)
-            {
-                var valorConceito = ehTipoNota ? valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId) : null;
-
-                quantidadeAlunosSuficientes += ehTipoNota ? nota.Nota >= notaParametro.Media ? 1 : 0 
-                                                          : valorConceito.NaoEhNulo() && valorConceito.Aprovado ? 1 : 0;
-            }
             string mensagemNotasConceitos = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {abrangenciaTurma.NomeTurma} da {abrangenciaTurma.NomeUe} (DRE {abrangenciaTurma.NomeDre}) no bimestre {periodoAtividade.Bimestre} de {abrangenciaTurma.AnoLetivo} foram alterados " +
-          $"pelo Professor {filtro.Usuario.Nome} ({filtro.Usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
-          $"<a href='{filtro.HostAplicacao}diario-classe/notas/{filtro.DisciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
+                                            $"pelo Professor {filtro.Usuario.Nome} ({filtro.Usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
+                                            $"<a href='{filtro.HostAplicacao}diario-classe/notas/{filtro.DisciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
 
-            // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
-            if (quantidadeAlunosSuficientes < (quantidadeAlunos * filtro.PercentualAlunosInsuficientes / 100))
+            if (QuantidadeAlunosSuficientesInferiorPercParametrizado(quantidadeAlunosSuficientes, quantidadeAlunos, filtro.PercentualAlunosInsuficientes))
             {
                 var usuariosCPs = await ObterUsuariosCPs(abrangenciaTurma.CodigoUe);
 
@@ -95,6 +77,33 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private bool QuantidadeAlunosSuficientesInferiorPercParametrizado(int quantidadeAlunosSuficientes, int quantidadeAlunos, double percentualAlunosInsuficientes)
+        {
+            return (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100));
+        }
+
+        private int ObterQuantidadeAlunosSuficientes(IEnumerable<NotaConceito> notasPorAvaliacao, 
+                                                     TipoNota tipoNota, 
+                                                     IEnumerable<Conceito> valoresConceito,
+                                                     NotaParametro notaParametro)
+        {
+            var retorno = 0;
+            var ehTipoNota = tipoNota == TipoNota.Nota;
+
+            foreach (var nota in notasPorAvaliacao)
+            {
+                var valorConceito = ehTipoNota ? valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId) : null;
+                if (ehTipoNota)
+                {
+                    if (nota.Nota >= notaParametro.Media)
+                        retorno++;
+                } else if (valorConceito.NaoEhNulo() && valorConceito.Aprovado)
+                    retorno++;
+
+            }
+            return retorno;
         }
 
         private async Task<IEnumerable<Usuario>> ObterUsuariosCPs(string codigoUe)

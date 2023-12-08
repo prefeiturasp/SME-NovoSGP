@@ -52,14 +52,14 @@ namespace SME.SGP.Dominio
             }
         }
         
-        public static bool EhEjaOuCelp(this Modalidade modalidade)
+        public static bool EhSemestral(this Modalidade modalidade)
         {
             return modalidade.EhUmDosValores(Modalidade.EJA, Modalidade.CELP);
         }
         
-        public static bool NaoEhEjaOuCelp(this Modalidade modalidade)
+        public static bool NaoEhSemestral(this Modalidade modalidade)
         {
-            return !EhEjaOuCelp(modalidade);
+            return !EhSemestral(modalidade);
         }
         
         public static bool EhEJA(this Modalidade modalidade)

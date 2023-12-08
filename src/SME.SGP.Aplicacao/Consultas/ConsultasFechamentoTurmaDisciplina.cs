@@ -238,7 +238,7 @@ namespace SME.SGP.Aplicacao
                 var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(codigosAlunos, turma.AnoLetivo);
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
-                    var fechamentoTurma = fechamentosTurmasAlunos.Where(c => c.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
+                    var fechamentoTurma = fechamentosTurmasAlunos.FirstOrDefault(c => c.AlunoCodigo == aluno.CodigoAluno);
 
                     var alunoDto = new NotaConceitoAlunoBimestreDto
                     {
@@ -250,8 +250,8 @@ namespace SME.SGP.Aplicacao
                         EhMatriculadoTurmaPAP = matriculadosTurmaPAP.Any(x => x.CodigoAluno.ToString() == aluno.CodigoAluno)
                     };
 
-                    var anotacaoAluno = anotacoesAlunos.Where(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
-                        c.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
+                    var anotacaoAluno = anotacoesAlunos.FirstOrDefault(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
+                        c.FechamentoAluno.AlunoCodigo == aluno.CodigoAluno);
 
                     alunoDto.TemAnotacao = anotacaoAluno.NaoEhNulo() && anotacaoAluno.Anotacao.NaoEhNulo() &&
                         !string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim());

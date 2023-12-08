@@ -52,9 +52,9 @@ namespace SME.SGP.Dominio
         {
             disciplinasReposta.ForEach(componenteCurricular =>
             {
-                var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.Codigo
+                var componenteCurricularSgp = componentesCurricularesSgp.FirstOrDefault(cc => cc.Codigo == componenteCurricular.Codigo
                                                                                     || (componenteCurricular.CodigoComponenteTerritorioSaber != 0 &&
-                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber)).FirstOrDefault();
+                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber));
 
                 if (componenteCurricularSgp.NaoEhNulo())
                 {

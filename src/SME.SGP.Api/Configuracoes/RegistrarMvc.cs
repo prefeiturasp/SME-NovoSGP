@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Api.Middlewares;
 using SME.SGP.Infra;
-using System.Text.Json.Serialization;
 
 namespace SME.SGP.Api.Configuracoes
 {

@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EscolaAqui.Dashboard.ObterDadosDeLeituraD
                 dadosLeituraAlunosComunicadoPorTurmaComMarcador.Add(item);
             }
 
-            return dadosLeituraAlunosComunicadoPorTurmaComMarcador.ToList().OrderBy(a => a.NomeAluno);
+            return dadosLeituraAlunosComunicadoPorTurmaComMarcador.OrderBy(a => a.NomeAluno);
         }
     }
 }

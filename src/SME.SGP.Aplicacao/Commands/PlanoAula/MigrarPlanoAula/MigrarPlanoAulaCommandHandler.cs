@@ -92,8 +92,8 @@ namespace SME.SGP.Aplicacao
         {
             var componenteCurricularTurmaOrigem = await mediator.Send(new ObterComponenteCurricularPorIdQuery(long.Parse(codigoComponenteCurricularAgrupadorTurmaOrigem)));
             var componentesCurricularesTurmaDestino = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurmaDestino));
-            var componenteCurricularTurmaDestino = componentesCurricularesTurmaDestino.Where(cc => (componenteCurricularTurmaOrigem?.TerritorioSaber ?? false) &&
-                                                                                    cc.CodigoComponenteTerritorioSaber == componenteCurricularTurmaOrigem.CodigoComponenteCurricularTerritorioSaber).FirstOrDefault();
+            var componenteCurricularTurmaDestino = componentesCurricularesTurmaDestino.FirstOrDefault(cc => (componenteCurricularTurmaOrigem?.TerritorioSaber ?? false) &&
+                                                                                    cc.CodigoComponenteTerritorioSaber == componenteCurricularTurmaOrigem.CodigoComponenteCurricularTerritorioSaber);
             return componenteCurricularTurmaDestino?.CodigoComponenteCurricular.ToString() ?? codigoComponenteCurricularAgrupadorTurmaOrigem;
         }
 

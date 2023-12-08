@@ -29,7 +29,6 @@ namespace SME.SGP.Benchmarks
             var query = @"select *
                  from usuario where id = 1";
 
-
             try
             {
                 var retorno = conexao.Query(query);
@@ -37,9 +36,6 @@ namespace SME.SGP.Benchmarks
             catch (Exception)
             {
                 throw;
-            }
-            finally
-            {
             }
         }
 

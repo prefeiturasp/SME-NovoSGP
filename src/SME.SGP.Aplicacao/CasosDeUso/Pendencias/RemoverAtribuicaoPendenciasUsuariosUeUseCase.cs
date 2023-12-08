@@ -50,14 +50,14 @@ namespace SME.SGP.Aplicacao
                     }
                     else if(pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)
                     {
-                        if(lstCefais.Count() > 0)
+                        if(lstCefais.Count > 0)
                             eraCefai = lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId);               
                         else
                             eraCefai = true;   
                     }        
                     else if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.ADMUE)
                     {
-                        if (lstAdmUes.Count() > 0)
+                        if (lstAdmUes.Count > 0)
                             eraAdmUe = lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId);
                         else
                             eraAdmUe = true;

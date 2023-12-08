@@ -2,7 +2,7 @@
 { 
     public class DadosResponsavelAlunoBuscaAtivaDto
     {
-        public DadosResponsavelAlunoBuscaAtivaDto(DadosResponsavelAlunoEolDto dadosResponsavel, AtualizarDadosUsuarioDto atualizarDados)
+        public DadosResponsavelAlunoBuscaAtivaDto(DadosResponsavelAlunoEolDto dadosResponsavel, AtualizarDadosResponsavelDto atualizarDados)
         {
             CodigoAluno = dadosResponsavel.CodigoAluno;
             Cpf = dadosResponsavel.Cpf;
