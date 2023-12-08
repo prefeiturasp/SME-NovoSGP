@@ -436,33 +436,36 @@ namespace SME.SGP.Aplicacao
             };
         }
 
+        private NotaConceitoBimestreComponenteDto ObterNotaConselhoComponenteTurma(long componenteCurricularCodigo, NotaFrequenciaDto dto)
+        {
+            return dto.NotasConselhoClasseAluno.OrderByDescending(x => x.ConselhoClasseNotaId).FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo
+                                        && dto.CodigosTurma.Contains(c.TurmaCodigo));
+        }
+
+        private bool NaoContemNotaComponenteTurma(NotaConceitoBimestreComponenteDto notaFrequencia)
+        {
+            return notaFrequencia.EhNulo() || !notaFrequencia.NotaConceito.HasValue;
+        }
+
+        private NotaConceitoBimestreComponenteDto ObterNotaFechamentoComponenteTurma(long componenteCurricularCodigo, NotaFrequenciaDto dto)
+        {
+            if (dto.Turma.EhEJA() || dto.Turma.EhTurmaEnsinoMedio)
+                return dto.NotasFechamentoAluno.FirstOrDefault(t => dto.CodigosTurma.Contains(t.TurmaCodigo) && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == dto.PeriodoEscolar?.Bimestre && t.ConselhoClasseNotaId > 0)
+                       ?? dto.NotasFechamentoAluno.FirstOrDefault(t => dto.CodigosTurma.Contains(t.TurmaCodigo) && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == dto.PeriodoEscolar?.Bimestre);
+            
+            var notasFechamentoAluno = dto.NotasFechamentoAluno.Select(n => n.TurmaCodigo).Distinct().Count() > 1 ? dto.NotasFechamentoAluno.Where(n => n.TurmaCodigo == dto.Turma.CodigoTurma) : dto.NotasFechamentoAluno;
+            return notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == dto.PeriodoEscolar?.Bimestre && c.ConselhoClasseNotaId > 0)
+                    ?? notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == dto.PeriodoEscolar?.Bimestre);
+        }
+
         private async Task<NotaPosConselhoDto> ObterNotasPosConselho(long componenteCurricularCodigo, NotaFrequenciaDto dto)
         {
             // Busca nota do conselho de classe consultado
-            var notaComponente = dto.NotasConselhoClasseAluno.OrderByDescending(x => x.ConselhoClasseNotaId).FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo
-            && dto.CodigosTurma.Contains(c.TurmaCodigo));
+            var notaComponente = ObterNotaConselhoComponenteTurma(componenteCurricularCodigo, dto);
             var notaComponenteId = notaComponente?.ConselhoClasseNotaId;
 
-            if (notaComponente.EhNulo() || !notaComponente.NotaConceito.HasValue)
-            {
-                var notaComponenteFechamento = new NotaConceitoBimestreComponenteDto();
-
-                if (dto.Turma.EhEJA() || dto.Turma.EhTurmaEnsinoMedio)
-                {
-                    notaComponenteFechamento =
-                        dto.NotasFechamentoAluno.FirstOrDefault(t => dto.CodigosTurma.Contains(t.TurmaCodigo) && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == dto.PeriodoEscolar?.Bimestre && t.ConselhoClasseNotaId > 0)
-                        ?? dto.NotasFechamentoAluno.FirstOrDefault(t => dto.CodigosTurma.Contains(t.TurmaCodigo) && t.ComponenteCurricularCodigo == componenteCurricularCodigo && t.Bimestre == dto.PeriodoEscolar?.Bimestre);
-                }
-                else
-                {
-                    var notasFechamentoAluno = dto.NotasFechamentoAluno.Select(n => n.TurmaCodigo).Distinct().Count() > 1 ? dto.NotasFechamentoAluno.Where(n => n.TurmaCodigo == dto.Turma.CodigoTurma) : dto.NotasFechamentoAluno;
-
-                    notaComponenteFechamento =
-                        notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == dto.PeriodoEscolar?.Bimestre && c.ConselhoClasseNotaId > 0)
-                        ?? notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == dto.PeriodoEscolar?.Bimestre);
-                }
-                notaComponente = notaComponenteFechamento;
-            }
+            if (NaoContemNotaComponenteTurma(notaComponente))
+                notaComponente = ObterNotaFechamentoComponenteTurma(componenteCurricularCodigo, dto);
 
             var notaPosConselho = new NotaPosConselhoDto()
             {
@@ -657,29 +660,52 @@ namespace SME.SGP.Aplicacao
             return alunoNaTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && alunoNaTurma.DataMatricula.Date == alunoNaTurma.DataSituacao.Date;
         }
 
+        private double ObterPercentualFrequencia(bool turmaPossuiRegistroFrequencia, NotaFrequenciaDto dto)
+        {
+            if (dto.PeriodoEscolar.EhNulo() && dto.Turma.AnoLetivo.Equals(2020))
+                return dto.FrequenciaAluno?.PercentualFrequenciaFinal ?? 0;
+            if (dto.Turma.AnoLetivo.Equals(2020) && dto.FrequenciaAluno?.TotalAulas == 0)
+                return  100;
+            if (turmaPossuiRegistroFrequencia && dto.FrequenciaAluno.NaoEhNulo())
+                return dto.FrequenciaAluno.PercentualFrequencia;
+            return double.MinValue;
+        }
+
+        private async Task<IEnumerable<TotalAulasPorAlunoTurmaDto>> ObterTotalAulas(bool componentePermiteFrequencia, int bimestre, NotaFrequenciaDto dto)
+        {
+            if (componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
+                return await mediator.Send(new ObterTotalAulasPorAlunoTurmaQuery(dto.ComponenteCurricularCodigo.ToString(), dto.Turma.CodigoTurma));
+            if (!componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
+                return await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(dto.ComponenteCurricularCodigo.ToString(), dto.Turma.CodigoTurma));
+
+            return Enumerable.Empty<TotalAulasPorAlunoTurmaDto>(); 
+        }
+
+        private string ObterPercFrequenciaFormatado(double percentualFrequencia, NotaFrequenciaDto dto)
+        {
+            var frequenciaInvalida = percentualFrequencia < 0;
+            var semRegistroAulas = ((dto.FrequenciaAluno?.TotalAulas ?? 0) == 0 && (dto.FrequenciaAluno?.TotalAusencias ?? 0) == 0);
+            return frequenciaInvalida || semRegistroAulas 
+                   ? null 
+                   : FrequenciaAluno.FormatarPercentual(percentualFrequencia);
+        }
+
+        private async Task<int> ObterQuantidadeAulas(string componenteCurricularCodigo, string turmaCodigo, int bimestre, DateTime dataMatricula)
+        {
+            var valor = await mediator.Send(new ObterTotalAlunosSemFrequenciaPorTurmaBimestreQuery(componenteCurricularCodigo, turmaCodigo, bimestre, dataMatricula));
+            return valor.FirstOrDefault();
+        }
+
         private async Task<ConselhoClasseComponenteFrequenciaDto> ObterNotasFrequenciaComponente(string componenteCurricularNome, 
                                                                                                  bool turmaPossuiRegistroFrequencia, 
                                                                                                  DateTime dataMatricula, 
                                                                                                  NotaFrequenciaDto dto)
         {
-            var totalAulas = Enumerable.Empty<TotalAulasPorAlunoTurmaDto>();
             var componentePermiteFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(dto.ComponenteCurricularCodigo));
-            var bimestre = !(dto.PeriodoEscolar?.Bimestre).HasValue ? 0 : dto.PeriodoEscolar.Bimestre;
-            var percentualFrequencia = double.MinValue;
-
-            if (turmaPossuiRegistroFrequencia && dto.FrequenciaAluno.NaoEhNulo())
-                percentualFrequencia = dto.FrequenciaAluno.PercentualFrequencia;
-
-            if (componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
-                totalAulas = await mediator.Send(new ObterTotalAulasPorAlunoTurmaQuery(dto.ComponenteCurricularCodigo.ToString(), dto.Turma.CodigoTurma));
-            else if (!componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
-                totalAulas = await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(dto.ComponenteCurricularCodigo.ToString(), dto.Turma.CodigoTurma));
-
-            // Cálculo de frequência particular do ano de 2020
-            if (dto.PeriodoEscolar.EhNulo() && dto.Turma.AnoLetivo.Equals(2020))
-                percentualFrequencia = dto.FrequenciaAluno?.PercentualFrequenciaFinal ?? 0;
-            else if (dto.Turma.AnoLetivo.Equals(2020) && dto.FrequenciaAluno?.TotalAulas == 0)
-                percentualFrequencia = 100;
+            var bimestre = dto.PeriodoEscolar?.Bimestre ?? 0;
+            var percentualFrequencia = ObterPercentualFrequencia(turmaPossuiRegistroFrequencia, dto);
+            var totalAulas = await ObterTotalAulas(componentePermiteFrequencia, bimestre, dto);
+            
 
             var conselhoClasseComponente = new ConselhoClasseComponenteFrequenciaDto()
             {
@@ -688,22 +714,17 @@ namespace SME.SGP.Aplicacao
                 QuantidadeAulas = dto.FrequenciaAluno?.TotalAulas ?? 0,
                 Faltas = dto.FrequenciaAluno?.TotalAusencias ?? 0,
                 AusenciasCompensadas = dto.FrequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = percentualFrequencia < 0 || ((dto.FrequenciaAluno?.TotalAulas ?? 0) == 0 && (dto.FrequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : FrequenciaAluno.FormatarPercentual(percentualFrequencia),
+                Frequencia = ObterPercFrequenciaFormatado(percentualFrequencia, dto),
                 NotasFechamentos = ObterNotasFechamentoOuConselho(dto.ComponenteCurricularCodigo, dto.PeriodoEscolar, dto.NotasFechamentoAluno),
                 NotaPosConselho = await ObterNotasPosConselho(dto.ComponenteCurricularCodigo, dto),
                 Aulas = dto.FrequenciaAluno?.TotalAulas.ToString() ?? "0",
             };
 
-            if (!componentePermiteFrequencia)
-            {
+            if (!componentePermiteFrequencia)         
                 if (bimestre == (int)Bimestre.Final)
-                    conselhoClasseComponente.Aulas = totalAulas.Count() == 0 ? "0" : totalAulas.FirstOrDefault().TotalAulas;
+                    conselhoClasseComponente.Aulas = totalAulas.FirstOrDefault()?.TotalAulas ?? "0";
                 else
-                {
-                    var valor = await mediator.Send(new ObterTotalAlunosSemFrequenciaPorTurmaBimestreQuery(dto.ComponenteCurricularCodigo.ToString(), dto.Turma.CodigoTurma, bimestre, dataMatricula.Date));
-                    conselhoClasseComponente.QuantidadeAulas = valor.FirstOrDefault();
-                }
-            }
+                    conselhoClasseComponente.QuantidadeAulas = await ObterQuantidadeAulas(dto.ComponenteCurricularCodigo.ToString(), dto.Turma.CodigoTurma, bimestre, dataMatricula.Date);
 
             return conselhoClasseComponente;
         }
