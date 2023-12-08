@@ -39,8 +39,8 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             {
                 // Exclui a aula em alteração da lista
                 aulasExistentes = aulasExistentes.Where(a => a.Id != request.Id);
-
-                if (aulasExistentes.Any(c => c.TipoAula == request.TipoAula && c.AulaCJ == request.Usuario.EhProfessorCj() && c.CriadoRF == request.Usuario.Login ))
+                var existeAula = VerificaSeHaAulasExistentes(request.Usuario.EhProfessorCj(), request.Usuario.Login, request.TipoAula, aulasExistentes);
+                if (existeAula)
                     throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
             }
 
@@ -61,6 +61,12 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
             retorno.Mensagens.Add("Aula alterada com sucesso.");
 
             return retorno;
+        }
+
+        private bool VerificaSeHaAulasExistentes(bool ehProfessorCj, string login, TipoAula tipoAula, IEnumerable<AulaConsultaDto> aulasExistentes)
+        {
+            return !ehProfessorCj ? aulasExistentes.Any(c => c.TipoAula == tipoAula && c.AulaCJ == ehProfessorCj) :
+                                    aulasExistentes.Any(c => c.TipoAula == tipoAula && c.AulaCJ == ehProfessorCj && c.CriadoRF == login);
         }
 
         private async Task TrataAlteracaoDeFrequencia(Usuario usuarioLogado, Aula aula, int aulaAnteriorQnt)
