@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
                     if (ehPerfilAtualCJ && request.ProfessorRf != null)
                     {
                         var aulaCj = aula.Where(a => a.AulaCJ == ehPerfilAtualCJ && a.CriadoRF == request.ProfessorRf);
-                        if (aulaCj == null || !aulaCj.Any())
+                        if (aulaCj.EhNulo() || !aulaCj.Any())
                             return false;
                     }
                 }
