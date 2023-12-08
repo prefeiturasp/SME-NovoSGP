@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -72,11 +71,10 @@ namespace SME.SGP.Aplicacao
                 var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinasId().Contains(componenteCurricularNaTurma.ComponenteCurricularId));
                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
-                if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
-                {
-                    if (professorComponente.NaoEhNulo() && !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
-                        gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
-                }
+                if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId) &&
+                    professorComponente.NaoEhNulo() && 
+                    !await ExistePendenciaProfessor(pendenciaId, turma.Id, componenteCurricular.Codigo, professorComponente.ProfessorRf, periodoEncerrando.PeriodoEscolar.Id))
+                    gerarPendenciasCP.Add((long.Parse(componenteCurricular.Codigo), professorComponente.ProfessorRf));
             }
 
             if (gerarPendenciasCP.Any())

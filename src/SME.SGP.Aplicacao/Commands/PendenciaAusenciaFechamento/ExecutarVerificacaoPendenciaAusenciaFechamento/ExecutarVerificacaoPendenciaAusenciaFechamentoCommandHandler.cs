@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -37,35 +36,26 @@ namespace SME.SGP.Aplicacao
                     foreach (var professorTurma in professoresTurma)
                     {
                         var obterComponenteCurricular = componentes.FirstOrDefault(c => professorTurma.DisciplinasId().Contains(long.Parse(c.Codigo)));
-                        if (obterComponenteCurricular.NaoEhNulo())
+                        if (obterComponenteCurricular.NaoEhNulo() && professorTurma.ProfessorRf != "")
                         {
-                            if (professorTurma.ProfessorRf != "")
+                            try
                             {
-                                try
+                                var existeFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), periodoFechamentoBimestre.PeriodoEscolar.Id));
+
+                                if (!existeFechamento &&!await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Id))
+                                    await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, periodoFechamentoBimestre.PeriodoEscolar.Id);
+                                
+                                if (EhBimestreFinal(request.ModalidadeTipoCalendario, periodoFechamentoBimestre.PeriodoEscolar.Bimestre))
                                 {
-                                    var existeFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), periodoFechamentoBimestre.PeriodoEscolar.Id));
-
-                                    if (!existeFechamento)
-                                    {
-                                        if (!await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Id))
-                                            await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, periodoFechamentoBimestre.PeriodoEscolar.Id);
-                                    }
-
-                                    if (EhBimestreFinal(request.ModalidadeTipoCalendario, periodoFechamentoBimestre.PeriodoEscolar.Bimestre))
-                                    {
-                                        existeFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), null));
-                                        if (!existeFechamento)
-                                        {
-                                            if (!await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, null))
-                                                await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, null);
-                                        }
-                                    }
-
+                                    existeFechamento = await mediator.Send(new VerificaFechamentoTurmaDisciplinaPorIdCCEPeriodoEscolarQuery(turma.Id, long.Parse(obterComponenteCurricular.Codigo), null));
+                                    
+                                    if (!existeFechamento && !await ExistePendenciaProfessor(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, null))
+                                        await IncluirPendenciaAusenciaFechamento(turma.Id, long.Parse(obterComponenteCurricular.Codigo), professorTurma.ProfessorRf, periodoFechamentoBimestre.PeriodoEscolar.Bimestre, obterComponenteCurricular.Descricao, obterComponenteCurricular.LancaNota, null);
                                 }
-                                catch (Exception ex)
-                                {
-                                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro em Executar Verificacao Pendencia Ausencia Fechamento.", LogNivel.Negocio, LogContexto.Fechamento, ex.Message));
-                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro em Executar Verificacao Pendencia Ausencia Fechamento.", LogNivel.Negocio, LogContexto.Fechamento, ex.Message));
                             }
                         }
                     }

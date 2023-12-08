@@ -52,14 +52,11 @@ namespace SME.SGP.Aplicacao
                                 {
                                     var componenteCurricular = componentesCurriculares.FirstOrDefault(c => professorComponenteTurma.DisciplinasId().Contains(long.Parse(c.Codigo))
                                                                                                && c.LancaNota);
-                                    if (componenteCurricular.NaoEhNulo() && !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId().Contains(c.ComponenteCurricularId)))
-                                    {
-                                        if (!fechamentosDaTurma.Any(a=> professorComponenteTurma.DisciplinasId().Contains(a.DisciplinaId) && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
-                                        {
-                                            if (!await ExistePendenciaProfessor(turma, professorComponenteTurma, periodoEncerrando.PeriodoEscolar.Id))
-                                                await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinasId().First(), professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
-                                        }
-                                    }
+                                    if (componenteCurricular.NaoEhNulo() && 
+                                        !turmasComAvaliacao.Any(c => c.TurmaId == turma.Id && professorComponenteTurma.DisciplinasId().Contains(c.ComponenteCurricularId)) &&
+                                        !fechamentosDaTurma.Any(a=> professorComponenteTurma.DisciplinasId().Contains(a.DisciplinaId) && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId) &&
+                                        !await ExistePendenciaProfessor(turma, professorComponenteTurma, periodoEncerrando.PeriodoEscolar.Id))
+                                        await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinasId().First(), professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
                                 }
                                 catch (Exception ex)
                                 {

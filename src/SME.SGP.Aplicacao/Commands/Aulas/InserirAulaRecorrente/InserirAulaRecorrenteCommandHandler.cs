@@ -1,10 +1,6 @@
 ﻿using MediatR;
-using Polly;
-using Polly.Registry;
-using SME.SGP.Infra;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -13,10 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using Elasticsearch.Net.Specification.CrossClusterReplicationApi;
-using Elasticsearch.Net;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -437,12 +429,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<CadastroAulaDto> PodeCadastrarAula(int aulaId, string turmaCodigo, long[] disciplinasId, DateTime dataAula, bool ehRegencia, TipoAula tipoAula)
         {
-            if (CriandoAula(aulaId) || await AlterandoDataAula(aulaId, dataAula))
-            {
-                if (!await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinasId, tipoAula)))
-                    throw new NegocioException($"Não é possível cadastrar aula do tipo '{tipoAula.Name()}' para o dia selecionado!");
-            }
-
+            var podeCadastrar = CriandoAula(aulaId) || await AlterandoDataAula(aulaId, dataAula);
+            
+            if (podeCadastrar && !await mediator.Send(new PodeCadastrarAulaNoDiaQuery(dataAula, turmaCodigo, disciplinasId, tipoAula)))
+                throw new NegocioException($"Não é possível cadastrar aula do tipo '{tipoAula.Name()}' para o dia selecionado!");
+            
             return new CadastroAulaDto()
             {
                 PodeCadastrarAula = true,

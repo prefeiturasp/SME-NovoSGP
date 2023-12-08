@@ -82,9 +82,9 @@ namespace SME.SGP.Aplicacao
         private void ValidarProfCJSemPermissaoCriacaoAulas(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor,
                                                            IEnumerable<AtribuicaoCJ> atribuicoesProfessorCJ, string codigoTurma, long componenteCurricularId)
         {
-            if (!ContemComponenteCurricularProfCJTurmaDisciplina(atribuicoesProfessorCJ, codigoTurma, componenteCurricularId))
-                if (!ContemComponenteCurricularProfTurmaDisciplina(componentesCurricularesDoProfessor, componenteCurricularId))
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+            if (!ContemComponenteCurricularProfCJTurmaDisciplina(atribuicoesProfessorCJ, codigoTurma, componenteCurricularId) &&
+                !ContemComponenteCurricularProfTurmaDisciplina(componentesCurricularesDoProfessor, componenteCurricularId))
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
         }
 
         private bool ContemComponenteCurricularProfTurmaDisciplina(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor, long componenteCurricularId)

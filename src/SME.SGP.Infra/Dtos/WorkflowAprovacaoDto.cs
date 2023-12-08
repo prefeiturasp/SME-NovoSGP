@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -40,15 +39,11 @@ namespace SME.SGP.Infra
             if (Niveis.EhNulo() || Niveis.Count == 0)
                 yield return new ValidationResult("No mínimo 1 nível deve ser informado.");
 
-            if (Niveis.NaoEhNulo())
-            {
-                if (Niveis.Count(a => a.Cargo.HasValue) > 0)
-                {
-                    if (string.IsNullOrEmpty(UeId))
-                        yield return new ValidationResult("Este workflow possui níveis com cargo e é necessário informar a Ue.");
-                }
-            }
-
+            if (Niveis.NaoEhNulo() &&
+                Niveis.Count(a => a.Cargo.HasValue) > 0 &&
+                string.IsNullOrEmpty(UeId))
+                yield return new ValidationResult("Este workflow possui níveis com cargo e é necessário informar a Ue.");
+                
             if (Tipo != WorkflowAprovacaoTipo.Basica)
             {
                 yield return new ValidationResult("Para este tipo de workflow, é necessário informar um Id de entidade para aprovar.");

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -113,13 +112,8 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-            var filtroEhCodigo = false;
+            var filtroEhCodigo = !string.IsNullOrWhiteSpace(filtro) && filtro.All(char.IsDigit);
 
-            if (!string.IsNullOrWhiteSpace(filtro))
-            {
-                if (filtro.All(char.IsDigit))
-                    filtroEhCodigo = true;
-            }
             return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo);
         }
 
