@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -42,11 +41,11 @@ namespace SME.SGP.Aplicacao
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
-                {
-                    if (!atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
-                        throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");   
-                }
+                if (possuiAtribuicaoCJ && 
+                    atribuicoesEsporadica.Any() &&
+                    !atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
+                    throw new NegocioException($"Você não possui permissão para inserir registro de diário de bordo neste período");   
+                
                 inseridoCJ = true;
             }
 

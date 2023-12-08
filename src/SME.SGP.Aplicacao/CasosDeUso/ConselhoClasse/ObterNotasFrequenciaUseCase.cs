@@ -1,15 +1,13 @@
+using MediatR;
+using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.ConselhoClasse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos.ConselhoClasse;
 
 namespace SME.SGP.Aplicacao
 {
@@ -631,22 +629,25 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var notaFechamento in notasFechamentoAluno)
             {
-                if (MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(notaFechamento.ComponenteCurricularCodigo))
+                if (MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_CODIGO_ED_FISICA.Equals(notaFechamento.ComponenteCurricularCodigo)
+                    && notaFechamento.Nota.NaoEhNulo())
                 {
-                    if (notaFechamento.Nota.NaoEhNulo())
-                        if (notaFechamento.Nota >= 7)
-                        {
-                            notaFechamento.ConceitoId = 1;
-                        }
-                        else if (notaFechamento.Nota >= 5 && notaFechamento.Nota <= 7)
-                        {
-                            notaFechamento.ConceitoId = 2;
-                        }
-                        else
-                            notaFechamento.ConceitoId = 3;
+                    notaFechamento.ConceitoId = ObterIdConceito(notaFechamento.Nota);
                 }
             }
         }
+
+        private int ObterIdConceito(double? nota)
+        {
+            if (nota >= 7)
+                return (int)ConceitoValores.P;
+
+            if (nota >= 5 && nota <= 7)
+                return (int)ConceitoValores.S;
+
+            return (int)ConceitoValores.NS;
+        }
+
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
         {
             var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));

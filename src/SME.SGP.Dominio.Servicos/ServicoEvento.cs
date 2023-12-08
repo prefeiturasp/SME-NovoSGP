@@ -3,9 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -130,11 +128,9 @@ namespace SME.SGP.Dominio.Servicos
 
             // Envia para workflow apenas na Inclusão ou alteração apos aprovado
             var enviarParaWorkflow = !string.IsNullOrWhiteSpace(evento.UeId) && devePassarPorWorkflowLiberacaoExcepcional;
-            if (!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado))
-            {
-                if (enviarParaWorkflow)
-                    await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
-            }
+            
+            if ((!ehAlteracao || (evento.Status == EntidadeStatus.Aprovado)) && enviarParaWorkflow)
+                await PersistirWorkflowEvento(evento, devePassarPorWorkflowLiberacaoExcepcional);
 
             if (!unitOfWorkJaEmUso)
                 unitOfWork.PersistirTransacao();

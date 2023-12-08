@@ -88,11 +88,9 @@ namespace SME.SGP.Aplicacao
                                         encerrarPlanoAee = true;
                                 }
                             }
-                            else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1)
-                            {
-                                if (AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
-                                    encerrarPlanoAee = true;
-                            }
+                            else if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1 &&
+                                     AlunoFoiTransferidoDaUnidadeEscolar(matriculas, turmaDoPlanoAee))
+                                encerrarPlanoAee = true;
                         }
 
                         if (encerrarPlanoAee)

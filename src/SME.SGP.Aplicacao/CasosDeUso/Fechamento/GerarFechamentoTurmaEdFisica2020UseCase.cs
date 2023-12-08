@@ -3,9 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -22,40 +20,36 @@ namespace SME.SGP.Aplicacao
             string codigoRfAluno = mensagem.Mensagem.NaoEhNulo() ? mensagem.Mensagem.ToString() : "";
             var valorParametro = await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.GerarFechamentoTurmasEdFisica2020));
             
-            if(valorParametro.NaoEhNulo())
+            if(valorParametro.NaoEhNulo() && valorParametro.Equals("true"))
             {
-                if (valorParametro.Equals("true"))
+                var dadosEolAlunoTurma = await mediator.Send(ObterAlunosEdFisica2020Query.Instance);
+
+                if (String.IsNullOrEmpty(codigoRfAluno))
                 {
-                    var dadosEolAlunoTurma = await mediator.Send(ObterAlunosEdFisica2020Query.Instance);
+                    var dadosAgrupadosPorTurma = dadosEolAlunoTurma.GroupBy(d => d.CodigoTurma);
 
-                    if (String.IsNullOrEmpty(codigoRfAluno))
+                    foreach (var alunosTurma in dadosAgrupadosPorTurma)
                     {
-                        var dadosAgrupadosPorTurma = dadosEolAlunoTurma.GroupBy(d => d.CodigoTurma);
-
-                        foreach (var alunosTurma in dadosAgrupadosPorTurma)
-                        {
-                            var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = alunosTurma.Key.ToString() });
-                            if (dadosTurma.NaoEhNulo() && dadosTurma.TipoTurma == TipoTurma.EdFisica && dadosTurma.AnoLetivo == ANO_LETIVO_TURMAS_ED_FISICA)
-                                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma,
-                                    new { TurmaId = dadosTurma.Id, CodigoAlunos = alunosTurma.Select(a => a.CodigoAluno).ToArray() }, Guid.NewGuid(), null));
-                        }
-                    }
-                    else
-                    {
-                        var dadosAlunoEdFisica = dadosEolAlunoTurma.FirstOrDefault(d => d.CodigoAluno.ToString().Equals(codigoRfAluno));
-                       
-                        if (dadosAlunoEdFisica.NaoEhNulo())
-                        {
-                            var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = dadosAlunoEdFisica.CodigoTurma.ToString() });
+                        var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = alunosTurma.Key.ToString() });
+                        if (dadosTurma.NaoEhNulo() && dadosTurma.TipoTurma == TipoTurma.EdFisica && dadosTurma.AnoLetivo == ANO_LETIVO_TURMAS_ED_FISICA)
                             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma,
-                                                    new { TurmaId = dadosTurma.Id, CodigoAlunos = new long[] { dadosAlunoEdFisica.CodigoAluno } }, Guid.NewGuid(), null));
-                        }
-                            
+                                new { TurmaId = dadosTurma.Id, CodigoAlunos = alunosTurma.Select(a => a.CodigoAluno).ToArray() }, Guid.NewGuid(), null));
                     }
-
-                    return true;
                 }
-                
+                else
+                {
+                    var dadosAlunoEdFisica = dadosEolAlunoTurma.FirstOrDefault(d => d.CodigoAluno.ToString().Equals(codigoRfAluno));
+                       
+                    if (dadosAlunoEdFisica.NaoEhNulo())
+                    {
+                        var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = dadosAlunoEdFisica.CodigoTurma.ToString() });
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma,
+                                                new { TurmaId = dadosTurma.Id, CodigoAlunos = new long[] { dadosAlunoEdFisica.CodigoAluno } }, Guid.NewGuid(), null));
+                    }
+                            
+                }
+
+                return true;
             }
 
             return false;

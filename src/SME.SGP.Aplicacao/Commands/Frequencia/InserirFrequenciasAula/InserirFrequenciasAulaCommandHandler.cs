@@ -1,12 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Usuario = SME.SGP.Dominio.Usuario;
@@ -47,11 +44,10 @@ namespace SME.SGP.Aplicacao
                 var atribuicoesEsporadica = (await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe), cancellationToken))
                     .ToList();
 
-                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
-                {
-                    if (!atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
-                        throw new NegocioException(MensagensNegocioFrequencia.Nao_possui_permissão_para_inserir_neste_periodo);
-                }
+                if (possuiAtribuicaoCJ && 
+                    atribuicoesEsporadica.Any() &&
+                    !atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
+                    throw new NegocioException(MensagensNegocioFrequencia.Nao_possui_permissão_para_inserir_neste_periodo);
             }
 
             if (!aula.PermiteRegistroFrequencia(turma))

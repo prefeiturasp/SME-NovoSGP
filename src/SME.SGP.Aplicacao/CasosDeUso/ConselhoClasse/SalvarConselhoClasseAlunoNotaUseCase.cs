@@ -122,25 +122,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioFechamentoNota.NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO);
         }
 
-        private async Task<FechamentoReabertura> ObtenhaPeriodoDeAbertura(PeriodoEscolar periodoEscolar, Turma turma, DateTime? periodoInicio)
-        {
-            if (periodoEscolar.NaoEhNulo())
-            {
-                if (periodoInicio.GetValueOrDefault().Year >= DateTime.Now.Year)
-                {
-                    return await mediator.Send(
-                        new ObterFechamentoReaberturaPorDataTurmaQuery()
-                        {
-                            DataParaVerificar = DateTime.Now,
-                            TipoCalendarioId = periodoEscolar.TipoCalendarioId,
-                            UeId = turma.Ue.Id
-                        });
-                }
-            }
-
-            return null;
-        }
-
         private async Task<List<PeriodoEscolar>> ObtenhaListaDePeriodoLetivo(Turma turma)
         {
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
