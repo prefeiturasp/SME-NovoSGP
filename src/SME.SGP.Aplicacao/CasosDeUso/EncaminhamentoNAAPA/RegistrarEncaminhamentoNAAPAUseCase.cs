@@ -140,21 +140,25 @@ namespace SME.SGP.Aplicacao
                         await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                     }
                     else
-                    {
-                        if (questaoExistente.Excluido)
-                            await AlterarQuestaoExcluida(questaoExistente);
-
-                        await ExcluirRespostasEncaminhamento(questaoExistente, questoes);
-
-                        await AlterarRespostasEncaminhamento(questaoExistente, questoes);
-
-                        await IncluirRespostasEncaminhamento(questaoExistente, questoes);
-                    }
+                        await AlterarQuestoesExistentes(questaoExistente, questoes);
                 }
-
-                foreach (var questao in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
-                    await mediator.Send(new ExcluirQuestaoEncaminhamentoNAAPAPorIdCommand(questao.Id));
+                await ExcluirQuestoesExistentes(secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)));
             }
+        }
+
+        private async Task ExcluirQuestoesExistentes(IEnumerable<QuestaoEncaminhamentoNAAPA> questoesRemovidas)
+        {
+            foreach (var questao in questoesRemovidas)
+                await mediator.Send(new ExcluirQuestaoEncaminhamentoNAAPAPorIdCommand(questao.Id));
+        }
+
+        private async Task AlterarQuestoesExistentes(QuestaoEncaminhamentoNAAPA questaoExistente, IGrouping<long, EncaminhamentoNAAPASecaoQuestaoDto> questoesRespostas)
+        {
+            if (questaoExistente.Excluido)
+                await AlterarQuestaoExcluida(questaoExistente);
+            await ExcluirRespostasEncaminhamento(questaoExistente, questoesRespostas);
+            await AlterarRespostasEncaminhamento(questaoExistente, questoesRespostas);
+            await IncluirRespostasEncaminhamento(questaoExistente, questoesRespostas);
         }
 
         private async Task AlterarQuestaoExcluida(QuestaoEncaminhamentoNAAPA questao)
