@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                     if (aula.All(a => ehPerfilAtualCJ != a.AulaCJ))
                         return false;
 
-                    if (ehPerfilAtualCJ && request.ProfessorRf != null)
+                    if (ehPerfilAtualCJ && request.ProfessorRf.NaoEhNulo())
                     {
                         var aulaCj = aula.Where(a => a.AulaCJ == ehPerfilAtualCJ && a.CriadoRF == request.ProfessorRf);
                         if (aulaCj.EhNulo() || !aulaCj.Any())
