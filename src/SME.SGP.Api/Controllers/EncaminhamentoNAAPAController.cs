@@ -1,19 +1,17 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
-using SME.SGP.Infra;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
-using System;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Infra.Dtos;
-using SME.SGP.Aplicacao.CasosDeUso;
-using System.Collections;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
 {
