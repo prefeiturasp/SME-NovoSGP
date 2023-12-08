@@ -118,23 +118,30 @@ namespace SME.SGP.Aplicacao
                     var questaoExistente = secaoExistente.Questoes.FirstOrDefault(q => q.QuestaoId == questoes.FirstOrDefault().QuestaoId);
 
                     if (questaoExistente.EhNulo())
-                    {
+                    {   
                         var resultadoRegistroAcaoQuestao = await mediator.Send(new RegistrarRegistroAcaoSecaoQuestaoCommand(secaoExistente.Id, questoes.FirstOrDefault().QuestaoId));
                         await RegistrarRespostaRegistroAcao(questoes, resultadoRegistroAcaoQuestao);
                     }
                     else
-                    {
-                        if (questaoExistente.Excluido)
-                            await AlterarQuestaoExcluida(questaoExistente);
-                        await ExcluirRespostasRegistroAcao(questaoExistente, questoes);
-                        await AlterarRespostasRegistroAcao(questaoExistente, questoes);
-                        await IncluirRespostasRegistroAcao(questaoExistente, questoes);
-                    }
+                        await AlterarQuestoesExistentes(questaoExistente, questoes);
                 }
-
-                foreach (var questao in secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)))
-                    await mediator.Send(new ExcluirQuestaoRegistroAcaoPorIdCommand(questao.Id));
+                await ExcluirQuestoesExistentes(secaoExistente.Questoes.Where(x => !secao.Questoes.Any(s => s.QuestaoId == x.QuestaoId)));
             }
+        }
+
+        private async Task ExcluirQuestoesExistentes(IEnumerable<QuestaoRegistroAcaoBuscaAtiva> questoesRemovidas)
+        {
+            foreach (var questao in questoesRemovidas)
+                await mediator.Send(new ExcluirQuestaoRegistroAcaoPorIdCommand(questao.Id));
+        }
+
+        private async Task AlterarQuestoesExistentes(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> questoesRespostas)
+        {
+            if (questaoExistente.Excluido)
+                await AlterarQuestaoExcluida(questaoExistente);
+            await ExcluirRespostasRegistroAcao(questaoExistente, questoesRespostas);
+            await AlterarRespostasRegistroAcao(questaoExistente, questoesRespostas);
+            await IncluirRespostasRegistroAcao(questaoExistente, questoesRespostas);
         }
 
         private async Task AlterarQuestaoExcluida(QuestaoRegistroAcaoBuscaAtiva questao)
