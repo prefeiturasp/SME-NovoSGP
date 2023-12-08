@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             var dadosResponsaveis = await mediator.Send(new ObterDadosResponsavelQuery(param.CPF));
 
-            if (dadosResponsaveis == null || !dadosResponsaveis.Any())
+            if (dadosResponsaveis.EhNulo() || !dadosResponsaveis.Any())
                 return false;
 
             foreach(var dadosResponsavel in dadosResponsaveis) 
