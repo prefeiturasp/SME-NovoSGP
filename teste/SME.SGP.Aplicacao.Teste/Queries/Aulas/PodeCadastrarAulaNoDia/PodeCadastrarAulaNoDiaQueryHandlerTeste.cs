@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries.Aulas.PodeCadastrarAulaNoDia
         public async Task Deve_Permitir_ProfessoresCJ_Cadastrar_Aula_Para_Mesmo_Componente_No_Mesmo_Dia()
         {
             // Arrange
-            var usuario = new Usuario() { Id = 1, CodigoRf = "1234", PerfilAtual = Perfis.PERFIL_CJ };
+            var usuario = new Usuario() { Id = 1, CodigoRf = "1234", PerfilAtual = Perfis.PERFIL_CJ, Login = "1234" };
             var turma = new Turma() { CodigoTurma = "1234", Ue = new Ue { CodigoUe = "321", Dre = new Dre { CodigoDre = "1" } } };
             var dreUeDaTurmaDto = new DreUeDaTurmaDto() { DreCodigo = "1", UeCodigo = "321" };
             var componenteCienciasCodigo = new long[] { 89 };
