@@ -27,51 +27,44 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosPorCodigoEolNomeQuery request, CancellationToken cancellationToken)
         {
-            try
+            var alunosEOL = await ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL, request.SomenteAtivos);
+            var alunoSimplesDto = new List<AlunoSimplesDto>();
+            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEOL.Select(al => al.CodigoTurma.ToString()).ToArray()));
+
+            foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
             {
-                var alunosEOL = await ObterAlunosPorNomeCodigoEol(request.AnoLetivo, request.CodigoUe, request.CodigoTurma, request.Nome, request.CodigoEOL, request.SomenteAtivos);
-
-                var alunoSimplesDto = new List<AlunoSimplesDto>();
-
-                var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(alunosEOL.Select(al => al.CodigoTurma.ToString()).ToArray()));
-
-                foreach (var alunoEOL in alunosEOL.OrderBy(a => a.NomeAluno))
+                var turmaAluno = turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString());
+                var alunoSimples = new AlunoSimplesDto()
                 {
-                    var turmaAluno = turmas.NaoEhNulo() && turmas.Any() ? turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()) : null;
-                    var turmaAlunoDescricao = turmaAluno.EhNulo() ? string.Empty : $"- {turmaAluno.Nome}";
-
-                    var alunoSimples = new AlunoSimplesDto()
-                    {
-                        Codigo = alunoEOL.CodigoAluno,
-                        Nome = $"{alunoEOL.NomeAluno} {turmaAlunoDescricao}",
-                        CodigoTurma = alunoEOL.CodigoTurma.ToString(),
-                        TurmaId = turmaAluno.NaoEhNulo() ? turmaAluno.Id : 0,
-                        NomeComModalidadeTurma = turmas.NaoEhNulo() && turmas.Any() ?
-                        $"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmas.FirstOrDefault(t => t.CodigoTurma == alunoEOL.CodigoTurma.ToString()))}" : "",
-                        Semestre = turmaAluno.NaoEhNulo() ? turmaAluno.Semestre : 0,
-                        ModalidadeCodigo = turmaAluno.NaoEhNulo() ? turmaAluno.ModalidadeCodigo : 0,
-                    };
-                    alunoSimplesDto.Add(alunoSimples);
-                }
-
-                return alunoSimplesDto;
+                    Codigo = alunoEOL.CodigoAluno,
+                    Nome = $"{alunoEOL.NomeAluno} {OberterNomeTurma(turmaAluno)}",
+                    CodigoTurma = alunoEOL.CodigoTurma.ToString(),
+                    TurmaId = turmaAluno?.Id ?? 0,
+                    NomeComModalidadeTurma = $"{alunoEOL.NomeAluno} - {OberterNomeTurmaFormatado(turmaAluno)}",
+                    Semestre = turmaAluno?.Semestre ?? 0,
+                    ModalidadeCodigo = turmaAluno?.ModalidadeCodigo ?? 0
+                };
+                alunoSimplesDto.Add(alunoSimples);
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
+
+            return alunoSimplesDto;
+            
         }
 
         private string OberterNomeTurmaFormatado(Turma turma)
         {
-            var turmaNome = "";
-
             if (turma.NaoEhNulo())
-                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
-
-            return turmaNome;
+                return $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+            return string.Empty;
         }
-        
+
+        private string OberterNomeTurma(Turma turma)
+        {
+            if (turma.NaoEhNulo())
+                return $"- {turma.Nome}"; 
+            return string.Empty;
+        }
+
         private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
         {
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
