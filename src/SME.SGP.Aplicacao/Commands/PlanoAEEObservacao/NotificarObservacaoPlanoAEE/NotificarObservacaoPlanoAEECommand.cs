@@ -1,24 +1,24 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
+using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class NotificarObservacaoPlanoAEECommand : IRequest<bool>
     {
-        public NotificarObservacaoPlanoAEECommand(long planoAEEObservacaoId, long planoAEEId, string criadorNome, string criadorRF, string alunoNome, string alunoCodigo, string observacao, string dreAbreviacao, string ueNome, IEnumerable<long> usuarios)
+        public NotificarObservacaoPlanoAEECommand(long planoAEEObservacaoId, PlanoAEE planoAEE, Usuario usuarioAtual, string observacao, IEnumerable<long> usuarios)
         {
             PlanoAEEObservacaoId = planoAEEObservacaoId;
-            PlanoAEEId = planoAEEId;
-            CriadorNome = criadorNome;
-            CriadorRF = criadorRF;
-            AlunoNome = alunoNome;
-            AlunoCodigo = alunoCodigo;
+            PlanoAEEId = planoAEE.Id;
+            CriadorNome = usuarioAtual.Nome;
+            CriadorRF = usuarioAtual.CodigoRf;
+            AlunoNome = planoAEE.AlunoNome;
+            AlunoCodigo = planoAEE.AlunoCodigo;
             Observacao = observacao;
-            DreAbreviacao = dreAbreviacao;
-            UeNome = ueNome;
+            DreAbreviacao = planoAEE.Turma.Ue.Dre.Abreviacao;
+            UeNome = $"{planoAEE.Turma.Ue.TipoEscola.ShortName()} {planoAEE.Turma.Ue.Nome}";
             Usuarios = usuarios;
         }
 

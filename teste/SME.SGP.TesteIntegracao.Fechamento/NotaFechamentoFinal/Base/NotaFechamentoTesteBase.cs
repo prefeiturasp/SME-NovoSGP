@@ -13,8 +13,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Interfaces;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
@@ -1049,10 +1047,22 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
 
             var usuarioLogado = ObterTodos<Usuario>().FirstOrDefault();
 
-            var commando = new IncluirFilaGeracaoPendenciasFechamentoCommand(
-                long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
-                TURMA_CODIGO_1, TURMA_NOME_1, DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1,
-                usuarioLogado, NUMERO_1, string.Empty, SISTEMA_CODIGO_RF, long.Parse(TURMA_CODIGO_1), true);
+            var fechamentoDto = new FechamentoTurmaDisciplinaPendenciaDto()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                CodigoTurma = TURMA_CODIGO_1,
+                NomeTurma = TURMA_NOME_1,
+                PeriodoInicio = DATA_03_01_INICIO_BIMESTRE_1,
+                PeriodoFim = DATA_01_05_FIM_BIMESTRE_1,
+                Bimestre = BIMESTRE_1,
+                UsuarioId = usuarioLogado.Id,
+                Id = NUMERO_1,
+                Justificativa = string.Empty,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TurmaId = TURMA_ID_1
+            };
+
+            var commando = new IncluirFilaGeracaoPendenciasFechamentoCommand(fechamentoDto, true);
 
             await servicoMediator.Send(commando);
 

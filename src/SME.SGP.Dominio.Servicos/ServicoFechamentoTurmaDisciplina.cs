@@ -138,24 +138,6 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
-        {
-            await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(
-                componenteCurricularId,
-                turmaCodigo,
-                turmaNome,
-                periodoEscolarInicio,
-                periodoEscolarFim,
-                bimestre,
-                usuario,
-                fechamentoTurmaDisciplinaId,
-                justificativa,
-                criadoRF,
-                turmaId,
-                componenteSemNota,
-                registraFrequencia));
-        }
-
         public async Task Reprocessar(long fechamentoTurmaDisciplinaId, Usuario usuario = null)
         {
             var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorIdQuery(fechamentoTurmaDisciplinaId));
@@ -181,19 +163,24 @@ namespace SME.SGP.Dominio.Servicos
 
             var usuarioLogado = usuario ?? await servicoUsuario.ObterUsuarioLogado();
             if (turma.TipoTurma != TipoTurma.Programa)
-                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                                            turma.CodigoTurma,
-                                            turma.Nome,
-                                            periodoEscolar.PeriodoInicio,
-                                            periodoEscolar.PeriodoFim,
-                                            periodoEscolar.Bimestre,
-                                            usuarioLogado,
-                                            fechamentoTurmaDisciplina.Id,
-                                            fechamentoTurmaDisciplina.Justificativa,
-                                            fechamentoTurmaDisciplina.CriadoRF,
-                                            turma.Id,
-                                            !disciplina.LancaNota,
-                                            disciplina.RegistraFrequencia);
+            {
+                var fechamentoDto = new FechamentoTurmaDisciplinaPendenciaDto()
+                {
+                    DisciplinaId = fechamentoTurmaDisciplina.DisciplinaId,
+                    CodigoTurma = turma.CodigoTurma,
+                    NomeTurma = turma.Nome,
+                    PeriodoInicio = periodoEscolar.PeriodoInicio,
+                    PeriodoFim = periodoEscolar.PeriodoFim,
+                    Bimestre = periodoEscolar.Bimestre,
+                    UsuarioId = usuarioLogado.Id,
+                    Id = fechamentoTurmaDisciplina.Id,
+                    Justificativa = fechamentoTurmaDisciplina.Justificativa,
+                    CriadoRF = fechamentoTurmaDisciplina.CriadoRF,
+                    TurmaId = turma.Id,
+                };
+
+                await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(fechamentoDto, !disciplina.LancaNota, disciplina.RegistraFrequencia));
+            }
         }
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
@@ -375,19 +362,24 @@ namespace SME.SGP.Dominio.Servicos
                 }
 
                 if (turma.TipoTurma != TipoTurma.Programa)
-                    await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                                                turmaFechamento.CodigoTurma,
-                                                turmaFechamento.Nome,
-                                                periodoEscolar.PeriodoInicio,
-                                                periodoEscolar.PeriodoFim,
-                                                periodoEscolar.Bimestre,
-                                                usuarioLogado,
-                                                fechamentoTurmaDisciplina.Id,
-                                                fechamentoTurmaDisciplina.Justificativa,
-                                                fechamentoTurmaDisciplina.CriadoRF,
-                                                fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
-                                                componenteSemNota,
-                                                disciplinaEOL.RegistraFrequencia);
+                {
+                    var fechamentoDto = new FechamentoTurmaDisciplinaPendenciaDto()
+                    {
+                        DisciplinaId = fechamentoTurmaDisciplina.DisciplinaId,
+                        CodigoTurma = turma.CodigoTurma,
+                        NomeTurma = turma.Nome,
+                        PeriodoInicio = periodoEscolar.PeriodoInicio,
+                        PeriodoFim = periodoEscolar.PeriodoFim,
+                        Bimestre = periodoEscolar.Bimestre,
+                        UsuarioId = usuarioLogado.Id,
+                        Id = fechamentoTurmaDisciplina.Id,
+                        Justificativa = fechamentoTurmaDisciplina.Justificativa,
+                        CriadoRF = fechamentoTurmaDisciplina.CriadoRF,
+                        TurmaId = fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
+                    };
+
+                    await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(fechamentoDto, componenteSemNota, disciplinaEOL.RegistraFrequencia));
+                }
 
                 await mediator.Send(new PublicaFilaExcluirPendenciaAusenciaFechamentoCommand(fechamentoTurmaDisciplina.DisciplinaId, periodoEscolar.Id, turmaFechamento.Id, usuarioLogado));
 

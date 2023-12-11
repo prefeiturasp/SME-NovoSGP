@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -94,7 +93,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $"<i>O componente curricular {componenteCurricularNome} não possui nenhuma avaliação cadastrada no {bimestre}º bimestre - {escolaUe}</i>";
             var instrucao = "Você precisa criar uma avaliação para esta turma e componente curricular.";
 
-            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(turma.Id, componenteCurricularId, periodoEscolarId, professorRf, titulo, descricao, instrucao, turma.UeId));
+            await mediator.Send(new SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(turma, componenteCurricularId, periodoEscolarId, professorRf, titulo, descricao, instrucao));
 
         }
     }

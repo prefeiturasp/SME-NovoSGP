@@ -1,20 +1,21 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand : IRequest<bool>
     {
-        public SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(long turmaId, long componenteCurricularId, long periodoEscolarId, string professorRf, string titulo, string mensagem, string instrucao, long ueId)
+        public SalvarPendenciaAusenciaDeAvaliacaoProfessorCommand(Turma turma, long componenteCurricularId, long periodoEscolarId, string professorRf, string titulo, string mensagem, string instrucao)
         {
-            TurmaId = turmaId;
+            TurmaId = turma.Id;
             ComponenteCurricularId = componenteCurricularId;
             PeriodoEscolarId = periodoEscolarId;
             ProfessorRf = professorRf;
             Titulo = titulo;
             Mensagem = mensagem;
             Instrucao = instrucao;
-            UeId = ueId;
+            UeId = turma.UeId;
         }
 
         public long TurmaId { get; set; }

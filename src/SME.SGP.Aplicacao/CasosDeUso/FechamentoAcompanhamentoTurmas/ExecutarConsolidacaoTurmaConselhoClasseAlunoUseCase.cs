@@ -143,9 +143,9 @@ namespace SME.SGP.Aplicacao
                             continue;
 
                         var notaConceitoCache = await ObterNotaConceitoCache(turmasIds.ToArray(), long.Parse(componenteCurricular.Codigo), filtro.Bimestre ?? 0, filtro.AlunoCodigo, converterNotaEmConceitoTurmaEdFisicaEJA);
-                        await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, long.Parse(componenteCurricular.Codigo),
-                                                                    filtro.AlunoCodigo, consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas,
-                                                                    notaConceitoCache.Nota, notaConceitoCache.ConceitoId, notaConceitoCache.EhNotaConceitoConselhoCache);
+                        await SalvarConsolidacaoConselhoClasseNota(turma, long.Parse(componenteCurricular.Codigo),
+                                                                    consolidadoTurmaAlunoId, conselhoClasseNotas, fechamentoNotas,
+                                                                    filtro, notaConceitoCache);
                     }
                 }
 
@@ -278,9 +278,11 @@ namespace SME.SGP.Aplicacao
             return Array.Empty<string>();
         }
 
-        private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, int? bimestre, long componenteCurricularId, string alunoCodigo, long consolidadoTurmaAlunoId,
-                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto, IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas,
-                                                                      double? notaCache, long? conceitoIdCache, bool ehNotaConceitoConselhoCache)
+        private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma, long componenteCurricularId, long consolidadoTurmaAlunoId,
+                                                                      IEnumerable<NotaConceitoBimestreComponenteDto> notaConceitoBimestreComponenteDto, 
+                                                                      IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotas,
+                                                                      MensagemConsolidacaoConselhoClasseAlunoDto filtro,
+                                                                      (double? Nota, long? ConceitoId, bool EhNotaConceitoConselhoCache) notaConceitoCache)
         {
             double? nota = null;
             double? conceito = null;
@@ -288,21 +290,21 @@ namespace SME.SGP.Aplicacao
             IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasDiciplina = null;
             IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
 
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, bimestre));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, filtro.Bimestre));
             if (fechamentoTurma.NaoEhNulo())
             {
                 var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
                 if (conselhoClasse.NaoEhNulo())
                     conselhoClasseNotasAluno = notaConceitoBimestreComponenteDto
-                        .Where(c => c.AlunoCodigo.Equals(alunoCodigo)
+                        .Where(c => c.AlunoCodigo.Equals(filtro.AlunoCodigo)
                                 && c.ConselhoClasseId == conselhoClasse.Id
                                 && c.ComponenteCurricularCodigo == componenteCurricularId
-                                && (((bimestre ?? 0) != 0 && c.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !c.Bimestre.HasValue)));
+                                && (((filtro.Bimestre ?? 0) != 0 && c.Bimestre == filtro.Bimestre.Value) || ((filtro.Bimestre ?? 0) == 0 && !c.Bimestre.HasValue)));
             }
             var contemNotaConselhoClasse = conselhoClasseNotasAluno.NaoEhNulo() && conselhoClasseNotasAluno.Any();
 
             fechamentoNotasDiciplina = fechamentoNotas.Where(t => t.ComponenteCurricularId == componenteCurricularId
-                                                                && (((bimestre ?? 0) != 0 && t.Bimestre == bimestre.Value) || ((bimestre ?? 0) == 0 && !t.Bimestre.HasValue)));
+                                                                && (((filtro.Bimestre ?? 0) != 0 && t.Bimestre == filtro.Bimestre.Value) || ((filtro.Bimestre ?? 0) == 0 && !t.Bimestre.HasValue)));
 
             if (contemNotaConselhoClasse)
             {
@@ -318,18 +320,18 @@ namespace SME.SGP.Aplicacao
                 conceito = notaFechamento?.ConceitoId;
             }
 
-            if ((notaCache.NaoEhNulo() || conceitoIdCache.NaoEhNulo()) &&
-                (ehNotaConceitoConselhoCache || !contemNotaConselhoClasse))
+            if ((notaConceitoCache.Nota.NaoEhNulo() || notaConceitoCache.ConceitoId.NaoEhNulo()) &&
+                (notaConceitoCache.EhNotaConceitoConselhoCache || !contemNotaConselhoClasse))
             {
-                nota = notaCache;
-                conceito = conceitoIdCache;
+                nota = notaConceitoCache.Nota;
+                conceito = notaConceitoCache.ConceitoId;
             }
 
-            var consolidadoNota = await mediator.Send(new ObterConselhoClasseConsolidadoNotaPorConsolidadoBimestreComponenteQuery(consolidadoTurmaAlunoId, bimestre, componenteCurricularId));
+            var consolidadoNota = await mediator.Send(new ObterConselhoClasseConsolidadoNotaPorConsolidadoBimestreComponenteQuery(consolidadoTurmaAlunoId, filtro.Bimestre, componenteCurricularId));
             consolidadoNota ??= new ConselhoClasseConsolidadoTurmaAlunoNota()
             {
                 ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
-                Bimestre = bimestre.HasValue && bimestre == 0 ? null : bimestre,
+                Bimestre = filtro.Bimestre.HasValue && filtro.Bimestre == 0 ? null : filtro.Bimestre,
             };
             consolidadoNota.ComponenteCurricularId = componenteCurricularId;
             consolidadoNota.Nota = nota;

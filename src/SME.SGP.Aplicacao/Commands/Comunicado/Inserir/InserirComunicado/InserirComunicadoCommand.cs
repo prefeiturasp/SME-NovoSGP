@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 
@@ -6,25 +7,25 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirComunicadoCommand : IRequest<bool>
     {
-        public InserirComunicadoCommand(string titulo, string descricao, DateTime dataEnvio, DateTime? dataExpiracao, int anoLetivo, string codigoDre, string codigoUe, IEnumerable<string> turmas, bool alunoEspecificado, int[] modalidades, int semestre, IEnumerable<string> alunos, string seriesResumidas, int[] tipoEscolaIds , string[] anosEscolares, long? tipoCalendarioId, long? eventoId)
+        public InserirComunicadoCommand(ComunicadoInserirDto comunicado)
         {
-            Titulo = titulo;
-            Descricao = descricao;
-            DataEnvio = dataEnvio;
-            DataExpiracao = dataExpiracao;
-            AnoLetivo = anoLetivo;
-            CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
-            Turmas = turmas;
-            AlunoEspecificado = alunoEspecificado;
-            Modalidades = modalidades;
-            Semestre = semestre;
-            Alunos = alunos;
-            SeriesResumidas = seriesResumidas;
-            TipoCalendarioId = tipoCalendarioId;
-            EventoId = eventoId;
-            TiposEscolas = tipoEscolaIds;
-            AnosEscolares = anosEscolares;
+            Titulo = comunicado.Titulo;
+            Descricao = comunicado.Descricao;
+            DataEnvio = comunicado.DataEnvio;
+            DataExpiracao = comunicado.DataExpiracao;
+            AnoLetivo = comunicado.AnoLetivo;
+            CodigoDre = comunicado.CodigoDre;
+            CodigoUe = comunicado.CodigoUe;
+            Turmas = comunicado.Turmas;
+            AlunoEspecificado = comunicado.AlunoEspecificado;
+            Modalidades = comunicado.Modalidades;
+            Semestre = comunicado.Semestre;
+            Alunos = comunicado.Alunos;
+            SeriesResumidas = comunicado.SeriesResumidas;
+            TipoCalendarioId = comunicado.TipoCalendarioId;
+            EventoId = comunicado.EventoId;
+            TiposEscolas = comunicado.TiposEscolas;
+            AnosEscolares = comunicado.AnosEscolares;
         }
 
         public string Titulo { get; set; }

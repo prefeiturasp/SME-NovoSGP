@@ -1,22 +1,23 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarAtividadeAvaliativaGsaCommand : IRequest
     {
-        public SalvarAtividadeAvaliativaGsaCommand(DateTime dataAula, string usuarioRf, string turmaCodigo, long componenteCurricularId, string titulo, string descricao, DateTime dataCriacao, DateTime? dataAlteracao, long atividadeClassroomId)
+        public SalvarAtividadeAvaliativaGsaCommand(DateTime dataAula, AtividadeGsaDto atividadeGsa)
         {
             DataAula = dataAula;
-            UsuarioRf = usuarioRf;
-            TurmaCodigo = turmaCodigo;
-            ComponenteCurricularId = componenteCurricularId;
-            Titulo = titulo;
-            Descricao = descricao;
-            DataCriacao = dataCriacao;
-            DataAlteracao = dataAlteracao;
-            AtividadeClassroomId = atividadeClassroomId;
+            UsuarioRf = atividadeGsa.UsuarioRf;
+            TurmaCodigo = atividadeGsa.TurmaId;
+            ComponenteCurricularId = atividadeGsa.ComponenteCurricularId;
+            Titulo = atividadeGsa.Titulo;
+            Descricao = atividadeGsa.Descricao;
+            DataCriacao = atividadeGsa.DataCriacao;
+            DataAlteracao = atividadeGsa.DataAlteracao;
+            AtividadeClassroomId = atividadeGsa.AtividadeClassroomId;
         }
 
         public DateTime DataAula { get; }

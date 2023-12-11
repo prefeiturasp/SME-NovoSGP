@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
 
@@ -6,24 +7,24 @@ namespace SME.SGP.Aplicacao
 {
     public class AlterarComunicadoCommand : IRequest<bool>
     {
-        public AlterarComunicadoCommand(long id, string titulo, string descricao, DateTime dataEnvio, DateTime? dataExpiracao, int anoLetivo, string seriesResumidas, string codigoDre, string codigoUe, IEnumerable<string> turmas, long? tipoCalendarioId, long? eventoId, bool alunosEspecificados, int[] modalidades, int semestre, IEnumerable<string> alunos)
+        public AlterarComunicadoCommand(long id, ComunicadoAlterarDto comunicado)
         {
             Id = id;
-            Titulo = titulo;
-            Descricao = descricao;
-            DataEnvio = dataEnvio;
-            DataExpiracao = dataExpiracao;
-            AnoLetivo = anoLetivo;
-            SeriesResumidas = seriesResumidas;
-            CodigoDre = codigoDre;
-            CodigoUe = codigoUe;
-            Turmas = turmas;
-            TipoCalendarioId = tipoCalendarioId;
-            EventoId = eventoId;
-            AlunosEspecificados = alunosEspecificados;
-            Modalidades = modalidades;
-            Semestre = semestre;
-            Alunos = alunos;
+            Titulo = comunicado.Titulo;
+            Descricao = comunicado.Descricao;
+            DataEnvio = comunicado.DataEnvio;
+            DataExpiracao = comunicado.DataExpiracao;
+            AnoLetivo = comunicado.AnoLetivo;
+            SeriesResumidas = comunicado.SeriesResumidas;
+            CodigoDre = comunicado.CodigoDre;
+            CodigoUe = comunicado.CodigoUe;
+            Turmas = comunicado.Turmas;
+            TipoCalendarioId = comunicado.TipoCalendarioId;
+            EventoId = comunicado.EventoId;
+            AlunosEspecificados = comunicado.AlunosEspecificados;
+            Modalidades = comunicado.Modalidades;
+            Semestre = comunicado.Semestre;
+            Alunos = comunicado.Alunos;
         }
 
         public long Id { get; set; }
