@@ -7,6 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Relatorios.HistoricoEscolar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -365,7 +366,62 @@ namespace SME.SGP.Aplicacao
         {
             if (registroFrequenciaAlunos.Any() && totalAulasDaTurmaGeral > 0)
             {
-                var registroFrequenciaAluno = registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo)
+                var registroFrequenciaAluno = ObterRegistroFrequenciaDisciplinaAluno(registroFrequenciaAlunos, alunoCodigo); 
+                var totalCompensacoesAluno = compensacoesDisciplinasAlunos
+                                                    .Where(a => a.AlunoCodigo == alunoCodigo)
+                                                    .Sum(c => c.Compensacoes);
+
+                var frequenciaParaTratar = ObterFrequenciaAluno(frequenciaDosAlunos, alunoCodigo, registroFrequenciaAluno.Bimestre);
+
+                if (frequenciaParaTratar.EhNulo())
+                {
+                    var frequenciaGlobal = new FrequenciaAluno(
+                                 alunoCodigo,
+                                 turmaId,
+                                 string.Empty,
+                                 registroFrequenciaAluno.PeriodoEscolarId,
+                                 registroFrequenciaAluno.PeriodoInicio,
+                                 registroFrequenciaAluno.PeriodoFim,
+                                 registroFrequenciaAluno.Bimestre,
+                                 Math.Min(registroFrequenciaAluno.TotalAusencias, totalAulasDaTurmaGeral),
+                                 totalAulasDaTurmaGeral,
+                                 Math.Min(registroFrequenciaAluno.TotalAusencias, totalCompensacoesAluno),
+                                 TipoFrequenciaAluno.Geral,
+                                 registroFrequenciaAluno.TotalRemotos,
+                                 registroFrequenciaAluno.TotalPresencas,
+                                 null);
+
+                    frequenciaDosAlunos.Add(frequenciaGlobal);
+                }
+                else
+                {
+                    frequenciaParaTratar
+                        .DefinirFrequencia(string.Empty,
+                                           Math.Min(registroFrequenciaAluno.TotalAusencias, totalAulasDaTurmaGeral),
+                                           totalAulasDaTurmaGeral,
+                                           Math.Min(registroFrequenciaAluno.TotalAusencias, totalCompensacoesAluno),
+                                           TipoFrequenciaAluno.Geral,
+                                           registroFrequenciaAluno.TotalRemotos,
+                                           registroFrequenciaAluno.TotalPresencas,
+                                           null);
+                }
+            }
+        }
+
+        private FrequenciaAluno ObterFrequenciaAluno(List<FrequenciaAluno> frequenciaDosAlunos, string alunoCodigo, int bimestre)
+        {
+            return (from f in frequenciaDosAlunos
+                    where f.CodigoAluno == alunoCodigo &&
+                          string.IsNullOrEmpty(f.DisciplinaId) &&
+                          f.Bimestre == bimestre
+                    orderby f.Id
+                    select f)
+                        .LastOrDefault();
+        }
+
+        private RegistroFrequenciaPorDisciplinaAlunoDto ObterRegistroFrequenciaDisciplinaAluno(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFrequenciaAlunos, string alunoCodigo)
+        {
+            return registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo)
                     .GroupBy(g => new { g.PeriodoEscolarId, g.PeriodoInicio, g.PeriodoFim, g.Bimestre, g.AlunoCodigo }, (key, group) =>
                 new
                 {
@@ -388,50 +444,6 @@ namespace SME.SGP.Aplicacao
                     TotalAusencias = s.TotalAusencias,
                     TotalRemotos = s.TotalRemotos
                 }).FirstOrDefault();
-
-                var totalCompensacoesAluno = compensacoesDisciplinasAlunos
-                    .Where(a => a.AlunoCodigo == alunoCodigo).Sum(c => c.Compensacoes);
-
-                var frequenciaParaTratar = (from f in frequenciaDosAlunos
-                                            where f.CodigoAluno == alunoCodigo &&
-                                                 string.IsNullOrEmpty(f.DisciplinaId) &&
-                                                 f.Bimestre == registroFrequenciaAluno.Bimestre
-                                            orderby f.Id
-                                            select f).LastOrDefault();
-
-                if (frequenciaParaTratar.EhNulo())
-                {
-                    var frequenciaGlobal = new FrequenciaAluno(
-                                 alunoCodigo,
-                                 turmaId,
-                                 string.Empty,
-                                 registroFrequenciaAluno.PeriodoEscolarId,
-                                 registroFrequenciaAluno.PeriodoInicio,
-                                 registroFrequenciaAluno.PeriodoFim,
-                                 registroFrequenciaAluno.Bimestre,
-                                 registroFrequenciaAluno.TotalAusencias > totalAulasDaTurmaGeral ? totalAulasDaTurmaGeral : registroFrequenciaAluno.TotalAusencias,
-                                 totalAulasDaTurmaGeral,
-                                 totalCompensacoesAluno > registroFrequenciaAluno.TotalAusencias ? registroFrequenciaAluno.TotalAusencias : totalCompensacoesAluno,
-                                 TipoFrequenciaAluno.Geral,
-                                 registroFrequenciaAluno.TotalRemotos,
-                                 registroFrequenciaAluno.TotalPresencas,
-                                 null);
-
-                    frequenciaDosAlunos.Add(frequenciaGlobal);
-                }
-                else
-                {
-                    frequenciaParaTratar
-                        .DefinirFrequencia(string.Empty,
-                                           registroFrequenciaAluno.TotalAusencias > totalAulasDaTurmaGeral ? totalAulasDaTurmaGeral : registroFrequenciaAluno.TotalAusencias,
-                                           totalAulasDaTurmaGeral,
-                                           totalCompensacoesAluno > registroFrequenciaAluno.TotalAusencias ? registroFrequenciaAluno.TotalAusencias : totalCompensacoesAluno,
-                                           TipoFrequenciaAluno.Geral,
-                                           registroFrequenciaAluno.TotalRemotos,
-                                           registroFrequenciaAluno.TotalPresencas,
-                                           null);
-                }
-            }
         }
     }
 }
