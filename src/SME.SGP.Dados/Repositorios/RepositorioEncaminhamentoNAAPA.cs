@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
             int situacao, long prioridade, long[] turmasIds, Paginacao paginacao, bool exibirEncerrados)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, codigoUe, nomeAluno, dataAberturaQueixaInicio, 
+            var query = MontaQueryCompleta(paginacao, codigoUe, nomeAluno, dataAberturaQueixaInicio, 
                 dataAberturaQueixaFim, situacao,prioridade , turmasIds, exibirEncerrados);
             var situacoesEncerrado = (int)SituacaoNAAPA.Encerrado ;
 
@@ -52,7 +52,8 @@ namespace SME.SGP.Dados.Repositorios
 
             return retorno;
         }
-        private string MontaQueryCompleta(Paginacao paginacao, long dreId, string codigoUe, string nomeAluno, 
+
+        private string MontaQueryCompleta(Paginacao paginacao, string codigoUe, string nomeAluno, 
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, bool exibirEncerrados)
         {
             var sql = new StringBuilder();

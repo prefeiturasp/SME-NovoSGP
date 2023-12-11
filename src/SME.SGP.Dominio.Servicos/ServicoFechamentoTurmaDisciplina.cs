@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Entidades;
@@ -234,8 +232,7 @@ namespace SME.SGP.Dominio.Servicos
             // Valida Permissão do Professor na Turma/Disciplina            
             if (!turmaFechamento.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilSME() && !usuarioLogado.EhPerfilDRE())
             {
-                await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento,
-                    entidadeDto.DisciplinaId.ToString(), usuarioLogado);
+                await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, entidadeDto.DisciplinaId.ToString(), usuarioLogado);
             }
             
             var mesmoAnoLetivo = turmaFechamento.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
@@ -734,7 +731,7 @@ namespace SME.SGP.Dominio.Servicos
             return tipoEvento;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento, string disciplinaId, Usuario usuario = null)
+        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, string disciplinaId, Usuario usuario = null)
         {
             if (usuario.EhNulo())
                 usuario = await servicoUsuario.ObterUsuarioLogado();

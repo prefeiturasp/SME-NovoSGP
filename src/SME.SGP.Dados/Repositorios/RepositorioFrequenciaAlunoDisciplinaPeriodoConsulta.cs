@@ -3,7 +3,6 @@ using Pipelines.Sockets.Unofficial.Arenas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
@@ -619,7 +618,7 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componentesCurricularesId, periodosEscolaresIds, professor });
         }
-        private String BuildQueryObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, string turmaId)
+        private String BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select ");
@@ -645,7 +644,7 @@ namespace SME.SGP.Dados
 
         public async Task<int> ObterTotalAulasPorDisciplinaETurmaAsync(DateTime dataAula, string disciplinaId, string turmaId)
         {
-            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(dataAula, disciplinaId, turmaId);
+            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId);
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmaId });
         }
 

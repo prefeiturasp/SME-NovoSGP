@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = new PaginacaoResultadoDto<Informativo>();
             var itens = new List<Informativo>();
             var informativo = new Informativo();
-            var queryPaginado = ObterQueryInformesPaginado(filtro, paginacao);
+            var queryPaginado = ObterQueryInformesPaginado(filtro);
 
             await database.Conexao
                 .QueryAsync<Informativo, Dre, Ue, InformativoPerfil, Informativo>(
@@ -89,7 +89,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private string ObterQueryInformesPaginado(InformeFiltroDto filtro, Paginacao paginacao)
+        private string ObterQueryInformesPaginado(InformeFiltroDto filtro)
         {
             var sql = new StringBuilder();
             sql.AppendLine(ObterQueryInforme());

@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -60,12 +59,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public void AlterarPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
         {
-            var somenteUe = fechamento.DreId.NaoEhNulo() && fechamento.DreId > 0;
-
             unitOfWork.IniciarTransacao();
             try
             {
-                AlterarBimestresPeriodosComHierarquiaInferior(fechamento, somenteUe).Wait();
+                AlterarBimestresPeriodosComHierarquiaInferior(fechamento).Wait();
 
                 unitOfWork.PersistirTransacao();
             } catch
@@ -75,7 +72,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task AlterarBimestresPeriodosComHierarquiaInferior(PeriodoFechamento fechamento, bool somenteUe)
+        private async Task AlterarBimestresPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
         {
             var listaPeriodosAlteracao = new List<PeriodoFechamentoBimestre>();
             // Carrega lista de Periodos a alterar
