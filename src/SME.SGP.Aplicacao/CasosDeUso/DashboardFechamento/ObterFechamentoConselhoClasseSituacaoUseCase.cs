@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Diagnostics.Tracing.Parsers.Kernel;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
@@ -11,59 +10,67 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoConselhoClasseSituacaoUseCase : AbstractUseCase, IObterFechamentoConselhoClasseSituacaoUseCase
     {
+        private FiltroDashboardFechamentoDto parametrosUseCase;
         public ObterFechamentoConselhoClasseSituacaoUseCase(IMediator mediator) : base(mediator)
         {
         }
 
         public async Task<IEnumerable<GraficoBaseDto>> Executar(FiltroDashboardFechamentoDto param)
         {
-            var conselhoClasse = await mediator.Send(new ObterConselhoClasseSituacaoQuery(param.UeId,
-                                                                                          param.AnoLetivo,
-                                                                                          param.DreId,
-                                                                                          param.Modalidade,
-                                                                                          param.Semestre,
-                                                                                          param.Bimestre));
+            parametrosUseCase = param ?? throw new ArgumentNullException(nameof(param));
+            var conselhoClasse = await mediator.Send(new ObterConselhoClasseSituacaoQuery(parametrosUseCase.UeId,
+                                                                                          parametrosUseCase.AnoLetivo,
+                                                                                          parametrosUseCase.DreId,
+                                                                                          parametrosUseCase.Modalidade,
+                                                                                          parametrosUseCase.Semestre,
+                                                                                          parametrosUseCase.Bimestre));
 
-            if (conselhoClasse.EhNulo() || !conselhoClasse.Any())
+            if (conselhoClasse.NaoPossuiRegistros())
                 return default;
 
             var conselhos = new List<GraficoBaseDto>();
-
-            if(param.UeId == 0)
-            {
-                foreach (var conselho in conselhoClasse.Where(c => c.Quantidade > 0).ToList())
-                    conselhos.Add(new GraficoBaseDto(conselho.AnoTurma, conselho.Quantidade, conselho.Situacao.Name()));
-            }                
+            if (parametrosUseCase.EhFiltroPorUe())
+                await AdicionaGraficoConselhosClassePorTurma(conselhos, conselhoClasse.GroupBy(c => c.CodigoTurma));
             else
-            {
-                foreach (var conselho in conselhoClasse.GroupBy(c => c.CodigoTurma))
-                {
-                    int quantidadeEmAndamentoEConcluido = 0;
-
-                    foreach(var informacoesTurma in conselho.ToList())
-                    {
-                        switch(informacoesTurma.Situacao)
-                        {
-                            case SituacaoConselhoClasse.EmAndamento:
-                                conselhos.Add(new GraficoBaseDto(informacoesTurma.AnoTurma, informacoesTurma.Quantidade > 0 ? informacoesTurma.Quantidade : 0, SituacaoConselhoClasse.EmAndamento.Name()));
-                                quantidadeEmAndamentoEConcluido += informacoesTurma.Quantidade;
-                                break;
-
-                            case SituacaoConselhoClasse.Concluido:
-                                conselhos.Add(new GraficoBaseDto(informacoesTurma.AnoTurma, informacoesTurma.Quantidade > 0 ? informacoesTurma.Quantidade : 0, SituacaoConselhoClasse.Concluido.Name()));
-                                quantidadeEmAndamentoEConcluido += informacoesTurma.Quantidade;
-                                break;
-                        }
-
-                        
-                    }
-
-                    if(quantidadeEmAndamentoEConcluido > 0)
-                        conselhos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, param.Bimestre, quantidadeEmAndamentoEConcluido), SituacaoConselhoClasse.NaoIniciado.Name()));
-                }
-            }
+                AdicionaGraficoConselhosClasse(conselhos, conselhoClasse);
 
             return conselhos.OrderBy(a => a.Grupo).ToList();
+        }
+
+        private async Task AdicionaGraficoConselhosClassePorTurma(List<GraficoBaseDto> graficos, IEnumerable<IGrouping<string, ConselhoClasseSituacaoQuantidadeDto>> conselhosClasseTurma)
+        {
+            foreach (var conselho in conselhosClasseTurma)
+            {
+                int quantidadeEmAndamentoEConcluido = 0;
+                foreach (var informacoesTurma in conselho.ToList())
+                    quantidadeEmAndamentoEConcluido += AdicionaGraficoConselhosClassePorTurma(graficos, informacoesTurma);
+
+                if (quantidadeEmAndamentoEConcluido > 0)
+                    graficos.Add(new GraficoBaseDto(conselho.FirstOrDefault().AnoTurma, await DefinirQuantidadeConselhoNaoIniciado(conselho.FirstOrDefault().CodigoTurma, parametrosUseCase.Bimestre, quantidadeEmAndamentoEConcluido), 
+                                                    SituacaoConselhoClasse.NaoIniciado.Name()));
+            }
+        }
+
+        private int AdicionaGraficoConselhosClassePorTurma(List<GraficoBaseDto> graficos, ConselhoClasseSituacaoQuantidadeDto conselhoClasseTurma)
+        {
+            var qdadeConselhosClasseTurma = conselhoClasseTurma.Quantidade > 0 ? conselhoClasseTurma.Quantidade : 0;
+            switch (conselhoClasseTurma.Situacao)
+            {
+                case SituacaoConselhoClasse.EmAndamento:
+                    graficos.Add(new GraficoBaseDto(conselhoClasseTurma.AnoTurma, qdadeConselhosClasseTurma, SituacaoConselhoClasse.EmAndamento.Name()));
+                    return conselhoClasseTurma.Quantidade;
+
+                case SituacaoConselhoClasse.Concluido:
+                    graficos.Add(new GraficoBaseDto(conselhoClasseTurma.AnoTurma, qdadeConselhosClasseTurma, SituacaoConselhoClasse.Concluido.Name()));
+                    return conselhoClasseTurma.Quantidade;
+                default : return 0;
+            }
+        }
+
+        private void AdicionaGraficoConselhosClasse(List<GraficoBaseDto> graficos, IEnumerable<ConselhoClasseSituacaoQuantidadeDto> conselhosClasse)
+        {
+            foreach (var conselho in conselhosClasse.Where(c => c.Quantidade > 0))
+                graficos.Add(new GraficoBaseDto(conselho.AnoTurma, conselho.Quantidade, conselho.Situacao.Name()));
         }
 
         private async Task<int> DefinirQuantidadeConselhoNaoIniciado(string codigoTurma, int bimestre, int quantidadeEmAndamentoEConcluido)
