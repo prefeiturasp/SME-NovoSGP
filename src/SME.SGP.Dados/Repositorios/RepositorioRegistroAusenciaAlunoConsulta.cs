@@ -59,8 +59,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId });
         }
 
-        private String BuildQueryObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno,
-            string disciplinaId, string turmaId)
+        private String BuildQueryObterTotalAusenciasPorAlunoETurma(string disciplinaId)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select");
@@ -101,13 +100,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public AusenciaPorDisciplinaDto ObterTotalAusenciasPorAlunoETurma(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
         {
-            String query = BuildQueryObterTotalAusenciasPorAlunoETurma(dataAula, codigoAluno, disciplinaId, turmaId);
+            String query = BuildQueryObterTotalAusenciasPorAlunoETurma(disciplinaId);
             return database.Conexao.QueryFirstOrDefault<AusenciaPorDisciplinaDto>(query.ToString(), new { dataAula, codigoAluno, disciplinaId, turmaId });
         }
 
         public async Task<AusenciaPorDisciplinaDto> ObterTotalAusenciasPorAlunoETurmaAsync(DateTime dataAula, string codigoAluno, string disciplinaId, string turmaId)
         {
-            String query = BuildQueryObterTotalAusenciasPorAlunoETurma(dataAula, codigoAluno, disciplinaId, turmaId);
+            String query = BuildQueryObterTotalAusenciasPorAlunoETurma(disciplinaId);
             return await database.Conexao.QueryFirstOrDefaultAsync<AusenciaPorDisciplinaDto>(query.ToString(), new { dataAula, codigoAluno, disciplinaId, turmaId });
         }
 

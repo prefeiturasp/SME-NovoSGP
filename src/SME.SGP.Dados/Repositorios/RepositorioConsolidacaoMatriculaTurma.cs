@@ -32,7 +32,7 @@ namespace SME.SGP.Dados
                 }
             }
             if (ueId > 0 && anos.NaoEhNulo() && anos.Count() == 1)
-                sql = QueryConsolidacaoPorTurma(tiposTurma, anosCondicao, semestre);
+                sql = QueryConsolidacaoPorTurma(tiposTurma, anosCondicao);
             else if (dreId > 0)
                 sql = QueryConsolidacaoPorAno(dreId, ueId, tiposTurma, anosCondicao, semestre);
             else sql = QueryConsolidacaoPorDre(dreId, ueId, tiposTurma, anosCondicao, semestre);
@@ -41,7 +41,7 @@ namespace SME.SGP.Dados
                 .QueryAsync<InformacoesEscolaresPorDreEAnoDto>(sql, new { modalidade, dreId, ueId, anoLetivo, semestre, anosCondicao, tiposTurma });
         }
 
-        private string QueryConsolidacaoPorTurma(IEnumerable<int> tiposTurma, IEnumerable<string> anosCondicao, int? semestre)
+        private string QueryConsolidacaoPorTurma(IEnumerable<int> tiposTurma, IEnumerable<string> anosCondicao)
         {
             var query = new StringBuilder();
             query.AppendLine(@"SELECT t.nome AS TurmaDescricao,

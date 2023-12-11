@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -170,7 +169,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
                 {
-                    await AprovarRegistroDeItinerancia(codigoDaNotificacao, workflow.Id, workflow.CriadoRF, workflow.CriadoPor);
+                    await AprovarRegistroDeItinerancia(workflow.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaConselho)
                 {
@@ -199,7 +198,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task AprovarRegistroDeItinerancia(long codigoDaNotificacao, long workFlowId, string criadoRF, string criadoPor)
+        private async Task AprovarRegistroDeItinerancia(long workFlowId)
         {
             var itineranciaEmAprovacao = await mediator.Send(new ObterWorkflowAprovacaoItineranciaPorIdQuery(workFlowId));
             if (itineranciaEmAprovacao.NaoEhNulo())

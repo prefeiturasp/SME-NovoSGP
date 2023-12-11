@@ -6,9 +6,7 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -256,105 +254,6 @@ namespace SME.SGP.Dados.Repositorios
             };
             return await database.Conexao.QueryAsync<FechamentoConselhoClasseNotaFinalDto>(query.ToString(), parametros, commandTimeout: 120);
         }
-
-        private string MontarQueryNotasFinasFechamentoQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
-        {
-            var query = new StringBuilder(@"    insert into temp_dados
-                                                select t.nome as TurmaAnoNome,
-                                                    pe.bimestre, 
-                                                    fn.disciplina_id as ComponenteCurricularCodigo, 
-                                                    null as ConselhoClasseNotaId, 
-                                                    fn.conceito_id as ConceitoId, 
-                                                    fn.nota as Nota, 
-                                                    fa.aluno_codigo as AlunoCodigo,
-                                                    cv.valor as Conceito,
-                                                    2 as prioridade
-                                                from
-                                                    fechamento_turma ft
-                                                inner join periodo_escolar pe on
-                                                    pe.id = ft.periodo_escolar_id
-                                                inner join turma t on
-                                                    t.id = ft.turma_id
-                                                inner join ue on
-                                                    ue.id = t.ue_id
-                                                inner join fechamento_turma_disciplina ftd on
-                                                    ftd.fechamento_turma_id = ft.id
-                                                inner join fechamento_aluno fa on
-                                                    fa.fechamento_turma_disciplina_id = ftd.id
-                                                inner join fechamento_nota fn on
-                                                    fn.fechamento_aluno_id = fa.id
-                                                inner join conceito_valores cv on fn.conceito_id = cv.id
-                                                where t.ano_letivo = @anoLetivo ");
-
-            if (ueId > 0)
-                query.Append(" and ue.id = @ueId ");
-
-            if (dreId > 0)
-                query.Append(" and ue.dre_id = @dreId ");
-
-            if (modalidade > 0)
-                query.Append(" and t.modalidade_codigo = @modalidade ");
-
-            if (bimestre > 0)
-                query.Append(" and pe.bimestre = @bimestre ");
-
-            if (semestre > 0)
-                query.Append(" and t.semestre = @semestre ");
-
-            query.Append(";");
-
-            return query.ToString();
-        }
-
-        private string MontarQueryNotasFinasConselhoClasseQuantidade(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
-        {
-            var query = new StringBuilder(@"    insert into temp_dados
-                                                select t.nome as TurmaAnoNome,  
-                                                    pe.bimestre, 
-                                                    ccn.componente_curricular_codigo as ComponenteCurricularCodigo, 
-                                                    ccn.id as ConselhoClasseNotaId, 
-                                                    ccn.conceito_id as ConceitoId, 
-                                                    ccn.nota as Nota, 
-                                                    cca.aluno_codigo as AlunoCodigo,
-                                                    cv.valor as Conceito,
-                                                    1 as prioridade
-                                                from
-                                                    fechamento_turma ft
-                                                inner join periodo_escolar pe on
-                                                    pe.id = ft.periodo_escolar_id
-                                                inner join turma t on
-                                                    t.id = ft.turma_id
-                                                inner join ue on
-                                                    ue.id = t.ue_id
-                                                inner join conselho_classe cc on
-                                                    cc.fechamento_turma_id = ft.id
-                                                inner join conselho_classe_aluno cca on
-                                                    cca.conselho_classe_id = cc.id
-                                                inner join conselho_classe_nota ccn on
-                                                    ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
-                                                inner join conceito_valores cv on ccn.conceito_id = cv.id
-                                                where t.ano_letivo = @anoLetivo ");
-
-            if (ueId > 0)
-                query.Append(" and ue.id = @ueId ");
-
-            if (dreId > 0)
-                query.Append(" and ue.dre_id = @dreId ");
-
-            if (modalidade > 0)
-                query.Append(" and t.modalidade_codigo = @modalidade ");
-
-            if (bimestre > 0)
-                query.Append(" and pe.bimestre = @bimestre ");
-
-            if (semestre > 0)
-                query.Append(" and t.semestre = @semestre ");
-
-            query.Append(";");
-
-            return query.ToString();
-        }
-
 
         public async Task<IEnumerable<objConsolidacaoConselhoAluno>> ObterAlunosReprocessamentoConsolidacaoConselho(int dreId)
         {

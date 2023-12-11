@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, Paginacao paginacao, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE, exibirEncerrados, responsavelRf, responsavelRfPaai);
+            var query = MontaQueryCompleta(paginacao, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE, exibirEncerrados, responsavelRf, responsavelRfPaai);
             var situacoesEncerrado = new int[] { (int)SituacaoPlanoAEE.Encerrado, (int)SituacaoPlanoAEE.EncerradoAutomaticamente };
             var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, situacoesEncerrado, responsavelRf, responsavelRfPaai };
             var retorno = new PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>();
@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
+        private string MontaQueryCompleta(Paginacao paginacao, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, bool exibirEncerrados, string responsavelRf, string responsavelRfPaai)
         {
 
             StringBuilder sql = new StringBuilder();
