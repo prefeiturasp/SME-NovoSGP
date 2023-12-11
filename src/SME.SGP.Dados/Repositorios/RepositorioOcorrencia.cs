@@ -189,7 +189,7 @@ namespace SME.SGP.Dados
 
         public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(long turmaId, long codigoAluno, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, turmaId, codigoAluno, periodoInicio, periodoFim);
+            var query = MontaQueryCompleta(paginacao);
             var parametros = new { turmaId, codigoAluno, periodoInicio, periodoFim };
             var retorno = new PaginacaoResultadoDto<OcorrenciasPorAlunoDto>();
 
@@ -202,24 +202,24 @@ namespace SME.SGP.Dados
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        private static string MontaQueryCompleta(Paginacao paginacao)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, turmaId, alunoCodigo, periodoIncio, periodoFim);
+            MontaQueryConsulta(paginacao, sql, contador: false);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, turmaId, alunoCodigo, periodoIncio, periodoFim);
+            MontaQueryConsulta(paginacao, sql, contador: true);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql, turmaId, alunoCodigo, periodoIncio, periodoFim);
+            ObtenhaFiltro(sql);
 
             if (!contador)
                 sql.AppendLine(" order by o.data_ocorrencia desc ");
@@ -245,7 +245,7 @@ namespace SME.SGP.Dados
             sql.AppendLine(" inner join turma t on t.id = o.turma_id");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        private static void ObtenhaFiltro(StringBuilder sql)
         {
             sql.AppendLine(" where ");
             sql.AppendLine(" o.turma_id = @turmaId and ");

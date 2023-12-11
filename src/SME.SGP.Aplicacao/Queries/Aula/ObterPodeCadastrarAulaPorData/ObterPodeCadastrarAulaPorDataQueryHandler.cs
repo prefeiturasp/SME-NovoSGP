@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var eventoReposicao = new PodeCadastrarAulaPorDataRetornoDto(false,"");
             if (periodoEscolar.EhNulo())
             {
-               eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
+               eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe);
                 if (eventoReposicao.NaoEhNulo())
                 {
                     return eventoReposicao;
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             {
                 var temEventoLetivoDeLiberacao = await repositorioEvento.DataPossuiEventoDeLiberacaoEoutroEventoLetivo(request.TipoCalendarioId, request.DataAula, request.UeCodigo);
 
-                 eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
+                 eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe);
 
                 if (!temEventoLetivoDeLiberacao && (eventoReposicao.NaoEhNulo()))
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                 : new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
         }
 
-        private async Task<PodeCadastrarAulaPorDataRetornoDto> EventoReposicao(DateTime dataAula, long tipoCalendarioId, string codigoUe, string vazio)
+        private async Task<PodeCadastrarAulaPorDataRetornoDto> EventoReposicao(DateTime dataAula, long tipoCalendarioId, string codigoUe)
         {
             var eventoReposicaoAulaNoDia = await repositorioEvento
                     .EventosNosDiasETipo(dataAula, dataAula, TipoEvento.ReposicaoDoDia, tipoCalendarioId, codigoUe, string.Empty);

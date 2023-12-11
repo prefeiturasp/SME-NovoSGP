@@ -17,65 +17,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComunicado : RepositorioBase<Comunicado>, IRepositorioComunicado
     {
-        private readonly Func<string, string> camposComunicado =
-            (prefixo) => string.Format(
-                @"{0}.id,
-                  {0}.titulo,
-                  {0}.descricao,
-                  {0}.data_envio,
-                  {0}.data_expiracao,
-                  {0}.criado_em,
-                  {0}.criado_por,
-                  {0}.alterado_em,
-                  {0}.alterado_por,
-                  {0}.criado_rf,
-                  {0}.alterado_rf,
-                  {0}.ano_letivo,
-                  {0}.modalidade,
-                  {0}.semestre,
-                  {0}.tipo_comunicado,
-                  {0}.codigo_dre,
-                  {0}.codigo_ue,
-                  {0}.excluido,
-                  {0}.tipo_calendario_id,
-                  {0}.evento_id,
-                  {0}.alunos_especificados", prefixo);
-
-        private string queryComunicadoListagem()
-        {
-            var query = new StringBuilder();
-
-            query.AppendLine(@"
-                        SELECT
-                            {0}
-                        FROM ({1}) c
-                        LEFT JOIN comunidado_grupo cg
-                            on cg.comunicado_id = c.id
-                        LEFT join grupo_comunicado g
-                            on cg.grupo_comunicado_id = g.id
-                        ");
-
-            query.AppendLine(@"
-                        WHERE c.excluido = false");
-
-            return query.ToString();
-        }
-
         public RepositorioComunicado(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
-        }
-        private string ObterCamposListagem(string prefixoComunicado, string prefixoGrupoComunicado, string prefixoTurmaComunicado)
-        {
-            StringBuilder builder = new StringBuilder();
-
-            builder.AppendLine($"{camposComunicado(prefixoComunicado)},");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.id,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.nome,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_escola_id,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.tipo_ciclo_id,");
-            builder.AppendLine($@"{prefixoGrupoComunicado}.etapa_ensino_id");
-
-            return builder.ToString();
         }
 
         public async Task<ComunicadosTotaisResultado> ObterComunicadosTotaisSme(int anoLetivo, string codigoDre, string codigoUe)
