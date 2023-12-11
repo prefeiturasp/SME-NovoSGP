@@ -1,23 +1,21 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarNotificacaoAulaPrevistaCommand : IRequest<bool>
     {
-        public SalvarNotificacaoAulaPrevistaCommand(string titulo, string mensagem, string professorRF, string dreCodigo, string ueCodigo, string turmaCodigo, long usuarioId, int bimestre, string componenteCurricularId)
+        public SalvarNotificacaoAulaPrevistaCommand(RegistroAulaPrevistaDivergenteDto AulaPrevistaDto, string titulo, string mensagem, long usuarioId)
         {
             Titulo = titulo;
             Mensagem = mensagem;
-            ProfessorRF = professorRF;
-            DreCodigo = dreCodigo;
-            UeCodigo = ueCodigo;
-            TurmaCodigo = turmaCodigo;
+            ProfessorRF = AulaPrevistaDto.ProfessorRf;
+            DreCodigo = AulaPrevistaDto.CodigoDre;
+            UeCodigo = AulaPrevistaDto.CodigoUe;
+            TurmaCodigo = AulaPrevistaDto.CodigoTurma;
             UsuarioId = usuarioId;
-            Bimestre = bimestre;
-            ComponenteCurricularId = componenteCurricularId;
+            Bimestre = AulaPrevistaDto.Bimestre;
+            ComponenteCurricularId = AulaPrevistaDto.DisciplinaId;
         }
 
         public string Titulo { get; }

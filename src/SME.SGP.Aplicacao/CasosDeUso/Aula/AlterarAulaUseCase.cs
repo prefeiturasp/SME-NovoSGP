@@ -20,34 +20,14 @@ namespace SME.SGP.Aplicacao
 
             if (aulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {
-                return await mediator.Send(new AlterarAulaUnicaCommand(usuarioLogado,
-                                                                       aulaDto.Id,
-                                                                       aulaDto.DataAula,
-                                                                       aulaDto.Quantidade,
-                                                                       aulaDto.CodigoTurma,
-                                                                       aulaDto.CodigoComponenteCurricular,
-                                                                       aulaDto.NomeComponenteCurricular,
-                                                                       aulaDto.TipoCalendarioId,
-                                                                       aulaDto.TipoAula,
-                                                                       aulaDto.CodigoUe,
-                                                                       aulaDto.EhRegencia));
+                return await mediator.Send(new AlterarAulaUnicaCommand(usuarioLogado, aulaDto));
             }
             else
             {
                 try
                 {
-                    await mediator.Send(new IncluirFilaAlteracaoAulaRecorrenteCommand(usuarioLogado,
-                                                                         aulaDto.Id,
-                                                                         aulaDto.DataAula,
-                                                                         aulaDto.Quantidade,
-                                                                         aulaDto.CodigoTurma,
-                                                                         aulaDto.CodigoComponenteCurricular,
-                                                                         aulaDto.NomeComponenteCurricular,
-                                                                         aulaDto.TipoCalendarioId,
-                                                                         aulaDto.TipoAula,
-                                                                         aulaDto.CodigoUe,
-                                                                         aulaDto.EhRegencia,
-                                                                         aulaDto.RecorrenciaAula));
+                    await mediator.Send(new IncluirFilaAlteracaoAulaRecorrenteCommand(usuarioLogado, aulaDto));
+
                     return await Task.FromResult(new RetornoBaseDto("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento."));
                 }
                 catch (Exception ex)

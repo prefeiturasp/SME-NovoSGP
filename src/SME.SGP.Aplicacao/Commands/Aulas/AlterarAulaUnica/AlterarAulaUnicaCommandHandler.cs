@@ -114,11 +114,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
 
         private async Task ValidarGrade(AlterarAulaUnicaCommand request, Usuario usuarioLogado, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)
         {
-            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
-                                                                                   turma.ModalidadeCodigo,
+            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma,
                                                                                    new long[] { request.ComponenteCurricularCodigo },
                                                                                    request.DataAula,
-                                                                                   usuarioLogado.CodigoRf,
+                                                                                   usuarioLogado,
                                                                                    quantidadeAdicional,
                                                                                    request.EhRegencia,
                                                                                    aulasExistentes));
@@ -150,14 +149,6 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.AlterarAulaUnica
         }
 
         private async Task<long> PersistirWorkflowReposicaoAula(AlterarAulaUnicaCommand request, Turma turma, Aula aula)
-            => await mediator.Send(new InserirWorkflowReposicaoAulaCommand(request.DataAula.Year,
-                                                                   aula.Id,
-                                                                   aula.Quantidade,
-                                                                   turma.Ue.Dre.CodigoDre,
-                                                                   turma.Ue.Dre.Nome,
-                                                                   turma.Ue.CodigoUe,
-                                                                   turma.Ue.Nome,
-                                                                   turma.Nome,
-                                                                   request.ComponenteCurricularNome));
+            => await mediator.Send(new InserirWorkflowReposicaoAulaCommand(request.DataAula.Year, aula, turma, request.ComponenteCurricularNome));
     }
 }

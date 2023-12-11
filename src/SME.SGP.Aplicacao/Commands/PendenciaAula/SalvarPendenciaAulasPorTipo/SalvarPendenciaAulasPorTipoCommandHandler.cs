@@ -59,10 +59,6 @@ namespace SME.SGP.Aplicacao
 
                         var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.NomeComponenteInfantil) ? componente.NomeComponenteInfantil : componente.Nome;
 
-                        var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
-
-                        var descricaoUeDre = turmaComDreUe.ObterEscola();
-
                         if (periodoEscolar.NaoEhNulo())
                         {
                             var aulasNormais = item.Where(w => !w.AulaCJ);
@@ -80,7 +76,7 @@ namespace SME.SGP.Aplicacao
                                     if (professorTitularTurma.NaoEhNulo() &&
                                         periodoEscolar.NaoEhNulo() && 
                                         !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
-                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaComDreUe);
                                 }
                                 else
                                 {
@@ -98,7 +94,7 @@ namespace SME.SGP.Aplicacao
                                             string codigoRfProfessor = professor.Trim();
 
                                             if (!string.IsNullOrEmpty(codigoRfProfessor))
-                                                await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                                await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaComDreUe);
                                         }
                                     }
                                 }
@@ -110,7 +106,7 @@ namespace SME.SGP.Aplicacao
                                 var agrupamentoAulasCJ = aulasCJ.Where(w => !string.IsNullOrEmpty(w.ProfessorRf)).GroupBy(x => new { x.ProfessorRf });
 
                                 foreach (var aulaCJ in agrupamentoAulasCJ)
-                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
+                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, aulaCJ.FirstOrDefault().ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulaCJ.Select(x => x.Id), descricaoComponenteCurricular, turmaComDreUe);
                             }
                         }
                     }
@@ -129,9 +125,7 @@ namespace SME.SGP.Aplicacao
                                 long periodoEscolarId, 
                                 TipoPendencia tipoPendencia, 
                                 IEnumerable<long> aulasIds, 
-                                string descricaoComponenteCurricular, 
-                                string turmaAnoComModalidade, 
-                                string descricaoUeDre, 
+                                string descricaoComponenteCurricular,
                                 Turma turma)
         {
             var pendenciaAulaProfessor = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(long.Parse(disciplinaId), codigoRfProfessor, periodoEscolarId, tipoPendencia, turma.CodigoTurma, turma.UeId));
@@ -148,7 +142,7 @@ namespace SME.SGP.Aplicacao
 
                     var pendenciaId = pendenciaIdExistente > 0
                         ? pendenciaIdExistente
-                        : await mediator.Send(MapearPendencia(tipoPendencia, descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turma.Id));
+                        : await mediator.Send(MapearPendencia(tipoPendencia, descricaoComponenteCurricular, turma.NomeComModalidade(), turma.ObterEscola(), turma.Id));
 
                     await mediator.Send(new SalvarPendenciasAulasCommand(pendenciaId, aulasIds));
 

@@ -258,11 +258,10 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma)
         {
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
-            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
-                                                                                   turma.ModalidadeCodigo,
+            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma,
                                                                                    codigosComponentesConsiderados.ToArray(),
                                                                                    dataAula,
-                                                                                   request.Usuario.CodigoRf,
+                                                                                   request.Usuario,
                                                                                    request.Quantidade,
                                                                                    request.EhRegencia,
                                                                                    aulasExistentes));
