@@ -150,9 +150,9 @@ namespace SME.SGP.Aplicacao
             
             var codigosComponentesConsiderados = new List<long>() { aulaRecorrente.ComponenteCurricularId };
 
-            var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma,
-                codigosComponentesConsiderados.ToArray(), aulaRecorrente.TipoCalendarioId, aulaRecorrente.EhRegencia,
-                aulaRecorrente.Quantidade, usuario, turma, atribuicao);
+            var validacaoDatas = await ValidarDatasAula(diasParaIncluirRecorrencia, 
+                                                        codigosComponentesConsiderados.ToArray(), 
+                                                        usuario, turma, atribuicao, aulaRecorrente);
             var datasPersistencia = validacaoDatas.datasPersistencia;
             var mensagensValidacao = validacaoDatas.mensagensValidacao;
 
@@ -218,10 +218,16 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<(IEnumerable<DateTime> datasPersistencia, IEnumerable<string> mensagensValidacao)> ValidarDatasAula(IEnumerable<DateTime> diasParaIncluirRecorrencia, string turmaCodigo, long[] componentesCurricularesCodigos, long tipoCalendarioId, bool ehRegencia, int quantidade, Usuario usuario, Turma turma, AtribuicaoEsporadica atribuicao)
+        private async Task<(IEnumerable<DateTime> datasPersistencia, IEnumerable<string> mensagensValidacao)> ValidarDatasAula(
+                                                                    IEnumerable<DateTime> diasParaIncluirRecorrencia, 
+                                                                    long[] componentesCurricularesCodigos,
+                                                                    Usuario usuario, 
+                                                                    Turma turma, 
+                                                                    AtribuicaoEsporadica atribuicao,
+                                                                    InserirAulaRecorrenteCommand aulaRecorrente)
         {
             // Aulas Existentes
-            var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, turmaCodigo, componentesCurricularesCodigos, usuario.EhProfessorCj());
+            var validacaoAulasExistentes = await ValidarAulaExistenteNaData(diasParaIncluirRecorrencia, aulaRecorrente.CodigoTurma, componentesCurricularesCodigos, usuario.EhProfessorCj());
             var datasValidas = validacaoAulasExistentes.datasValidas;
 
             if (datasValidas.EhNulo() || !datasValidas.Any())
@@ -233,16 +239,16 @@ namespace SME.SGP.Aplicacao
             }
 
             // Grade Curricular
-            var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, turmaCodigo, componentesCurricularesCodigos, ehRegencia, quantidade, usuario.CodigoRf);
+            var validacaoGradeCurricular = await ValidarGradeCurricular(datasValidas, aulaRecorrente.CodigoTurma, componentesCurricularesCodigos, aulaRecorrente.EhRegencia, aulaRecorrente.Quantidade, usuario.CodigoRf);
 
             // Dias Letivos
-            var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, tipoCalendarioId);
+            var validacaoDiasLetivos = await ValidarDiasLetivos(validacaoGradeCurricular.datasValidas, turma, aulaRecorrente.TipoCalendarioId);
 
             if (validacaoDiasLetivos.diasLetivos.EhNulo() || !validacaoDiasLetivos.diasLetivos.Any())
                 throw new NegocioException($"{string.Join("<br/>", validacaoDiasLetivos.mensagensValidacao)}");
 
             // Atribuição Professor
-            var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, turmaCodigo, componentesCurricularesCodigos.OrderBy(cc => cc).Last(), usuario, atribuicao); ;
+            var validacaoAtribuicaoProfessor = await ValidarAtribuicaoProfessor(validacaoDiasLetivos.diasLetivos, aulaRecorrente.CodigoTurma, componentesCurricularesCodigos.OrderBy(cc => cc).Last(), usuario, atribuicao); ;
 
             return (validacaoAtribuicaoProfessor.datasAtribuicao,
                     validacaoAtribuicaoProfessor.mensagensValidacao

@@ -35,33 +35,14 @@ namespace SME.SGP.Aplicacao
             {
                 if (inserirAulaDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
                 {
-                    return await mediator.Send(new InserirAulaUnicaCommand(usuarioLogado,
-                                                                           inserirAulaDto.DataAula,
-                                                                           inserirAulaDto.Quantidade,
-                                                                           inserirAulaDto.CodigoTurma,
-                                                                           inserirAulaDto.CodigoComponenteCurricular, 
-                                                                           inserirAulaDto.NomeComponenteCurricular,
-                                                                           inserirAulaDto.TipoCalendarioId,
-                                                                           inserirAulaDto.TipoAula,
-                                                                           inserirAulaDto.CodigoUe,
-                                                                           inserirAulaDto.EhRegencia));
+                    return await mediator.Send(new InserirAulaUnicaCommand(usuarioLogado, inserirAulaDto));
                 }
                 else
                 {
                     string mensagemDeExcecao;
                     try
                     {
-                        await mediator.Send(new IncluirFilaInserirAulaRecorrenteCommand(usuarioLogado,
-                                                                                        inserirAulaDto.DataAula,
-                                                                                        inserirAulaDto.Quantidade,
-                                                                                        inserirAulaDto.CodigoTurma,
-                                                                                        inserirAulaDto.CodigoComponenteCurricular,
-                                                                                        inserirAulaDto.NomeComponenteCurricular,
-                                                                                        inserirAulaDto.TipoCalendarioId,
-                                                                                        inserirAulaDto.TipoAula,
-                                                                                        inserirAulaDto.CodigoUe,
-                                                                                        inserirAulaDto.EhRegencia,
-                                                                                        inserirAulaDto.RecorrenciaAula));
+                        await mediator.Send(new IncluirFilaInserirAulaRecorrenteCommand(usuarioLogado, inserirAulaDto));
 
                         return await Task.FromResult(new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento."));
                     }

@@ -51,16 +51,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task SalvarAtividadeAvaliativa(ImportarAtividadeGsaCommand request, DataAulaDto aula)
         {
-            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,
-                                                                  request.AtividadeGsa.UsuarioRf,
-                                                                  request.AtividadeGsa.TurmaId,
-                                                                  request.AtividadeGsa.ComponenteCurricularId,
-                                                                  request.AtividadeGsa.Titulo,
-                                                                  request.AtividadeGsa.Descricao,
-                                                                  request.AtividadeGsa.DataCriacao,
-                                                                  request.AtividadeGsa.DataAlteracao,
-                                                                  request.AtividadeGsa.AtividadeClassroomId
-                                                                  ));
+            await mediator.Send(new SalvarAtividadeAvaliativaGsaCommand(aula.DataAula,request.AtividadeGsa));
         }
 
         private async Task ValidarLancamentoNotaComponente(long componenteCurricularId)

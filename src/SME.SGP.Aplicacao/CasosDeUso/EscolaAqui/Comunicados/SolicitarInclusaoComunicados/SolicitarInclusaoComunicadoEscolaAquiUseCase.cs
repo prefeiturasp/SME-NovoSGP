@@ -32,23 +32,7 @@ namespace SME.SGP.Aplicacao
                             .Select(d => (int)d)
                             .ToArray();
 
-                var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado.Titulo,
-                                                                               comunicado.Descricao,
-                                                                               comunicado.DataEnvio,
-                                                                               comunicado.DataExpiracao,
-                                                                               comunicado.AnoLetivo,
-                                                                               comunicado.CodigoDre,
-                                                                               comunicado.CodigoUe,
-                                                                               comunicado.Turmas,
-                                                                               comunicado.AlunoEspecificado,
-                                                                               comunicado.Modalidades,
-                                                                               comunicado.Semestre,
-                                                                               comunicado.Alunos,
-                                                                               comunicado.SeriesResumidas,
-                                                                               comunicado.TiposEscolas,
-                                                                               comunicado.AnosEscolares,
-                                                                               comunicado.TipoCalendarioId,
-                                                                               comunicado.EventoId));
+                var retorno = await mediator.Send(new InserirComunicadoCommand(comunicado));
 
                 if (!retorno)
                     throw new NegocioException("Erro ao criar o comunicado");

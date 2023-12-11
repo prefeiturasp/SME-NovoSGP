@@ -50,15 +50,10 @@ namespace SME.SGP.Aplicacao
             mensagemUsuario.Append($"<a href='{hostAplicacao}diario-classe/aula-dada-aula-prevista'>Clique aqui para visualizar os detalhes.</a>");
 
             await mediator.Send(new SalvarNotificacaoAulaPrevistaCommand(
+                registroAulaPrevistaDivergente,
                 tituloMensagem,
                 mensagemUsuario.ToString(),
-                registroAulaPrevistaDivergente.ProfessorRf,
-                registroAulaPrevistaDivergente.CodigoDre,
-                registroAulaPrevistaDivergente.CodigoUe,
-                registroAulaPrevistaDivergente.CodigoTurma,
-                usuarioId,
-                registroAulaPrevistaDivergente.Bimestre,
-                registroAulaPrevistaDivergente.DisciplinaId));
+                usuarioId));
         }
     }
 }
