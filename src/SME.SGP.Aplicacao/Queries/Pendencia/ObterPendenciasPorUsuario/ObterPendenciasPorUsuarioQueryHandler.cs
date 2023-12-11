@@ -26,61 +26,45 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
         {
             PaginacaoResultadoDto<Pendencia> pendenciaPaginada;
-            var itensDaLista = new List<Pendencia>();
-            
             List<long> listaPendenciasUsuario;
 
-            //-> Retorno quando houver algum filtro
-            if (!string.IsNullOrEmpty(request.TurmaCodigo) || !string.IsNullOrEmpty(request.TituloPendencia) ||
-                request.TipoPendencia > 0)
+            if (ParametrosValidos(request))
             {
-                var tiposPendenciasGruposFiltrar = request.TipoPendencia > 0
-                    ? ObterTiposPendenciasGrupos((TipoPendenciaGrupo)request.TipoPendencia.GetValueOrDefault()).ToArray()
-                    : Array.Empty<int>();
-
+                var tiposPendenciasGruposFiltrar = ObterTiposPendenciasGrupos(request.TipoPendencia);
                 pendenciaPaginada = await repositorioPendencia.ListarPendenciasUsuarioComFiltro(request.UsuarioId,
-                    tiposPendenciasGruposFiltrar.ToArray(),
-                    request.TituloPendencia,
-                    request.TurmaCodigo,
-                    Paginacao);
-
-                itensDaLista.AddRange(pendenciaPaginada.Items);
-
+                                                                                                tiposPendenciasGruposFiltrar.ToArray(),
+                                                                                                request.TituloPendencia,
+                                                                                                request.TurmaCodigo,
+                                                                                                Paginacao);
+                
                 if (!string.IsNullOrEmpty(request.TurmaCodigo) && request.TipoPendencia == 0)
                 {
-                    listaPendenciasUsuario =
-                        (await repositorioPendencia.FiltrarListaPendenciasUsuario(request.TurmaCodigo,
-                            pendenciaPaginada.Items.ToList())).ToList();
-                    
-                    foreach (var pendencia in pendenciaPaginada.Items)
-                    {
-                        if (!listaPendenciasUsuario.Any(c => c == pendencia.Id))
-                            itensDaLista.Remove(pendencia);
-                    }
+                    listaPendenciasUsuario = (await repositorioPendencia.FiltrarListaPendenciasUsuario(request.TurmaCodigo,
+                                                                                                       pendenciaPaginada.Items.ToList())).ToList();
+                    pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
                 }
-
-                pendenciaPaginada.Items = itensDaLista;
                 return await MapearParaDtoPaginado(pendenciaPaginada);
             }
 
-            //-> Retorno quando não há qualquer filtro
             pendenciaPaginada = await repositorioPendencia.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
-            
-            itensDaLista.AddRange(pendenciaPaginada.Items);
-
-            listaPendenciasUsuario =
-                (await repositorioPendencia.FiltrarListaPendenciasUsuario(request.TurmaCodigo,
-                    pendenciaPaginada.Items.ToList())).ToList();            
-            
-            foreach (var pendencia in pendenciaPaginada.Items)
-            {
-                if (!listaPendenciasUsuario.Any(c => c == pendencia.Id))
-                    itensDaLista.Remove(pendencia);
-            }
-            
+            listaPendenciasUsuario = (await repositorioPendencia.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendenciaPaginada.Items.ToList())).ToList();
+            pendenciaPaginada.Items = pendenciaPaginada.Items.Where(pendencia => listaPendenciasUsuario.Any(c => c == pendencia.Id));
+           
             return await MapearParaDtoPaginado(pendenciaPaginada);
         }
 
+        private bool ParametrosValidos(ObterPendenciasPorUsuarioQuery request) =>
+                    !string.IsNullOrEmpty(request.TurmaCodigo) || 
+                    !string.IsNullOrEmpty(request.TituloPendencia) ||
+                    request.TipoPendencia > 0;
+
+        private static IEnumerable<int> ObterTiposPendenciasGrupos(int? tipoPendenciaGrupo)
+        {
+            if (tipoPendenciaGrupo > 0)
+                return ObterTiposPendenciasGrupos((TipoPendenciaGrupo)tipoPendenciaGrupo.GetValueOrDefault()).ToArray();
+            return Array.Empty<int>();
+
+        }
         private static IEnumerable<int> ObterTiposPendenciasGrupos(TipoPendenciaGrupo tipoPendenciaGrupo)
         {
             var tiposPendencias = Enum.GetValues(typeof(TipoPendenciaGrupo))
