@@ -15,15 +15,15 @@ namespace SME.SGP.Aplicacao
     public class SalvarAcompanhamentoAlunoUseCase : AbstractUseCase, ISalvarAcompanhamentoAlunoUseCase
     {
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
-        
-        public SalvarAcompanhamentoAlunoUseCase(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
+
+        public SalvarAcompanhamentoAlunoUseCase(IMediator mediator, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> 
-            
-            
+        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto>
+
+
             Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(acompanhamentoAlunoDto.TurmaId));
@@ -31,25 +31,25 @@ namespace SME.SGP.Aplicacao
 
             if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
                 throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA, parametroQuantidadeImagens));
-            
+
             if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
-            
+
             var bimestre = acompanhamentoAlunoDto.Semestre == 1 ? 2 : 4;
 
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataAtual, bimestre,turma.AnoLetivo == dataAtual.Year));
-            
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataAtual, bimestre, turma.AnoLetivo == dataAtual.Year));
+
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
-            
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, turma.AnoLetivo, true,false, turma.CodigoTurma));
+
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, turma.AnoLetivo, turma.Historica, false, turma.CodigoTurma));
             if (aluno.EhNulo())
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
-            
+
             if (aluno.EstaInativo(dataAtual))
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_INATIVO);
-            
+
             if (acompanhamentoAlunoDto.TextoSugerido)
                 await CopiarArquivo(acompanhamentoAlunoDto);
 
@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
                             var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
                             acompanhamentoAluno.PercursoIndividual = str;
                         }
-                    }       
+                    }
                 }
 
         }
