@@ -103,21 +103,10 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var aulaRegistrada in registroFrequenciaAlunoDto.Aulas)
                 {
-                    var frequenciaAluno = registroFrequenciaAlunoAtual.FirstOrDefault(fr => fr.NumeroAula == aulaRegistrada.NumeroAula && fr.CodigoAluno == registroFrequenciaAlunoDto.CodigoAluno);
+                    var frequenciaAluno = ObterRegistroFrequenciaAlunoAula(registroFrequenciaAlunoAtual, aulaRegistrada.NumeroAula, registroFrequenciaAlunoDto.CodigoAluno);
                     var valorFrequencia = ObterValorFrequencia(registroFrequenciaAlunoDto.TipoFrequenciaPreDefinido, aulaRegistrada.TipoFrequencia);
-
                     if (frequenciaAluno.NaoEhNulo())
-                    {
-                        if (frequenciaAluno.Valor != (int)valorFrequencia)
-                        {
-                            if (frequenciaAluno.Valor == (int)TipoFrequencia.F && valorFrequencia != TipoFrequencia.F)
-                                registroFrequenciasAlunos[EXCLUIR_COMPENSACAO].Add(frequenciaAluno);
-
-                            frequenciaAluno.Valor = (int)valorFrequencia;
-                            frequenciaAluno.AulaId = request.AulaId;
-                            registroFrequenciasAlunos[ALTERAR].Add(frequenciaAluno);
-                        }
-                    }
+                        TratarAlteracaoRegistroFrequenciaAluno(registroFrequenciasAlunos, request.AulaId, frequenciaAluno, valorFrequencia);
                     else
                     {
                         var novafrequencia = new RegistroFrequenciaAluno()
@@ -136,6 +125,22 @@ namespace SME.SGP.Aplicacao
 
             return registroFrequenciasAlunos;
         }
+
+        private void TratarAlteracaoRegistroFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> registroFrequenciasAlunos, long aulaId, RegistroFrequenciaAluno registroFrequenciaAluno, TipoFrequencia valorFrequencia)
+        {
+            if (registroFrequenciaAluno.Valor != (int)valorFrequencia)
+            {
+                if (registroFrequenciaAluno.Valor == (int)TipoFrequencia.F && valorFrequencia != TipoFrequencia.F)
+                    registroFrequenciasAlunos[EXCLUIR_COMPENSACAO].Add(registroFrequenciaAluno);
+
+                registroFrequenciaAluno.Valor = (int)valorFrequencia;
+                registroFrequenciaAluno.AulaId = aulaId;
+                registroFrequenciasAlunos[ALTERAR].Add(registroFrequenciaAluno);
+            }
+        }
+
+        private RegistroFrequenciaAluno ObterRegistroFrequenciaAlunoAula(IEnumerable<RegistroFrequenciaAluno> registrosFrequenciasAlunoAtual, int numeroAula, string codigoAluno) =>
+                        registrosFrequenciasAlunoAtual.FirstOrDefault(fr => fr.NumeroAula == numeroAula && fr.CodigoAluno == codigoAluno);
 
         private async Task<Dictionary<int, List<FrequenciaPreDefinida>>> ObterDicionarioFrequenciaPreDefinidaParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
         {
