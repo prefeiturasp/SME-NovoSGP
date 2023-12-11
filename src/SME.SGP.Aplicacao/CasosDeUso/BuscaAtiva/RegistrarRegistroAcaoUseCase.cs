@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task IncluirRespostasRegistroAcao(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
-            => await RegistrarRespostaRegistroAcao(ObterRespostasAIncluir(questaoExistente, respostas), questaoExistente.Id);
+            => await RegistrarRespostaRegistroAcao(ObterRespostasAIncluir(respostas), questaoExistente.Id);
 
         private async Task RegistrarRespostaRegistroAcao(IEnumerable<RegistroAcaoBuscaAtivaSecaoQuestaoDto> questoes, long questaoRegistroAcaoId)
         {
@@ -233,8 +233,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private IEnumerable<RegistroAcaoBuscaAtivaSecaoQuestaoDto> ObterRespostasAIncluir(QuestaoRegistroAcaoBuscaAtiva questaoExistente,
-                                                                                       IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
+        private IEnumerable<RegistroAcaoBuscaAtivaSecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas)
             => respostas.Where(c => c.RespostaRegistroAcaoId == 0);
 
         private IEnumerable<RespostaRegistroAcaoBuscaAtiva> ObterRespostasAExcluir(QuestaoRegistroAcaoBuscaAtiva questaoExistente, IGrouping<long, RegistroAcaoBuscaAtivaSecaoQuestaoDto> respostas) 

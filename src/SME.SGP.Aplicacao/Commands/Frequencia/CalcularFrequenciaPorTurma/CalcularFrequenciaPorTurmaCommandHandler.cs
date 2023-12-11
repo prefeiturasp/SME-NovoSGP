@@ -53,16 +53,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task CalcularFrequenciaPorTurma(CalcularFrequenciaPorTurmaCommand request)
         {
-            var usuarioConsiderado = await ObterUsuarioConsiderado(request);
-            var professor = usuarioConsiderado.NaoEhNulo() && usuarioConsiderado.EhProfessor() ? usuarioConsiderado.CodigoRf : null;
+            var professor = await ObterRfProfessorLogado(request);
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaId));
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-            var periodoConsiderado = periodos?.SingleOrDefault(p => p.PeriodoInicio.Date <= request.DataAula.Date && p.PeriodoFim.Date >= request.DataAula.Date);
+            var periodoConsiderado = ObterPeriodoVigenteDataAula(periodos, request.DataAula.Date);
             var componentesRegenciaAulasAutomaticas = await mediator.Send(new ObterCodigosComponentesCurricularesRegenciaAulasAutomaticasQuery(turma.ModalidadeCodigo));
-
-            if (periodoConsiderado.EhNulo())
-                throw new NegocioException("A data da aula está fora dos períodos escolares da turma");
-
             var alunos = request.Alunos;
 
             if (alunos.Any())
@@ -84,23 +79,10 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var codigoAluno in alunosComFrequencia)
                     {
-                        var totalAulasNaDisciplinaParaAluno = registroFreqAlunos
-                            .Where(t => t.AlunoCodigo.Equals(codigoAluno) && disciplinasIdsConsideradas.Contains(t.ComponenteCurricularId))?
-                            .Sum(t => t.TotalAulas) ?? 0;
-
-                        var totalAulasParaAluno = registroFreqAlunos
-                            .Where(t => t.AlunoCodigo.Equals(codigoAluno))
-                            .Sum(s => s.TotalAulas);
-
-                        if (totalAulasNaDisciplinaParaAluno == 0)
-                            excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos
-                                .Where(w => w.Tipo == TipoFrequenciaAluno.PorDisciplina && disciplinasIdsConsideradas.Contains(w.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno))
-                                .Select(s => s.Id));
-
-                        if (totalAulasParaAluno == 0)
-                            excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos
-                                .Where(w => w.Tipo == TipoFrequenciaAluno.Geral && w.CodigoAluno.Equals(codigoAluno))
-                                .Select(s => s.Id));
+                        var totalAulasNaDisciplinaParaAluno = ObterTotalAulasAlunoNaDisciplina(registroFreqAlunos, codigoAluno, disciplinasIdsConsideradas);
+                        var totalAulasParaAluno = ObterTotalAulasAluno(registroFreqAlunos, codigoAluno);
+                        excluirFrequenciaAlunoIds.AddRange(ObterIdsFrequenciaAlunoSemAulaDisciplinaExclusao(totalAulasNaDisciplinaParaAluno, frequenciaDosAlunos, codigoAluno, disciplinasIdsConsideradas));
+                        excluirFrequenciaAlunoIds.AddRange(ObterIdsFrequenciaAlunoSemAulaExclusao(totalAulasParaAluno, frequenciaDosAlunos, codigoAluno));
                         
                         TrataFrequenciaPorDisciplinaAluno(codigoAluno, totalAulasNaDisciplinaParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, turma, request.DisciplinaId, periodoConsiderado, null, excluirFrequenciaAlunoIds);
                         TrataFrequenciaGlobalAluno(codigoAluno, totalAulasParaAluno, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
@@ -117,6 +99,55 @@ namespace SME.SGP.Aplicacao
                 if (excluirFrequenciaAlunoIds.Any())
                     await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
             }
+        }
+
+        private IEnumerable<long> ObterIdsFrequenciaAlunoSemAulaDisciplinaExclusao(int totalAulasNaDisciplinaParaAluno, IEnumerable<FrequenciaAluno> frequenciaAlunos,
+                                                     string codigoAluno, IEnumerable<string> disciplinasIdsConsideradas)
+        {
+            if (totalAulasNaDisciplinaParaAluno == 0)
+                return frequenciaAlunos
+                                .Where(w => w.Tipo == TipoFrequenciaAluno.PorDisciplina && disciplinasIdsConsideradas.Contains(w.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno))
+                                .Select(s => s.Id);
+            return Enumerable.Empty<long>();
+        }
+
+        private IEnumerable<long> ObterIdsFrequenciaAlunoSemAulaExclusao(int totalAulasParaAluno, IEnumerable<FrequenciaAluno> frequenciaAlunos,
+                                                     string codigoAluno)
+        {
+            if (totalAulasParaAluno == 0)
+                return frequenciaAlunos
+                                .Where(w => w.Tipo == TipoFrequenciaAluno.Geral && w.CodigoAluno.Equals(codigoAluno))
+                                .Select(s => s.Id);
+            return Enumerable.Empty<long>();
+        }
+
+        private int ObterTotalAulasAluno(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos,
+                                                     string codigoAluno)
+        {
+            return registroFreqAlunos
+                            .Where(t => t.AlunoCodigo.Equals(codigoAluno))
+                            .Sum(s => s.TotalAulas);
+        }
+
+        private int ObterTotalAulasAlunoNaDisciplina(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos, 
+                                                     string codigoAluno, IEnumerable<string> disciplinasIdsConsideradas)
+        {
+            return registroFreqAlunos
+                            .Where(t => t.AlunoCodigo.Equals(codigoAluno) && disciplinasIdsConsideradas.Contains(t.ComponenteCurricularId))?
+                            .Sum(t => t.TotalAulas) ?? 0;
+        }
+        private PeriodoEscolar ObterPeriodoVigenteDataAula(IEnumerable<PeriodoEscolar> periodos, DateTime dataAula)
+        {
+            var periodo = periodos?.SingleOrDefault(p => p.PeriodoInicio.Date <= dataAula && p.PeriodoFim.Date >= dataAula);
+            if (periodo.EhNulo())
+                throw new NegocioException("A data da aula está fora dos períodos escolares da turma");
+            return periodo;
+        }
+
+        private async Task<string> ObterRfProfessorLogado(CalcularFrequenciaPorTurmaCommand request)
+        {
+            var usuarioConsiderado = await ObterUsuarioConsiderado(request);
+            return usuarioConsiderado.NaoEhNulo() && usuarioConsiderado.EhProfessor() ? usuarioConsiderado.CodigoRf : null;
         }
 
         private async Task<Usuario> ObterUsuarioConsiderado(CalcularFrequenciaPorTurmaCommand request)

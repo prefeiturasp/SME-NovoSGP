@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
                 var somenteInfantil = perfilAtual == Perfis.PERFIL_CJ_INFANTIL;
 
                 if (!consideraHistorico)
-                    await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes, codigoDre);
+                    await ObterAtribuicoesEolUe(loginAtual, perfilAtual, codigosUes);
 
                 if (somenteInfantil)
                     await ObterAtribuicoesCjUe(loginAtual, codigosUes, codigoDre, anoLetivo, Modalidade.EducacaoInfantil, consideraHistorico);
@@ -185,7 +185,7 @@ namespace SME.SGP.Aplicacao
                                   select dre.Codigo).Distinct());
         }
 
-        private async Task ObterAtribuicoesEolUe(string professorRf, Guid perfil, List<string> codigosUes, string codigoDre)
+        private async Task ObterAtribuicoesEolUe(string professorRf, Guid perfil, List<string> codigosUes)
         {
             var abrangencia = await mediator.Send(new ObterAbrangenciaPorLoginPerfilQuery(professorRf, perfil));
 

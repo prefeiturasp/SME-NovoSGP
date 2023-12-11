@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             var turmasCodigos = new List<string> { turma.CodigoTurma };
             if (turma.EhEJA() || turma.EhTurmaEnsinoMedio)
             {
-                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, filtro.AlunoCodigo);
                 turmasCodigos.AddRange(codigosComplementares);
                 if (!turma.EhTurmaRegular())
                 {
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
             if (!filtro.Inativo && componentesComNotaFechamentoOuConselho.Any())
             {
-                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, ue, filtro.AlunoCodigo);
+                var codigosComplementares = await ObterTurmasComplementaresEOL(turma, filtro.AlunoCodigo);
 
                 if (turma.ModalidadeCodigo != Modalidade.Fundamental && codigosComplementares.Any())
                     turmasCodigos.AddRange(codigosComplementares);
@@ -251,7 +251,7 @@ namespace SME.SGP.Aplicacao
             else return conceitoId;
         }
 
-        private async Task<string[]> ObterTurmasComplementaresEOL(Turma turma, Ue ue, string codigoAluno)
+        private async Task<string[]> ObterTurmasComplementaresEOL(Turma turma, string codigoAluno)
         {
             var turmasItinerarioEnsinoMedio = await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance);
 

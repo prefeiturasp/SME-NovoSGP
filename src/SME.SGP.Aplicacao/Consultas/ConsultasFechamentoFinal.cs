@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
 
             if (!retorno.EhSintese)
-                notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota, tipoCalendario.Id);
+                notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, retorno.EhNota, tipoCalendario.Id);
 
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
@@ -212,7 +212,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota,long? tipoCalendario = null)
+        private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, bool ehNota,long? tipoCalendario = null)
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
             var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo }, -1, tipoCalendario);
