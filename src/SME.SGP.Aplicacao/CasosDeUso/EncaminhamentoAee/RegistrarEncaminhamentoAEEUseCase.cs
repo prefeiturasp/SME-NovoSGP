@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         }
 
         private async Task IncluirRespostasEncaminhamento(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
-            => await RegistrarRespostaEncaminhamento(ObterRespostasAIncluir(questaoExistente, respostas), questaoExistente.Id);
+            => await RegistrarRespostaEncaminhamento(ObterRespostasAIncluir(respostas), questaoExistente.Id);
 
         private async Task RegistrarRespostaEncaminhamento(IEnumerable<EncaminhamentoAEESecaoQuestaoDto> questoes, long questaoEncaminhamentoId)
         {
@@ -205,7 +205,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 await mediator.Send(new ExcluirRespostaEncaminhamentoAEECommand(respostasExcluir));
         }
 
-        private IEnumerable<EncaminhamentoAEESecaoQuestaoDto> ObterRespostasAIncluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
+        private IEnumerable<EncaminhamentoAEESecaoQuestaoDto> ObterRespostasAIncluir(IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostas)
             => respostas.Where(c => c.RespostaEncaminhamentoId == 0);
 
         private IEnumerable<RespostaEncaminhamentoAEE> ObterRespostasAExcluir(QuestaoEncaminhamentoAEE questaoExistente, IGrouping<long, EncaminhamentoAEESecaoQuestaoDto> respostasEncaminhamento)
