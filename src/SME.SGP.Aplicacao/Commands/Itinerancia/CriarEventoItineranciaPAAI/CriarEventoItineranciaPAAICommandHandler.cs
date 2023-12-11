@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.Commands
                 DataInicio = request.DataEvento,
                 DataFim = request.DataEvento,
                 Letivo = EventoLetivo.Opcional,
-                Nome = ObterNomeEvento(request, usuario),
+                Nome = ObterNomeEvento(usuario),
                 Descricao = ObterDescricaoEvento(request)
             };
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao.Commands
             return await mediator.Send(new ObterTipoCalendarioIdPorCodigoUEQuery(ueCodigo, anoLetivo, semestre));
         }
 
-        private string ObterNomeEvento(CriarEventoItineranciaPAAICommand request, Usuario usuario)
+        private string ObterNomeEvento(Usuario usuario)
             => $"Itinerância PAAI {usuario.Nome}";
 
         private string ObterDescricaoEvento(CriarEventoItineranciaPAAICommand request)

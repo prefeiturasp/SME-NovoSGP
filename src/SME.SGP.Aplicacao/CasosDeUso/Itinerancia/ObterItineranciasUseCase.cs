@@ -29,23 +29,23 @@ namespace SME.SGP.Aplicacao
 
             if (listaRetorno.NaoEhNulo() && listaRetorno.Items.Any())
             {
-                return await MapearParaDto(listaRetorno, filtro.AnoLetivo);
+                return await MapearParaDto(listaRetorno);
             }
 
             return default;
         }
 
-        private async Task<PaginacaoResultadoDto<ItineranciaResumoDto>> MapearParaDto(PaginacaoResultadoDto<ItineranciaRetornoQueryDto> resultadoDto, int anoLetivo)
+        private async Task<PaginacaoResultadoDto<ItineranciaResumoDto>> MapearParaDto(PaginacaoResultadoDto<ItineranciaRetornoQueryDto> resultadoDto)
         {
             return new PaginacaoResultadoDto<ItineranciaResumoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = await MapearParaDto(resultadoDto.Items, anoLetivo)
+                Items = await MapearParaDto(resultadoDto.Items)
             };
         }
 
-        private async Task<IEnumerable<ItineranciaResumoDto>> MapearParaDto(IEnumerable<ItineranciaRetornoQueryDto> itinerancias, int anoLetivo)
+        private async Task<IEnumerable<ItineranciaResumoDto>> MapearParaDto(IEnumerable<ItineranciaRetornoQueryDto> itinerancias)
         {
             var itineranciasParaRetornar = new List<ItineranciaResumoDto>();
 

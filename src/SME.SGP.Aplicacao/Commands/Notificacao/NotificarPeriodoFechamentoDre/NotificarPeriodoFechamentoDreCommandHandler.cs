@@ -24,13 +24,13 @@ namespace SME.SGP.Aplicacao
             var ano = DateTime.Now.Year;
             var ues = await mediator.Send(new ObterUEsSemPeriodoFechamentoQuery(request.PeriodoFechamentoBimestre.PeriodoEscolarId, ano, request.ModalidadeTipoCalendario));
 
-            await EnviarNotificacaoDre(ues, request.PeriodoFechamentoBimestre, request.ModalidadeTipoCalendario, ano);
-            await EnviarNotificacaoSme(ues, request.PeriodoFechamentoBimestre, request.ModalidadeTipoCalendario, ano);
+            await EnviarNotificacaoDre(ues, request.ModalidadeTipoCalendario, ano);
+            await EnviarNotificacaoSme(ues, request.ModalidadeTipoCalendario, ano);
 
             return true;
         }
 
-        private async Task EnviarNotificacaoSme(IEnumerable<Ue> ues, PeriodoFechamentoBimestre periodoFechamentoBimestre, ModalidadeTipoCalendario modalidadeTipoCalendario, int ano)
+        private async Task EnviarNotificacaoSme(IEnumerable<Ue> ues, ModalidadeTipoCalendario modalidadeTipoCalendario, int ano)
         {
             var titulo = $"UEs que não cadastraram o período de fechamento - {modalidadeTipoCalendario.Name()} {ano}";
             var mensagem = new StringBuilder($"As UEs abaixo ainda não cadastraram o período de fechamento para o tipo de calendário - <b>{modalidadeTipoCalendario.Name()} {ano}</b>.<br/><br/>");
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, mensagem.ToString(), NotificacaoCategoria.Aviso, NotificacaoTipo.Calendario, adminsSme));
         }
 
-        private async Task EnviarNotificacaoDre(IEnumerable<Ue> ues, PeriodoFechamentoBimestre periodoFechamentoBimestre, ModalidadeTipoCalendario modalidadeTipoCalendario, int ano)
+        private async Task EnviarNotificacaoDre(IEnumerable<Ue> ues, ModalidadeTipoCalendario modalidadeTipoCalendario, int ano)
         {
             var grupoDres = ues.GroupBy(a => a.DreId);
 

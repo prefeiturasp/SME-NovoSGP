@@ -97,13 +97,12 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
                     $"O fechamento do {bimestre}º bimestre de {componentes.FirstOrDefault().Nome} da turma {turma.Nome} da {ue.Nome} ({dre.Nome}) gerou {servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas()} pendência(s): " +
                     pendencias +
                     "Para consultar os detalhes da(s) pendência(s) acesse a tela 'Fechamento > Pendências do fechamento'", 
-                    usuarioLogadoId, 
                     dre.CodigoDre, 
                     ue.CodigoUe, 
                     turma.CodigoTurma, perfilUsuario);
         }
 
-        private async Task NotificarUsuarios(string titulo, string mensagem, long usuarioLogadoId, string codigoDre, string codigoUe, string codigoTurma, string perfilUsuario)
+        private async Task NotificarUsuarios(string titulo, string mensagem, string codigoDre, string codigoUe, string codigoTurma, string perfilUsuario)
         {
             var enviarPara = new List<Cargo>() { Cargo.Diretor, Cargo.CP};
 

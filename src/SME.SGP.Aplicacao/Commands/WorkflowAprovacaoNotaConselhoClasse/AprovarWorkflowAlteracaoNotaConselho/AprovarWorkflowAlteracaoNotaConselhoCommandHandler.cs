@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     foreach (var notaEmAprovacao in notasEmAprovacao)
-                        await AtualizarNotaConselho(notaEmAprovacao, request);
+                        await AtualizarNotaConselho(notaEmAprovacao);
 
                     await mediator.Send(new NotificarAprovacaoNotasConselhoCommand(notasEmAprovacao,
                                                                           request.CodigoDaNotificacao,
@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
         }
 
-        private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao, AprovarWorkflowAlteracaoNotaConselhoCommand request)
+        private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao)
         {
             await AlterarNota(notaEmAprovacao);
             await ExcluirWorkFlow(notaEmAprovacao);

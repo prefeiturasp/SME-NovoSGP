@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
                 // Valida Permissão do Professor na Turma/Disciplina            
                 if (!turma.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilSME() && !usuarioLogado.EhPerfilDRE())
-                    await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, fechamentoTurma.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento, fechamentoTurma.DisciplinaId.ToString(), usuarioLogado);
+                    await VerificaSeProfessorPodePersistirTurma(fechamentoTurma.TurmaId, periodoEscolar.PeriodoFim, fechamentoTurma.DisciplinaId.ToString(), usuarioLogado);
             }
 
             var parametroAlteracaoNotaFechamento = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, turma.AnoLetivo), cancellationToken);
@@ -505,7 +505,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento, string disciplinaId, Usuario usuario = null)
+        private async Task VerificaSeProfessorPodePersistirTurma(string turmaId, DateTime dataAula, string disciplinaId, Usuario usuario = null)
         {
             if (usuario.EhNulo())
                 usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
