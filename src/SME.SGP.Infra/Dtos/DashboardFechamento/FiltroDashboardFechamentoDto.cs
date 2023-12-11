@@ -8,6 +8,7 @@
         public int Modalidade { get; set; }
         public int Semestre { get; set; }
         public int Bimestre { get; set; }
+        public bool EhFiltroPorUe() => UeId != 0;
         
     }
 }

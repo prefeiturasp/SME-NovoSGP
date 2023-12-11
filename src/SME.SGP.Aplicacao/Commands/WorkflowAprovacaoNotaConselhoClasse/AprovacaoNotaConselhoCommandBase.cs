@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                                                           .ThenBy(parecer => parecer.DescricaoComponenteCurricular);
 
             foreach (var aprovacao in aprovacoesPorTurmaDto)
-                descricao.AppendLine(ObterLinhaDoAluno(aprovacao, turma));
+                descricao.AppendLine(ObterLinhaDoAluno(aprovacao));
 
             descricao.AppendLine("<tbody>");
             descricao.AppendLine("</table>");
@@ -83,7 +83,7 @@ namespace SME.SGP.Aplicacao
             return descricao.ToString();
         }
 
-        private string ObterLinhaDoAluno(WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto aprovacao, Turma turma)
+        private string ObterLinhaDoAluno(WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto aprovacao)
         {
             var notas = ObterValoresNotasNovoAnterior(aprovacao.ConceitoIdConselhoClasse, aprovacao.NotaConselhoClasse, aprovacao.ConceitoId, aprovacao.Nota);
             return $@"<tr>

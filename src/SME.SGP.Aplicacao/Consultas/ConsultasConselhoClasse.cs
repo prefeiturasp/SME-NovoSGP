@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
 
             var periodoFechamentoVigente = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamentoVigente(turma, DateTimeExtension.HorarioBrasilia().Date, bimestreFechamento);
 
-            var tipoNota = await ObterTipoNota(turma, periodoFechamentoVigente, consideraHistorico);
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoVigente);
 
             var mediaAprovacao = double.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.MediaBimestre));
 
@@ -188,7 +188,7 @@ namespace SME.SGP.Aplicacao
             var periodoFechamentoBimestre = await consultasPeriodoFechamento
                 .TurmaEmPeriodoDeFechamentoVigente(turma, DateTimeExtension.HorarioBrasilia().Date, ultimoBimestre.Bimestre);
 
-            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre, consideraHistorico);
+            var tipoNota = await ObterTipoNota(turma, periodoFechamentoBimestre);
 
             return new ConselhoClasseAlunoResumoDto()
             {
@@ -199,7 +199,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoVigenteDto periodoFechamentoVigente, bool consideraHistorico = false)
+        private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoVigenteDto periodoFechamentoVigente)
         {
             if (turma.EhCELP())
                 return TipoNota.Conceito;
