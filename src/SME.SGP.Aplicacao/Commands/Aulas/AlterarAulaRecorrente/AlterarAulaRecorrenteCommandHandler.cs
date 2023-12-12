@@ -82,9 +82,9 @@ namespace SME.SGP.Aplicacao
         private void ValidarProfCJSemPermissaoCriacaoAulas(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor,
                                                            IEnumerable<AtribuicaoCJ> atribuicoesProfessorCJ, string codigoTurma, long componenteCurricularId)
         {
-            if (!ContemComponenteCurricularProfCJTurmaDisciplina(atribuicoesProfessorCJ, codigoTurma, componenteCurricularId))
-                if (!ContemComponenteCurricularProfTurmaDisciplina(componentesCurricularesDoProfessor, componenteCurricularId))
-                    throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
+            if (!ContemComponenteCurricularProfCJTurmaDisciplina(atribuicoesProfessorCJ, codigoTurma, componenteCurricularId) &&
+                !ContemComponenteCurricularProfTurmaDisciplina(componentesCurricularesDoProfessor, componenteCurricularId))
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
         }
 
         private bool ContemComponenteCurricularProfTurmaDisciplina(IEnumerable<ComponenteCurricularEol> componentesCurricularesDoProfessor, long componenteCurricularId)
@@ -196,7 +196,7 @@ namespace SME.SGP.Aplicacao
             {
                 await AplicarValidacoes(request, dataAula, turma, aula);
 
-                await AlterarAula(request, aula, dataAula, turma);
+                await AlterarAula(request, aula, dataAula);
             }
             catch (NegocioException ne)
             {
@@ -213,7 +213,7 @@ namespace SME.SGP.Aplicacao
             return (true, false, dataAula, string.Empty);
         }
 
-        private async Task AlterarAula(AlterarAulaRecorrenteCommand request, Aula aula, DateTime dataAula, Turma turma)
+        private async Task AlterarAula(AlterarAulaRecorrenteCommand request, Aula aula, DateTime dataAula)
         {
             aula.DataAula = dataAula;
             aula.Quantidade = request.Quantidade;
@@ -237,7 +237,7 @@ namespace SME.SGP.Aplicacao
             if (aulasExistentes.NaoEhNulo() && aulasExistentes.Any(c => c.TipoAula == request.TipoAula))
                 throw new NegocioException("Já existe uma aula criada neste dia para este componente curricular");
 
-            await ValidarGrade(request, dataAula, aulasExistentes, turma, request.Quantidade - aula.Quantidade);
+            await ValidarGrade(request, dataAula, aulasExistentes, turma);
         }
 
         private async Task ValidarSeEhDiaLetivo(long tipoCalendarioId, DateTime dataAula, Turma turma)
@@ -255,14 +255,13 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(consultaPodeCadastrarAula.MensagemPeriodo);
         }
 
-        private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma, int quantidadeAdicional)
+        private async Task ValidarGrade(AlterarAulaRecorrenteCommand request, DateTime dataAula, IEnumerable<AulaConsultaDto> aulasExistentes, Turma turma)
         {
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };
-            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
-                                                                                   turma.ModalidadeCodigo,
+            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma,
                                                                                    codigosComponentesConsiderados.ToArray(),
                                                                                    dataAula,
-                                                                                   request.Usuario.CodigoRf,
+                                                                                   request.Usuario,
                                                                                    request.Quantidade,
                                                                                    request.EhRegencia,
                                                                                    aulasExistentes));

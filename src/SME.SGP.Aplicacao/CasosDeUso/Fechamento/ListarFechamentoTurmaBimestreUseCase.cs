@@ -348,9 +348,8 @@ namespace SME.SGP.Aplicacao
                             DisciplinaCodigo = disciplinaParaAdicionar.CodigoComponenteCurricular,
                         };
 
-                        if (nota.NaoEhNulo())
-                            if (!string.IsNullOrEmpty(nota.NotaConceito))
-                                notaConceitoTurma.NotaConceito = double.Parse(nota.NotaConceito);
+                        if (nota.NaoEhNulo() && !string.IsNullOrEmpty(nota.NotaConceito))
+                            notaConceitoTurma.NotaConceito = double.Parse(nota.NotaConceito);
 
                         fechamentoFinalAluno.NotasConceitoBimestre.Add(notaConceitoTurma);
                     }

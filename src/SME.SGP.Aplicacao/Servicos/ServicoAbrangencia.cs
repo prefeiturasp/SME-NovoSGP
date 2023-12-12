@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -206,7 +205,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
                     if (turmaId > 0)
                     {
-                        var abragenciaSGP = abrangenciaGeralSGP.Where(a => a.TurmaId == turmaId && !a.Historico).FirstOrDefault();
+                        var abragenciaSGP = abrangenciaGeralSGP.FirstOrDefault(a => a.TurmaId == turmaId && !a.Historico);
                         if (abragenciaSGP.NaoEhNulo())
                         {
                             var virouHistorica = await mediator.Send(new VerificaSeTurmaVirouHistoricaQuery(abragenciaSGP.TurmaId.Value));
@@ -394,9 +393,10 @@ namespace SME.SGP.Aplicacao.Servicos
             if(registrosDuplicados.Any())
                 idsParaAtualizar = registrosDuplicados.Select(x => x.Id).ToList();
 
-            if(abrangenciaSintetica.Any() && turmas.Any())
-                if(abrangenciaSintetica.Count() != turmas.Count())
-                    idsParaAtualizar.AddRange(VerificaTurmasAbrangenciaAtualParaHistorica(abrangenciaSintetica, turmas));
+            if(abrangenciaSintetica.Any() && 
+                turmas.Any() &&
+                abrangenciaSintetica.Count() != turmas.Count())
+                idsParaAtualizar.AddRange(VerificaTurmasAbrangenciaAtualParaHistorica(abrangenciaSintetica, turmas));
 
             await repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, TurmaId = x.Id}), login);
 

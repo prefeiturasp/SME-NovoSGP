@@ -2,8 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,11 +37,10 @@ namespace SME.SGP.Aplicacao
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
             var dadosPendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
-            if (dadosPendencia.NaoEhNulo())
-            {
-                if (dadosPendencia.PendenciaId > 0)
-                    await RemovePendencias(dadosPendencia.PendenciaId);
-            }
+            
+            if (dadosPendencia.NaoEhNulo() && dadosPendencia.PendenciaId > 0)
+                await RemovePendencias(dadosPendencia.PendenciaId);
+            
             if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
 

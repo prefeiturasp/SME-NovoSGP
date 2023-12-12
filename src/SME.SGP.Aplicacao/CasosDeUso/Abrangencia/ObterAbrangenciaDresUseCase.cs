@@ -2,8 +2,6 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
-using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,13 +22,7 @@ namespace SME.SGP.Aplicacao
             var perfil = await mediator
                 .Send(ObterPerfilAtualQuery.Instance);
 
-            var filtroEhCodigo = false;
-
-            if (!string.IsNullOrWhiteSpace(filtro))
-            {
-                if (filtro.All(char.IsDigit))
-                    filtroEhCodigo = true;
-            }
+            var filtroEhCodigo = !string.IsNullOrWhiteSpace(filtro) && filtro.All(char.IsDigit);
 
             return await mediator
                 .Send(new ObterAbrangenciaDresQuery(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo));

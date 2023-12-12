@@ -170,7 +170,7 @@ namespace SME.SGP.Aplicacao
                 mensagem.Append("<tr style='padding:4px;'>");
                 if (primeiroComponente)
                 {
-                    mensagem.Append($"<td style='padding:4px;' rowspan='{dto.ComponentesCurriculares.Count()}'>{dto.TurmaNome}</td>");
+                    mensagem.Append($"<td style='padding:4px;' rowspan='{dto.ComponentesCurriculares.Count}'>{dto.TurmaNome}</td>");
                     primeiroComponente = false;
                 }
                 mensagem.Append($"<td style='padding:4px;'>{componenteCurricular.ComponenteCurricularNome}</td>");

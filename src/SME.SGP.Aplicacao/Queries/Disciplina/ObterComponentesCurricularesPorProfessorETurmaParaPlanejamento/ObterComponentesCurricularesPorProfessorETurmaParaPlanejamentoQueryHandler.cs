@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
                     string.Empty,
                     request.CodigoDisciplina,
                     usuario.Login);
-                disciplinasDto = (MapearParaDto(componentesCJ, request.TurmaPrograma))?.OrderBy(c => c.Nome)?.ToList();
+                disciplinasDto = (MapearParaDto(componentesCJ))?.OrderBy(c => c.Nome)?.ToList();
             }
             else
             {
@@ -143,7 +143,7 @@ namespace SME.SGP.Aplicacao
             return componentes;
         }
 
-        private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
+        private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool ensinoEspecial = false)
         {
             var retorno = new List<DisciplinaDto>();
 

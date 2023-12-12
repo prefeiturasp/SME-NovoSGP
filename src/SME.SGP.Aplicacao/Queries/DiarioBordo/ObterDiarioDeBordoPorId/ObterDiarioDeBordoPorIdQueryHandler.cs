@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
             if (disciplinas != null && disciplinas.Any())
             {
-                if (disciplinas.Count() > 1)
+                if (disciplinas.Count > 1)
                 {
                     var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 

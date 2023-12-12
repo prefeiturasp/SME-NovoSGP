@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtroTurmaDto.TurmaCodigo));
 
-                    turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                    turmasPaginadas.Items = disciplinas.Select(d => new RetornoConsultaListagemTurmaComponenteDto()
                     {
                         TurmaCodigo = long.Parse(filtroTurmaDto.TurmaCodigo),
                         Modalidade = filtroTurmaDto.Modalidade.Value,
@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                         {
                             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaAbrangencia.ToString()));
 
-                            turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                            turmasPaginadas.Items = disciplinas.Select(d => new RetornoConsultaListagemTurmaComponenteDto()
                             {
                                 TurmaCodigo = long.Parse(turmaAbrangencia.ToString()),
                                 Modalidade = filtroTurmaDto.Modalidade.Value,
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                                                                                              usuario.CodigoRf,
                                                                                              filtroTurmaDto.ConsideraHistorico,
                                                                                              filtroTurmaDto.Bimestre > 0 ?
-                                                                                                periodoEscolar.Where(p => p.Bimestre == (filtroTurmaDto.Bimestre)).FirstOrDefault().PeriodoInicio :
+                                                                                                periodoEscolar.FirstOrDefault(p => p.Bimestre == (filtroTurmaDto.Bimestre)).PeriodoInicio :
                                                                                                 periodoEscolar.FirstOrDefault().PeriodoInicio,
                                                                                              anosInfantilDesconsiderar.NaoEhNulo() ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaAbrangencia.ToString()));
                         var disciplinas = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
-                        turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                        turmasPaginadas.Items = disciplinas.Select(d => new RetornoConsultaListagemTurmaComponenteDto()
                         {
                             TurmaCodigo = long.Parse(turmaAbrangencia.ToString()),
                             Modalidade = filtroTurmaDto.Modalidade.Value,
@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
 
             var codigosTurmaPaginada = turmasPaginadas.Items.Select(c => c.TurmaCodigo).Distinct().ToArray();
             var codigosTurmasComponente = usuario.EhAdmGestao() ? codigosTurmaPaginada
-                                     : turmasAbrangencia.NaoEhNulo() ? turmasAbrangencia.Select(c => c).ToArray().Intersect(codigosTurmaPaginada).ToArray()
+                                     : turmasAbrangencia.NaoEhNulo() ? turmasAbrangencia.Select(c => c).Intersect(codigosTurmaPaginada).ToArray()
                                      : codigosTurmaPaginada;
 
             var retornoComponentesTurma = from item in turmasPaginadas.Items.ToList()
@@ -291,18 +291,12 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turmaComponente in turmaCodigo)
                 {
-                    var pendencias = bimestre > 0 ? await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
-                                                                                                        turma.CodigoTurma,
+                    var pendencias = bimestre > 0 ? await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(
+                                                                                                        turma,
+                                                                                                        usuario,
+                                                                                                        turmaComponente.ComponenteCurricularCodigo.ToString(),
                                                                                                         anoLetivo,
-                                                                                                        bimestre,
-                                                                                                        verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
-                                                                                                        verificaAvaliacao: !ehTurmaInfantil,
-                                                                                                        verificaPlanoAula: !ehTurmaInfantil,
-                                                                                                        verificaFrequencia: !ehTurmaInfantil || !usuario.EhProfessorCjInfantil(),
-                                                                                                        professorCj: usuario.EhProfessorCj(),
-                                                                                                        professorNaoCj: usuario.EhProfessor(),
-                                                                                                        professorRf: usuario.CodigoRf,
-                                                                                                        ehGestor: usuario.EhGestorEscolar())) : null;
+                                                                                                        bimestre)) : null;
 
                     var possuiFechamento = periodoFechamentoIniciado &&
                         await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turma.Id,

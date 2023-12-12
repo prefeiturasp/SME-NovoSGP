@@ -102,13 +102,13 @@ namespace SME.SGP.Aplicacao
                 if (listaPlanoAnual.Count() != periodos.Count())
                 {
                     var periodosFaltantes = periodos.Where(c => !listaPlanoAnual.Any(p => p.Bimestre == c.Bimestre));
-                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodosFaltantes, dataAtual).ToList();
+                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodosFaltantes).ToList();
                     planosFaltantes.AddRange(listaPlanoAnual);
                     listaPlanoAnual = planosFaltantes;
                 }
             }
             else
-                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodos, dataAtual);
+                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodos);
 
             listaPlanoAnual.ToList().ForEach(planoAnual =>
             {
@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
-        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(Turma turma, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos, DateTime dataAtual)
+        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(Turma turma, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos)
         {
             var listaPlanoAnual = new List<PlanoAnualTerritorioSaberCompletoDto>();
             foreach (var periodo in periodos)

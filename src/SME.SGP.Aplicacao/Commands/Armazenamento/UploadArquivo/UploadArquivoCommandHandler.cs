@@ -1,11 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,12 +19,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ArquivoArmazenadoDto> Handle(UploadArquivoCommand request, CancellationToken cancellationToken)
         {
-            if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
-            {
-                if (request.Arquivo.ContentType != request.TipoConteudo.Name())
-                    throw new NegocioException(MensagemNegocioComuns.FORMATO_ARQUIVO_NAO_ACEITO);
-            }
-
+            if (request.TipoConteudo != TipoConteudoArquivo.Indefinido &&
+                request.Arquivo.ContentType != request.TipoConteudo.Name())
+                throw new NegocioException(MensagemNegocioComuns.FORMATO_ARQUIVO_NAO_ACEITO);
+            
             var nomeArquivo = request.Arquivo.FileName;
 
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));

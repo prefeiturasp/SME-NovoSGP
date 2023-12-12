@@ -124,34 +124,90 @@ namespace SME.SGP.Aplicacao.Interfaces
 
         public async Task<bool> ExcluirFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
-            if (itineranciaDto.PossuiAlunos)
-                foreach (var aluno in itinerancia.Alunos)
-                    if (!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
-                        throw new NegocioException($"Não foi possível excluir a itinerância do aluno de Id {aluno.Id}");
+            await ExcluirItineranciaAlunos(itineranciaDto, itinerancia);
+            await ExcluirItineranciaObjetivos(itineranciaDto, itinerancia);
+            await ExcluirItineranciaQuestoes(itineranciaDto, itinerancia);
+            return true;
+        }
 
+        private async Task ExcluirItineranciaQuestaoUpload(ItineranciaQuestaoDto questao)
+        {
+            if (questao.Excluido && questao.QuestaoTipoUploadRespondida())
+            {
+                var arquivoCodigo = Guid.Parse(questao.Resposta);
+                await ExcluirArquivoItinerancia(arquivoCodigo);
+            }
+        }
+
+        private async Task ExcluirItineranciaQuestoes(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
+            if (itineranciaDto.PossuiQuestoes)
+                foreach (var questao in itineranciaDto.Questoes)
+                {
+                    if (questao.Id != 0 &&
+                        !await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
+                            throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
+
+                    await ExcluirItineranciaQuestaoUpload(questao);
+                }
+        }
+
+        private async Task ExcluirItineranciaObjetivos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
             if (itineranciaDto.PossuiObjetivos)
                 foreach (var objetivo in itinerancia.ObjetivosVisita)
                     if (!await mediator.Send(new ExcluirItineranciaObjetivoCommand(objetivo.Id, itinerancia.Id)))
                         throw new NegocioException($"Não foi possível excluir o objetivo da itinerância de Id {objetivo.Id}");
+        }
 
-            if (itineranciaDto.PossuiQuestoes)
-                foreach (var questao in itineranciaDto.Questoes)
-                {
-                    if (questao.Id != 0)
-                        if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
-                            throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
-                    if (questao.Excluido && questao.QuestaoTipoUploadRespondida())
-                    {
-                        var arquivoCodigo = Guid.Parse(questao.Resposta);
-                        await ExcluirArquivoItinerancia(arquivoCodigo);
-                    }
-                    
-                }
-
-            return true;
+        private async Task ExcluirItineranciaAlunos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
+            if (itineranciaDto.PossuiAlunos)
+                foreach (var aluno in itinerancia.Alunos)
+                    if (!await mediator.Send(new ExcluirItineranciaAlunoCommand(aluno)))
+                        throw new NegocioException($"Não foi possível excluir a itinerância do aluno de Id {aluno.Id}");
         }
 
         public async Task<bool> SalvarFilhosItinerancia(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
+            await SalvarItineranciaAlunos(itineranciaDto, itinerancia);
+            await SalvarItineranciaObjetivos(itineranciaDto, itinerancia);
+            await SalvarItineranciaQuestoes(itineranciaDto, itinerancia);
+            return true;
+        }
+
+        private async Task SalvarItineranciaQuestaoUpload(ItineranciaQuestaoDto questao)
+        {
+            if (questao.QuestaoTipoUploadRespondida() &&
+                            questao.QuestaoSemArquivoId())
+            {
+                var arquivoCodigo = Guid.Parse(questao.Resposta);
+                questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
+            }
+        }
+
+        private async Task SalvarItineranciaObjetivos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
+            if (itineranciaDto.PossuiObjetivos)
+                foreach (var objetivo in itineranciaDto.ObjetivosVisita)
+                    await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao, objetivo.TemDescricao));
+        }
+
+        private async Task SalvarItineranciaQuestoes(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
+        {
+            if (itineranciaDto.PossuiQuestoes)
+                foreach (var questao in itineranciaDto.Questoes)
+                {
+                    if (!questao.Excluido)
+                    {
+                        await SalvarItineranciaQuestaoUpload(questao);
+                        if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
+                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
+                    }
+                }
+        }
+
+        private async Task SalvarItineranciaAlunos(ItineranciaDto itineranciaDto, Itinerancia itinerancia)
         {
             if (itineranciaDto.PossuiAlunos)
             {
@@ -159,29 +215,6 @@ namespace SME.SGP.Aplicacao.Interfaces
                 foreach (var aluno in itineranciaDto.Alunos)
                     await mediator.Send(new SalvarItineranciaAlunoCommand(aluno, itinerancia.Id));
             }
-
-            if (itineranciaDto.PossuiObjetivos)
-                foreach (var objetivo in itineranciaDto.ObjetivosVisita)
-                    await mediator.Send(new SalvarItineranciaObjetivoCommand(objetivo.ItineranciaObjetivoBaseId, itinerancia.Id, objetivo.Descricao, objetivo.TemDescricao));
-
-            if (itineranciaDto.PossuiQuestoes)
-                foreach (var questao in itineranciaDto.Questoes)
-                {
-                    if (!questao.Excluido)
-                    {
-                        if (questao.QuestaoTipoUploadRespondida() &&
-                            questao.QuestaoSemArquivoId())
-                        {
-                            var arquivoCodigo = Guid.Parse(questao.Resposta);
-                            questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
-                        }
-
-                        if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
-                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
-                    }
-                }
-
-            return true;
         }
 
         private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
@@ -191,7 +224,7 @@ namespace SME.SGP.Aplicacao.Interfaces
             if (turmasCodigos.NaoEhNulo() && turmasCodigos.Any())
             {
                 var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos.ToArray()));
-                if (turmas.Count() != turmasCodigos.Count())
+                if (turmas.Count() != turmasCodigos.Count)
                     throw new NegocioException("Não foi possível localizar as turmas no SGP.");
 
                 foreach (var item in itineranciaDto.Alunos)

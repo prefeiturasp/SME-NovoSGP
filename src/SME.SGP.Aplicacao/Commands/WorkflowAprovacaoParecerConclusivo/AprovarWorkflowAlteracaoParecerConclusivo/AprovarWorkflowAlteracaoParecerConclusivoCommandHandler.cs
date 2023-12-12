@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(AprovarWorkflowAlteracaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
             var pareceresEmAprovacao = await mediator.Send(new ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
-            if (pareceresEmAprovacao.NaoEhNulo() && pareceresEmAprovacao.ToArray().Any())
+            if (pareceresEmAprovacao.NaoEhNulo() && pareceresEmAprovacao.Any())
             {
                 unitOfWork.IniciarTransacao();
                 try

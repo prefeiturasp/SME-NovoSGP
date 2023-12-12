@@ -58,33 +58,30 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoAsync(alunosEol, alunosRecuperacaoParalela, filtro.TurmaId, filtro.PeriodoId, filtro.Ordenacao, periodoEscolarAtual);
         }
 
-        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano,
-            int anoLetivo, int? pagina)
+        public async Task<PaginacaoResultadoDto<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultado(FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultado(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo, pagina);
+            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultado(filtro);
             return MapearResultadoPaginadoParaDto(totalResumo);
         }
 
-        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano,
-            int anoLetivo, int? pagina)
+        public async Task<IEnumerable<RecuperacaoParalelaTotalResultadoDto>> ListarTotalResultadoEncaminhamento(FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            if (periodo.HasValue && periodo.Value != (int)PeriodoRecuperacaoParalela.Encaminhamento) return null;
-            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultadoEncaminhamento(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo, pagina);
+            if (filtro.Periodo.HasValue && filtro.Periodo.Value != (int)PeriodoRecuperacaoParalela.Encaminhamento) return null;
+            var totalResumo = await repositorioRecuperacaoParalela.ListarTotalResultadoEncaminhamento(filtro);
             return MapearResultadoParaDto(totalResumo);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(int? periodo, string dreId, string ueId, int? cicloId, string turmaId, string ano, int anoLetivo)
+        public async Task<RecuperacaoParalelaTotalEstudanteDto> TotalEstudantes(FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo);
+            var totalAlunosPorSeries = await repositorioRecuperacaoParalela.ListarTotalAlunosSeries(filtro);
             if (!totalAlunosPorSeries.Any()) return null;
             var total = totalAlunosPorSeries.Sum(s => s.Total);
             return MapearParaDtoTotalEstudantes(total, totalAlunosPorSeries);
         }
 
-        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(int? periodo, string dreId, string ueId, int? cicloId, string turmaId,
-            string ano, int anoLetivo)
+        public async Task<RecuperacaoParalelaTotalEstudantePorFrequenciaDto> TotalEstudantesPorFrequencia(FiltroRecuperacaoParalelaResumoDto filtro)
         {
-            var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(periodo, dreId, ueId, cicloId, turmaId, ano, anoLetivo);
+            var totalAlunosPorSeriesFrequencia = await repositorioRecuperacaoParalela.ListarTotalEstudantesPorFrequencia(filtro);
             if (!totalAlunosPorSeriesFrequencia.Any()) return null;
             var total = totalAlunosPorSeriesFrequencia.Sum(s => s.Total);
             return MapearParaDtoTotalEstudantesPorFrequencia(total, totalAlunosPorSeriesFrequencia);

@@ -44,7 +44,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPAObservacoesDto>
             {
-                TotalRegistros = observacoes.Any() ? observacoes.Count() : 0
+                TotalRegistros = observacoes.Any() ? observacoes.Count : 0
             };
 
             retornoPaginado.TotalPaginas = (int)Math.Ceiling((double)retornoPaginado.TotalRegistros / paginacao.QuantidadeRegistros);

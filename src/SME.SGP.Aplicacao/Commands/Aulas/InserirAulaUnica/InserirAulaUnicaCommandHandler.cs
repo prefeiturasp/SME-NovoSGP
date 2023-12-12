@@ -93,10 +93,10 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
                                                          turma.Ue.Dre.CodigoDre,
                                                          turma.Ue.CodigoUe));
 
-                if (atribuicoesEsporadica.Any() && !atribuicoesEsporadica.Where(a => a.DataInicio <= dataAula.Date
+                if (atribuicoesEsporadica.Any() && !atribuicoesEsporadica.Any(a => a.DataInicio <= dataAula.Date
                                                    && a.DataFim >= dataAula.Date
                                                    && a.DreId == turma.Ue.Dre.CodigoDre
-                                                   && a.UeId == turma.Ue.CodigoUe).Any())
+                                                   && a.UeId == turma.Ue.CodigoUe))
                     throw new NegocioException("Você não possui permissão para cadastrar aulas neste período");
             }
         }
@@ -169,14 +169,13 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         {
 
             var codigosConsiderados = new List<long>() { inserirAulaUnicaCommand.CodigoComponenteCurricular };
-            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma.CodigoTurma,
-                                                                                   turma.ModalidadeCodigo,
+            var retornoValidacao = await mediator.Send(new ValidarGradeAulaCommand(turma,
                                                                                    codigosConsiderados.ToArray(),
                                                                                    inserirAulaUnicaCommand.DataAula,
-                                                                                   usuarioLogado.CodigoRf,
+                                                                                   usuarioLogado,
                                                                                    inserirAulaUnicaCommand.Quantidade,
                                                                                    inserirAulaUnicaCommand.EhRegencia,
-                                                                                   aulasExistentes, usuarioLogado.EhGestorEscolar()));
+                                                                                   aulasExistentes));
 
             if (!retornoValidacao.resultado)
                 throw new NegocioException(retornoValidacao.mensagem);
@@ -211,14 +210,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
         }
 
         private async Task<long> PersistirWorkflowReposicaoAula(InserirAulaUnicaCommand command, Turma turma, Aula aula, Usuario usuarioLogado)
-            => await mediator.Send(new InserirWorkflowReposicaoAulaCommand(command.DataAula.Year,
-                                                                           aula.Id,
-                                                                           aula.Quantidade,
-                                                                           turma.Ue.Dre.CodigoDre,
-                                                                           turma.Ue.Dre.Nome,
-                                                                           turma.Ue.CodigoUe,
-                                                                           turma.Ue.Nome,
-                                                                           turma.Nome,
+            => await mediator.Send(new InserirWorkflowReposicaoAulaCommand(command.DataAula.Year, aula, turma,
                                                                            command.NomeComponenteCurricular,
                                                                            usuarioLogado.PerfilAtual));
     }

@@ -44,13 +44,11 @@ namespace SME.SGP.Aplicacao
 
             var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, new string[] { componenteCurricularCodigo > 0 ? componenteCurricularCodigo.ToString() : request.ComponenteCurricularId }, usuarioLogado.EhProfessorCj());
 
-            var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s => s.Id)));
-
             var bimestre = periodosEscolaresAulasInicioFim.FirstOrDefault().Bimestre;
 
             var validaObjetivos = !usuarioLogado.EhSomenteProfessorCj() && turma.ModalidadeCodigo != Modalidade.EJA && turma.ModalidadeCodigo != Modalidade.Medio;
 
-            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId, validaObjetivos, long.Parse(request.ComponenteCurricularId), bimestre, turma.Id);
+            var planoAulaDto = await MapearParaDto(aulas, temPlanoAnual, validaObjetivos, bimestre, request, turma);
 
             return planoAulaDto.OrderBy(x => x.DataAula);
         }
@@ -81,25 +79,32 @@ namespace SME.SGP.Aplicacao
             return temPlanoAnual.Any(s => s > 0);
         }
 
-        private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(IEnumerable<PlanoAulaObjetivosAprendizagemDto> planoAulas, IEnumerable<Aula> aulas, bool temPlanoAnual, string componenteCurricularCodigo, long ueId, bool validaObjetivos, long componenteCurricularId, int bimestre, long turmaId)
+        private async Task<IEnumerable<PlanoAulaRetornoDto>> MapearParaDto(
+                                                        IEnumerable<Aula> aulas, 
+                                                        bool temPlanoAnual,
+                                                        bool validaObjetivos, 
+                                                        int bimestre,
+                                                        ObterPlanoAulasPorTurmaEComponentePeriodoQuery filtro,
+                                                        Turma turma)
         {
             var planosAulaRetorno = new List<PlanoAulaRetornoDto>();
-            var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
-            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;
+            var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s => s.Id)));
+            var ue = await mediator.Send(new ObterUePorIdQuery(turma.UeId));
+            //var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var ehRegencia = (await mediator.Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(new long[] { long.Parse(filtro.ComponenteCurricularId) }, codigoTurma: turma.CodigoTurma))).FirstOrDefault().Regencia;
 
             var disciplinaId = (planoAulas.NaoEhNulo() && planoAulas.Any()) ? long.Parse(planoAulas.FirstOrDefault().DisciplinaId) : 0;
             var objetivosAprendizagemComponente = validaObjetivos ? await mediator.Send(new ObterObjetivosPlanoDisciplinaQuery(bimestre,
-                                                                                                                           turmaId,
-                                                                                                                           componenteCurricularId,
-                                                                                                                           disciplinaId,
-                                                                                                                           ehRegencia)) : null;
+                                                                                                                               turma.Id,
+                                                                                                                               long.Parse(filtro.ComponenteCurricularId),
+                                                                                                                               disciplinaId,
+                                                                                                                               ehRegencia)) : null;
 
             var temObjetivosAprendizagemOpcionais = objetivosAprendizagemComponente.EhNulo() || objetivosAprendizagemComponente.Count() == 0;
 
             foreach (var plano in planoAulas)
             {
-                var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(plano.DataAula.Date, componenteCurricularCodigo, plano.TurmaId, ue.CodigoUe));
+                var atividadeAvaliativa = await mediator.Send(new ObterAtividadeAvaliativaQuery(plano.DataAula.Date, filtro.ComponenteCurricularCodigo, plano.TurmaId, ue.CodigoUe));
 
                 planosAulaRetorno.Add(new PlanoAulaRetornoDto()
                 {

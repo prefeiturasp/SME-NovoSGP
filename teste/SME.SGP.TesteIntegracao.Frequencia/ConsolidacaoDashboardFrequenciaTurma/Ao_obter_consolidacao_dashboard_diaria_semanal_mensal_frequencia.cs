@@ -2,6 +2,7 @@
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -72,11 +73,19 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
 
             var x = ObterTodos<ConsolidacaoFrequenciaTurma>();
 
+            var dto = new FrequenciasConsolidadacaoPorTurmaEAnoDto()
+            {
+                AnoLetivo = dataReferencia.Year,
+                DreId = ConstantesTeste.DRE_1_ID,
+                UeId = ConstantesTeste.UE_1_ID,
+                Modalidade = (int)Modalidade.Fundamental,
+                AnoTurma = ConstantesTeste.TURMA_ANO_1
+            };
+
             var useCase = ServiceProvider.GetService<IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase>();
             
-            var retornoSemanal = await useCase.Executar(dataReferencia.Year,
-                ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,ConstantesTeste.TURMA_ANO_1,
-                inicioSemanaReferencia,inicioSemanaReferencia.AddDays(6),null, TipoConsolidadoFrequencia.Semanal,0);
+            var retornoSemanal = await useCase.Executar(dto,
+                inicioSemanaReferencia,inicioSemanaReferencia.AddDays(6),null, TipoConsolidadoFrequencia.Semanal);
             
             retornoSemanal.ShouldNotBeNull();
             retornoSemanal.DadosFrequenciaDashboard.ElementAt(0).Quantidade.ShouldBeEquivalentTo(10); //Mínimo
@@ -136,11 +145,19 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
                 PeriodoFim = fimMesReferencia,
             });
 
+            var dto = new FrequenciasConsolidadacaoPorTurmaEAnoDto()
+            {
+                AnoLetivo = dataReferencia.Year,
+                DreId = ConstantesTeste.DRE_1_ID,
+                UeId = ConstantesTeste.UE_1_ID,
+                Modalidade = (int)Modalidade.Fundamental,
+                AnoTurma = ConstantesTeste.TURMA_ANO_1
+            };
+
             var useCase = ServiceProvider.GetService<IObterDadosDashboardFrequenciaSemanalMensalPorAnoTurmaUseCase>();
             
-            var retornoMensal = await useCase.Executar(dataReferencia.Year,
-                ConstantesTeste.DRE_1_ID,ConstantesTeste.UE_1_ID,(int)Modalidade.Fundamental,ConstantesTeste.TURMA_ANO_1,
-                null,null,dataReferencia.Month, TipoConsolidadoFrequencia.Mensal,0);
+            var retornoMensal = await useCase.Executar(dto,
+                null,null,dataReferencia.Month, TipoConsolidadoFrequencia.Mensal);
             
             retornoMensal.ShouldNotBeNull();
             retornoMensal.DadosFrequenciaDashboard.ElementAt(0).Quantidade.ShouldBeEquivalentTo(25);

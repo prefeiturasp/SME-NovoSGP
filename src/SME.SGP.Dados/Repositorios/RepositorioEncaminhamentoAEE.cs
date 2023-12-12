@@ -21,7 +21,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, Paginacao paginacao, bool exibirEncerrados)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos, exibirEncerrados);
+            var query = MontaQueryCompleta(paginacao, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos, exibirEncerrados);
             var situacoesEncerrado = new int[] { (int)SituacaoAEE.Encerrado, (int)SituacaoAEE.EncerradoAutomaticamente };
             var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos, situacoesEncerrado };
             var retorno = new PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>();
@@ -37,7 +37,7 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, bool exibirEncerrados)
+        private static string MontaQueryCompleta(Paginacao paginacao, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos, bool exibirEncerrados)
         {
             StringBuilder sql = new StringBuilder();
 

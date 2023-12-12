@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
-                            if (disciplinasRegenciaEol.EhNulo() || !disciplinasRegenciaEol.Where(x => x.Regencia).Any())
+                            if (disciplinasRegenciaEol.EhNulo() || !disciplinasRegenciaEol.Any(x => x.Regencia))
                                 throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
                             disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(x => x.Regencia));
                         }
@@ -310,20 +310,17 @@ namespace SME.SGP.Aplicacao
                                         EhConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
-                        else if (disciplinaEOL.Regencia)
+                        else if (disciplinaEOL.Regencia && disciplinasRegencia.NaoEhNulo())
                         {
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            if (disciplinasRegencia.NaoEhNulo())
+                            foreach (var disciplinaRegencia in disciplinasRegencia)
                             {
-                                foreach (var disciplinaRegencia in disciplinasRegencia)
+                                notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
                                 {
-                                    notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
-                                    {
-                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
-                                        Disciplina = disciplinaRegencia.Nome,
-                                    });
-                                }
-                            }
+                                    DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                    Disciplina = disciplinaRegencia.Nome,
+                                });
+                            } 
                         }
 
                         // Carrega Frequencia Aluno
@@ -358,7 +355,7 @@ namespace SME.SGP.Aplicacao
                             atividadeAvaliativaParaObterTipoNota = avaliacao;
                     }
                     bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
-                    bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre.Where(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id).Count();
+                    bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre.Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
                     bimestreParaAdicionar.PodeLancarNotaFinal = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTimeExtension.HorarioBrasilia(), periodoAtual.Bimestre));
 
                     // Valida Avaliações Bimestrais

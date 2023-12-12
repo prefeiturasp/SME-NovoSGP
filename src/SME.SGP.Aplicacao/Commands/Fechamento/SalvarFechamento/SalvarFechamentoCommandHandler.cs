@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
 
                 // Valida Permissão do Professor na Turma/Disciplina            
                 if (!turma.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilSME() && !usuarioLogado.EhPerfilDRE())
-                    await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, fechamentoTurma.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento, fechamentoTurma.DisciplinaId.ToString(), usuarioLogado);
+                    await VerificaSeProfessorPodePersistirTurma(fechamentoTurma.TurmaId, periodoEscolar.PeriodoFim, fechamentoTurma.DisciplinaId.ToString(), usuarioLogado);
             }
 
             var parametroAlteracaoNotaFechamento = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, turma.AnoLetivo), cancellationToken);
@@ -257,20 +257,24 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (turma.TipoTurma != TipoTurma.Programa)
-                    await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                        turma.CodigoTurma,
-                        turma.Nome,
-                        periodoEscolar.PeriodoInicio,
-                        periodoEscolar.PeriodoFim,
-                        periodoEscolar.Bimestre,
-                        usuarioLogado,
-                        fechamentoTurmaDisciplina.Id,
-                        fechamentoTurmaDisciplina.Justificativa,
-                        fechamentoTurmaDisciplina.CriadoRF,
-                        fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
-                        fechamentoTurma.ComponenteSemNota,
-                        disciplina.RegistraFrequencia);
+                {
+                    var fechamentoDto = new FechamentoTurmaDisciplinaPendenciaDto()
+                    {
+                        DisciplinaId = fechamentoTurmaDisciplina.DisciplinaId,
+                        CodigoTurma = turma.CodigoTurma,
+                        NomeTurma = turma.Nome,
+                        PeriodoInicio = periodoEscolar.PeriodoInicio,
+                        PeriodoFim = periodoEscolar.PeriodoFim,
+                        Bimestre = periodoEscolar.Bimestre,
+                        UsuarioId = usuarioLogado.Id,
+                        Id = fechamentoTurmaDisciplina.Id,
+                        Justificativa = fechamentoTurmaDisciplina.Justificativa,
+                        CriadoRF = fechamentoTurmaDisciplina.CriadoRF,
+                        TurmaId = fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
+                    };
 
+                    await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(fechamentoDto, fechamentoTurma.ComponenteSemNota, disciplina.RegistraFrequencia));
+                }
                 if (!emAprovacao)
                     await ExcluirPendenciaAusenciaFechamento(fechamentoTurmaDisciplina.DisciplinaId, fechamentoTurmaDisciplina.FechamentoTurma.TurmaId, periodoEscolar, usuarioLogado, fechamentoTurma.EhFinal);
 
@@ -349,22 +353,6 @@ namespace SME.SGP.Aplicacao
         {
             return bimestre.HasValue ? bimestre.Value > 0 ? bimestre : null : null;
         }
-
-        private Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
-            => mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(
-                componenteCurricularId,
-                turmaCodigo,
-                turmaNome,
-                periodoEscolarInicio,
-                periodoEscolarFim,
-                bimestre,
-                usuario,
-                fechamentoTurmaDisciplinaId,
-                justificativa,
-                criadoRF,
-                turmaId,
-                componenteSemNota,
-                registraFrequencia));
 
         private async Task<Turma> ObterTurma(string turmaId)
         {
@@ -505,7 +493,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, DateTime dataAula, PeriodoDto periodoFechamento, string disciplinaId, Usuario usuario = null)
+        private async Task VerificaSeProfessorPodePersistirTurma(string turmaId, DateTime dataAula, string disciplinaId, Usuario usuario = null)
         {
             if (usuario.EhNulo())
                 usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);

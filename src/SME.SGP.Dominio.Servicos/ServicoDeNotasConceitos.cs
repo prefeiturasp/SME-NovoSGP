@@ -78,13 +78,10 @@ namespace SME.SGP.Dominio
                 foreach (var notasPorAvaliacao in notasPorAvaliacoes)
                 {
                     var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                    entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf,
-                        disciplinaId, usuario, turma));
+                    entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, disciplinaId, usuario, turma));
                 }
 
-                var criadoPor = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-
-                await SalvarNoBanco(entidadesSalvar, criadoPor, turma.CodigoTurma);
+                await SalvarNoBanco(entidadesSalvar, turma.CodigoTurma);
 
                 var alunosId = alunos
                     .Select(a => a.CodigoAluno)
@@ -185,7 +182,7 @@ namespace SME.SGP.Dominio
             return retorno;
         }
 
-        private async Task SalvarNoBanco(IEnumerable<NotaConceito> EntidadesSalvar, Usuario criadoPor, string codigoTurma)
+        private async Task SalvarNoBanco(IEnumerable<NotaConceito> EntidadesSalvar, string codigoTurma)
         {
             var notaConceitoParaInserir = Enumerable.Empty<NotaConceito>();
             var notaConceitoParaRemover = Enumerable.Empty<NotaConceito>();
@@ -235,7 +232,7 @@ namespace SME.SGP.Dominio
             string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol,
             bool gestorEscolar)
         {
-            if (atividadesAvaliativas.Where(x => x.DataAvaliacao.Date > DateTime.Today).Any())
+            if (atividadesAvaliativas.Any(x => x.DataAvaliacao.Date > DateTime.Today))
                 throw new NegocioException(
                     "Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 
@@ -269,8 +266,7 @@ namespace SME.SGP.Dominio
         }
 
         private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos,
-            AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf,
-            string disciplinaId,
+            AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string disciplinaId,
             Usuario usuario, Turma turma)
         {
                 var notasMultidisciplina = new List<NotaConceito>();

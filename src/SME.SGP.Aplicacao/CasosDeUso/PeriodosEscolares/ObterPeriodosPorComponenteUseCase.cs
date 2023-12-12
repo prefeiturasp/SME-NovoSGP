@@ -104,9 +104,8 @@ namespace SME.SGP.Aplicacao
             var quantidadeExata = datasConsideradas.Count % 5 == 0;
             foreach (var dataAula in datasConsideradas)
             {
-                if (qtdeDiasAulas == 0)
-                    if (dataInicioPeriodo == DateTime.MinValue)
-                        dataInicioPeriodo = dataAula;
+                if (qtdeDiasAulas == 0 && dataInicioPeriodo == DateTime.MinValue)
+                    dataInicioPeriodo = dataAula;
 
                 if (qtdeDiasAulas < 5)
                     qtdeDiasAulas++;

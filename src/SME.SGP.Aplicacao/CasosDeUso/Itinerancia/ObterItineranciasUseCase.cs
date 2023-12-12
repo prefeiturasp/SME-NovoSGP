@@ -17,35 +17,27 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<ItineranciaResumoDto>> Executar(FiltroPesquisaItineranciasDto filtro)
         {
-            var listaRetorno = await mediator.Send(new ObterItineranciasQuery(filtro.DreId,
-                                                                                      filtro.UeId,
-                                                                                      filtro.TurmaId,
-                                                                                      filtro.AnoLetivo,
-                                                                                      filtro.AlunoCodigo,
-                                                                                      filtro.DataInicio,
-                                                                                      filtro.DataFim,
-                                                                                      filtro.Situacao,
-                                                                                      filtro.CriadoRf));
+            var listaRetorno = await mediator.Send(new ObterItineranciasQuery(filtro));
 
             if (listaRetorno.NaoEhNulo() && listaRetorno.Items.Any())
             {
-                return await MapearParaDto(listaRetorno, filtro.AnoLetivo);
+                return await MapearParaDto(listaRetorno);
             }
 
             return default;
         }
 
-        private async Task<PaginacaoResultadoDto<ItineranciaResumoDto>> MapearParaDto(PaginacaoResultadoDto<ItineranciaRetornoQueryDto> resultadoDto, int anoLetivo)
+        private async Task<PaginacaoResultadoDto<ItineranciaResumoDto>> MapearParaDto(PaginacaoResultadoDto<ItineranciaRetornoQueryDto> resultadoDto)
         {
             return new PaginacaoResultadoDto<ItineranciaResumoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = await MapearParaDto(resultadoDto.Items, anoLetivo)
+                Items = await MapearParaDto(resultadoDto.Items)
             };
         }
 
-        private async Task<IEnumerable<ItineranciaResumoDto>> MapearParaDto(IEnumerable<ItineranciaRetornoQueryDto> itinerancias, int anoLetivo)
+        private async Task<IEnumerable<ItineranciaResumoDto>> MapearParaDto(IEnumerable<ItineranciaRetornoQueryDto> itinerancias)
         {
             var itineranciasParaRetornar = new List<ItineranciaResumoDto>();
 
