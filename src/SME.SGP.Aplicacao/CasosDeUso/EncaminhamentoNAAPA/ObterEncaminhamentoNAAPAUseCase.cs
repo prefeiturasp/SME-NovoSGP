@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> Executar(FiltroEncaminhamentoNAAPADto filtro)
         {
-            var codigoUe = !string.IsNullOrEmpty(filtro.CodigoUe) ? filtro.CodigoUe.Equals("-99") ? string.Empty : filtro.CodigoUe : String.Empty; 
+            filtro.CodigoUe = !string.IsNullOrEmpty(filtro.CodigoUe) ? filtro.CodigoUe.Equals("-99") ? string.Empty : filtro.CodigoUe : String.Empty; 
             
             return await mediator.Send(new ObterEncaminhamentosNAAPAQuery(filtro));
         }
