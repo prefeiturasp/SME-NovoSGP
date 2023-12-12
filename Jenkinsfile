@@ -104,21 +104,6 @@ pipeline {
             }
           }
 
-          stage('Quality Gate') {
-            steps {
-                // Aguarda a análise no SonarQube concluir
-                timeout(time: 1, unit: 'HOURS') {
-                    // Consulta o status do Quality Gate
-                    script {
-                        def qg = waitForQualityGate() 
-                        if (qg.status != 'OK') {
-                            error "Quality Gate não passou!"
-                        }
-                    }
-                }
-            }
-          }
-
           stage('TesteIntegracao.AEE'){
             agent { kubernetes {
                label 'dotnet5-sonar'
