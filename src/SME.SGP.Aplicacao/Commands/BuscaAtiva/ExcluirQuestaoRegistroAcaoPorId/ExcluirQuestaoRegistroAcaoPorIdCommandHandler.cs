@@ -22,9 +22,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExcluirQuestaoRegistroAcaoPorIdCommand request, CancellationToken cancellationToken)
         {
             await repositorioQuestao.RemoverLogico(request.QuestaoId);
-            var questoesIds = await repositorioQuestao.ObterQuestoesPorSecaoId(request.QuestaoId);
-            foreach (var questaoId in questoesIds)
-                await mediator.Send(new ExcluirRespostaRegistroAcaoPorQuestaoIdCommand(questaoId));
+            await mediator.Send(new ExcluirRespostaRegistroAcaoPorQuestaoIdCommand(request.QuestaoId));
 
             return true;
         }
