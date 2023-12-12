@@ -98,29 +98,25 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)
         {
-            return pendencia.EhPendenciaAula() ?
-                await ObterPendenciasAulasFormatadas(pendencia) :
-                pendencia.EhPendenciaCadastroEvento () ?
-                    await ObterPendenciasAulasFormatadas(pendencia) :
-                pendencia.EhPendenciaCalendarioUe () ?
-                    await ObterPendenciasAulasFormatadas(pendencia) :
-                pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
-                    await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
-                pendencia.EhPendenciaAusenciaAvaliacaoCP() ?
-                    await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia): 
-                pendencia.EhPendenciaFechamento() ?
-                    await ObterPendenciasFechamentoFormatadas(pendencia) :
-                    pendencia.EhAusenciaFechamento() ?
-                    await ObterPendenciasProfessorFormatadas(pendencia) :
-                pendencia.EhPendenciaDiarioBordo() ?
-                    await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf) :
-                pendencia.EhPendenciaAEE() ?
-                    await ObterPendenciasProfessorFormatadas(pendencia) :
-                pendencia.EhPendenciaDevolutiva() ?
-                    await ObterPendenciasDevolutivaFormatadas(pendencia) :
-                pendencia.EhPendenciaProfessor() ?
-                    await ObterPendenciasProfessorFormatadas(pendencia) :
-                    new List<PendenciaDto>();
+            switch (true)
+            {
+                case var _ when pendencia.EhPendenciaAula() || pendencia.EhPendenciaCadastroEvento() || pendencia.EhPendenciaCalendarioUe():
+                    return await ObterPendenciasAulasFormatadas(pendencia);
+                case var _ when pendencia.EhPendenciaAusenciaAvaliacaoProfessor():
+                    return await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia);
+                case var _ when pendencia.EhPendenciaAusenciaAvaliacaoCP():
+                    return await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia);
+                case var _ when pendencia.EhPendenciaFechamento():
+                    return await ObterPendenciasFechamentoFormatadas(pendencia);
+                case var _ when pendencia.EhAusenciaFechamento():
+                    return await ObterPendenciasProfessorFormatadas(pendencia);
+                case var _ when pendencia.EhPendenciaDiarioBordo():
+                    return await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf);
+                case var _ when pendencia.EhPendenciaAEE() || pendencia.EhPendenciaDevolutiva() || pendencia.EhPendenciaProfessor():
+                    return await ObterPendenciasProfessorFormatadas(pendencia);
+                default:
+                    return Enumerable.Empty<PendenciaDto>();
+            }
         }
         
         private async Task<IEnumerable<PendenciaDto>> ObterPendenciasProfessorFormatadas(Pendencia pendencia)
