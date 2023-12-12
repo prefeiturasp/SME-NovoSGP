@@ -21,13 +21,7 @@ namespace SME.SGP.Aplicacao
             int? situacaoConselhoClasse = param.SituacaoConselhoClasse.HasValue && param.SituacaoConselhoClasse.Value > -99 ? 
                                                              param.SituacaoConselhoClasse : null;
 
-            var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param.DreId,
-                                                                                          param.UeId,
-                                                                                          param.TurmasId,
-                                                                                          param.Modalidade,
-                                                                                          param.Semestre,
-                                                                                          param.Bimestre,
-                                                                                          param.AnoLetivo,
+            var turmas = await mediator.Send(new ObterTurmasFechamentoAcompanhamentoQuery(param,
                                                                                           situacaoFechamento,
                                                                                           situacaoConselhoClasse,
                                                                                           listarTodasTurmas));

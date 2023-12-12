@@ -7,15 +7,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasFechamentoAcompanhamentoQuery : IRequest<PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>>
     {
-        public ObterTurmasFechamentoAcompanhamentoQuery(long dreId, long ueId, string[] turmasCodigo, Modalidade modalidade, int semestre, int bimestre, int anoLetivo, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
+        public ObterTurmasFechamentoAcompanhamentoQuery(FiltroAcompanhamentoFechamentoTurmasDto filtro, int? situacaoFechamento, int? situacaoConselhoClasse, bool listarTodasTurmas)
         {
-            DreId = dreId;
-            UeId = ueId;
-            TurmasCodigo = turmasCodigo;
-            Modalidade = modalidade;
-            Semestre = semestre;
-            Bimestre = bimestre;
-            AnoLetivo = anoLetivo;
+            DreId = filtro.DreId;
+            UeId = filtro.UeId;
+            TurmasCodigo = filtro.TurmasId;
+            Modalidade = filtro.Modalidade;
+            Semestre = filtro.Semestre;
+            Bimestre = filtro.Bimestre;
+            AnoLetivo = filtro.AnoLetivo;
             SituacaoFechamento = situacaoFechamento;
             SituacaoConselhoClasse = situacaoConselhoClasse;
             ListarTodasTurmas = listarTodasTurmas;

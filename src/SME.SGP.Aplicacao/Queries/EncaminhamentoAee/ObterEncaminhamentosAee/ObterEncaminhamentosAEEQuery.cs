@@ -2,24 +2,21 @@
 using MediatR;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosAEEQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>>
     {
-        public ObterEncaminhamentosAEEQuery(long dreId, long ueId, long turmaId, string alunoCodigo, SituacaoAEE? situacao, string responsavelRf, int anoLetivo, bool exibirEncerrados)
+        public ObterEncaminhamentosAEEQuery(FiltroPesquisaEncaminhamentosAEEDto filtro)
         {
-            DreId = dreId;
-            UeId = ueId;
-            TurmaId = turmaId;
-            AlunoCodigo = alunoCodigo;
-            Situacao = situacao;
-            ResponsavelRf = responsavelRf;
-            AnoLetivo = anoLetivo;
-            ExibirEncerrados = exibirEncerrados;
+            DreId = filtro.DreId;
+            UeId = filtro.UeId;
+            TurmaId = filtro.TurmaId;
+            AlunoCodigo = filtro.AlunoCodigo;
+            Situacao = filtro.Situacao;
+            ResponsavelRf = filtro.ResponsavelRf;
+            AnoLetivo = filtro.AnoLetivo;
+            ExibirEncerrados = filtro.ExibirEncerrados;
         }
 
         public long DreId { get; }

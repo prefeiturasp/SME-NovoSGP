@@ -7,20 +7,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterEncaminhamentosNAAPAQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>>
     {
-        public ObterEncaminhamentosNAAPAQuery(bool exibirHistorico,int anoLetivo, long dreId, string codigoUe, long turmaId, string nomeAluno,
-            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, int prioridade, bool exibirEncerrados)
+        public ObterEncaminhamentosNAAPAQuery(FiltroEncaminhamentoNAAPADto filtro)
         {
-            ExibirHistorico = exibirHistorico;
-            DreId = dreId;
-            TurmaId = turmaId;
-            CodigoUe = codigoUe;
-            Situacao = situacao;
-            NomeAluno = nomeAluno;
-            AnoLetivo = anoLetivo;
-            DataAberturaQueixaInicio = dataAberturaQueixaInicio;
-            DataAberturaQueixaFim = dataAberturaQueixaFim;
-            Prioridade = prioridade;
-            ExibirEncerrados = exibirEncerrados;
+            ExibirHistorico = filtro.ExibirHistorico;
+            DreId = filtro.DreId;
+            TurmaId = filtro.TurmaId;
+            CodigoUe = filtro.CodigoUe;
+            Situacao = filtro.Situacao;
+            NomeAluno = filtro.NomeAluno;
+            AnoLetivo = filtro.AnoLetivo;
+            DataAberturaQueixaInicio = filtro.DataAberturaQueixaInicio;
+            DataAberturaQueixaFim = filtro.DataAberturaQueixaFim;
+            Prioridade = filtro.Prioridade;
+            ExibirEncerrados = filtro.ExibirEncerrados;
         }
 
         public bool ExibirHistorico { get; set; }
