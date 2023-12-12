@@ -2,12 +2,9 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,16 +14,16 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<GraficoFrequenciaAlunoDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataAula,  bool visaoDre = false)
+        public async Task<GraficoFrequenciaAlunoDto> Executar(FrequenciasConsolidadacaoPorTurmaEAnoDto frequenciaDto)
         {
             var dadosFrequenciaAlunos = Enumerable.Empty<FrequenciaAlunoDashboardDto>();
             
-            dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(anoLetivo, dreId, ueId, modalidade, semestre, anoTurma, dataAula, visaoDre));
+            dadosFrequenciaAlunos = await mediator.Send(new ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(frequenciaDto));
 
             if (dadosFrequenciaAlunos.EhNulo() || !dadosFrequenciaAlunos.Any())
                 return null;
             
-            return MapearParaDto(dadosFrequenciaAlunos, modalidade);
+            return MapearParaDto(dadosFrequenciaAlunos, frequenciaDto.Modalidade);
         }
 
         private GraficoFrequenciaAlunoDto MapearParaDto(IEnumerable<FrequenciaAlunoDashboardDto> frequenciasAlunos, int modalidade)

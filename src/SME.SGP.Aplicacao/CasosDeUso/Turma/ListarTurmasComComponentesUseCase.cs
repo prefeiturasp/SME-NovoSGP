@@ -291,18 +291,12 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turmaComponente in turmaCodigo)
                 {
-                    var pendencias = bimestre > 0 ? await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
-                                                                                                        turma.CodigoTurma,
+                    var pendencias = bimestre > 0 ? await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(
+                                                                                                        turma,
+                                                                                                        usuario,
+                                                                                                        turmaComponente.ComponenteCurricularCodigo.ToString(),
                                                                                                         anoLetivo,
-                                                                                                        bimestre,
-                                                                                                        verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
-                                                                                                        verificaAvaliacao: !ehTurmaInfantil,
-                                                                                                        verificaPlanoAula: !ehTurmaInfantil,
-                                                                                                        verificaFrequencia: !ehTurmaInfantil || !usuario.EhProfessorCjInfantil(),
-                                                                                                        professorCj: usuario.EhProfessorCj(),
-                                                                                                        professorNaoCj: usuario.EhProfessor(),
-                                                                                                        professorRf: usuario.CodigoRf,
-                                                                                                        ehGestor: usuario.EhGestorEscolar())) : null;
+                                                                                                        bimestre)) : null;
 
                     var possuiFechamento = periodoFechamentoIniciado &&
                         await mediator.Send(new ObterIndicativoPendenciaFechamentoTurmaDisciplinaQuery(turma.Id,

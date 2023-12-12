@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
@@ -90,14 +89,12 @@ namespace SME.SGP.Aplicacao
 
             var pareceresEmAprovacaoAtual = await mediator.Send(new ObterParecerConclusivoEmAprovacaoPorConselhoClasseAlunoQuery(conselhoClasseAluno.Id));
             if (!pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId))
-                await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
-                                                                 turma,
-                                                                 conselhoClasseAluno.AlunoCodigo,
-                                                                 parecerConclusivoId,
-                                                                 parecerAnterior,
-                                                                 parecerNovo,
-                                                                 usuarioSolicitanteId,
-                                                                 conselhoClasseAluno.ConselhoClasseParecerId));
+                await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno,
+                                                                                 turma,
+                                                                                 parecerConclusivoId,
+                                                                                 parecerAnterior,
+                                                                                 parecerNovo,
+                                                                                 usuarioSolicitanteId));
 
             return true;
         }
