@@ -18,39 +18,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FrequenciaDto> Executar(FiltroFrequenciaDto param)
         {
-            var aula = await mediator
-                .Send(new ObterAulaPorIdQuery(param.AulaId));
-
-            if (aula.EhNulo())
-                throw new NegocioException("Aula não encontrada.");
-
-            var turma = await mediator
-                .Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
-
-            if (turma.EhNulo())
-                throw new NegocioException(MensagensNegocioFrequencia.TURMA_NAO_ENCONTRADA_POR_CODIGO);
-
-            var alunosDaTurmaNaData = await mediator
-                .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (aula.DataAula, aula.DataAula)));
-
-            if (alunosDaTurmaNaData.EhNulo() || !alunosDaTurmaNaData.Any())
-                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
-
+            (Aula aula, Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosDaTurmaNaData) = await ValidarParametros(param);
             var registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
-
-            var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id));
-            if (frequenciaAlunos.EhNulo())
-                frequenciaAlunos = new List<FrequenciaAlunoSimplificadoDto>();
-
-            var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id));
-            if (compensacaoAusenciaAlunoAulas.EhNulo())
-                compensacaoAusenciaAlunoAulas = new List<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
-
+            var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id))
+                                   ?? Enumerable.Empty<FrequenciaAlunoSimplificadoDto>();
+            var compensacaoAusenciaAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulaSimplificadoPorAulaIdsQuery(aula.Id)) 
+                                                ?? Enumerable.Empty<CompensacaoAusenciaAlunoAulaSimplificadoDto>();
+            
             var periodoEscolar = await mediator
-                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula));
-
-            if (periodoEscolar.EhNulo())
-                throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
+                .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula))
+                ?? throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
 
             var mesmoAnoLetivo = DateTime.Today.Year == aula.DataAula.Year;
 
@@ -58,40 +35,30 @@ namespace SME.SGP.Aplicacao
                 .Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
 
             var parametroPercentualCritico = await mediator
-                .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, periodoEscolar.PeriodoInicio.Year));
-
-            if (parametroPercentualCritico.EhNulo())
-                throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
+                .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCritico, periodoEscolar.PeriodoInicio.Year))
+                ?? throw new NegocioException("Parâmetro de percentual de frequência em nível crítico não encontrado contate a SME.");
 
             var percentualCritico = int.Parse(parametroPercentualCritico.Valor);
 
             var parametroPercentualAlerta = await mediator
-                .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year));
-
-            if (parametroPercentualAlerta.EhNulo())
-                throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");
+                .Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaAlerta, periodoEscolar.PeriodoInicio.Year))
+                ?? throw new NegocioException("Parâmetro de percentual de frequência em alerta não encontrado contate a SME.");   
 
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
-
-            var codigosComponentesConsiderados = new List<long>() { param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId) };
-
-            var componenteCurricularAula = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(codigosComponentesConsiderados.ToArray(), codigoTurma: turma.CodigoTurma));
-
-            if (componenteCurricularAula.EhNulo() || !componenteCurricularAula.Any())
-                throw new NegocioException("Componente curricular da aula não encontrado");
+            var codigosComponentesConsiderados = new long[] { param.ComponenteCurricularId ?? long.Parse(aula.DisciplinaId) };
+            var componenteCurricularAula = await ObterComponentesCurricularesTurma(codigosComponentesConsiderados, turma.CodigoTurma);
 
             var anotacoesTurma = await mediator
                 .Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
 
             var frequenciaAlunosRegistrada = await mediator
-                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesConsiderados.ToArray(), periodoEscolar.Id));
+                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesConsiderados, periodoEscolar.Id));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
                 .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), periodoEscolar.Id));
 
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosDaTurmaNaData, turma);
-            foreach (var aluno in alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno))
+            foreach (var aluno in alunosDaTurmaNaData)
             {
                 var tipoFrequenciaPreDefinida = await mediator
                     .Send(new ObterFrequenciaPreDefinidaPorAlunoETurmaQuery(turma.Id, long.Parse(aula.DisciplinaId), aluno.CodigoAluno));
@@ -110,7 +77,7 @@ namespace SME.SGP.Aplicacao
                     SituacaoMatricula = aluno.SituacaoMatricula,
                     DataSituacao = aluno.DataSituacao,
                     DataNascimento = aluno.DataNascimento,
-                    Desabilitado = aluno.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio) && (aluno.EstaInativo(aula.DataAula) || (aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido) && aula.EhDataSelecionadaFutura && !aula.PermiteRegistroFrequencia(turma))) && turma.TipoTurma != TipoTurma.Programa,
+                    Desabilitado = EhAlunoDesabilitado(turma, aula, periodoEscolar, aluno),
                     PermiteAnotacao = aluno.EstaAtivo(aula.DataAula),
                     PossuiAnotacao = anotacoesTurma.Any(a => a == aluno.CodigoAluno),
                     NomeResponsavel = aluno.NomeResponsavel,
@@ -154,6 +121,36 @@ namespace SME.SGP.Aplicacao
             registroFrequenciaDto.Desabilitado = registroFrequenciaDto.ListaFrequencia.All(c => c.Desabilitado) || aula.EhDataSelecionadaFutura || !aula.PermiteRegistroFrequencia(turma);
 
             return registroFrequenciaDto;
+        }
+
+        private bool EhAlunoDesabilitado(Turma turma, Aula aula, PeriodoEscolar periodoEscolar, AlunoPorTurmaResposta aluno)
+            => aluno.DeveMostrarNaChamada(aula.DataAula, periodoEscolar.PeriodoInicio) && (aluno.EstaInativo(aula.DataAula) ||
+                   (aluno.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido) && aula.EhDataSelecionadaFutura && !aula.PermiteRegistroFrequencia(turma)))
+                   && turma.TipoTurma != TipoTurma.Programa;
+
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesTurma(long[] componentesCurriculares, string codigoTurma)
+        {
+            var componenteCurricularAula = await mediator
+                .Send(new ObterComponentesCurricularesPorIdsUsuarioLogadoQuery(componentesCurriculares, codigoTurma));
+
+            if (componenteCurricularAula.NaoPossuiRegistros())
+                throw new NegocioException("Componente curricular da aula não encontrado");
+
+            return componenteCurricularAula;
+        }
+
+        private async Task<(Aula aula, Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosTurmaNoPeriodo)> ValidarParametros(FiltroFrequenciaDto param)
+        {
+            var aula = await mediator
+                .Send(new ObterAulaPorIdQuery(param.AulaId)) ?? throw new NegocioException("Aula não encontrada.");
+            var turma = await mediator
+                .Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId)) ?? throw new NegocioException(MensagensNegocioFrequencia.TURMA_NAO_ENCONTRADA_POR_CODIGO);
+            var alunosDaTurmaNaData = await mediator
+                .Send(new ObterAlunosDentroPeriodoQuery(aula.TurmaId, (aula.DataAula, aula.DataAula)));
+            if (alunosDaTurmaNaData.NaoPossuiRegistros())
+                throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
+
+            return (aula, turma, alunosDaTurmaNaData.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno));
         }
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(IEnumerable<AlunoPorTurmaResposta> alunosDaTurmaNaData, Turma turma)
