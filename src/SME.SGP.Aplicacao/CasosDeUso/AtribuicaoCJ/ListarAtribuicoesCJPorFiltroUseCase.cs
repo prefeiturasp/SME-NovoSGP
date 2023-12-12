@@ -66,6 +66,7 @@ namespace SME.SGP.Aplicacao
                     Disciplinas = exibeNomeTurmaNovoInfantil
                     ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil ?? d.Nome).Distinct().ToArray()
                     : disciplinasDescricoes.Select(d => d.Nome).Distinct().ToArray(),
+                    DisciplinasId = disciplinasIds.ToArray(),
                     ProfessorRf = professorDisciplina.ProfessorRf
                 };
 

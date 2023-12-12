@@ -5,6 +5,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,7 +150,11 @@ namespace SME.SGP.Aplicacao
                     var turmasCodigosEOL = await mediator
                     .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.First(x => x.Bimestre == 1).PeriodoInicio,  ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
-                    if (turma.Historica == true)
+                    var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+
+                    turmasCodigosEOL = turmasEOL.NaoEhNulo() && turmasEOL.Any() ? turmasEOL.Where(x => x.Ano == turma.Ano).Select(x => x.CodigoTurma).ToArray() : null;
+
+                    if (turma.Historica == true && turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any())
                     {
                         var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
 
@@ -165,8 +170,8 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                     else
-                        turmasCodigos = turmasCodigosEOL
-                            .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                        turmasCodigos = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? turmasCodigosEOL
+                            .Concat(new string[] { turma.CodigoTurma }).ToArray() : new string[] { turma.CodigoTurma };
                 }
                 else turmasCodigos = new string[] { turma.CodigoTurma };
             }
