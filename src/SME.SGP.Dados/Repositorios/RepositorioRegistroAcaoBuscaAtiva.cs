@@ -135,6 +135,7 @@ namespace SME.SGP.Dados.Repositorios
                                       and sraba.etapa = {SECAO_ETAPA_1} 
                                       and sraba.ordem = {SECAO_ORDEM_1} 
                                       and not rabar.excluido
+                                      and not rabaq.excluido
                                 )
                               , vw_resposta_procedimento_realizado as (
                                 select rabas.registro_acao_busca_ativa_id, 
@@ -152,6 +153,7 @@ namespace SME.SGP.Dados.Repositorios
                                       and sraba.etapa = {SECAO_ETAPA_1} 
                                       and sraba.ordem = {SECAO_ORDEM_1}
                                       and not rabar.excluido 
+                                      and not rabaq.excluido
                                 )
                               , vw_resposta_contato_com_responsavel as (
                                 select rabas.registro_acao_busca_ativa_id, 
@@ -167,6 +169,7 @@ namespace SME.SGP.Dados.Repositorios
                                       and sraba.etapa = {SECAO_ETAPA_1} 
                                       and sraba.ordem = {SECAO_ORDEM_1}
                                       and not rabar.excluido 
+                                      and not rabaq.excluido
                                 )
                                 , vw_resposta_retornou_escola_apos_ligacao as (
                                 select rabas.registro_acao_busca_ativa_id, 
@@ -182,6 +185,7 @@ namespace SME.SGP.Dados.Repositorios
                                       and sraba.etapa = {SECAO_ETAPA_1} 
                                       and sraba.ordem = {SECAO_ORDEM_1}
                                       and not rabar.excluido 
+                                      and not rabaq.excluido
                                 )
                                 select ";
             sql.AppendLine(sqlSelect);
