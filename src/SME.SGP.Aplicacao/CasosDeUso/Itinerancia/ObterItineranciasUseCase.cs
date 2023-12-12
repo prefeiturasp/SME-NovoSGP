@@ -17,15 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<ItineranciaResumoDto>> Executar(FiltroPesquisaItineranciasDto filtro)
         {
-            var listaRetorno = await mediator.Send(new ObterItineranciasQuery(filtro.DreId,
-                                                                                      filtro.UeId,
-                                                                                      filtro.TurmaId,
-                                                                                      filtro.AnoLetivo,
-                                                                                      filtro.AlunoCodigo,
-                                                                                      filtro.DataInicio,
-                                                                                      filtro.DataFim,
-                                                                                      filtro.Situacao,
-                                                                                      filtro.CriadoRf));
+            var listaRetorno = await mediator.Send(new ObterItineranciasQuery(filtro));
 
             if (listaRetorno.NaoEhNulo() && listaRetorno.Items.Any())
             {

@@ -26,9 +26,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<NotificacaoBasicaDto>> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
         {
-            var retorno = await mediator.Send(new ObterNotificacoesQuery(filtroNotificacaoDto.DreId,
-                filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
-                (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo, this.Paginacao));
+            var retorno = await mediator.Send(new ObterNotificacoesQuery(filtroNotificacaoDto, this.Paginacao));
 
             var retornoPaginadoDto = new PaginacaoResultadoDto<NotificacaoBasicaDto>
             {

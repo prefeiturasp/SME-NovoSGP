@@ -200,13 +200,7 @@ namespace SME.SGP.Aplicacao
         
         private async Task<bool> VerificarUsuarioLogadoPertenceMesmaUEPlano(Usuario usuarioLogado, Turma turmaEncaminhamentoAee)
         {
-            return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(
-                usuarioLogado.Login, 
-                usuarioLogado.PerfilAtual,
-                turmaEncaminhamentoAee.Ue.CodigoUe,
-                turmaEncaminhamentoAee.ModalidadeCodigo,
-                turmaEncaminhamentoAee.Historica,
-                turmaEncaminhamentoAee.AnoLetivo));
+            return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(usuarioLogado, turmaEncaminhamentoAee));
         }
         
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
