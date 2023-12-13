@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
             
             var frequenciasAluno = turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma.NaoEhNulo() ?
-                await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoNaTurma, tipoCalendario.Id, notasFrequenciaDto.Bimestre, tipoCalendario.AnoLetivo) :
+                await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, dadosMatriculaAlunoNaTurma, tipoCalendario.Id, notasFrequenciaDto.Bimestre, tipoCalendario.AnoLetivo) :
                 Enumerable.Empty<FrequenciaAluno>();
 
             var frequenciaAlunoRegenciaPai = new FrequenciaAluno();
@@ -257,13 +257,16 @@ namespace SME.SGP.Aplicacao
                         var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
 
                         var dataFim = periodoEscolar?.PeriodoFim ?? periodoFim;
+                        var dataInicio = periodoEscolar?.PeriodoInicio ?? periodoInicio;
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => (a.DisciplinaId == disciplina.Id.ToString() ||
-                                                                                      a.DisciplinaId == disciplina.CodigoComponenteCurricular.ToString())
-                                                         && (alunoNaTurma.DataMatricula <= dataFim
-                                                         || MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma)));
+                                                                                      a.DisciplinaId == disciplina.CodigoComponenteCurricular.ToString()) &&
+                                                         dadosMatriculaAlunoNaTurma.Select(d=> new { d.DataMatricula, d.DataSituacao, d.Ativo})
+                                                         .Any(a=> (a.Ativo && a.DataMatricula < dataFim
+                                                         || MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma))
+                                                         || !a.Ativo && a.DataMatricula < dataFim && a.DataSituacao > dataInicio))?.ToList();
 
-                        frequenciasAlunoParaTratar = (periodoMatricula.NaoEhNulo() ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
+                        frequenciasAlunoParaTratar = (periodoMatricula.NaoEhNulo() && dadosMatriculaAlunoNaTurma.Count() == 1 ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
 
                         FrequenciaAluno frequenciaAluno;
                         var percentualFrequenciaPadrao = false;
@@ -541,10 +544,11 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunoRefatorada(IEnumerable<DisciplinaDto> disciplinasDaTurma, PeriodoEscolar periodoEscolar, AlunoPorTurmaResposta alunoTurma,
+        private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunoRefatorada(IEnumerable<DisciplinaDto> disciplinasDaTurma, PeriodoEscolar periodoEscolar, IEnumerable<AlunoPorTurmaResposta> situacoesAlunoNaTurma,
             long tipoCalendarioId, int bimestre, int anoLetivo = 0)
         {
             var frequenciasAlunoRetorno = new List<FrequenciaAluno>();
+            string codigoAluno = situacoesAlunoNaTurma.FirstOrDefault().CodigoAluno;
             var disciplinasId = disciplinasDaTurma.Select(a => a.CodigoComponenteCurricular.ToString()).Distinct().ToList();
             var disciplinaIdRegenciaPai = disciplinasDaTurma.FirstOrDefault(d => d.Regencia && d.CdComponenteCurricularPai != 0)?.CdComponenteCurricularPai;
             if (disciplinaIdRegenciaPai.HasValue)
@@ -564,13 +568,18 @@ namespace SME.SGP.Aplicacao
             }
             else bimestres = new int[] { bimestre };
 
-            var frequenciasAluno = await mediator.Send(new ObterFrequenciaAlunoPorAlunoTipoTurmasDisciplinasTurmasBimestresPeriodoEscolarQuery(alunoTurma.CodigoAluno,
+            var frequenciasAluno = await mediator.Send(new ObterFrequenciaAlunoPorAlunoTipoTurmasDisciplinasTurmasBimestresPeriodoEscolarQuery(codigoAluno,
                                                          TipoFrequenciaAluno.PorDisciplina,
                                                          disciplinas,
                                                          turmasCodigo, bimestres));
 
             var aulasComponentesTurmas = await mediator
-                .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinas, bimestres, alunoTurma.DataMatricula, alunoTurma.Inativo ? alunoTurma.DataSituacao : null));
+                .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(turmasCodigo, tipoCalendarioId, disciplinas, bimestres));
+
+            if(aulasComponentesTurmas.NaoEhNulo())
+                aulasComponentesTurmas = aulasComponentesTurmas.Where(a => situacoesAlunoNaTurma.Select(s => new { s.DataMatricula, s.DataSituacao, s.Ativo })
+                                                                           .Any(d => d.Ativo && d.DataMatricula < a.PeriodoFim ||
+                                                                                !d.Ativo && d.DataMatricula < a.PeriodoFim && d.DataSituacao > a.PeriodoInicio))?.ToList();
 
             if (frequenciasAluno.NaoEhNulo() && frequenciasAluno.Any())
                 frequenciasAlunoRetorno.AddRange(frequenciasAluno);
@@ -581,7 +590,7 @@ namespace SME.SGP.Aplicacao
                 {
                     frequenciasAlunoRetorno.Add(new FrequenciaAluno()
                     {
-                        CodigoAluno = alunoTurma.CodigoAluno,
+                        CodigoAluno = codigoAluno,
                         DisciplinaId = aulaComponenteTurma.ComponenteCurricularCodigo,
                         TurmaId = aulaComponenteTurma.TurmaCodigo,
                         TotalAulas = 0,
