@@ -85,6 +85,13 @@ namespace SME.SGP.Aplicacao
                     var ehPerfilAtualCJ = perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name();
                     if (aula.All(a => ehPerfilAtualCJ != a.AulaCJ))
                         return false;
+
+                    if (ehPerfilAtualCJ && request.ProfessorRf.NaoEhNulo())
+                    {
+                        var aulaCj = aula.Where(a => a.AulaCJ == ehPerfilAtualCJ && a.CriadoRF == request.ProfessorRf);
+                        if (aulaCj.EhNulo() || !aulaCj.Any())
+                            return false;
+                    }
                 }
 
                 return true;
