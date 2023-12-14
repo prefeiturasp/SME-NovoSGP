@@ -57,9 +57,8 @@ namespace SME.SGP.Aplicacao
             long[] conselhosClassesIds;
 
             var turmasItinerarioEnsinoMedio = (await mediator.Send(ObterTurmaItinerarioEnsinoMedioQuery.Instance)).ToList();
-            var alunosEol = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(notasFrequenciaDto.AlunoCodigo)));
-            var alunoNaTurma = periodoEscolar.NaoEhNulo() ? alunosEol.FirstOrDefault(a => a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) : alunosEol.Last();
-            var codigosAlunos = alunosEol.Select(a => a.CodigoAluno).ToArray();
+            var situacoesAlunoNaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(notasFrequenciaDto.AlunoCodigo)));
+            var alunoNaTurma = periodoEscolar.NaoEhNulo() ? situacoesAlunoNaTurma.FirstOrDefault(a => a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date) : situacoesAlunoNaTurma.Last();
 
             if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
                 && !(notasFrequenciaDto.Bimestre == 0 && turma.EhEJA() && !turma.EhTurmaRegular()))
@@ -156,10 +155,9 @@ namespace SME.SGP.Aplicacao
             }
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(notasFrequenciaDto.AlunoCodigo));
-            var dadosMatriculaAlunoNaTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, notasFrequenciaDto.AlunoCodigo));
 
-            if (dadosMatriculaAlunoNaTurma.Count() > 1)
-                dadosAluno = dadosMatriculaAlunoNaTurma.Select(d => new AlunoDadosBasicosDto()
+            if (situacoesAlunoNaTurma.Count() > 1)
+                dadosAluno = situacoesAlunoNaTurma.Select(d => new AlunoDadosBasicosDto()
                 {
                     CodigoEOL = d.CodigoAluno,
                     DataMatricula = d.DataMatricula,
@@ -203,7 +201,7 @@ namespace SME.SGP.Aplicacao
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
             
             var frequenciasAluno = turmasComMatriculasValidas.Contains(notasFrequenciaDto.CodigoTurma) && alunoNaTurma.NaoEhNulo() ?
-                await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, dadosMatriculaAlunoNaTurma, tipoCalendario.Id, notasFrequenciaDto.Bimestre, tipoCalendario.AnoLetivo) :
+                await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, situacoesAlunoNaTurma, tipoCalendario.Id, notasFrequenciaDto.Bimestre, tipoCalendario.AnoLetivo) :
                 Enumerable.Empty<FrequenciaAluno>();
 
             var frequenciaAlunoRegenciaPai = new FrequenciaAluno();
@@ -261,12 +259,12 @@ namespace SME.SGP.Aplicacao
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => (a.DisciplinaId == disciplina.Id.ToString() ||
                                                                                       a.DisciplinaId == disciplina.CodigoComponenteCurricular.ToString()) &&
-                                                         dadosMatriculaAlunoNaTurma.Select(d=> new { d.DataMatricula, d.DataSituacao, d.Ativo})
+                                                         situacoesAlunoNaTurma.Select(d=> new { d.DataMatricula, d.DataSituacao, d.Ativo})
                                                          .Any(a=> (a.Ativo && a.DataMatricula < dataFim
                                                          || MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma))
                                                          || !a.Ativo && a.DataMatricula < dataFim && a.DataSituacao > dataInicio))?.ToList();
 
-                        frequenciasAlunoParaTratar = (periodoMatricula.NaoEhNulo() && dadosMatriculaAlunoNaTurma.Count() == 1 ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
+                        frequenciasAlunoParaTratar = (periodoMatricula.NaoEhNulo() && situacoesAlunoNaTurma.Count() == 1 ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
 
                         FrequenciaAluno frequenciaAluno;
                         var percentualFrequenciaPadrao = false;
