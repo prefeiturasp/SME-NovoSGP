@@ -104,6 +104,19 @@ pipeline {
             }
           }
 
+          stage('Quality Gate') {
+              steps {
+                  timeout(time: 1, unit: 'HOURS') {
+                      script {
+                          def qg = waitForQualityGate() 
+                          if (qg.status != 'OK') {
+                              error "Quality Gate não passou!"
+                          }
+                      }
+                  }
+              }
+          }
+
           stage('TesteIntegracao.AEE'){
             agent { kubernetes {
                label 'dotnet5-sonar'
