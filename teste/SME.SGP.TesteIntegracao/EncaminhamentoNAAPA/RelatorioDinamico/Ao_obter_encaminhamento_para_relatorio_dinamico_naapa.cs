@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
                 AnoLetivo = dataAtual.Year,
-                Modalidade = null,
+                Modalidades = null,
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
                 {
@@ -126,7 +126,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
                 AnoLetivo = dataAtual.Year,
-                Modalidade = null,
+                Modalidades = null,
                 Anos = new List<string> { ANO_1 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
                 {
@@ -195,7 +195,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
                 AnoLetivo = dataAtual.Year,
-                Modalidade = null,
+                Modalidades = null,
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
                 {
@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
                 AnoLetivo = dataAtual.Year,
-                Modalidade = null,
+                Modalidades = null,
                 Anos = new List<string> { ANO_6, ANO_8 },
                 FiltroAvancado = null
             };

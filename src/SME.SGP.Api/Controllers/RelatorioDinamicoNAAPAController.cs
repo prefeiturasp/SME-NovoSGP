@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(RelatorioDinamicoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
+        //[Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosNAAPA(
                                             [FromBody] FiltroRelatorioDinamicoNAAPADto filtro,
                                             [FromServices] IRelatorioDinamicoObterEncaminhamentoNAAPAUseCase useCase)
