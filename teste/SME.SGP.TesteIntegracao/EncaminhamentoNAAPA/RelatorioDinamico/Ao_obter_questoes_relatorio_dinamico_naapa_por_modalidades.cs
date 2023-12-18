@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 {
@@ -33,8 +34,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             await CriarDadosBase(filtroNAAPA);
 
             var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase>();
-            var retorno = await useCase.Executar(new int[] { (int)ModalidadeTipoCalendario.FundamentalMedio });
-            retorno.ShouldNotBeNull();
+            var retorno = await useCase.Executar(new int[] { (int)Modalidade.Fundamental });
+            retorno.PossuiRegistros().ShouldBeTrue();
+            retorno.Count().ShouldBe(2); //Seção Questionário Geral e específico modalidade (todos exceto infantil)
+            retorno.FirstOrDefault().ModalidadesCodigo.NaoPossuiRegistros().ShouldBeTrue();
+            retorno.LastOrDefault().ModalidadesCodigo.PossuiRegistros().ShouldBeTrue();
+            retorno.LastOrDefault().ModalidadesCodigo.Contains((int)Modalidade.Fundamental).ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Obter questões para relatório dinâmico para todas as modalidades")]
@@ -56,7 +61,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 
             var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase>();
             var retorno = await useCase.Executar(null);
-            retorno.ShouldNotBeNull();
+            retorno.PossuiRegistros().ShouldBeTrue();
+            retorno.Count().ShouldBe(3); //Seção Questionário Geral e específicos modalidades (somenter infantil e todos exceto infantil)
+            retorno.FirstOrDefault().ModalidadesCodigo.NaoPossuiRegistros().ShouldBeTrue();
+            retorno.Where(x => x.ModalidadesCodigo.PossuiRegistros()).Count().ShouldBe(2);
+            retorno.FirstOrDefault(x => x.ModalidadesCodigo.Contains((int)Modalidade.Fundamental)).ShouldNotBeNull();
+            retorno.FirstOrDefault(x => x.ModalidadesCodigo.Contains((int)Modalidade.EducacaoInfantil)).ShouldNotBeNull();
         }
     }
 }
