@@ -481,7 +481,7 @@ namespace SME.SGP.Dados.Repositorios
                         t.turma_id,
                         t.nome"
                 : @"group by
-                        t.ano";
+                        t.ano";      
 
         public async Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string[] codigosDisciplinas, long tipoCalendarioId, DateTime[] datasConsideradas)
         {

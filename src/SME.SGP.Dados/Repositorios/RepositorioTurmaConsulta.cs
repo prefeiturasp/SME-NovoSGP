@@ -265,7 +265,7 @@ namespace SME.SGP.Dados.Repositorios
                                 u.dre_id = d.id
                             where
                                 t.modalidade_codigo = @modalidade
-                                and t.historica = false
+                                and not t.historica
                                 and t.ano_letivo = @anoLetivo
                                 and tipo_turma = @tipoTurma
                                 and ano ~ E'^[0-9\.]+$'

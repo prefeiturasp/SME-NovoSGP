@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFake
                 11,1,2
             };
 
-            return listIds;
+            return await Task.FromResult(listIds);
         }
     }
 }

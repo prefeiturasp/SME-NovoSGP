@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorTurmasCodigoQuery request, CancellationToken cancellationToken)
         {
-            return new List<DisciplinaDto>()
+            return await Task.FromResult(new List<DisciplinaDto>()
             {
                 new DisciplinaDto()
                 {
@@ -159,7 +159,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     TerritorioSaber = true,
                     LancaNota = true
                 },
-            };
+            });
         }
 
     }

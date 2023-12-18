@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
                 }
             };
 
-            return alunos;
+            return await Task.FromResult(alunos);
         }
     }
 }

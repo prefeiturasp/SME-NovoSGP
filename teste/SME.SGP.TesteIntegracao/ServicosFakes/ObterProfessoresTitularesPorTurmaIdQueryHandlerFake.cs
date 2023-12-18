@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFake
     {
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesPorTurmaIdQuery request, CancellationToken cancellationToken)
         {
-            return new List<ProfessorTitularDisciplinaEol>()
+            return await Task.FromResult(new List<ProfessorTitularDisciplinaEol>()
             {
                 new ProfessorTitularDisciplinaEol
                 {
@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFake
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
                     CodigosDisciplinas = "138"
                 },
-            };
+            });
         }
     }
 }

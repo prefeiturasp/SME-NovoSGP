@@ -17,8 +17,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         }
 
         public async Task<bool> Handle(RemoverArquivosExcluidosCommand request, CancellationToken cancellationToken)
-        {
-            return true;
+        {   
+            return await Task.FromResult(true);
         }
     }
 }

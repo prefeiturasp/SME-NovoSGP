@@ -11,14 +11,14 @@ namespace SME.SGP.TesteIntegracao
     {
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery request, CancellationToken cancellationToken)
         {
-            return new List<ComponenteCurricularEol>() 
+            return await Task.FromResult(new List<ComponenteCurricularEol>() 
             {
                 new ComponenteCurricularEol() 
                 {
                     Codigo = 138,
                     TerritorioSaber = false
                 }
-            };
+            });
         }
     }
 }

@@ -10,8 +10,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class RepositorioRegistroFrequenciaAlunoFake : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
-        private readonly ISgpContext sgpContext;
-
         public RepositorioRegistroFrequenciaAlunoFake(ISgpContext sgpContext,IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
         {}
 

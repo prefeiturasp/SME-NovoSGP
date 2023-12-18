@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao
     {
         public async Task<Guid> Handle(ObterPerfilAtualQuery request, CancellationToken cancellationToken)
         {
-            return Guid.Parse(PerfilUsuario.PROFESSOR.Name());
+            return await Task.FromResult(Guid.Parse(PerfilUsuario.PROFESSOR.Name()));
         }
     }
 }

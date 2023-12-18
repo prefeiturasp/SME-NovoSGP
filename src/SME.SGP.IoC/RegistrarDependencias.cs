@@ -366,6 +366,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioComunicadoTipoEscola, RepositorioComunicadoTipoEscola>();
             services.TryAddScoped<IRepositorioComunicadoAnoEscolar, RepositorioComunicadoAnoEscolar>();
             services.TryAddScoped<IRepositorioDiarioBordo, RepositorioDiarioBordo>();
+            services.TryAddScoped<IRepositorioDiarioBordoConsulta, RepositorioDiarioBordoConsulta>();
             services.TryAddScoped<IRepositorioDevolutiva, RepositorioDevolutiva>();
             services.TryAddScoped<IRepositorioAnoEscolar, RepositorioAnoEscolar>();
             services.TryAddScoped<IRepositorioCartaIntencoes, RepositorioCartaIntencoes>();

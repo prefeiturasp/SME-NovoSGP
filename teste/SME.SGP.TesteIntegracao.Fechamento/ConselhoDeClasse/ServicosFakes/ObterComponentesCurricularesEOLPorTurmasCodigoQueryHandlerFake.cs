@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 
       public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesEOLPorTurmasCodigoQuery request, CancellationToken cancellationToken)
       {
-        return new List<ComponenteCurricularEol>()
+        return await Task.FromResult(new List<ComponenteCurricularEol>()
         {
           new ComponenteCurricularEol()
           {
@@ -104,7 +104,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
               LancaNota = true,
               Regencia = true
           }
-        };
+        });
       }
     }
 }
