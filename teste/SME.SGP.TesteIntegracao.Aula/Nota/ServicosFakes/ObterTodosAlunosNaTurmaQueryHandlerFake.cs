@@ -214,7 +214,7 @@ namespace SME.SGP.TesteIntegracao.Aula.Nota.ServicosFakes
                 }
             };
 
-            return alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma.ToString());
+            return await Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma.ToString()));
         }
     }
 }

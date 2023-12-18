@@ -57,9 +57,11 @@ namespace SME.SGP.Aplicacao
                     });
                 }
             }
-            
-            if (request.DataMatricula.HasValue)
-                frequenciaAlunoPeriodos = frequenciaAlunoPeriodos.Where(f => f.PeriodoFim > request.DataMatricula.Value).ToList();
+
+            if (request.InformacoesAluno.NaoEhNulo())
+                frequenciaAlunoPeriodos = frequenciaAlunoPeriodos.Where(f => request.InformacoesAluno.Select(i => new { i.DataMatricula, i.DataSituacao, i.Ativo })
+                .Any(d => d.Ativo && d.DataMatricula < f.PeriodoFim ||
+                         !d.Ativo && d.DataMatricula < f.PeriodoFim && d.DataSituacao > f.PeriodoInicio)).ToList();
 
             return frequenciaAlunoPeriodos
                 .GroupBy(a => (a.DisciplinaId, a.Professor))

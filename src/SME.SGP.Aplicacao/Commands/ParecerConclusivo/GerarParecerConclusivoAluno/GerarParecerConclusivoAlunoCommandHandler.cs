@@ -4,6 +4,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -137,28 +138,37 @@ namespace SME.SGP.Aplicacao
                 tiposTurmasParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
 
-                var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
+                var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, 1));
 
-                if (turma.Historica == true)
+                if(periodoEscolar.NaoEhNulo() && periodoEscolar.Any())
                 {
-                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+                    var turmasCodigosEOL = await mediator
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.First(x => x.Bimestre == 1).PeriodoInicio,  ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
-                    if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                    var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+
+                    turmasCodigosEOL = turmasEOL.NaoEhNulo() && turmasEOL.Any() ? turmasEOL.Where(x => x.Ano == turma.Ano).Select(x => x.CodigoTurma).ToArray() : null;
+
+                    if (turma.Historica == true && turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any())
                     {
-                        turmasCodigos = turmasCodigosEOL;
-                        turmasCodigos = turmasCodigos
-                        .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                        var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+
+                        if (turmasCodigosHistorico.NaoEhNulo() && turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                        {
+                            turmasCodigos = turmasCodigosEOL;
+                            turmasCodigos = turmasCodigos
+                            .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                        }
+                        else
+                        {
+                            turmasCodigos = new string[] { turma.CodigoTurma };
+                        }
                     }
                     else
-                    {
-                        turmasCodigos = new string[] { turma.CodigoTurma };
-                    }
+                        turmasCodigos = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? turmasCodigosEOL
+                            .Concat(new string[] { turma.CodigoTurma }).ToArray() : new string[] { turma.CodigoTurma };
                 }
-                else
-                    turmasCodigos = turmasCodigosEOL
-                        .Concat(new string[] { turma.CodigoTurma }).ToArray();
-
+                else turmasCodigos = new string[] { turma.CodigoTurma };
             }
             else turmasCodigos = new string[] { turma.CodigoTurma };
 

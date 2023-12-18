@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaQuery request, CancellationToken cancellationToken)
         {
-            return new List<AlunoPorTurmaResposta>
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>
             {
                 new AlunoPorTurmaResposta
                 {
@@ -130,7 +130,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CelularResponsavel = "11961861993",
                     DataAtualizacaoContato = new (DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 }
-            };
+            });
         }
     }
 }
