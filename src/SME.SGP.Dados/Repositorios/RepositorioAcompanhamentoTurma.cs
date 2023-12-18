@@ -17,7 +17,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select at.*
                     from acompanhamento_turma at
                     where at.turma_id = @turmaId
-                        and at.semestre = @semestre ";
+                        and at.semestre = @semestre 
+                        and not at.excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AcompanhamentoTurma>(query, new { turmaId, semestre });
             
