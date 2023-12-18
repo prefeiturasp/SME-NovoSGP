@@ -11,7 +11,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/relatorio-dinamico-naapa")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class RelatorioDinamicoNAAPAController : ControllerBase
     {
         [HttpPost]
@@ -28,12 +28,12 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("questoes")] 
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
+        //[Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestoesPorModalidadesParaRelatorioDinamico(
-                                            [FromQuery] int? modalidadeId,
+                                            [FromQuery] int[] modalidadesId,
                                             [FromServices] IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase useCase)
         {
-            return Ok(await useCase.Executar(modalidadeId));
+            return Ok(await useCase.Executar(modalidadesId));
         }
     }
 }
