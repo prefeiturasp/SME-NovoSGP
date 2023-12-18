@@ -6,6 +6,7 @@ using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using System.Collections.Generic;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
 {
@@ -32,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
             await CriarDadosBase(filtroNAAPA);
 
             var useCase = ServiceProvider.GetService<IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase>();
-            var retorno = await useCase.Executar((int)ModalidadeTipoCalendario.FundamentalMedio);
+            var retorno = await useCase.Executar(new int[] { (int)ModalidadeTipoCalendario.FundamentalMedio });
             retorno.ShouldNotBeNull();
         }
 
