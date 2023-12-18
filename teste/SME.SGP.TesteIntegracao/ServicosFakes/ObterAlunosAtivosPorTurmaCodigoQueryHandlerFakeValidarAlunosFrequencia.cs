@@ -1,16 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
-    public class ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia: IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia : IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly string ALUNO_CODIGO_1 = "1";
         private readonly string ALUNO_CODIGO_2 = "2";
@@ -27,9 +26,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         private readonly string ALUNO_CODIGO_13 = "13";
 
         private readonly string ATIVO = "Ativo";
-        private readonly string RESPONSAVEL = "RESPONSAVEL";
-        private readonly string TIPO_RESPONSAVEL_4 = "4";
-        private readonly string CELULAR_RESPONSAVEL = "11111111111";
         private readonly string NAO_COMPARECEU = "Não Compareceu";
         private readonly string DESISTENTE = "Desistente";
         private readonly string VINCULO_INDEVIDO = "Vínculo indevido";
@@ -40,9 +36,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosAtivosPorTurmaCodigoQuery request, CancellationToken cancellationToken)
         {
-              var dataRefencia = DateTimeExtension.HorarioBrasilia();
-              
-              return new List<AlunoPorTurmaResposta>()
+            var dataRefencia = DateTimeExtension.HorarioBrasilia();
+
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>()
               {
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -70,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       SituacaoMatricula = ATIVO,
                       NomeAluno = "NOME_ALUNO_3"
-                  },   
+                  },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
                       DataSituacao = dataRefencia.AddDays(-20),
@@ -129,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Deslocamento,
                       SituacaoMatricula = DESLOCAMENTO,
                       NomeAluno = "NOME_ALUNO_9"
-                  },  
+                  },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
                       DataSituacao = dataRefencia.AddDays(10),
@@ -169,8 +165,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.NaoCompareceu,
                       SituacaoMatricula = NAO_COMPARECEU,
                       NomeAluno = "NOME_ALUNO_13"
-                  },  
-              }; 
+                  },
+              });
         }
     }
 }

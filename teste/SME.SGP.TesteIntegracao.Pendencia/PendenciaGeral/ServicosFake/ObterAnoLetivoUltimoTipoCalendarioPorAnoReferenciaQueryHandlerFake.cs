@@ -11,7 +11,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaGeral.ServicosFake
 
         public async Task<int> Handle(ObterAnoLetivoUltimoTipoCalendarioPorAnoReferenciaQuery request, CancellationToken cancellationToken)
         {
-            return DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
+            return await Task.FromResult(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year);
         }
     }
 }

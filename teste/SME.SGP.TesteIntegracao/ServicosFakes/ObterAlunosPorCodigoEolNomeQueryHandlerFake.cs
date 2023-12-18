@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeComModalidadeTurma = "Nome Modalidade"
                }   
             };
-            return listaRetorno;
+            return await Task.FromResult(listaRetorno);
         }
     }
 }

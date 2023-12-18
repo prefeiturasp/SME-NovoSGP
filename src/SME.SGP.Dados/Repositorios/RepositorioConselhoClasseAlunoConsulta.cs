@@ -129,8 +129,8 @@ namespace SME.SGP.Dados.Repositorios
                             UNION
                             SELECT cca.id                                    AS ConselhoClasseAlunoId,
                                    ccn.componente_curricular_codigo          AS ComponenteCurricularCodigo,
-                                   ccn.conceito_id AS ConceitoId,
-                                   ccn.nota               AS Nota,
+                                   coalesce (ccn.conceito_id, fn.conceito_id) AS ConceitoId,
+                                   coalesce (ccn.nota, fn.nota)        AS Nota,
                                    fn.id AS fechamentoNotaId
                             FROM   fechamento_turma ft
                                    LEFT JOIN periodo_escolar pe

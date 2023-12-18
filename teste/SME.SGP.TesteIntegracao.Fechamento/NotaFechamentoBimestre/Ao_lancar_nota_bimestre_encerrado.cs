@@ -138,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             return fechamentoTurmaDisciplinaDto;
         }
 
-        private FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDtoFundamental(string perfil, string anoTurma, bool consideraAnorAnterior = false)
+        private static FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDtoFundamental(string perfil, string anoTurma, bool consideraAnorAnterior = false)
         {
             return new FiltroFechamentoNotaDto()
             {

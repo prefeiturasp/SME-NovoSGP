@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
-    public class ObterAlunoPorCodigoEolQueryHandlerFake  : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
+    public class ObterAlunoPorCodigoEolQueryHandlerFake : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
     {
-        private readonly string ALUNO_CODIGO_1 = "1"; 
-
         private readonly string ATIVO = "Ativo";
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";

@@ -12,8 +12,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
     public class ObterTurmasAlunoPorFiltroPlanoAEEQueryHandlerFake  : IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        private readonly string ALUNO_CODIGO_1 = "1"; 
-
         private readonly string ATIVO = "Ativo";
         private readonly string RESPONSAVEL = "RESPONSAVEL";
         private readonly string TIPO_RESPONSAVEL_4 = "4";

@@ -25,10 +25,10 @@ namespace SME.SGP.TesteIntegracao
         protected long REGISTRO_FREQUENCIA_ID_4 = 4;
 
         private const int QUANTIDADE_3 = 3;
-        protected const long AULA_ID_1 = 1;
-        protected const long AULA_ID_2 = 2;
-        protected const long AULA_ID_3 = 3;
-        protected const long AULA_ID_4 = 4;
+        protected new const long AULA_ID_1 = 1;
+        protected new const long AULA_ID_2 = 2;
+        protected new const long AULA_ID_3 = 3;
+        protected new const long AULA_ID_4 = 4;
         protected const int NUMERO_AULAS_1 = 1;
         protected const int NUMERO_AULAS_2 = 2;
         protected const int NUMERO_AULAS_3 = 3;
@@ -92,19 +92,19 @@ namespace SME.SGP.TesteIntegracao
 
             var registroFrequencia = ObterTodos<RegistroFrequencia>();
             registroFrequencia.ShouldNotBeEmpty();
-            registroFrequencia.Count().ShouldBeGreaterThanOrEqualTo(1);
+            registroFrequencia.Count.ShouldBeGreaterThanOrEqualTo(1);
 
             var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
             registroFrequenciaAluno.ShouldNotBeEmpty();
-            registroFrequenciaAluno.Count().ShouldBeGreaterThanOrEqualTo(1);
+            registroFrequenciaAluno.Count.ShouldBeGreaterThanOrEqualTo(1);
 
             var consolidacaoFrequenciaAlunoMensal = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
             consolidacaoFrequenciaAlunoMensal.ShouldNotBeEmpty();
-            consolidacaoFrequenciaAlunoMensal.Count().ShouldBeGreaterThanOrEqualTo(1);
+            consolidacaoFrequenciaAlunoMensal.Count.ShouldBeGreaterThanOrEqualTo(1);
 
             var consolidacaoDashBoardFrequencias = ObterTodos<ConsolidacaoDashBoardFrequencia>();
             consolidacaoDashBoardFrequencias.ShouldNotBeEmpty();
-            consolidacaoDashBoardFrequencias.Count().ShouldBeGreaterThanOrEqualTo(1);
+            consolidacaoDashBoardFrequencias.Count.ShouldBeGreaterThanOrEqualTo(1);
 
             return retorno;
         }

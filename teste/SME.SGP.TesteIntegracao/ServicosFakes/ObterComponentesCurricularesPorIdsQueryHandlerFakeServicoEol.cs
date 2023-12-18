@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
-            return new List<DisciplinaDto>
+            return await Task.FromResult(new List<DisciplinaDto>
             {
                 new DisciplinaDto
                 {
@@ -317,7 +317,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     GrupoMatrizNome = "Teste 1213",
                     TurmaCodigo = "1"
                 }
-            }.Where(x => request.Ids.Contains(x.Id));
+            }.Where(x => request.Ids.Contains(x.Id)));
         }
     }
 }

@@ -24,8 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> Executar(ConselhoClasseSinteseDto conselhoClasseSinteseDto)
         {
-            var alunosEol = await mediator.Send(new ObterAlunosEolPorTurmaQuery(conselhoClasseSinteseDto.CodigoTurma, true));
-            var informacoesAluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseSinteseDto.AlunoCodigo);
+            var informacoesAluno = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(Convert.ToInt32(conselhoClasseSinteseDto.CodigoTurma), Convert.ToInt32(conselhoClasseSinteseDto.AlunoCodigo)));
 
             var totalCompensacoesComponentesNaoLancamNotas = await mediator.Send(new ObterTotalCompensacoesComponenteNaoLancaNotaQuery(conselhoClasseSinteseDto.CodigoTurma, conselhoClasseSinteseDto.Bimestre));
             totalCompensacoesComponentesNaoLancamNotas = totalCompensacoesComponentesNaoLancamNotas.Where(x => x.CodigoAluno == conselhoClasseSinteseDto.AlunoCodigo);
@@ -48,7 +47,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var frequenciasAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(conselhoClasseSinteseDto.AlunoCodigo, new string[] { turma.CodigoTurma }, tipoCalendarioId, 
-                                                                                                        informacoesAluno.NaoEhNulo() ? informacoesAluno.DataMatricula : null, 
+                                                                                                        informacoesAluno.NaoEhNulo() ? informacoesAluno : null, 
                                                                                                         conselhoClasseSinteseDto.Bimestre));
             var periodoEscolar = ObterPeriodoEscolarFechamento(fechamentoTurma, turma, conselhoClasseSinteseDto.Bimestre);
 
