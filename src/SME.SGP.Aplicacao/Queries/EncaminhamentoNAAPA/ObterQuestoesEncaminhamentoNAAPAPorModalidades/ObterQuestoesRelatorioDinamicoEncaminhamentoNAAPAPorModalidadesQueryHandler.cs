@@ -7,34 +7,43 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Infra.Dtos.Questionario;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQueryHandler : IRequestHandler<ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery, IEnumerable<QuestaoDto>>
+    public class ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQueryHandler : IRequestHandler<ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery, IEnumerable<SecaoQuestoesDTO>>
     {
         private readonly IMediator mediator;
-        private const string SECAO_INFORMACOES_ESTUDANTE = "INFORMACOES_ESTUDANTE";
 
         public ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SecaoQuestoesDTO>> Handle(ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery request, CancellationToken cancellationToken)
         {
-            var secoesQuestionario = await mediator.Send(new ObterSecoesEncaminhamentosSecaoNAAPAQuery(request.ModalidadeId, null));
+            var secoesQuestionario = await mediator.Send(new ObterSecoesEncaminhamentoNAAPAPorModalidadesQuery(TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA, 
+                                                                                                               request.ModalidadesId));
 
-            var secoesQuestionariosNAAPA = secoesQuestionario.Where(secao => secao.TipoQuestionario == TipoQuestionario.RelatorioDinamicoEncaminhamentoNAAPA);
+            var secoesQuestoesRetorno = new List<SecaoQuestoesDTO>();
+            foreach (var secaoQuestionario in secoesQuestionario)
+            {
+                var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secaoQuestionario.QuestionarioId));
+                secoesQuestoesRetorno.Add(new SecaoQuestoesDTO()
+                {
+                    Id = secaoQuestionario.Id,
+                    Nome = secaoQuestionario.Nome,
+                    NomeComponente = secaoQuestionario.NomeComponente,
+                    Ordem = secaoQuestionario.Ordem,
+                    QuestionarioId = secaoQuestionario.QuestionarioId,
+                    TipoQuestionario = secaoQuestionario.TipoQuestionario,
+                    Questoes = questoes,
+                    ModalidadesCodigo = secaoQuestionario.ModalidadesCodigo
+                });
+            }
+                
 
-            if (!request.ModalidadeId.HasValue)
-                secoesQuestionariosNAAPA = secoesQuestionariosNAAPA.Where(secao => secao.NomeComponente.Equals(SECAO_INFORMACOES_ESTUDANTE));
-
-            var questoes = new List<QuestaoDto>();
-            
-            foreach (var secaoQuestionario in secoesQuestionariosNAAPA)
-                questoes.AddRange(await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secaoQuestionario.QuestionarioId)));
-
-            return questoes;
+            return secoesQuestoesRetorno;
         }
     }
 }
