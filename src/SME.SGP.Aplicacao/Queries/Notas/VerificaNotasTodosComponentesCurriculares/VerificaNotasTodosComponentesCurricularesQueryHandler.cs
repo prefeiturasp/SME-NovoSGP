@@ -29,13 +29,13 @@ namespace SME.SGP.Aplicacao.Queries
 
             if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
             {
-                var tiposTurmas = new List<int> { (int) request.Turma.TipoTurma };
-                
+                var tiposTurmas = new List<int> { (int)request.Turma.TipoTurma };
+
                 tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
-                tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c=> tiposTurmas.All(x=> x != c)));
-                
+                tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposTurmas.All(x => x != c)));
+
                 var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas,
-                   dataReferencia: request.PeriodoEscolar?.PeriodoFim, semestre:request.Turma.EhEJA() ? request.Turma.Semestre : null), cancellationToken);
+                   dataReferencia: request.PeriodoEscolar?.PeriodoFim, semestre: request.Turma.EhEJA() ? request.Turma.Semestre : null), cancellationToken);
 
                 if (request.Historico.HasValue && request.Historico.Value)
                 {
@@ -51,6 +51,13 @@ namespace SME.SGP.Aplicacao.Queries
                 }
                 else
                     turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
+
+                var matriculasDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, dataAula: request.PeriodoEscolar?.PeriodoFim, request.Turma.AnoLetivo));
+                string[] turmasConsideradas = ValidaMatriculasAConsiderar(request.PeriodoEscolar, turmasCodigosEol, matriculasDoAluno);
+                if (turmasConsideradas.Any())
+                {
+                    turmasCodigos = turmasConsideradas;
+                }
 
                 if (turmasCodigos.Length > 0)
                 {
@@ -95,6 +102,18 @@ namespace SME.SGP.Aplicacao.Queries
             // Checa se todas as disciplinas da turma receberam nota
             var disciplinasLancamNota = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome.NaoEhNulo());
             return disciplinasLancamNota.All(componenteCurricular => notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular));
+        }
+
+        private static string[] ValidaMatriculasAConsiderar(Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigosEol, IEnumerable<AlunoPorTurmaResposta> matriculasDoAluno)
+        {
+            var matriculasOrdenadas = matriculasDoAluno.OrderByDescending(x => x.DataSituacao)?.GroupBy(x => x.CodigoTurma)
+                                        .Select(x => x.FirstOrDefault(x => x.DataMatricula < periodoEscolar.PeriodoFim));
+
+            var turmasConsideradas = matriculasOrdenadas.Where(x => (periodoEscolar is null && !x.Inativo ||
+                                                                    (!x.Inativo && x.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
+                                                                    (x.Inativo && x.DataSituacao.Date > periodoEscolar.PeriodoInicio))
+                                                                    && turmasCodigosEol.Contains(x.CodigoTurma.ToString())).Select(x => x.CodigoTurma.ToString()).ToArray();
+            return turmasConsideradas;
         }
 
         private async Task<string[]> DefinirTurmasConsideradasDeAcordoComMatricula(string alunoCodigo, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
