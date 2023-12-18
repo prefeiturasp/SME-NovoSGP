@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     Semestre = 1
                 }
             };
-           return lista;
+           return await Task.FromResult(lista);
         }
     }
 }

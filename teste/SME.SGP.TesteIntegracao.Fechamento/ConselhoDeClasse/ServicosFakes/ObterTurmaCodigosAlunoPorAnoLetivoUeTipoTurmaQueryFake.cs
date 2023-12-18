@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
             {
                 "1","2"
             };
-            return lista.ToArray();
+            return await Task.FromResult(lista.ToArray());
         }
     }
 }

@@ -4,7 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma.ServicosF
     {
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosDentroPeriodoQuery request, CancellationToken cancellationToken)
         {
-            return new List<AlunoPorTurmaResposta>()
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>()
             {
                 new AlunoPorTurmaResposta()
                 {
@@ -52,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma.ServicosF
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     SituacaoMatricula = ConstantesTeste.SITUACAO_MATRICULA_ATIVO
                 }
-            };
+            });
         }
     }
 }

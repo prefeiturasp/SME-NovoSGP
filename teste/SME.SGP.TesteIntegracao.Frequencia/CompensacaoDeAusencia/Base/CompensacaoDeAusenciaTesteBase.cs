@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 {
     public abstract class CompensacaoDeAusenciaTesteBase : TesteBaseComuns
     {
-        protected const int COMPENSACAO_AUSENCIA_ID_1 = 1;
+        protected new const int COMPENSACAO_AUSENCIA_ID_1 = 1;
         protected const int PERIODO_ESCOLAR_ID_3 = 3;
         protected const int REGISTRO_FREQUENCIA_ID_1 = 1;
 

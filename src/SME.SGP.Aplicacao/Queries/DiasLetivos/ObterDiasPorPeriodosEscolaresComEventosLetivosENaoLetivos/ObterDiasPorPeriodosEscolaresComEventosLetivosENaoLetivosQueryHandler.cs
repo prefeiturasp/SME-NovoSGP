@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -13,21 +15,47 @@ namespace SME.SGP.Aplicacao
     public class ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQueryHandler : IRequestHandler<ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery, List<DiaLetivoDto>>
     {
         private readonly IRepositorioEvento repositorioEvento;
+        private readonly IRepositorioCache repositorioCache;
 
-        public ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQueryHandler(IRepositorioEvento repositorioEvento)
+        public ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQueryHandler(IRepositorioEvento repositorioEvento, IRepositorioCache repositorioCache)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<List<DiaLetivoDto>> Handle(ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery request, CancellationToken cancellationToken)
         {
+            var chaveCache = string.Format(NomeChaveCache.DIAS_LETIVOS_E_NAO_LETIVOS_PERIODO_ESCOLAR_IDS_CONSIDERADOS_DESCONSIDERA_CRIACAO_DIA_LETIVO_PROXIMAS_UES,
+                string.Join(",", request.PeriodosEscolares.Select(p => p.Id)), request.DesconsiderarCriacaoDiaLetivoProximasUes);
+
+            return await repositorioCache.ObterAsync(chaveCache, async
+                () => await ProcessarDiasLetivos(request.TipoCalendarioId, request.PeriodosEscolares, request.UeCodigo, request.DesconsiderarCriacaoDiaLetivoProximasUes), minutosParaExpirar: 300);
+        }
+
+        private async Task<List<DiaLetivoDto>> ProcessarDiasLetivos(long tipoCalendarioId, IEnumerable<PeriodoEscolar> periodoEscolares, string ueCodigo, bool desconsiderarCriacaoDiaLetivoProximasUes)
+        {
             var datasDosPeriodosEscolares = new List<DiaLetivoDto>();
 
-            var eventos = (await repositorioEvento
-                .ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId, request.UeCodigo, EventoLetivo.Sim, EventoLetivo.Nao))?
-                .Where(c => (c.EhEventoUE() || c.EhEventoSME()));
+            var tiposLetivosConsiderados = new int[] { (int)EventoLetivo.Sim, (int)EventoLetivo.Nao };
 
-            foreach (var periodoEscolar in request.PeriodosEscolares.OrderBy(c => c.Bimestre))
+            var chaveCacheEventosTipoCalendario = string.Format(NomeChaveCache.EVENTOS_TIPO_CALENDARIO_UE_TIPOS_LETIVOS_CONSIDERADOS,
+                tipoCalendarioId, ueCodigo, string.Join(",", tiposLetivosConsiderados));
+
+            var eventosTipoCalendario = await repositorioCache
+                .ObterAsync(chaveCacheEventosTipoCalendario, async
+                    () => await repositorioEvento.ObterEventosPorTipoDeCalendarioAsync(tipoCalendarioId, ueCodigo, tiposLetivosConsiderados.Select(tl => (EventoLetivo)tl).ToArray()), minutosParaExpirar: 300);
+
+            var eventos = eventosTipoCalendario?
+                .Where(c => c.EhEventoUE() || c.EhEventoSME());
+
+            DefinirDiasLetivos(periodoEscolares, desconsiderarCriacaoDiaLetivoProximasUes, datasDosPeriodosEscolares, eventos);
+
+            return datasDosPeriodosEscolares;
+        }
+
+        private static void DefinirDiasLetivos(IEnumerable<PeriodoEscolar> periodosEscolares, bool desconsiderarCriacaoDiaLetivoProximasUes, List<DiaLetivoDto> datasDosPeriodosEscolares, IEnumerable<Evento> eventos)
+        {
+            foreach (var periodoEscolar in periodosEscolares.OrderBy(c => c.Bimestre))
             {
                 foreach (var diaAtual in periodoEscolar.ObterIntervaloDatas())
                 {
@@ -90,23 +118,20 @@ namespace SME.SGP.Aplicacao
                             });
                         });
 
-                        if (request.DesconsiderarCriacaoDiaLetivoProximasUes)
+                        if (desconsiderarCriacaoDiaLetivoProximasUes)
                             continue;
                     }
                     else
                     {
                         diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
-                        datasDosPeriodosEscolares.Add(diaLetivoDto);    
+                        datasDosPeriodosEscolares.Add(diaLetivoDto);
                     }
                 }
             }
-
-            return datasDosPeriodosEscolares;
         }
 
-        private bool EventoEhLetivo(DateTime data, Evento evento)
-        {
-            return (!data.FimDeSemana() && evento.EhEventoLetivo()) || (data.FimDeSemana() && (evento.EhEventoLetivo() || (EventoTipoEnum)evento.TipoEventoId == EventoTipoEnum.ReposicaoAula));
-        }
+        private static bool EventoEhLetivo(DateTime data, Evento evento)
+            => (!data.FimDeSemana() && evento.EhEventoLetivo()) ||
+               (data.FimDeSemana() && (evento.EhEventoLetivo() || (EventoTipoEnum)evento.TipoEventoId == EventoTipoEnum.ReposicaoAula));
     }
 }

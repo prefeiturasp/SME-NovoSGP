@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         {
             var dataAtual = DateTime.Now;
 
-            return new List<AlunoPorTurmaResposta>()
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>()
             {
                 new AlunoPorTurmaResposta()
                 {
@@ -154,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Desistente,
                     SituacaoMatricula = SITUACAO_MATRICULA_2
                 }
-            };
+            });
         }
     }
 }

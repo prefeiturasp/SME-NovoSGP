@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
     public class Ao_registrar_nota_pelo_cp_ou_diretor : NotaFechamentoBimestreTesteBase
     {
-        private const string ALUNO_CODIGO_1 = "1";
+        private new const string ALUNO_CODIGO_1 = "1";
 
         public Ao_registrar_nota_pelo_cp_ou_diretor(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -160,7 +160,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await ExecutarTeste(fechamentoTurmaDisciplinaDto);
         }
 
-        private FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDto(string perfil, string anoTurma, bool consideraAnorAnterior = false)
+        private static new FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDto(string perfil, string anoTurma, bool consideraAnorAnterior = false)
         {
             return new FiltroFechamentoNotaDto()
             {

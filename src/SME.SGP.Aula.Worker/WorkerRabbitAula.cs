@@ -29,8 +29,8 @@ namespace SME.SGP.Aula.Worker
             Comandos.Add(RotasRabbitSgpAula.RotaInserirAulaRecorrencia, new ComandoRabbit("Inserir aulas recorrentes", typeof(IInserirAulaRecorrenteUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaAlterarAulaRecorrencia, new ComandoRabbit("Alterar aulas recorrentes", typeof(IAlterarAulaRecorrenteUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaExcluirAulaRecorrencia, new ComandoRabbit("Excluir aulas recorrentes", typeof(IExcluirAulaRecorrenteUseCase)));
-            Comandos.Add(RotasRabbitSgpAula.RotaSincronizarAulasInfatil, new ComandoRabbit("Sincronizar aulas da modalidade Infantil que devem ser criadas ou excluídas", typeof(ICriarAulasInfantilAutomaticamenteUseCase), true));
-            Comandos.Add(RotasRabbitSgpAula.RotaCriarAulasInfatilERegenciaAutomaticamente, new ComandoRabbit("Criar aulas da modalidade Infantil automaticamente", typeof(ICriarAulasInfantilERegenciaUseCase), true));
+            Comandos.Add(RotasRabbitSgpAula.RotaSincronizarAulasInfantil, new ComandoRabbit("Sincronizar aulas da modalidade Infantil que devem ser criadas ou excluídas", typeof(ICriarAulasInfantilAutomaticamenteUseCase), true));
+            Comandos.Add(RotasRabbitSgpAula.RotaCriarAulasInfantilERegenciaAutomaticamente, new ComandoRabbit("Criar aulas da modalidade Infantil automaticamente", typeof(ICriarAulasInfantilERegenciaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoExclusaoAulasComFrequencia, new ComandoRabbit("Notificar usuário sobre a exclusão de aulas com frequência registrada", typeof(INotificarExclusaoAulaComFrequenciaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaPendenciasAula, new ComandoRabbit("Verifica as pendências de aula e cria caso exista", typeof(IPendenciaAulaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDre, new ComandoRabbit("Verifica as pendências de aula por DRE e cria caso exista", typeof(IPendenciaAulaDreUseCase), true));

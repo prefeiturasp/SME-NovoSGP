@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
                     }
             };
 
-            return alunos;
+            return await Task.FromResult(alunos);
         }
     }
 }

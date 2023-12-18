@@ -21,25 +21,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
     {
         protected const string CODIGO_ALUNO_99999 = "99999";
 
-        protected readonly double NOTA_1 = 1;
-        protected readonly double NOTA_2 = 2;
-        protected readonly double NOTA_3 = 3;
-        protected readonly double NOTA_4 = 4;
-        protected readonly double NOTA_5 = 5;
-        protected readonly double NOTA_6 = 6;
-        protected readonly double NOTA_7 = 7;
-        protected readonly double NOTA_8 = 8;
-        protected readonly double NOTA_9 = 9;
-        protected readonly double NOTA_10 = 10;
+        protected new readonly double NOTA_1 = 1;
+        protected new readonly double NOTA_2 = 2;
+        protected new readonly double NOTA_3 = 3;
+        protected new readonly double NOTA_4 = 4;
+        protected new readonly double NOTA_5 = 5;
+        protected new readonly double NOTA_6 = 6;
+        protected new readonly double NOTA_7 = 7;
+        protected new readonly double NOTA_8 = 8;
+        protected new readonly double NOTA_9 = 9;
+        protected new readonly double NOTA_10 = 10;
 
-        protected const string PLENAMENTE_SATISFATORIO = "P";
-        protected const string SATISFATORIO = "S";
-        protected const string NAO_SATISFATORIO = "NS";
+        protected new const string PLENAMENTE_SATISFATORIO = "P";
+        protected new const string SATISFATORIO = "S";
+        protected new const string NAO_SATISFATORIO = "NS";
 
-        protected const long PERIODO_ESCOLAR_CODIGO_1 = 1;
-        protected const long PERIODO_ESCOLAR_CODIGO_2 = 2;
-        protected const long PERIODO_ESCOLAR_CODIGO_3 = 3;
-        protected const long PERIODO_ESCOLAR_CODIGO_4 = 4;
+        protected new const long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        protected new const long PERIODO_ESCOLAR_CODIGO_2 = 2;
+        protected new const long PERIODO_ESCOLAR_CODIGO_3 = 3;
+        protected new const long PERIODO_ESCOLAR_CODIGO_4 = 4;
 
         protected readonly long FECHAMENTO_TURMA_ID_1 = 1;
         protected const long FECHAMENTO_TURMA_ID_2 = 2;
@@ -60,8 +60,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         protected const long FECHAMENTO_ALUNO_ID_8 = 8;
         protected const long FECHAMENTO_ALUNO_ID_9 = 9;
         protected const long FECHAMENTO_ALUNO_ID_10 = 10;
-        protected readonly string NOTA = "NOTA";
-        protected readonly string CONCEITO = "CONCEITO";
+        protected new readonly string NOTA = "NOTA";
+        protected new readonly string CONCEITO = "CONCEITO";
 
         protected NotaFechamentoTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -1032,6 +1032,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             var fechamentoTurmaDisciplina = ObterTodos<FechamentoTurmaDisciplina>();
             (fechamentoTurmaDisciplina.FirstOrDefault().Situacao == situacaoTipo).ShouldBeTrue();
             (fechamentoTurmaDisciplina.FirstOrDefault().Situacao != situacaoTipo).ShouldBeFalse();
+
+            await Task.CompletedTask;
         }
 
         protected async Task ExecutarTesteGerarPendenciasFechamentoCommand(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
@@ -1252,7 +1254,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             });
         }
 
-        protected FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular, bool considerarAnoAnterior = false, bool ehRegencia = false)
+        protected static FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular, bool considerarAnoAnterior = false, bool ehRegencia = false)
         {
             return new FiltroNotaFechamentoDto()
             {

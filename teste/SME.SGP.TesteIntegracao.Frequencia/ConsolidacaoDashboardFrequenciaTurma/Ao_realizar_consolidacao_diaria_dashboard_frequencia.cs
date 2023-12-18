@@ -317,7 +317,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
             });
         }
 
-        private async Task CriarItensBasicos()
+        private new async Task CriarItensBasicos()
         {
             await InserirNaBase(new Dre
             {
