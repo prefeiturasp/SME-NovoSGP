@@ -52,11 +52,14 @@ namespace SME.SGP.Aplicacao.Queries
                 else
                     turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
 
-                var matriculasDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, dataAula: request.PeriodoEscolar?.PeriodoFim, request.Turma.AnoLetivo));
-                string[] turmasConsideradas = ValidaMatriculasAConsiderar(request.PeriodoEscolar, turmasCodigosEol, matriculasDoAluno);
-                if (turmasConsideradas.Any())
-                {
-                    turmasCodigos = turmasConsideradas;
+                if (request.Turma.ModalidadeCodigo == Modalidade.EJA) 
+                { 
+                    var matriculasDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(request.AlunoCodigo, dataAula: request.PeriodoEscolar?.PeriodoFim, request.Turma.AnoLetivo));
+                    string[] turmasConsideradas = ValidaMatriculasAConsiderar(request.PeriodoEscolar, turmasCodigosEol, matriculasDoAluno);
+                    if (turmasConsideradas.Any())
+                    {
+                        turmasCodigos = turmasConsideradas;
+                    }
                 }
 
                 if (turmasCodigos.Length > 0)
