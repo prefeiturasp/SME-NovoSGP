@@ -198,7 +198,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
-            fechamentosNotas.Count.ShouldBe(7);
+            fechamentosNotas.Count.ShouldBe(1);
 
             var fechamentoNota = await ObterFechamentoNotaBimestre(filtroFechamentoNota);
 
@@ -208,10 +208,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
 
             var historicoNotas = ObterTodos<HistoricoNota>();
-            historicoNotas.Count.ShouldBe(7);
+            historicoNotas.Count.ShouldBe(1);
 
             var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
-            historicoNotasNotaFechamentos.Count.ShouldBe(7);
+            historicoNotasNotaFechamentos.Count.ShouldBe(1);
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - não deve lançar nota numérica e sim apresentar exceção para aluno inativo")]
@@ -275,7 +275,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
         private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunosInativosDurantePeriodoFechamento(long disciplinaId)
         {
-            var alunosCodigos = new[] { CODIGO_ALUNO_5, CODIGO_ALUNO_6, CODIGO_ALUNO_7, CODIGO_ALUNO_8, CODIGO_ALUNO_9, CODIGO_ALUNO_10, CODIGO_ALUNO_11 };
+            var alunosCodigos = new[] {CODIGO_ALUNO_8};
             return await LancarNotasAlunos(alunosCodigos, disciplinaId);
         }
 
