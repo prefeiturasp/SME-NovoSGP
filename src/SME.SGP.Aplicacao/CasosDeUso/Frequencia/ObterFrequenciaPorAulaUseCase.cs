@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
 
             var frequenciaAlunosRegistrada = await mediator
-                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesConsiderados.ToArray(), periodoEscolar.Id));
+                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, codigosComponentesConsiderados.Concat(DisciplinaExtension.ObterCodigos(componenteCurricularAula)).Distinct().ToArray(), periodoEscolar.Id));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
                 .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, codigosComponentesConsiderados.Select(c => c.ToString()).ToArray(), periodoEscolar.Id));

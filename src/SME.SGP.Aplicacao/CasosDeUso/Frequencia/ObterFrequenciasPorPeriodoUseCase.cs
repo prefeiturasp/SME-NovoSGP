@@ -31,6 +31,9 @@ namespace SME.SGP.Aplicacao
                 componenteCurricular.CodigoComponenteCurricular.ToString();
 
             var codigosComponentesBusca = new List<string>() { componenteCurricular.Regencia && componenteCurricular.CdComponenteCurricularPai.HasValue && componenteCurricular.CdComponenteCurricularPai.Value > 0 ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId };
+
+            if (componenteCurricular.TerritorioSaber)
+                codigosComponentesBusca.Add(componenteCurricular.CodigoComponenteCurricularTerritorioSaber.ToString());
           
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, codigosComponentesBusca.ToArray(), usuarioLogado.EhSomenteProfessorCj());
 

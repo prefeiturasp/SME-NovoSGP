@@ -196,6 +196,10 @@ namespace SME.SGP.Aplicacao
             var usuarioRF = (string)null;
 
             var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
+
+            if (disciplina.TerritorioSaber)
+                codigosDisciplinas.Add(disciplina.CodigoComponenteCurricularTerritorioSaber.ToString());
+
             IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEOL = null;
 
             var usuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);

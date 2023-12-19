@@ -58,7 +58,7 @@ namespace SME.SGP.Aplicacao
             {
                 var periodoFinal = MontaPeriodoEscolarFinalParaMarcador(periodosEscolares, turma.ModalidadeCodigo);
 
-                if(periodoFinal != null)
+                if (periodoFinal != null)
                 {
                     periodoInicio = periodoFinal.PeriodoInicio;
                     periodoFim = periodoFinal.PeriodoFim;
@@ -73,18 +73,22 @@ namespace SME.SGP.Aplicacao
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
+            long[] componentes = new long[] { dto.ComponenteCurricularId };
+
+            if (componenteCurricular.TerritorioSaber)
+                componentes = componentes.Concat(new long[] { componenteCurricular.CodigoComponenteCurricularTerritorioSaber }).ToArray();
+
             return BimestreFinal == dto.Bimestre
-                ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunos, dto.ComponenteCurricularId, tipoCalendarioId)
-                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunos, dto.ComponenteCurricularId, tipoCalendarioId, periodoAtual);
+                ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunos, componentes, tipoCalendarioId)
+                : await ObterFrequenciaAlunosBimestresRegularesAsync(turma, alunos, componentes, tipoCalendarioId, periodoAtual);
         }
 
-        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId, PeriodoEscolar periodoEscolar)
+        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestresRegularesAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long[] componentesCurricularesId, long tipoCalendarioId, PeriodoEscolar periodoEscolar)
         {
-            var componentesCurricularesId = new List<long>() { componenteCurricularId };
-            var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componentesCurricularesId.ToArray(), tipoCalendarioId, periodoEscolar.Bimestre);
-            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, componentesCurricularesId.ToArray(), tipoCalendarioId, periodoEscolar.Id));
+            var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componentesCurricularesId, tipoCalendarioId, periodoEscolar.Bimestre);
+            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, componentesCurricularesId, tipoCalendarioId, periodoEscolar.Id));
 
-            var frequenciaAlunosComTotalizadores = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componentesCurricularesId.ToArray(), new List<long> { periodoEscolar.Id }, alunos);
+            var frequenciaAlunosComTotalizadores = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componentesCurricularesId, new List<long> { periodoEscolar.Id }, alunos);
             var frequenciaAlunos = await ObterListagemFrequenciaAluno(alunos, turma, frequenciaAlunosComTotalizadores, periodoEscolar, frequenciaAlunosComTotalizadores.Any());
 
             return new FrequenciaAlunosPorBimestreDto
@@ -153,7 +157,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
-            return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
+            return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, string codigoTurma = null)
         {
@@ -161,7 +165,7 @@ namespace SME.SGP.Aplicacao
             return componentes.FirstOrDefault();
         }
 
-        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestreFinalAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long componenteCurricularId, long tipoCalendarioId)
+        private async Task<FrequenciaAlunosPorBimestreDto> ObterFrequenciaAlunosBimestreFinalAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunos, long[] componenteCurricularId, long tipoCalendarioId)
         {
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
 
@@ -170,11 +174,10 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolaresIds = periodosEscolares.Select(x => x.Id);
             var bimestres = periodosEscolares.Select(x => x.Bimestre);
-            var componentesCurricularesId = new List<long>() { componenteCurricularId };
 
-            var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componentesCurricularesId.ToArray(), tipoCalendarioId);
-            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, componentesCurricularesId.ToArray(), tipoCalendarioId, periodosEscolaresIds));
-            var frequenciaAlunosComTotalizadores = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componentesCurricularesId.ToArray(), periodosEscolaresIds, alunos);
+            var aulasPrevistas = await ObterAulasPrevistasAsync(turma, componenteCurricularId, tipoCalendarioId);
+            var aulasDadas = await mediator.Send(new ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery(turma.CodigoTurma, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds));
+            var frequenciaAlunosComTotalizadores = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componenteCurricularId, periodosEscolaresIds, alunos);
             var periodoEscolar = MontaPeriodoEscolarFinalParaMarcador(periodosEscolares, turma.ModalidadeCodigo);
             var frequenciaAlunos = await ObterListagemFrequenciaAluno(alunos, turma, frequenciaAlunosComTotalizadores, periodoEscolar, frequenciaAlunosComTotalizadores.Any());
 
@@ -192,7 +195,7 @@ namespace SME.SGP.Aplicacao
         private PeriodoEscolar MontaPeriodoEscolarFinalParaMarcador(IEnumerable<PeriodoEscolar> periodos, Modalidade modalidadeTurma)
          => new PeriodoEscolar()
          {
-             PeriodoInicio = periodos.FirstOrDefault(p=> p.Bimestre == 1).PeriodoInicio,
+             PeriodoInicio = periodos.FirstOrDefault(p => p.Bimestre == 1).PeriodoInicio,
              PeriodoFim = periodos.FirstOrDefault(p => modalidadeTurma == Modalidade.EJA ? p.Bimestre == 2 : p.Bimestre == 4).PeriodoFim
          };
 

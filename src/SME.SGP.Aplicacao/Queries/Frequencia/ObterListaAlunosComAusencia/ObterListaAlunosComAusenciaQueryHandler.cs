@@ -34,10 +34,10 @@ namespace SME.SGP.Aplicacao
             var periodo = await BuscaPeriodo(turma, request.Bimestre);
 
             var alunosEOL = await mediator
-                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
+                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)), cancellationToken);
 
             var alunosAtivos = await mediator
-                .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)));
+                .Send(new ObterAlunosDentroPeriodoQuery(turma.CodigoTurma, (periodo.PeriodoInicio, periodo.PeriodoFim)), cancellationToken);
             
             if (alunosAtivos.NaoEhNulo() && alunosAtivos.Any())
                 alunosAtivos = alunosAtivos.OrderByDescending(a => a.DataSituacao).ToList().DistinctBy(a => a.CodigoAluno);
@@ -46,16 +46,19 @@ namespace SME.SGP.Aplicacao
 
             var componentesCurricularesId = new List<long>() { long.Parse(request.DisciplinaId) };
 
-            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesId.ToArray()));
+            var disciplinasEOL = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesId.ToArray()), cancellationToken);
+
+            if (disciplinasEOL.Any(d => d.TerritorioSaber))
+                componentesCurricularesId.AddRange(disciplinasEOL.Where(d => d.TerritorioSaber).Select(d => d.CodigoComponenteCurricularTerritorioSaber));
 
             if (disciplinasEOL.EhNulo() || !disciplinasEOL.Any())
                 throw new NegocioException("Componente curricular informado não localizado.");
 
             var quantidadeMaximaCompensacoes = int.Parse(await mediator
-                .Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
+                .Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year), cancellationToken));
 
             var percentualFrequenciaAlerta = int.Parse(await mediator
-                .Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));                       
+                .Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year), cancellationToken));                       
             
             var matriculadosTurmaPAP = await BuscarAlunosTurmaPAP(alunosAtivos.Select(x => x.CodigoAluno).ToArray(), turma);
             foreach (var alunoEOL in alunosAtivos)
