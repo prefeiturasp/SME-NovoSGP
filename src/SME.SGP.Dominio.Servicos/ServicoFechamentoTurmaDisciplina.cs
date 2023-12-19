@@ -276,9 +276,6 @@ namespace SME.SGP.Dominio.Servicos
             var codigosAlunosAtivos = alunosAtivos.Select(c => c.CodigoAluno).Distinct().ToArray();
             var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
 
-            var alunosDiferenca = codigosAlunosFechamento.Where(c => !codigosAlunosAtivos.Contains(c));
-
-
             if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
                 throw new NegocioException(MensagemNegocioFechamentoNota.EXISTEM_ALUNOS_INATIVOS_FECHAMENTO_NOTA_BIMESTRE);
 
