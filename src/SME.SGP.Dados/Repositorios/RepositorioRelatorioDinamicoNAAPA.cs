@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = string.Concat(sqlPaginada, ";", sqlTotalDeRegistros);
             var situacao = new List<int>() { (int)SituacaoNAAPA.AguardandoAtendimento, (int)SituacaoNAAPA.EmAtendimento };
             var retornoPaginado = new PaginacaoResultadoDto<EncaminhamentoNAAPARelatorioDinamico>();
-            IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> retornoTotalDeRegitros = null; 
+            IEnumerable<TotalRegistroPorModalidadeRelatorioDinamicoNAAPA> retornoTotalDeRegitros = null;
             var parametros = new
             {
                 filtro.DreId,
@@ -38,7 +38,7 @@ namespace SME.SGP.Dados.Repositorios
                 filtro.AnoLetivo,
                 Anos = filtro.Anos.ToArray(),
                 situacao = situacao.ToArray(),
-                filtro.Modalidade
+                Modalidades = filtro.Modalidades?.Select(modalidade => (int)modalidade).ToArray()
             };
             using (var encaminhamentosNAAPA = await contexto.Conexao.QueryMultipleAsync(sql, parametros))
             {
@@ -101,7 +101,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private (string campos, string groupBy) ObterCamposEGrupoParaQueryTotalDeRegistro(FiltroRelatorioDinamicoNAAPADto filtro)
         {
-            if (!filtro.Modalidade.HasValue)
+            if (filtro.Modalidades.NaoPossuiRegistros())
                 return ("count(distinct np.id) Total, t.modalidade_codigo as Modalidade", " GROUP BY t.modalidade_codigo ");
 
             return ("count(distinct np.id) Total, t.ano, t.modalidade_codigo as Modalidade", " GROUP BY t.ano, t.modalidade_codigo");
@@ -186,7 +186,7 @@ namespace SME.SGP.Dados.Repositorios
                 ObterFiltroDre, 
                 ObterFiltroUe,
                 ObterFiltroAnoLetivo,
-                ObterFiltroModalidade,
+                ObterFiltroModalidades,
                 ObterFiltroAnos,
                 ObterFiltroAvancado
             };
@@ -208,8 +208,8 @@ namespace SME.SGP.Dados.Repositorios
         private string ObterFiltroAnoLetivo(FiltroRelatorioDinamicoNAAPADto filtro)
             => " AND t.historica = @Historico AND t.ano_letivo = @AnoLetivo";
 
-        private string ObterFiltroModalidade(FiltroRelatorioDinamicoNAAPADto filtro)
-            => filtro.Modalidade.HasValue ? " AND t.modalidade_codigo = @Modalidade" : string.Empty;
+        private string ObterFiltroModalidades(FiltroRelatorioDinamicoNAAPADto filtro)
+            => filtro.Modalidades.PossuiRegistros() ? " AND t.modalidade_codigo = any(@Modalidades)" : string.Empty;
 
         private string ObterFiltroAnos(FiltroRelatorioDinamicoNAAPADto filtro)
             => filtro.Anos.NaoEhNulo() && filtro.Anos.Any() ? " AND t.ano = ANY(@Anos)" : string.Empty;

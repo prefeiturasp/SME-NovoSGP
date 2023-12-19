@@ -265,6 +265,37 @@ namespace SME.SGP.Dados.Repositorios
             return Enumerable.Empty<AtendimentosProfissionalEncaminhamentoNAAPAConsolidadoDto>();
 
         }
-       
+
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesEncaminhamentoPorModalidades(TipoQuestionario tipoQuestionario, int[] modalidades = null)
+        {
+            var query = new StringBuilder($@"SELECT sea.id, sea.nome, 
+	                                          q.id as QuestionarioId,
+	                                          sea.etapa, 
+	                                          sea.nome_componente as NomeComponente,
+	                                          sea.ordem,
+	                                          q.tipo as TipoQuestionario,
+	                                          COALESCE(array_agg(senm.modalidade_codigo) FILTER (WHERE senm.modalidade_codigo IS NOT NULL), '{{}}'::int[]) as ModalidadesCodigo  
+	                                        FROM secao_encaminhamento_naapa sea 
+    	                                    join questionario q on q.id = sea.questionario_id 
+    	                                    left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
+	                                        WHERE not sea.excluido 
+	  	                                        and q.tipo = @tipoQuestionario
+                                                {(modalidades.PossuiRegistros() ?
+                                                 $@" and exists (select seaAux.id from secao_encaminhamento_naapa seaAux 
+    	                                                         left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = seaAux.id 
+    	                                                         where seaAux.id = sea.id and
+                  	                                                  ((senm.modalidade_codigo = any(@modalidades)) or (senm.modalidade_codigo is null)))" : string.Empty) }  
+	                                        GROUP BY
+    	                                        sea.id, sea.nome, q.id, sea.etapa, sea.nome_componente, sea.ordem, q.tipo
+	                                        ORDER BY 
+    	                                        sea.etapa, sea.ordem; ");
+
+            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(
+                    query.ToString(), new
+                    {
+                        tipoQuestionario = (int)tipoQuestionario,
+                        modalidades
+                    });           
+        }
     }
 }

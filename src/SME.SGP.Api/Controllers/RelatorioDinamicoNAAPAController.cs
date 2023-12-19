@@ -4,6 +4,7 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Questionario;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -26,14 +27,14 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("questoes")] 
-        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<SecaoQuestoesDTO>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RDNAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestoesPorModalidadesParaRelatorioDinamico(
-                                            [FromQuery] int? modalidadeId,
+                                            [FromQuery] int[] modalidadesId,
                                             [FromServices] IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase useCase)
         {
-            return Ok(await useCase.Executar(modalidadeId));
+            return Ok(await useCase.Executar(modalidadesId));
         }
     }
 }
