@@ -269,12 +269,15 @@ namespace SME.SGP.Dominio.Servicos
             var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
 
             var alunosAtivos = from a in alunos
-                where a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date
+                where a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim)
                 orderby a.NomeValido(), a.NumeroAlunoChamada
                 select a;
 
             var codigosAlunosAtivos = alunosAtivos.Select(c => c.CodigoAluno).Distinct().ToArray();
             var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
+
+            var alunosDiferenca = codigosAlunosFechamento.Where(c => !codigosAlunosAtivos.Contains(c));
+
 
             if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
                 throw new NegocioException(MensagemNegocioFechamentoNota.EXISTEM_ALUNOS_INATIVOS_FECHAMENTO_NOTA_BIMESTRE);

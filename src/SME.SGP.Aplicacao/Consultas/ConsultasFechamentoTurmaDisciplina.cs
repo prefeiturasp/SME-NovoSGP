@@ -225,7 +225,7 @@ namespace SME.SGP.Aplicacao
 
                 alunos = alunos.Where(a => a.VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(bimestreDoPeriodo.PeriodoFim));
 
-                var alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
+                var alunosValidosComOrdenacao = alunos.Where(a => a.EstaAtivo(bimestreDoPeriodo.PeriodoInicio, bimestreDoPeriodo.PeriodoFim))
                     .GroupBy(a => a.CodigoAluno)
                     .Select(a => a.OrderByDescending(i => i.DataSituacao).First())
                     .OrderBy(a => a.NomeAluno)
