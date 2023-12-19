@@ -298,7 +298,7 @@ namespace SME.SGP.Aplicacao
                 return (false, false);
             else
                 notasConselhoClasse = notasConselhoClasse.Any(x=>x.ConselhoClasseAlunoId != 0) ? 
-                    notasConselhoClasse.OrderByDescending(c=> c.ConselhoClasseAlunoId).DistinctBy(c => c.ComponenteCurricularCodigo) 
+                    notasConselhoClasse.OrderByDescending(c=> c.ConselhoClasseAlunoId).ThenByDescending(c=> c.FechamentoNotaId).DistinctBy(c => c.ComponenteCurricularCodigo) 
                     : notasConselhoClasse.OrderByDescending(c => c.FechamentoNotaId).DistinctBy(c => c.ComponenteCurricularCodigo);
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
