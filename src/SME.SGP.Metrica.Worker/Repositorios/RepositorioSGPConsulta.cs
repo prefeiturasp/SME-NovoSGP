@@ -461,5 +461,10 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 			=> database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(rf.id) from registro_frequencia rf
                                                                  where not rf.excluido 
 	                                                                   and rf.criado_em::date = @data;", new { data });
+
+        public Task<int> ObterQuantidadeDiariosBordoDia(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(db.id) from diario_bordo db
+                                                             where not db.excluido
+	                                                         and db.criado_em::date = @data", new { data });
     }
 }
