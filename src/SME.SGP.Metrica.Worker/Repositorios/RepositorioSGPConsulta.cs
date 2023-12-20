@@ -456,5 +456,10 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				group by db.aula_id
         			, db.componente_curricular_id 
 				having count(db.id) > 1 ");
+
+        public Task<int> ObterQuantidadeRegistrosFrequenciaEfetuadosDia(DateTime data)
+			=> database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(rf.id) from registro_frequencia rf
+                                                                 where not rf.excluido 
+	                                                                   and rf.criado_em::date = @data;", new { data });
     }
 }

@@ -45,5 +45,6 @@
         public const string ConsolidacaoFrequenciaAlunoMensalInconsistenteUE = "sgp.metricas.consolidacao.frequencia.aluno.mensal.inconsistente.ue";
         public const string ConsolidacaoFrequenciaAlunoMensalInconsistenteTurma = "sgp.metricas.consolidacao.frequencia.aluno.mensal.inconsistente.turma";
         public const string DuplicacaoDiarioBordo = "sgp.metricas.diario.bordo.duplicado";
+        public const string RegistrosFrequencia = "sgp.metricas.registro.frequencia.dia";
     }
 }
