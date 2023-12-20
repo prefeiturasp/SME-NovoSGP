@@ -68,7 +68,8 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.ConsolidacaoFrequenciaAlunoMensalInconsistenteUE, new ComandoRabbit("Registro de inconsistencia em calculo de consolidação mensal de frequencia com relação aos numeros de aula e ausencias existentes", typeof(IConsolidacaoFrequenciaAlunoMensalInconsistenteUEUseCase)));
             Comandos.Add(RotasRabbitMetrica.ConsolidacaoFrequenciaAlunoMensalInconsistenteTurma, new ComandoRabbit("Registro de inconsistencia em calculo de consolidação mensal de frequencia com relação aos numeros de aula e ausencias existentes", typeof(IConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoDiarioBordo, new ComandoRabbit("Registro DiarioBordo duplicados para mesma aula", typeof(IDiarioBordoDuplicadoUseCase)));
-            Comandos.Add(RotasRabbitMetrica.RegistrosFrequencia, new ComandoRabbit("Quantidade de Registros Frequência por Dia", typeof(IRegistrosFrequenciaDiarioUseCase)));
+            Comandos.Add(RotasRabbitMetrica.RegistrosFrequenciaDiarios, new ComandoRabbit("Quantidade de Registros Frequência por Dia", typeof(IRegistrosFrequenciaDiarioUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DiariosBordoDiarios, new ComandoRabbit("Quantidade de Diários de Bordo por Dia", typeof(IDiariosBordoDiarioUseCase)));
         }
     }
 }
