@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Metrica.Worker.Entidade
 {
-    public class AcessosDiario
+    public class AcessosDiario: EntidadeElasticBase
     {
-        public AcessosDiario(DateTime data, int quantidade)
+        public AcessosDiario(DateTime data, int quantidade): base(data.ToString("yyyyMMdd"))
         {
             Data = data.ToUniversalTime();
             Quantidade = quantidade;

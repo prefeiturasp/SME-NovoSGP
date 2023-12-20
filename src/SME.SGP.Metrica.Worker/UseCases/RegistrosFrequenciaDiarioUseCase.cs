@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.UseCases
 {
-    public class RegistrosFrequenciaEfetuadosUseCase : IRegistrosFrequenciaEfetuadosUseCase
+    public class RegistrosFrequenciaDiarioUseCase : IRegistrosFrequenciaDiarioUseCase
     {
         private readonly IRepositorioSGPConsulta repositorioSGP;
-        private readonly IRepositorioRegistrosFrequencia repositorioRegistrosFrequencia;
+        private readonly IRepositorioRegistrosFrequenciaDiario repositorioRegistrosFrequencia;
 
-        public RegistrosFrequenciaEfetuadosUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioRegistrosFrequencia repositorioRegistrosFrequencia)
+        public RegistrosFrequenciaDiarioUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioRegistrosFrequenciaDiario repositorioRegistrosFrequencia)
         {
             this.repositorioSGP = repositorioSGP ?? throw new ArgumentNullException(nameof(repositorioSGP));
             this.repositorioRegistrosFrequencia = repositorioRegistrosFrequencia ?? throw new ArgumentNullException(nameof(repositorioRegistrosFrequencia));
@@ -21,7 +21,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var parametro = mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            var quantidadeAcessos = await repositorioSGP.ObterQuantidadeRegistrosFrequenciaEfetuadosDia(parametro.Data);
+            var quantidadeAcessos = await repositorioSGP.ObterQuantidadeRegistrosFrequenciaDia(parametro.Data);
 
             await repositorioRegistrosFrequencia.InserirAsync(new Entidade.RegistrosFrequenciaDiario(parametro.Data, quantidadeAcessos));
 
