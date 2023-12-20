@@ -30,5 +30,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<IEnumerable<DiarioBordoDuplicado>> ObterDiariosBordoDuplicados();
         Task<int> ObterQuantidadeRegistrosFrequenciaDia(DateTime data);
         Task<int> ObterQuantidadeDiariosBordoDia(DateTime data);
+        Task<int> ObterQuantidadeDevolutivasDiarioBordoMes(DateTime data);
     }
 }
