@@ -111,6 +111,10 @@ namespace SME.SGP.Aplicacao.Queries
                 if (turmasConsideradas.Any())
                     turmasCodigos = turmasConsideradas;
             }
+            else {
+                var matriculasAtivas = matriculasDoAluno.Where(x=>x.Ativo);
+                turmasCodigos = matriculasAtivas.OrderByDescending(x => x.DataSituacao)?.GroupBy(x => x.CodigoTurma).Select(x=>x.First().CodigoTurma.ToString()).ToArray();
+            }
 
             return turmasCodigos;
         }
