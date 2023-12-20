@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Metrica.Worker.UseCases.Interfaces
 {
-    public interface IRegistrosFrequenciaEfetuadosUseCase : IRabbitUseCase
+    public interface IRegistrosFrequenciaDiarioUseCase : IRabbitUseCase
     {
     }
 }
