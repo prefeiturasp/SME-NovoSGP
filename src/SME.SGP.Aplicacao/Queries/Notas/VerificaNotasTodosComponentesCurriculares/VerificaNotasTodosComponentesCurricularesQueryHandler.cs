@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao.Queries
                     turmasCodigos = turmasConsideradas;
             }
             else {
-                var matriculasAtivas = matriculasDoAluno.Where(x=>x.Ativo);
+                var matriculasAtivas = matriculasDoAluno.Where(x=>x.Ativo && turmasCodigos.Contains(x.CodigoTurma.ToString()));
                 if (!matriculasAtivas.Any())
                     return turmasCodigos;
 
