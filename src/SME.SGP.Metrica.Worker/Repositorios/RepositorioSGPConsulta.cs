@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dados;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
@@ -460,22 +461,34 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<int> ObterQuantidadeRegistrosFrequenciaDia(DateTime data)
 			=> database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(rf.id) from registro_frequencia rf
                                                                  where not rf.excluido 
-	                                                                   and rf.criado_em::date = @data;", new { data });
+	                                                                   and rf.criado_em between @primeiraHoraDia and @ultimaHoraDia ",
+                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
         public Task<int> ObterQuantidadeDiariosBordoDia(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(db.id) from diario_bordo db
                                                              where not db.excluido
-	                                                         and db.criado_em::date = @data", new { data });
+	                                                         and db.criado_em between @primeiraHoraDia and @ultimaHoraDia ", 
+														new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
         public Task<int> ObterQuantidadeDevolutivasDiarioBordoMes(DateTime data)
-        {
-            DateTime primeiroDiaDoMes = new DateTime(data.Year, data.Month, 1);
-            DateTime ultimoDiaDoMes = primeiroDiaDoMes.AddMonths(1).AddDays(-1);
-
-			return database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(d.id) from devolutiva d  
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(d.id) from devolutiva d  
                                                                     where not d.excluido 
-	                                                                      and d.criado_em::date between @primeiroDiaDoMes and @ultimoDiaDoMes;",
-																		  new { primeiroDiaDoMes, ultimoDiaDoMes });
-        }
+	                                                                      and d.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+																		  new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+    }
+
+    internal static class DateTimeExtension
+    {
+        static public DateTime PrimeiroDiaMes(this DateTime data, int hour = 0, int minute = 0, int second = 0)
+        => new DateTime(data.Year, data.Month, 1, hour, minute, second);
+
+        static public DateTime UltimoDiaMes(this DateTime data)
+        => data.PrimeiroDiaMes(23, 59, 59).AddMonths(1).AddDays(-1);
+
+        static public DateTime PrimeiraHoraDia(this DateTime data)
+        => new DateTime(data.Year, data.Month, data.Day, 0, 0, 0);
+
+        static public DateTime UltimaHoraDia(this DateTime data)
+        => new DateTime(data.Year, data.Month, data.Day, 23, 59, 59);
     }
 }
