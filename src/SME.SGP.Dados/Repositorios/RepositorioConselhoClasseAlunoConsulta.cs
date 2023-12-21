@@ -120,7 +120,7 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN fechamento_aluno fa
                                            ON fa.fechamento_turma_disciplina_id = ftd.id
                                    INNER JOIN fechamento_nota fn
-                                           ON fn.fechamento_aluno_id = fa.id 
+                                           ON fn.fechamento_aluno_id = fa.id and not fn.excluido
                                    inner join componente_curricular ccr on fn.disciplina_id = ccr.id
                             WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND fa.aluno_codigo = @alunoCodigo
