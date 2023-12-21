@@ -21,9 +21,9 @@ namespace SME.SGP.Metrica.Worker.UseCases
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var parametro = mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            var quantidadeAcessos = await repositorioSGP.ObterQuantidadeRegistrosFrequenciaDia(parametro.Data);
+            var quantidadeRegistros = await repositorioSGP.ObterQuantidadeRegistrosFrequenciaDia(parametro.Data);
 
-            await repositorioRegistrosFrequencia.InserirAsync(new Entidade.RegistrosFrequenciaDiario(parametro.Data, quantidadeAcessos));
+            await repositorioRegistrosFrequencia.InserirAsync(new Entidade.RegistrosFrequenciaDiario(parametro.Data, quantidadeRegistros));
 
             return true;
         }

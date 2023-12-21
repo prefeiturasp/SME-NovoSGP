@@ -31,5 +31,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<int> ObterQuantidadeRegistrosFrequenciaDia(DateTime data);
         Task<int> ObterQuantidadeDiariosBordoDia(DateTime data);
         Task<int> ObterQuantidadeDevolutivasDiarioBordoMes(DateTime data);
+        Task<int> ObterQuantidadeAulasCJMes(DateTime data);
+        Task<int> ObterQuantidadePlanosAulaDia(DateTime data);
+        Task<int> ObterQuantidadeEncaminhamentosAEEMes(DateTime data);
+        Task<int> ObterQuantidadePlanosAEEMes(DateTime data);
     }
 }

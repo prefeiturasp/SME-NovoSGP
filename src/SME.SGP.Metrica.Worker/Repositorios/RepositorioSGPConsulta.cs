@@ -461,13 +461,13 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<int> ObterQuantidadeRegistrosFrequenciaDia(DateTime data)
 			=> database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(rf.id) from registro_frequencia rf
                                                                  where not rf.excluido 
-	                                                                   and rf.criado_em between @primeiraHoraDia and @ultimaHoraDia ",
+	                                                                   and rf.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
                                                                 new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
         public Task<int> ObterQuantidadeDiariosBordoDia(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(db.id) from diario_bordo db
                                                              where not db.excluido
-	                                                         and db.criado_em between @primeiraHoraDia and @ultimaHoraDia ", 
+	                                                         and db.criado_em between @primeiraHoraDia and @ultimaHoraDia; ", 
 														new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
         public Task<int> ObterQuantidadeDevolutivasDiarioBordoMes(DateTime data)
@@ -475,6 +475,31 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                                     where not d.excluido 
 	                                                                      and d.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
 																		  new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+
+        public Task<int> ObterQuantidadeAulasCJMes(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(a.id) from aula a
+                                                            where not a.excluido
+                                                                  and a.aula_cj
+                                                                  and a.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+
+        public Task<int> ObterQuantidadePlanosAulaDia(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(pa.id) from plano_aula pa
+                                                            where not pa.excluido
+                                                            and pa.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
+                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+
+        public Task<int> ObterQuantidadeEncaminhamentosAEEMes(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(ea.id) from encaminhamento_aee ea
+                                                            where not ea.excluido
+                                                            and ea.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+
+        public Task<int> ObterQuantidadePlanosAEEMes(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(pa.id) from plano_aee pa
+                                                            where not pa.excluido
+                                                            and pa.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
     }
 
     internal static class DateTimeExtension
