@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
             if (frequenciaAluno?.TotalAulas == 0)
                 return string.Empty;
-            else if (frequenciaAluno.EhNulo() && aulasComponentesTurmas.EhNulo() || aulasComponentesTurmas.Count() == 0)
+            else if (frequenciaAluno.EhNulo() && (aulasComponentesTurmas.EhNulo() || !aulasComponentesTurmas.Any()))
                 return FrequenciaAluno.FormatarPercentual(0);
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequenciaFormatado;
