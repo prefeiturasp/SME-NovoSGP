@@ -49,5 +49,8 @@
         public const string DiariosBordoDiarios = "sgp.metricas.diario.bordo.dia";
         public const string DevolutivasDiarioBordoMensais = "sgp.metricas.devolutiva.diario.bordo.mes";
         public const string AulasCJMensais = "sgp.metricas.aula.cj.mes";
+        public const string EncaminhamentosAEEMensais = "sgp.metricas.encaminhamento.aee.mes";
+        public const string PlanosAEEMensais = "sgp.metricas.plano.aee.mes";
+        public const string PlanosAulaDiarios = "sgp.metricas.plano.aula.dia";
     }
 }

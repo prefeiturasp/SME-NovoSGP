@@ -72,6 +72,9 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.DiariosBordoDiarios, new ComandoRabbit("Quantidade de Diários de Bordo por Dia", typeof(IDiariosBordoDiarioUseCase)));
             Comandos.Add(RotasRabbitMetrica.DevolutivasDiarioBordoMensais, new ComandoRabbit("Quantidade de Devolutivas Diário de Bordo por Mês", typeof(IDevolutivasDiarioBordoMensalUseCase)));
             Comandos.Add(RotasRabbitMetrica.AulasCJMensais, new ComandoRabbit("Quantidade de Aulas CJ por Mês", typeof(IAulasCJMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.EncaminhamentosAEEMensais, new ComandoRabbit("Quantidade de Encaminhamentos AEE por Mês", typeof(IEncaminhamentosAEEMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.PlanosAEEMensais, new ComandoRabbit("Quantidade de Planos AEE por Mês", typeof(IPlanosAEEMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.PlanosAulaDiarios, new ComandoRabbit("Quantidade de Planos Aula por Dia", typeof(IPlanosAulaDiarioUseCase)));
         }
     }
 }
