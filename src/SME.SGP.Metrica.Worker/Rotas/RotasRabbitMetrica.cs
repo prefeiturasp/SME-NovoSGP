@@ -48,6 +48,6 @@
         public const string RegistrosFrequenciaDiarios = "sgp.metricas.registro.frequencia.dia";
         public const string DiariosBordoDiarios = "sgp.metricas.diario.bordo.dia";
         public const string DevolutivasDiarioBordoMensais = "sgp.metricas.devolutiva.diario.bordo.mes";
-
+        public const string AulasCJMensais = "sgp.metricas.aula.cj.mes";
     }
 }

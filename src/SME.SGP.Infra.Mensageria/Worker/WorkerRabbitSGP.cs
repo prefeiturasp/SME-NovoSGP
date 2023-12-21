@@ -214,7 +214,7 @@ namespace SME.SGP.Infra.Worker
                 }
                 catch (Exception ex)
                 {
-                    transacao?.CaptureException(ex);
+                     transacao?.CaptureException(ex);
  
                     var rejeicoes = GetRetryCount(ea.BasicProperties);
                     if (++rejeicoes >= comandoRabbit.QuantidadeReprocessamentoDeadLetter)
