@@ -11,7 +11,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
     public class RepositorioPlanosAEEMensal : RepositorioElasticBase<PlanosAEEMensal>, IRepositorioPlanosAEEMensal
     {
         public RepositorioPlanosAEEMensal(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
-            : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_plano_aee_mensal")
+            : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_planos_aee_mensal")
         {
         }
     }

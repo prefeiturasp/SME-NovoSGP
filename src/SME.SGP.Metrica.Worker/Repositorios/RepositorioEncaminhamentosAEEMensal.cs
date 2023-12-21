@@ -11,7 +11,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
     public class RepositorioEncaminhamentosAEEMensal : RepositorioElasticBase<EncaminhamentosAEEMensal>, IRepositorioEncaminhamentosAEEMensal
     {
         public RepositorioEncaminhamentosAEEMensal(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria, IOptions<ElasticOptions> elasticOptions) 
-            : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_encaminhamento_aee_mensal")
+            : base(elasticClient, servicoTelemetria, elasticOptions, "metricas_sgp_encaminhamentos_aee_mensal")
         {
         }
     }
