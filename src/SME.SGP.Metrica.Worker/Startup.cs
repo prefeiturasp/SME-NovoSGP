@@ -129,6 +129,13 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRepositorioRegistroFrequenciaAlunoDuplicado, RepositorioRegistroFrequenciaAlunoDuplicado>();
             services.TryAddScoped<IRepositorioConsolidacaoFrequenciaAlunoMensalInconsistente, RepositorioConsolidacaoFrequenciaAlunoMensalInconsistente>();
             services.TryAddScoped<IRepositorioDiarioBordoDuplicado, RepositorioDiarioBordoDuplicado>();
+            services.TryAddScoped<IRepositorioRegistrosFrequenciaDiario, RepositorioRegistrosFrequenciaDiario>();
+            services.TryAddScoped<IRepositorioDiariosBordoDiario, RepositorioDiariosBordoDiario>();
+            services.TryAddScoped<IRepositorioDevolutivasDiarioBordoMensal, RepositorioDevolutivasDiarioBordoMensal>();
+            services.TryAddScoped<IRepositorioAulasCJMensal, RepositorioAulasCJMensal>();
+            services.TryAddScoped<IRepositorioEncaminhamentosAEEMensal, RepositorioEncaminhamentosAEEMensal>();
+            services.TryAddScoped<IRepositorioPlanosAEEMensal, RepositorioPlanosAEEMensal>();
+            services.TryAddScoped<IRepositorioPlanosAulaDiario, RepositorioPlanosAulaDiario>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
@@ -174,6 +181,13 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IConsolidacaoFrequenciaAlunoMensalInconsistenteUseCase, ConsolidacaoFrequenciaAlunoMensalInconsistenteUseCase>();
             services.TryAddScoped<IConsolidacaoFrequenciaAlunoMensalInconsistenteUEUseCase, ConsolidacaoFrequenciaAlunoMensalInconsistenteUEUseCase>();
             services.TryAddScoped<IConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase, ConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase>();
+            services.TryAddScoped<IRegistrosFrequenciaDiarioUseCase, RegistrosFrequenciaDiarioUseCase>();
+            services.TryAddScoped<IDiariosBordoDiarioUseCase, DiariosBordoDiarioUseCase>();
+            services.TryAddScoped<IDevolutivasDiarioBordoMensalUseCase, DevolutivasDiarioBordoMensalUseCase>();
+            services.TryAddScoped<IAulasCJMensalUseCase, AulasCJMensalUseCase>();
+            services.TryAddScoped<IEncaminhamentosAEEMensalUseCase, EncaminhamentosAEEMensalUseCase>();
+            services.TryAddScoped<IPlanosAEEMensalUseCase, PlanosAEEMensalUseCase>();
+            services.TryAddScoped<IPlanosAulaDiarioUseCase, PlanosAulaDiarioUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -68,6 +68,13 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.ConsolidacaoFrequenciaAlunoMensalInconsistenteUE, new ComandoRabbit("Registro de inconsistencia em calculo de consolidação mensal de frequencia com relação aos numeros de aula e ausencias existentes", typeof(IConsolidacaoFrequenciaAlunoMensalInconsistenteUEUseCase)));
             Comandos.Add(RotasRabbitMetrica.ConsolidacaoFrequenciaAlunoMensalInconsistenteTurma, new ComandoRabbit("Registro de inconsistencia em calculo de consolidação mensal de frequencia com relação aos numeros de aula e ausencias existentes", typeof(IConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase)));
             Comandos.Add(RotasRabbitMetrica.DuplicacaoDiarioBordo, new ComandoRabbit("Registro DiarioBordo duplicados para mesma aula", typeof(IDiarioBordoDuplicadoUseCase)));
+            Comandos.Add(RotasRabbitMetrica.RegistrosFrequenciaDiarios, new ComandoRabbit("Quantidade de Registros Frequência por Dia", typeof(IRegistrosFrequenciaDiarioUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DiariosBordoDiarios, new ComandoRabbit("Quantidade de Diários de Bordo por Dia", typeof(IDiariosBordoDiarioUseCase)));
+            Comandos.Add(RotasRabbitMetrica.DevolutivasDiarioBordoMensais, new ComandoRabbit("Quantidade de Devolutivas Diário de Bordo por Mês", typeof(IDevolutivasDiarioBordoMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.AulasCJMensais, new ComandoRabbit("Quantidade de Aulas CJ por Mês", typeof(IAulasCJMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.EncaminhamentosAEEMensais, new ComandoRabbit("Quantidade de Encaminhamentos AEE por Mês", typeof(IEncaminhamentosAEEMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.PlanosAEEMensais, new ComandoRabbit("Quantidade de Planos AEE por Mês", typeof(IPlanosAEEMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.PlanosAulaDiarios, new ComandoRabbit("Quantidade de Planos Aula por Dia", typeof(IPlanosAulaDiarioUseCase)));
         }
     }
 }
