@@ -1,1 +1,0 @@
-update secao_encaminhamento_naapa set nome_componente = 'QUESTOES_ITINERANCIA' where nome_componente = 'QUESTOES_ITINERACIA';
