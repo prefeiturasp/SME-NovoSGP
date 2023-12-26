@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Consts;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,6 @@ namespace SME.SGP.Dados.Repositorios
         public const int QUESTAO_PRIORIDADE_ORDEM = 1;
         public const int SECAO_ETAPA_1 = 1;
         public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
-        public const string SECAO_ITINERANCIA_NOME = "QUESTOES_ITINERACIA";
         public const string QUESTAO_DATA_DO_ATENDIMENTO = "DATA_DO_ATENDIMENTO";
 
         public RepositorioEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
@@ -343,7 +343,7 @@ namespace SME.SGP.Dados.Repositorios
                         WHERE NOT ens.excluido and sen.nome_componente = @secaoNome
                                 and ens.encaminhamento_naapa_id = @id";
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME }));           
+            return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id = encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA }));           
         }
 
         public async Task<IEnumerable<EncaminhamentosNAAPAConsolidadoDto>> ObterQuantidadeSituacaoEncaminhamentosPorUeAnoLetivo(long ueId, int anoLetivo)
@@ -395,7 +395,7 @@ namespace SME.SGP.Dados.Repositorios
                         and not ens.excluido and 
                         en.id = @encaminhamentoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = SECAO_ITINERANCIA_NOME });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { situacao = (int)SituacaoNAAPA.AguardandoAtendimento, encaminhamentoId, secaoNome = EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA });
         }
 
         public async Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()
@@ -444,7 +444,7 @@ namespace SME.SGP.Dados.Repositorios
                 inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                 where not exists(select 1
                                  from secao_encaminhamento_naapa sen
-                                 where sen.nome_componente = '{SECAO_ITINERANCIA_NOME}'
+                                 where sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                                    and not sen.excluido 
                                    and sen.id = ens.secao_encaminhamento_id)
                 and en.situacao = any(@situacoes)
@@ -455,7 +455,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine($@"select en.aluno_codigo AlunoCodigo, en.aluno_nome AlunoNome, en.turma_id TurmaId, en.id EncaminhamentoId
                 from encaminhamento_naapa en
                 inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
-                inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id and sen.nome_componente = '{SECAO_ITINERANCIA_NOME}'
+                inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id and sen.nome_componente = '{EncaminhamentoNAAPAConstants.SECAO_ITINERANCIA}'
                 inner join questionario qto on qto.id = sen.questionario_id
                 inner join(select max(texto::date) dataAtendimento, enq.encaminhamento_naapa_secao_id
                            from encaminhamento_naapa_resposta enr
