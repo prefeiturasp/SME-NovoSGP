@@ -91,6 +91,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task ExecuteTeste(ConselhoClasseNotaDto dtoNota, TipoNota tipoNota, bool ehAlterar = false)
         {
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
             await CriarBase(tipoNota, ehAlterar);
 
             var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
