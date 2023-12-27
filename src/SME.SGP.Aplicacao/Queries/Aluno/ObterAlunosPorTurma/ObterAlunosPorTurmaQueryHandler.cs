@@ -46,7 +46,9 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return alunos.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
+            return alunos.Where(x => x.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido)
+                         .GroupBy(x => x.CodigoAluno)
+                         .SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
         }
     }
 }

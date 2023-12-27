@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
             if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null))
-              return new ParecerConclusivoDto();
+                return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma);
             var parecerConclusivo =
@@ -145,15 +145,19 @@ namespace SME.SGP.Aplicacao
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, 1));
 
-                if(periodoEscolar.NaoEhNulo() && periodoEscolar.Any())
+                if (periodoEscolar.NaoEhNulo() && periodoEscolar.Any())
                 {
                     var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.First(x => x.Bimestre == 1).PeriodoInicio,  ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
-                    var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigosEOL, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date));
-                    if (turmasComMatriculasValidas.Any())
-                        turmasCodigosEOL = turmasComMatriculasValidas.ToArray();
+                        .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.First(x => x.Bimestre == 1).PeriodoInicio, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
-                    var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+                    if (turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any())
+                    {
+                        var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigosEOL, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date));
+                        if (turmasComMatriculasValidas.Any())
+                            turmasCodigosEOL = turmasComMatriculasValidas.ToArray();
+                    }
+
+                    var turmasEOL = turmasCodigosEOL != null && turmasCodigosEOL.Any() ? await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL)) : null;
 
                     turmasCodigosEOL = turmasEOL.NaoEhNulo() && turmasEOL.Any() ? turmasEOL.Where(x => x.Ano == turma.Ano).Select(x => x.CodigoTurma).ToArray() : null;
 
@@ -165,12 +169,10 @@ namespace SME.SGP.Aplicacao
                         {
                             turmasCodigos = turmasCodigosEOL;
                             turmasCodigos = turmasCodigos
-                            .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                                .Concat(new string[] { turma.CodigoTurma }).ToArray();
                         }
                         else
-                        {
                             turmasCodigos = new string[] { turma.CodigoTurma };
-                        }
                     }
                     else
                         turmasCodigos = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? turmasCodigosEOL
