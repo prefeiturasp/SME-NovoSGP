@@ -32,9 +32,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(TIPO_CALENDARIO_1, request.DataAula));
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(TIPO_CALENDARIO_1));
             var primeiroBimestre = periodosEscolares.FirstOrDefault(x => x.Bimestre == (int) Bimestre.Primeiro);
-
             var dataAtual = DateTime.Now;
+            var dataSituacao = periodoEscolar.EhNulo() ? dataAtual : periodoEscolar.PeriodoInicio;
+            var dataSituacaoAluno1 = dataSituacao;
 
+            if (periodoEscolar.NaoEhNulo())
+                dataSituacaoAluno1 = periodoEscolar.PeriodoInicio > dataAtual ? dataAtual : periodoEscolar.PeriodoFim;
+        
             return await Task.FromResult(new List<AlunoPorTurmaResposta>()
             {
                 new AlunoPorTurmaResposta()
@@ -42,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeAluno = "Aluno 1",
                     NomeResponsavel = "Responsavel 1",
                     Ano = DateTime.Now.Year,
-                    DataSituacao = periodoEscolar.PeriodoInicio > dataAtual ? dataAtual : periodoEscolar.PeriodoFim,
+                    DataSituacao = dataSituacaoAluno1,
                     CodigoAluno = CODIGO_ALUNO_1,
                     CodigoComponenteCurricular = 138,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
@@ -52,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 {
                     NomeAluno = "Aluno 2",
                     Ano = DateTime.Now.Year,
-                    DataSituacao = periodoEscolar.PeriodoInicio.AddDays(1),
+                    DataSituacao = dataSituacao.AddDays(1),
                     CodigoAluno = CODIGO_ALUNO_4,
                     CodigoComponenteCurricular = 138,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
@@ -63,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeAluno = "Aluno 3",
                     NomeResponsavel = "Responsavel 1",
                     Ano = DateTime.Now.Year,
-                    DataSituacao = periodoEscolar.PeriodoInicio,
+                    DataSituacao = dataSituacao,
                     CodigoAluno = CODIGO_ALUNO_2,
                     CodigoComponenteCurricular = 138,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.ReclassificadoSaida,
@@ -74,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeAluno = "Aluno 4",
                     NomeResponsavel = "Responsavel 1",
                     Ano = DateTime.Now.Year,
-                    DataSituacao = primeiroBimestre.PeriodoInicio.AddDays(-1),
+                    DataSituacao = dataSituacao.AddDays(-1),
                     CodigoAluno = CODIGO_ALUNO_3,
                     CodigoComponenteCurricular = 138,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.VinculoIndevido,
