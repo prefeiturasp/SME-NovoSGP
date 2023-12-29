@@ -22,7 +22,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
-                            ? new FiltroDataDto(DateTimeExtension.HorarioBrasilia().Date.AddDays(-1))
+                            ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeDevolutivasDiarioBordoMes(parametro.Data);
 
