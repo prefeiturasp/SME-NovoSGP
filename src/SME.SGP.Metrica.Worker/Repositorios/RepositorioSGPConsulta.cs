@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dados;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
@@ -456,5 +457,63 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				group by db.aula_id
         			, db.componente_curricular_id 
 				having count(db.id) > 1 ");
+
+        public Task<int> ObterQuantidadeRegistrosFrequenciaDia(DateTime data)
+			=> database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(rf.id) from registro_frequencia rf
+                                                                 where not rf.excluido 
+	                                                                   and rf.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
+                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+
+        public Task<int> ObterQuantidadeDiariosBordoDia(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(db.id) from diario_bordo db
+                                                             where not db.excluido
+	                                                         and db.criado_em between @primeiraHoraDia and @ultimaHoraDia; ", 
+														new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+
+        public Task<int> ObterQuantidadeDevolutivasDiarioBordoMes(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(d.id) from devolutiva d  
+                                                                    where not d.excluido 
+	                                                                      and d.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+																		  new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+
+        public Task<int> ObterQuantidadeAulasCJMes(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(a.id) from aula a
+                                                            where not a.excluido
+                                                                  and a.aula_cj
+                                                                  and a.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+
+        public Task<int> ObterQuantidadePlanosAulaDia(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(pa.id) from plano_aula pa
+                                                            where not pa.excluido
+                                                            and pa.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
+                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+
+        public Task<int> ObterQuantidadeEncaminhamentosAEEMes(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(ea.id) from encaminhamento_aee ea
+                                                            where not ea.excluido
+                                                            and ea.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+
+        public Task<int> ObterQuantidadePlanosAEEMes(DateTime data)
+        => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(pa.id) from plano_aee pa
+                                                            where not pa.excluido
+                                                            and pa.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+    }
+
+    internal static class DateTimeExtension
+    {
+        static public DateTime PrimeiroDiaMes(this DateTime data, int hour = 0, int minute = 0, int second = 0)
+        => new DateTime(data.Year, data.Month, 1, hour, minute, second);
+
+        static public DateTime UltimoDiaMes(this DateTime data)
+        => data.PrimeiroDiaMes(23, 59, 59).AddMonths(1).AddDays(-1);
+
+        static public DateTime PrimeiraHoraDia(this DateTime data)
+        => new DateTime(data.Year, data.Month, data.Day, 0, 0, 0);
+
+        static public DateTime UltimaHoraDia(this DateTime data)
+        => new DateTime(data.Year, data.Month, data.Day, 23, 59, 59);
     }
 }

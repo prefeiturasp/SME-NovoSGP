@@ -101,7 +101,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private (string campos, string groupBy) ObterCamposEGrupoParaQueryTotalDeRegistro(FiltroRelatorioDinamicoNAAPADto filtro)
         {
-            if (filtro.Modalidades.NaoPossuiRegistros())
+            if (filtro.Modalidades.Count() != 1)
                 return ("count(distinct np.id) Total, t.modalidade_codigo as Modalidade", " GROUP BY t.modalidade_codigo ");
 
             return ("count(distinct np.id) Total, t.ano, t.modalidade_codigo as Modalidade", " GROUP BY t.ano, t.modalidade_codigo");
