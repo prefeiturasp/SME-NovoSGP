@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.UseCases
 {
-    public class AcessosDiarioSGPUseCase : IAcessosDiarioSGPUseCase
+    public class EncaminhamentosAEEMensalUseCase : IEncaminhamentosAEEMensalUseCase
     {
         private readonly IRepositorioSGPConsulta repositorioSGP;
-        private readonly IRepositorioAcessos repositorioAcessos;
+        private readonly IRepositorioEncaminhamentosAEEMensal repositorioEncaminhamentosAEE;
 
-        public AcessosDiarioSGPUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioAcessos repositorioAcessos)
+        public EncaminhamentosAEEMensalUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioEncaminhamentosAEEMensal repositorioEncaminhamentosAEE)
         {
             this.repositorioSGP = repositorioSGP ?? throw new ArgumentNullException(nameof(repositorioSGP));
-            this.repositorioAcessos = repositorioAcessos ?? throw new ArgumentNullException(nameof(repositorioAcessos));
+            this.repositorioEncaminhamentosAEE = repositorioEncaminhamentosAEE ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentosAEE));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -24,10 +24,10 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            var quantidadeAcessos = await repositorioSGP.ObterQuantidadeAcessosDia(parametro.Data);
+            var quantidadeRegistros = await repositorioSGP.ObterQuantidadeEncaminhamentosAEEMes(parametro.Data);
 
-            await repositorioAcessos.InserirAsync(new Entidade.AcessosDiario(parametro.Data, quantidadeAcessos));
-
+            await repositorioEncaminhamentosAEE.InserirAsync(new Entidade.EncaminhamentosAEEMensal(parametro.Data, quantidadeRegistros));
+            
             return true;
         }
     }

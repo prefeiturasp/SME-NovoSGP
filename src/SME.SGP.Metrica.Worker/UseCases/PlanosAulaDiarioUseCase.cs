@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.UseCases
 {
-    public class AcessosDiarioSGPUseCase : IAcessosDiarioSGPUseCase
+    public class PlanosAulaDiarioUseCase : IPlanosAulaDiarioUseCase
     {
         private readonly IRepositorioSGPConsulta repositorioSGP;
-        private readonly IRepositorioAcessos repositorioAcessos;
+        private readonly IRepositorioPlanosAulaDiario repositorioPlanosAula;
 
-        public AcessosDiarioSGPUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioAcessos repositorioAcessos)
+        public PlanosAulaDiarioUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioPlanosAulaDiario repositorioPlanosAula)
         {
             this.repositorioSGP = repositorioSGP ?? throw new ArgumentNullException(nameof(repositorioSGP));
-            this.repositorioAcessos = repositorioAcessos ?? throw new ArgumentNullException(nameof(repositorioAcessos));
+            this.repositorioPlanosAula = repositorioPlanosAula ?? throw new ArgumentNullException(nameof(repositorioPlanosAula));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
@@ -24,9 +24,9 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            var quantidadeAcessos = await repositorioSGP.ObterQuantidadeAcessosDia(parametro.Data);
+            var quantidadeRegistros = await repositorioSGP.ObterQuantidadePlanosAulaDia(parametro.Data);
 
-            await repositorioAcessos.InserirAsync(new Entidade.AcessosDiario(parametro.Data, quantidadeAcessos));
+            await repositorioPlanosAula.InserirAsync(new Entidade.PlanosAulaDiario(parametro.Data, quantidadeRegistros));
 
             return true;
         }

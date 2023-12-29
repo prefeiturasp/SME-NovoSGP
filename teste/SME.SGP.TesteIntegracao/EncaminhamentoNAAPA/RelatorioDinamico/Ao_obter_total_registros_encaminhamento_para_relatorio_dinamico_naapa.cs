@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.RelatorioDinamico
                 DreId = DRE_ID_1,
                 UeId = UE_ID_1,
                 AnoLetivo = dataAtual.Year,
-                Modalidades = null,
+                Modalidades = new Modalidade[] { },
                 Anos = new List<string> { ANO_1, ANO_6, ANO_8 },
                 FiltroAvancado = new List<FiltroComponenteRelatorioDinamicoNAAPA>()
                 {
