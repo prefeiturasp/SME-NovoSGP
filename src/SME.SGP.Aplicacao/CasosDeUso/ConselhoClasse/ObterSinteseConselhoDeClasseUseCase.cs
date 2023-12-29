@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao
             var dto = MapearDisciplinasDto(componenteCurricular);
             
             var frequenciaComponente = frequenciaAluno
-                .FirstOrDefault(a => (a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString() || a.DisciplinaId == componenteCurricular.CodigoComponenteTerritorioSaber.ToString()));
+                .FirstOrDefault(a => (a.DisciplinaId == componenteCurricular.CodigoComponenteCurricular.ToString()));
 
             frequenciaComponente = VerificaTotalAulasParaCalcularPercentualFrequencia(frequenciaComponente, totalAulas);
 
