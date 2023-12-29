@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;
@@ -20,7 +21,9 @@ namespace SME.SGP.Metrica.Worker.UseCases
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var parametro = mensagem.ObterObjetoMensagem<FiltroDataDto>();
+            var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
+                            ? new FiltroDataDto(DateTimeExtension.HorarioBrasilia().Date.AddDays(-1))
+                            : mensagem.ObterObjetoMensagem<FiltroDataDto>();
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeDiariosBordoDia(parametro.Data);
 
             await repositorioDiariosBordo.InserirAsync(new Entidade.DiariosBordoDiario(parametro.Data, quantidadeRegistros));

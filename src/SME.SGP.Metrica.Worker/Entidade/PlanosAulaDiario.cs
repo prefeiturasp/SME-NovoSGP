@@ -6,7 +6,7 @@ namespace SME.SGP.Metrica.Worker.Entidade
     {
         public PlanosAulaDiario(DateTime data, int quantidade): base(data.ToString("yyyyMMdd"))
         {
-            Data = data.ToUniversalTime();
+            Data = data.Date.ToUniversalTime();
             Quantidade = quantidade;
             Ano = data.Year;
             Mes = data.Month;
