@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,13 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesDoProfessorCJ = string.Empty;
             if (usuario.EhProfessorCj())
             {
-                var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, filtroTurmaDto.TurmaCodigo, string.Empty, 0, usuario.Login, string.Empty, true));
+                var dto = new AtribuicoesPorTurmaEProfessorDto()
+                {
+                    TurmaId = filtroTurmaDto.TurmaCodigo,
+                    UsuarioRf = usuario.Login,
+                    Substituir = true
+                };
+                var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto));
                 componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
             }
 

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,16 @@ namespace SME.SGP.Aplicacao
 
             var professoresTitularesDisciplinasEol = (await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId, dataReferencia, professorRf, false))).ToList();
 
-            var listaAtribuicoes = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo))).ToList();
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                Modalidade = modalidadeId,
+                TurmaId = turmaId,
+                UeId = ueId,
+                UsuarioRf = professorRf,
+                AnoLetivo = anoLetivo
+            };
+
+            var listaAtribuicoes = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto))).ToList();
 
             if (professoresTitularesDisciplinasEol.Any())
                 return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);

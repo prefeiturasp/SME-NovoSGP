@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task RegistraConsolidacaoFrequenciaTurma(long turmaId, int quantidadeAprovados, int quantidadeReprovados, int totalAulas, int totalFrequencias)
         {
-            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos.DataInicio, Periodos.DataFim,totalAulas, totalFrequencias));
+            await mediator.Send(new RegistraConsolidacaoFrequenciaTurmaCommand(turmaId, quantidadeAprovados, quantidadeReprovados, TipoConsolidado, Periodos, totalAulas, totalFrequencias));
         }
     }
 }
