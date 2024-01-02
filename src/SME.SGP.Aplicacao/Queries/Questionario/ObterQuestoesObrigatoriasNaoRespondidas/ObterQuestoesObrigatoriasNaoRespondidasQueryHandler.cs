@@ -53,18 +53,15 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var questao in questoes)
             {
-                var ordem = questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString();
+                var ordem = ObterOrdemQuestao(questao, questaoPaiOrdem);
 
                 if (EhQuestaoObrigatoriaNaoRespondida(questao))
-                {
                     questoesObrigatoriasAConsistir.Add(new QuestaoObrigatoriaNaoRespondidaDto(secao.Id, secao.Nome, ordem));
-                }
-                else if (questao.OpcaoResposta.NaoNuloEContemRegistros() && questao.Resposta.NaoNuloEContemRegistrosRespondidos())
+                else if (QuestaoRespondida(questao))
                 {
                     foreach (var resposta in questao.Resposta)
                     {
                         var opcao = questao.OpcaoResposta.FirstOrDefault(opcao => opcao.Id == Convert.ToInt64(resposta.Texto));
-
                         if (opcao.NaoEhNulo() && opcao.QuestoesComplementares.Any())
                         {
                             ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasAConsistir);
@@ -72,6 +69,16 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
+        }
+        private bool QuestaoRespondida(QuestaoDto questao)
+        {
+            return questao.OpcaoResposta.NaoNuloEContemRegistros()
+                   && questao.Resposta.NaoNuloEContemRegistrosRespondidos();
+        }
+
+        private string ObterOrdemQuestao(QuestaoDto questao, string questaoPaiOrdem = "")
+        {
+            return (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString());
         }
     }
 }
