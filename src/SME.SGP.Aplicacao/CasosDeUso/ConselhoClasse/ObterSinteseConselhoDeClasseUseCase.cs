@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
-using RespostasDto = SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using System.Runtime.CompilerServices;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -157,14 +155,28 @@ namespace SME.SGP.Aplicacao
 
             var percentualFrequencia = CalcularPercentualFrequenciaComponente(frequenciaComponente, anoLetivo);
 
-            var parecerFinal = bimestre == 0 && EhEjaCompartilhada(componenteCurricular, modalidade) == false
-                ? await mediator.Send(new ObterSinteseAlunoQuery(string.IsNullOrEmpty(percentualFrequencia) ? 0 : double.Parse(percentualFrequencia), dto, anoLetivo))
-                : null;
+            var parecerFinal = await ObterSintese(componenteCurricular, modalidade, bimestre, percentualFrequencia, dto, anoLetivo);
 
             var componenteSinteseAdicionar = MapearConselhoDeClasseComponenteSinteseDto(componenteCurricular,
                 frequenciaComponente, percentualFrequencia, parecerFinal, totalAulas, totalCompensacoes, bimestre);
 
             return componenteSinteseAdicionar;
+        }
+
+        private async Task<SinteseDto> ObterSintese(
+                                        DisciplinaResposta componenteCurricular, 
+                                        Modalidade modalidade, 
+                                        int bimestre,
+                                        string percentualFrequencia, 
+                                        DisciplinaDto dto,
+                                        int anoLetivo)
+        {
+            var percentual = string.IsNullOrEmpty(percentualFrequencia) ? 0 : double.Parse(percentualFrequencia);
+
+            if (bimestre == 0 && !EhEjaCompartilhada(componenteCurricular, modalidade))
+                return await mediator.Send(new ObterSinteseAlunoQuery(percentual, dto, anoLetivo));
+
+            return null;
         }
         
         private string CalcularPercentualFrequenciaComponente(FrequenciaAluno frequenciaComponente, int anoLetivo)
@@ -190,9 +202,9 @@ namespace SME.SGP.Aplicacao
                 if (dadosAulasComponente.NaoEhNulo())
                 {
                     int totalAulasComponente = Convert.ToInt32(dadosAulasComponente.TotalAulas);
-                    frequenciaAluno.TotalAulas = frequenciaAluno.TotalAulas == totalAulasComponente
-                        ? frequenciaAluno.TotalAulas
-                        : frequenciaAluno.TotalAulas > totalAulasComponente
+
+                    if (frequenciaAluno.TotalAulas != totalAulasComponente)
+                        frequenciaAluno.TotalAulas = frequenciaAluno.TotalAulas > totalAulasComponente
                             ? frequenciaAluno.TotalAulas
                             : totalAulasComponente;
                 }
@@ -264,11 +276,12 @@ namespace SME.SGP.Aplicacao
 
             totalAulasAlunoDisciplina = totalAulasAlunoDisciplina ?? 0;
 
-            return aulasComponente.NaoEhNulo()
-                    ? Convert.ToInt32(aulasComponente.TotalAulas) >= totalAulasAlunoDisciplina
+            if (aulasComponente.EhNulo())
+                return totalAulasAlunoDisciplina.ToString();
+
+            return Convert.ToInt32(aulasComponente.TotalAulas) >= totalAulasAlunoDisciplina
                                                                   ? aulasComponente.TotalAulas
-                                                                  : totalAulasAlunoDisciplina.ToString()
-                    : totalAulasAlunoDisciplina.ToString();
+                                                                  : totalAulasAlunoDisciplina.ToString();
         }
     }
 }

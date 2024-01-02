@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         protected List<Usuario> Usuarios;
         protected List<Conceito> Conceitos;
 
-        public AprovacaoNotaConselhoCommandBase(IMediator mediator)
+        protected AprovacaoNotaConselhoCommandBase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

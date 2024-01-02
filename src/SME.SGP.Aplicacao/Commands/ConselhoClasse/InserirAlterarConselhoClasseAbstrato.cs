@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         protected readonly IMediator mediator;
         protected readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
 
-        public InserirAlterarConselhoClasseAbstrato(
+        protected InserirAlterarConselhoClasseAbstrato(
                             IMediator mediator,
                             IRepositorioConselhoClasseNota repositorioConselhoClasseNota)
         {
