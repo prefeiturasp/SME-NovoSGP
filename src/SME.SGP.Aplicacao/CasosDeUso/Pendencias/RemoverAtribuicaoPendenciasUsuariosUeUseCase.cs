@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -14,7 +15,7 @@ namespace SME.SGP.Aplicacao
     public class RemoverAtribuicaoPendenciasUsuariosUeUseCase : AbstractUseCase, IRemoverAtribuicaoPendenciasUsuariosUeUseCase
     {
         public RemoverAtribuicaoPendenciasUsuariosUeUseCase(IMediator mediator) : base(mediator)
-        {}
+        { }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
@@ -64,13 +65,13 @@ namespace SME.SGP.Aplicacao
             }
 
             if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.CEFAI)
-                return (null, 
-                        lstCefais.NaoPossuiRegistros() || lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId), 
+                return (null,
+                        lstCefais.NaoPossuiRegistros() || lstCefais.Any(usuarioCefai => usuarioCefai != pendenciaFuncionario.UsuarioId),
                         false);
-            
+
             if (pendenciaFuncionario.PerfilCodigo == (int)PerfilUsuario.ADMUE)
                 return (null,
-                        false, 
+                        false,
                         lstAdmUes.NaoPossuiRegistros() || lstAdmUes.Any(usuarioAdmUe => usuarioAdmUe != pendenciaFuncionario.UsuarioId));
 
             return (null, false, false);
@@ -78,38 +79,42 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPerfisNovosEOL(Dictionary<string, IEnumerable<FuncionarioCargoDTO>> dicUePerfilCodigoFuncionarios, IEnumerable<PendenciaPerfilUsuarioDto> filtro)
         {
-            foreach (var dados in dicUePerfilCodigoFuncionarios) 
+            foreach (var dados in dicUePerfilCodigoFuncionarios)
             {
-                foreach (var valorDados in dados.Value) 
+                foreach (var valorDados in dados.Value)
                 {
-                    if (!filtro.Any(p => p.CodigoRf.Equals(valorDados.FuncionarioRF)))
+                    if (!filtro.FuncionarioPossuiPendenciaPerfil(valorDados.FuncionarioRF))
                     {
-                        var itensKey = dados.Key.Split('_');
-                        int perfilCodigo = Convert.ToInt32(itensKey[1]);
-                        long ueId = Convert.ToInt64(itensKey[0]);
-
-                        if (dados.Value.Count() > 1) // existe mais de uma pessoa com o mesmo perfil
-                        {
-                            var listaPendenciasParaOCargo = filtro.Where(pf => pf.PerfilCodigo == perfilCodigo);
-                            foreach (var valorLista in listaPendenciasParaOCargo)
-                            {
-                                var dadospendenciaPerfilId = await mediator.Send(new ObterPendenciaPerfilPorPendenciaIdQuery(valorLista.PendenciaId));
-                                var valorPendenciaPerfil = dadospendenciaPerfilId.Where(p => p.PerfilCodigo == (PerfilUsuario)perfilCodigo).Select(d => d.Id).FirstOrDefault();
-                                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(valorDados.FuncionarioRF));
-
-                                if (valorPendenciaPerfil > 0 && usuarioId > 0)
-                                    await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(valorPendenciaPerfil, usuarioId, (PerfilUsuario)perfilCodigo));
-                            }
-                        }
+                        var (PerfilCodigo, _) = ObterParametrosKey(dados);
+                        if (dados.ExistemNFuncionariosMesmoPerfil())
+                            await GerarPendenciasPerfilUsuario(PerfilCodigo, 
+                                                               filtro, 
+                                                               valorDados.FuncionarioRF);
                     }
                 }
-            }      
+            }
         }
 
-        private async Task RemoverTratarAtribuicao(PendenciaPerfilUsuarioDto pendenciaFuncionario)
+        private async Task GerarPendenciasPerfilUsuario(int perfilCodigo, IEnumerable<PendenciaPerfilUsuarioDto> filtro, string rfFuncionario)
         {
-            await mediator.Send(new ExcluirPendenciaPerfilUsuarioCommand(pendenciaFuncionario.Id));
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaFuncionario.PendenciaId, pendenciaFuncionario.UeId.Value), Guid.NewGuid()));
+            var listaPendenciasParaOCargo = filtro.Where(pf => pf.PerfilCodigo == perfilCodigo);
+            foreach (var valorLista in listaPendenciasParaOCargo)
+            {
+                var dadospendenciaPerfilId = await mediator.Send(new ObterPendenciaPerfilPorPendenciaIdQuery(valorLista.PendenciaId));
+                var valorPendenciaPerfil = dadospendenciaPerfilId.Where(p => p.PerfilCodigo == (PerfilUsuario)perfilCodigo).Select(d => d.Id).FirstOrDefault();
+                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(rfFuncionario));
+
+                if (valorPendenciaPerfil > 0 && usuarioId > 0)
+                    await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(valorPendenciaPerfil, usuarioId, (PerfilUsuario)perfilCodigo));
+            }
+        }
+
+        private (int PerfilCodigo, long UeId) ObterParametrosKey(KeyValuePair<string, IEnumerable<FuncionarioCargoDTO>> valorDicionarioFuncionarioCargo)
+        {
+            var itensKey = valorDicionarioFuncionarioCargo.Key.Split('_');
+            int perfilCodigo = Convert.ToInt32(itensKey[1]);
+            long ueId = Convert.ToInt64(itensKey[0]);
+            return (perfilCodigo, ueId);
         }
 
         private IEnumerable<PendenciaPerfilUsuarioUePerfilDto> ObterAgrupamentoUePerfil(IEnumerable<PendenciaPerfilUsuarioDto> pendenciaFuncionarios)
