@@ -82,12 +82,13 @@ namespace SME.SGP.Aplicacao
 
                 if (PossuiAulasOuPerfilParaValidacao(aula, perfilAtual))
                 {
-                    if (aula.All(a => PerfilAtualEhCJ(perfilAtual) != a.AulaCJ))
+                    var ehPerfilAtualCJ = PerfilAtualEhCJ(perfilAtual);
+                    if (aula.All(a => ehPerfilAtualCJ != a.AulaCJ))
                         return false;
 
-                    if (PerfilAtualEhCJ(perfilAtual) && request.ProfessorRf.NaoEhNulo())
+                    if (ehPerfilAtualCJ && request.ProfessorRf.NaoEhNulo())
                     {
-                        var aulaCj = aula.Where(a => a.AulaCJ == PerfilAtualEhCJ(perfilAtual) && a.CriadoRF == request.ProfessorRf);
+                        var aulaCj = aula.Where(a => a.AulaCJ == ehPerfilAtualCJ && a.CriadoRF == request.ProfessorRf);
                         if (aulaCj.NaoPossuiRegistros())
                             return false;
                     }
