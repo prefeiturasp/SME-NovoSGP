@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
         protected readonly IMediator mediator;
         protected readonly IRepositorioConselhoClasseNota repositorioConselhoClasseNota;
 
-        public InserirAlterarConselhoClasseAbstrato(
+        protected InserirAlterarConselhoClasseAbstrato(
                             IMediator mediator,
                             IRepositorioConselhoClasseNota repositorioConselhoClasseNota)
         {
@@ -62,9 +62,6 @@ namespace SME.SGP.Aplicacao
                                 double? notaAnterior, 
                                 long? conceitoIdAnterior)
         {
-            double? notaAtual = conselhoClasseNota.Nota;
-            long? conceitoIdAtual = conselhoClasseNota.ConceitoId;
-
             if (conselhoClasseNota.Id == 0)
             {
                 conselhoClasseNota.Nota = null;
@@ -73,10 +70,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
             }
 
-            await mediator.Send(new GerarWFAprovacaoNotaConselhoClasseCommand(conselhoClasseNota.Id,
-                                                                              conselhoClasseNota.ComponenteCurricularCodigo,
-                                                                              notaAtual,
-                                                                              conceitoIdAtual,
+            await mediator.Send(new GerarWFAprovacaoNotaConselhoClasseCommand(conselhoClasseNota,
                                                                               turma,
                                                                               bimestre,
                                                                               usuarioLogado,

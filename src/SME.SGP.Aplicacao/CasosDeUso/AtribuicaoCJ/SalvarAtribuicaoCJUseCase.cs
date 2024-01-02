@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,8 +20,16 @@ namespace SME.SGP.Aplicacao
         {
             var anoLetivo = int.Parse(persistenciaDto.AnoLetivo);
 
-            var atribuicoesAtuais = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(persistenciaDto.Modalidade, persistenciaDto.TurmaId,
-                persistenciaDto.UeId, 0, persistenciaDto.UsuarioRf, string.Empty, null, "", null, anoLetivo));
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                Modalidade = persistenciaDto.Modalidade,
+                TurmaId = persistenciaDto.TurmaId,
+                UeId = persistenciaDto.UeId,
+                UsuarioRf = persistenciaDto.UsuarioRf,
+                AnoLetivo = anoLetivo
+            };
+
+            var atribuicoesAtuais = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto));
 
             var atribuiuCj = false;
 

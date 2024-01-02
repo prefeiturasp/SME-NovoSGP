@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,13 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesDoProfessorCJ = string.Empty;
             if (usuario.EhProfessorCj())
             {
-                var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, filtroTurmaDto.TurmaCodigo, string.Empty, 0, usuario.Login, string.Empty, true));
+                var dto = new AtribuicoesPorTurmaEProfessorDto()
+                {
+                    TurmaId = filtroTurmaDto.TurmaCodigo,
+                    UsuarioRf = usuario.Login,
+                    Substituir = true
+                };
+                var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto));
                 componentesCurricularesDoProfessorCJ = String.Join(",", atribuicoes.Select(s => s.DisciplinaId.ToString()).Distinct());
             }
 
@@ -106,22 +113,14 @@ namespace SME.SGP.Aplicacao
             }
             else if (!filtroTurmaDto.ConsideraHistorico)
             {
-                turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
-                                                                                             filtroTurmaDto.DreCodigo,
-                                                                                             filtroTurmaDto.TurmaCodigo,
-                                                                                             filtroTurmaDto.AnoLetivo,
-                                                                                             qtdeRegistros,
-                                                                                             qtdeRegistrosIgnorados,
-                                                                                             filtroTurmaDto.Bimestre,
-                                                                                             filtroTurmaDto.Modalidade.Value,
-                                                                                             filtroTurmaDto.Semestre,
-                                                                                             usuario.EhPerfilProfessor(),
-                                                                                             usuario.CodigoRf,
-                                                                                             filtroTurmaDto.ConsideraHistorico,
-                                                                                             filtroTurmaDto.Bimestre > 0 ?
+                turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto,
+                                                                                         qtdeRegistros,
+                                                                                         qtdeRegistrosIgnorados,
+                                                                                         usuario,
+                                                                                         filtroTurmaDto.Bimestre > 0 ?
                                                                                                 periodoEscolar.FirstOrDefault(p => p.Bimestre == (filtroTurmaDto.Bimestre)).PeriodoInicio :
                                                                                                 periodoEscolar.FirstOrDefault().PeriodoInicio,
-                                                                                             anosInfantilDesconsiderar.NaoEhNulo() ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
+                                                                                         anosInfantilDesconsiderar.NaoEhNulo() ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
             else
             {

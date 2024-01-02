@@ -17,17 +17,7 @@ namespace SME.SGP.Aplicacao.Commands.FilaRabbit.IncluirFilaInserirAulaRecorrente
 
         public async Task<bool> Handle(IncluirFilaInserirAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            var command = new InserirAulaRecorrenteCommand(request.Usuario,
-                                                           request.DataAula,
-                                                           request.Quantidade,
-                                                           request.CodigoTurma,
-                                                           request.ComponenteCurricularId,
-                                                           request.NomeComponenteCurricular,
-                                                           request.TipoCalendarioId,
-                                                           request.TipoAula,
-                                                           request.CodigoUe,
-                                                           request.EhRegencia,
-                                                           request.RecorrenciaAula);
+            var command = new InserirAulaRecorrenteCommand(request);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaInserirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
 
