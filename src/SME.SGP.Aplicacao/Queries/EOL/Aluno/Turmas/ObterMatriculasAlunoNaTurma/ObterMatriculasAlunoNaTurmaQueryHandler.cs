@@ -13,12 +13,10 @@ namespace SME.SGP.Aplicacao
     public class ObterMatriculasAlunoNaTurmaQueryHandler : IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IMediator mediator;
 
-        public ObterMatriculasAlunoNaTurmaQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
+        public ObterMatriculasAlunoNaTurmaQueryHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterMatriculasAlunoNaTurmaQuery request, CancellationToken cancellationToken)
