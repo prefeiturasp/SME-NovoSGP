@@ -67,6 +67,9 @@ namespace SME.SGP.Aplicacao
                 tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));                
                 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
+                var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(request.AlunoCodigo, turmasCodigos, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date));
+                if (turmasComMatriculasValidas.Any())
+                    turmasCodigos = turmasComMatriculasValidas.ToArray();
             }
             else
                 turmasCodigos = new string[1] { turma.CodigoTurma };

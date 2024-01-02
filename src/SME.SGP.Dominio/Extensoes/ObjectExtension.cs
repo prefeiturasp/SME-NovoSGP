@@ -14,5 +14,11 @@ namespace SME.SGP.Dominio
         {
             return !(objeto is null);
         }
+
+        public static void LancarExcecaoNegocioSeEhNulo(this object objeto, string msgErro)
+        {
+            if (objeto.EhNulo())
+                throw new NegocioException(msgErro);
+        }
     }
 }

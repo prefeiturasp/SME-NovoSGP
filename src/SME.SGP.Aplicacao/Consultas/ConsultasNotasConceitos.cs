@@ -368,7 +368,8 @@ namespace SME.SGP.Aplicacao
                             throw new NegocioException("Não foi possível obter o tipo de nota desta avaliação.");
 
                         retorno.NotaTipo = notaTipo.TipoNota;
-                        ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
+                        CarregarValoresDeAuditoriaInserida(dataUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoInserida, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao);
+                        CarregarValoresAuditoriaAlterada(dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaAlteracao);
                     }
                     else
                     {
@@ -523,14 +524,21 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private void ObterValoresDeAuditoria(DateTime? dataUltimaNotaConceitoInserida, DateTime? dataUltimaNotaConceitoAlterada, string usuarioInseriu, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao, string nomeAvaliacaoAlteracao)
+        private void CarregarValoresAuditoriaAlterada(DateTime? dataUltimaNotaConceitoAlterada, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoAlteracao)
         {
-            var tituloNotasOuConceitos = tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
-
-            if (dataUltimaNotaConceitoInserida.HasValue)
-                notasConceitosRetornoDto.AuditoriaInserido = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
             if (dataUltimaNotaConceitoAlterada.HasValue)
-                notasConceitosRetornoDto.AuditoriaAlterado = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+                notasConceitosRetornoDto.AuditoriaAlterado = $"{ObterDescricaoNota(tipoNota)} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+        }
+
+        private void CarregarValoresDeAuditoriaInserida(DateTime? dataUltimaNotaConceitoInserida, string usuarioInseriu, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao)
+        {
+            if (dataUltimaNotaConceitoInserida.HasValue)
+                notasConceitosRetornoDto.AuditoriaInserido = $"{ObterDescricaoNota(tipoNota)} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
+        }
+
+        private string ObterDescricaoNota(TipoNota tipoNota)
+        {
+            return tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
         }
 
         private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto disciplinaEOL, IEnumerable<DisciplinaResposta> disciplinasRegencia, long tipoCalendarioId, string turmaCodigo, int bimestre, TipoAvaliacao tipoAvaliacaoBimestral, NotasConceitosBimestreRetornoDto bimestreDto)

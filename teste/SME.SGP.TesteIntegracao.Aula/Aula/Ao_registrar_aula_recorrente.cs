@@ -88,7 +88,21 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrente
             var useCase = ServiceProvider.GetService<IInserirAulaRecorrenteUseCase>();
 
             var usuario = await ServiceProvider.GetService<IMediator>().Send(ObterUsuarioLogadoQuery.Instance);
-            var command = new InserirAulaRecorrenteCommand(usuario, dataAtual, 1, "1", 1, "comp infantil", 1, TipoAula.Normal, "1", true, RecorrenciaAula.RepetirBimestreAtual);
+            var aulaRecorrente = new IncluirFilaInserirAulaRecorrenteCommand(usuario, 
+                new PersistirAulaDto() 
+                {  
+                    DataAula = dataAtual,
+                    Quantidade = 1,
+                    CodigoTurma = "1",
+                    CodigoComponenteCurricular = 1,
+                    NomeComponenteCurricular = "comp infantil",
+                    TipoCalendarioId = 1,
+                    TipoAula = TipoAula.Normal,
+                    CodigoUe = "1",
+                    EhRegencia = true,
+                    RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual
+                });
+            var command = new InserirAulaRecorrenteCommand(aulaRecorrente);
             var mensagem = new MensagemRabbit(JsonSerializer.Serialize(command));
             var resultado = await useCase.Executar(mensagem);
 

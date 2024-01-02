@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
                 await RecuperarDiariosBordoComAulaExcluida(request.CodigosDisciplinasConsideradas.ToArray(), tipoCalendarioId, diariosBordoComAulaExcluida, turma.CodigoTurma, periodoTurmaConsiderado, cancellationToken);
 
-                var aulasCriacao = from ac in await ObterAulasParaCriacao(tipoCalendarioId, periodoTurmaConsiderado, diasLetivos, diasNaoLetivos, turma, aulasCriadasPeloSistema, dadosDisciplinaAulaCriada, quantidadeAulas, rfProfessor)
+                var aulasCriacao = from ac in await ObterAulasParaCriacao(request, periodoTurmaConsiderado, diasLetivos, diasNaoLetivos, aulasCriadasPeloSistema)
                                    where !diariosBordoComAulaExcluida.Select(db => db.Aula.DataAula).Contains(ac.aula.DataAula) &&
                                          !aulasCriadasOuExcluidasPorUsuario.Select(a => a.DataAula).Distinct().Contains(ac.aula.DataAula)
                                    select ac;
@@ -198,13 +198,23 @@ namespace SME.SGP.Aplicacao
         public static bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
             => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA && !diasLetivos.Any(d => d.Data == aula.DataAula);        
 
-        private async Task<IEnumerable<(Aula aula, long? plano_aula_id)>> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
+        private async Task<IEnumerable<(Aula aula, long? plano_aula_id)>> ObterAulasParaCriacao(CriarAulasInfantilERegenciaAutomaticamenteCommand request,
+                                                                                                IEnumerable<DiaLetivoDto> diasDoPeriodo, 
+                                                                                                IEnumerable<DiaLetivoDto> diasLetivos, 
+                                                                                                IEnumerable<DiaLetivoDto> diasNaoLetivos, 
+                                                                                                IEnumerable<Aula> aulasCriadasPeloSistema)
         {
             var diasParaCriar = diasDoPeriodo
                 .Where(l => !l.Data.FimDeSemana() && (diasLetivos.NaoEhNulo() && diasLetivos.Any(n => n.Data == l.Data) || (diasNaoLetivos.EhNulo() || !diasNaoLetivos.Any(n => n.Data == l.Data))))?
                 .ToList();
 
-            return await ObterListaDeAulas(diasParaCriar?.DistinctBy(c => c.Data)?.ToList(), tipoCalendarioId, turma, aulasCriadasPeloSistema, dadosDisciplina, quantidade, rfProfessor);
+            return await ObterListaDeAulas(diasParaCriar?.DistinctBy(c => c.Data)?.ToList(), 
+                                           request.TipoCalendarioId, 
+                                           request.Turma, 
+                                           aulasCriadasPeloSistema, 
+                                           request.DadosAulaCriadaAutomaticamente.ComponenteCurricular, 
+                                           request.DadosAulaCriadaAutomaticamente.QuantidadeAulas, 
+                                           request.DadosAulaCriadaAutomaticamente.RfProfessor);
         }
 
         private static IList<DiaLetivoDto> DeterminaDiasNaoLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, Turma turma)
