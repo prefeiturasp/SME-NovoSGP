@@ -23,57 +23,81 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var executarManutencao = await mediator
-                .Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
-
-            if (!executarManutencao)
-            {
-                await mediator
-                    .Send(new SalvarLogViaRabbitCommand($"{DateTimeExtension.HorarioBrasilia():dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas de regência não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
+            if (await ParametroExecutacaoManutencaoAulasInfantilDesligado())
                 return false;
-            }
 
-            Modalidade[] modalidades;
-            Turma turma = null;
             var executarProximaPagina = false;
-
-            var mensagem = mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo() ?
-                mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>() : new DadosCriacaoAulasAutomaticasCarregamentoDto();
-
-            if ((mensagem?.CodigoTurma).NaoEhNulo())
-            {
-                turma = await mediator
-                    .Send(new ObterTurmaComUeEDrePorCodigoQuery(mensagem.CodigoTurma));
-
-                if (turma.EhNulo() || (turma.ModalidadeCodigo != Modalidade.Fundamental && turma.ModalidadeCodigo != Modalidade.EJA))
-                    return false;
-                else
-                    modalidades = new Modalidade[] { turma.ModalidadeCodigo };
-            }
-            else
-                modalidades = new Modalidade[] { Modalidade.Fundamental, Modalidade.EJA };
+            var parametro = ObterDtoParametro(mensagemRabbit);
+            Turma turma = await ObterTurmaParametrizada(parametro.CodigoTurma);
+            Modalidade[] modalidades = ObterModalidadesParametrizadas(parametro, turma);
 
             foreach (var modalidade in modalidades)
             {
-                if (modalidade == Modalidade.EJA)
+                switch (modalidade)
                 {
-                    if (turma == null || turma.Semestre == 1)
-                        await ObterDados(modalidade, 1, turma, mensagem.Pagina);
-
-                    if (turma == null || turma.Semestre == 2)
-                        await ObterDados(modalidade, 2, turma, mensagem.Pagina);
+                    case Modalidade.EJA:
+                        await ObterDadosEJA(turma, 1, parametro.Pagina);
+                        await ObterDadosEJA(turma, 2, parametro.Pagina);
+                        break;
+                    default: 
+                        executarProximaPagina = await ObterDados(modalidade, turma: turma, pagina: parametro.Pagina);
+                        break;
                 }
-                else executarProximaPagina = await ObterDados(modalidade, turma: turma, pagina: mensagem.Pagina);
             }
 
-            if (string.IsNullOrWhiteSpace(mensagem.CodigoTurma) && executarProximaPagina)
+            if (string.IsNullOrWhiteSpace(parametro.CodigoTurma) && executarProximaPagina)
             {
-                mensagem.Pagina += 1;
+                parametro.Pagina += 1;
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.CarregarDadosUeTurmaRegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.CarregarDadosUeTurmaRegenciaAutomaticamente, parametro, Guid.NewGuid(), null));
             }
 
             return true;
+        }
+
+        private async Task ObterDadosEJA(Turma turma, int semestre, int pagina)
+        {
+            if ((turma?.Semestre ?? semestre) == semestre)
+                await ObterDados(Modalidade.EJA, semestre, turma, pagina);
+        }
+
+        private async Task<Turma> ObterTurmaParametrizada(string codigoTurma)
+        {
+            if (string.IsNullOrEmpty(codigoTurma)) return null;
+            return await mediator
+                    .Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoTurma));
+        }
+        private async Task<bool> ParametroExecutacaoManutencaoAulasInfantilDesligado()
+        {
+            var executarManutencao = await mediator.Send(ObterExecutarManutencaoAulasInfantilQuery.Instance);
+            if (executarManutencao)
+                return false;
+            
+            await mediator
+                    .Send(new SalvarLogViaRabbitCommand($"{DateTimeExtension.HorarioBrasilia():dd/MM/yyyy HH:mm:ss} - Rotina de manutenção de aulas de regência não iniciada pois seu parâmetro está marcado como não executar", LogNivel.Negocio, LogContexto.Infantil));
+            return true;
+        }
+
+        private Modalidade[] ObterModalidadesParametrizadas(DadosCriacaoAulasAutomaticasCarregamentoDto parametro, Turma turma)
+        {
+            if (!string.IsNullOrEmpty(parametro.CodigoTurma))
+            {
+                var modalidadeTurma = turma?.ModalidadeCodigo ?? 0;
+                if (modalidadeTurma != Modalidade.Fundamental 
+                    && modalidadeTurma != Modalidade.EJA)
+                    return new Modalidade[] {};
+                else
+                    return new Modalidade[] { turma.ModalidadeCodigo };
+            }
+            else
+                return new Modalidade[] { Modalidade.Fundamental, Modalidade.EJA };
+        }
+
+        private DadosCriacaoAulasAutomaticasCarregamentoDto ObterDtoParametro(MensagemRabbit mensagemRabbit)
+        {
+            if (mensagemRabbit.NaoEhNulo() && mensagemRabbit.Mensagem.NaoEhNulo())
+                return mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasCarregamentoDto>();
+            return new DadosCriacaoAulasAutomaticasCarregamentoDto();
         }
 
         private async Task<bool> ObterDados(Modalidade modalidade, int? semestre = null, Turma turma = null, int pagina = 1)
