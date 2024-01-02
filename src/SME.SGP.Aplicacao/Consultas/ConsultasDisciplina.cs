@@ -9,6 +9,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -365,54 +366,50 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login, bool verificaPerfilGestao = false, string codigoDre = null, string codigoUe = null)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
-            var atribuicoes = verificaPerfilGestao ? await repositorioAtribuicaoCJ.ObterAtribuicaoCJPorDreUeTurmaRF(codigoTurma, codigoDre, codigoUe, string.Empty) :
-               await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
-
-            if (atribuicoes.EhNulo() || !atribuicoes.Any())
+            var atribuicoes = await ObterAtribuicoesCJ(codigoTurma, codigoDre, codigoUe, verificaPerfilGestao, login);
+            if (atribuicoes.NaoPossuiRegistros())
                 return Enumerable.Empty<DisciplinaResposta>();
 
             var disciplinasEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray()));
-                
-            var professoresTitulares = !string.IsNullOrEmpty(codigoTurma) ? await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma)) : Enumerable.Empty<ProfessorTitularDisciplinaEol>();
+            var professoresTitulares = await ObterProfessoresTitularesDisciplinasEol(codigoTurma);
 
             foreach (var d in disciplinasEol)
             {
-                d.Professor = professoresTitulares
+                 var rfProfessor = professoresTitulares
                     .FirstOrDefault(pt => pt.DisciplinasId().Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
-
-                if (!string.IsNullOrWhiteSpace(d.Professor))
-                {
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(codigoTurma, d.Professor, Perfis.PERFIL_PROFESSOR));
-                    var componenteCorrepondente = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(d.CodigoComponenteCurricular));
-                    if (componenteCorrepondente.NaoEhNulo())
-                    {
-                        d.CodigoComponenteCurricular = componenteCorrepondente.Codigo;
-                        d.CodigoComponenteCurricularTerritorioSaber = componenteCorrepondente.CodigoComponenteTerritorioSaber;
-                        d.Nome = componenteCorrepondente.Descricao;
-                    }
-                }
-            }
-           
-
-            var contemComponenteTerritorioSemCodigo = disciplinasEol.Any(d => d.TerritorioSaber && d.CodigoComponenteCurricularTerritorioSaber == 0);
-            if (contemComponenteTerritorioSemCodigo)
-            {
-                var componentesDaTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(codigoTurma));
-
-                foreach (var componente in disciplinasEol.Where(d => d.TerritorioSaber))
-                {
-                    var componenteCorrespondente = componentesDaTurma.FirstOrDefault(c => c.CodigoComponenteTerritorioSaber == componente.CodigoComponenteCurricular);
-
-                    if (componenteCorrespondente.NaoEhNulo())
-                    {
-                        componente.CodigoComponenteCurricular = componenteCorrespondente.CodigoComponenteTerritorioSaber.Value;
-                        componente.CodigoComponenteCurricularTerritorioSaber = componenteCorrespondente.CodigoComponenteCurricular;
-                        componente.Nome = componenteCorrespondente.Nome;
-                    }
-                }
-            }
-
+                await PreencherInformacoesComponenteCurricularProfessor(codigoTurma, rfProfessor, d);
+            }          
             return MapearDisciplinaResposta(disciplinasEol);
+        }
+
+        private async Task PreencherInformacoesComponenteCurricularProfessor(string codigoTurma, string rfProfessor, DisciplinaDto componenteCurricular)
+        {
+            componenteCurricular.Professor = rfProfessor;
+            if (!string.IsNullOrWhiteSpace(componenteCurricular.Professor))
+            {
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(codigoTurma, componenteCurricular.Professor, Perfis.PERFIL_PROFESSOR));
+                var componenteCorrepondente = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricular.CodigoComponenteCurricular));
+                if (componenteCorrepondente.NaoEhNulo())
+                {
+                    componenteCurricular.CodigoComponenteCurricular = componenteCorrepondente.Codigo;
+                    componenteCurricular.CodigoComponenteCurricularTerritorioSaber = componenteCorrepondente.CodigoComponenteTerritorioSaber;
+                    componenteCurricular.Nome = componenteCorrepondente.Descricao;
+                }
+            }
+        }
+
+        private async Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesDisciplinasEol(string codigoTurma)
+        {
+            if (string.IsNullOrEmpty(codigoTurma))
+                return Enumerable.Empty<ProfessorTitularDisciplinaEol>();
+            return await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
+        }
+
+        private async Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicoesCJ(string codigoTurma, string codigoDre, string codigoUe, bool verificaPerfilGestao, string login)
+        {
+            if (verificaPerfilGestao)
+                return await repositorioAtribuicaoCJ.ObterAtribuicaoCJPorDreUeTurmaRF(codigoTurma, codigoDre, codigoUe, string.Empty);
+            return await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
         }
 
         public async Task<List<DisciplinaDto>> ObterDisciplinasPorProfessorETurma(string codigoTurma, bool turmaPrograma)
