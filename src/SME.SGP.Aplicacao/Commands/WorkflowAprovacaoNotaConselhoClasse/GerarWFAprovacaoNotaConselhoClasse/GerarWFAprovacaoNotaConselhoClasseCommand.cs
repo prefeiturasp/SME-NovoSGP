@@ -6,21 +6,18 @@ namespace SME.SGP.Aplicacao
 {
     public class GerarWFAprovacaoNotaConselhoClasseCommand : IRequest
     {
-        public GerarWFAprovacaoNotaConselhoClasseCommand(long conselhoClasseNotaId,
-                                                         long componenteCurricularCodigo,
-                                                         double? nota,
-                                                         long? conceitoId,
-                                                         Dominio.Turma turma,
+        public GerarWFAprovacaoNotaConselhoClasseCommand(ConselhoClasseNota conselhoClasseNota,
+                                                         Turma turma,
                                                          int? bimestre,
                                                          Usuario usuarioLogado,
                                                          string alunoCodigo,
                                                          double? notaAnterior,
                                                          long? conceitoIdAnterior)
         {
-            ConselhoClasseNotaId = conselhoClasseNotaId;
-            ComponenteCurricularCodigo = componenteCurricularCodigo;
-            Nota = nota;
-            ConceitoId = conceitoId;
+            ConselhoClasseNotaId = conselhoClasseNota.Id;
+            ComponenteCurricularCodigo = conselhoClasseNota.ComponenteCurricularCodigo;
+            Nota = conselhoClasseNota.Nota;
+            ConceitoId = conselhoClasseNota.ConceitoId;
             Turma = turma;
             Bimestre = bimestre;
             UsuarioLogado = usuarioLogado;

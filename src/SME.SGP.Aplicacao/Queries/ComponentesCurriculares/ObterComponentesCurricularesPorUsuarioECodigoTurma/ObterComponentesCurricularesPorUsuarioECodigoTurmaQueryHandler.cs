@@ -1,12 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -52,7 +50,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesAtribuicaoCj(string turmaCodigo, string login)
         {
-            var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, turmaCodigo, string.Empty, 0, login, string.Empty, true));
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                TurmaId = turmaCodigo,
+                UsuarioRf = login,
+                Substituir = true
+            };
+            var atribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto));
 
             if (atribuicoes.EhNulo() || !atribuicoes.Any())
                 return null;

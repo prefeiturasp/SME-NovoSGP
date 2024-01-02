@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Infra.Dtos;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,8 +16,13 @@ namespace SME.SGP.Aplicacao
         {
             var codigoRf = await mediator.Send(ObterUsuarioLogadoRFQuery.Instance);
 
-            var listaRetorno = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(null, null, null, 0,
-                codigoRf, null, true))).ToList();
+            var dto = new AtribuicoesPorTurmaEProfessorDto()
+            {
+                UsuarioRf = codigoRf,
+                Substituir = true
+            };
+
+            var listaRetorno = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(dto))).ToList();
 
             if (!listaRetorno.Any())
                 return null;
