@@ -113,22 +113,14 @@ namespace SME.SGP.Aplicacao
             }
             else if (!filtroTurmaDto.ConsideraHistorico)
             {
-                turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto.UeCodigo,
-                                                                                             filtroTurmaDto.DreCodigo,
-                                                                                             filtroTurmaDto.TurmaCodigo,
-                                                                                             filtroTurmaDto.AnoLetivo,
-                                                                                             qtdeRegistros,
-                                                                                             qtdeRegistrosIgnorados,
-                                                                                             filtroTurmaDto.Bimestre,
-                                                                                             filtroTurmaDto.Modalidade.Value,
-                                                                                             filtroTurmaDto.Semestre,
-                                                                                             usuario.EhPerfilProfessor(),
-                                                                                             usuario.CodigoRf,
-                                                                                             filtroTurmaDto.ConsideraHistorico,
-                                                                                             filtroTurmaDto.Bimestre > 0 ?
+                turmasPaginadas = await mediator.Send(new ObterTurmasComComponentesQuery(filtroTurmaDto,
+                                                                                         qtdeRegistros,
+                                                                                         qtdeRegistrosIgnorados,
+                                                                                         usuario,
+                                                                                         filtroTurmaDto.Bimestre > 0 ?
                                                                                                 periodoEscolar.FirstOrDefault(p => p.Bimestre == (filtroTurmaDto.Bimestre)).PeriodoInicio :
                                                                                                 periodoEscolar.FirstOrDefault().PeriodoInicio,
-                                                                                             anosInfantilDesconsiderar.NaoEhNulo() ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
+                                                                                         anosInfantilDesconsiderar.NaoEhNulo() ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
             else
             {

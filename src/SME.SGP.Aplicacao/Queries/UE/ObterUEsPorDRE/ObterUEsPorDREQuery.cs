@@ -2,26 +2,42 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dto;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterUEsPorDREQuery : IRequest<IEnumerable<AbrangenciaUeRetorno>>
     {
-        public ObterUEsPorDREQuery(string codigoDre, string login, Guid perfil, Modalidade? modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, bool consideraNovasUEs = false, bool filtrarTipoEscolaPorAnoLetivo = false, string filtro = "", bool filtroEhCodigo = false)
+        public ObterUEsPorDREQuery(UEsPorDreDto dto, string login, Guid perfil)
+        {
+            CodigoDre = dto.CodigoDre;
+            Login = login;
+            Perfil = perfil;
+            Modalidade = dto.Modalidade;
+            Periodo = dto.Periodo;
+            ConsideraHistorico = dto.ConsideraHistorico;
+            AnoLetivo = dto.AnoLetivo;
+            ConsideraNovasUEs = dto.ConsideraNovasUEs;
+            FiltrarTipoEscolaPorAnoLetivo = dto.FiltrarTipoEscolaPorAnoLetivo;
+            Filtro = dto.Filtro;
+            FiltroEhCodigo = !string.IsNullOrWhiteSpace(dto.Filtro) && dto.Filtro.All(char.IsDigit);
+        }
+        public ObterUEsPorDREQuery(string codigoDre, string login, Guid perfil, bool consideraHistorico, int anoLetivo)
         {
             CodigoDre = codigoDre;
             Login = login;
             Perfil = perfil;
-            Modalidade = modalidade;
-            Periodo = periodo;
+            Modalidade = null;
+            Periodo = 0;
             ConsideraHistorico = consideraHistorico;
             AnoLetivo = anoLetivo;
-            ConsideraNovasUEs = consideraNovasUEs;
-            FiltrarTipoEscolaPorAnoLetivo = filtrarTipoEscolaPorAnoLetivo;
-            Filtro = filtro;
-            FiltroEhCodigo = filtroEhCodigo;
+            ConsideraNovasUEs = false;
+            FiltrarTipoEscolaPorAnoLetivo = false;
+            Filtro = string.Empty;
+            FiltroEhCodigo = false;
         }
 
         public string CodigoDre { get; }
