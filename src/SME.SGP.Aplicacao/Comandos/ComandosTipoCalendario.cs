@@ -14,12 +14,12 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
-        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta;
+        private readonly IRepositorioTipoCalendario repositorioTipoCalendario;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
-        public ComandosTipoCalendario(IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta, 
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorioTipoCalendario, 
                                       IServicoFeriadoCalendario servicoFeriadoCalendario, 
                                       IServicoEvento servicoEvento,
                                       IRepositorioEvento repositorioEvento, 
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.repositorioTipoCalendarioConsulta = repositorioTipoCalendarioConsulta ?? throw new ArgumentNullException(nameof(repositorioTipoCalendarioConsulta));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.servicoFeriadoCalendario = servicoFeriadoCalendario ?? throw new ArgumentNullException(nameof(servicoFeriadoCalendario));
             this.servicoEvento = servicoEvento ?? throw new ArgumentNullException(nameof(servicoEvento));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             if (ehRegistroExistente)
                 throw new NegocioException(MensagemNegocioComuns.TIPO_CALENDARIO_ESCOLAR_X_JA_EXISTE);
 
-            repositorioTipoCalendarioConsulta.Salvar(tipoCalendario);
+            repositorioTipoCalendario.Salvar(tipoCalendario);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarTipoCalendario, new ExecutarTipoCalendarioParametro { Dto = tipoCalendarioDto, TipoCalendario = tipoCalendario }, Guid.NewGuid(), null));
         }
@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
                 if (ehRegistroExistente)
                     throw new NegocioException(MensagemNegocioComuns.TIPO_CALENDARIO_ESCOLAR_X_JA_EXISTE);
 
-                repositorioTipoCalendarioConsulta.Salvar(tipoCalendario);
+                repositorioTipoCalendario.Salvar(tipoCalendario);
 
                 await ExecutarReplicacao(tipoCalendarioDto, true, tipoCalendario);
 
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto tipoCalendarioDto, long? id = null)
         {
-            var tipoCalendario = id.HasValue ? repositorioTipoCalendarioConsulta.ObterPorId(id.Value) : new TipoCalendario();
+            var tipoCalendario = id.HasValue ? repositorioTipoCalendario.ObterPorId(id.Value) : new TipoCalendario();
             bool possuiEventos = id.HasValue && repositorioEvento.ExisteEventoPorTipoCalendarioId(id.Value);
                 
             tipoCalendario.Nome = tipoCalendarioDto.Nome;
@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
             StringBuilder tiposInvalidos = new StringBuilder();
             foreach (long id in ids)
             {
-                var tipoCalendario = repositorioTipoCalendarioConsulta.ObterPorId(id);
+                var tipoCalendario = repositorioTipoCalendario.ObterPorId(id);
                 if (tipoCalendario.NaoEhNulo())
                 {
                     var possuiEventos = repositorioEvento.ExisteEventoPorTipoCalendarioId(id);
@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
                     else
                     {
                         tipoCalendario.Excluido = true;
-                        repositorioTipoCalendarioConsulta.Salvar(tipoCalendario);
+                        repositorioTipoCalendario.Salvar(tipoCalendario);
                     }
                 }
                 else
