@@ -512,6 +512,15 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                             group by coalesce(pe.bimestre, 0);",
                                                                 new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
+        public Task<IEnumerable<(int Bimestre, int Quantidade)>> ObterQuantidadeConselhosClasseAlunoDia(DateTime data)
+        => database.Conexao.QueryAsync<(int, int)>(@"select coalesce(pe.bimestre, 0) as bimestre, count(cca.id) as quantidade from conselho_classe_aluno cca 
+                                                     inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
+                                                     inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
+                                                     left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                                                     where not cca.excluido and not cc.excluido and not ft.excluido
+                                                           and cca.criado_em between @primeiraHoraDia and @ultimaHoraDia
+                                                     group by coalesce(pe.bimestre, 0);",
+                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
     }
 
     internal static class DateTimeExtension
