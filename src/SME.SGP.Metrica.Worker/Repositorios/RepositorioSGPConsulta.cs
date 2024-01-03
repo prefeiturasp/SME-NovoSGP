@@ -500,6 +500,18 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                             where not pa.excluido
                                                             and pa.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
                                                                           new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+
+        public Task<IEnumerable<(int Bimestre, int Quantidade)>> ObterQuantidadeFechamentosNotaDia(DateTime data)
+        => database.Conexao.QueryAsync<(int, int)>(@"select coalesce(pe.bimestre, 0) as bimestre, count(fn.id) as quantidade from fechamento_nota fn
+                                                            inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
+                                                            inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
+                                                            inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
+                                                            left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                                                            where not fn.excluido and not fa.excluido and not ftd.excluido and not ft.excluido
+                                                                  and fn.criado_em between @primeiraHoraDia and @ultimaHoraDia
+                                                            group by coalesce(pe.bimestre, 0);",
+                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+
     }
 
     internal static class DateTimeExtension

@@ -35,5 +35,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<int> ObterQuantidadePlanosAulaDia(DateTime data);
         Task<int> ObterQuantidadeEncaminhamentosAEEMes(DateTime data);
         Task<int> ObterQuantidadePlanosAEEMes(DateTime data);
+        Task<IEnumerable<(int Bimestre, int Quantidade)>> ObterQuantidadeFechamentosNotaDia(DateTime data);
     }
 }

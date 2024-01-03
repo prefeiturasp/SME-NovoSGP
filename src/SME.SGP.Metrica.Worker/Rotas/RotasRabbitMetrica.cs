@@ -52,5 +52,7 @@
         public const string EncaminhamentosAEEMensais = "sgp.metricas.encaminhamento.aee.mes";
         public const string PlanosAEEMensais = "sgp.metricas.plano.aee.mes";
         public const string PlanosAulaDiarios = "sgp.metricas.plano.aula.dia";
+        public const string FechamentosNotaDiarios = "sgp.metricas.fechamento.nota.dia";
+
     }
 }
