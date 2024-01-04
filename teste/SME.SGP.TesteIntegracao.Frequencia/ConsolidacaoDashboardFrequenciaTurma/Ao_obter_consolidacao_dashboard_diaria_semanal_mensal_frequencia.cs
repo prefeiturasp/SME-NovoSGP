@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
         {
             await CriarItensBasicos();
 
-            var dataReferencia = DateTimeExtension.HorarioBrasilia().Date.AddDays(-30);
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().Month == 1 ? DateTimeExtension.HorarioBrasilia().Date : DateTimeExtension.HorarioBrasilia().Date.AddDays(-30);
             var inicioMesReferencia = new DateTime(dataReferencia.Year, dataReferencia.Month, 1);
             var fimMesReferencia = inicioMesReferencia.AddMonths(1).AddDays(-1);
             var inicioSemanaReferencia = inicioMesReferencia;
@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDashboardFrequenciaTurma
         {
             await CriarItensBasicos();
 
-            var dataReferencia = DateTimeExtension.HorarioBrasilia().Date.AddDays(-30);
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().Month == 1 ? DateTimeExtension.HorarioBrasilia().Date : DateTimeExtension.HorarioBrasilia().Date.AddDays(-30);
             var inicioMesReferencia = new DateTime(dataReferencia.Year, dataReferencia.Month, 1);
             var fimMesReferencia = inicioMesReferencia.AddMonths(1).AddDays(-1);
             var inicioSemanaReferencia = inicioMesReferencia;
