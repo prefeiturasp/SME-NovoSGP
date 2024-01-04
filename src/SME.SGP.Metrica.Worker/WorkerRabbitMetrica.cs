@@ -78,6 +78,7 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.FechamentosNotaDiarios, new ComandoRabbit("Quantidade de Fechamentos Nota por Dia", typeof(IFechamentosNotaDiarioUseCase)));
             Comandos.Add(RotasRabbitMetrica.ConselhosClasseAlunoDiarios, new ComandoRabbit("Quantidade de Conselhos Classe Aluno por Dia", typeof(IConselhosClasseAlunoDiarioUseCase)));
             Comandos.Add(RotasRabbitMetrica.FechamentosTurmaDisciplinaDiarios, new ComandoRabbit("Quantidade de Fechamentos Turma Disciplina por Dia", typeof(IFechamentosTurmaDisciplinaDiarioUseCase)));
+            Comandos.Add(RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoMensais, new ComandoRabbit("Quantidade de Aulas sem Atribuição e sem atribuição por Mês", typeof(IAulasSemAtribuicaoSubstituicaoMensalUseCase)));
         }
     }
 }
