@@ -311,7 +311,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Semestre = SEMESTRE_1,
                 TurmaCodigo = TURMA_CODIGO_1,
                 TurmaHistorico = false,
-                PeriodoInicioTicks = filtroNota.ConsiderarAnoAnterior ? DATA_03_01_INICIO_BIMESTRE_1.AddYears(-1).Ticks : DATA_03_01_INICIO_BIMESTRE_1.Ticks,
+                PeriodoInicioTicks = filtroNota.ConsiderarAnoAnterior ? DATA_01_01_INICIO_BIMESTRE_1.AddYears(-1).Ticks : DATA_01_01_INICIO_BIMESTRE_1.Ticks,
                 PeriodoFimTicks = filtroNota.ConsiderarAnoAnterior ? DATA_01_05_FIM_BIMESTRE_1.AddYears(-1).Ticks : DATA_01_05_FIM_BIMESTRE_1.Ticks,
             };
         }

@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.TipoCalendarioValidacoes
             
             var consultasTipoCalendario = ServiceProvider.GetService<IConsultasTipoCalendario>();
 
-            var retorno = await consultasTipoCalendario.PeriodoEmAberto(new TipoCalendario(){Id = TIPO_CALENDARIO_8},DATA_03_01_INICIO_BIMESTRE_1,BIMESTRE_1); 
+            var retorno = await consultasTipoCalendario.PeriodoEmAberto(new TipoCalendario(){Id = TIPO_CALENDARIO_8},DATA_01_01_INICIO_BIMESTRE_1,BIMESTRE_1); 
             retorno.ShouldBeTrue();
         }
         
@@ -316,7 +316,7 @@ namespace SME.SGP.TesteIntegracao.TipoCalendarioValidacoes
             await CriarVariosTiposCalendariosEPeriodosEscolaresParaEjaCelpFundamental();
 
             var mediator = ServiceProvider.GetService<IMediator>();
-            var retorno = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferenciaQuery(ANO_LETIVO_ANO_ATUAL,ModalidadeTipoCalendario.CELP,DATA_03_01_INICIO_BIMESTRE_1));
+            var retorno = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoModalidadeEDataReferenciaQuery(ANO_LETIVO_ANO_ATUAL,ModalidadeTipoCalendario.CELP,DATA_01_01_INICIO_BIMESTRE_1));
             retorno.ShouldNotBe(0);
             retorno.ShouldBe(TIPO_CALENDARIO_8);
         }
