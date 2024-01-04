@@ -54,5 +54,6 @@
         public const string PlanosAulaDiarios = "sgp.metricas.plano.aula.dia";
         public const string FechamentosNotaDiarios = "sgp.metricas.fechamento.nota.dia";
         public const string ConselhosClasseAlunoDiarios = "sgp.metricas.conselho.classe.aluno.dia";
+        public const string FechamentosTurmaDisciplinaDiarios = "sgp.metricas.fechamento.turma.disciplina.dia";
     }
 }

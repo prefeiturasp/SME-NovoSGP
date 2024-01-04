@@ -486,20 +486,20 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<int> ObterQuantidadePlanosAulaDia(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(pa.id) from plano_aula pa
                                                             where not pa.excluido
-                                                            and pa.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
-                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+                                                                  and pa.criado_em between @primeiraHoraDia and @ultimaHoraDia; ",
+                                                            new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
         public Task<int> ObterQuantidadeEncaminhamentosAEEMes(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(ea.id) from encaminhamento_aee ea
                                                             where not ea.excluido
-                                                            and ea.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
-                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+                                                                  and ea.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                            new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
 
         public Task<int> ObterQuantidadePlanosAEEMes(DateTime data)
         => database.Conexao.QueryFirstOrDefaultAsync<int>(@"select count(pa.id) from plano_aee pa
                                                             where not pa.excluido
-                                                            and pa.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
-                                                                          new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+                                                                  and pa.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
+                                                            new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
 
         public Task<IEnumerable<(int Bimestre, int Quantidade)>> ObterQuantidadeFechamentosNotaDia(DateTime data)
         => database.Conexao.QueryAsync<(int, int)>(@"select coalesce(pe.bimestre, 0) as bimestre, count(fn.id) as quantidade from fechamento_nota fn
@@ -510,7 +510,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                             where not fn.excluido and not fa.excluido and not ftd.excluido and not ft.excluido
                                                                   and fn.criado_em between @primeiraHoraDia and @ultimaHoraDia
                                                             group by coalesce(pe.bimestre, 0);",
-                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+                                                            new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
 
         public Task<IEnumerable<(int Bimestre, int Quantidade)>> ObterQuantidadeConselhosClasseAlunoDia(DateTime data)
         => database.Conexao.QueryAsync<(int, int)>(@"select coalesce(pe.bimestre, 0) as bimestre, count(cca.id) as quantidade from conselho_classe_aluno cca 
@@ -520,7 +520,17 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                      where not cca.excluido and not cc.excluido and not ft.excluido
                                                            and cca.criado_em between @primeiraHoraDia and @ultimaHoraDia
                                                      group by coalesce(pe.bimestre, 0);",
-                                                                new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+                                                     new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+
+        public Task<IEnumerable<(int Bimestre, int Quantidade)>> ObterQuantidadeFechamentosTurmaDisciplinaDia(DateTime data)
+        => database.Conexao.QueryAsync<(int, int)>(@"select coalesce(pe.bimestre, 0) as bimestre, count(ftd.id) as quantidade from fechamento_turma_disciplina ftd 
+                                                                     inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
+                                                                     left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                                                                     left join componente_curricular cc on cc.id = ftd.disciplina_id 
+                                                                     where not ftd.excluido and not ft.excluido
+                                                                           and ftd.criado_em between @primeiraHoraDia and @ultimaHoraDia
+                                                                     group by coalesce(pe.bimestre, 0);",
+                                                     new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
     }
 
     internal static class DateTimeExtension

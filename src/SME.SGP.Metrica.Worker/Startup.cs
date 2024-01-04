@@ -138,6 +138,7 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRepositorioPlanosAulaDiario, RepositorioPlanosAulaDiario>();
             services.TryAddScoped<IRepositorioFechamentosNotaDiario, RepositorioFechamentosNotaDiario>();
             services.TryAddScoped<IRepositorioConselhosClasseAlunoDiario, RepositorioConselhosClasseAlunoDiario>();
+            services.TryAddScoped<IRepositorioFechamentosTurmaDisciplinaDiario, RepositorioFechamentosTurmaDisciplinaDiario>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
@@ -192,6 +193,7 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IPlanosAulaDiarioUseCase, PlanosAulaDiarioUseCase>();
             services.TryAddScoped<IFechamentosNotaDiarioUseCase, FechamentosNotaDiarioUseCase>();
             services.TryAddScoped<IConselhosClasseAlunoDiarioUseCase, ConselhosClasseAlunoDiarioUseCase>();
+            services.TryAddScoped<IFechamentosTurmaDisciplinaDiarioUseCase, FechamentosTurmaDisciplinaDiarioUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
