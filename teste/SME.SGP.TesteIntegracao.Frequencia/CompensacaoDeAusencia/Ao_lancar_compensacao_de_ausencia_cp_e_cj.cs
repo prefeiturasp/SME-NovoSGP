@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 ComponenteCurricular = componente,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 AnoTurma = ANO_5,
-                DataReferencia = DATA_03_01_INICIO_BIMESTRE_1,
+                DataReferencia = DATA_01_01_INICIO_BIMESTRE_1,
                 QuantidadeAula = QUANTIDADE_AULA_4
             };
         }
