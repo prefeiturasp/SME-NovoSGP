@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             await InserirNaBase(new ConfiguracaoRelatorioPAP()
             {
                 Id = 1,
-                InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
+                InicioVigencia = DATA_01_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_01_05_FIM_BIMESTRE_1,
                 TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_SEMANAL,
                 CriadoEm = DateTime.Now,
@@ -80,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             await InserirNaBase(new ConfiguracaoRelatorioPAP()
             {
                 Id = 1,
-                InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
+                InicioVigencia = DATA_01_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_01_05_FIM_BIMESTRE_1,
                 TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL,
                 CriadoEm = DateTime.Now,
