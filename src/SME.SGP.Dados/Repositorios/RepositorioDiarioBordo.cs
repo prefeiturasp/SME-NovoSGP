@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDiarioBordo : RepositorioBase<DiarioBordo>, IRepositorioDiarioBordo
     {
+        private const int ANO_LETIVO_INICIO_DEVOLUTIVA_UNIFICADA = 2024;
         public RepositorioDiarioBordo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         { }
 
@@ -51,8 +52,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorPeriodoPaginado(string turmaCodigo, int anoLetivo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
         {
-            if (anoLetivo >= 2024)
-                return await ObterDiarioBordoDevolutiva2024(turmaCodigo, componenteCurricularCodigo, periodoInicio, periodoFim, paginacao);
+            if (anoLetivo >= ANO_LETIVO_INICIO_DEVOLUTIVA_UNIFICADA)
+                return await ObterDiarioBordoDevolutivaUnificada(turmaCodigo, componenteCurricularCodigo, periodoInicio, periodoFim, paginacao);
 
             return await ObterDiarioBordoDevolutiva(turmaCodigo, componenteCurricularCodigo, periodoInicio, periodoFim, paginacao);
         }
@@ -98,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
             };
         }
 
-        private async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiarioBordoDevolutiva2024(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
+        private async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiarioBordoDevolutivaUnificada(string turmaCodigo, long componenteCurricularCodigo, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
         {
             var query = $@"select db.planejamento as DescricaoPlanejamento
                             , a.aula_cj as AulaCj
