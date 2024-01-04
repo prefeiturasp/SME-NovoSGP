@@ -56,5 +56,7 @@
         public const string ConselhosClasseAlunoDiarios = "sgp.metricas.conselho.classe.aluno.dia";
         public const string FechamentosTurmaDisciplinaDiarios = "sgp.metricas.fechamento.turma.disciplina.dia";
         public const string AulasSemAtribuicaoSubstituicaoMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.mes";
+        public const string AulasSemAtribuicaoSubstituicaoUEMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.ue.mes";
+        public const string AulasSemAtribuicaoSubstituicaoTurmaMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.turma.mes";
     }
 }

@@ -196,6 +196,8 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IConselhosClasseAlunoDiarioUseCase, ConselhosClasseAlunoDiarioUseCase>();
             services.TryAddScoped<IFechamentosTurmaDisciplinaDiarioUseCase, FechamentosTurmaDisciplinaDiarioUseCase>();
             services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoMensalUseCase, AulasSemAtribuicaoSubstituicaoMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoUEMensalUseCase, AulasSemAtribuicaoSubstituicaoUEMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoTurmaMensalUseCase, AulasSemAtribuicaoSubstituicaoTurmaMensalUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

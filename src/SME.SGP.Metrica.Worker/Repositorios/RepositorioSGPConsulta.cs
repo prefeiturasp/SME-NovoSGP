@@ -22,8 +22,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios
         public Task<IEnumerable<long>> ObterUesIds()
             => database.Conexao.QueryAsync<long>("select id from ue order by id");
 
-        public Task<IEnumerable<long>> ObterTurmasIdsPorUE(long ueId)
-            => database.Conexao.QueryAsync<long>("select id from turma where ano_letivo = extract(year from NOW()) and ue_id = @ueId", new { ueId });
+        public Task<IEnumerable<long>> ObterTurmasIdsPorUE(long ueId, int? anoLetivo = null)
+            => database.Conexao.QueryAsync<long>($"select id from turma where ano_letivo = {(anoLetivo.HasValue ? "@anoLetivo" : "extract(year from NOW())")} and ue_id = @ueId", new { ueId, anoLetivo });
 
         public Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades)
             => database.Conexao.QueryAsync<long>("select id from turma where ano_letivo = extract(year from NOW()) and modalidade_codigo = ANY(@modalidades) order by id", new { modalidades });

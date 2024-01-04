@@ -9,7 +9,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
     {
         Task<IEnumerable<long>> ObterUesIds();
         Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades);
-        Task<IEnumerable<long>> ObterTurmasIdsPorUE(long ueId);
+        Task<IEnumerable<long>> ObterTurmasIdsPorUE(long ueId, int? anoLetivo = null);
         Task<int> ObterQuantidadeAcessosDia(DateTime data);
         Task<IEnumerable<ConselhoClasseDuplicado>> ObterConselhosClasseDuplicados();
         Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
