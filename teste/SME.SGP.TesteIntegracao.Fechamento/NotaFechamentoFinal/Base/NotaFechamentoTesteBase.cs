@@ -1054,7 +1054,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
                 DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
                 CodigoTurma = TURMA_CODIGO_1,
                 NomeTurma = TURMA_NOME_1,
-                PeriodoInicio = DATA_03_01_INICIO_BIMESTRE_1,
+                PeriodoInicio = DATA_01_01_INICIO_BIMESTRE_1,
                 PeriodoFim = DATA_01_05_FIM_BIMESTRE_1,
                 Bimestre = BIMESTRE_1,
                 UsuarioId = usuarioLogado.Id,

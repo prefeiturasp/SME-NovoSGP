@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEvento servicoEvento;
         private readonly IServicoFeriadoCalendario servicoFeriadoCalendario;
 
-        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorioTipoCalendario, 
-                                      IServicoFeriadoCalendario servicoFeriadoCalendario, 
+        public ComandosTipoCalendario(IRepositorioTipoCalendario repositorioTipoCalendario,
+                                      IServicoFeriadoCalendario servicoFeriadoCalendario,
                                       IServicoEvento servicoEvento,
-                                      IRepositorioEvento repositorioEvento, 
+                                      IRepositorioEvento repositorioEvento,
                                       IMediator mediator,
                                       IUnitOfWork unitOfWork)
         {
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
         {
             if (tipoCalendarioDto.Modalidade.EhEjaOuCelp() && !tipoCalendarioDto.Semestre.HasValue)
                 throw new NegocioException(MensagemNegocioComuns.TIPO_CALENDARIO_EJA_OU_CELP_DEVE_TER_SEMESTRE);
-            
+
             if (tipoCalendarioDto.Modalidade.NaoEhEjaOuCelp() && tipoCalendarioDto.Semestre.HasValue)
                 throw new NegocioException(MensagemNegocioComuns.TIPO_CALENDARIO_DIFERENTE_EJA_OU_CELP_NAO_DEVE_TER_SEMESTRE);
         }
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 ValidarSemestreParaEjaECelp(tipoCalendarioDto);
-                
+
                 var tipoCalendario = MapearParaDominio(tipoCalendarioDto);
 
                 bool ehRegistroExistente = await mediator.Send(new VerificarRegistroExistenteTipoCalendarioQuery(0, tipoCalendarioDto.Nome));
@@ -99,14 +99,14 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.Rollback();
                 throw;
-            }            
+            }
         }
 
         public TipoCalendario MapearParaDominio(TipoCalendarioDto tipoCalendarioDto, long? id = null)
         {
             var tipoCalendario = id.HasValue ? repositorioTipoCalendario.ObterPorId(id.Value) : new TipoCalendario();
             bool possuiEventos = id.HasValue && repositorioEvento.ExisteEventoPorTipoCalendarioId(id.Value);
-                
+
             tipoCalendario.Nome = tipoCalendarioDto.Nome;
             tipoCalendario.Situacao = tipoCalendarioDto.Situacao;
             tipoCalendario.Semestre = tipoCalendarioDto.Semestre;
@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
             StringBuilder tiposInvalidos = new StringBuilder();
             foreach (long id in ids)
             {
-                var tipoCalendario = repositorioTipoCalendarioConsulta.ObterPorId(id);
+                var tipoCalendario = repositorioTipoCalendario.ObterPorId(id);
                 MarcarExcluido(id, tipoCalendario, idsInvalidos, tiposInvalidos);
             }
 
@@ -145,7 +145,7 @@ namespace SME.SGP.Aplicacao
             return $"Houve um erro ao excluir o tipo de calendário '{erroTipos}'. O tipo de calendário possui eventos vinculados. Excluia primeiro os eventos para depois remover o tipo de calendário escolar";
         }
 
-    private string ObterMsgErroIdsInvalidos(StringBuilder idsInvalidos)
+        private string ObterMsgErroIdsInvalidos(StringBuilder idsInvalidos)
         {
             string erroIds = idsInvalidos.ToString().TrimEnd(',');
             if (erroIds.IndexOf(',') > -1)
@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     tipoCalendario.Excluido = true;
-                    repositorioTipoCalendarioConsulta.Salvar(tipoCalendario);
+                    repositorioTipoCalendario.Salvar(tipoCalendario);
                 }
             }
             else
