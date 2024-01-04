@@ -18,5 +18,6 @@ namespace SME.SGP.Metrica.Worker.Entidade
         public int Mes { get; set; }
         public int Quantidade { get; set; }
         public int Bimestre { get; set; }
+        public int QuantidadeBimestralEstimada { get; set; } = 120000;
     }
 }
