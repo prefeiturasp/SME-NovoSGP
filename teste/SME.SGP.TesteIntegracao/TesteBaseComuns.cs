@@ -1727,5 +1727,18 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
         }
+        public static DateTime ObterTerceiroSabadoDoMes(int ano, int mes)
+        {
+            // Define a data do primeiro dia do mês
+            DateTime primeiroDiaDoMes = new DateTime(ano, mes, 1);
+
+            // Obtém o primeiro sábado do mês
+            DateTime primeiroSabado = primeiroDiaDoMes.AddDays((DayOfWeek.Saturday - primeiroDiaDoMes.DayOfWeek + 7) % 7);
+
+            // Calcula o terceiro sábado adicionando 14 dias ao primeiro sábado
+            DateTime terceiroSabado = primeiroSabado.AddDays(14);
+
+            return terceiroSabado;
+        }
     }
 }
