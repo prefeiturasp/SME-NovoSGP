@@ -171,7 +171,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ComponenteCurricular = componenteCurricular,
                 AnoTurma = anoTurma,
                 ConsiderarAnoAnterior = false,
-                DataAula = DATA_03_01_INICIO_BIMESTRE_1,
+                DataAula = DATA_01_01_INICIO_BIMESTRE_1,
                 TipoNota = TipoNota.Nota,
                 SituacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
                 CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
