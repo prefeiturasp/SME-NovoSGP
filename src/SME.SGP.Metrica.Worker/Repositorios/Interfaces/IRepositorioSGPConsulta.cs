@@ -1,4 +1,5 @@
-﻿using SME.SGP.Metrica.Worker.Entidade;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Metrica.Worker.Entidade;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,9 +9,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
     public interface IRepositorioSGPConsulta
     {
         Task<IEnumerable<long>> ObterUesIds();
+        Task<IEnumerable<string>> ObterUesCodigo();
         Task<IEnumerable<long>> ObterTurmasIds(int[] modalidades);
         Task<IEnumerable<long>> ObterTurmasIdsPorUE(long ueId, int? anoLetivo = null);
+        Task<IEnumerable<string>> ObterTurmasCodigoPorUE(string ueCodigo, int? anoLetivo = null);
+        Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
+        Task<bool> ComponenteCurriculareERegencia(long id);
         Task<int> ObterQuantidadeAcessosDia(DateTime data);
+        Task<Grade> ObterGradeTurmaAno(TipoEscola tipoEscola, Modalidade modalidade, int duracao, int ano, string anoLetivo);
+        Task<int> ObterHorasComponente(long gradeId, long[] componentesCurriculares, int ano);
+        Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula);
+        Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDia(string turma, string componenteCurricular, DateTime dataAula);
+        Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string componenteCurricular);
+        Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana, DateTime dataExcecao);
         Task<IEnumerable<ConselhoClasseDuplicado>> ObterConselhosClasseDuplicados();
         Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
         Task<IEnumerable<ConselhoClasseNotaDuplicado>> ObterConselhosClasseNotaDuplicados();

@@ -32,9 +32,9 @@ namespace SME.SGP.Metrica.Worker.UseCases
                 || parametro.Data.DayOfWeek == DayOfWeek.Sunday)
                 return false;
 
-            var ues = await repositorioSGP.ObterUesIds();
+            var ues = await repositorioSGP.ObterUesCodigo();
             foreach (var ue in ues)
-                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new FiltroIdDataDto(ue, parametro.Data)));
+                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new FiltroCodigoDataDto(ue, parametro.Data)));
             return true;
         }
     }
