@@ -27,7 +27,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Ao_registrar_frequencia_professor_CJ_ensino_infantil()
         {
             await CriarDadosBasicosVigenciaRelativa(ObterPerfilCJ(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil, BIMESTRE_2, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), criarPeriodo:false);
-            await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
             await CriarAtribuicaoCJ(Modalidade.EducacaoInfantil, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
