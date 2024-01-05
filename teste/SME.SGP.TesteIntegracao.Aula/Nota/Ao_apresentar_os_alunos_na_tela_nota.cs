@@ -77,9 +77,9 @@ namespace SME.SGP.TesteIntegracao.Nota
             };
 
             await CriarDadosBase(filtroNota);
-            await CriarAula(filtroNota.ComponenteCurricular, DATA_03_01_INICIO_BIMESTRE_1, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CriarAula(filtroNota.ComponenteCurricular, DATA_01_01_INICIO_BIMESTRE_1, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
-            await CriarAtividadeAvaliativa(DATA_03_01_INICIO_BIMESTRE_1, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
+            await CriarAtividadeAvaliativa(DATA_01_01_INICIO_BIMESTRE_1, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
 
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
             var retorno = await useCase.Executar(ObterNotaConceitoListar());
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Semestre = SEMESTRE_1,
                 TurmaCodigo = TURMA_CODIGO_1,
                 TurmaHistorico = false,
-                PeriodoInicioTicks = DATA_03_01_INICIO_BIMESTRE_1.Ticks,
+                PeriodoInicioTicks = DATA_01_01_INICIO_BIMESTRE_1.Ticks,
                 PeriodoFimTicks = DATA_01_05_FIM_BIMESTRE_1.Ticks,
             };
         }
