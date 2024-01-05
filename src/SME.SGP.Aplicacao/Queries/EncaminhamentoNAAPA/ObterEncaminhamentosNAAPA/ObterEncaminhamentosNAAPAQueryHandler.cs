@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
                     turmas = new List<AbrangenciaTurmaRetorno>() { new () { Id = request.TurmaId }};
                 else
                     turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(request.CodigoUe,
-                        0, 0, request.ExibirHistorico, DateTimeExtension.HorarioBrasilia().Year, null, true));
+                        0, 0, request.ExibirHistorico, request.AnoLetivo, null, true));
             }
             
             var turmasIds = turmas.NaoEhNulo() || turmas.Any() ? turmas.Select(s => s.Id) : null;
