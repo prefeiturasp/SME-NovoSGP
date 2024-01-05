@@ -24,11 +24,10 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            var quantidadeRegistrosBimestrais = await repositorioSGP.ObterQuantidadeFechamentosNotaDia(parametro.Data);
 
+            var quantidadeRegistrosBimestrais = await repositorioSGP.ObterQuantidadeFechamentosNotaDia(parametro.Data);
             foreach (var qdadePorBimestre in quantidadeRegistrosBimestrais)
                 await repositorioFechamentosNota.InserirAsync(new Entidade.FechamentosNotaDiario(parametro.Data, qdadePorBimestre.Quantidade, qdadePorBimestre.Bimestre));
-
             return true;
         }
     }

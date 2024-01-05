@@ -24,10 +24,9 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            var quantidadeRegistros = await repositorioSGP.ObterQuantidadeAulasCJMes(parametro.Data);
-
-            await repositorioAulasCJ.InserirAsync(new Entidade.AulasCJMensal(parametro.Data, quantidadeRegistros));
             
+            var quantidadeRegistros = await repositorioSGP.ObterQuantidadeAulasCJMes(parametro.Data);
+            await repositorioAulasCJ.InserirAsync(new Entidade.AulasCJMensal(parametro.Data, quantidadeRegistros));
             return true;
         }
     }

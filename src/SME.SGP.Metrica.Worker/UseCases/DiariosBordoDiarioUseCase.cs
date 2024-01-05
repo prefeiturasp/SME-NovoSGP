@@ -24,10 +24,9 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
+
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeDiariosBordoDia(parametro.Data);
-
             await repositorioDiariosBordo.InserirAsync(new Entidade.DiariosBordoDiario(parametro.Data, quantidadeRegistros));
-
             return true;
         }
     }
