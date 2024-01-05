@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dados;
+﻿using Nest;
+using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
@@ -696,26 +697,38 @@ namespace SME.SGP.Metrica.Worker.Repositorios
             return qtd;
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana, DateTime dataExcecao)
+        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana)
         {
             var query = @"select sum(quantidade) from aula
                           where not excluido and tipo_aula = @aulaNomal 
                                 and turma_id = @turma 
                                 and disciplina_id = @componenteCurricular 
                                 and extract('week' from data_aula::date + 1) = @semana ";
-                          //and Date(data_aula) <> @dataExcecao
 
             var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
             {
                 turma,
                 componenteCurricular,
                 semana,
-                aulaNomal = TipoAula.Normal,
-                dataExcecao
+                aulaNomal = TipoAula.Normal
             }) ?? 0;
 
             return qtd;
         }
+
+        public Task<long> ObterTipoCalendarioId(int anoLetivo, int modalidadeTipoCalendario)
+        => database.Conexao.QueryFirstOrDefaultAsync<long>($@"select id
+                                                              from tipo_calendario 
+                                                              where not excluido
+                                                              and ano_letivo = @anoLetivo
+                                                              and modalidade = @modalidadeTipoCalendario", new { anoLetivo, modalidadeTipoCalendario });
+
+        public Task<bool> ExistePeriodoEscolarPorTipoCalendarioData(long tipoCalendarioId, DateTime dataParaVerificar)
+        => database.Conexao.QueryFirstOrDefaultAsync<bool>($@"select exists (select pe.id
+                                                                             from periodo_escolar pe
+                                                                             join tipo_calendario tc on tc.id = pe.tipo_calendario_id
+                                                                             where tc.id = @tipoCalendarioId
+                                                                                   and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim::date);", new { tipoCalendarioId, dataParaVerificar });
     }
 
 

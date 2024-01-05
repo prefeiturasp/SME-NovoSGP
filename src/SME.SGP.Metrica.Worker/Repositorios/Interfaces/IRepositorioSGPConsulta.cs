@@ -21,7 +21,9 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula);
         Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDia(string turma, string componenteCurricular, DateTime dataAula);
         Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string componenteCurricular);
-        Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana, DateTime dataExcecao);
+        Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana);
+        Task<long> ObterTipoCalendarioId(int anoLetivo, int modalidadeTipoCalendario);
+        Task<bool> ExistePeriodoEscolarPorTipoCalendarioData(long tipoCalendarioId, DateTime dataParaVerificar);
         Task<IEnumerable<ConselhoClasseDuplicado>> ObterConselhosClasseDuplicados();
         Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
         Task<IEnumerable<ConselhoClasseNotaDuplicado>> ObterConselhosClasseNotaDuplicados();

@@ -28,10 +28,6 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            if (parametro.Data.DayOfWeek == DayOfWeek.Saturday
-                || parametro.Data.DayOfWeek == DayOfWeek.Sunday)
-                return false;
-
             var ues = await repositorioSGP.ObterUesCodigo();
             foreach (var ue in ues)
                 await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new FiltroCodigoDataDto(ue, parametro.Data)));

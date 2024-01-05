@@ -37,7 +37,7 @@ namespace SME.SGP.Metrica.Worker.Queries
             // Busca horas aula cadastradas para a disciplina na turma
             return ehExperienciaPedagogica ?
                 await repositorioSGP.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(request.Turma.CodigoTurma, semana, request.ComponenteCurricularCodigo) :
-                await repositorioSGP.ObterQuantidadeAulasTurmaDisciplinaSemana(request.Turma.CodigoTurma, request.ComponenteCurricularCodigo, semana, request.DataAula);
+                await repositorioSGP.ObterQuantidadeAulasTurmaDisciplinaSemana(request.Turma.CodigoTurma, request.ComponenteCurricularCodigo, semana);
         }
 
         private bool EhComponenteExperienciaPedagogica(string componenteCurricularCodigo)
