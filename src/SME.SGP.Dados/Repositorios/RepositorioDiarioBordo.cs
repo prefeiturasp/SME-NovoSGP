@@ -73,14 +73,13 @@ namespace SME.SGP.Dados.Repositorios
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                 new { turmaCodigo, componenteCurricularCodigo, periodoInicio, periodoFim });
 
-            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
-
             query = $@"select db.planejamento as DescricaoPlanejamento
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data 
                             , db.inserido_cj as InseridoCJ
                             {condicao} 
-                            order by a.data_aula {offSet} ";
+                            order by a.data_aula
+                            offset {paginacao.QuantidadeRegistrosIgnorados} rows fetch next {paginacao.QuantidadeRegistros} rows only ";
 
             return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
             {
@@ -90,9 +89,7 @@ namespace SME.SGP.Dados.Repositorios
                                                         turmaCodigo,
                                                         componenteCurricularCodigo,
                                                         periodoInicio,
-                                                        periodoFim,
-                                                        qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
-                                                        qtdeRegistros = paginacao.QuantidadeRegistros
+                                                        periodoFim
                                                     }),
                 TotalRegistros = totalRegistrosDaQuery,
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
