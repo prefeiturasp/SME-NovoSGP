@@ -254,7 +254,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_PAAI_LOGIN_5555555 = "5555555";
         protected const string USUARIO_PAEE_LOGIN_5555555 = "5555555";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
-        private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
+        protected const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
 
         protected const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
