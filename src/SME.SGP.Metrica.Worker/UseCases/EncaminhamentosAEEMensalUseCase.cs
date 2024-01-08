@@ -26,7 +26,8 @@ namespace SME.SGP.Metrica.Worker.UseCases
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
 
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeEncaminhamentosAEEMes(parametro.Data);
-            await repositorioEncaminhamentosAEE.InserirAsync(new Entidade.EncaminhamentosAEEMensal(parametro.Data, quantidadeRegistros));           
+            if (quantidadeRegistros > 0)
+                await repositorioEncaminhamentosAEE.InserirAsync(new Entidade.EncaminhamentosAEEMensal(parametro.Data, quantidadeRegistros));           
             return true;
         }
     }
