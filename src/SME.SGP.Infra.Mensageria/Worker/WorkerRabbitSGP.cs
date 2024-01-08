@@ -63,6 +63,7 @@ namespace SME.SGP.Infra.Worker
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.QueueLogs, ExchangeType.Direct, true, false);
 
             Comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();

@@ -41,7 +41,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
    
             foreach (var codigoComponente in codigosComponentesCurricularesTurmaSemAtribuicao)
             {
-                var ehRegencia = await repositorioSGP.ComponenteCurriculareERegencia(long.Parse(codigoComponente));
+                var ehRegencia = await repositorioSGP.ComponenteCurriculareEhRegencia(long.Parse(codigoComponente));
                 var horasAulaGrade = await mediator.Send(new ObterHorasGradeComponenteCurricularTurmaQuery(turma, codigoComponente, ehRegencia));
                 var horasAulaLancadas = await mediator.Send(new ObterHorasCadastradasComponenteCurricularTurmaQuery(turma, codigoComponente, ehRegencia, filtroTurma.Data));
                 var diferencaAulasLancadasXAulasGrade = Math.Max(horasAulaGrade - horasAulaLancadas, 0);

@@ -586,7 +586,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				return turma;
 			}, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
 
-        public Task<bool> ComponenteCurriculareERegencia(long id)
+        public Task<bool> ComponenteCurriculareEhRegencia(long id)
         => database.Conexao.QueryFirstOrDefaultAsync<bool>($@"select eh_regencia from componente_curricular WHERE id = @id;", new { id });
 
         public async Task<Grade> ObterGradeTurmaAno(TipoEscola tipoEscola, Modalidade modalidade, int duracao, int ano, string anoLetivo)
@@ -643,15 +643,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios
             return consulta.Any() ? consulta.Single() : 0;
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula)
+        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula, bool consideraSomenteAulasComRegistroFrequencia = true)
         {
-            var query = @"select sum(quantidade) from aula
-                          left join componente_curricular cc on cc.id = aula.disciplina_id::int8
-                            where not excluido
-                                  and turma_id = @turma
-                                  and (cc.eh_territorio or cc.id is null)
-                                  and date(data_aula) = @dataAula;";
-
+            var query = $@"select sum(quantidade) from aula
+                           left join componente_curricular cc on cc.id = aula.disciplina_id::int8
+                           where not excluido
+                                 and turma_id = @turma
+                                 and (cc.eh_territorio or cc.id is null)
+                                 and date(data_aula) = @dataAula
+                               {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
             var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
             {
                 turma,
@@ -660,14 +664,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios
             return qtd;
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDia(string turma, string componenteCurricular, DateTime dataAula)
+        public async Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDia(string turma, string componenteCurricular, DateTime dataAula, bool consideraSomenteAulasComRegistroFrequencia = true)
         {
-            var query = @"select sum(quantidade) 
-                          from aula
+            var query = $@"select sum(quantidade) from aula
+                          left join componente_curricular cc on cc.id = aula.disciplina_id::int8
                           where not excluido and tipo_aula = @aulaNomal 
                                 and turma_id = @turma 
                                 and disciplina_id = @componenteCurricular 
-                                and date(data_aula) = @dataAula ";
+                                and date(data_aula) = @dataAula 
+                               {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
             var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
             {
                 turma,
@@ -679,14 +688,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios
             return qtd;
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string componenteCurricular)
+        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string componenteCurricular, bool consideraSomenteAulasComRegistroFrequencia = true)
         {
-            var query = @"select sum(quantidade) from aula
-                          where not excluido
-                                and turma_id = @turma
-                                and disciplina_id = @componenteCurricular
-                                and extract('week' from data_aula) = @semana";
-
+            var query = $@"select sum(quantidade) from aula
+                           left join componente_curricular cc on cc.id = aula.disciplina_id::int8
+                           where not excluido
+                                 and turma_id = @turma
+                                 and disciplina_id = @componenteCurricular
+                                 and extract('week' from data_aula) = @semana
+                               {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
             var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
             {
                 turma,
@@ -697,14 +711,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios
             return qtd;
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana)
+        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana, bool consideraSomenteAulasComRegistroFrequencia = true)
         {
-            var query = @"select sum(quantidade) from aula
+            var query = $@"select sum(quantidade) from aula
+                          left join componente_curricular cc on cc.id = aula.disciplina_id::int8
                           where not excluido and tipo_aula = @aulaNomal 
                                 and turma_id = @turma 
                                 and disciplina_id = @componenteCurricular 
-                                and extract('week' from data_aula::date + 1) = @semana ";
-
+                                and extract('week' from data_aula::date + 1) = @semana
+                                {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
             var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
             {
                 turma,
