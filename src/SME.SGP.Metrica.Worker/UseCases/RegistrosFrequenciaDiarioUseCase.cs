@@ -26,7 +26,8 @@ namespace SME.SGP.Metrica.Worker.UseCases
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
 
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeRegistrosFrequenciaDia(parametro.Data);
-            await repositorioRegistrosFrequencia.InserirAsync(new Entidade.RegistrosFrequenciaDiario(parametro.Data, quantidadeRegistros));
+            if (quantidadeRegistros > 0)
+                await repositorioRegistrosFrequencia.InserirAsync(new Entidade.RegistrosFrequenciaDiario(parametro.Data, quantidadeRegistros));
             return true;
         }
     }

@@ -26,7 +26,8 @@ namespace SME.SGP.Metrica.Worker.UseCases
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
             
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeAulasCJMes(parametro.Data);
-            await repositorioAulasCJ.InserirAsync(new Entidade.AulasCJMensal(parametro.Data, quantidadeRegistros));
+            if (quantidadeRegistros > 0)
+                await repositorioAulasCJ.InserirAsync(new Entidade.AulasCJMensal(parametro.Data, quantidadeRegistros));
             return true;
         }
     }

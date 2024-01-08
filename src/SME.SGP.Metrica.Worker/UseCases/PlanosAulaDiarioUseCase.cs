@@ -26,7 +26,8 @@ namespace SME.SGP.Metrica.Worker.UseCases
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
 
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadePlanosAulaDia(parametro.Data);
-            await repositorioPlanosAula.InserirAsync(new Entidade.PlanosAulaDiario(parametro.Data, quantidadeRegistros));
+            if (quantidadeRegistros > 0)
+                await repositorioPlanosAula.InserirAsync(new Entidade.PlanosAulaDiario(parametro.Data, quantidadeRegistros));
             return true;
         }
     }
