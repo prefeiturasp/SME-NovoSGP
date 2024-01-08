@@ -30,7 +30,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
             var ues = await repositorioSGP.ObterUesCodigo();
             foreach (var ue in ues)
-                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new FiltroCodigoDataDto(ue, parametro.Data)));
+                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new FiltroCodigoDataMetricasDto(ue, parametro.Data)));
             return true;
         }
     }

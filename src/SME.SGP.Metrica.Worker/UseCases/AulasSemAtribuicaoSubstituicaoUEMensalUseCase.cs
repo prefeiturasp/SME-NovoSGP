@@ -23,10 +23,10 @@ namespace SME.SGP.Metrica.Worker.UseCases
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var ue = mensagem.ObterObjetoMensagem<FiltroCodigoDataDto>();
+            var ue = mensagem.ObterObjetoMensagem<FiltroCodigoDataMetricasDto>();
             var turmas = await repositorioSGP.ObterTurmasCodigoPorUE(ue.Codigo, ue.Data.Year);
             foreach (var turma in turmas)
-                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoTurmaMensais, new FiltroCodigoDataDto(turma, ue.Data)));
+                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoTurmaMensais, new FiltroCodigoDataMetricasDto(turma, ue.Data, ue.IgnorarRecheckCargaMetricas)));
             return true;
         }
     }

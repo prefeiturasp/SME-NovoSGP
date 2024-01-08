@@ -742,12 +742,19 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                               and ano_letivo = @anoLetivo
                                                               and modalidade = @modalidadeTipoCalendario", new { anoLetivo, modalidadeTipoCalendario });
 
-        public Task<bool> ExistePeriodoEscolarPorTipoCalendarioData(long tipoCalendarioId, DateTime dataParaVerificar)
-        => database.Conexao.QueryFirstOrDefaultAsync<bool>($@"select exists (select pe.id
-                                                                             from periodo_escolar pe
-                                                                             join tipo_calendario tc on tc.id = pe.tipo_calendario_id
-                                                                             where tc.id = @tipoCalendarioId
-                                                                                   and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim::date);", new { tipoCalendarioId, dataParaVerificar });
+        public Task<PeriodoIdDto> ObterPeriodoEscolarPorTipoCalendarioData(long tipoCalendarioId, DateTime dataParaVerificar)
+        => database.Conexao.QueryFirstOrDefaultAsync<PeriodoIdDto>($@"select pe.id, pe.periodo_inicio as Inicio, pe.periodo_fim as Fim
+                                                                    from periodo_escolar pe
+                                                                    join tipo_calendario tc on tc.id = pe.tipo_calendario_id
+                                                                    where tc.id = @tipoCalendarioId
+                                                                          and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim::date;", new { tipoCalendarioId, dataParaVerificar });
+
+        public Task<PeriodoIdDto> ObterPeriodoFechamentoPorPeriodoEscolar(long periodoEscolarId)
+        => database.Conexao.QueryFirstOrDefaultAsync<PeriodoIdDto>($@"select pfb.id, pfb.inicio_fechamento as Inicio, pfb.final_fechamento as Fim  
+                                                                    from periodo_fechamento_bimestre pfb 
+                                                                    inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id 
+                                                                    where pe.id = @periodoEscolarId;", new { periodoEscolarId });
+
     }
 
 

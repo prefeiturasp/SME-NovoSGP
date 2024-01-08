@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,8 @@ namespace SME.SGP.Metrica.Worker.Repositorios.Interfaces
         Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string componenteCurricular, bool consideraSomenteAulasComRegistroFrequencia = true);
         Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana, bool consideraSomenteAulasComRegistroFrequencia = true);
         Task<long> ObterTipoCalendarioId(int anoLetivo, int modalidadeTipoCalendario);
-        Task<bool> ExistePeriodoEscolarPorTipoCalendarioData(long tipoCalendarioId, DateTime dataParaVerificar);
+        Task<PeriodoIdDto> ObterPeriodoEscolarPorTipoCalendarioData(long tipoCalendarioId, DateTime dataParaVerificar);
+        Task<PeriodoIdDto> ObterPeriodoFechamentoPorPeriodoEscolar(long periodoEscolarId);
         Task<IEnumerable<ConselhoClasseDuplicado>> ObterConselhosClasseDuplicados();
         Task<IEnumerable<ConselhoClasseAlunoDuplicado>> ObterConselhosClasseAlunoDuplicados(long ueId);
         Task<IEnumerable<ConselhoClasseNotaDuplicado>> ObterConselhosClasseNotaDuplicados();
