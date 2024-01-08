@@ -136,6 +136,9 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRepositorioEncaminhamentosAEEMensal, RepositorioEncaminhamentosAEEMensal>();
             services.TryAddScoped<IRepositorioPlanosAEEMensal, RepositorioPlanosAEEMensal>();
             services.TryAddScoped<IRepositorioPlanosAulaDiario, RepositorioPlanosAulaDiario>();
+            services.TryAddScoped<IRepositorioDevolutivaDuplicado, RepositorioDevolutivaDuplicado>();
+            services.TryAddScoped<IRepositorioDevolutivaMaisDeUmaNoDiario, RepositorioDevolutivaMaisDeUmaNoDiario>();
+            services.TryAddScoped<IRepositorioDevolutivaSemDiario, RepositorioDevolutivaSemDiario>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
@@ -188,6 +191,9 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IEncaminhamentosAEEMensalUseCase, EncaminhamentosAEEMensalUseCase>();
             services.TryAddScoped<IPlanosAEEMensalUseCase, PlanosAEEMensalUseCase>();
             services.TryAddScoped<IPlanosAulaDiarioUseCase, PlanosAulaDiarioUseCase>();
+            services.TryAddScoped<IDevolutivaDuplicadoUseCase, DevolutivaDuplicadoUseCase>();
+            services.TryAddScoped<IDevolutivaMaisDeUmaNoDiarioUseCase, DevolutivaMaisDeUmaNoDiarioUseCase>();
+            services.TryAddScoped<IDevolutivaSemDiarioUseCase, DevolutivaSemDiarioUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

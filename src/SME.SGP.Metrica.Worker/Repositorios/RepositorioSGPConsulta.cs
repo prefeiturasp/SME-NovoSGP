@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dados;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
@@ -500,6 +499,32 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                             where not pa.excluido
                                                             and pa.criado_em between @primeiroDiaMes and @ultimoDiaMes;",
                                                                           new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
+        public Task<IEnumerable<DevolutivaDuplicado>> ObterDevolutivaDuplicados()
+			=> database.Conexao.QueryAsync<DevolutivaDuplicado>(
+				@"select count(id) Quantidade, descricao, componente_curricular_codigo, min(criado_em) as PrimeiroRegistro, 
+						max(criado_em) as UltimoRegistro, min(id) as PrimeiroId, max(id) as UltimoId 
+						from devolutiva d1
+						where exists (select 1 from devolutiva d2 
+									  where d1.id <> d2.id 
+										and d1.descricao = d2.descricao 
+										and d1.componente_curricular_codigo = d2.componente_curricular_codigo  
+										and d1.periodo_inicio = d2.periodo_inicio
+										and d1.periodo_fim = d2.periodo_fim)       
+						group by descricao, componente_curricular_codigo");
+
+		public Task<IEnumerable<DevolutivaMaisDeUmaNoDiario>> ObterDevolutivaMaisDeUmaNoDiario()
+			=> database.Conexao.QueryAsync<DevolutivaMaisDeUmaNoDiario>(
+                @"select count(db.id) as Quantidade, devolutiva_id as DevolutivaId
+			      from diario_bordo db inner join
+                  devolutiva d on d.id = db.devolutiva_id 
+                  group by devolutiva_id                    
+                  having count(db.id) > 1");
+
+		public Task<IEnumerable<DevolutivaSemDiario>> ObterDevolutivaSemDiario()
+			=> database.Conexao.QueryAsync<DevolutivaSemDiario>(
+				@"select d.id as DevolutivaId 
+                  from devolutiva d  
+                  where not exists(select 1 from diario_bordo db where db.devolutiva_id = d.id)");
     }
 
     internal static class DateTimeExtension
