@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao
                             turmasCodigosEOL = turmasComMatriculasValidas.ToArray();
                     }
 
-                    var turmasEOL = turmasCodigosEOL != null && turmasCodigosEOL.Any() ? await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL)) : null;
+                    var turmasEOL = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL)) : null;
 
                     turmasCodigosEOL = turmasEOL.NaoEhNulo() && turmasEOL.Any() ? turmasEOL.Where(x => x.Ano == turma.Ano).Select(x => x.CodigoTurma).ToArray() : null;
 
