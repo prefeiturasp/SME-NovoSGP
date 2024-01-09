@@ -74,10 +74,8 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
             dto.ShouldNotBeNull();
             var item = dto.Items.FirstOrDefault();
             item.Data.ShouldBe(filtroDiarioBordo.DataAulaDiarioBordo);
-            //var descricaoPlanejamento = UtilRegex.RemoverTagsHtml(item.PlanejamentoSimples).Replace(Environment.NewLine, "");
             item.PlanejamentoSimples.ShouldContain("REGÊNCIA INFANTIL EMEI 2H");
             item.PlanejamentoSimples.ShouldContain("REGÊNCIA INFANTIL EMEI 4H");
-            //descricaoPlanejamento.ShouldBe("REGÊNCIA INFANTIL EMEI 2H - Planejamento Planejado 513 REGÊNCIA INFANTIL EMEI 4H - Planejamento Planejado 512");
         }
 
         [Fact]
