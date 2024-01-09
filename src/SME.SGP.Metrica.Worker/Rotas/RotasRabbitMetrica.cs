@@ -52,5 +52,8 @@
         public const string EncaminhamentosAEEMensais = "sgp.metricas.encaminhamento.aee.mes";
         public const string PlanosAEEMensais = "sgp.metricas.plano.aee.mes";
         public const string PlanosAulaDiarios = "sgp.metricas.plano.aula.dia";
+        public const string DuplicadoDevolutiva = "sgp.metricas.devolutiva.duplicado";
+        public const string DevolutivaMaisDeUmaNoDiario = "sgp.metricas.devolutiva.mais.um.diario";
+        public const string DevolutivaSemDiario = "sgp.metricas.devolutiva.sem.diario";
     }
 }
