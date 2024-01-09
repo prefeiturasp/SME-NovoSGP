@@ -52,6 +52,14 @@
         public const string EncaminhamentosAEEMensais = "sgp.metricas.encaminhamento.aee.mes";
         public const string PlanosAEEMensais = "sgp.metricas.plano.aee.mes";
         public const string PlanosAulaDiarios = "sgp.metricas.plano.aula.dia";
+        public const string FechamentosNotaDiarios = "sgp.metricas.fechamento.nota.dia";
+        public const string ConselhosClasseAlunoDiarios = "sgp.metricas.conselho.classe.aluno.dia";
+        public const string FechamentosTurmaDisciplinaDiarios = "sgp.metricas.fechamento.turma.disciplina.dia";
+        public const string AulasSemAtribuicaoSubstituicaoMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.mes";
+        public const string AulasSemAtribuicaoSubstituicaoUEMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.ue.mes";
+        public const string AulasSemAtribuicaoSubstituicaoTurmaMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.turma.mes";
+        public const string AulasSemAtribuicaoSubstituicaoComponenteMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.componente.mes";
+        public const string AulasSemAtribuicaoSubstituicaoExclusaoTurmaMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.exclusao.turma.mes";
         public const string DuplicadoDevolutiva = "sgp.metricas.devolutiva.duplicado";
         public const string DevolutivaMaisDeUmaNoDiario = "sgp.metricas.devolutiva.mais.um.diario";
         public const string DevolutivaSemDiario = "sgp.metricas.devolutiva.sem.diario";

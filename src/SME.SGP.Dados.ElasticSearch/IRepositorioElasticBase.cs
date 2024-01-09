@@ -15,5 +15,6 @@ namespace SME.Pedagogico.Interface
         Task<bool> ExisteAsync(string indice, string id, string nomeConsulta, object parametro = null);
         Task<bool> InserirAsync(T entidade, string indice = "");
         Task ExcluirTodos(string indice = "");
+        Task ExcluirPorId(string id, string indice = "");
     }
 }
