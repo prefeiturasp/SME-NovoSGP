@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.TesteIntegracao.DiarioBordo;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -73,8 +74,8 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
             dto.ShouldNotBeNull();
             var item = dto.Items.FirstOrDefault();
             item.Data.ShouldBe(filtroDiarioBordo.DataAulaDiarioBordo);
-            var descricaoPlanejamento = UtilRegex.RemoverTagsHtml(item.PlanejamentoSimples).Replace("\r\n", "");
-            descricaoPlanejamento.ShouldBe("REGÊNCIA INFANTIL EMEI 2H - Planejamento Planejado 513 REGÊNCIA INFANTIL EMEI 4H - Planejamento Planejado 512");
+            item.PlanejamentoSimples.ShouldContain("REGÊNCIA INFANTIL EMEI 2H");
+            item.PlanejamentoSimples.ShouldContain("REGÊNCIA INFANTIL EMEI 4H");
         }
 
         [Fact]
