@@ -11,6 +11,7 @@ using SME.SGP.Dominio;
 using Nest;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.Metrica.Worker.Commands;
+using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Metrica.Worker.UseCases
 {
@@ -20,7 +21,7 @@ namespace SME.SGP.Metrica.Worker.UseCases
         private readonly IRepositorioAulasSemAtribuicaoSubstituicaoMensal repositorioAulas;
         private readonly IMediator mediator;
 
-        public AulasSemAtribuicaoSubstituicaoTurmaMensalUseCase(IRepositorioSGPConsulta repositorioSGP, 
+        public AulasSemAtribuicaoSubstituicaoTurmaMensalUseCase(IRepositorioSGPConsulta repositorioSGP,
                                                                 IRepositorioAulasSemAtribuicaoSubstituicaoMensal repositorioAulas,
                                                                 IMediator mediator)
         {
@@ -40,34 +41,13 @@ namespace SME.SGP.Metrica.Worker.UseCases
             if (!await PossuiPeriodoLetivo(turma, filtroTurma.Data))
                 return false;
 
-            var codigosComponentesCurricularesTurmaSemAtribuicao = await mediator.Send(new ObterComponentesCurricularesSemAtribuicaoPorTurmaDataQuery(filtroTurma.Codigo, filtroTurma.Data));
-   
+            var codigosComponentesCurricularesTurmaSemAtribuicao = await mediator.Send(new ObterComponentesCurricularesSemAtribuicaoPorTurmaDataQuery(filtroTurma.Codigo, filtroTurma.Data));  
             foreach (var codigoComponente in codigosComponentesCurricularesTurmaSemAtribuicao)
-            {
-                var ehRegencia = await repositorioSGP.ComponenteCurriculareEhRegencia(long.Parse(codigoComponente));
-                var horasAulaGrade = await mediator.Send(new ObterHorasGradeComponenteCurricularTurmaQuery(turma, codigoComponente, ehRegencia));
-                var horasAulaLancadas = await mediator.Send(new ObterHorasCadastradasComponenteCurricularTurmaQuery(turma, codigoComponente, ehRegencia, filtroTurma.Data));
-                var diferencaAulasLancadasXAulasGrade = Math.Max(horasAulaGrade - horasAulaLancadas, 0);
+                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoComponenteMensais, new FiltroComponenteCodigoDataMetricasDto(codigoComponente, filtroTurma.Data, filtroTurma.Codigo)));
 
-                await repositorioAulas.InserirAsync(new Entidade.AulasSemAtribuicaoSubstituicaoMensal(filtroTurma.Codigo, codigoComponente, (int)turma.ModalidadeCodigo,
-                                                                                                      filtroTurma.Data, diferencaAulasLancadasXAulasGrade,
-                                                                                                      ehRegencia));
-            }
-            await ExcluirDocumentos(turma, filtroTurma.Data, codigosComponentesCurricularesTurmaSemAtribuicao.ToArray());
+            if (codigosComponentesCurricularesTurmaSemAtribuicao.PossuiRegistros())
+                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoExclusaoTurmaMensais, new FiltroComponentesSemAtribuicaoCodigoDataMetricasDto(codigosComponentesCurricularesTurmaSemAtribuicao.ToArray(), filtroTurma.Data, filtroTurma.Codigo)));
             return true;
-        }
-
-        private async Task ExcluirDocumentos(Turma turma, DateTime dataJob, string[] codigosComponentesCurricularesTurmaSemAtribuicao)
-        {
-            var componentesCurricularesTurma = await mediator.Send(new ObterComponentesCurricularesVinculadosTurmaQuery(turma.CodigoTurma));
-            var codigosComponentesCurricularesAtribuidos = componentesCurricularesTurma.Except(codigosComponentesCurricularesTurmaSemAtribuicao);
-            foreach (var codigoComponenteCurricular in codigosComponentesCurricularesAtribuidos)
-            {
-                var ehRegencia = await repositorioSGP.ComponenteCurriculareEhRegencia(long.Parse(codigoComponenteCurricular));
-                var semana = UtilData.ObterSemanaDoAno(dataJob);
-                var id = $"{turma.CodigoTurma}-{codigoComponenteCurricular}-{(ehRegencia ? dataJob.ToString("yyyyMMdd") : $"{dataJob.ToString("yyyyMM")}-{semana}")}";
-                await repositorioAulas.ExcluirPorId(id);
-            }
         }
 
         private async Task TratarAtualizacaoMetricasAnteriores(bool ignorarRecheckCargaMetricas, Turma turma, DateTime dataJob)

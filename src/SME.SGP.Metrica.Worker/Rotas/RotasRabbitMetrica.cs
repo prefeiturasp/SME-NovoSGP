@@ -58,5 +58,7 @@
         public const string AulasSemAtribuicaoSubstituicaoMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.mes";
         public const string AulasSemAtribuicaoSubstituicaoUEMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.ue.mes";
         public const string AulasSemAtribuicaoSubstituicaoTurmaMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.turma.mes";
+        public const string AulasSemAtribuicaoSubstituicaoComponenteMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.componente.mes";
+        public const string AulasSemAtribuicaoSubstituicaoExclusaoTurmaMensais = "sgp.metricas.aula.sem.atribuicao.substituicao.exclusao.turma.mes";
     }
 }

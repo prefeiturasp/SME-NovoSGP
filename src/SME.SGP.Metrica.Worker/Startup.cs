@@ -202,6 +202,8 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoMensalUseCase, AulasSemAtribuicaoSubstituicaoMensalUseCase>();
             services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoUEMensalUseCase, AulasSemAtribuicaoSubstituicaoUEMensalUseCase>();
             services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoTurmaMensalUseCase, AulasSemAtribuicaoSubstituicaoTurmaMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoComponenteMensalUseCase, AulasSemAtribuicaoSubstituicaoComponenteMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoExclusaoTurmaMensalUseCase, AulasSemAtribuicaoSubstituicaoExclusaoTurmaMensalUseCase>();
         }
 
         private void AdicionarHttpClients(IServiceCollection services)

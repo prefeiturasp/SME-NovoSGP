@@ -81,6 +81,8 @@ namespace SME.SGP.Metrica.Worker
             Comandos.Add(RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoMensais, new ComandoRabbit("Quantidade de Aulas sem Atribuição e sem atribuição por Mês", typeof(IAulasSemAtribuicaoSubstituicaoMensalUseCase)));
             Comandos.Add(RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new ComandoRabbit("Quantidade de Aulas sem Atribuição e sem atribuição por Mês (UE)", typeof(IAulasSemAtribuicaoSubstituicaoUEMensalUseCase)));
             Comandos.Add(RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoTurmaMensais, new ComandoRabbit("Quantidade de Aulas sem Atribuição e sem atribuição por Mês (Turma)", typeof(IAulasSemAtribuicaoSubstituicaoTurmaMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoComponenteMensais, new ComandoRabbit("Quantidade de Aulas sem Atribuição e sem atribuição por Mês (Componente)", typeof(IAulasSemAtribuicaoSubstituicaoComponenteMensalUseCase)));
+            Comandos.Add(RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoExclusaoTurmaMensais, new ComandoRabbit("Excluir documento quantidade de Aulas sem Atribuição e sem atribuição por Mês (Turma)", typeof(IAulasSemAtribuicaoSubstituicaoExclusaoTurmaMensalUseCase)));
         }
     }
 }
