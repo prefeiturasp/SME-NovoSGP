@@ -11,13 +11,18 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirDevolutivaUseCase : AbstractUseCase, IInserirDevolutivaUseCase
     {
-        public InserirDevolutivaUseCase(IMediator mediator) : base(mediator)
+        private const int ANO_LETIVO_INICIO_DEVOLUTIVA_UNIFICADA = 2024;
+        private readonly IConsultasDisciplina consultasDisciplina;
+
+        public InserirDevolutivaUseCase(IMediator mediator,
+                                        IConsultasDisciplina consultasDisciplina) : base(mediator)
         {
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
         {
-            IEnumerable<(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date));
+            IEnumerable<(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, new long[] { param.CodigoComponenteCurricular }, param.PeriodoInicio.Date, param.PeriodoFim.Date));
 
             if (!dados.Any())
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
@@ -35,7 +40,8 @@ namespace SME.SGP.Aplicacao
             await MoverRemoverExcluidos(param);
             AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao, turma.Id));
 
-            await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
+            var idsDiariosAtualizacao = await ObterIdDiarioUnificado(idsDiarios, turma, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date);
+            await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiariosAtualizacao, auditoria.Id));
 
             var filtro = new FiltroExclusaoPendenciasDevolutivaDto()
             { 
@@ -46,6 +52,30 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDevolutiva, filtro, Guid.NewGuid()));
 
             return auditoria;
+        }
+
+        private async Task<IEnumerable<long>> ObterIdDiarioUnificado(IEnumerable<long> idsDiarios, Turma turma, long codigoComponente, DateTime periodoInicio, DateTime periodoFim)
+        {
+            if (turma.AnoLetivo >= ANO_LETIVO_INICIO_DEVOLUTIVA_UNIFICADA)
+            {
+                var retorno = new List<long>();
+                var disciplinas = await ObterComponentesCurricularesTurma(turma.CodigoTurma, codigoComponente);
+                var dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(turma.CodigoTurma, disciplinas.Select(x => x.CodigoComponenteCurricular).ToArray(), periodoInicio, periodoFim));
+
+                retorno.AddRange(idsDiarios);
+                retorno.AddRange(dados.Select(x => x.Id));
+
+                return retorno;
+            }
+
+            return idsDiarios;
+        }
+
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesTurma(string turmaCodigo, long componentePai)
+        {
+            var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false);
+
+            return disciplinas.FindAll(item => item.CdComponenteCurricularPai == componentePai && item.CodigoComponenteCurricular != componentePai);
         }
 
         private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)

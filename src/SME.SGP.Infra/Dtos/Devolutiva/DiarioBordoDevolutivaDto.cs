@@ -18,6 +18,7 @@ namespace SME.SGP.Infra
         public string DescricaoPlanejamento { get; set; }
         public bool InseridoCJ { get; set; }
         public string Descricao { get; set; }  
+        public string Componente { get; set; }
         public string Planejamento
         {
             get
