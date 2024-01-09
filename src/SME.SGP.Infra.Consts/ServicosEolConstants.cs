@@ -244,5 +244,7 @@
         public const string URL_GRUPOS_USUARIOS = "grupos-usuarios/tipo-perfil/{0}";
 
         public const string URL_ABRANGENCIAS_PERFIS_USUARIO = "abrangencia/perfis/usuarios";
+        
+        public const string URL_COMPONENTES_CURRICULARES_TURMA_SEM_ATRIBUICAO_AULA = "v1/componentes-curriculares/turmas/{0}/sem-atribuicao/{1}";
     }
 }

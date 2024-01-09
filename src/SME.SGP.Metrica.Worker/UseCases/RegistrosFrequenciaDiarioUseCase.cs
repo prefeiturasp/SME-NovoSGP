@@ -24,10 +24,10 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo() 
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1)) 
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
+
             var quantidadeRegistros = await repositorioSGP.ObterQuantidadeRegistrosFrequenciaDia(parametro.Data);
-
-            await repositorioRegistrosFrequencia.InserirAsync(new Entidade.RegistrosFrequenciaDiario(parametro.Data, quantidadeRegistros));
-
+            if (quantidadeRegistros > 0)
+                await repositorioRegistrosFrequencia.InserirAsync(new Entidade.RegistrosFrequenciaDiario(parametro.Data, quantidadeRegistros));
             return true;
         }
     }

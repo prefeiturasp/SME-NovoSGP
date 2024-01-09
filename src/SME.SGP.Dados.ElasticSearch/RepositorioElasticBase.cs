@@ -192,5 +192,25 @@ namespace SME.SGP.Dados.ElasticSearch
             if (!response.IsValid)
                 throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
         }
+
+        public async Task ExcluirPorId(string id, string indice = "")
+        {
+            var nomeIndice = ObterNomeIndice(indice);
+            DeleteByQueryResponse response = await servicoTelemetria.RegistrarComRetornoAsync<DeleteByQueryResponse>(async () =>
+                await _elasticClient.DeleteByQueryAsync<TEntidade>(q => q
+                      .Index(nomeIndice)
+                      .Query(q => q
+                        .Term(t => t
+                            .Field("_id")
+                            .Value(id)
+                        )
+                    )),
+                "Elastic",
+                $"Excluir Id [{nomeIndice}-{id}]",
+                indice);
+
+            if (!response.IsValid)
+                throw new InvalidOperationException(response.ServerError?.ToString(), response.OriginalException);
+        }
     }
 }

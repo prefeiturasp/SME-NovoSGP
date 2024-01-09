@@ -352,7 +352,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 ComponenteCurricular = componente,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 AnoTurma = ano,
-                DataReferencia = DATA_03_01_INICIO_BIMESTRE_1,
+                DataReferencia = DATA_01_01_INICIO_BIMESTRE_1,
                 QuantidadeAula = QUANTIDADE_AULA_4
             };
         }
@@ -402,7 +402,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         {
             await CriaFrequenciaAluno(
                 dtoDadoBase,
-                DATA_03_01_INICIO_BIMESTRE_1,
+                DATA_01_01_INICIO_BIMESTRE_1,
                 DATA_01_05_FIM_BIMESTRE_1,
                 codigoAluno,
                 totalPresenca,

@@ -19,6 +19,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
 {
     public class Ao_consolidar_turma_conselho_classe : TesteBaseComuns
     {
+        private int ANO_ATUAL = DateTimeExtension.HorarioBrasilia().Year;
         public Ao_consolidar_turma_conselho_classe(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -39,7 +40,18 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
 
             await CriarDreUePerfilComponenteCurricular();
             await CriarTurma(Modalidade.Fundamental);
-            await InserirNaBase(new TipoCalendario() { Id = tipoCalendarioId, Modalidade = ModalidadeTipoCalendario.FundamentalMedio, Nome = "1", Situacao = true, AnoLetivo = 2023, CriadoPor = "sistema", CriadoRF = "sistema", CriadoEm = DateTimeExtension.HorarioBrasilia() });
+            await InserirNaBase(
+                new TipoCalendario() 
+                { 
+                    Id = tipoCalendarioId, 
+                    Modalidade = ModalidadeTipoCalendario.FundamentalMedio, 
+                    Nome = "1", 
+                    Situacao = true, 
+                    AnoLetivo = ANO_ATUAL, 
+                    CriadoPor = "sistema", 
+                    CriadoRF = "sistema", 
+                    CriadoEm = DateTimeExtension.HorarioBrasilia() 
+                });
             await CriarPeriodosEscolares(tipoCalendarioId);
             await CriarConsolidacaoTurmaAluno(turmaId);
             await CriarConsolidacaoTurmaAlunoNota();
@@ -136,8 +148,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
             {
                 Id = 1,
                 Bimestre = (int)Bimestre.Primeiro,
-                PeriodoInicio = new DateTime(2023, 02, 06),
-                PeriodoFim = new DateTime(2023, 04, 29),
+                PeriodoInicio = new DateTime(ANO_ATUAL, 02, 06),
+                PeriodoFim = new DateTime(ANO_ATUAL, 04, 29),
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoPor = "sistema",
                 CriadoRF = "sistema",
@@ -148,8 +160,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
             {
                 Id = 2,
                 Bimestre = (int)Bimestre.Segundo,
-                PeriodoInicio = new DateTime(2023, 05, 02),
-                PeriodoFim = new DateTime(2023, 07, 08),
+                PeriodoInicio = new DateTime(ANO_ATUAL, 05, 02),
+                PeriodoFim = new DateTime(ANO_ATUAL, 07, 08),
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoPor = "sistema",
                 CriadoRF = "sistema",
@@ -159,8 +171,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
             {
                 Id = 3,
                 Bimestre = (int)Bimestre.Terceiro,
-                PeriodoInicio = new DateTime(2023, 07, 24),
-                PeriodoFim = new DateTime(2023, 09, 30),
+                PeriodoInicio = new DateTime(ANO_ATUAL, 07, 24),
+                PeriodoFim = new DateTime(ANO_ATUAL, 09, 30),
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoPor = "sistema",
                 CriadoRF = "sistema",
@@ -170,8 +182,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoConselhoDeClasse
             {
                 Id = 4,
                 Bimestre = (int)Bimestre.Quarto,
-                PeriodoInicio = new DateTime(2023, 10, 02),
-                PeriodoFim = new DateTime(2023, 12, 21),
+                PeriodoInicio = new DateTime(ANO_ATUAL, 10, 02),
+                PeriodoFim = new DateTime(ANO_ATUAL, 12, 21),
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoPor = "sistema",
                 CriadoRF = "sistema",

@@ -24,6 +24,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
         private const string ANOTACOES_PEDAGOGICAS_ALUNO_1 = "Anotações Pedagógicas Aluno 1";
         private const string RECOMENDACOES_ALUNO_PADRAO = "Recomendações Aluno PADRÃO";
         private const string RECOMENDACOES_FAMILIA_PADRAO = "Recomendações Família PADRÃO";
+        private int ANO_ATUAL = DateTimeExtension.HorarioBrasilia().Year;
         public Ao_obter_recomendacoes_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
@@ -41,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
 
             var useCase = ServiceProvider.GetService<IObterRecomendacoesPorAlunoTurmaUseCase>();
 
-            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = 2023, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental});
+            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = ANO_ATUAL, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental});
             retorno.ShouldNotBeEmpty();
             retorno.Count().ShouldBe(1);
             retorno.Where(e => e.AlunoCodigo == CODIGO_ALUNO_1 && e.TurmaCodigo == TURMA_CODIGO_1 
@@ -57,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
 
             var useCase = ServiceProvider.GetService<IObterRecomendacoesPorAlunoTurmaUseCase>();
 
-            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = 2023, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental });
+            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = ANO_ATUAL, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental });
             retorno.ShouldNotBeEmpty();
             retorno.Count().ShouldBe(1);
             retorno.Where(e => e.AlunoCodigo == CODIGO_ALUNO_1 && e.TurmaCodigo == TURMA_CODIGO_1
@@ -74,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
 
             var useCase = ServiceProvider.GetService<IObterRecomendacoesPorAlunoTurmaUseCase>();
 
-            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = 2023, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental });
+            var retorno = await useCase.Executar(new Infra.FiltroRecomendacaoConselhoClasseAlunoTurmaDto() { AnoLetivo = ANO_ATUAL, CodigoAluno = CODIGO_ALUNO_1, CodigoTurma = TURMA_CODIGO_1, Modalidade = (int)Modalidade.Fundamental });
             retorno.ShouldNotBeEmpty();
             retorno.Count().ShouldBe(1);
             retorno.Where(e => e.AlunoCodigo == CODIGO_ALUNO_1 && e.TurmaCodigo == TURMA_CODIGO_1
@@ -172,12 +173,12 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
                 Ano = "1",
                 CodigoTurma = TURMA_CODIGO_1,
                 ModalidadeCodigo = Modalidade.Fundamental,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
+                AnoLetivo = ANO_ATUAL
             });
             await InserirNaBase(new TipoCalendario()
             {
                 Id = TIPO_CALENDARIO_1,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = ANO_ATUAL,
                 Nome = "Calendário Teste Ano Atual",
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Situacao = true,
@@ -190,8 +191,8 @@ namespace SME.SGP.TesteIntegracao.EscolaAqui
             {
                 Id = PERIODO_ESCOLAR_CODIGO_1,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),
-                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 12, 29),
+                PeriodoInicio = new DateTime(ANO_ATUAL, 01, 03),
+                PeriodoFim = new DateTime(ANO_ATUAL, 12, 29),
                 Bimestre = 1,
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 15, 23, 48, 43),
                 CriadoPor = "Sistema",
