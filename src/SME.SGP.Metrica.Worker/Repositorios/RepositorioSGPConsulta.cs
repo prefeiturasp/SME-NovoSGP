@@ -1,10 +1,13 @@
-﻿using SME.SGP.Dados;
+﻿using Nest;
+using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Metrica.Worker.Repositorios
@@ -531,7 +534,230 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                                            and ftd.criado_em between @primeiraHoraDia and @ultimaHoraDia
                                                                      group by coalesce(pe.bimestre, 0);",
                                                      new { primeiraHoraDia = data.PrimeiraHoraDia(), ultimaHoraDia = data.UltimaHoraDia() });
+
+        public Task<IEnumerable<string>> ObterUesCodigo()
+        => database.Conexao.QueryAsync<string>("select ue_id from ue order by id");
+
+        public Task<IEnumerable<string>> ObterTurmasCodigoPorUE(string ueCodigo, int? anoLetivo = null)
+            => database.Conexao.QueryAsync<string>($@"select turma_id from turma 
+                                                      inner join ue on ue.id = turma.ue_id
+                                                    where ano_letivo = {(anoLetivo.HasValue ? "@anoLetivo" : "extract(year from NOW())")} and ue.ue_id = @ueCodigo", new { ueCodigo, anoLetivo });
+
+		public async Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo)
+		=> (await database.Conexao.QueryAsync<Turma, Ue, Dre, Turma>(@"select t.id TurmaId,
+                        t.id,
+                        t.turma_id CodigoTurma,
+                        t.ue_id,
+                        t.nome,
+                        t.ano,
+                        t.ano_letivo AnoLetivo,
+                        t.modalidade_codigo ModalidadeCodigo,
+                        t.semestre,
+                        t.qt_duracao_aula QuantidadeDuracaoAula,
+                        t.tipo_turno TipoTurno,
+                        t.data_atualizacao DataAtualizacao,
+                        t.tipo_turma TipoTurma,
+                        t.data_inicio DataInicio,
+                        t.historica,
+                        u.id as UeId,
+                        u.id,
+                        u.ue_id CodigoUe,
+                        u.nome,
+                        u.dre_id,
+                        u.tipo_escola TipoEscola,
+                        u.data_atualizacao DataAtualizacao,
+                        d.id as DreId,
+                        d.id,
+                        d.nome,
+                        d.dre_id,
+                        d.abreviacao,
+                        d.data_atualizacao DataAtualizacao
+                    from
+                        turma t
+                    inner join ue u on
+                        t.ue_id = u.id
+                    inner join dre d on
+                        u.dre_id = d.id
+                    where
+                        turma_id = @turmaCodigo", (turma, ue, dre) =>
+			{
+				ue.AdicionarDre(dre);
+				turma.AdicionarUe(ue);
+				return turma;
+			}, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
+
+        public Task<bool> ComponenteCurriculareEhRegencia(long id)
+        => database.Conexao.QueryFirstOrDefaultAsync<bool>($@"select eh_regencia from componente_curricular WHERE id = @id;", new { id });
+
+        public async Task<Grade> ObterGradeTurmaAno(TipoEscola tipoEscola, Modalidade modalidade, int duracao, int ano, string anoLetivo)
+        {
+            string query = @"select f.id as FiltroId, g.Id as GradeId, g.*
+                  from grade_filtro f
+                 inner join grade g on g.id = f.grade_id ";
+
+            if (ano > 0)
+                query += " inner join grade_disciplina gd on g.id = gd.grade_id ";
+
+            query += @" where f.tipo_escola = @tipoEscola
+                   and f.modalidade = @modalidade
+                   and f.duracao_turno = @duracao";
+
+            if (ano > 0)
+                query += " and gd.ano = @ano ";
+
+            if (modalidade == Modalidade.Medio)
+                query += " and to_char(g.inicio_vigencia, 'YYYY') <= @anoLetivo and (to_char(g.fim_vigencia, 'YYYY') >= @anoLetivo or g.fim_vigencia is null) ";
+
+
+            var filtro = await database.Conexao.QueryAsync<GradeFiltro, Grade, Grade>(query,
+            (gradeFiltro, grade) =>
+            {
+                return grade;
+            }, new
+            {
+                tipoEscola,
+                modalidade,
+                duracao,
+                ano,
+                anoLetivo
+            }, splitOn: "FiltroId, GradeId");
+
+            return filtro.FirstOrDefault();
+        }
+
+        public async Task<int> ObterHorasComponente(long gradeId, long[] componentesCurriculares, int ano)
+        {
+            var query = @"select gd.quantidade_aulas
+                      from grade_disciplina gd
+                     where gd.grade_id = @gradeId
+                       and gd.componente_curricular_id = any(@componentesCurriculares)
+                       and gd.ano = @ano";
+
+            var consulta = await database.Conexao.QueryAsync<int>(query, new
+            {
+                gradeId,
+                componentesCurriculares,
+                ano
+            });
+
+            return consulta.Any() ? consulta.Single() : 0;
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasDia(string turma, DateTime dataAula, bool consideraSomenteAulasComRegistroFrequencia = true)
+        {
+            var query = $@"select sum(quantidade) from aula
+                           left join componente_curricular cc on cc.id = aula.disciplina_id::int8
+                           where not excluido
+                                 and turma_id = @turma
+                                 and (cc.eh_territorio or cc.id is null)
+                                 and date(data_aula) = @dataAula
+                               {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
+            {
+                turma,
+                dataAula = dataAula.Date
+            }) ?? 0;
+            return qtd;
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurmaComponenteCurricularDia(string turma, string componenteCurricular, DateTime dataAula, bool consideraSomenteAulasComRegistroFrequencia = true)
+        {
+            var query = $@"select sum(quantidade) from aula
+                          left join componente_curricular cc on cc.id = aula.disciplina_id::int8
+                          where not excluido and tipo_aula = @aulaNomal 
+                                and turma_id = @turma 
+                                and disciplina_id = @componenteCurricular 
+                                and date(data_aula) = @dataAula 
+                               {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
+            {
+                turma,
+                componenteCurricular,
+                dataAula = dataAula.Date,
+                aulaNomal = TipoAula.Normal
+            }) ?? 0;
+
+            return qtd;
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string componenteCurricular, bool consideraSomenteAulasComRegistroFrequencia = true)
+        {
+            var query = $@"select sum(quantidade) from aula
+                           left join componente_curricular cc on cc.id = aula.disciplina_id::int8
+                           where not excluido
+                                 and turma_id = @turma
+                                 and disciplina_id = @componenteCurricular
+                                 and extract('week' from data_aula) = @semana
+                               {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
+            {
+                turma,
+                semana,
+                componenteCurricular
+            }) ?? 0;
+
+            return qtd;
+        }
+
+        public async Task<int> ObterQuantidadeAulasTurmaDisciplinaSemana(string turma, string componenteCurricular, int semana, bool consideraSomenteAulasComRegistroFrequencia = true)
+        {
+            var query = $@"select sum(quantidade) from aula
+                          left join componente_curricular cc on cc.id = aula.disciplina_id::int8
+                          where not excluido and tipo_aula = @aulaNomal 
+                                and turma_id = @turma 
+                                and disciplina_id = @componenteCurricular 
+                                and extract('week' from data_aula::date + 1) = @semana
+                                {(consideraSomenteAulasComRegistroFrequencia ?
+                                  @" and ((coalesce(cc.permite_registro_frequencia, true) 
+                                           and exists(select rf.id from registro_frequencia rf where rf.aula_id = aula.id and not rf.excluido))
+                                          or not coalesce(cc.permite_registro_frequencia, true)                                          
+                                          ) " : string.Empty)}";
+            var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query.ToString(), new
+            {
+                turma,
+                componenteCurricular,
+                semana,
+                aulaNomal = TipoAula.Normal
+            }) ?? 0;
+
+            return qtd;
+        }
+
+        public Task<long> ObterTipoCalendarioId(int anoLetivo, int modalidadeTipoCalendario)
+        => database.Conexao.QueryFirstOrDefaultAsync<long>($@"select id
+                                                              from tipo_calendario 
+                                                              where not excluido
+                                                              and ano_letivo = @anoLetivo
+                                                              and modalidade = @modalidadeTipoCalendario", new { anoLetivo, modalidadeTipoCalendario });
+
+        public Task<PeriodoIdDto> ObterPeriodoEscolarPorTipoCalendarioData(long tipoCalendarioId, DateTime dataParaVerificar)
+        => database.Conexao.QueryFirstOrDefaultAsync<PeriodoIdDto>($@"select pe.id, pe.periodo_inicio as Inicio, pe.periodo_fim as Fim
+                                                                    from periodo_escolar pe
+                                                                    join tipo_calendario tc on tc.id = pe.tipo_calendario_id
+                                                                    where tc.id = @tipoCalendarioId
+                                                                          and @dataParaVerificar between symmetric pe.periodo_inicio::date and pe.periodo_fim::date;", new { tipoCalendarioId, dataParaVerificar });
+
+        public Task<PeriodoIdDto> ObterPeriodoFechamentoPorPeriodoEscolar(long periodoEscolarId)
+        => database.Conexao.QueryFirstOrDefaultAsync<PeriodoIdDto>($@"select pfb.id, pfb.inicio_fechamento as Inicio, pfb.final_fechamento as Fim  
+                                                                    from periodo_fechamento_bimestre pfb 
+                                                                    inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id 
+                                                                    where pe.id = @periodoEscolarId;", new { periodoEscolarId });
+
     }
+
+
 
     internal static class DateTimeExtension
     {

@@ -13,28 +13,22 @@ namespace SME.SGP.Metrica.Worker.UseCases
     public class AulasSemAtribuicaoSubstituicaoMensalUseCase : IAulasSemAtribuicaoSubstituicaoMensalUseCase
     {
         private readonly IRepositorioSGPConsulta repositorioSGP;
-        private readonly IRepositorioAulasSemAtribuicaoSubstituicaoMensal repositorioAulas;
         private readonly IMediator mediator;
 
-        public AulasSemAtribuicaoSubstituicaoMensalUseCase(IRepositorioSGPConsulta repositorioSGP, IRepositorioAulasSemAtribuicaoSubstituicaoMensal repositorioAulas, IMediator mediator)
+        public AulasSemAtribuicaoSubstituicaoMensalUseCase(IRepositorioSGPConsulta repositorioSGP, IMediator mediator)
         {
             this.repositorioSGP = repositorioSGP ?? throw new ArgumentNullException(nameof(repositorioSGP));
-            this.repositorioAulas = repositorioAulas ?? throw new ArgumentNullException(nameof(repositorioAulas));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
-                            ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
-                            : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            if (parametro.Data.DayOfWeek == DayOfWeek.Saturday
-                || parametro.Data.DayOfWeek == DayOfWeek.Sunday)
-                return false;
-
-            var ues = await repositorioSGP.ObterUesIds();
+                            ? new FiltroDataMetricasDto(DateTime.Now.Date.AddDays(-1))
+                            : mensagem.ObterObjetoMensagem<FiltroDataMetricasDto>();
+            var ues = await repositorioSGP.ObterUesCodigo();
             foreach (var ue in ues)
-                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new FiltroIdDataDto(ue, parametro.Data)));
+                await mediator.Send(new PublicarFilaCommand(Rotas.RotasRabbitMetrica.AulasSemAtribuicaoSubstituicaoUEMensais, new FiltroCodigoDataMetricasDto(ue, parametro.Data, parametro.IgnorarRecheckCargaMetricas)));
             return true;
         }
     }
