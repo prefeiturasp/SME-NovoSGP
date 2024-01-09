@@ -91,6 +91,8 @@ namespace SME.SGP.Metrica.Worker.UseCases
         private async Task<bool> TratarAtualizacaoMetricasBimestreFechamento(Turma turma, DateTime dataJob)
         {
             var periodoEscolar = await ObterPeriodoEscolarLetivo(turma, dataJob);
+            if (periodoEscolar.EhNulo())
+                return false;
             var periodoFechamento = await ObterPeriodoFechamento(periodoEscolar.Id);
             if (periodoFechamento.Fim == dataJob)
             {
