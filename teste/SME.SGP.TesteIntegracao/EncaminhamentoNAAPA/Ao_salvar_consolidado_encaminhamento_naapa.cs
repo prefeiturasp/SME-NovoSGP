@@ -20,6 +20,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
     public class Ao_salvar_consolidado_encaminhamento_naapa : EncaminhamentoNAAPATesteBase
     {
+        private int ANO_ATUAL = DateTimeExtension.HorarioBrasilia().Year;
         public Ao_salvar_consolidado_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -44,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             var useCase = ServiceProvider.GetService<IExecutarCargaConsolidadoEncaminhamentoNAAPAUseCase>();
             await CriarDadosBasicos();
-            var retornoUseCase = await useCase.Executar(new MensagemRabbit("2023"));
+            var retornoUseCase = await useCase.Executar(new MensagemRabbit(ANO_ATUAL.ToString()));
             retornoUseCase.ShouldBeTrue();
         }
 
@@ -54,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var useCase = ServiceProvider.GetService<IExecutarBuscarUesConsolidadoEncaminhamentoNAAPAUseCase>();
             await CriarDadosBasicos();
             var ueId = 1;
-            var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
+            var anoLetivo = ANO_ATUAL;
             var retornoUseCase = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new FiltroBuscarUesConsolidadoEncaminhamentoNAAPADto(ueId, anoLetivo))));
             retornoUseCase.ShouldBeTrue();
         }
@@ -69,7 +70,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             obterTodos.Count.ShouldBeEquivalentTo(1);
 
             var ueId = 1;
-            var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
+            var anoLetivo = ANO_ATUAL;
             var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 10, SituacaoNAAPA.Rascunho))));
             retorno.ShouldBeTrue();
 
@@ -89,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             obterTodos.FirstOrDefault().Quantidade.ShouldBe<long>(10);
 
             var ueId = 1;
-            var anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
+            var anoLetivo = ANO_ATUAL;
             var retorno = await useCase.Executar(new MensagemRabbit(JsonConvert.SerializeObject(new ConsolidadoEncaminhamentoNAAPA(anoLetivo, ueId, 12, SituacaoNAAPA.Encerrado))));
             retorno.ShouldBeTrue();
 
@@ -120,10 +121,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Dominio.Turma()
             {
                 Id = 1,
-                DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1),
+                DataAtualizacao = new DateTime(ANO_ATUAL, 1, 1),
                 Historica = false,
                 TipoTurma = TipoTurma.Regular,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = ANO_ATUAL,
                 UeId = 1
             });
             for (int i = 0; i < 5; i++)
@@ -141,7 +142,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new ConsolidadoEncaminhamentoNAAPA
             {
                 UeId = 1,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = ANO_ATUAL,
                 Quantidade = 10,
                 Situacao = SituacaoNAAPA.Encerrado,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(), 
