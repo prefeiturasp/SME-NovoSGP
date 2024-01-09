@@ -501,7 +501,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                                                                           new { primeiroDiaMes = data.PrimeiroDiaMes(), ultimoDiaMes = data.UltimoDiaMes() });
         public Task<IEnumerable<DevolutivaDuplicado>> ObterDevolutivaDuplicados()
 			=> database.Conexao.QueryAsync<DevolutivaDuplicado>(
-				@"select count(id) Quantidade, descricao, componente_curricular_codigo, min(criado_em) as PrimeiroRegistro, 
+                @"select count(id) Quantidade, descricao, componente_curricular_codigo as ComponenteCurricularId, min(criado_em) as PrimeiroRegistro, 
 						max(criado_em) as UltimoRegistro, min(id) as PrimeiroId, max(id) as UltimoId 
 						from devolutiva d1
 						where exists (select 1 from devolutiva d2 
