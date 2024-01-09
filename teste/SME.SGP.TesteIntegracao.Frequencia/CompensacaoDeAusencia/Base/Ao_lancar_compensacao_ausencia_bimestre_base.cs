@@ -23,9 +23,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             return await Task.FromResult(new List<(string CodigoAluno, int QdadeAula)>
             {
                 (CODIGO_ALUNO_1, QUANTIDADE_AULA),
-                (CODIGO_ALUNO_2, QUANTIDADE_AULA_2),
-                (CODIGO_ALUNO_3, QUANTIDADE_AULA_3),
-                (CODIGO_ALUNO_4, QUANTIDADE_AULA_4)
+                (CODIGO_ALUNO_4, QUANTIDADE_AULA)
             });
         }        
         

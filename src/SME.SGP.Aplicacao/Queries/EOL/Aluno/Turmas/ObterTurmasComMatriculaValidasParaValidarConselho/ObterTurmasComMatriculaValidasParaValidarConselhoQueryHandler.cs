@@ -29,9 +29,11 @@ namespace SME.SGP.Aplicacao
                 if (turma.NaoEhNulo())
                 {
                     var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turmaCodigo, request.AlunoCodigo));
-                    if (matriculasAluno.NaoEhNulo() || matriculasAluno.Any())
+                    if (matriculasAluno.NaoEhNulo() && matriculasAluno.Any())
                     {
-                        if ((matriculasAluno.NaoEhNulo() || matriculasAluno.Any()) && matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim)))
+                        if (matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || 
+                           (m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido && (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 
+                           || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim && m.DataSituacao > request.PeriodoFim))))
                         {
                             if (turma.TipoTurma != TipoTurma.EdFisica || turma.TipoTurma == TipoTurma.EdFisica && !matriculasAluno.Any(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.DispensadoEdFisica))
                                 turmasCodigosComMatriculasValidas.Add(turma.CodigoTurma);

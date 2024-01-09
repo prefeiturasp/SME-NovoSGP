@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Humanizer;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
@@ -23,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
     {
         private const long TIPO_CALENDARIO_999999 = 999999;
         private const string NOME_TOKEN_TESTE = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiUHJvZmVzc29yIiwiSXNzdWVyIjoiSXNzdWVyIiwiVXNlcm5hbWUiOiJUZXN0ZVByb2Zlc3NvciIsImlhdCI6MTY3MDUyNTQyMSwicGVyZmlsIjoiNDBFMUUwNzQtMzdENi1FOTExLUFCRDYtRjgxNjU0RkU4OTVEIn0.da2rLBX_esGtdudii1bZpSG6SQK264bQ_oKm74BkA6M";
-
+        private readonly DateTime DATA_ATUAL = DateTimeExtension.HorarioBrasilia();
         private readonly DateTime DATA_19_06 = new(DateTimeExtension.HorarioBrasilia().Year, 06, 19);
 
         public Ao_registrar_aula_verifica_se_pode_cadastrar_aula(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -77,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
                 DataAula = DATA_02_05,
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DATA_ATUAL,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Status = EntidadeStatus.Aprovado
@@ -124,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
                 DataAula = DATA_02_05,
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 TipoAula = TipoAula.Reposicao,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DATA_ATUAL,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Status = EntidadeStatus.Aprovado
@@ -375,7 +376,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
         public async Task Verifica_aula_automatica_fim_de_semana_com_frequencia_lancada_e_evento_letivo_nao_ser_excluída_por_exceção_unica()
         {
             var mensagemRabbit = await ObterMensagemRabbit2();
-
+            var terceiroSabadoDoMesSetembro = ObterTerceiroSabadoDoMes(DATA_ATUAL.Year, 09).Day;
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
 
             var mediator = ServiceProvider.GetService<ICriarAulasInfantilERegenciaUseCase>();
@@ -383,7 +384,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
             var aulaExistente = ObterTodos<Dominio.Aula>();
             aulaExistente.ShouldNotBeNull();
-            aulaExistente.FirstOrDefault(a => a.DataAula.Day == 16).DataAula.FimDeSemana().ShouldBeTrue();
+            aulaExistente.FirstOrDefault(a => a.DataAula.Day == terceiroSabadoDoMesSetembro).DataAula.FimDeSemana().ShouldBeTrue();
 
         }
 
@@ -433,22 +434,26 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
         private async Task<MensagemRabbit> ObterMensagemRabbit2()
         {
+            var dataTerceiroSabadoSetembro = ObterTerceiroSabadoDoMes(DATA_ATUAL.Year, 09);
+            var dataTerceiroSabadoOutubro = ObterTerceiroSabadoDoMes(DATA_ATUAL.Year, 10);
+            var dataTerceiroSabadoNovembro = ObterTerceiroSabadoDoMes(DATA_ATUAL.Year, 11);
+
             var diasLetivos = new List<DiaLetivoDto>()
             {
                new DiaLetivoDto(){
-                    Data = DATA_16_09,
+                    Data = dataTerceiroSabadoSetembro,
                     Motivo = "REUNIAO",
                     EhLetivo = true,
                     PossuiEvento = true
                },
                new DiaLetivoDto(){
-                    Data = DATA_01_10,
+                    Data = dataTerceiroSabadoOutubro,
                     Motivo = "",
                     EhLetivo = false,
                     PossuiEvento = false
                },
                new DiaLetivoDto(){
-                    Data = DATA_03_10,
+                    Data = dataTerceiroSabadoNovembro,
                     Motivo = "",
                     EhLetivo = true,
                     PossuiEvento = false
@@ -484,7 +489,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             await InserirNaBase(new TipoCalendario()
             {
                 Id = 1,
-                AnoLetivo = DateTime.Now.Year,
+                AnoLetivo = DATA_ATUAL.Year,
                 Nome = "tipo cal infantil",
                 Periodo = Periodo.Anual,
                 Modalidade = ModalidadeTipoCalendario.Infantil,
@@ -497,11 +502,11 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             await InserirNaBase(new Dominio.Aula
             {
                 Id = 1,
-                DataAula = DATA_16_09,
+                DataAula = dataTerceiroSabadoSetembro,
                 TurmaId = TURMA_CODIGO_1,
                 DisciplinaId = COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(),
                 DadosComplementares = new AulaDadosComplementares() { PossuiFrequencia = true },
-                CriadoEm = DateTime.Now,
+                CriadoEm = DATA_ATUAL,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
@@ -533,7 +538,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2);
 

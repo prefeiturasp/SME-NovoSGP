@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             var configuracao = new ConfiguracaoRelatorioPAP()
             {
                 Id = 1,
-                InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
+                InicioVigencia = DATA_01_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_01_05_FIM_BIMESTRE_1,
                 TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL
             };
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
                 TurmaId = TURMA_CODIGO_1,
                 TotalAulas = 30,
                 DisciplinaId = COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(),
-                PeriodoInicio = DATA_03_01_INICIO_BIMESTRE_1,
+                PeriodoInicio = DATA_01_01_INICIO_BIMESTRE_1,
                 PeriodoFim = DATA_01_05_FIM_BIMESTRE_1,
                 Bimestre = BIMESTRE_1,
                 TotalPresencas = 28,
@@ -162,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioPAP
             var configuracao = new ConfiguracaoRelatorioPAP()
             {
                 Id = 1,
-                InicioVigencia = DATA_03_01_INICIO_BIMESTRE_1,
+                InicioVigencia = DATA_01_01_INICIO_BIMESTRE_1,
                 FimVigencia = DATA_22_12_FIM_BIMESTRE_4,
                 TipoPeriocidade = ConstantesTestePAP.TIPO_PERIODICIDADE_BIMESTRAL
             };

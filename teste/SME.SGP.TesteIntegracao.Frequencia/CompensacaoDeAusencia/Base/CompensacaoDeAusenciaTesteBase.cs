@@ -67,6 +67,16 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
         protected async Task CriarAula(CompensacaoDeAusenciaDBDto dtoDB)
         {
+            var dataConsiderar = DateTime.MinValue;
+
+            switch (dtoDB.Bimestre)
+            {
+                case 1: dataConsiderar = DATA_01_01_INICIO_BIMESTRE_1.AddYears(dtoDB.ConsiderarAnoAnterior ? -1 : 0); break;
+                case 2: dataConsiderar = DATA_02_05_INICIO_BIMESTRE_2.AddYears(dtoDB.ConsiderarAnoAnterior ? -1 : 0); break;
+                case 3: dataConsiderar = DATA_25_07_INICIO_BIMESTRE_3.AddYears(dtoDB.ConsiderarAnoAnterior ? -1 : 0); break;
+                case 4: dataConsiderar = DATA_03_10_INICIO_BIMESTRE_4.AddYears(dtoDB.ConsiderarAnoAnterior ? -1 : 0); break;
+            }
+
             await InserirNaBase(
                             new Dominio.Aula
                             {
@@ -76,10 +86,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                                 TipoCalendarioId = dtoDB.TipoCalendarioId,
                                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                                 Quantidade = dtoDB.QuantidadeAula,
-                                DataAula = dtoDB.DataReferencia.GetValueOrDefault(),
+                                DataAula = dtoDB.DataReferencia ?? dataConsiderar,
                                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                                 TipoAula = TipoAula.Normal,
-                                CriadoEm = DateTime.Now,
+                                CriadoEm = DateTimeExtension.HorarioBrasilia(),
                                 CriadoPor = SISTEMA_NOME,
                                 CriadoRF = SISTEMA_CODIGO_RF,
                                 AulaCJ = dtoDB.AulaCj
@@ -192,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             foreach (var compensacaoAusenciaAluno in compensacaoAusenciaAlunos.Where(t => t.CompensacaoAusenciaId == COMPENSACAO_AUSENCIA_ID_1))
             {
-                foreach(var registroFrequencia in registroFrequenciaAlunos.Where(t => t.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno).Take(compensacaoAusenciaAluno.QuantidadeFaltasCompensadas))
+                foreach (var registroFrequencia in registroFrequenciaAlunos.Where(t => t.CodigoAluno == compensacaoAusenciaAluno.CodigoAluno).Take(compensacaoAusenciaAluno.QuantidadeFaltasCompensadas))
                 {
                     await InserirNaBase(new CompensacaoAusenciaAlunoAula
                     {
@@ -243,7 +253,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
         private async Task CriarPeriodoEscolar(bool considerarAnoAnterior)
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
