@@ -24,10 +24,10 @@ namespace SME.SGP.Metrica.Worker.UseCases
             var parametro = mensagem.EhNulo() || mensagem.Mensagem.EhNulo()
                             ? new FiltroDataDto(DateTime.Now.Date.AddDays(-1))
                             : mensagem.ObterObjetoMensagem<FiltroDataDto>();
-            var quantidadeRegistros = await repositorioSGP.ObterQuantidadeEncaminhamentosAEEMes(parametro.Data);
 
-            await repositorioEncaminhamentosAEE.InserirAsync(new Entidade.EncaminhamentosAEEMensal(parametro.Data, quantidadeRegistros));
-            
+            var quantidadeRegistros = await repositorioSGP.ObterQuantidadeEncaminhamentosAEEMes(parametro.Data);
+            if (quantidadeRegistros > 0)
+                await repositorioEncaminhamentosAEE.InserirAsync(new Entidade.EncaminhamentosAEEMensal(parametro.Data, quantidadeRegistros));           
             return true;
         }
     }
