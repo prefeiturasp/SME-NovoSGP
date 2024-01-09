@@ -1,5 +1,6 @@
 ﻿using Nest;
 using SME.SGP.Dados;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Metrica.Worker.Entidade;
 using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
@@ -781,10 +782,6 @@ namespace SME.SGP.Metrica.Worker.Repositorios
                   from devolutiva d  
                   where not exists(select 1 from diario_bordo db where db.devolutiva_id = d.id)");
     }
-
-}
-
-
 
     internal static class DateTimeExtension
     {
