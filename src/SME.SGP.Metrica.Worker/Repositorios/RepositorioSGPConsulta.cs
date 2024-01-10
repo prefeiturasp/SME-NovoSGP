@@ -436,7 +436,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 					cfam.quantidade_compensacoes as QuantidadeCompensacoes,
 					ta.QuantidadeAulas as QuantidadeAulasCalculado,
 					tf.QuantidadeAusencias as QuantidadeAusenciasCalculado,
-					tf.QuantidadeCompensacoes as QuantidadeCompensacoesCalculado,
+					tf.QuantidadeCompensacoes as QuantidadeCompensacoesCalculado
 				from totalFrequencia tf
 				inner join totalAulas ta on ta.mes = tf.mes
 				inner join consolidacao_frequencia_aluno_mensal cfam on cfam.turma_id = ta.TurmaId and cfam.aluno_codigo = tf.AlunoCodigo and cfam.mes = ta.mes
