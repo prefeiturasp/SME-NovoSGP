@@ -22,7 +22,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
         {
-            IEnumerable<(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, new long[] { param.CodigoComponenteCurricular }, param.PeriodoInicio.Date, param.PeriodoFim.Date));
+            var turma = await ObterTurma(param.TurmaCodigo);
+            var componentes = await ObterComponentes(turma, param.CodigoComponenteCurricular);
+
+            IEnumerable <(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, componentes.ToArray(), param.PeriodoInicio.Date, param.PeriodoFim.Date));
 
             if (!dados.Any())
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
@@ -32,7 +35,6 @@ namespace SME.SGP.Aplicacao
 
             await ValidarDevolutivaNoPeriodo(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date);
 
-            var turma = await ObterTurma(param.TurmaCodigo);
             var bimestre = await ValidarBimestreDiarios(turma, inicioEfetivo, fimEfetivo);
             await ValidarBimestreEmAberto(turma, bimestre);
 
@@ -40,8 +42,7 @@ namespace SME.SGP.Aplicacao
             await MoverRemoverExcluidos(param);
             AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao, turma.Id));
 
-            var idsDiariosAtualizacao = await ObterIdDiarioUnificado(idsDiarios, turma, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date);
-            await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiariosAtualizacao, auditoria.Id));
+            await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
             var filtro = new FiltroExclusaoPendenciasDevolutivaDto()
             { 
@@ -54,28 +55,27 @@ namespace SME.SGP.Aplicacao
             return auditoria;
         }
 
-        private async Task<IEnumerable<long>> ObterIdDiarioUnificado(IEnumerable<long> idsDiarios, Turma turma, long codigoComponente, DateTime periodoInicio, DateTime periodoFim)
+        private async Task<IEnumerable<long>> ObterComponentes(Turma turma, long codigoComponente)
         {
+            var retorno = new List<long>();
+
             if (turma.AnoLetivo >= ANO_LETIVO_INICIO_DEVOLUTIVA_UNIFICADA)
             {
-                var retorno = new List<long>();
                 var disciplinas = await ObterComponentesCurricularesTurma(turma.CodigoTurma, codigoComponente);
-                var dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(turma.CodigoTurma, disciplinas.Select(x => x.CodigoComponenteCurricular).ToArray(), periodoInicio, periodoFim));
 
-                retorno.AddRange(idsDiarios);
-                retorno.AddRange(dados.Select(x => x.Id));
-
-                return retorno;
+                return disciplinas.Select(x => x.CodigoComponenteCurricular).ToArray();
             }
 
-            return idsDiarios;
+            retorno.Add(codigoComponente);
+
+            return retorno;
         }
 
         private async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesTurma(string turmaCodigo, long componentePai)
         {
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false);
 
-            return disciplinas.FindAll(item => item.CdComponenteCurricularPai == componentePai && item.CodigoComponenteCurricular != componentePai);
+            return disciplinas.FindAll(item => item.CdComponenteCurricularPai == componentePai);
         }
 
         private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
