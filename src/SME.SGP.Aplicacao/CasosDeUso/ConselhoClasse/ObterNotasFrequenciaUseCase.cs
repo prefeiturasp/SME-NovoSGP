@@ -15,10 +15,6 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private const int PRIMEIRO_BIMESTRE = 1;
-        private const string PRIMEIRO_ANO_EM = "1";
-        private const double NOTA_CONCEITO_CINCO = 5.0;
-        private const double NOTA_CONCEITO_SETE = 7.0;
-        
 
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
 
@@ -469,8 +465,8 @@ namespace SME.SGP.Aplicacao
 
             var notaPosConselho = new NotaPosConselhoDto()
             {
-                Id = notaComponenteId ?? null,
-                Nota = notaComponente?.NotaConceito ?? null,
+                Id = notaComponenteId,
+                Nota = notaComponente?.NotaConceito,
                 PodeEditar = dto.ComponenteLancaNota && dto.VisualizaNotas
             };
 
