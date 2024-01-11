@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         protected FiltroConsolidacaoFrequenciaTurma Filtro { get; set; }
         protected bool AnoAnterior { get; set; }
 
-        public ConsolidarFrequenciaPorTurmaAbstractUseCase(IMediator mediator) : base(mediator)
+        protected ConsolidarFrequenciaPorTurmaAbstractUseCase(IMediator mediator) : base(mediator)
         {
         }
 

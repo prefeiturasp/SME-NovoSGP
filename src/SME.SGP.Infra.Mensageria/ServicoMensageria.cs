@@ -19,7 +19,7 @@ namespace SME.SGP.Infra
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
 
-        public ServicoMensageria(IConexoesRabbit conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
+        protected ServicoMensageria(IConexoesRabbit conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
         {
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));

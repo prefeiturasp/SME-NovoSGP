@@ -11,13 +11,21 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirDevolutivaUseCase : AbstractUseCase, IInserirDevolutivaUseCase
     {
-        public InserirDevolutivaUseCase(IMediator mediator) : base(mediator)
+        private const int ANO_LETIVO_INICIO_DEVOLUTIVA_UNIFICADA = 2024;
+        private readonly IConsultasDisciplina consultasDisciplina;
+
+        public InserirDevolutivaUseCase(IMediator mediator,
+                                        IConsultasDisciplina consultasDisciplina) : base(mediator)
         {
+            this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task<AuditoriaDto> Executar(InserirDevolutivaDto param)
         {
-            IEnumerable<(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date));
+            var turma = await ObterTurma(param.TurmaCodigo);
+            var componentes = await ObterComponentes(turma, param.CodigoComponenteCurricular);
+
+            IEnumerable <(long Id, DateTime DataAula)> dados = await mediator.Send(new ObterDatasEfetivasDiariosQuery(param.TurmaCodigo, componentes.ToArray(), param.PeriodoInicio.Date, param.PeriodoFim.Date));
 
             if (!dados.Any())
                 throw new NegocioException("Diários de bordo não encontrados para aplicar Devolutiva.");
@@ -27,7 +35,6 @@ namespace SME.SGP.Aplicacao
 
             await ValidarDevolutivaNoPeriodo(param.TurmaCodigo, param.CodigoComponenteCurricular, param.PeriodoInicio.Date, param.PeriodoFim.Date);
 
-            var turma = await ObterTurma(param.TurmaCodigo);
             var bimestre = await ValidarBimestreDiarios(turma, inicioEfetivo, fimEfetivo);
             await ValidarBimestreEmAberto(turma, bimestre);
 
@@ -46,6 +53,29 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDevolutiva, filtro, Guid.NewGuid()));
 
             return auditoria;
+        }
+
+        private async Task<IEnumerable<long>> ObterComponentes(Turma turma, long codigoComponente)
+        {
+            var retorno = new List<long>();
+
+            if (turma.AnoLetivo >= ANO_LETIVO_INICIO_DEVOLUTIVA_UNIFICADA)
+            {
+                var disciplinas = await ObterComponentesCurricularesTurma(turma.CodigoTurma, codigoComponente);
+
+                return disciplinas.Select(x => x.CodigoComponenteCurricular).ToArray();
+            }
+
+            retorno.Add(codigoComponente);
+
+            return retorno;
+        }
+
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesCurricularesTurma(string turmaCodigo, long componentePai)
+        {
+            var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false);
+
+            return disciplinas.FindAll(item => item.CdComponenteCurricularPai == componentePai);
         }
 
         private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)

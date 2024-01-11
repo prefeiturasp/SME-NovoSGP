@@ -18,9 +18,8 @@ namespace SME.SGP.Aplicacao
         {
             var login = await mediator.Send(ObterLoginAtualQuery.Instance);
             var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
-            var filtroEhCodigo = !string.IsNullOrWhiteSpace(dto.Filtro) && dto.Filtro.All(char.IsDigit);
 
-            return await mediator.Send(new ObterUEsPorDREQuery(dto.CodigoDre, login, perfil, dto.Modalidade, dto.Periodo, dto.ConsideraHistorico, dto.AnoLetivo, dto.ConsideraNovasUEs, dto.FiltrarTipoEscolaPorAnoLetivo, dto.Filtro, filtroEhCodigo));
+            return await mediator.Send(new ObterUEsPorDREQuery(dto, login, perfil));
         }
     }
 }

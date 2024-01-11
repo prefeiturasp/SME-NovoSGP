@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.Turma
             await InserirNaBase(new TipoCalendario()
             {
                 Id = 1,
-                AnoLetivo = 2023,
+                AnoLetivo = dataAtual.Year,
                 Nome = "tipo cal infantil",
                 Periodo = Periodo.Anual,
                 Modalidade = ModalidadeTipoCalendario.Infantil,

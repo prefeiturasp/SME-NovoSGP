@@ -16,8 +16,15 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 {
     public class Ao_registrar_aula_repetir_todos_bimestre : AulaTeste
     {
+        private readonly int contagemDiaSemanaPeriodo;
+
         public Ao_registrar_aula_repetir_todos_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
-        { }
+        {
+            contagemDiaSemanaPeriodo = ContarDiaSemanaPeriodo(DATA_03_01, DATA_29_04_FIM_BIMESTRE_1, DATA_03_01.DayOfWeek) +
+                                       ContarDiaSemanaPeriodo(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, DATA_03_01.DayOfWeek) +
+                                       ContarDiaSemanaPeriodo(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, DATA_03_01.DayOfWeek) +
+                                       ContarDiaSemanaPeriodo(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, DATA_03_01.DayOfWeek);
+        }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -38,11 +45,11 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
-            aulasCadastradas.Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
         }
 
         [Fact]
@@ -56,11 +63,11 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
-            aulasCadastradas.Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString()).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString()).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
         }
 
         [Fact]
@@ -74,11 +81,11 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
-            aulasCadastradas.Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
         }
 
 
@@ -227,11 +234,11 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
-            aulasCadastradas.Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
         }
 
         [Fact]
@@ -245,11 +252,11 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
-            aulasCadastradas.Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
         }
 
         [Fact]
@@ -263,11 +270,11 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
-            aulasCadastradas.Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => !w.Excluido).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
 
-            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(49);
+            aulasCadastradas.Where(w => w.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBeEquivalentTo(contagemDiaSemanaPeriodo);
         }
 
         private async Task CriarPeriodoEscolarEPeriodoReabertura()
@@ -283,5 +290,17 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
+        private int ContarDiaSemanaPeriodo(DateTime inicio, DateTime fim, DayOfWeek diaSemanaConsiderado)
+        {
+            var contagem = 0;
+
+            for (DateTime i = inicio.Date; i < fim.Date; i = i.AddDays(1))
+            {
+                if (i.DayOfWeek == diaSemanaConsiderado)
+                    contagem++;
+            }
+
+            return contagem;
+        }
     }
 }

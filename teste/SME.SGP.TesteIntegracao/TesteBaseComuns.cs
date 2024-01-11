@@ -254,7 +254,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_PAAI_LOGIN_5555555 = "5555555";
         protected const string USUARIO_PAEE_LOGIN_5555555 = "5555555";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
-        private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
+        protected const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
 
         protected const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
@@ -293,7 +293,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string LIBERACAO_EXCEPCIONAL = "Liberação excepcional";
         protected const int TIPO_CALENDARIO_ID = 1;
 
-        protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+        protected DateTime DATA_01_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         protected DateTime DATA_01_05_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 01);
         protected DateTime DATA_29_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
         protected DateTime DATA_02_05_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
@@ -1451,7 +1451,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_512.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_4HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME);
             
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME);
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_513.ToString(), COMPONENTE_CURRICULAR_513.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_2HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_513.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_2HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME);
         }
         
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
@@ -1614,7 +1614,7 @@ namespace SME.SGP.TesteIntegracao
         protected async Task CriarVariosTiposCalendariosEPeriodosEscolaresParaEjaCelpFundamental()
         {
             await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,true,SEMESTRE_1);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, true);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, true);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1,true);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,true, SEMESTRE_2);
@@ -1622,7 +1622,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_2,true);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,true, SEMESTRE_1);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_3,true);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_3,true);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_3,true);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,true, SEMESTRE_2);
@@ -1630,13 +1630,13 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_4,true);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio, true);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_5,true);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_5,true);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_5,true);
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_5,true);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_5,true);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,semestre:1);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_6);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_6);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_6);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.EJA,semestre:2);
@@ -1644,7 +1644,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_7);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,semestre:1);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_8);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_8);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_8);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.CELP,semestre:2);
@@ -1652,7 +1652,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_9);
             
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_10);
+            await CriarPeriodoEscolar(DATA_01_01_INICIO_BIMESTRE_1, DATA_01_05_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_10);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_24_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_10);
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_02_10_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_10);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_10);
@@ -1758,6 +1758,19 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
+        }
+        public static DateTime ObterTerceiroSabadoDoMes(int ano, int mes)
+        {
+            // Define a data do primeiro dia do mês
+            DateTime primeiroDiaDoMes = new DateTime(ano, mes, 1);
+
+            // Obtém o primeiro sábado do mês
+            DateTime primeiroSabado = primeiroDiaDoMes.AddDays((DayOfWeek.Saturday - primeiroDiaDoMes.DayOfWeek + 7) % 7);
+
+            // Calcula o terceiro sábado adicionando 14 dias ao primeiro sábado
+            DateTime terceiroSabado = primeiroSabado.AddDays(14);
+
+            return terceiroSabado;
         }
     }
 }

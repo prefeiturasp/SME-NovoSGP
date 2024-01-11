@@ -12,8 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Polly.Extensions.Http;
+using Polly;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.ElasticSearch;
@@ -25,6 +28,7 @@ using SME.SGP.Metrica.Worker.Repositorios.Interfaces;
 using SME.SGP.Metrica.Worker.UseCases;
 using SME.SGP.Metrica.Worker.UseCases.Interfaces;
 using System;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 
@@ -98,9 +102,9 @@ namespace SME.SGP.Metrica.Worker
             services.ConfigurarTelemetria(Configuration);
             services.AddHttpContextAccessor();
             services.AddMediatR(Assembly.GetExecutingAssembly());
-
             RegistrarRepositorio(services);
             RegistrarUseCases(services);
+            AdicionarHttpClients(services);
         }
 
         private void RegistrarRepositorio(IServiceCollection services)
@@ -136,6 +140,13 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IRepositorioEncaminhamentosAEEMensal, RepositorioEncaminhamentosAEEMensal>();
             services.TryAddScoped<IRepositorioPlanosAEEMensal, RepositorioPlanosAEEMensal>();
             services.TryAddScoped<IRepositorioPlanosAulaDiario, RepositorioPlanosAulaDiario>();
+            services.TryAddScoped<IRepositorioDevolutivaDuplicado, RepositorioDevolutivaDuplicado>();
+            services.TryAddScoped<IRepositorioDevolutivaMaisDeUmaNoDiario, RepositorioDevolutivaMaisDeUmaNoDiario>();
+            services.TryAddScoped<IRepositorioDevolutivaSemDiario, RepositorioDevolutivaSemDiario>();
+            services.TryAddScoped<IRepositorioFechamentosNotaDiario, RepositorioFechamentosNotaDiario>();
+            services.TryAddScoped<IRepositorioConselhosClasseAlunoDiario, RepositorioConselhosClasseAlunoDiario>();
+            services.TryAddScoped<IRepositorioFechamentosTurmaDisciplinaDiario, RepositorioFechamentosTurmaDisciplinaDiario>();
+            services.TryAddScoped<IRepositorioAulasSemAtribuicaoSubstituicaoMensal, RepositorioAulasSemAtribuicaoSubstituicaoMensal>();
         }
 
         private void RegistrarUseCases(IServiceCollection services)
@@ -181,6 +192,7 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IConsolidacaoFrequenciaAlunoMensalInconsistenteUseCase, ConsolidacaoFrequenciaAlunoMensalInconsistenteUseCase>();
             services.TryAddScoped<IConsolidacaoFrequenciaAlunoMensalInconsistenteUEUseCase, ConsolidacaoFrequenciaAlunoMensalInconsistenteUEUseCase>();
             services.TryAddScoped<IConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase, ConsolidacaoFrequenciaAlunoMensalInconsistenteTurmaUseCase>();
+            services.TryAddScoped<IDiarioBordoDuplicadoUseCase, DiarioBordoDuplicadoUseCase>();
             services.TryAddScoped<IRegistrosFrequenciaDiarioUseCase, RegistrosFrequenciaDiarioUseCase>();
             services.TryAddScoped<IDiariosBordoDiarioUseCase, DiariosBordoDiarioUseCase>();
             services.TryAddScoped<IDevolutivasDiarioBordoMensalUseCase, DevolutivasDiarioBordoMensalUseCase>();
@@ -188,6 +200,38 @@ namespace SME.SGP.Metrica.Worker
             services.TryAddScoped<IEncaminhamentosAEEMensalUseCase, EncaminhamentosAEEMensalUseCase>();
             services.TryAddScoped<IPlanosAEEMensalUseCase, PlanosAEEMensalUseCase>();
             services.TryAddScoped<IPlanosAulaDiarioUseCase, PlanosAulaDiarioUseCase>();
+            services.TryAddScoped<IFechamentosNotaDiarioUseCase, FechamentosNotaDiarioUseCase>();
+            services.TryAddScoped<IConselhosClasseAlunoDiarioUseCase, ConselhosClasseAlunoDiarioUseCase>();
+            services.TryAddScoped<IFechamentosTurmaDisciplinaDiarioUseCase, FechamentosTurmaDisciplinaDiarioUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoMensalUseCase, AulasSemAtribuicaoSubstituicaoMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoUEMensalUseCase, AulasSemAtribuicaoSubstituicaoUEMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoTurmaMensalUseCase, AulasSemAtribuicaoSubstituicaoTurmaMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoComponenteMensalUseCase, AulasSemAtribuicaoSubstituicaoComponenteMensalUseCase>();
+            services.TryAddScoped<IAulasSemAtribuicaoSubstituicaoExclusaoTurmaMensalUseCase, AulasSemAtribuicaoSubstituicaoExclusaoTurmaMensalUseCase>();
+            services.TryAddScoped<IDevolutivaDuplicadoUseCase, DevolutivaDuplicadoUseCase>();
+            services.TryAddScoped<IDevolutivaMaisDeUmaNoDiarioUseCase, DevolutivaMaisDeUmaNoDiarioUseCase>();
+            services.TryAddScoped<IDevolutivaSemDiarioUseCase, DevolutivaSemDiarioUseCase>();
+        }
+
+        private void AdicionarHttpClients(IServiceCollection services)
+        {
+            services.AddHttpClient(name: ServicosEolConstants.SERVICO, c =>
+            {
+                c.BaseAddress = new Uri(Configuration.GetSection("UrlApiEOL").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-api-eol-key", Configuration.GetSection("ApiKeyEolApi").Value);
+
+                if (Configuration.GetSection("HttpClientTimeoutSecond").Value.NaoEhNulo())
+                    c.Timeout = TimeSpan.FromSeconds(double.Parse(Configuration.GetSection("HttpClientTimeoutSecond").Value));
+
+            }).AddPolicyHandler(GetRetryPolicy());
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
