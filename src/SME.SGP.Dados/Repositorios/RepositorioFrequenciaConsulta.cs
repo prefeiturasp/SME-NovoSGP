@@ -1,20 +1,18 @@
 ﻿using Dapper;
 using Polly;
 using Polly.Registry;
-using SME.SGP.Infra;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {

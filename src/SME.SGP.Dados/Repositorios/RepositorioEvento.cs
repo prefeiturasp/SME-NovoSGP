@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Dapper;
-using Dapper;
+﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
