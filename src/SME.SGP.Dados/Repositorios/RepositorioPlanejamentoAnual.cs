@@ -27,6 +27,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanejamentoAnualPeriodoEscolar>(sql, new { id });
         }
 
+        private static void PreencherComponentesPlanejamentoAnualPeriodoEscolar(PlanejamentoAnualPeriodoEscolar periodoEscolar, 
+                                                                         long componenteCurricularId,
+                                                                         PlanejamentoAnualObjetivoAprendizagem objetivo)
+        {
+            var componenteCurricular = periodoEscolar.ComponentesCurriculares.FirstOrDefault(c => c.Id == componenteCurricularId);
+            if (componenteCurricular.NaoEhNulo())
+            {
+                var objetivoAprendizagem = componenteCurricular.ObjetivosAprendizagem.FirstOrDefault(c => c.Id == objetivo.Id);
+                if (objetivoAprendizagem.EhNulo())
+                    componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
+            }
+            else
+            {
+                componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
+                periodoEscolar.ComponentesCurriculares.Add(componenteCurricular);
+            }
+        }
         public async Task<PlanejamentoAnual> ObterPorTurmaEComponenteCurricularPeriodoEscolar(long turmaId, long componenteCurricularId, long periodoEscolarId)
         {
             var sql = @"select
@@ -70,22 +87,7 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         var periodoEscolar = planejamentoAdicionado.PeriodosEscolares.FirstOrDefault(c => c.Id == periodo.Id);
                         if (periodoEscolar.NaoEhNulo())
-                        {
-                            var componenteCurricular = periodoEscolar.ComponentesCurriculares.FirstOrDefault(c => c.Id == componente.Id);
-                            if (componenteCurricular.NaoEhNulo())
-                            {
-                                var objetivoAprendizagem = componenteCurricular.ObjetivosAprendizagem.FirstOrDefault(c => c.Id == objetivo.Id);
-                                if (objetivoAprendizagem.EhNulo())
-                                {
-                                    componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
-                                }
-                            }
-                            else
-                            {
-                                componenteCurricular.ObjetivosAprendizagem.Add(objetivo);
-                                periodoEscolar.ComponentesCurriculares.Add(componenteCurricular);
-                            }
-                        }
+                            PreencherComponentesPlanejamentoAnualPeriodoEscolar(periodoEscolar, componente.Id, objetivo);
                         else
                         {
                             componente.ObjetivosAprendizagem.Add(objetivo);
