@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                     ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil ?? d.Nome).Distinct().ToArray()
                     : disciplinasDescricoes.Select(d => d.Nome).Distinct().ToArray(),
                     DisciplinasId = disciplinasIds.ToArray(),
-                    ProfessorRf = professorDisciplina.ProfessorRf
+                    ProfessorRf = professorDisciplina?.ProfessorRf
                 };
 
                 listRetorno.Add(atribuicaoDto);
