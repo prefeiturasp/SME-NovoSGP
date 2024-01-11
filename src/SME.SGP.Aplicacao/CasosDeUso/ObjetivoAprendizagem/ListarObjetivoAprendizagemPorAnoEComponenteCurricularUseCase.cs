@@ -26,8 +26,9 @@ namespace SME.SGP.Aplicacao
             if (new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turma.ModalidadeCodigo))
                 return null;
 
+            var componenteEnsinoEspecial = ensinoEspecial ? 11 : 6;
             long[] ids = componenteCurricularId == 138 ?
-                new long[] { (ensinoEspecial ? 11 : 6) } :
+                new long[] { componenteEnsinoEspecial } :
                 await mediator.Send(new ObterJuremaIdsPorComponentesCurricularIdQuery(componenteCurricularId));
 
             var anos = new string[] { ano };

@@ -59,9 +59,8 @@ namespace SME.SGP.Aplicacao
             domingo = domingo.AddDays(7);
             sabado = sabado.AddDays(7);
 
-            periodoBimestre.PeriodoFim = exibirDataFutura
-                ? periodoBimestre.PeriodoFim
-                : periodoBimestre.PeriodoFim < DateTimeExtension.HorarioBrasilia()
+            if (!exibirDataFutura)
+                periodoBimestre.PeriodoFim = periodoBimestre.PeriodoFim < DateTimeExtension.HorarioBrasilia()
                                     ? periodoBimestre.PeriodoFim
                                     : DateTimeExtension.HorarioBrasilia();
 

@@ -69,10 +69,11 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosPorCodigoEolNome
         {
             var alunos = Enumerable.Empty<AlunoPorTurmaResposta>();
             var url = string.Format(ServicosEolConstants.URL_ALUNOS_UES_ANOS_LETIVOS_AUTOCOMPLETE, codigoUe, anoLetivo);
-
+            var operadorCodigoEol = codigoTurma > 0 ? "&" : "?";
+            var operadorNomeAluno = codigoEol.NaoEhNulo() || codigoTurma > 0 ? "&" : "?";
             var urlComplementar = (codigoTurma > 0 ? $"?codigoTurma={codigoTurma}" : null)
-                                      + (codigoEol.HasValue ? $"{(codigoTurma > 0 ? "&" : "?") + $"codigoEol={codigoEol}"}" : "")
-                                      + (nome.NaoEhNulo() ? $"{(codigoEol.NaoEhNulo() || codigoTurma > 0 ? "&" : "?") + $"nomeAluno={nome}"}" : "")
+                                      + (codigoEol.HasValue ? $"{operadorCodigoEol + $"codigoEol={codigoEol}"}" : "")
+                                      + (nome.NaoEhNulo() ? $"{operadorNomeAluno + $"nomeAluno={nome}"}" : "")
                                       + (somenteAtivos == true ? $"&somenteAtivos={somenteAtivos}" : "");
 
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);

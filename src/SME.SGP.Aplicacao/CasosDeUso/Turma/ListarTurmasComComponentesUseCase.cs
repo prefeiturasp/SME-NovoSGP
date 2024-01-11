@@ -150,10 +150,10 @@ namespace SME.SGP.Aplicacao
             if (turmasPaginadas.EhNulo() || (turmasPaginadas?.Items).EhNulo() || !turmasPaginadas.Items.Any())
                 return default;
 
-            var codigosTurmaPaginada = turmasPaginadas.Items.Select(c => c.TurmaCodigo).Distinct().ToArray();
-            var codigosTurmasComponente = usuario.EhAdmGestao() ? codigosTurmaPaginada
-                                     : turmasAbrangencia.NaoEhNulo() ? turmasAbrangencia.Select(c => c).Intersect(codigosTurmaPaginada).ToArray()
-                                     : codigosTurmaPaginada;
+            var codigosTurmasComponente = turmasPaginadas.Items.Select(c => c.TurmaCodigo).Distinct().ToArray();
+
+            if (!usuario.EhAdmGestao() && turmasAbrangencia.NaoEhNulo())
+                codigosTurmasComponente = turmasAbrangencia.Select(c => c).Intersect(codigosTurmasComponente).ToArray();
 
             var retornoComponentesTurma = from item in turmasPaginadas.Items.ToList()
                                           join componenteCodigo in codigosTurmasComponente on item.TurmaCodigo equals componenteCodigo
@@ -264,15 +264,18 @@ namespace SME.SGP.Aplicacao
             var nomeComponente = (turmas.TerritorioSaber || componente is null) ? turmas.NomeComponenteCurricular : componente.Descricao;
             var componentePermiteLanctoNota = componente?.PermiteLanctoNota ?? false;
 
-            return turmas.EhNulo() ? null : new TurmaComComponenteDto
-            {
-                Id = turmas.Id.GetValueOrDefault(),
-                NomeTurma = turmas.SerieEnsino.EhNulo() && turmas.NomeFiltro.EhNulo() ? turmas.NomeTurmaFormatado(nomeComponente) : turmas.NomeTurmaFiltroFormatado(nomeComponente),
-                TurmaCodigo = turmas.TurmaCodigo,
-                ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
-                Turno = turmas.Turno.ObterNome(),
-                LancaNota = componentePermiteLanctoNota
-            };
+            if (turmas.NaoEhNulo())
+                return new TurmaComComponenteDto
+                {
+                    Id = turmas.Id.GetValueOrDefault(),
+                    NomeTurma = turmas.SerieEnsino.EhNulo() && turmas.NomeFiltro.EhNulo() ? turmas.NomeTurmaFormatado(nomeComponente) : turmas.NomeTurmaFiltroFormatado(nomeComponente),
+                    TurmaCodigo = turmas.TurmaCodigo,
+                    ComponenteCurricularCodigo = turmas.ComponenteCurricularCodigo,
+                    Turno = turmas.Turno.ObterNome(),
+                    LancaNota = componentePermiteLanctoNota
+                };
+
+            return null;
         }
 
         private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int anoLetivo, int bimestre, Usuario usuario)
