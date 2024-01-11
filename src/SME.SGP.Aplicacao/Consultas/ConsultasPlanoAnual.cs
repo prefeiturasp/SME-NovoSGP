@@ -125,34 +125,15 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTime.Now.Date;
             var listaPlanoAnual = repositorioPlanoAnual.ObterPlanoAnualCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCurricularEolId);
             var componentesCurricularesEol = repositorioComponenteCurricular.Listar();
-            if (listaPlanoAnual.NaoEhNulo() && listaPlanoAnual.Any())
+            if (listaPlanoAnual.PossuiRegistros())
             {
                 var objetivosAprendizagem = await consultasObjetivoAprendizagem.Listar();
                 foreach (var planoAnual in listaPlanoAnual)
                 {
-                    var periodo = periodos.FirstOrDefault(c => c.Bimestre == planoAnual.Bimestre);
-                    if (periodo.EhNulo())
-                        throw new NegocioException("Plano anual com data fora do período escolar. Contate o suporte.");
-                    if (periodo.PeriodoFim.Local() >= dataAtual && periodo.PeriodoInicio.Local() <= dataAtual)
-                    {
-                        planoAnual.Obrigatorio = true;
-                    }
-                    if (planoAnual.IdsObjetivosAprendizagem.EhNulo())
-                        continue;
-
-                    foreach (var idObjetivo in planoAnual.IdsObjetivosAprendizagem)
-                    {
-                        var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
-                        if (objetivo.NaoEhNulo())
-                        {
-                            var componenteCurricularEol = componentesCurricularesEol.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
-                            if (componenteCurricularEol.NaoEhNulo())
-                            {
-                                objetivo.ComponenteCurricularEolId = componenteCurricularEol.CodigoEOL;
-                            }
-                            planoAnual.ObjetivosAprendizagem.Add(objetivo);
-                        }
-                    }
+                    var periodo = periodos.FirstOrDefault(c => c.Bimestre == planoAnual.Bimestre)
+                                  ?? throw new NegocioException("Plano anual com data fora do período escolar. Contate o suporte.");
+                    PreencherPlanoAnualObrigatorio(planoAnual, periodo, dataAtual);
+                    AdicionarObjetivosAprendizagem(planoAnual, objetivosAprendizagem, componentesCurricularesEol);
                 }
                 if (listaPlanoAnual.Count() != periodos.Count())
                 {
@@ -167,6 +148,28 @@ namespace SME.SGP.Aplicacao
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
+        private void AdicionarObjetivosAprendizagem(PlanoAnualCompletoDto planoAnual,
+                                                    IEnumerable<ObjetivoAprendizagemDto> objetivosAprendizagem,
+                                                    IEnumerable<ComponenteCurricularJurema> componentesCurricularesEol)
+        {
+            foreach (var idObjetivo in (planoAnual.IdsObjetivosAprendizagem ?? Enumerable.Empty<long>()))
+            {
+                var objetivo = objetivosAprendizagem.FirstOrDefault(c => c.Id == idObjetivo);
+                if (objetivo.NaoEhNulo())
+                {
+                    var componenteCurricularEol = componentesCurricularesEol.FirstOrDefault(c => c.CodigoJurema == objetivo.IdComponenteCurricular);
+                    if (componenteCurricularEol.NaoEhNulo())
+                        objetivo.ComponenteCurricularEolId = componenteCurricularEol.CodigoEOL;
+                    planoAnual.ObjetivosAprendizagem.Add(objetivo);
+                }
+            }
+        }
+        private void PreencherPlanoAnualObrigatorio(PlanoAnualCompletoDto planoAnual, PeriodoEscolar periodo, DateTime dataAtual)
+        {
+            if (periodo.PeriodoFim.Local() >= dataAtual 
+                && periodo.PeriodoInicio.Local() <= dataAtual)
+                planoAnual.Obrigatorio = true;
+        }
         public async Task<IEnumerable<TurmaParaCopiaPlanoAnualDto>> ObterTurmasParaCopia(int turmaId, long componenteCurricular, bool consideraHistorico)
         {
             var codigoRfUsuarioLogado = servicoUsuario.ObterRf();
