@@ -192,10 +192,15 @@ namespace SME.SGP.Aplicacao
                         var codigoComponenteCurricular = disciplina.CodigoComponenteCurricular;
                         var nota = notasFechamentosFinais?.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
                                                                         && a.AlunoCodigo == aluno.CodigoAluno && (a.Bimestre is null || a.Bimestre == (int)Bimestre.Final));
+                        string notaParaAdicionar = string.Empty;
 
-                        string notaParaAdicionar = nota.EhNulo() ? string.Empty :
-                                                   tipoNota.EhNota() ? nota.Nota.HasValue ? nota.Nota.Value.ToString() : ""
-                                                                     : nota.ConceitoId.HasValue ? nota.ConceitoId.Value.ToString() : "";
+                        if (nota.NaoEhNulo())
+                        {
+                            if (tipoNota.EhNota())
+                                notaParaAdicionar = nota.Nota.HasValue ? nota.Nota.Value.ToString() : string.Empty;
+                            else
+                                notaParaAdicionar = nota.ConceitoId.HasValue ? nota.ConceitoId.Value.ToString() : string.Empty;
+                        }
 
                         fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {

@@ -297,20 +297,31 @@ namespace SME.SGP.Aplicacao
                return pendenciaCompleto.NaoEhNulo() ? ObterNomeBimestre(pendenciaCompleto.Bimestre) : string.Empty;
             }
 
-            var turma = pendencia.EhPendenciaAula() ? 
-                    await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
-                    pendencia.EhPendenciaProfessor() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
-                pendencia.EhPendenciaDiarioBordo() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :
-                pendencia.EhPendenciaDevolutiva() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaDevolutivaQuery(pendencia.Id)) :
-                null;
+            var turma = await ObterTurmaPorPendencia(pendencia);
 
             if (turma.EhNulo())
                 return "";
             
             return await ObterDescricaoBimestrePendencia(pendencia.Id, turma.Id, pendencia.CriadoEm);
+        }
+
+        private Task<Turma> ObterTurmaPorPendencia(Pendencia pendencia)
+        {
+            var lista = new List<(bool executar, Func<Task<Turma>> funcaoPendenciaTurma)>()
+            {
+                (pendencia.EhPendenciaAula(), async () => await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id))),
+                (pendencia.EhPendenciaProfessor(), async () => await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id))),
+                (pendencia.EhPendenciaDiarioBordo(), async () => await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id))),
+                (pendencia.EhPendenciaDevolutiva(), async () => await mediator.Send(new ObterTurmaDaPendenciaDevolutivaQuery(pendencia.Id)))
+            };
+
+            foreach(var item in lista)
+            {
+                if (item.executar)
+                    return item.funcaoPendenciaTurma();
+            }
+
+            return null;
         }
 
         private async Task<string> ObterDescricaoBimestrePendencia(long pendenciaId, long turmaId, DateTime dataPendenciaCriada)

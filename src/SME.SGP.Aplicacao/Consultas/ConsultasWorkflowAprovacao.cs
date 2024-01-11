@@ -51,26 +51,31 @@ namespace SME.SGP.Aplicacao
         }
 
         private WorkflowAprovacaoTimeRespostaDto RetornaProximoUsuarioTimeline(WorkflowAprovacaoNivel nivel)
-                    => nivel.Usuarios.Count() > 1 ? new WorkflowAprovacaoTimeRespostaDto()
-                    {
-                        AlteracaoData = null,
-                        AlteracaoUsuario = null,
-                        AlteracaoUsuarioRf = null,
-                        NivelDescricao = nivel.Cargo.HasValue ? nivel.Cargo.GetAttribute<DisplayAttribute>().Name : null,
-                        NivelId = nivel.Id,
-                        Status = nivel.Status.GetAttribute<DisplayAttribute>().Name,
-                        StatusId = (int)nivel.Status,
-                        Nivel = nivel.Nivel
-                    } : new WorkflowAprovacaoTimeRespostaDto()
-                    {
-                        AlteracaoData = null,
-                        AlteracaoUsuario = nivel.Usuarios.Any() ? nivel.Usuarios.FirstOrDefault().Nome : "",
-                        AlteracaoUsuarioRf = nivel.Usuarios.Any() ? nivel.Usuarios.FirstOrDefault().CodigoRf : "",
-                        NivelDescricao = nivel.Cargo.HasValue ? nivel.Cargo.GetAttribute<DisplayAttribute>().Name : null,
-                        NivelId = nivel.Id,
-                        Status = nivel.Status.GetAttribute<DisplayAttribute>().Name,
-                        StatusId = (int)nivel.Status,
-                        Nivel = nivel.Nivel
-                    };
+        {
+            if (nivel.Usuarios.Count() > 1)
+                return new WorkflowAprovacaoTimeRespostaDto()
+                {
+                    AlteracaoData = null,
+                    AlteracaoUsuario = null,
+                    AlteracaoUsuarioRf = null,
+                    NivelDescricao = nivel.Cargo.HasValue ? nivel.Cargo.GetAttribute<DisplayAttribute>().Name : null,
+                    NivelId = nivel.Id,
+                    Status = nivel.Status.GetAttribute<DisplayAttribute>().Name,
+                    StatusId = (int)nivel.Status,
+                    Nivel = nivel.Nivel
+                };
+
+            return new WorkflowAprovacaoTimeRespostaDto()
+            {
+                AlteracaoData = null,
+                AlteracaoUsuario = nivel.Usuarios.Any() ? nivel.Usuarios.FirstOrDefault().Nome : "",
+                AlteracaoUsuarioRf = nivel.Usuarios.Any() ? nivel.Usuarios.FirstOrDefault().CodigoRf : "",
+                NivelDescricao = nivel.Cargo.HasValue ? nivel.Cargo.GetAttribute<DisplayAttribute>().Name : null,
+                NivelId = nivel.Id,
+                Status = nivel.Status.GetAttribute<DisplayAttribute>().Name,
+                StatusId = (int)nivel.Status,
+                Nivel = nivel.Nivel
+            };
+        }
     }
 }

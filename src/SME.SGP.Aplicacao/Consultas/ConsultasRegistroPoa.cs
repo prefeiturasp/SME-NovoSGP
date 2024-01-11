@@ -69,14 +69,15 @@ namespace SME.SGP.Aplicacao.Consultas
 
         private PaginacaoResultadoDto<RegistroPoaDto> MapearListagem(PaginacaoResultadoDto<RegistroPoa> retornoquery, PaginacaoResultadoDto<RegistroPoaDto> retornoPaginado, bool nenhumItemEncontrado, IEnumerable<ProfessorResumoDto> nomes)
         {
-            retornoPaginado.Items = nenhumItemEncontrado ? null : retornoquery.Items.Select(registro =>
-            {
-                var professor = nomes.FirstOrDefault(resumo => resumo.CodigoRF.Equals(registro.CodigoRf));
+            if (!nenhumItemEncontrado)
+                retornoPaginado.Items = retornoquery.Items.Select(registro =>
+                {
+                    var professor = nomes.FirstOrDefault(resumo => resumo.CodigoRF.Equals(registro.CodigoRf));
 
-                string nome = professor.EhNulo() ? "Professor não encontrado" : professor.Nome;
+                    string nome = professor.EhNulo() ? "Professor não encontrado" : professor.Nome;
 
-                return MapearParaDto(registro, nome);
-            });
+                    return MapearParaDto(registro, nome);
+                });
 
             return retornoPaginado;
         }

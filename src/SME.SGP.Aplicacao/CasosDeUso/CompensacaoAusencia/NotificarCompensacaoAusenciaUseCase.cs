@@ -109,14 +109,10 @@ namespace SME.SGP.Aplicacao
         {
             if (periodoAberto)
                 return false;
-            else if (parametroAtivo && !periodoAberto)
+            else if (parametroAtivo)
                 return true;
-            else if (!parametroAtivo && !periodoAberto)
+            else
                 throw new NegocioException("Compensação de ausência não permitida, É necessário que o período esteja aberto");
-            else if (!parametroAtivo)
-                return false;
-
-            return false;
         }
 
         private async Task<long> NotificarCompensacaoExtemporanea(NotificarCompensacaoDto dto)

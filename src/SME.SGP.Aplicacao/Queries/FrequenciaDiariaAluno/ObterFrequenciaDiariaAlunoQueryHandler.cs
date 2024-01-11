@@ -25,9 +25,10 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>> Handle(ObterFrequenciaDiariaAlunoQuery request, CancellationToken cancellationToken)
         {
             var retornoPaginado = new PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>();
-            int[] bimestres = request.Bimestre > 0
-                ? new int[] { request.Bimestre }
-                : request.Semestre == 1 ? new int[] { 1, 2 } : new int[] { 3, 4 };
+            int[] bimestres = request.Semestre == 1 ? new int[] { 1, 2 } : new int[] { 3, 4 };
+
+            if (request.Bimestre > 0)
+                bimestres = new int[] { request.Bimestre };
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
             var codigosComponentesConsiderados = new List<long>() { request.ComponenteCurricularId };

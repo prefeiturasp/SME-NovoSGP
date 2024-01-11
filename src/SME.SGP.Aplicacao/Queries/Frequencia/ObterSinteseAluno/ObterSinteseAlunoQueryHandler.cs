@@ -17,11 +17,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> Handle(ObterSinteseAlunoQuery request, CancellationToken cancellationToken)
         {
-            var sintese = request.PercentualFrequencia.EhNulo() ?
-                SinteseEnum.NaoFrequente :
-                request.PercentualFrequencia >= await mediator.Send(new ObterFrequenciaMediaQuery(request.Disciplina, request.AnoLetivo)) ?
-                SinteseEnum.Frequente :
-                SinteseEnum.NaoFrequente;
+            var sintese = SinteseEnum.NaoFrequente;
+
+            if (request.PercentualFrequencia.NaoEhNulo() && 
+                request.PercentualFrequencia >= await mediator.Send(new ObterFrequenciaMediaQuery(request.Disciplina, request.AnoLetivo)))
+                sintese = SinteseEnum.Frequente;
 
             return new SinteseDto()
             {

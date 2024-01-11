@@ -148,10 +148,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<NotaTipoValor> ObterNotaTipo(AbrangenciaFiltroRetorno abrangenciaFiltroRetorno, DateTime data, Usuario usuario, bool consideraHistorico = false)
         {
-            var anoCicloModalidade = !String.IsNullOrEmpty(abrangenciaFiltroRetorno?.Ano) 
-                ? abrangenciaFiltroRetorno.Ano == AnoCiclo.Alfabetizacao.Name() 
-                    ? AnoCiclo.Alfabetizacao.Description() : abrangenciaFiltroRetorno.Ano : string.Empty;
-            
+            var anoCicloModalidade = string.Empty;
+
+            if (!String.IsNullOrEmpty(abrangenciaFiltroRetorno?.Ano))
+                anoCicloModalidade = abrangenciaFiltroRetorno.Ano == AnoCiclo.Alfabetizacao.Name()
+                    ? AnoCiclo.Alfabetizacao.Description() : abrangenciaFiltroRetorno.Ano;
+
             var ciclo = await repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, abrangenciaFiltroRetorno.Modalidade);
 
             if (ciclo.EhNulo())

@@ -245,8 +245,11 @@ namespace SME.SGP.Aplicacao
 
             var parecerFinal = bimestre == 0 ? await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, componenteCurricular, turma.AnoLetivo)) : null;
 
-            var notaFechamento = !componenteCurricular.LancaNota ? parecerFinal?.Valor : (notasFechamento.NaoEhNulo() && notasFechamento.Any() &&
-                                 notasFechamento.FirstOrDefault().NotaConceito.NaoEhNulo() ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null);
+            var notaFechamento = parecerFinal?.Valor;
+
+            if (componenteCurricular.LancaNota)
+               notaFechamento = notasFechamento.NaoEhNulo() && notasFechamento.Any() &&
+                                 notasFechamento.FirstOrDefault().NotaConceito.NaoEhNulo() ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null;
 
             var conselhoClasseComponente = new DetalhamentoComponentesCurricularesAlunoDto()
             {
