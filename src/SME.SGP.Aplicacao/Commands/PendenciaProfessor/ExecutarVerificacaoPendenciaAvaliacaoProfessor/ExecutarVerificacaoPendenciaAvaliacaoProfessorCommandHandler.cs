@@ -39,32 +39,51 @@ namespace SME.SGP.Aplicacao
                                                                                                                             periodoEncerrando.PeriodoEscolar.PeriodoFim));
 
                     // Filtra turmas seriadas 1º ao 9º ano
-                    foreach (var turma in turmas.Where(c => Enumerable.Range(1, 9).Select(a => a.ToString()).Contains(c.Ano)))
-                    {
-                        await ExecutaAcaoComTratamentoExcecao(async () =>
-                        {
-                            var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
-                            var fechamentosDaTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdQuery(long.Parse(turma.CodigoTurma)));
-
-                            foreach (var professorComponenteTurma in professoresTurma.Where(w => !string.IsNullOrEmpty(w.ProfessorRf)))
-                            {
-                                await ExecutaAcaoComTratamentoExcecao(async () =>
-                                {
-                                    var componenteCurricular = FiltrarComponenteCurricularProfLancanota(componentesCurriculares, professorComponenteTurma);
-                                    if (await DeveIncluirPendenciaProfessor(turma, componenteCurricular,
-                                                                  professorComponenteTurma, periodoEncerrando,
-                                                                  turmasComAvaliacao, fechamentosDaTurma))
-                                        await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinasId().First(), professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
-                                }, "Erro na verificação da pendência de avaliação do Professor.");
-
-                            }
-                        },
-                        "Erro na verificação da pendência de avaliação do Professor.");
-                    }
+                    await TratarPorTurmas(turmas.Where(c => Enumerable.Range(1, 9).Select(a => a.ToString()).Contains(c.Ano)),
+                                          componentesCurriculares, periodoEncerrando, turmasComAvaliacao);
                 }, "Erro na verificação da pendência de avaliação do Professor.");
             }
 
             return true;
+        }
+
+        private async Task TratarPorTurmas(IEnumerable<Turma> turmas, 
+                                           IEnumerable<ComponenteCurricularDto> componentesCurriculares,
+                                           PeriodoFechamentoBimestre periodoEncerrando,
+                                           IEnumerable<AvaliacoesPorTurmaComponenteDto> turmasComAvaliacao)
+        {
+            foreach (var turma in turmas)
+            {
+                await ExecutaAcaoComTratamentoExcecao(async () =>
+                {
+                    var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
+                    var fechamentosDaTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdQuery(long.Parse(turma.CodigoTurma)));
+
+                    await TratarPorProfessores(turma, professoresTurma.Where(w => !string.IsNullOrEmpty(w.ProfessorRf)),
+                                               componentesCurriculares, periodoEncerrando, turmasComAvaliacao, fechamentosDaTurma);
+                },
+                "Erro na verificação da pendência de avaliação do Professor.");
+            }
+        }
+
+        private async Task TratarPorProfessores(Turma turma, IEnumerable<ProfessorTitularDisciplinaEol> professoresTurma,
+                                           IEnumerable<ComponenteCurricularDto> componentesCurriculares,
+                                           PeriodoFechamentoBimestre periodoEncerrando,
+                                           IEnumerable<AvaliacoesPorTurmaComponenteDto> turmasComAvaliacao,
+                                           IEnumerable<TurmaFechamentoDisciplinaSituacaoDto> fechamentosDaTurma)
+        {
+            foreach (var professorComponenteTurma in professoresTurma)
+            {
+                await ExecutaAcaoComTratamentoExcecao(async () =>
+                {
+                    var componenteCurricular = FiltrarComponenteCurricularProfLancanota(componentesCurriculares, professorComponenteTurma);
+                    if (await DeveIncluirPendenciaProfessor(turma, componenteCurricular,
+                                                  professorComponenteTurma, periodoEncerrando,
+                                                  turmasComAvaliacao, fechamentosDaTurma))
+                        await IncluirPendenciaProfessor(turma, professorComponenteTurma.DisciplinasId().First(), professorComponenteTurma.ProfessorRf, periodoEncerrando.PeriodoEscolar.Bimestre, componenteCurricular.Descricao, periodoEncerrando.PeriodoEscolar.Id);
+                }, "Erro na verificação da pendência de avaliação do Professor.");
+
+            }
         }
 
         private async Task ExecutaAcaoComTratamentoExcecao(Func<Task> funcao, string msgErro)
@@ -75,7 +94,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand(msgErro, LogNivel.Negocio, LogContexto.Avaliacao, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand(msgErro, LogNivel.Critico, LogContexto.Avaliacao, ex.Message));
             }
         }
 
