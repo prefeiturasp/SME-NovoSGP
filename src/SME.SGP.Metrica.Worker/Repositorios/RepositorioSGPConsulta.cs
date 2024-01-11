@@ -401,7 +401,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 
         public Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalInconsistente>> ObterConsolidacaoFrequenciaAlunoMensalInconsistente(long turmaId)
 			=> database.Conexao.QueryAsync<ConsolidacaoFrequenciaAlunoMensalInconsistente>(
-				@"with totalAulas as (
+                @"with totalAulas as (
 					select
 						t.id as TurmaId,
 						extract(month from a.data_aula) as Mes,
@@ -420,10 +420,11 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 						count(caaa.id) as QuantidadeCompensacoes
 					from aula a
 					inner join registro_frequencia_aluno rfa on rfa.aula_id = a.id and not rfa.excluido and rfa.valor = 2
+                    inner join turma t on t.turma_id = a.turma_id 
 					left join compensacao_ausencia_aluno_aula caaa on caaa.registro_frequencia_aluno_id = rfa.id and not caaa.excluido
 					where
 						not a.excluido
-						and a.turma_id = @turmaId
+						and t.id = @turmaId
 					group by rfa.codigo_aluno, extract(month from a.data_aula)
 				)
  
