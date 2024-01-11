@@ -33,7 +33,7 @@ namespace SME.SGP.Infra
         
         public static bool EstaPreenchido(this string str)
         {
-            return !string.IsNullOrEmpty(str) || !string.IsNullOrWhiteSpace(str);
+            return !NaoEstaPreenchido(str);
         }
         
         public static bool NaoEstaPreenchido(this string str)

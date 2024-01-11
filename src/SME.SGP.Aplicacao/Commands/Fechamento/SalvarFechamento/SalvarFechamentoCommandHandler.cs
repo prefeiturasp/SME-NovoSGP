@@ -26,6 +26,9 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
 
+        private const int BIMESTRE_2 = 2;
+        private const int BIMESTRE_4 = 4;
+
         public SalvarFechamentoCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioFechamentoNota repositorioFechamentoNota, 
             IRepositorioFechamentoTurma repositorioFechamentoTurma, IRepositorioFechamentoAluno repositorioFechamentoAluno,
             IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
@@ -68,10 +71,10 @@ namespace SME.SGP.Aplicacao
                 cancellationToken);
 
             var ue = turma.Ue;
+            var bimestre = fechamentoTurma.Bimestre;
 
-            var bimestre = fechamentoTurma.EhFinal && !turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 4
-                : fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 2
-                : fechamentoTurma.Bimestre;
+            if (fechamentoTurma.EhFinal)
+                bimestre = turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4;
 
             var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, bimestre);
             var periodoEscolar = periodos.periodoEscolar;
@@ -351,7 +354,10 @@ namespace SME.SGP.Aplicacao
 
         private static int? ObterBimestre(int? bimestre)
         {
-            return bimestre.HasValue ? bimestre.Value > 0 ? bimestre : null : null;
+            if (bimestre.HasValue && bimestre.Value > 0)
+                return bimestre;
+
+            return null;
         }
 
         private async Task<Turma> ObterTurma(string turmaId)
@@ -525,11 +531,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<SinteseDto> ObterSinteseAluno(double? percentualFrequencia, DisciplinaDto disciplina, int anoLetivo)
         {
-            var sintese = percentualFrequencia.EhNulo() ?
-                SinteseEnum.NaoFrequente :
-                percentualFrequencia >= await ObterFrequenciaMedia(disciplina, anoLetivo) ?
-                SinteseEnum.Frequente :
-                SinteseEnum.NaoFrequente;
+            var sintese = SinteseEnum.NaoFrequente;
+
+            if (percentualFrequencia.NaoEhNulo() && percentualFrequencia >= await ObterFrequenciaMedia(disciplina, anoLetivo))
+                sintese = SinteseEnum.Frequente;
 
             return new SinteseDto()
             {

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -68,48 +69,42 @@ namespace SME.SGP.Dominio.Servicos
         private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais)
         {
             var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
-
             var abrangenciasAtuais = await repositorioAbrangencia.ObterAbrangenciaSintetica(atribuicaoCJ.ProfessorRf, perfil, atribuicaoCJ.TurmaId);
 
             if (atribuicaoCJ.Substituir)
             {
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId));
-              
-                if (abrangenciasAtuais.NaoEhNulo() && !abrangenciasAtuais.Any())
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJ.TurmaId))
+                            ?? throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
+                if (abrangenciasAtuais.NaoPossuiRegistros())
                 {
-                 
-                    if (turma.EhNulo())
-                        throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
-                 
-                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id , Historico  = turma.Historica } };
-
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = turma.Historica } };
                     await servicoAbrangencia.SalvarAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
-
-                if (abrangenciasAtuais.NaoEhNulo())
+                else
                 {
                     var abrangenciaDaTurma = abrangenciasAtuais.FirstOrDefault(x => x.TurmaId == turma.Id);
-                    if (abrangenciaDaTurma.NaoEhNulo() && abrangenciaDaTurma.Historico != turma.Historica)
+                    if (abrangenciaDaTurma.NaoEhNulo()
+                        && abrangenciaDaTurma.Historico != turma.Historica)
                     {
                         var abangencia = new long[] { abrangenciaDaTurma.Id };
                         await repositorioAbrangencia.AtualizaAbrangenciaHistorica(abangencia);
                     }
 
                 }
-
-
             }
-            else if ((abrangenciasAtuais.NaoEhNulo() && abrangenciasAtuais.Any()) &&
-                     (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
+            else await RemoverAbrangenciasAtribuicoesCJ(abrangenciasAtuais, atribuicoesAtuais, atribuicaoCJ);
+        }
+
+        private async Task RemoverAbrangenciasAtribuicoesCJ(IEnumerable<AbrangenciaSinteticaDto> abrangenciasAtuais,
+                                                            IEnumerable<AtribuicaoCJ> atribuicoesAtuais, AtribuicaoCJ atribuicaoCJ)
+        {
+            var atribuicaoPresenteNasAtribuicoesAtuais = atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir);
+            if (abrangenciasAtuais.PossuiRegistros() 
+                && !atribuicaoPresenteNasAtribuicoesAtuais)
             {
                 await servicoAbrangencia.RemoverAbrangencias(abrangenciasAtuais.Select(a => a.Id).ToArray());
-
                 await repositorioAtribuicaoCJ.RemoverRegistros(atribuicaoCJ.DreId, atribuicaoCJ.UeId, atribuicaoCJ.TurmaId, atribuicaoCJ.ProfessorRf, atribuicaoCJ.DisciplinaId);
             }
-
-           
-
-
         }
 
         private async Task ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(AtribuicaoCJ atribuicaoCJ)

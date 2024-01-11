@@ -285,7 +285,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                  .Select(resposta => new RespostaQuestaoObrigatoriaDto
                  {
                      QuestaoId = resposta.QuestaoId,
-                     Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId?.ToString() : resposta.Texto,
+                     Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
                      Persistida = true
                  })
                  : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();

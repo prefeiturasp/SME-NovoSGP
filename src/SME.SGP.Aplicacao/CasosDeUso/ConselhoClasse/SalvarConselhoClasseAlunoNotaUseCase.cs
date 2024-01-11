@@ -95,7 +95,10 @@ namespace SME.SGP.Aplicacao
         {
             if (periodo.PeriodoFim == DateTime.MinValue)
             {
-                return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
+                if (bimestre == 0)
+                    bimestre = turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4;
+
+                return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             }
 
             return periodo;
@@ -164,13 +167,13 @@ namespace SME.SGP.Aplicacao
 
             var turmasCodigos = new[] { dto.CodigoTurma };
 
+            var dataSituacao = alunoConselho.PossuiSituacaoAtiva() ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao;
+
             var notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?
                 await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, dto.CodigoAluno,
-                    dto.Bimestre, alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva()
-                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
+                    dto.Bimestre, alunoConselho.DataMatricula, dataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
                 await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, dto.CodigoAluno,
-                    alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva()
-                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();
+                    alunoConselho.DataMatricula, dataSituacao, dto.Bimestre))).ToList();
 
             var notaFechamentoAluno = notasFechamentoAluno.FirstOrDefault(c =>
                 c.ComponenteCurricularCodigo == dto.ConselhoClasseNotaDto.CodigoComponenteCurricular &&
