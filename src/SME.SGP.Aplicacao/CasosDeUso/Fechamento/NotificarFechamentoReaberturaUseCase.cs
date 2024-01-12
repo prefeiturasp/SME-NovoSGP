@@ -28,14 +28,14 @@ namespace SME.SGP.Aplicacao
             }
 
             if (filtro.EhParaUe)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro), new Guid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro), Guid.NewGuid(), null));
             else
             {
                 var verificarUesTipoCalendario = await mediator.Send(new ObterUEsComDREsPorModalidadeTipoCalendarioQuery(filtro.Modalidades, filtro.AnoLetivo));
                 var agrupamentoUeporDre = verificarUesTipoCalendario.GroupBy(d => d.Dre.CodigoDre).ToDictionary(group => group.Key, group => group.Select(s => s.CodigoUe));
 
                 foreach (var valores in agrupamentoUeporDre)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaDRE, new FiltroNotificacaoFechamentoReaberturaDREDto(valores.Key, valores.Value, filtro), new Guid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaDRE, new FiltroNotificacaoFechamentoReaberturaDREDto(valores.Key, valores.Value, filtro), Guid.NewGuid(), null));
             }
 
             return true;
