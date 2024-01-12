@@ -262,12 +262,10 @@ namespace SME.SGP.Aplicacao
                         frequenciasAlunoParaTratar = (periodoMatricula.NaoEhNulo() && situacoesAlunoNaTurma.Count() == 1 ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
 
                         FrequenciaAluno frequenciaAluno;
-                        var percentualFrequenciaPadrao = false;
-
 
                         if (frequenciasAlunoParaTratar.EhNulo() || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
-                        else if (frequenciasAlunoParaTratar.Count() == 1)
+                        else if (frequenciasAlunoParaTratar.Count == 1)
                         {
                             frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
                             if (frequenciasAlunoParaTratar.FirstOrDefault().TotalPresencas == 0 && frequenciasAlunoParaTratar.FirstOrDefault().TotalAusencias == 0 && notasFrequenciaDto.Bimestre != 0)
@@ -288,8 +286,6 @@ namespace SME.SGP.Aplicacao
                                 TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias),
                                 TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes)
                             };
-
-                            percentualFrequenciaPadrao = true;
 
                             frequenciasAlunoParaTratar
                                 .ToList()
@@ -359,7 +355,7 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoVigenteDto periodoFechamentoVigente)
         {
-            var dataReferencia = periodoFechamentoVigente?.PeriodoFechamentoFim ?? (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
+            var dataReferencia = periodoFechamentoVigente?.PeriodoFechamentoFim ?? (await ObterPeriodoUltimoBimestrePorTurma(turma)).PeriodoFim;
             return await mediator.Send(new ObterTipoNotaPorTurmaQuery(turma,dataReferencia));
         }
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestrePorTurma(Turma turma)
@@ -371,11 +367,6 @@ namespace SME.SGP.Aplicacao
             return periodoEscolarUltimoBimestre;
         }
 
-        private async Task<bool> EstaInativoDentroPeriodoAberturaReabertura(DateTime dataSituacaoAluno, int bimestre, long tipoCalendarioId, Turma turma)
-        {
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataSituacaoAluno, bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendarioId));
-        }
-        
         private bool VerificarSePossuiRegistroFrequencia(string alunoCodigo, string turmaCodigo, long codigoComponenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<FrequenciaAluno> frequenciasAlunoParaTratar, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia)
         {
             return (frequenciasAlunoParaTratar.NaoEhNulo() && frequenciasAlunoParaTratar.Any()) ||
@@ -652,14 +643,6 @@ namespace SME.SGP.Aplicacao
             return (int)ConceitoValores.NS;
         }
 
-        private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
-        {
-            var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (periodoEscolarUltimoBimestre.EhNulo())
-                throw new NegocioException(MensagemNegocioPeriodo.NAO_FOI_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
-
-            return periodoEscolarUltimoBimestre;
-        }
         private bool MatriculaIgualDataConclusaoAlunoTurma(AlunoPorTurmaResposta alunoNaTurma)
         {
             return alunoNaTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && alunoNaTurma.DataMatricula.Date == alunoNaTurma.DataSituacao.Date;

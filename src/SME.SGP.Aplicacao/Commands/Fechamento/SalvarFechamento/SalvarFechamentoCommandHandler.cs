@@ -304,7 +304,7 @@ namespace SME.SGP.Aplicacao
                 await LogarErro("Erro ao persistir notas de fechamento", e, LogNivel.Critico);
 
                 unitOfWork.Rollback();
-                throw e;
+                throw;
             }
         }
 
@@ -383,16 +383,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotafechamento' para o ano {anoLetivo}");
 
             return parametro.Ativo;
-        }
-
-        private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId)
-        {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
-
-            if (!componentes.Any())
-                throw new NegocioException($"Componente Curricular do Fechamento ({componenteCurricularId}) não localizado!");
-
-            return componentes.FirstOrDefault();
         }
 
         private async Task<FechamentoTurmaDisciplina> MapearParaEntidade(long id, FechamentoFinalTurmaDisciplinaDto fechamentoDto, Turma turma)

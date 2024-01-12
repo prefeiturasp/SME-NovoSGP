@@ -25,12 +25,6 @@ namespace SME.SGP.Aplicacao
             return await GerarFotoAluno(request.AlunoCodigo, request.File);
         }
 
-        private async Task<bool> ValidarAlunoNaTurma(string alunoCodigo, string turmaCodigo)
-        {
-            var alunos = await mediator.Send(new ObterAlunosSimplesDaTurmaQuery(turmaCodigo));
-            return alunos.Any(a => a.Codigo == alunoCodigo);
-        }
-
         private async Task<Guid> GerarFotoAluno(string alunoCodigo, IFormFile file)
         {
             var imagem = ObterImagem(file);

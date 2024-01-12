@@ -77,9 +77,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return resultadoEncaminhamento;
         }
 
-        private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
-            => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
-
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));

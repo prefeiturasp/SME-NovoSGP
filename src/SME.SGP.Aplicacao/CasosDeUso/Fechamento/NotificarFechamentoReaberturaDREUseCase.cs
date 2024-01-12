@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
             {
                 filtro.FechamentoReabertura.UeCodigo = ue;
                 filtro.FechamentoReabertura.DreCodigo = filtro.Dre;
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro.FechamentoReabertura), new Guid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(filtro.FechamentoReabertura), Guid.NewGuid(), null));
             }                
                     
             return true;
