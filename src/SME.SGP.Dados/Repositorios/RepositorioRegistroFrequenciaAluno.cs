@@ -1,18 +1,15 @@
 ﻿using Npgsql;
 using NpgsqlTypes;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dados
+namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRegistroFrequenciaAluno : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
-        private readonly ISgpContext sgpContext;
-
         public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {}
 

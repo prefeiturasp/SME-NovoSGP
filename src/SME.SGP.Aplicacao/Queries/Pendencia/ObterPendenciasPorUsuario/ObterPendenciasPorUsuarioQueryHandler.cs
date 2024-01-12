@@ -238,26 +238,6 @@ namespace SME.SGP.Aplicacao
             return ObterPendenciasFormatadas(pendencia, agrupamentoPendenciasBimestres);
         }
 
-        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasDevolutivaFormatadas(Pendencia pendencia)
-        {
-            var turma = await mediator.Send(new ObterTurmaDaPendenciaDevolutivaQuery(pendencia.Id));
-
-            var descricao = new StringBuilder(pendencia.Descricao);
-            descricao.AppendLine("<br /><ul>");
-            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
-
-            return new List<PendenciaDto>
-            {
-                new()
-                {
-                    Tipo = pendencia.Tipo.GroupName(),
-                    Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
-                    Detalhe = descricao.ToString(),
-                    Turma = ObterNomeTurma(turma),
-                }
-            };
-        }
-
         private static IEnumerable<PendenciaDto> ObterPendenciasFormatadas(Pendencia pendencia, IEnumerable<PendenciaAgrupamentoDto> agrupamentoPendenciasBimestres)
         {
             var pendenciasDiarioBordo = new List<PendenciaDto>();

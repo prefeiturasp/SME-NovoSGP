@@ -58,24 +58,5 @@ namespace SME.SGP.Aplicacao.Consultas
 
             return retorno;
         }
-
-        private PlanoAulaRetornoDto MapearParaDto(PlanoAula plano) =>
-            plano.EhNulo() ? null :
-            new PlanoAulaRetornoDto()
-            {
-                Id = plano.Id,
-                Descricao = plano.Descricao,
-                RecuperacaoAula = plano.RecuperacaoAula,
-                LicaoCasa = plano.LicaoCasa,
-                AulaId = plano.AulaId,
-
-                Migrado = plano.Migrado,
-                CriadoEm = plano.CriadoEm,
-                CriadoPor = plano.CriadoPor,
-                CriadoRf = plano.CriadoRF,
-                AlteradoEm = plano.AlteradoEm,
-                AlteradoPor = plano.AlteradoPor,
-                AlteradoRf = plano.AlteradoRF
-            };
     }
 }

@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using Org.BouncyCastle.Ocsp;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -97,24 +95,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-
-        private async Task SalvarEventoItinerancia(long itineranciaId, ItineranciaDto itineranciaDto)
-        {
-            var ue = await mediator.Send(new ObterUePorIdQuery(itineranciaDto.UeId));
-            if (ue.EhNulo())
-                throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
-
-            await mediator.Send(new CriarEventoItineranciaPAAICommand(
-                    itineranciaId,
-                    ue.Dre.CodigoDre,
-                    ue.CodigoUe,
-                    itineranciaDto.DataRetornoVerificacao.Value,
-                    itineranciaDto.DataVisita,
-                    (IEnumerable<ItineranciaNomeDescricaoDto>)ObterObjetivos(itineranciaDto.ObjetivosVisita)));
-        }
-
-        private IEnumerable<ItineranciaObjetivoDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
-            => objetivosVisita.Select(a => (ItineranciaObjetivoDescricaoDto)a);
 
         private async Task TrataTurmasCodigos(ItineranciaDto itineranciaDto)
         {

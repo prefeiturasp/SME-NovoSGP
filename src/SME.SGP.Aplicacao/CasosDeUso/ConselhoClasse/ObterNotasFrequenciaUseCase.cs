@@ -371,11 +371,6 @@ namespace SME.SGP.Aplicacao
             return periodoEscolarUltimoBimestre;
         }
 
-        private async Task<bool> EstaInativoDentroPeriodoAberturaReabertura(DateTime dataSituacaoAluno, int bimestre, long tipoCalendarioId, Turma turma)
-        {
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataSituacaoAluno, bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendarioId));
-        }
-        
         private bool VerificarSePossuiRegistroFrequencia(string alunoCodigo, string turmaCodigo, long codigoComponenteCurricular, PeriodoEscolar periodoEscolar, IEnumerable<FrequenciaAluno> frequenciasAlunoParaTratar, IEnumerable<RegistroFrequenciaAlunoBimestreDto> registrosFrequencia)
         {
             return (frequenciasAlunoParaTratar.NaoEhNulo() && frequenciasAlunoParaTratar.Any()) ||

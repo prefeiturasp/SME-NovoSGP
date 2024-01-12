@@ -57,36 +57,6 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private PaginacaoResultadoDto<ComunicadoDto> MapearParaDtoPaginado(PaginacaoResultadoDto<Comunicado> comunicado)
-        {
-            var itens = new List<ComunicadoDto>();
-
-            var retornoPaginado = new PaginacaoResultadoDto<ComunicadoDto>
-            {
-                Items = new List<ComunicadoDto>(),
-                TotalPaginas = comunicado.TotalPaginas,
-                TotalRegistros = comunicado.TotalRegistros
-            };
-
-            foreach (var item in comunicado.Items)
-            {
-                var comunicadoDto = itens.FirstOrDefault(x => x.Id == item.Id);
-
-                if (comunicadoDto.EhNulo())
-                    itens.Add((ComunicadoDto)item);
-                else
-                    comunicadoDto.Grupos.AddRange(item.GruposComunicacao.Select(x => new GrupoComunicacaoDto
-                    {
-                        Id = x.Id,
-                        Nome = x.Nome
-                    }));
-            }
-
-            retornoPaginado.Items = itens;
-
-            return retornoPaginado;
-        }
-
         private async Task ValidarAbrangenciaUsuario(ComunicadoDto filtroDto)
         {
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
