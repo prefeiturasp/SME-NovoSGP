@@ -35,10 +35,10 @@ namespace SME.SGP.Dominio
         {
             var campo = ueId > 0 ? "t.nome" : "concat(t.ano, 'º ano')";
             var agrupamento = ueId > 0 ? "nome" : "ano";
+            var filtro = "and ue.id = @ueId";
 
-            var filtro = ueId > 0 ? "and ue.id = @ueId" :
-                            dreId > 0 ? "and ue.dre_id = @dreId" :
-                            "";
+            if (ueId == 0)
+                filtro = dreId > 0 ? "and ue.dre_id = @dreId" : string.Empty;
 
             var query = $@"select {campo} as Turma
                             , sum(c.quantidade_com_acompanhamento) as QuantidadeComAcompanhamento
