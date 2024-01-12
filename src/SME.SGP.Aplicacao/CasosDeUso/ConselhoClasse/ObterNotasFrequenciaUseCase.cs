@@ -262,8 +262,6 @@ namespace SME.SGP.Aplicacao
                         frequenciasAlunoParaTratar = (periodoMatricula.NaoEhNulo() && situacoesAlunoNaTurma.Count() == 1 ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
 
                         FrequenciaAluno frequenciaAluno;
-                        var percentualFrequenciaPadrao = false;
-
 
                         if (frequenciasAlunoParaTratar.EhNulo() || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
@@ -288,8 +286,6 @@ namespace SME.SGP.Aplicacao
                                 TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias),
                                 TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes)
                             };
-
-                            percentualFrequenciaPadrao = true;
 
                             frequenciasAlunoParaTratar
                                 .ToList()
