@@ -265,7 +265,7 @@ namespace SME.SGP.Aplicacao
 
                         if (frequenciasAlunoParaTratar.EhNulo() || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
-                        else if (frequenciasAlunoParaTratar.Count() == 1)
+                        else if (frequenciasAlunoParaTratar.Count == 1)
                         {
                             frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
                             if (frequenciasAlunoParaTratar.FirstOrDefault().TotalPresencas == 0 && frequenciasAlunoParaTratar.FirstOrDefault().TotalAusencias == 0 && notasFrequenciaDto.Bimestre != 0)
