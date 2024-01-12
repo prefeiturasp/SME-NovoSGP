@@ -43,9 +43,9 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch (System.Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
     }

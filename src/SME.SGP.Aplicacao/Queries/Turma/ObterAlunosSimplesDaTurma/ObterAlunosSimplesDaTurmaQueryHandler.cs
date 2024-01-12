@@ -28,9 +28,9 @@ namespace SME.SGP.Aplicacao
                 alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
                 return MapearParaDto(alunosEOL);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
 

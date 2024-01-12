@@ -27,9 +27,9 @@ namespace SME.SGP.Aplicacao
 
                 await SalvarPendenciaDiario(request, usuarioId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 

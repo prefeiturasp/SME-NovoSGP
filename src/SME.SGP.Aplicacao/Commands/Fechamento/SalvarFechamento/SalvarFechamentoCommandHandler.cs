@@ -304,7 +304,7 @@ namespace SME.SGP.Aplicacao
                 await LogarErro("Erro ao persistir notas de fechamento", e, LogNivel.Critico);
 
                 unitOfWork.Rollback();
-                throw e;
+                throw;
             }
         }
 

@@ -393,10 +393,10 @@ namespace SME.SGP.Dominio.Servicos
 
                 return auditoria;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
-                throw e;
+                throw;
             }
         }
 
