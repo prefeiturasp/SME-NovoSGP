@@ -477,32 +477,24 @@ namespace SME.SGP.Dados.Repositorios
                                                where dre.id = @dreId
                                                  and ue.id = @ueId and t.tipo_turma not in(@tipoTurma) ");
 
-            if (!listarTodasTurmas)
-                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
-
-            if (bimestre > 0)
-                query.AppendLine("and pe.bimestre = @bimestre ");
+            AdicionarCondicionalQuery(query, "and t.turma_id = ANY(@turmasCodigo) ", !listarTodasTurmas);
+            AdicionarCondicionalQuery(query, "and pe.bimestre = @bimestre ", bimestre > 0);
 
             var querySituacao = new StringBuilder();
             if (situacaoFechamento.HasValue && situacaoFechamento.Value > -99)
             {
                 querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_fechamento_componente_turma 
-                                   where not excluido and turma_id = t.id and status = @situacaoFechamento  ");
+                                           where not excluido and turma_id = t.id and status = @situacaoFechamento  ");
 
-                if (bimestre > 0)
-                    querySituacao.AppendLine("and bimestre = @bimestre ");
-
+                AdicionarCondicionalQuery(querySituacao, "and bimestre = @bimestre ", bimestre > 0);
                 querySituacao.AppendLine(")");
             }
 
             if (situacaoConselhoClasse.HasValue && situacaoConselhoClasse.Value > -99)
             {
                 querySituacao.AppendLine(@"and t.id in (select turma_id from consolidado_conselho_classe_aluno_turma 
-                                   where not excluido and turma_id = t.id and status = @situacaoConselhoClasse  ");
-
-                if (bimestre > 0)
-                    querySituacao.AppendLine("and bimestre = @bimestre ");
-
+                                           where not excluido and turma_id = t.id and status = @situacaoConselhoClasse  ");
+                AdicionarCondicionalQuery(querySituacao, "and bimestre = @bimestre ", bimestre > 0);
                 querySituacao.AppendLine(")");
             }
 
@@ -515,27 +507,15 @@ namespace SME.SGP.Dados.Repositorios
                 var periodoReferencia = semestre == 1 ? "p.periodo_inicio < @dataReferencia" : "p.periodo_fim > @dataReferencia";
                 queryPeriodoEJA = $"and exists(select 0 from periodo_escolar p where p.tipo_calendario_id = tc.id and {periodoReferencia} and t.semestre = @semestre)";
                 query.AppendLine(queryPeriodoEJA);
-
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
-            if (anoLetivo == DateTime.Today.Year)
-            {
-                query.AppendLine(@" and t.modalidade_codigo = @modalidade
+            query.AppendLine(@$" and t.modalidade_codigo = @modalidade
                                 and t.ano_letivo = @anoLetivo
-                                and not t.historica 
+                                {(anoLetivo == DateTime.Today.Year ? " and not t.historica" : string.Empty) }
                                 and t.tipo_turma not in(@tipoTurma)
                             order by coalesce(t.nome_filtro,t.nome)
                             OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
-            }
-            else
-            {
-                query.AppendLine(@" and t.modalidade_codigo = @modalidade
-                                and t.ano_letivo = @anoLetivo
-                                and t.tipo_turma not in(@tipoTurma)
-                            order by coalesce(t.nome_filtro,t.nome)
-                            OFFSET @quantidadeRegistrosIgnorados ROWS FETCH NEXT @quantidadeRegistros ROWS ONLY; ");
-            }
 
             query.AppendLine(@"select count(distinct (t.id))
                                     from turma t 
@@ -547,34 +527,17 @@ namespace SME.SGP.Dados.Repositorios
                                     on tc.id = pe.tipo_calendario_id
                                 where dre.id = @dreId
                                     and ue.id = @ueId ");
-
-            if (!listarTodasTurmas)
-                query.AppendLine("and t.turma_id = ANY(@turmasCodigo) ");
-
-            if (bimestre > 0)
-                query.AppendLine("and pe.bimestre = @bimestre ");
-
-            if (modalidade == Modalidade.EJA)
-                query.AppendLine(queryPeriodoEJA);
-
+            AdicionarCondicionalQuery(query, "and t.turma_id = ANY(@turmasCodigo) ", !listarTodasTurmas);
+            AdicionarCondicionalQuery(query, "and pe.bimestre = @bimestre ", bimestre > 0);
+            AdicionarCondicionalQuery(query, queryPeriodoEJA, modalidade == Modalidade.EJA);
             query.AppendLine(querySituacao.ToString());
 
-            if (anoLetivo == DateTime.Today.Year)
-            {
-                query.AppendLine(@"and t.modalidade_codigo = @modalidade 
-                               and t.ano_letivo = @anoLetivo
-                               and not t.historica
-                               and t.tipo_turma not in(@tipoTurma)");
-            }
-            else
-            {
-                query.AppendLine(@"and t.modalidade_codigo = @modalidade 
-                               and t.ano_letivo = @anoLetivo
-                               and t.tipo_turma not in(@tipoTurma)");
-            }
-
+            query.AppendLine(@$"and t.modalidade_codigo = @modalidade 
+                                and t.ano_letivo = @anoLetivo
+                                {(anoLetivo == DateTime.Today.Year ? "and not t.historica " : string.Empty)}
+                                and t.tipo_turma not in(@tipoTurma)");
+            
             var retorno = new PaginacaoResultadoDto<TurmaAcompanhamentoFechamentoRetornoDto>();
-
             var parametros = new
             {
                 quantidadeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
@@ -594,12 +557,16 @@ namespace SME.SGP.Dados.Repositorios
             };
 
             var multi = await contexto.Conexao.QueryMultipleAsync(query.ToString(), parametros);
-
             retorno.Items = multi.Read<TurmaAcompanhamentoFechamentoRetornoDto>();
             retorno.TotalRegistros = multi.ReadFirst<int>();
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
-
             return retorno;
+        }
+
+        private static void AdicionarCondicionalQuery(StringBuilder query, string condicional, bool expressaoAdicaoCondicional)
+        {
+            if (expressaoAdicaoCondicional)
+                query.AppendLine(condicional);
         }
 
         public async Task<IEnumerable<ModalidadesPorAnoDto>> ObterModalidadesPorAnos(int anoLetivo, long dreId, long ueId, int modalidade, int semestre)
