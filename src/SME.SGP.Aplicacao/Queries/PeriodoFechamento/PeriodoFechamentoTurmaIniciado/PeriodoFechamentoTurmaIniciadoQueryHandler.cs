@@ -9,6 +9,8 @@ namespace SME.SGP.Aplicacao
     public class PeriodoFechamentoTurmaIniciadoQueryHandler : IRequestHandler<PeriodoFechamentoTurmaIniciadoQuery, bool>
     {
         private readonly IMediator mediator;
+        private const int BIMESTRE_2 = 2;
+        private const int BIMESTRE_4 = 4;
 
         public PeriodoFechamentoTurmaIniciadoQueryHandler(IMediator mediator)
         {
@@ -21,8 +23,8 @@ namespace SME.SGP.Aplicacao
                 request.TipoCalendarioId.Value :
                 await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(request.Turma));
 
-            int bimestre = request.Bimestre > 0 ? request.Bimestre :
-                        request.Turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? 2 : 4;
+            int bimestreFixo = request.Turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4;
+            int bimestre = request.Bimestre > 0 ? request.Bimestre : bimestreFixo;
 
             var periodoFechamento = await mediator.Send(
                 new ObterPeriodoFechamentoPorCalendarioDreUeBimestreQuery(tipoCalendarioId,

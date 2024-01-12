@@ -258,14 +258,16 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasPersistidas(long? PAPSecaoId)
         {
-            return PAPSecaoId.HasValue ? (await mediator.Send( new ObterRespostaPorSecaoPAPQuery(PAPSecaoId.Value)))
-                .Select(resposta => new RespostaQuestaoObrigatoriaDto
-                {
-                    QuestaoId = resposta.RelatorioPeriodicoQuestao.QuestaoId,
-                    Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
-                    Persistida = true
-                })
-                : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
+            if (PAPSecaoId.HasValue)
+                return (await mediator.Send(new ObterRespostaPorSecaoPAPQuery(PAPSecaoId.Value)))
+                    .Select(resposta => new RespostaQuestaoObrigatoriaDto
+                    {
+                        QuestaoId = resposta.RelatorioPeriodicoQuestao.QuestaoId,
+                        Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
+                        Persistida = true
+                    });
+
+            return Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
     }
 }
