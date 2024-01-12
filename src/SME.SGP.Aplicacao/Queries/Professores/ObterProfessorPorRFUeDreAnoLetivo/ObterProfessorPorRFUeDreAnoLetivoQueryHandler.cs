@@ -30,7 +30,10 @@ namespace SME.SGP.Aplicacao
             var (paramUeId, paramDreId) = ObterParametrosDreUe(request);
             var url = string.Format(ServicosEolConstants.URL_PROFESSORES_BUSCAR_POR_RF_DRE_UE, request.CodigoRF, request.AnoLetivo);
             var resposta = await httpClient.GetAsync($"{url}?{string.Concat(paramUeId, paramDreId)}buscarOutrosCargos={request.BuscarOutrosCargos}");
-            var retorno = await TratarRepostaSemSucesso(resposta, request);
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
+            var retorno = await TratarRepostaSemConteudo(resposta, request);
             if (retorno.NaoEhNulo())
                 return retorno;
 
@@ -48,18 +51,11 @@ namespace SME.SGP.Aplicacao
             return usuario.Id;
         }
 
-        private async Task<ProfessorResumoDto> TratarRepostaSemSucesso(HttpResponseMessage resposta, ObterProfessorPorRFUeDreAnoLetivoQuery request)
+        private async Task<ProfessorResumoDto> TratarRepostaSemConteudo(HttpResponseMessage resposta, ObterProfessorPorRFUeDreAnoLetivoQuery request)
         {
-            if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException("Ocorreu uma falha ao consultar o professor");
-
             if (resposta.StatusCode == HttpStatusCode.NoContent)
             {
-                var dadosUsuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-                var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
-                if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
-                    throw new NegocioException($"Não foi encontrado professor com RF {request.CodigoRF}");
-
+                var (dadosUsuarioLogado, ehGestorEscolar) = await ObterDadosUsuarioLogado(request.CodigoRF);
                 if (ehGestorEscolar)
                 {
                     if (await EhFuncionarioGestorEscolarDaUe(dadosUsuarioLogado.CodigoRf, request))
@@ -67,20 +63,32 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(request.CodigoRF, false));
-                    if (!obterAtribuicoesCJAtivas.Any())
-                        throw new NegocioException($"Não foi encontrado professor com RF {request.CodigoRF}");
-
-                    var possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == request.UeId);
+                    var obterAtribuicoesCJAtivas = await ObterAtribuicoesCJAtivasProfessor(request.CodigoRF);
+                    var possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.PossuiRegistros(a => a.UeId == request.UeId);
                     if (possuiAtribuicaoNaUE)
                         return new ProfessorResumoDto { CodigoRF = request.CodigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
                 }
-
                 throw new NegocioException($"Não foi encontrado professor com RF {request.CodigoRF}");
             }
-
             return null;
         }
+        
+        private async Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicoesCJAtivasProfessor(string codigoRf)
+        {
+            var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRf, false));
+            if (obterAtribuicoesCJAtivas.NaoPossuiRegistros())
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRf}");
+            return obterAtribuicoesCJAtivas;
+        }
+
+        private async Task<(Usuario UsuarioLogado, bool EhGestorEscolar)> ObterDadosUsuarioLogado(string codigoRf)
+        {
+            var dadosUsuarioLogado = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
+            var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
+            if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRf}");
+            return (dadosUsuarioLogado, ehGestorEscolar);
+        } 
 
         private async Task<bool> EhFuncionarioGestorEscolarDaUe(string codigoRfUsuarioLogado, ObterProfessorPorRFUeDreAnoLetivoQuery request)
         {
