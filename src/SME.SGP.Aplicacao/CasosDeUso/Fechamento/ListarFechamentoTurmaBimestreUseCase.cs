@@ -509,17 +509,6 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno, long fechamentoTurmaId)
            => await mediator.Send(new ObterNotasBimestrePorCodigoAlunoFechamentoIdQuery(codigoAluno, fechamentoTurmaId));
 
-        private int ObterBimestreAtual(IEnumerable<PeriodoEscolar> periodosEscolares)
-        {
-            var dataPesquisa = DateTime.Now;
-
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
-
-            if (periodoEscolar.EhNulo())
-                return 1;
-            else return periodoEscolar.Bimestre;
-        }
-
         private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto disciplinaEOL, IEnumerable<DisciplinaDto> disciplinasRegencia, long tipoCalendarioId, string turmaCodigo, int bimestre, TipoAvaliacao tipoAvaliacaoBimestral, FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma)
         {
             if (disciplinaEOL.Regencia)

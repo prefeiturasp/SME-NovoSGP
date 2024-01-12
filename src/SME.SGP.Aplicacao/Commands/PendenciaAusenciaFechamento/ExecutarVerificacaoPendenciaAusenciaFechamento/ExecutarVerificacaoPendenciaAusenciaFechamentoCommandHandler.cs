@@ -94,12 +94,5 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new SalvarPendenciaAusenciaFechamentoCommand(turma.Id, componenteCurricularId, professorRf, titulo, descricao, instrucao, periodoEscolarId));
         }
-
-        private async Task<DisciplinaDto> ObterComponenteCurricular(long componenteCurricularId)
-        {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }));
-            return componentes.FirstOrDefault();
-        }
-
     }
 }

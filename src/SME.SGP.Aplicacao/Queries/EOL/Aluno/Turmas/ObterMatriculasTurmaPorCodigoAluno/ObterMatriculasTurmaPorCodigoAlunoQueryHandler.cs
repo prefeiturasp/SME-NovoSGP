@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter as matrículas/turma do aluno no EOL - Aluno: {request.CodigoAluno} - Erro: {e.Message}", 
                                                                     LogNivel.Critico, 
                                                                     LogContexto.Turma, e.Message));
-                throw e;
+                throw;
             }
         }
     }

@@ -290,17 +290,6 @@ namespace SME.SGP.Aplicacao
             return fechamentoFinalAluno;
         }
 
-        private void TrataPeriodosEscolaresParaAluno(FechamentoFinalConsultaFiltroDto filtros, AlunoPorTurmaResposta aluno, ref int totalAusencias, ref int totalAusenciasCompensadas, ref int totalDeAulas, PeriodoEscolar periodo)
-        {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(aluno.CodigoAluno, periodo.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtros.DisciplinaCodigo.ToString());
-            if (frequenciaAluno.NaoEhNulo())
-            {
-                totalAusencias += frequenciaAluno.TotalAusencias;
-                totalAusenciasCompensadas += frequenciaAluno.TotalCompensacoes;
-                totalDeAulas += frequenciaAluno.TotalAulas;
-            }
-        }
-
         private async Task VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma, long? tipoCalendario = null)
         {
             var ultimoBimestre = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault().Bimestre;

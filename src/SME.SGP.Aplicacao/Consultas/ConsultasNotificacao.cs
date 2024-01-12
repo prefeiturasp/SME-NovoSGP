@@ -98,58 +98,5 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new ObterNotificacaoQuantNaoLidasPorAnoLetivoRfAnoLetivoQuery(anoLetivo, usuarioRf));
         }
-
-        private async Task<NotificacaoDetalheDto> MapearEntidadeParaDetalheDto(Notificacao retorno)
-        {
-            string codigoRelatorio = string.Empty;
-            int tipoRelatorio = 0;
-            bool relatorioExiste = true;
-
-            if (NotificacaoTipo.Relatorio == retorno.Tipo)
-                codigoRelatorio = ObterCodigoArquivo(retorno.Mensagem);
-
-            if (codigoRelatorio.Any())
-            {
-                tipoRelatorio = await repositorioTipoRelatorio.ObterTipoPorCodigo(codigoRelatorio);
-            }
-
-            if (!string.IsNullOrEmpty(codigoRelatorio) && (tipoRelatorio != (int)TipoRelatorio.Itinerancias))
-                relatorioExiste = await VerificarSeArquivoExiste(codigoRelatorio);
-
-            return new NotificacaoDetalheDto()
-            {
-                AlteradoEm = retorno.AlteradoEm.ToString(),
-                AlteradoPor = retorno.AlteradoPor,
-                CriadoEm = retorno.CriadoEm.ToString(),
-                CriadoPor = retorno.CriadoPor,
-                Id = retorno.Id,
-                Mensagem = relatorioExiste ? retorno.Mensagem : "O arquivo não está mais disponível, solicite a geração do relatório novamente.",
-                Situacao = retorno.Status.ToString(),
-                Tipo = retorno.Tipo.GetAttribute<DisplayAttribute>().Name,
-                Titulo = retorno.Titulo,
-                MostrarBotaoRemover = retorno.PodeRemover,
-                MostrarBotoesDeAprovacao = retorno.DeveAprovar,
-                MostrarBotaoMarcarComoLido = retorno.DeveMarcarComoLido,
-                CategoriaId = (int)retorno.Categoria,
-                TipoId = (int)retorno.Tipo,
-                StatusId = (int)retorno.Status,
-                Codigo = retorno.Codigo,
-                Observacao = retorno.WorkflowAprovacaoNivel.EhNulo() ? string.Empty : retorno.WorkflowAprovacaoNivel.Observacao
-            };
-        }
-
-        private static string ObterCodigoArquivo(string mensagem)
-        {
-            string pattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
-            Regex rg = new(pattern);
-            var codigo = rg.Match(mensagem);
-            return codigo.ToString();
-        }
-
-        private async Task<bool> VerificarSeArquivoExiste(string codigoArquivo)
-        {
-            var guidRelatorio = new Guid(codigoArquivo);
-            return await mediator.Send(new VerificarExistenciaRelatorioPorCodigoQuery(guidRelatorio));
-        }
     }
 }

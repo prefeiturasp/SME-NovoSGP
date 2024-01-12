@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,45 +59,6 @@ namespace SME.SGP.Aplicacao.Interfaces
                     throw;
                 }
             }
-        }
-
-        private async Task AltararDataEventosItinerancias(ItineranciaDto dto, DateTime? dataRetornoAnterior)
-        {
-            if (UsuarioRemoveuDataDeRetorno(dto))
-                await RemoverEventosItinerancia(dto.Id);
-            else if (UsuarioAlterouDataDeRetorno(dto, dataRetornoAnterior))
-                await AtualizaDatasEventos(dto.Id, dto.DataRetornoVerificacao);
-            else // UsuarioIncluiuDataRetorno
-                await SalvarEventosItinerancia(dto);
-        }
-
-        private bool UsuarioAlterouDataDeRetorno(ItineranciaDto dto, DateTime? dataRetornoAnterior)
-            => dataRetornoAnterior.HasValue && dto.DataRetornoVerificacao.HasValue;
-
-        private bool UsuarioRemoveuDataDeRetorno(ItineranciaDto dto)
-            => !dto.DataRetornoVerificacao.HasValue;
-
-
-        private async Task SalvarEventosItinerancia(ItineranciaDto dto)
-        {
-            var ue = await mediator.Send(new ObterUePorIdQuery(dto.UeId));
-            if (ue.EhNulo())
-                throw new NegocioException("Não foi possível localizar um Unidade Escolar!");
-
-            await mediator.Send(new CriarEventoItineranciaPAAICommand(dto.Id, ue.Dre.CodigoDre, ue.CodigoUe, dto.DataRetornoVerificacao.Value, dto.DataVisita, ObterObjetivos(dto.ObjetivosVisita)));
-        }
-
-        private IEnumerable<ItineranciaNomeDescricaoDto> ObterObjetivos(IEnumerable<ItineranciaObjetivoDto> objetivosVisita)
-            => (IEnumerable<ItineranciaNomeDescricaoDto>)objetivosVisita.Select(a => (ItineranciaObjetivoDescricaoDto)a);
-
-        private async Task AtualizaDatasEventos(long id, DateTime? dataRetornoVerificacao)
-        {
-            await mediator.Send(new AtualizarDatasEventosItineranciaCommand(id, dataRetornoVerificacao.Value));
-        }
-
-        private async Task RemoverEventosItinerancia(long id)
-        {
-            await mediator.Send(new RemoverEventosItineranciaCommand(id));
         }
 
         private async Task EnviarNotificacao(Itinerancia itinerancia, ItineranciaDto dto)

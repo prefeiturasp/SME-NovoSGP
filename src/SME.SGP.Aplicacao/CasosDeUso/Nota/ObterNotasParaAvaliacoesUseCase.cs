@@ -487,18 +487,13 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(turma.AnoLetivo, alunosCodigos));
         }
+
         private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
         {
             if (dadosUsuario.EhProfessor() || dadosUsuario.EhProfessorCj())
                 return dadosUsuario.EhProfessorCj() && dadosAvaliacao.EhCj || dadosUsuario.EhProfessor() && !dadosAvaliacao.EhCj;
 
             return true;
-        }
-
-        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio, DateTime periodoFim)
-        {
-            return !aluno.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && aluno.DataSituacao >= periodoInicio
-                   && aluno.DataMatricula <= periodoFim;
         }
 
         private void VerificaNotaEmAprovacao(double notaConceitoAprovacaoWf, FechamentoNotaRetornoDto notasConceito)
@@ -602,10 +597,6 @@ namespace SME.SGP.Aplicacao
                 if ((avaliacoes.EhNulo()) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                     bimestreDto.Observacoes.Add($"O componente curricular [{componenteCurricular.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
-        }
-        private async Task<bool> VerificaPeriodoFechamentoEmAberto(Turma turma, int bimestre)
-        {
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(), bimestre, true));
         }
 
         private static NotaConceito ObterNotaParaVisualizacao(IEnumerable<NotaConceito> notas, AlunoPorTurmaResposta aluno, AtividadeAvaliativa atividadeAvaliativa)
