@@ -355,7 +355,7 @@ namespace SME.SGP.Aplicacao
         }
         private async Task<TipoNota> ObterTipoNota(Turma turma, PeriodoFechamentoVigenteDto periodoFechamentoVigente)
         {
-            var dataReferencia = periodoFechamentoVigente?.PeriodoFechamentoFim ?? (await ObterPeriodoUltimoBimestre(turma)).PeriodoFim;
+            var dataReferencia = periodoFechamentoVigente?.PeriodoFechamentoFim ?? (await ObterPeriodoUltimoBimestrePorTurma(turma)).PeriodoFim;
             return await mediator.Send(new ObterTipoNotaPorTurmaQuery(turma,dataReferencia));
         }
         private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestrePorTurma(Turma turma)
@@ -643,14 +643,6 @@ namespace SME.SGP.Aplicacao
             return (int)ConceitoValores.NS;
         }
 
-        private async Task<PeriodoEscolar> ObterPeriodoUltimoBimestre(Turma turma)
-        {
-            var periodoEscolarUltimoBimestre = await mediator.Send(new ObterUltimoPeriodoEscolarPorAnoModalidadeSemestreQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
-            if (periodoEscolarUltimoBimestre.EhNulo())
-                throw new NegocioException(MensagemNegocioPeriodo.NAO_FOI_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
-
-            return periodoEscolarUltimoBimestre;
-        }
         private bool MatriculaIgualDataConclusaoAlunoTurma(AlunoPorTurmaResposta alunoNaTurma)
         {
             return alunoNaTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && alunoNaTurma.DataMatricula.Date == alunoNaTurma.DataSituacao.Date;
