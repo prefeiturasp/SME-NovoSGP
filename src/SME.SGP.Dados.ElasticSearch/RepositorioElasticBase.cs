@@ -161,12 +161,12 @@ namespace SME.SGP.Dados.ElasticSearch
 
         private string ObterNomeIndice(string indice = "")
         {
-            var nomeIndice = string.IsNullOrEmpty(indice) ?
-                string.IsNullOrEmpty(indicePadraoRepositorio) ?
-                    elasticOptions.IndicePadrao :
-                    indicePadraoRepositorio :
-                indice;
+            var nomeIndice = indice;
 
+            if (string.IsNullOrEmpty(indice))
+                nomeIndice = string.IsNullOrEmpty(indicePadraoRepositorio) ?
+                    elasticOptions.IndicePadrao : indicePadraoRepositorio;
+            
             return $"{elasticOptions.Prefixo}{nomeIndice}";
         }
 

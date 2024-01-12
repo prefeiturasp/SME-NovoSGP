@@ -132,9 +132,10 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre = 0,
             DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null, string alunoCodigo = null)
         {
+            var condicaoSemBimestre = bimestre == 0 ? "or pe.id is null" : string.Empty;
             var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : string.Empty;
-            var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
-            var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
+            var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {condicaoSemBimestre})" : string.Empty;
+            var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {condicaoSemBimestre})" : string.Empty;
             var condicaoTipoCalendario = tipoCalendario.HasValue ? $"and (pe.tipo_calendario_id =@tipoCalendario or pe.tipo_calendario_id is null)" : string.Empty;
 
             var condicaoAlunoCodigo = !string.IsNullOrEmpty(alunoCodigo) ? "and fa.aluno_codigo = @alunoCodigo" : string.Empty;
@@ -166,9 +167,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null, bool validaMatricula = true)
         {
+            var condicaoSemBimestre = bimestre == 0 ? "or pe.id is null" : string.Empty;
             var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : string.Empty;
-            var condicaoDataMatricula = dataMatricula.HasValue && validaMatricula ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
-            var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
+            var condicaoDataMatricula = dataMatricula.HasValue && validaMatricula ? $"and (@dataMatricula <= pe.periodo_fim {condicaoSemBimestre})" : string.Empty;
+            var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {condicaoSemBimestre})" : string.Empty;
             var query = $@"select distinct * from (
                 select pe.bimestre, fn.disciplina_id as ComponenteCurricularCodigo, ccn.id as ConselhoClasseNotaId, coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, coalesce(ccn.nota, fn.nota) as Nota
                   from fechamento_turma ft
@@ -214,9 +216,14 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int? bimestre,
             DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null, string alunoCodigo = null)
         {
-            var condicaoBimestre = bimestre.HasValue ? bimestre > 0 ? "and bimestre = @bimestre" : "and ft.periodo_escolar_id is null" : string.Empty;
-            var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
-            var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
+            var condicaoSemBimestre = bimestre == 0 ? "or pe.id is null" : string.Empty;
+            var condicaoBimestre = string.Empty;
+
+            if (bimestre.HasValue)
+                condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : "and ft.periodo_escolar_id is null";
+
+            var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {condicaoSemBimestre})" : string.Empty;
+            var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {condicaoSemBimestre})" : string.Empty;
             var condicaoTipoCalendario = tipoCalendario.HasValue ? $"and (pe.tipo_calendario_id =@tipoCalendario or pe.tipo_calendario_id is null)" : string.Empty;
 
             var condicaoAlunoCodigo = !string.IsNullOrEmpty(alunoCodigo) ? "and cca.aluno_codigo = @alunoCodigo" : string.Empty;

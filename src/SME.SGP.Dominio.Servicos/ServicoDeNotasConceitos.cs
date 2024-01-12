@@ -170,9 +170,11 @@ namespace SME.SGP.Dominio
             if (turma.EhNulo())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrada_a_turma_informada);
 
-            string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano)
-                ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano
-                : string.Empty;
+            string anoCicloModalidade = string.Empty;
+
+            if (!String.IsNullOrEmpty(turma?.Ano))
+                anoCicloModalidade = turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano;
+
             var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, turma.Modalidade));
 
             if (ciclo.EhNulo())

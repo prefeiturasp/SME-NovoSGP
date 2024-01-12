@@ -64,9 +64,14 @@ namespace SME.SGP.Aplicacao
                 disciplinaDto = disciplinasRetorno.FirstOrDefault();
             }
 
+            var codigoComponente = long.Parse(ComponenteCurricularId);
+
+            if (disciplinaDto.NaoEhNulo())
+                codigoComponente = disciplinaDto.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular;
+
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
-                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto.NaoEhNulo() ? disciplinaDto.Id > 0 ? disciplinaDto.Id : disciplinaDto.CodigoComponenteCurricular : long.Parse(ComponenteCurricularId)));
+                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, codigoComponente));
 
                 temPlanoAnual.Add(planejamentoAnualPeriodoId);
 

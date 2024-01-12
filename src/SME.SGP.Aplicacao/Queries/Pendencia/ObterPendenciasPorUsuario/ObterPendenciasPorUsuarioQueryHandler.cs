@@ -148,13 +148,16 @@ namespace SME.SGP.Aplicacao
             if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
                 descricao = await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
 
+            if (string.IsNullOrEmpty(descricao) && !string.IsNullOrEmpty(pendencia.Descricao))
+                descricao = pendencia.Descricao;
+
             return new List<PendenciaDto>
             {
                 new()
                 {
                     Tipo = pendencia.Tipo.GroupName(),
                     Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
-                    Detalhe = !string.IsNullOrEmpty(descricao) ? descricao : !string.IsNullOrEmpty(pendencia.Descricao) ? pendencia.Descricao : "",
+                    Detalhe = descricao,
                     Turma = ObterNomeTurma(turma),
                     Bimestre = await ObterBimestreTurma(pendencia)
                 }

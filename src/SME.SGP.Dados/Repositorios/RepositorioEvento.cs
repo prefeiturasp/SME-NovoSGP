@@ -722,14 +722,17 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterParametrosDaFuncaoEventosListarSemPaginacao(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, string dreId, string ueId, bool ehTodasDres, bool ehTodasUes, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor, bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, bool consideraHistorico, StringBuilder queryNova, bool eventosTodaRede)
         {
+            var parametro_dre = string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'";
+            var parametro_ue = string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'";
+
             queryNova.AppendLine($"from public.f_eventos_listar_sem_paginacao ('{usuario.CodigoRf}', ");
             queryNova.AppendLine($"'{usuarioPerfil}', ");
             queryNova.AppendLine($"{consideraHistorico}, ");
             queryNova.AppendLine($"{tipoCalendarioId}, ");
             queryNova.AppendLine($"{usuarioTemPerfilSupervisorOuDiretor}, ");
             queryNova.AppendLine($"{!podeVisualizarEventosLocalOcorrenciaDre},");
-            queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
-            queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
+            queryNova.AppendLine($"{(ehTodasDres ? "null" : parametro_dre)}, ");
+            queryNova.AppendLine($"{(ehTodasUes ? "null" : parametro_ue)},");
             queryNova.AppendLine($"{podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
             queryNova.AppendLine($"{(dataInicio.HasValue ? $"TO_DATE('{dataInicio.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
             queryNova.AppendLine($"{(dataFim.HasValue ? $"TO_DATE('{dataFim.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
