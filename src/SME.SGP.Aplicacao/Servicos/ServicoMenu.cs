@@ -45,11 +45,8 @@ namespace SME.SGP.Aplicacao
                     EhMenu = atributoEnumerado.EhMenu
                 };
 
-                var permissoesMenu = agrupamento.GroupBy(item => new MenuOrdem()
-                {
-                    Menu = item.GetAttribute<PermissaoMenuAttribute>().Menu,
-                    Ordem = item.GetAttribute<PermissaoMenuAttribute>().OrdemMenu
-                }).OrderBy(a => a.Key.Ordem).ToList();
+                var permissoesMenu = agrupamento.GroupBy(item => new MenuOrdem(item.GetAttribute<PermissaoMenuAttribute>().Menu,
+                                                                               item.GetAttribute<PermissaoMenuAttribute>().OrdemMenu)).OrderBy(a => a.Key.Ordem).ToList();
 
                 AdicionarPermissoesMenu(menuRetornoDto, permissoesMenu, ajudas);
                 
@@ -59,11 +56,7 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private record MenuOrdem
-        {
-            public string Menu { get; set; }
-            public int Ordem { get; set; }
-        }
+        private record MenuOrdem(string Menu, int Ordem);
 
         private void AdicionarPermissoesMenu(MenuRetornoDto menuRetornoDto, List<IGrouping<MenuOrdem, Permissao>> permissoesMenu, IEnumerable<AjudaDoSistemaDto> ajudas)
         {
