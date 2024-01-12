@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Dapper;
-using Dapper;
+﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -12,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -723,14 +722,17 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterParametrosDaFuncaoEventosListarSemPaginacao(long? tipoCalendarioId, long? tipoEventoId, string nomeEvento, DateTime? dataInicio, DateTime? dataFim, string dreId, string ueId, bool ehTodasDres, bool ehTodasUes, Usuario usuario, Guid usuarioPerfil, bool usuarioTemPerfilSupervisorOuDiretor, bool podeVisualizarEventosLocalOcorrenciaDre, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme, bool consideraHistorico, StringBuilder queryNova, bool eventosTodaRede)
         {
+            var parametro_dre = string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'";
+            var parametro_ue = string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'";
+
             queryNova.AppendLine($"from public.f_eventos_listar_sem_paginacao ('{usuario.CodigoRf}', ");
             queryNova.AppendLine($"'{usuarioPerfil}', ");
             queryNova.AppendLine($"{consideraHistorico}, ");
             queryNova.AppendLine($"{tipoCalendarioId}, ");
             queryNova.AppendLine($"{usuarioTemPerfilSupervisorOuDiretor}, ");
             queryNova.AppendLine($"{!podeVisualizarEventosLocalOcorrenciaDre},");
-            queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
-            queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
+            queryNova.AppendLine($"{(ehTodasDres ? "null" : parametro_dre)}, ");
+            queryNova.AppendLine($"{(ehTodasUes ? "null" : parametro_ue)},");
             queryNova.AppendLine($"{podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
             queryNova.AppendLine($"{(dataInicio.HasValue ? $"TO_DATE('{dataInicio.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
             queryNova.AppendLine($"{(dataFim.HasValue ? $"TO_DATE('{dataFim.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
@@ -1019,18 +1021,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendFormat(" and et.codigo not in ({0}) ", string.Join(",", new int[] { (int)TipoEvento.LiberacaoExcepcional, (int)TipoEvento.ReposicaoNoRecesso }));
 
             StringBuilder queryDreUe = new StringBuilder();
-
-            if (!string.IsNullOrEmpty(dreId) && !string.IsNullOrEmpty(ueId))
-                queryDreUe.AppendLine("and (e.dre_id = @dreId and e.ue_id = @ueId)");
-            else if (!string.IsNullOrEmpty(dreId))
-                queryDreUe.AppendLine("and (e.dre_id = @dreId and e.ue_id is null)");
-            else if (EhEventoSme)
-                queryDreUe.AppendLine("and (e.dre_id is null or e.ue_id is null)");
-            else if (filtroDreUe)
-                queryDreUe.AppendLine("and (e.dre_id is not null or e.ue_id is not null)");
-
-            if (!filtroDreUe)
-                queryDreUe.AppendLine($"{(String.IsNullOrEmpty(queryDreUe.ToString()) ? "and" : "or")} (e.dre_id is null and e.ue_id is null)");
+            AdicionarCondicionalDreUeObterEventos(queryDreUe, dreId, ueId, EhEventoSme, filtroDreUe);
 
             if (!String.IsNullOrEmpty(queryDreUe.ToString()))
             {
@@ -1073,6 +1064,22 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             return query.ToString();
+        }
+
+        private static void AdicionarCondicionalDreUeObterEventos(StringBuilder query, string dreId, string ueId, bool ehEventoSme, bool filtroDreUe)
+        {
+            if (!string.IsNullOrEmpty(dreId) && !string.IsNullOrEmpty(ueId))
+                query.AppendLine("and (e.dre_id = @dreId and e.ue_id = @ueId)");
+            else if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and (e.dre_id = @dreId and e.ue_id is null)");
+            else if (ehEventoSme)
+                query.AppendLine("and (e.dre_id is null or e.ue_id is null)");
+            else if (filtroDreUe)
+                query.AppendLine("and (e.dre_id is not null or e.ue_id is not null)");
+
+            if (!filtroDreUe)
+                query.AppendLine($"{(String.IsNullOrEmpty(query.ToString()) ? "and" : "or")} (e.dre_id is null and e.ue_id is null)");
+
         }
 
 

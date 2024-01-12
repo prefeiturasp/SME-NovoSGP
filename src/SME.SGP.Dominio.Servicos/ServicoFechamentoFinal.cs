@@ -190,7 +190,7 @@ namespace SME.SGP.Dominio.Servicos
                 await LogarErro("Erro ao persistir notas de fechamento final", e, LogNivel.Critico);
 
                 unitOfWork.Rollback();
-                throw e;
+                throw;
             }
         }
 

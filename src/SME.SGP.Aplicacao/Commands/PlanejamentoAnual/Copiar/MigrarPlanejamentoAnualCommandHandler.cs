@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace SME.SGP.Aplicacao
 {
@@ -26,40 +27,19 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                var periodosOrigem = await mediator.Send(new ObterPlanejamentoAnualPeriodosEscolaresCompletoPorIdQuery(comando.Planejamento.PlanejamentoPeriodosEscolaresIds.ToArray()));
+                var periodosOrigem = await ObterPlanejamentoAnualPeriodosEscolares(comando.Planejamento.PlanejamentoPeriodosEscolaresIds.ToArray());
                 var usuario = await mediator.Send(ObterUsuarioLogadoQuery.Instance);
-
                 List<string> excessoes = new List<string>();
-
-                if (!periodosOrigem.Any())
-                    throw new NegocioException($"Nenhum período foi encontrado");
 
                 // Validando as turmas
                 foreach (var turma in comando.Planejamento.TurmasDestinoIds)
                 {
-                    Turma checarTurma;
-                    if (usuario.PerfilAtual == Perfis.PERFIL_CP)
-                        checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turma));
-                    else
-                        checarTurma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turma.ToString()));
-
-                    if (checarTurma.EhNulo())
-                        throw new NegocioException($"Turma não encontrada");
-
+                    Turma checarTurma = await ObterTurma(turma, usuario.PerfilAtual);
                     foreach (var periodoOrigem in periodosOrigem)
                     {
                         var periodo = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoOrigem.PeriodoEscolarId));
-
-                        if (usuario.EhProfessor())
-                        {
-                            var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(comando.Planejamento.ComponenteCurricularId, checarTurma.CodigoTurma, usuario.CodigoRf, periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
-                            if (!temAtribuicao)
-                                excessoes.Add($"Você não possui atribuição na turma {checarTurma.Nome} - {periodo.Bimestre}° Bimestre.");
-                        }
-
-                        var periodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(checarTurma, DateTime.Today, periodo.Bimestre, checarTurma.AnoLetivo == DateTime.Today.Year));
-                        if (!periodoEmAberto)
-                            excessoes.Add($"O {periodo.Bimestre}° Bimestre não está aberto.");
+                        await AvaliarExcecaoProfessorSemAtribuicao(usuario, checarTurma, comando.Planejamento.ComponenteCurricularId, periodo, excessoes);
+                        await AvaliarExcecaoPeriodoAberto(checarTurma, periodo, excessoes);
                     }
 
                     var planejamentoCopiado = new PlanejamentoAnual(checarTurma.Id, comando.Planejamento.ComponenteCurricularId);
@@ -70,16 +50,7 @@ namespace SME.SGP.Aplicacao
 
                 }
 
-                if (excessoes.Any())
-                {
-                    var str = new StringBuilder();
-                    str.AppendLine($"Os seguintes erros foram encontrados: ");
-                    foreach (var t in excessoes)
-                        str.AppendLine($"- {t}");
-
-                    throw new NegocioException(str.ToString());
-                }
-
+                TratarLancamentoExcecoes(excessoes);
                 unitOfWork.PersistirTransacao();
             }
             catch
@@ -89,6 +60,55 @@ namespace SME.SGP.Aplicacao
             }
 
             return true;
+        }
+
+        private void TratarLancamentoExcecoes(List<string> excessoes)
+        {
+            if (excessoes.Any())
+            {
+                var str = new StringBuilder();
+                str.AppendLine($"Os seguintes erros foram encontrados: ");
+                foreach (var t in excessoes)
+                    str.AppendLine($"- {t}");
+
+                throw new NegocioException(str.ToString());
+            }
+        }
+
+        private async Task AvaliarExcecaoPeriodoAberto(Turma turma, PeriodoEscolar periodo, List<string> excessoes)
+        {
+            var periodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodo.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
+            if (!periodoEmAberto)
+                excessoes.Add($"O {periodo.Bimestre}° Bimestre não está aberto.");
+        }
+
+        private async Task AvaliarExcecaoProfessorSemAtribuicao(Usuario usuario, Turma turma, long componenteCurricularId,
+                                                                PeriodoEscolar periodo, List<string> excessoes)
+        {
+            if (usuario.EhProfessor())
+            {
+                var temAtribuicao = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaNoPeriodoQuery(componenteCurricularId,
+                                                            turma.CodigoTurma, usuario.CodigoRf, 
+                                                            periodo.PeriodoInicio.Date, periodo.PeriodoFim.Date));
+                if (!temAtribuicao)
+                    excessoes.Add($"Você não possui atribuição na turma {turma.Nome} - {periodo.Bimestre}° Bimestre.");
+            }
+        }
+
+        private async Task<Turma> ObterTurma(long codigoIdTurma, Guid perfilUsuario)
+        {
+            if (perfilUsuario == Perfis.PERFIL_CP)
+                return await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(codigoIdTurma)) ?? throw new NegocioException($"Turma não encontrada"); ;
+            return await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoIdTurma.ToString())) ?? throw new NegocioException($"Turma não encontrada"); ;
+
+        }
+
+        private async Task<IEnumerable<PlanejamentoAnualPeriodoEscolar>> ObterPlanejamentoAnualPeriodosEscolares(long[] ids)
+        {
+            var periodos = await mediator.Send(new ObterPlanejamentoAnualPeriodosEscolaresCompletoPorIdQuery(ids));
+            if (periodos.NaoPossuiRegistros()) 
+                throw new NegocioException($"Nenhum período foi encontrado");
+            return periodos;
         }
     }
 }

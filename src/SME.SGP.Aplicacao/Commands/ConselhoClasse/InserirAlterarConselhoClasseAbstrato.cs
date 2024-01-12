@@ -81,7 +81,10 @@ namespace SME.SGP.Aplicacao
 
         protected int? ObterBimestre(int? bimestre)
         {
-            return bimestre.HasValue ? bimestre.Value > 0 ? bimestre : null : null;
+            if (bimestre.HasValue && bimestre.Value > 0)
+                return bimestre;
+
+            return null;
         }
         protected async Task MoverJustificativaConselhoClasseNota(ConselhoClasseNotaDto conselhoClasseNotaDto, string justificativaObj)
         {

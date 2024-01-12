@@ -91,7 +91,6 @@ namespace SME.SGP.Aplicacao
         {
             //alunos eol que não estão ainda na tabela de recuperação paralela
             var alunos = alunosEol.Where(w => !alunosRecuperacaoParalela.Select(s => s.AlunoId).Contains(Convert.ToInt32(w.CodigoAluno))).ToList();
-
             var respostas = await repositorioResposta.Listar(periodoId);
             var objetivos = await repositorioObjetivo.Listar(periodoId);
             var eixos = await repositorioEixo.Listar(periodoId);
@@ -124,10 +123,10 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = periodoId,
                     CriadoPor = alunoCriado.CriadoPor,
-                    CriadoEm = alunoCriado.CriadoEm == DateTime.MinValue ? null : alunoCriado.CriadoEm,
+                    CriadoEm = TratarDataInvalidaMinValue(alunoCriado.CriadoEm),
                     CriadoRF = alunoCriado.CriadoRF,
                     AlteradoPor = alunoAlterado.AlteradoPor,
-                    AlteradoEm = alunoAlterado.AlteradoEm == DateTime.MinValue ? null : alunoAlterado.AlteradoEm,
+                    AlteradoEm = TratarDataInvalidaMinValue(alunoAlterado.AlteradoEm),
                     AlteradoRF = alunoAlterado.AlteradoRF,
                     Alunos = await ObterAlunos(retorno, alunosEol, alunosRecuperacaoParalela, objetivos, turmaId)
                 }
@@ -136,7 +135,7 @@ namespace SME.SGP.Aplicacao
             if (recuperacaoParalelaPeriodo.Id == 1)
                 //parecer conclusivo
                 recuperacaoRetorno.Periodo.Alunos
-                    .Where(w => w.Id == 0 && w.ParecerConclusivo.HasValue && char.GetNumericValue(w.ParecerConclusivo.Value) <= 3)
+                    .Where(w => w.Id == 0 && w.EhParecerConclusisoPromocao())
                     .ToList()
                     .ForEach(x => x.Respostas.Add(
                         new ObjetivoRespostaDto
@@ -162,11 +161,9 @@ namespace SME.SGP.Aplicacao
                 });
 
                 //frequencias
-                foreach (var frequencia in frequencias)
+                foreach (var frequencia in frequencias.Where(f => recuperacaoRetorno.Periodo.Alunos.Any(w => w.CodAluno == Convert.ToInt32(f.Key))))
                 {
-                    if (recuperacaoRetorno.Periodo.Alunos.Any(w => w.CodAluno == Convert.ToInt32(frequencia.Key)))
-                    {
-                        recuperacaoRetorno.Periodo.Alunos
+                    recuperacaoRetorno.Periodo.Alunos
                             .FirstOrDefault(w => w.CodAluno == Convert.ToInt32(frequencia.Key))
                             .Respostas
                             .Add(new ObjetivoRespostaDto
@@ -174,7 +171,6 @@ namespace SME.SGP.Aplicacao
                                 ObjetivoId = 4,
                                 RespostaId = frequencia.Value
                             });
-                    }
                 }
             }
             else
@@ -207,6 +203,9 @@ namespace SME.SGP.Aplicacao
 
             return recuperacaoRetorno;
         }
+
+        private static DateTime? TratarDataInvalidaMinValue(DateTime? data)
+        => data == DateTime.MinValue ? null : data;
 
         private async Task<List<RecuperacaoParalelaAlunoListagemDto>> ObterAlunos(IEnumerable<(long AlunoId, long Id)> retorno, IEnumerable<AlunoPorTurmaResposta> alunosEol, IEnumerable<RetornoRecuperacaoParalela> alunosRecuperacaoParalela, IEnumerable<ObjetivoDto> objetivos, long turmaId)
         {

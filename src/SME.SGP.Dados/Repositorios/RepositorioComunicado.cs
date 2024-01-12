@@ -494,7 +494,6 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-
         private string MontaQueryListarComunicados(string dreCodigo, string ueCodigo, int[] modalidades, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
         {
             var query = new StringBuilder(@"select distinct c.id,
@@ -515,40 +514,74 @@ namespace SME.SGP.Dados.Repositorios
                                               left join ue on ue.ue_id = c.codigo_ue
                                              where c.ano_letivo = @anoLetivo
                                                and not c.excluido and c.tipo_comunicado <> @tipoComunicado ");
+            AdicionarCondicionalDreListarComunicados(query, dreCodigo);
+            AdicionarCondicionalUeListarComunicados(query, ueCodigo);
+            AdicionarCondicionalModalidadesListarComunicados(query, modalidades);
+            AdicionarCondicionalAnosEscolaresListarComunicados(query, anosEscolares);
+            AdicionarCondicionalTurmasListarComunicados(query, turmasCodigo);
+            AdicionarCondicionalTiposEscolasListarComunicados(query, tiposEscolas);
+            AdicionarCondicionalTituloListarComunicados(query, titulo);
+            AdicionarCondicionalDataEnvioListarComunicados(query, dataEnvioInicio, dataEnvioFim);
+            AdicionarCondicionalDataExpiracaoListarComunicados(query, dataExpiracaoInicio, dataExpiracaoFim);
+            return query.ToString();
+        }
 
+        private void AdicionarCondicionalDreListarComunicados(StringBuilder query, string dreCodigo)
+        {
             if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
                 query.AppendLine("and c.codigo_dre = @dreCodigo ");
             else
                 query.AppendLine("and c.codigo_dre is null ");
+        }
 
+        private void AdicionarCondicionalUeListarComunicados(StringBuilder query, string ueCodigo)
+        {
             if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
                 query.AppendLine("and c.codigo_ue = @ueCodigo ");
             else
                 query.AppendLine("and c.codigo_ue is null ");
+        }
 
+        private void AdicionarCondicionalModalidadesListarComunicados(StringBuilder query, int[] modalidades)
+        {
             if (modalidades.NaoEhNulo() && !modalidades.Any(c => c == -99))
-                query.AppendLine("and cm.modalidade = any(@modalidades) ");           
+                query.AppendLine("and cm.modalidade = any(@modalidades) ");
+        }
 
+        private void AdicionarCondicionalAnosEscolaresListarComunicados(StringBuilder query, string[] anosEscolares)
+        {
             if (anosEscolares.NaoEhNulo() && !anosEscolares.Any(c => c == "-99"))
                 query.AppendLine("and t.ano = any(@anosEscolares) ");
+        }
 
+        private void AdicionarCondicionalTurmasListarComunicados(StringBuilder query, string[] turmasCodigo)
+        {
             if (turmasCodigo.NaoEhNulo() && !turmasCodigo.Any(c => c == "-99"))
                 query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
+        }
 
+        private void AdicionarCondicionalTiposEscolasListarComunicados(StringBuilder query, int[] tiposEscolas)
+        {
             if (tiposEscolas.NaoEhNulo() && !tiposEscolas.Any(c => c == -99))
                 query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");
+        }
 
+        private void AdicionarCondicionalTituloListarComunicados(StringBuilder query, string titulo)
+        {
             if (!string.IsNullOrEmpty(titulo))
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
+                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");
+        }
 
+        private void AdicionarCondicionalDataEnvioListarComunicados(StringBuilder query, DateTime? dataEnvioInicio, DateTime? dataEnvioFim)
+        {
             if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
                 query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
+        }
 
+        private void AdicionarCondicionalDataExpiracaoListarComunicados(StringBuilder query, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim)
+        {
             if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
                 query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
-
-            return query.ToString();
-
         }
 
         private string MontaQueryListarComunicadosEja(string dreCodigo, string ueCodigo, DateTime? dataEnvioInicio, DateTime? dataEnvioFim, DateTime? dataExpiracaoInicio, DateTime? dataExpiracaoFim, string titulo, string[] turmasCodigo, string[] anosEscolares, int[] tiposEscolas)
@@ -573,35 +606,14 @@ namespace SME.SGP.Dados.Repositorios
                                                and not c.excluido and c.tipo_comunicado <> @tipoComunicado
                                                and cm.modalidade = any(@modalidades)
                                                and t.semestre = @semestre ");
-
-            if (!string.IsNullOrEmpty(dreCodigo) && dreCodigo != "-99")
-                query.AppendLine("and c.codigo_dre = @dreCodigo ");
-            else
-                query.AppendLine("and c.codigo_dre is null ");
-
-            if (!string.IsNullOrEmpty(ueCodigo) && ueCodigo != "-99")
-                query.AppendLine("and c.codigo_ue = @ueCodigo ");
-            else
-                query.AppendLine("and c.codigo_ue is null ");            
-
-            if (anosEscolares.NaoEhNulo() && !anosEscolares.Any(c => c == "-99"))
-                query.AppendLine("and t.ano = any(@anosEscolares) ");
-
-            if (turmasCodigo.NaoEhNulo() && !turmasCodigo.Any(c => c == "-99"))
-                query.AppendLine("and ct.turma_codigo = any(@turmasCodigo) ");
-
-            if (tiposEscolas.NaoEhNulo() && !tiposEscolas.Any(c => c == -99))
-                query.AppendLine("and cte.tipo_escola = any(@tiposEscolas) ");            
-
-            if (!string.IsNullOrEmpty(titulo))
-                query.AppendLine("and (upper(f_unaccent(c.titulo)) LIKE @tituloFormatado) ");            
-
-            if (dataEnvioInicio.HasValue && dataEnvioFim.HasValue)
-                query.AppendLine("and c.data_envio::date between @dataEnvioInicio::date and @dataEnvioFim::date ");
-
-            if (dataExpiracaoInicio.HasValue && dataExpiracaoFim.HasValue)
-                query.AppendLine("and c.data_expiracao::date between @dataExpiracaoInicio::date and @dataExpiracaoFim::date ");
-
+            AdicionarCondicionalDreListarComunicados(query, dreCodigo);
+            AdicionarCondicionalUeListarComunicados(query, ueCodigo);
+            AdicionarCondicionalAnosEscolaresListarComunicados(query, anosEscolares);
+            AdicionarCondicionalTurmasListarComunicados(query, turmasCodigo);
+            AdicionarCondicionalTiposEscolasListarComunicados(query, tiposEscolas);
+            AdicionarCondicionalTituloListarComunicados(query, titulo);
+            AdicionarCondicionalDataEnvioListarComunicados(query, dataEnvioInicio, dataEnvioFim);
+            AdicionarCondicionalDataExpiracaoListarComunicados(query, dataExpiracaoInicio, dataExpiracaoFim);
             return query.ToString();
         }
 

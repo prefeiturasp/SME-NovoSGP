@@ -207,27 +207,6 @@ namespace SME.SGP.Aplicacao
         {
             return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
         }
-        private async Task<bool> EhGestorDaEscolaDaTurma(Usuario usuarioLogado, Turma turma)
-        {
-            if (!usuarioLogado.EhGestorEscolar())
-                return false;
-
-            var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
-            if (ue.EhNulo())
-                throw new NegocioException($"Escola da turma [{turma.CodigoTurma}] não localizada.");
-
-            return await mediator.Send(new EhGestorDaEscolaQuery(usuarioLogado.CodigoRf, ue.CodigoUe, usuarioLogado.PerfilAtual));
-        }
-
-        private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Turma turma)
-        {
-            if (!usuarioLogado.EhProfessor())
-                return false;
-
-            var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-
-            return professores.Any(a => a.ProfessorRf.ToString() == usuarioLogado.CodigoRf);
-        }
 
         private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
         {

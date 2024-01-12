@@ -26,8 +26,9 @@ namespace SME.SGP.Infra
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = new CancellationToken())
         {
-            if (!configuracaoCacheOptions.UtilizaRedis || repositorioCache is not RepositorioCacheRedis repositorioCacheRedis)
-                return HealthCheckResult.Healthy("O serviço Redis não esta ativo. A aplicação está utilizando cache em memória.");
+            if (!configuracaoCacheOptions.UtilizaRedis
+                || repositorioCache is not RepositorioCacheRedis repositorioCacheRedis)
+                    return HealthCheckResult.Healthy("O serviço Redis não esta ativo. A aplicação está utilizando cache em memória.");
 
             try
             {

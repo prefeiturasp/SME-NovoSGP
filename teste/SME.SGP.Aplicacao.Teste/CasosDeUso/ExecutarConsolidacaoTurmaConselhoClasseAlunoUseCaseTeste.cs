@@ -35,7 +35,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var alunoCodigo = "9";
             var bimestre = 0;
             var turmaId = 101;
-            var nota = 8;
             var inativo = false;
             var componenteCurricularId = 2;
 
@@ -60,7 +59,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var alunoCodigo = "9";
             var bimestre = 1;
             var turmaId = 101;
-            var nota = 8;
             var inativo = false;
             var componenteCurricularId = 2;
 
@@ -83,7 +81,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var alunoCodigo = "9";
             var bimestre = 1;
             var turmaId = 101;
-            var nota = 8;
             var inativo = true;
             var componenteCurricularId = 2;
 

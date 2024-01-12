@@ -104,12 +104,6 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
-        {
-            return await repositorioSupervisorEscolaDre.VerificarSeJaExisteAtribuicaoExcluida(atribuicaoSupervisorEscolaDto.DreId,
-                                atribuicaoSupervisorEscolaDto.UesIds.ToArray(), (int)atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
-        }
-
         private async Task AjustarRegistrosExistentes(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto, IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
         {
             if (escolasAtribuidas.NaoEhNulo())

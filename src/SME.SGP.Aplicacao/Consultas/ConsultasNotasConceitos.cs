@@ -498,32 +498,6 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private NotasConceitosBimestreRetornoDto ObterBimestreGenerico(int bimestreAtual)
-        {
-            return new NotasConceitosBimestreRetornoDto()
-            {
-                Descricao = $"{bimestreAtual}º Bimestre",
-                Numero = bimestreAtual
-            };
-        }
-
-        private IEnumerable<NotasConceitosBimestreRetornoDto> ObterListaBimestreGenerico(int quantidadeBimestres)
-        {
-            for (int i = 0; i < quantidadeBimestres; i++)
-            {
-                yield return ObterBimestreGenerico(i + 1);
-            }
-        }
-
-        private NotasConceitosRetornoDto ObterRetornoGenericoBimestreAtualVazio(IEnumerable<PeriodoEscolar> periodosEscolares, int bimestre)
-        {
-            return new NotasConceitosRetornoDto
-            {
-                BimestreAtual = bimestre,
-                Bimestres = ObterListaBimestreGenerico(periodosEscolares.Count()).ToList(),
-            };
-        }
-
         private void CarregarValoresAuditoriaAlterada(DateTime? dataUltimaNotaConceitoAlterada, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoAlteracao)
         {
             if (dataUltimaNotaConceitoAlterada.HasValue)

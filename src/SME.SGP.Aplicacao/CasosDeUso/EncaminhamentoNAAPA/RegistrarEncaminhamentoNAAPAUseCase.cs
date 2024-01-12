@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao
     public class RegistrarEncaminhamentoNAAPAUseCase : IRegistrarEncaminhamentoNAAPAUseCase
     {
         private const string SECAO_QUESTOES_APRESENTADAS = "QUESTOES_APRESENTADAS_INFANTIL";
-        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
         private const string QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS = "OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS";
         private const string QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
         private const string QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS = "TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS";
@@ -286,7 +285,7 @@ namespace SME.SGP.Aplicacao
                 .Select(resposta => new RespostaQuestaoObrigatoriaDto
                 {
                     QuestaoId = resposta.QuestaoId,
-                    Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId?.ToString() : resposta.Texto,
+                    Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
                     Persistida = true
                 })
                 : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();

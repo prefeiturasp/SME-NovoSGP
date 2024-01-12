@@ -2,11 +2,8 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Enumerados;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -58,56 +55,5 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new ExcluirPendenciaPerfilUsuarioCommand(pendenciaFuncionario.Id));
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaFuncionario.PendenciaId, pendenciaFuncionario.UeId.Value), Guid.NewGuid()));
         }
-
-        private IEnumerable<PendenciaPerfilUsuarioUePerfilDto> ObterAgrupamentoUePerfil(IEnumerable<PendenciaPerfilUsuarioDto> pendenciaFuncionarios)
-        {
-            var agruparUePerfilCodigoAnonymous = pendenciaFuncionarios.Where(w => w.UeId.HasValue).Select(s => new { UeId = s.UeId.Value, s.PerfilCodigo }).Distinct();
-            return agruparUePerfilCodigoAnonymous.Select(s => new PendenciaPerfilUsuarioUePerfilDto() { UeId = s.UeId, PerfilCodigo = s.PerfilCodigo });
-        }
-
-        private async Task ObterFuncionariosCefaisAdmUes(IEnumerable<PendenciaPerfilUsuarioUePerfilDto> agruparUePerfilCodigo, Dictionary<string, IEnumerable<FuncionarioCargoDTO>> dicUePerfilCodigoFuncionarios, List<long> lstCefais, List<long> lstAdmUes)
-        {
-            foreach (var uePerfilCodigo in agruparUePerfilCodigo)
-            {
-                var dreUe = await ObterCodigoDREUE(uePerfilCodigo.UeId);
-
-                var perfilUsuario = (PerfilUsuario)uePerfilCodigo.PerfilCodigo;
-
-                switch (perfilUsuario)
-                {
-                    case PerfilUsuario.CP:
-                    case PerfilUsuario.AD:
-                    case PerfilUsuario.DIRETOR:
-                        var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, EnumHelper.ObterCargoPorPerfil(uePerfilCodigo.PerfilCodigo)));
-                        dicUePerfilCodigoFuncionarios.Add($"{uePerfilCodigo.UeId}_{uePerfilCodigo.PerfilCodigo}", funcionarios);
-                        break;
-
-                    case PerfilUsuario.CEFAI:
-                        lstCefais.AddRange(await mediator.Send(new ObtemUsuarioCEFAIDaDreQuery(dreUe.DreCodigo)));
-                        break;
-
-                    case PerfilUsuario.ADMUE:
-                        lstAdmUes.AddRange(await ObterAdministradoresPorUE(dreUe.UeCodigo));
-                        break;
-                }
-            }
-        }
-
-        private async Task<List<long>> ObterAdministradoresPorUE(string CodigoUe)
-        {
-            var administradoresId = await mediator.Send(new ObterAdministradoresPorUEQuery(CodigoUe));
-            var AdministradoresUeId = new List<long>();
-
-            foreach (var adm in administradoresId)
-                AdministradoresUeId.Add(await ObterUsuarioId(adm));
-
-            return AdministradoresUeId;
-        }
-
-        private async Task<long> ObterUsuarioId(string rf)
-            => await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(rf));
-
-        private async Task<DreUeCodigoDto> ObterCodigoDREUE(long ueId)
-            => await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
     }
 }

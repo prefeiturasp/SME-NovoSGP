@@ -77,9 +77,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             return resultadoEncaminhamento;
         }
 
-        private Task<bool> EhUsuarioResponsavelPeloEncaminhamento(Usuario usuarioLogado, long? responsavelId)
-            => Task.FromResult(responsavelId.HasValue && usuarioLogado.Id == responsavelId.Value);
-
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.GerarPendenciasEncaminhamentoAEE, DateTime.Today.Year));
@@ -281,14 +278,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasEncaminhamentoAEE(long? encaminhamentoAEEId)
         {
-            return encaminhamentoAEEId.HasValue ? (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
-                 .Select(resposta => new RespostaQuestaoObrigatoriaDto
-                 {
-                     QuestaoId = resposta.QuestaoId,
-                     Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId?.ToString() : resposta.Texto,
-                     Persistida = true
-                 })
-                 : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
+            if (encaminhamentoAEEId.HasValue)
+                return (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
+                     .Select(resposta => new RespostaQuestaoObrigatoriaDto
+                     {
+                         QuestaoId = resposta.QuestaoId,
+                         Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
+                         Persistida = true
+                     });
+
+            return Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
 
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoAeeDto encaminhamentoAEEDto)

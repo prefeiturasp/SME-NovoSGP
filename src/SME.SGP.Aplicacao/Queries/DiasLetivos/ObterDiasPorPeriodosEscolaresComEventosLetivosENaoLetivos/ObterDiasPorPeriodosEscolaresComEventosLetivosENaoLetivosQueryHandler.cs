@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -65,68 +66,70 @@ namespace SME.SGP.Aplicacao
                         PossuiEvento = false
                     };
 
-                    var eventosComData = eventos
-                        .Where(e => diaAtual.Date >= e.DataInicio.Date && diaAtual.Date <= e.DataFim.Date)
-                        .ToList();
-
-                    if (!eventosComData.Any())
-                    {
-                        diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
-                        datasDosPeriodosEscolares.Add(diaLetivoDto);
-                        continue;
-                    }
-
-                    var eventosSME = eventosComData
-                        .Where(e => e.EhEventoSME());
-
-                    if (eventosSME.Any())
-                    {
-                        diaLetivoDto.EhLetivo = eventosSME.Any(e => e.EhEventoLetivo());
-                        diaLetivoDto.Motivo = eventosSME.First().Nome;
-                        diaLetivoDto.PossuiEvento = true;
-                        datasDosPeriodosEscolares.Add(diaLetivoDto);
-                        continue;
-                    }
-
-                    var eventosDRE = eventosComData
-                        .Where(e => e.EhEventoDRE());
-
-                    if (eventosDRE.Any())
-                    {
-                        diaLetivoDto.EhLetivo = eventosDRE.Any(e => e.EhEventoLetivo());
-                        diaLetivoDto.Motivo = eventosDRE.First().Nome;
-                        diaLetivoDto.DreIds = eventosDRE.Select(e => e.DreId).ToList();
-                        diaLetivoDto.PossuiEvento = true;
-                        datasDosPeriodosEscolares.Add(diaLetivoDto);
-                        continue;
-                    }
-
-                    var eventosLetivosNaoLetivosUE = eventosComData
-                        .Where(e => e.EhEventoUE());
-
-                    if (eventosLetivosNaoLetivosUE.Any())
-                    {
-                        eventosLetivosNaoLetivosUE.ToList().ForEach(elue =>
-                        {
-                            datasDosPeriodosEscolares.Add(new DiaLetivoDto()
-                            {
-                                Data = diaAtual,
-                                PossuiEvento = true,
-                                EhLetivo = EventoEhLetivo(diaAtual, elue),
-                                Motivo = elue.Nome,
-                                UesIds = new List<string>() { elue.UeId }
-                            });
-                        });
-
-                        if (desconsiderarCriacaoDiaLetivoProximasUes)
-                            continue;
-                    }
-                    else
-                    {
-                        diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
-                        datasDosPeriodosEscolares.Add(diaLetivoDto);
-                    }
+                    var eventosComData = eventos.Where(e => diaAtual.Date >= e.DataInicio.Date 
+                                                            && diaAtual.Date <= e.DataFim.Date)
+                                                .ToList();
+                    PreencherInformacoesDiaLetivo(diaLetivoDto, eventosComData, datasDosPeriodosEscolares, desconsiderarCriacaoDiaLetivoProximasUes, diaAtual);
                 }
+            }
+        }
+
+        private static void PreencherInformacoesDiaLetivo(DiaLetivoDto diaLetivoDto, List<Evento> eventosComData, 
+                                             List<DiaLetivoDto> datasDosPeriodosEscolares,
+                                             bool desconsiderarCriacaoDiaLetivoProximasUes,
+                                             DateTime diaPeriodo)
+        {
+            if (!eventosComData.Any())
+            {
+                diaLetivoDto.EhLetivo = !diaPeriodo.FimDeSemana();
+                datasDosPeriodosEscolares.Add(diaLetivoDto);
+                return;
+            }
+
+            var eventosSME = eventosComData.Where(e => e.EhEventoSME());
+            if (eventosSME.Any())
+            {
+                diaLetivoDto.EhLetivo = eventosSME.Any(e => e.EhEventoLetivo());
+                diaLetivoDto.Motivo = eventosSME.First().Nome;
+                diaLetivoDto.PossuiEvento = true;
+                datasDosPeriodosEscolares.Add(diaLetivoDto);
+                return;
+            }
+
+            var eventosDRE = eventosComData.Where(e => e.EhEventoDRE());
+            if (eventosDRE.Any())
+            {
+                diaLetivoDto.EhLetivo = eventosDRE.Any(e => e.EhEventoLetivo());
+                diaLetivoDto.Motivo = eventosDRE.First().Nome;
+                diaLetivoDto.DreIds = eventosDRE.Select(e => e.DreId).ToList();
+                diaLetivoDto.PossuiEvento = true;
+                datasDosPeriodosEscolares.Add(diaLetivoDto);
+                return;
+            }
+
+            var eventosLetivosNaoLetivosUE = eventosComData.Where(e => e.EhEventoUE());
+
+            if (eventosLetivosNaoLetivosUE.Any())
+            {
+                eventosLetivosNaoLetivosUE.ToList().ForEach(elue =>
+                {
+                    datasDosPeriodosEscolares.Add(new DiaLetivoDto()
+                    {
+                        Data = diaPeriodo,
+                        PossuiEvento = true,
+                        EhLetivo = EventoEhLetivo(diaPeriodo, elue),
+                        Motivo = elue.Nome,
+                        UesIds = new List<string>() { elue.UeId }
+                    });
+                });
+
+                if (desconsiderarCriacaoDiaLetivoProximasUes)
+                    return;
+            }
+            else
+            {
+                diaLetivoDto.EhLetivo = !diaPeriodo.FimDeSemana();
+                datasDosPeriodosEscolares.Add(diaLetivoDto);
             }
         }
 

@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(parametro.CodigoTurma))
             {
                 var modalidadeTurma = turma?.ModalidadeCodigo ?? 0;
-                if (modalidadeTurma != Modalidade.Fundamental 
-                    && modalidadeTurma != Modalidade.EJA)
+                if (turma.EhNulo() || (modalidadeTurma != Modalidade.Fundamental 
+                    && modalidadeTurma != Modalidade.EJA))
                     return new Modalidade[] {};
                 else
                     return new Modalidade[] { turma.ModalidadeCodigo };

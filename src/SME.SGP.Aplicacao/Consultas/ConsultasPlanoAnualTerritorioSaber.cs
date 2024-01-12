@@ -87,14 +87,21 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor.NaoEhNulo() && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
-                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId || (componenteCurricular.NaoEhNulo() && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) || cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId)
-                    : new ComponenteCurricularEol
-                    {
-                        Codigo = territorioExperienciaId > 0 ? territorioExperienciaId : 0,
-                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
-                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
-                    };
+            ComponenteCurricularEol componenteCorrespondente = null;
+
+            if (!usuarioLogado.EhProfessorCj() &&
+                componentesCurricularesEolProfessor.NaoEhNulo() &&
+                (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor()))
+                componenteCorrespondente = componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId ||
+                                                                                                    (componenteCurricular.NaoEhNulo() && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) ||
+                                                                                                    cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId);
+            else
+                componenteCorrespondente = new ComponenteCurricularEol
+                {
+                    Codigo = territorioExperienciaId > 0 ? territorioExperienciaId : 0,
+                    CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
+                    CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
+                };
 
             var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.Codigo ?? 0, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
             if (listaPlanoAnual.NaoEhNulo() && listaPlanoAnual.Any())

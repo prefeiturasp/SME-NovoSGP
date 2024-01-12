@@ -927,41 +927,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             };
         }
 
-        private async Task CrieConceitoValores()
-        {
-
-            await InserirNaBase(new Conceito()
-            {
-                Valor = PLENAMENTE_SATISFATORIO,
-                InicioVigencia = DATA_01_01,
-                Ativo = true,
-                Descricao = ConceitoValores.P.GetAttribute<DisplayAttribute>().Name,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-            await InserirNaBase(new Conceito()
-            {
-                Valor = SATISFATORIO,
-                InicioVigencia = DATA_01_01,
-                Ativo = true,
-                Descricao = ConceitoValores.S.GetAttribute<DisplayAttribute>().Name,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-            await InserirNaBase(new Conceito()
-            {
-                Valor = NAO_SATISFATORIO,
-                InicioVigencia = DATA_01_01,
-                Ativo = true,
-                Descricao = ConceitoValores.NS.GetAttribute<DisplayAttribute>().Name,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-        }
-
         private async Task CriarParametrosSistema()
         {
             await InserirNaBase(new ParametrosSistema

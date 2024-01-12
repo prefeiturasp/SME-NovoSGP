@@ -145,34 +145,36 @@ namespace SME.SGP.Aplicacao
 
         private EventoCompletoDto MapearParaDto(Evento evento, bool? podeAlterar = null, bool? podeAlterarExcluirPorPerfilAbrangencia = null, int[] bimestres = null)
         {
-            return evento.EhNulo() ? null : new EventoCompletoDto
-            {
-                DataFim = evento.DataFim,
-                DataInicio = evento.DataInicio,
-                Descricao = evento.Descricao,
-                DreId = evento.DreId,
-                FeriadoId = evento.FeriadoId,
-                Id = evento.Id,
-                Letivo = evento.Letivo,
-                Nome = evento.Nome,
-                TipoCalendarioId = evento.TipoCalendarioId,
-                TipoEventoId = evento.TipoEventoId,
-                UeId = evento.UeId,
-                AlteradoEm = evento.AlteradoEm,
-                AlteradoPor = evento.AlteradoPor,
-                AlteradoRF = evento.AlteradoRF,
-                CriadoEm = evento.CriadoEm,
-                CriadoPor = evento.CriadoPor,
-                CriadoRF = evento.CriadoRF,
-                TipoEvento = MapearTipoEvento(evento.TipoEvento),
-                Migrado = evento.Migrado,
-                PodeAlterar = podeAlterar.NaoEhNulo() ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
-                PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia.NaoEhNulo() ? podeAlterarExcluirPorPerfilAbrangencia : false,
-                Status = evento.Status,
-                Bimestre = bimestres,
-                DescricaoDreUe = $"{MontarDescricaoDre(evento)} - {MontarDescricaoUe(evento)}"
-                
-            };
+            if (evento.NaoEhNulo())
+                return new EventoCompletoDto
+                {
+                    DataFim = evento.DataFim,
+                    DataInicio = evento.DataInicio,
+                    Descricao = evento.Descricao,
+                    DreId = evento.DreId,
+                    FeriadoId = evento.FeriadoId,
+                    Id = evento.Id,
+                    Letivo = evento.Letivo,
+                    Nome = evento.Nome,
+                    TipoCalendarioId = evento.TipoCalendarioId,
+                    TipoEventoId = evento.TipoEventoId,
+                    UeId = evento.UeId,
+                    AlteradoEm = evento.AlteradoEm,
+                    AlteradoPor = evento.AlteradoPor,
+                    AlteradoRF = evento.AlteradoRF,
+                    CriadoEm = evento.CriadoEm,
+                    CriadoPor = evento.CriadoPor,
+                    CriadoRF = evento.CriadoRF,
+                    TipoEvento = MapearTipoEvento(evento.TipoEvento),
+                    Migrado = evento.Migrado,
+                    PodeAlterar = podeAlterar.NaoEhNulo() ? podeAlterar.Value && evento.PodeAlterar() : evento.PodeAlterar(),
+                    PodeAlterarExcluirPorPerfilAbrangencia = podeAlterarExcluirPorPerfilAbrangencia.NaoEhNulo() ? podeAlterarExcluirPorPerfilAbrangencia : false,
+                    Status = evento.Status,
+                    Bimestre = bimestres,
+                    DescricaoDreUe = $"{MontarDescricaoDre(evento)} - {MontarDescricaoUe(evento)}"
+                };
+
+            return null;
         }
 
         private string MontarDescricaoDre(Evento evento)

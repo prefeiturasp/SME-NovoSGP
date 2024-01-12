@@ -192,10 +192,15 @@ namespace SME.SGP.Aplicacao
                         var codigoComponenteCurricular = disciplina.CodigoComponenteCurricular;
                         var nota = notasFechamentosFinais?.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
                                                                         && a.AlunoCodigo == aluno.CodigoAluno && (a.Bimestre is null || a.Bimestre == (int)Bimestre.Final));
+                        string notaParaAdicionar = string.Empty;
 
-                        string notaParaAdicionar = nota.EhNulo() ? string.Empty :
-                                                   tipoNota.EhNota() ? nota.Nota.HasValue ? nota.Nota.Value.ToString() : ""
-                                                                     : nota.ConceitoId.HasValue ? nota.ConceitoId.Value.ToString() : "";
+                        if (nota.NaoEhNulo())
+                        {
+                            if (tipoNota.EhNota())
+                                notaParaAdicionar = nota.Nota.HasValue ? nota.Nota.Value.ToString() : string.Empty;
+                            else
+                                notaParaAdicionar = nota.ConceitoId.HasValue ? nota.ConceitoId.Value.ToString() : string.Empty;
+                        }
 
                         fechamentoFinalAluno.NotasConceitoFinal.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                         {
@@ -283,17 +288,6 @@ namespace SME.SGP.Aplicacao
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
             };
             return fechamentoFinalAluno;
-        }
-
-        private void TrataPeriodosEscolaresParaAluno(FechamentoFinalConsultaFiltroDto filtros, AlunoPorTurmaResposta aluno, ref int totalAusencias, ref int totalAusenciasCompensadas, ref int totalDeAulas, PeriodoEscolar periodo)
-        {
-            var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoData(aluno.CodigoAluno, periodo.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtros.DisciplinaCodigo.ToString());
-            if (frequenciaAluno.NaoEhNulo())
-            {
-                totalAusencias += frequenciaAluno.TotalAusencias;
-                totalAusenciasCompensadas += frequenciaAluno.TotalCompensacoes;
-                totalDeAulas += frequenciaAluno.TotalAulas;
-            }
         }
 
         private async Task VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma, long? tipoCalendario = null)

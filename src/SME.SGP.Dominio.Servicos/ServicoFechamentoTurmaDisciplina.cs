@@ -393,10 +393,10 @@ namespace SME.SGP.Dominio.Servicos
 
                 return auditoria;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 unitOfWork.Rollback();
-                throw e;
+                throw;
             }
         }
 
@@ -633,21 +633,6 @@ namespace SME.SGP.Dominio.Servicos
                 return true;
 
             return false;
-        }
-
-        private static void AdicionaAprovacaoConceito(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota,
-            string alunoCodigo, double? nota, long? conceitoId)
-        {
-            notasEmAprovacao.Add(new FechamentoNotaDto()
-            {
-                Id = fechamentoNota.Id,
-                NotaAnterior = fechamentoNota.Nota,
-                Nota = nota,
-                ConceitoIdAnterior = fechamentoNota.ConceitoId,
-                ConceitoId = conceitoId,
-                CodigoAluno = alunoCodigo,
-                DisciplinaId = fechamentoNota.DisciplinaId
-            });
         }
 
         private FechamentoNota MapearParaEntidade(FechamentoNotaDto fechamentoNotaDto)

@@ -24,7 +24,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterMatriculasTurmaPorCodigoAlunoQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-            var queryParam = $"{(request.AnoLetivo.HasValue ? $"anoLetivo={request.AnoLetivo.Value}{(request.AnoLetivo.HasValue ? $"&" : string.Empty)}" : string.Empty)}";
+            var operadorAnoLetivo = request.AnoLetivo.HasValue ? $"&" : string.Empty;
+            var queryParam = $"{(request.AnoLetivo.HasValue ? $"anoLetivo={request.AnoLetivo.Value}{operadorAnoLetivo}" : string.Empty)}";
             queryParam = queryParam + $"{(request.DataAula.HasValue ? $"dataAulaTicks={request.DataAula.Value.Ticks}" : string.Empty)}";
             var url = string.Format(ServicosEolConstants.URL_TURMAS_ALUNOS, request.CodigoAluno) + $"{(!string.IsNullOrEmpty(queryParam) ? $"?{queryParam}" : string.Empty)}";
             try
@@ -49,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter as matrículas/turma do aluno no EOL - Aluno: {request.CodigoAluno} - Erro: {e.Message}", 
                                                                     LogNivel.Critico, 
                                                                     LogContexto.Turma, e.Message));
-                throw e;
+                throw;
             }
         }
     }

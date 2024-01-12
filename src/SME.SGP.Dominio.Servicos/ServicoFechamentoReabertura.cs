@@ -79,7 +79,7 @@ namespace SME.SGP.Dominio.Servicos
                 mensagemRetorno = "Reabertura de Fechamento alterado e será válido após aprovação.";
             }
             else
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), Guid.NewGuid(), usuarioAtual));
 
             unitOfWork.PersistirTransacao();
 
@@ -185,7 +185,7 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 fechamentoReabertura.Bimestres.ToList().ForEach(f => f.FechamentoAbertura = null);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), new System.Guid(), usuarioAtual));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual), Guid.NewGuid(), usuarioAtual));
             }
 
             unitOfWork.PersistirTransacao();

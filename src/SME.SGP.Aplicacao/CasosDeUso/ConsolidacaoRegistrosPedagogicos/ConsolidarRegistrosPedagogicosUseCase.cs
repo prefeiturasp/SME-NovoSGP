@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                     continue;
 
                 foreach (var ue in ues)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorUeTratar, new FiltroConsolidacaoRegistrosPedagogicosPorUeDto(ue, parametro.Ano.GetValueOrDefault()), new System.Guid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarRegistrosPedagogicosPorUeTratar, new FiltroConsolidacaoRegistrosPedagogicosPorUeDto(ue, parametro.Ano.GetValueOrDefault()), Guid.NewGuid(), null));
 
                 await AtualizarDataExecucao(parametro);
             }

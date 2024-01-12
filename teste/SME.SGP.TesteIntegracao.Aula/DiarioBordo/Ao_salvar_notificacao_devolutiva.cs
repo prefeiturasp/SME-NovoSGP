@@ -22,8 +22,6 @@ namespace SME.SGP.TesteIntegracao.Aula.DiarioBordo
 {
     public class Ao_salvar_notificacao_devolutiva : DiarioBordoTesteBase
     {
-        private const long USUARIO_ID_1 = 1;
-        private const long USUARIO_ID_2 = 2;
         public Ao_salvar_notificacao_devolutiva(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

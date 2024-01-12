@@ -60,18 +60,26 @@ namespace SME.SGP.Aplicacao
 
         private string OterNomesComponentes(IEnumerable<ComponenteCurricularDto> componentesUe)
         {
-            return string.Join(", ",
-                            componentesUe.Select(a => a.Codigo == "1060" ? "Sala de Leitura" :
-                                                      a.Codigo == "1061" ? "Informática" :
-                                                       "PAP"));
+            return string.Join(", ", componentesUe.Select(a => ObterSiglaNomeComponente(a.Codigo)));
         }
 
         private string ObterSiglasComponentes(IEnumerable<ComponenteCurricularDto> componentesUe)
         {
-            return string.Join(", ",
-                            componentesUe.Select(a => a.Codigo == "1060" ? "OSL" :
-                                                      a.Codigo == "1061" ? "OIE" :
-                                                       "PAP"));
+            return string.Join(", ", componentesUe.Select(a => ObterSiglaNomeComponente(a.Codigo, true)));
+        }
+
+        private string ObterSiglaNomeComponente(string codigo, bool sigla = false)
+        {
+            var dicionario = new Dictionary<string, (string sigla, string descricao)>()
+            {
+                {"1060",("OSL", "Sala de Leitura") },
+                {"1061",("OIE", "Informática") }
+            };
+
+            if (dicionario.ContainsKey(codigo))
+                return sigla ? dicionario[codigo].sigla : dicionario[codigo].descricao;
+
+            return "PAP";
         }
 
         private async Task<IEnumerable<ComponenteCurricularDto>> VerificaComponentesUe(Ue ue)

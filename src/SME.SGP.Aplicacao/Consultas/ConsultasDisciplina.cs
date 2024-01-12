@@ -89,9 +89,10 @@ namespace SME.SGP.Aplicacao
             {
                 disciplinasAtribuicaoCj = (await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login)).ToList();
 
-                var disciplinasEolTratadas = realizarAgrupamentoComponente ?
-                    disciplinasAtribuicaoCj?.DistinctBy(s => (s.Nome.ToUpper(), s.TerritorioSaber ? s.Professor : null)).OrderBy(s => s.Nome) :
-                    disciplinasAtribuicaoCj.OrderBy(s => s.Nome);
+                var disciplinasEolTratadas = disciplinasAtribuicaoCj.OrderBy(s => s.Nome);
+
+                if (realizarAgrupamentoComponente)
+                    disciplinasEolTratadas = disciplinasAtribuicaoCj?.DistinctBy(s => (s.Nome.ToUpper(), s.TerritorioSaber ? s.Professor : null)).OrderBy(s => s.Nome);
 
                 disciplinasDto = (MapearParaDto(disciplinasEolTratadas, ehEnsinoMedio, turmaPrograma, turma.EnsinoEspecial))?.OrderBy(c => c.Nome)?.ToList();
             }
@@ -227,14 +228,16 @@ namespace SME.SGP.Aplicacao
         private async Task<long[]> ObterDisciplinasAtribuicaoCJParaTurma(string codigoTurma, List<ComponenteCurricularEol> componentesCurriculares, long[] idsDisciplinas)
         {
             var atribuicoesCJTurma = await ObterDisciplinasPerfilCJ(codigoTurma, null);
-            var codigosDisciplinasAtribuicao = atribuicoesCJTurma.NaoEhNulo() && atribuicoesCJTurma.Any() ?
-                (from a in atribuicoesCJTurma
-                 where !idsDisciplinas.Any(id => a.CodigoComponenteCurricular == id || a.CodigoComponenteTerritorioSaber == id)
-                 select a.TerritorioSaber ? a.CodigoComponenteCurricular : a.CodigoComponenteTerritorioSaber)
-                .Where(a => a.HasValue)
-                .Select(a => a.Value)
-                .Distinct()
-                .ToArray() : new long[] { };
+            var codigosDisciplinasAtribuicao = new long[] { };
+
+            if (atribuicoesCJTurma.NaoEhNulo() && atribuicoesCJTurma.Any())
+                codigosDisciplinasAtribuicao = (from a in atribuicoesCJTurma
+                                                where !idsDisciplinas.Any(id => a.CodigoComponenteCurricular == id || a.CodigoComponenteTerritorioSaber == id)
+                                                select a.TerritorioSaber ? a.CodigoComponenteCurricular : a.CodigoComponenteTerritorioSaber)
+                                                .Where(a => a.HasValue)
+                                                .Select(a => a.Value)
+                                                .Distinct()
+                                                .ToArray();
 
             if (codigosDisciplinasAtribuicao.Any())
             {
