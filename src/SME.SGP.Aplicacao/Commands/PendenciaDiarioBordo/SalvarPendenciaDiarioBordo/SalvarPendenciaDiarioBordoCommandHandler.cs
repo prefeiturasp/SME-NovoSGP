@@ -21,16 +21,9 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(SalvarPendenciaDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ProfessorRf));
+            var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ProfessorRf));
 
-                await SalvarPendenciaDiario(request, usuarioId);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            await SalvarPendenciaDiario(request, usuarioId);
         }
 
         private async Task SalvarPendenciaDiario(SalvarPendenciaDiarioBordoCommand request, long usuarioId)
