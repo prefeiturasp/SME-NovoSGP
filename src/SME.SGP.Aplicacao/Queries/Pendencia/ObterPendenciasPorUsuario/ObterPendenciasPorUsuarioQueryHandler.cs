@@ -321,7 +321,7 @@ namespace SME.SGP.Aplicacao
                     return item.funcaoPendenciaTurma();
             }
 
-            return null;
+            return Task.FromResult<Turma>(null);
         }
 
         private async Task<string> ObterDescricaoBimestrePendencia(long pendenciaId, long turmaId, DateTime dataPendenciaCriada)

@@ -281,14 +281,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasEncaminhamentoAEE(long? encaminhamentoAEEId)
         {
-            return encaminhamentoAEEId.HasValue ? (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
-                 .Select(resposta => new RespostaQuestaoObrigatoriaDto
-                 {
-                     QuestaoId = resposta.QuestaoId,
-                     Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
-                     Persistida = true
-                 })
-                 : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
+            if (encaminhamentoAEEId.HasValue)
+                return (await repositorioQuestaoEncaminhamento.ObterRespostasEncaminhamento(encaminhamentoAEEId.Value))
+                     .Select(resposta => new RespostaQuestaoObrigatoriaDto
+                     {
+                         QuestaoId = resposta.QuestaoId,
+                         Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
+                         Persistida = true
+                     });
+
+            return Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
 
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoAeeDto encaminhamentoAEEDto)

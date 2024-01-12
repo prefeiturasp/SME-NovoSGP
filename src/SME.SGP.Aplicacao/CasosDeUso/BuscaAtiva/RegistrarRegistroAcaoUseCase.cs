@@ -190,15 +190,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasRegistroAcao(long? registroAcaoId)
         {
-            return registroAcaoId.HasValue ? (await mediator.Send(
-                    new ObterQuestaoRespostaRegistroAcaoPorIdQuery(registroAcaoId.Value)))
-                .Select(resposta => new RespostaQuestaoObrigatoriaDto
-                {
-                    QuestaoId = resposta.QuestaoId,
-                    Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
-                    Persistida = true
-                })
-                : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
+            if (registroAcaoId.HasValue)
+                return (await mediator.Send(
+                        new ObterQuestaoRespostaRegistroAcaoPorIdQuery(registroAcaoId.Value)))
+                    .Select(resposta => new RespostaQuestaoObrigatoriaDto
+                    {
+                        QuestaoId = resposta.QuestaoId,
+                        Resposta = resposta.RespostaId.HasValue ? resposta.RespostaId?.ToString() : resposta.Texto,
+                        Persistida = true
+                    });
+
+            return Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
         }
 
         private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(RegistroAcaoBuscaAtivaDto registroAcaoDto)
