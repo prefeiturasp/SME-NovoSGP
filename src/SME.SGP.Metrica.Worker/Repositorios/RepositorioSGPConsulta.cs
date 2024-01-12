@@ -187,8 +187,7 @@ namespace SME.SGP.Metrica.Worker.Repositorios
 				 from consolidado_conselho_classe_aluno_turma_nota cccatn
 				 join consolidado_conselho_classe_aluno_turma cccat on cccat.id = cccatn.consolidado_conselho_classe_aluno_turma_id 
 				 join turma t on t.id = cccat.turma_id 		
-			    where t.ue_id = @ueid
-			      and not cccat.excluido
+			    where not cccat.excluido
 			    group by cccatn.consolidado_conselho_classe_aluno_turma_id,
 			        cccat.turma_id,
 					coalesce(cccatn.bimestre, 0),
