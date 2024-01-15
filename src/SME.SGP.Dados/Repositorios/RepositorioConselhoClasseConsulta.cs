@@ -436,7 +436,7 @@ namespace SME.SGP.Dados.Repositorios
                         where coalesce(cc.permite_lancamento_nota, false) = false 
                         and fa.turma_id = @codigoTurma
                         and fa.tipo  = @tipo
-                        group by fa.disciplina_id, total_compensacoes, codigo_aluno ";
+                        group by fa.disciplina_id, total_compensacoes, codigo_aluno, fa.bimestre ";
 
             return await database.Conexao.QueryAsync<TotalCompensacoesComponenteNaoLancaNotaDto>(sql, new { codigoTurma, tipo = (int)TipoAula.Normal }, commandTimeout: 60);
         }
