@@ -48,19 +48,26 @@ namespace SME.SGP.Aplicacao
                 if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
                     throw new NegocioException("Não foi possível obter o RF do usuário.");
 
-            foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
-            {
-                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, usuarioAtual.EhProfessor() ? usuarioAtual.CodigoRf : null);
-                if (planoAnualTerritorioSaber.NaoEhNulo())
-                {
-                    var podePersistirTurmaDisciplina = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now);
-                    if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistirTurmaDisciplina)
-                        throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
-                }
-                listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto() { DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
-                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
-                                                                                ReflexaoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Reflexao : string.Empty,
-                                                                                ReflexaoNovo = bimestrePlanoAnual.Reflexao});
+                var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString())); ;
+                bool deveVerificarProfessor = usuarioAtual.EhProfessor() && professorTitular.NaoEhNulo() && (!string.IsNullOrEmpty(professorTitular.ProfessorRf) && professorTitular.ProfessorRf != usuarioAtual.CodigoRf);
+
+                foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
+                {                 
+                    PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, deveVerificarProfessor ? usuarioAtual.CodigoRf : null);
+
+                    if (planoAnualTerritorioSaber.NaoEhNulo())
+                    {
+                        var podePersistirTurmaDisciplina = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now);
+                        if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistirTurmaDisciplina)
+                            throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+                    }
+                    listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto()
+                    {
+                        DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
+                        DesenvolvimentoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
+                        ReflexaoAtual = planoAnualTerritorioSaber.NaoEhNulo() ? planoAnualTerritorioSaber.Reflexao : string.Empty,
+                        ReflexaoNovo = bimestrePlanoAnual.Reflexao
+                    });
 
                     planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
                     repositorioPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaber);
