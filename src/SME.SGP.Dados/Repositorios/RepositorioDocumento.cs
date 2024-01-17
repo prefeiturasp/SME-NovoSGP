@@ -135,9 +135,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             sql.AppendLine("where 1 = 1");
             if (dreId.HasValue && !dreId.Equals(-99))
-                sql.AppendLine(" and u.dre_id = @dreId ");
+                sql.AppendLine(" and ue.dre_id = @dreId ");
             if (ueId.HasValue && !ueId.Equals(-99))
-                sql.AppendLine(" and u.id = @ueId ");
+                sql.AppendLine(" and ue.id = @ueId ");
             if (tipoDocumentoId > 0)
                 sql.AppendLine("and td.id = @tipoDocumentoId ");
             if (classificacaoId > 0)
