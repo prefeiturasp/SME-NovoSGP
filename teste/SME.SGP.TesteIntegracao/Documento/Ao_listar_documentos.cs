@@ -27,7 +27,13 @@ namespace SME.SGP.TesteIntegracao.Documento
             await CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
             var obterServicoListarDocumentosUse = ObterServicoListarDocumentosUseCase();
-            var retorno = await obterServicoListarDocumentosUse.Executar(null, UE_ID_1, (long)Dominio.Enumerados.TipoDocumento.Documento, (long)Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma);
+            var retorno = await obterServicoListarDocumentosUse.Executar(
+                new Dto.FiltroListagemDocumentosDto() 
+                {
+                    UeId = UE_ID_1,
+                    TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.Documento,
+                    ClassificacaoId = (long)Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma
+                });
             retorno.ShouldNotBeNull();
             retorno.TotalRegistros.ShouldBeEquivalentTo(3);
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma.GetDisplayName())).ShouldBeTrue();
@@ -51,7 +57,13 @@ namespace SME.SGP.TesteIntegracao.Documento
             await CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica);
 
             var obterServicoListarDocumentosUse = ObterServicoListarDocumentosUseCase();
-            var retorno = await obterServicoListarDocumentosUse.Executar(null, UE_ID_1, (long)Dominio.Enumerados.TipoDocumento.Documento, (long)Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica);
+            var retorno = await obterServicoListarDocumentosUse.Executar(
+                new Dto.FiltroListagemDocumentosDto()
+                {
+                    UeId = UE_ID_1, 
+                    TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.Documento, 
+                    ClassificacaoId = (long)Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica
+                });
             retorno.ShouldNotBeNull();
             retorno.TotalRegistros.ShouldBeEquivalentTo(3);
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma.GetDisplayName())).ShouldBeFalse();
