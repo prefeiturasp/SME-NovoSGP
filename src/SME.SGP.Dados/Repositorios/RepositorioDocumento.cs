@@ -44,6 +44,7 @@ namespace SME.SGP.Dados.Repositorios
                 g.ComponenteCurricularNome,
                 g.CodigoDre,
                 g.NomeDre,
+                g.AbreviacaoDre,
                 g.CodigoUe,
                 g.NomeUe,
                 g.TipoEscola
@@ -62,6 +63,7 @@ namespace SME.SGP.Dados.Repositorios
                             Nome = s.NomeArquivo
                         }).ToList(),
                     NomeDre = key.NomeDre,
+                    AbreviacaoDre = key.AbreviacaoDre,
                     NomeUe = key.NomeUe,
                     TipoEscola = key.TipoEscola,
                     CodigoDre = key.CodigoDre,
@@ -118,7 +120,8 @@ namespace SME.SGP.Dados.Repositorios
                                   u.nome || ' (' || u.rf_codigo || ')' as Usuario,
                                   case when d.alterado_em is not null then d.alterado_em else d.criado_em end as Data,
                                   dre.dre_id as CodigoDre, ue.ue_id as CodigoUe,
-                                  dre.nome as NomeDre, ue.nome as NomeUe, ue.tipo_escola as TipoEscola
+                                  dre.nome as NomeDre, ue.nome as NomeUe, ue.tipo_escola as TipoEscola,
+                                  dre.abreviacao as AbreviacaoDre 
                             from documento d 
                                join  classificacao_documento cd on d.classificacao_documento_id = cd.id 
                                join  tipo_documento td on cd.tipo_documento_id = td.id       
