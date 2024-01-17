@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDocumentosPorUeETipoEClassificacaoQueryHandler : ConsultasBase, IRequestHandler<ObterDocumentosPorUeETipoEClassificacaoQuery, PaginacaoResultadoDto<DocumentoResumidoDto>>
+    public class ObterDocumentosPorDreUeETipoEClassificacaoQueryHandler : ConsultasBase, IRequestHandler<ObterDocumentosPorDreUeETipoEClassificacaoQuery, PaginacaoResultadoDto<DocumentoResumidoDto>>
     {
         private readonly IRepositorioDocumento repositorioDocumento;
 
-        public ObterDocumentosPorUeETipoEClassificacaoQueryHandler(IContextoAplicacao contextoAplicacao, 
+        public ObterDocumentosPorDreUeETipoEClassificacaoQueryHandler(IContextoAplicacao contextoAplicacao, 
             IRepositorioDocumento repositorioDocumento) : base(contextoAplicacao)
         {
             this.repositorioDocumento = repositorioDocumento ?? throw new ArgumentNullException(nameof(repositorioDocumento));
         }
 
-        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Handle(ObterDocumentosPorUeETipoEClassificacaoQuery request, CancellationToken cancellationToken)
+        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Handle(ObterDocumentosPorDreUeETipoEClassificacaoQuery request, CancellationToken cancellationToken)
         {
-            var documentos = await repositorioDocumento.ObterPorUeTipoEClassificacaoPaginada(request.UeId, request.TipoDocumentoId, request.ClassificacaoId, request.AnoLetivo, Paginacao);
+            var documentos = await repositorioDocumento.ObterPorDreUeTipoEClassificacaoPaginada(request.DreId, request.UeId, request.TipoDocumentoId, request.ClassificacaoId, request.AnoLetivo, Paginacao);
             return MapearParaDtoPaginado(documentos);
         }
 
