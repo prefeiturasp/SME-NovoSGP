@@ -27,7 +27,10 @@ namespace SME.SGP.Aplicacao
             
             foreach (string codTurma in request.TurmasCodigos)
             {
-                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo));
+                var matriculasAluno = (await mediator
+                    .Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo), cancellationToken))
+                    .Where(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
+
                 if (matriculasAluno.NaoEhNulo() || matriculasAluno.Any())
                 {
                     if (matriculasAluno.Any(m => m.CodigoTurma.ToString() == codTurma &&
@@ -37,6 +40,7 @@ namespace SME.SGP.Aplicacao
                             turmasCodigosComMatriculasValidas.Add(codTurma);
                 }
             }
+
             return turmasCodigosComMatriculasValidas;
         }
     }
