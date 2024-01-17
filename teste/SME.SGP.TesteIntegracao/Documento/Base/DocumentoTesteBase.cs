@@ -70,11 +70,13 @@ namespace SME.SGP.TesteIntegracao.Documento
             }
         }
         
-        protected async Task CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento classificacaoDocumento, long? componentecurricularId = null, bool inserirTurma = true)
+        protected async Task CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento classificacaoDocumento, long? componentecurricularId = null, 
+                                             bool inserirTurma = true,
+                                             long ueId = UE_ID_1, 
+                                             long documentoId = 1,
+                                             long arquivoId = 1)
         {
             var turmas = new List<long> { 1, 2, 3 };
-            long documentoId = 1;
-            long arquivoId = 1;
             var camposDocumentoArquivo = new [] { "documento_id", "arquivo_id" };
 
             foreach (var turma in turmas)
@@ -82,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.Documento
                 await InserirNaBase(new Dominio.Documento()
                 {
                     UsuarioId = USUARIO_ID_1,
-                    UeId = UE_ID_1,
+                    UeId = ueId,
                     AnoLetivo = DateTime.Now.Year,
                     ClassificacaoDocumentoId = (long)classificacaoDocumento,
                     TurmaId = inserirTurma ? turma : null,
