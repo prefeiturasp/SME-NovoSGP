@@ -12,7 +12,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/armazenamento/documentos")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class DocumentoController : ControllerBase
     {
         [HttpGet("{documentoId}/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/ue/{ueId}/anoLetivo/{anoLetivo}")]
@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<DocumentoDto>), 200)]
         [ProducesResponseType(401)]
-        //[Permissao(Permissao.DPU_C, Policy = "Bearer")]
+        [Permissao(Permissao.DPU_C, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ListarDocumentos([FromQuery] FiltroListagemDocumentosDto filtro, [FromServices] IListarDocumentosUseCase useCase)
         {
