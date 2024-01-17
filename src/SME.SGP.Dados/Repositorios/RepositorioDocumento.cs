@@ -23,12 +23,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
         }
 
-        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> ObterPorUeTipoEClassificacaoPaginada(long ueId, long tipoDocumentoId, 
+        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> ObterPorDreUeTipoEClassificacaoPaginada(long? dreId, long? ueId, long tipoDocumentoId, 
             long classificacaoId, int? anoLetivo, Paginacao paginacao)
         {
-            var sql = MontaQueryCompleta(tipoDocumentoId, classificacaoId, anoLetivo);
+            var sql = MontaQueryCompleta(dreId, ueId, tipoDocumentoId, classificacaoId, anoLetivo);
 
-            var parametros = new { ueId, tipoDocumentoId, classificacaoId, anoLetivo };
+            var parametros = new { dreId, ueId, tipoDocumentoId, classificacaoId, anoLetivo };
 
             var documentos = await database.Conexao.QueryAsync<DocumentoCompletoDto>(sql, parametros);
             
@@ -41,7 +41,12 @@ namespace SME.SGP.Dados.Repositorios
                 g.Data,
                 g.TurmaNome,
                 g.Modalidade,
-                g.ComponenteCurricularNome
+                g.ComponenteCurricularNome,
+                g.CodigoDre,
+                g.NomeDre,
+                g.CodigoUe,
+                g.NomeUe,
+                g.TipoEscola
             }, (key, group) => 
                 new DocumentoResumidoDto { 
                     DocumentoId = key.DocumentoId,
@@ -55,9 +60,16 @@ namespace SME.SGP.Dados.Repositorios
                         {
                             Codigo = s.CodigoArquivo,
                             Nome = s.NomeArquivo
-                        }).ToList()
+                        }).ToList(),
+                    NomeDre = key.NomeDre,
+                    NomeUe = key.NomeUe,
+                    TipoEscola = key.TipoEscola,
+                    CodigoDre = key.CodigoDre,
+                    CodigoUe = key.CodigoUe
                 })
-                .OrderBy(o => o.TurmaComponenteCurricular)
+                .OrderBy(o => o.CodigoDre)
+                .ThenBy(o => o.SiglaNomeUe)
+                .ThenBy(o => o.TurmaComponenteCurricular)
                 .ThenByDescending(o => o.Data)
                 .ToList();
 
@@ -77,20 +89,20 @@ namespace SME.SGP.Dados.Repositorios
             return string.Empty;
         }
 
-        private static string MontaQueryCompleta(long tipoDocumentoId, long classificacaoId, int? anoLetivo)
+        private static string MontaQueryCompleta(long? dreId, long? ueId, long tipoDocumentoId, long classificacaoId, int? anoLetivo)
         {
             var sql = new StringBuilder();
 
-            MontaQueryConsulta(sql, anoLetivo, tipoDocumentoId, classificacaoId);
+            MontaQueryConsulta(sql, dreId, ueId, anoLetivo, tipoDocumentoId, classificacaoId);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(StringBuilder sql, int? anoLetivo, long tipoDocumentoId = 0, long classificacaoId = 0)
+        private static void MontaQueryConsulta(StringBuilder sql, long? dreId, long? ueId, int? anoLetivo, long tipoDocumentoId = 0, long classificacaoId = 0)
         {
             ObterCabecalho(sql);
 
-            ObterFiltro(sql, tipoDocumentoId, classificacaoId, anoLetivo);
+            ObterFiltro(sql, dreId, ueId, tipoDocumentoId, classificacaoId, anoLetivo);
         }
 
         private static void ObterCabecalho(StringBuilder sql)
@@ -104,26 +116,32 @@ namespace SME.SGP.Dados.Repositorios
                                   a.codigo as CodigoArquivo, 
                                   a.nome as NomeArquivo, 
                                   u.nome || ' (' || u.rf_codigo || ')' as Usuario,
-                                  case when d.alterado_em is not null then d.alterado_em else d.criado_em end as Data 
+                                  case when d.alterado_em is not null then d.alterado_em else d.criado_em end as Data,
+                                  dre.dre_id as CodigoDre, ue.ue_id as CodigoUe,
+                                  dre.nome as NomeDre, ue.nome as NomeUe, ue.tipo_escola as TipoEscola
                             from documento d 
                                join  classificacao_documento cd on d.classificacao_documento_id = cd.id 
                                join  tipo_documento td on cd.tipo_documento_id = td.id       
                                join usuario u on d.usuario_id = u.id
+                               join ue on ue.id = d.ue_id
+                               join dre on dre.id = ue.dre_id
                                left join turma t on t.id = d.turma_id
                                left join componente_curricular cc on cc.id = d.componente_curricular_id
                                left join documento_arquivo da on da.documento_id = d.id 
                                left join arquivo a on a.id = da.arquivo_id  ");
         }
 
-        private static void ObterFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId, int? anoLetivo)
+        private static void ObterFiltro(StringBuilder sql, long? dreId, long? ueId, long tipoDocumentoId, long classificacaoId, int? anoLetivo)
         {
-            sql.AppendLine("where d.ue_id = @ueId ");
-
+            sql.AppendLine("where 1 = 1");
+            if (dreId.HasValue && !dreId.Equals(-99))
+                sql.AppendLine(" and u.dre_id = @dreId ");
+            if (ueId.HasValue && !ueId.Equals(-99))
+                sql.AppendLine(" and u.id = @ueId ");
             if (tipoDocumentoId > 0)
                 sql.AppendLine("and td.id = @tipoDocumentoId ");
             if (classificacaoId > 0)
                 sql.AppendLine("and cd.id = @classificacaoId ");
-
             if (anoLetivo.NaoEhNulo())
                 sql.AppendLine("and d.ano_letivo = @anoLetivo");
         }
