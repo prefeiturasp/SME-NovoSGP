@@ -11,9 +11,14 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarParecerConclusivoAlunoCommandHandler(IMediator mediator) : IRequestHandler<GerarParecerConclusivoAlunoCommand, ParecerConclusivoDto>
+    public class GerarParecerConclusivoAlunoCommandHandler : IRequestHandler<GerarParecerConclusivoAlunoCommand, ParecerConclusivoDto>
     {
-        private readonly IMediator mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        private readonly IMediator mediator;
+
+        public GerarParecerConclusivoAlunoCommandHandler(IMediator mediator)
+        {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
 
         public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request, CancellationToken cancellationToken)
         {
