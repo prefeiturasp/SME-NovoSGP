@@ -162,15 +162,15 @@ namespace SME.SGP.Aplicacao
                                 .Concat(new string[] { turma.CodigoTurma }).ToArray();
                         }
                         else
-                            turmasCodigos = [turma.CodigoTurma];
+                            turmasCodigos = new string[] { turma.CodigoTurma };
                     }
                     else
                         turmasCodigos = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? turmasCodigosEOL
                             .Concat(new string[] { turma.CodigoTurma }).ToArray() : [turma.CodigoTurma];
                 }
-                else turmasCodigos = [turma.CodigoTurma];
+                else turmasCodigos = new string[] { turma.CodigoTurma };
             }
-            else turmasCodigos = [turma.CodigoTurma];
+            else turmasCodigos = new string[] { turma.CodigoTurma };
 
             turmasCodigos = turmasCodigos.Distinct().ToArray();
 
