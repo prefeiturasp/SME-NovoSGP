@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
                     matriculadoDepois = (from m in matriculasAlunoTurma
                                          from p in periodosEscolares
-                                         where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) < p.PeriodoFim.Date
+                                         where (m.DataMatricula.Equals(DateTime.MinValue) ? aluno.DataMatricula.Date : m.DataMatricula.Date) <= p.PeriodoFim.Date
                                          orderby p.Bimestre
                                          select (int?)p.Bimestre).FirstOrDefault() ?? null;                    
                 }
