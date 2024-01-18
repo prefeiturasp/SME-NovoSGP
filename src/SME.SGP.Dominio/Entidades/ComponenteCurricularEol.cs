@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -28,7 +27,7 @@ namespace SME.SGP.Dominio
 
         public bool PossuiObjetivosDeAprendizagem(IEnumerable<ComponenteCurricularJurema> componentesCurricularesJurema, Modalidade turmaModalidade)
         {
-            if (new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade))
+            if(new[] { Modalidade.EJA, Modalidade.Medio }.Contains(turmaModalidade))
                 return false;
 
             return componentesCurricularesJurema.Any(x => x.CodigoEOL == Codigo);
@@ -51,30 +50,29 @@ namespace SME.SGP.Dominio
 
         public static void PreencherInformacoesPegagogicasSgp(this List<ComponenteCurricularEol> disciplinasReposta, IEnumerable<InfoComponenteCurricular> componentesCurricularesSgp)
         {
-            var componentesEquivalentes = from dr in disciplinasReposta
-                                          join ccsgp in componentesCurricularesSgp
-                                             on (dr.TerritorioSaber && dr.CodigoComponenteTerritorioSaber != 0 ? dr.CodigoComponenteTerritorioSaber : dr.Codigo) equals ccsgp.Codigo
-                                          select (dr, ccsgp);
-
-            foreach (var (dr, ccsgp) in componentesEquivalentes)
+            disciplinasReposta.ForEach(componenteCurricular =>
             {
-                if (ccsgp.NaoEhNulo())
-                {
-                    dr.GrupoMatriz = new GrupoMatriz() { Id = ccsgp.GrupoMatrizId, Nome = ccsgp.GrupoMatrizNome };
-                    dr.LancaNota = ccsgp.LancaNota;
-                    dr.RegistraFrequencia = ccsgp.RegistraFrequencia;
-                    dr.Compartilhada = ccsgp.EhCompartilhada;
-                    dr.BaseNacional = ccsgp.EhBaseNacional;
-                    dr.Regencia = ccsgp.EhRegencia || dr.PlanejamentoRegencia;
-                    dr.TerritorioSaber = ccsgp.EhTerritorioSaber;
+                var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.Codigo
+                                                                                    || (componenteCurricular.CodigoComponenteTerritorioSaber != 0 &&
+                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber)).FirstOrDefault();
 
-                    if (!dr.TerritorioSaber)
+                if (componenteCurricularSgp.NaoEhNulo())
+                {
+                    componenteCurricular.GrupoMatriz = new GrupoMatriz() { Id = componenteCurricularSgp.GrupoMatrizId, Nome = componenteCurricularSgp.GrupoMatrizNome };
+                    componenteCurricular.LancaNota = componenteCurricularSgp.LancaNota;
+                    componenteCurricular.RegistraFrequencia = componenteCurricularSgp.RegistraFrequencia;
+                    componenteCurricular.Compartilhada = componenteCurricularSgp.EhCompartilhada;
+                    componenteCurricular.BaseNacional = componenteCurricularSgp.EhBaseNacional;
+                    componenteCurricular.Regencia = componenteCurricularSgp.EhRegencia || componenteCurricular.PlanejamentoRegencia;
+                    componenteCurricular.TerritorioSaber = componenteCurricularSgp.EhTerritorioSaber;
+
+                    if (!componenteCurricular.TerritorioSaber)
                     {
-                        dr.Descricao = ccsgp.Nome;
-                        dr.DescricaoComponenteInfantil = ccsgp.NomeComponenteInfantil;
+                        componenteCurricular.Descricao = componenteCurricularSgp.Nome;
+                        componenteCurricular.DescricaoComponenteInfantil = componenteCurricularSgp.NomeComponenteInfantil;
                     }
                 }
-            }
+            });
         }
     }
 }
