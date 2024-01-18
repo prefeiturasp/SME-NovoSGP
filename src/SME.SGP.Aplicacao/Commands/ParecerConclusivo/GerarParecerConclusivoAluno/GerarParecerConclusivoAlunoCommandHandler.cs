@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                         turmasCodigos = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? turmasCodigosEOL
-                            .Concat(new string[] { turma.CodigoTurma }).ToArray() : [turma.CodigoTurma];
+                            .Concat(new string[] { turma.CodigoTurma }).ToArray() : new string[] { turma.CodigoTurma };
                 }
                 else turmasCodigos = new string[] { turma.CodigoTurma };
             }
