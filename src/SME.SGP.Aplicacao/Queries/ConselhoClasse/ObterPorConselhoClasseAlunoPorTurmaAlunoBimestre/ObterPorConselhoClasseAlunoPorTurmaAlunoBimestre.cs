@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                     .WithMessage("O código do aluno deve ser informado para a busca de conselho de classe do aluno.");
                 
                 RuleFor(c => c.Bimestre)
-                    .ExclusiveBetween(1,4)
+                    .NotEmpty()
                     .When(a=> !a.EhFinal)
                     .WithMessage("O bimestre deve ser informado para a busca de conselho de classe do aluno.");
             }
