@@ -226,7 +226,9 @@ namespace SME.SGP.Aplicacao
                 .GroupBy(c => c.GrupoMatrizId)
                 .ToList();
 
-            var permiteEdicao = dadosAluno.EstaAtivo() || await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, notasFrequenciaDto.Bimestre, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year, tipoCalendario.Id));
+            var permiteEdicao = (periodoEscolar is null && dadosAluno.EstaAtivo()) ||
+                (dadosAluno.EstaAtivo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
+                (!dadosAluno.EstaAtivo() && dadosAluno.DataSituacao.Date > periodoInicio);
 
             var periodoMatricula = alunoNaTurma.NaoEhNulo() ? await mediator
                 .Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula)) : null;
