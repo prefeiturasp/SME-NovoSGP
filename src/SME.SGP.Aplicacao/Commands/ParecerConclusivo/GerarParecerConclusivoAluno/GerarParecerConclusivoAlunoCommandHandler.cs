@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
             if (turma.EhCELP() || 
-                !await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, turma.Historica))
+                !await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma);
