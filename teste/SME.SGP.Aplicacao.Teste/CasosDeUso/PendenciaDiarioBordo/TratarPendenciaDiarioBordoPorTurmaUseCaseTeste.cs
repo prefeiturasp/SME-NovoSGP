@@ -63,13 +63,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf = "111",
-                    DisciplinasId = new long[] { 138 },
+                    CodigosDisciplinas = "138",
                     TurmaId = 1
                 },
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf = "222",
-                    DisciplinasId = new long[] { 138 },
+                    CodigosDisciplinas = "138",
                     TurmaId = 1
                 }
             };

@@ -16,12 +16,12 @@ namespace SME.SGP.Aplicacao.Queries
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
-        public async Task<bool> Handle(ValidaSeExisteUePorCodigoQuery request, CancellationToken cancellationToken)
+        public Task<bool> Handle(ValidaSeExisteUePorCodigoQuery request, CancellationToken cancellationToken)
         {
             if (repositorioUe.ObterPorCodigo(request.CodigoUe).EhNulo())
                 throw new NegocioException("Não foi possível encontrar a UE");
 
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

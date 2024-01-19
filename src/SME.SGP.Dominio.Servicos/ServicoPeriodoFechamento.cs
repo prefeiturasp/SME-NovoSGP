@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -60,12 +59,10 @@ namespace SME.SGP.Dominio.Servicos
 
         public void AlterarPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
         {
-            var somenteUe = fechamento.DreId.NaoEhNulo() && fechamento.DreId > 0;
-
             unitOfWork.IniciarTransacao();
             try
             {
-                AlterarBimestresPeriodosComHierarquiaInferior(fechamento, somenteUe).Wait();
+                AlterarBimestresPeriodosComHierarquiaInferior(fechamento).Wait();
 
                 unitOfWork.PersistirTransacao();
             } catch
@@ -75,24 +72,29 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task AlterarBimestresPeriodosComHierarquiaInferior(PeriodoFechamento fechamento, bool somenteUe)
+        private async Task<List<PeriodoFechamentoBimestre>> ObterBimestresParaAlteracaoHierarquica(long? dreId, List<PeriodoFechamentoBimestre> fechamentosBimestre)
         {
             var listaPeriodosAlteracao = new List<PeriodoFechamentoBimestre>();
             // Carrega lista de Periodos a alterar
-            foreach (var fechamentoBimestre in fechamento.FechamentosBimestre)
+            foreach (var fechamentoBimestre in fechamentosBimestre)
             {
                 // Obter Lista de PeriodoFechamentoBimestre por Dre e PeriodoEscolar
                 var periodosFechamentoBimestre =
                     await repositorioPeriodoFechamentoBimestre.ObterBimestreParaAlteracaoHierarquicaAsync(
                         fechamentoBimestre.PeriodoEscolarId,
-                        fechamento.DreId,
+                        dreId,
                         fechamentoBimestre.InicioDoFechamento,
                         fechamentoBimestre.FinalDoFechamento);
-
-                if (periodosFechamentoBimestre.NaoEhNulo() && periodosFechamentoBimestre.Any())
-                    listaPeriodosAlteracao.AddRange(periodosFechamentoBimestre);
+                listaPeriodosAlteracao.AddRange(periodosFechamentoBimestre);
             }
+            return listaPeriodosAlteracao;
+        }
 
+        private async Task AlterarBimestresPeriodosComHierarquiaInferior(PeriodoFechamento fechamento)
+        {
+            // Carrega lista de Periodos a alterar
+            var listaPeriodosAlteracao = await ObterBimestresParaAlteracaoHierarquica(fechamento.DreId, fechamento.FechamentosBimestre);
+           
             // Agrupa a lista em PeriodoEscolar (por UE)
             foreach (var periodosFechamentoBimestreUE in listaPeriodosAlteracao.GroupBy(a => a.PeriodoFechamentoId))
             {
@@ -101,33 +103,17 @@ namespace SME.SGP.Dominio.Servicos
                 // Atualiza os periodos bimestre alterados
                 foreach (var periodoFechamentoBimestreUe in periodosFechamentoBimestreUE)
                 {
-                    try
+                    var periodoFechamentoBimestreDre = fechamento.FechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolarId == periodoFechamentoBimestreUe.PeriodoEscolarId);
+                    if (periodoFechamentoBimestreDre.NaoEhNulo())
                     {
-                        var periodoFechamentoBimestreDre = fechamento.FechamentosBimestre.FirstOrDefault(c => c.PeriodoEscolarId == periodoFechamentoBimestreUe.PeriodoEscolarId);
-                        if (periodoFechamentoBimestreDre.NaoEhNulo())
-                        {
-                            AtualizaDatasInicioEFim(periodoFechamentoBimestreDre, periodoFechamentoBimestreUe);
-                            await repositorioPeriodoFechamentoBimestre.SalvarAsync(periodoFechamentoBimestreUe);
+                        AtualizaDatasInicioEFim(periodoFechamentoBimestreDre, periodoFechamentoBimestreUe);
+                        await repositorioPeriodoFechamentoBimestre.SalvarAsync(periodoFechamentoBimestreUe);
 
-                            EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(periodoFechamentoBimestreUe.Id));
-                            
-                            if (fechamentoExistente.NaoEhNulo())
-                                AtualizaEventoDeFechamento(periodoFechamentoBimestreUe, fechamentoExistente);
-
-                        }
-                    }
-                    catch (Exception)
-                    {
-
-                        throw;
+                        EventoFechamento fechamentoExistente = await mediator.Send(new ObterEventoFechamenoPorIdQuery(periodoFechamentoBimestreUe.Id));
+                        AtualizaEventoDeFechamento(periodoFechamentoBimestreUe, fechamentoExistente);
                     }
                 }
-
-                // Notifica Alteração dos Periodos
-                if (periodoFechamento.UeId.HasValue)
-                    await EnviaNotificacaoParaUe(periodosFechamentoBimestreUE, periodoFechamento.UeId.Value);
-                else
-                    await EnviaNotificacaoParaDre(periodoFechamento.DreId.Value, periodosFechamentoBimestreUE);
+                await EnviarNotificacaoUeDre(periodosFechamentoBimestreUE, periodoFechamento.UeId, periodoFechamento.DreId);
             }
         }
 
@@ -247,6 +233,8 @@ namespace SME.SGP.Dominio.Servicos
 
         private void AtualizaEventoDeFechamento(PeriodoFechamentoBimestre bimestre, EventoFechamento fechamentoExistente)
         {
+            if (fechamentoExistente.EhNulo())
+                return;
             var eventoExistente = fechamentoExistente.Evento ?? repositorioEvento.ObterPorId(fechamentoExistente.EventoId);
             if (eventoExistente.NaoEhNulo())
             {
@@ -294,6 +282,15 @@ namespace SME.SGP.Dominio.Servicos
                 else
                     CriaEventoDeFechamento(fechamento, tipoEvento, bimestre);
             }
+        }
+
+        private async Task EnviarNotificacaoUeDre(IEnumerable<PeriodoFechamentoBimestre> periodosFechamentoBimestreUE, long? ueId, long? dreId)
+        {
+            // Notifica Alteração dos Periodos
+            if (ueId.HasValue)
+                await EnviaNotificacaoParaUe(periodosFechamentoBimestreUE, ueId.Value);
+            else
+                await EnviaNotificacaoParaDre(dreId.Value, periodosFechamentoBimestreUE);
         }
 
         private async Task EnviaNotificacaoParaDre(long dreId, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre)

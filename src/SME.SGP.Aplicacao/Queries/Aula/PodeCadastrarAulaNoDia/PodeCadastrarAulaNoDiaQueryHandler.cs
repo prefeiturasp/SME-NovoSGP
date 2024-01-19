@@ -80,16 +80,16 @@ namespace SME.SGP.Aplicacao
                 var aula = await mediator
                     .Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponentesCurriculares));
 
-                if (aula.Any() || perfilAtual != Guid.Empty)
+                if (PossuiAulasOuPerfilParaValidacao(aula, perfilAtual))
                 {
-                    var ehPerfilAtualCJ = perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name();
+                    var ehPerfilAtualCJ = PerfilAtualEhCJ(perfilAtual);
                     if (aula.All(a => ehPerfilAtualCJ != a.AulaCJ))
                         return false;
 
                     if (ehPerfilAtualCJ && request.ProfessorRf.NaoEhNulo())
                     {
                         var aulaCj = aula.Where(a => a.AulaCJ == ehPerfilAtualCJ && a.CriadoRF == request.ProfessorRf);
-                        if (aulaCj.EhNulo() || !aulaCj.Any())
+                        if (aulaCj.NaoPossuiRegistros())
                             return false;
                     }
                 }
@@ -99,6 +99,12 @@ namespace SME.SGP.Aplicacao
 
             return false;
         }
+
+        private bool PerfilAtualEhCJ(Guid perfilAtual) 
+            => perfilAtual.ToString() == PerfilUsuario.CJ.Name() 
+               || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name();
+        private bool PossuiAulasOuPerfilParaValidacao(IEnumerable<AulaConsultaDto> aulas, Guid perfilAtual)
+        => (aulas.PossuiRegistros() || perfilAtual != Guid.Empty);
             
     }
 }

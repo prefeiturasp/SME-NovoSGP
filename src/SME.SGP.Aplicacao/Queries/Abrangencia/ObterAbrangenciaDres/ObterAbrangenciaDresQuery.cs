@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public Guid Perfil { get; set; }
 
 
-        public ObterAbrangenciaDresQuery(string login, Guid perfil, Modalidade? modalidade, int periodo, bool consideraHistorico, int anoLetivo, string filtro, bool filtroEhCodigo)
+        public ObterAbrangenciaDresQuery(string login, Guid perfil, Modalidade? modalidade, int periodo, bool consideraHistorico, int anoLetivo, string filtro)
         {
             Login = login;
             Perfil = perfil;
@@ -29,7 +30,7 @@ namespace SME.SGP.Aplicacao
             ConsideraHistorico = consideraHistorico;
             AnoLetivo = anoLetivo;
             Filtro = filtro;
-            FiltroEhCodigo = filtroEhCodigo;
+            FiltroEhCodigo = !string.IsNullOrWhiteSpace(filtro) && filtro.All(char.IsDigit);
         }
 
     }

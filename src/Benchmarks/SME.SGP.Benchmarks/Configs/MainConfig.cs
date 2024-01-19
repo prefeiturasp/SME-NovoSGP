@@ -7,7 +7,7 @@ namespace SME.SGP.Benchmarks
     {
         public MainConfig()
         {
-            Add(JitOptimizationsValidator.DontFailOnError); // ALLOW NON-OPTIMIZED DLLS            
+            AddValidator(JitOptimizationsValidator.DontFailOnError); // ALLOW NON-OPTIMIZED DLLS            
         }
     }
 }

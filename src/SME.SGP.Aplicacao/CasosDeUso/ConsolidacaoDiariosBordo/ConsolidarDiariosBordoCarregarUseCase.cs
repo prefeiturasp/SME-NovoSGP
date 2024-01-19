@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             var ues = await mediator.Send(ObterTodasUesIdsQuery.Instance);
             foreach (var ue in ues)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDiariosBordoPorUeTratar, new FiltroConsolidacaoDiariosBordoPorUeDto(ue), new System.Guid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDiariosBordoPorUeTratar, new FiltroConsolidacaoDiariosBordoPorUeDto(ue), Guid.NewGuid(), null));
 
             await AtualizarDataExecucao();
 

@@ -13,5 +13,8 @@ namespace SME.Pedagogico.Interface
         Task<IEnumerable<T>> ObterListaAsync(string indice, Func<QueryContainerDescriptor<T>, QueryContainer> request, string nomeConsulta, object parametro = null);
         Task<long> ObterTotalDeRegistroAsync(string indice, string nomeConsulta, object parametro = null);
         Task<bool> ExisteAsync(string indice, string id, string nomeConsulta, object parametro = null);
+        Task<bool> InserirAsync(T entidade, string indice = "");
+        Task ExcluirTodos(string indice = "");
+        Task ExcluirPorId(string id, string indice = "");
     }
 }

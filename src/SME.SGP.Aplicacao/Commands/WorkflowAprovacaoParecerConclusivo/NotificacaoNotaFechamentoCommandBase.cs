@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
         protected readonly IMediator mediator;
         protected List<TurmasDoAlunoDto> Alunos;
         protected IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> WFAprovacoes;
-        
-        public NotificacaoNotaFechamentoCommandBase(IMediator mediator)
+
+        protected NotificacaoNotaFechamentoCommandBase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

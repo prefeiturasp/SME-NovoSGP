@@ -54,6 +54,7 @@ namespace SME.SGP.TesteIntegracao
         protected const long TURMA_ID_4 = 4;
 
         protected const long DRE_ID_1 = 1;
+        protected const long DRE_ID_2 = 2;
         protected const long UE_ID_1 = 1;
         protected const long UE_ID_2 = 2;
         protected const long UE_ID_3 = 3;
@@ -254,12 +255,13 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_PAAI_LOGIN_5555555 = "5555555";
         protected const string USUARIO_PAEE_LOGIN_5555555 = "5555555";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
-        private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
+        protected const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
 
         protected const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
 
+        protected const long USUARIO_RF_1111111_ID_2 = 2;
         protected const string USUARIO_PROFESSOR_LOGIN_1111111 = "1111111";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_1111111 = "1111111";
         protected const string USUARIO_PROFESSOR_NOME_1111111 = "Nome do usuário 1111111";
@@ -346,7 +348,17 @@ namespace SME.SGP.TesteIntegracao
         protected const int AULA_ID_8 = 8;
         protected const int AULA_ID_9 = 9;
         protected const int AULA_ID_10 = 10;
-        
+        protected const int AULA_ID_11 = 11;
+        protected const int AULA_ID_12 = 12;
+        protected const int AULA_ID_13 = 13;
+        protected const int AULA_ID_14 = 14;
+        protected const int AULA_ID_15 = 15;
+        protected const int AULA_ID_16 = 16;
+        protected const int AULA_ID_17 = 17;
+        protected const int AULA_ID_18 = 18;
+        protected const int AULA_ID_19 = 19;
+        protected const int AULA_ID_20 = 20;
+
         protected const long REGISTRO_FREQUENCIA_1 = 1;
         protected const long REGISTRO_FREQUENCIA_2 = 2;
 
@@ -382,8 +394,22 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_21_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 21);
         protected readonly DateTime DATA_22_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 22);
         protected readonly DateTime DATA_23_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 23);
+        protected readonly DateTime DATA_24_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 24);
 
         protected readonly DateTime DATA_25_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
+        protected readonly DateTime DATA_26_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 26);
+        protected readonly DateTime DATA_27_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 27);
+        protected readonly DateTime DATA_28_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 28);
+        protected readonly DateTime DATA_29_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 29);
+        protected readonly DateTime DATA_30_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 30);
+        protected readonly DateTime DATA_31_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 31);
+        protected readonly DateTime DATA_01_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 01);
+        protected readonly DateTime DATA_02_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 02);
+        protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 03);
+        protected readonly DateTime DATA_04_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 04);
+        protected readonly DateTime DATA_05_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 05);
+        protected readonly DateTime DATA_06_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 06);
+
         protected readonly DateTime DATA_16_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 16);
         protected readonly DateTime DATA_30_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
 
@@ -1073,6 +1099,13 @@ namespace SME.SGP.TesteIntegracao
                 DreId = 1,
                 Nome = UE_NOME_1,
             });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = codigoUe,
+                DreId = 1,
+                Nome = UE_NOME_2,
+            });
         }
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
         {
@@ -1419,7 +1452,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_512.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_4HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME);
             
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_PAP_PROJETO_COLABORATIVO_NOME);
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_513.ToString(), COMPONENTE_CURRICULAR_513.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_2HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_513.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_2HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_2H_NOME);
         }
         
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)

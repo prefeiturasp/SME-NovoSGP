@@ -37,7 +37,7 @@
 
         public bool MarcarComoLidaAoObterDetalhe()
         {
-            if (Categoria == NotificacaoCategoria.Aviso)
+            if (Categoria == NotificacaoCategoria.Aviso || Categoria == NotificacaoCategoria.Informe)
             {
                 Status = NotificacaoStatus.Lida;
                 return true;

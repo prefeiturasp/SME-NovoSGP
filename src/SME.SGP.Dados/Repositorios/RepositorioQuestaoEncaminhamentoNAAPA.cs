@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
                             where not enq.excluido and not ens.excluido 
                                 and sen.nome_componente = 'INFORMACOES_ESTUDANTE' 
                                 and q.nome_componente = 'ENDERECO_RESIDENCIAL'
-	                            and ens.encaminhamento_naapa_id  = @encaminhamentoNAAPAId";
+                                and ens.encaminhamento_naapa_id  = @encaminhamentoNAAPAId";
 
             QuestaoEncaminhamentoNAAPA retorno = null;
             await database.Conexao.QueryAsync< QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, QuestaoEncaminhamentoNAAPA> (query,
@@ -67,7 +67,7 @@ namespace SME.SGP.Dados.Repositorios
                             where not enq.excluido and not ens.excluido 
                                 and sen.nome_componente = 'INFORMACOES_ESTUDANTE' 
                                 and q.nome_componente = 'TURMAS_PROGRAMA'
-	                            and ens.encaminhamento_naapa_id  = @encaminhamentoNAAPAId";
+                                and ens.encaminhamento_naapa_id  = @encaminhamentoNAAPAId";
 
             QuestaoEncaminhamentoNAAPA retorno = null;
             await database.Conexao.QueryAsync<QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, QuestaoEncaminhamentoNAAPA>(query,
@@ -103,9 +103,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @$"select ren.Id
                             , qen.questao_id as QuestaoId
-	                        , ren.resposta_id as RespostaId
-	                        , ren.texto 
-	                        , a.*
+                            , ren.resposta_id as RespostaId
+                            , ren.texto 
+                            , a.*
                           from encaminhamento_naapa_secao ens 
                          inner join encaminhamento_naapa_questao qen on qen.encaminhamento_naapa_secao_id = ens.id
                          inner join encaminhamento_naapa_resposta ren on ren.questao_encaminhamento_id = qen.id

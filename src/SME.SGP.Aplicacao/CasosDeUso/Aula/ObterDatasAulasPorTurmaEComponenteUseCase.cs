@@ -11,12 +11,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDatasAulasPorTurmaEComponenteUseCase : AbstractUseCase, IObterDatasAulasPorTurmaEComponenteUseCase
     {
-        private readonly IServicoUsuario servicoUsuario;
-
-        public ObterDatasAulasPorTurmaEComponenteUseCase(IMediator mediator, IServicoUsuario servicoUsuario) : base(mediator) 
-        {
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-        }
+        public ObterDatasAulasPorTurmaEComponenteUseCase(IMediator mediator) : base(mediator) 
+        {}
 
         public async Task<IEnumerable<DatasAulasDto>> Executar(ConsultaDatasAulasDto param)
         {

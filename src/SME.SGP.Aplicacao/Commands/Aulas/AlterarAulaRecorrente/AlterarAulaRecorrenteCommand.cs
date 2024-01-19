@@ -2,38 +2,25 @@
 using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class AlterarAulaRecorrenteCommand: IRequest<bool>
     {
-        public AlterarAulaRecorrenteCommand(Usuario usuario,
-                                       long aulaId,
-                                       DateTime dataAula,
-                                       int quantidade,
-                                       string codigoTurma,
-                                       long componenteCurricularId,
-                                       string nomeComponenteCurricular,
-                                       long tipoCalendarioId,
-                                       TipoAula tipoAula,
-                                       string codigoUe,
-                                       bool ehRegencia,
-                                       RecorrenciaAula recorrenciaAula)
+        public AlterarAulaRecorrenteCommand(IncluirFilaAlteracaoAulaRecorrenteCommand aulaRecorrente)
         {
-            Usuario = usuario;
-            AulaId = aulaId;
-            DataAula = dataAula;
-            Quantidade = quantidade;
-            CodigoTurma = codigoTurma;
-            ComponenteCurricularId = componenteCurricularId;
-            NomeComponenteCurricular = nomeComponenteCurricular;
-            TipoCalendarioId = tipoCalendarioId;
-            TipoAula = tipoAula;
-            CodigoUe = codigoUe;
-            EhRegencia = ehRegencia;
-            RecorrenciaAula = recorrenciaAula;
+            Usuario = aulaRecorrente.Usuario;
+            AulaId = aulaRecorrente.AulaId;
+            DataAula = aulaRecorrente.DataAula;
+            Quantidade = aulaRecorrente.Quantidade;
+            CodigoTurma = aulaRecorrente.CodigoTurma;
+            ComponenteCurricularId = aulaRecorrente.ComponenteCurricularId;
+            NomeComponenteCurricular = aulaRecorrente.NomeComponenteCurricular;
+            TipoCalendarioId = aulaRecorrente.TipoCalendarioId;
+            TipoAula = aulaRecorrente.TipoAula;
+            CodigoUe = aulaRecorrente.CodigoUe;
+            EhRegencia = aulaRecorrente.EhRegencia;
+            RecorrenciaAula = aulaRecorrente.RecorrenciaAula;
         }
 
         public Usuario Usuario { get; set; }

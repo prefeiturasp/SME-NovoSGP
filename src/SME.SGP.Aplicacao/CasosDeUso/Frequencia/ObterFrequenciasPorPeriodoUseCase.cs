@@ -1,5 +1,4 @@
-﻿using Elasticsearch.Net.Specification.CatApi;
-using MediatR;
+﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
@@ -57,22 +56,27 @@ namespace SME.SGP.Aplicacao
             var anotacoesTurma = await mediator.Send(new ObterAlunosComAnotacaoPorPeriodoQuery(param.TurmaId, param.DataInicio, param.DataFim));
             var frequenciaPreDefinida = await mediator.Send(new ObterFrequenciaPreDefinidaPorTurmaComponenteQuery(turma.Id, componenteCurricularId));
 
-            
-            return await mediator.Send(new ObterListaFrequenciaAulasQuery(turma,
-                                                                          alunosDaTurma.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno),
-                                                                          aulas,
-                                                                          frequenciaAlunos.ToList(),
-                                                                          registrosFrequenciaAlunos,
-                                                                          anotacoesTurma,
-                                                                          frequenciaPreDefinida,
-                                                                          compensacaoAusenciaAlunoAulas,
-                                                                          periodoEscolar,
-                                                                          registraFrequencia,
-                                                                          turmaPossuiFrequenciaRegistrada,
-                                                                          param.DataInicio,
-                                                                          param.DataFim,
-                                                                          percentualAlerta,
-                                                                          percentualCritico));
+            var filtro = new FiltroFrequenciaAulasDto()
+            {
+                Turma = turma,
+                AlunosDaTurma = alunosDaTurma.OrderBy(a => a.NomeSocialAluno ?? a.NomeAluno),
+                Aulas = aulas,
+                FrequenciaAlunos = frequenciaAlunos.ToList(),
+                RegistrosFrequenciaAlunos = registrosFrequenciaAlunos,
+                AnotacoesTurma = anotacoesTurma,
+                FrequenciasPreDefinidas = frequenciaPreDefinida,
+                CompensacaoAusenciaAlunoAulas = compensacaoAusenciaAlunoAulas,
+                PeriodoEscolar = periodoEscolar,
+                RegistraFrequencia = registraFrequencia,
+                TurmaPossuiFrequenciaRegistrada = turmaPossuiFrequenciaRegistrada,
+                DataInicio = param.DataInicio,
+                DataFim = param.DataFim,
+                PercentualAlerta = percentualAlerta,
+                PercentualCritico = percentualCritico
+            };
+
+
+            return await mediator.Send(new ObterListaFrequenciaAulasQuery(filtro));
         }
 
         private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId)

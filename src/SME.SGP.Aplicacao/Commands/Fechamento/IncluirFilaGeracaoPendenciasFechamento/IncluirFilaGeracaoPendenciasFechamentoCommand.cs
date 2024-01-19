@@ -1,27 +1,28 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaGeracaoPendenciasFechamentoCommand : IRequest<bool>
     {
-        public IncluirFilaGeracaoPendenciasFechamentoCommand(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
+        public IncluirFilaGeracaoPendenciasFechamentoCommand(FechamentoTurmaDisciplinaPendenciaDto fechamentoDto, bool componenteSemNota = false, bool registraFrequencia = true)
         {
-            ComponenteCurricularId = componenteCurricularId;
-            TurmaCodigo = turmaCodigo;
-            TurmaNome = turmaNome;
-            PeriodoEscolarInicio = periodoEscolarInicio;
-            PeriodoEscolarFim = periodoEscolarFim;
-            Bimestre = bimestre;
-            Usuario = usuario;
-            FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId;
-            Justificativa = justificativa;
-            CriadoRF = criadoRF;
+            ComponenteCurricularId = fechamentoDto.DisciplinaId;
+            TurmaCodigo = fechamentoDto.CodigoTurma;
+            TurmaNome = fechamentoDto.NomeTurma;
+            PeriodoEscolarInicio = fechamentoDto.PeriodoInicio;
+            PeriodoEscolarFim = fechamentoDto.PeriodoFim;
+            Bimestre = fechamentoDto.Bimestre;
+            Usuario = new Usuario() { Id = fechamentoDto.UsuarioId };
+            FechamentoTurmaDisciplinaId = fechamentoDto.Id;
+            Justificativa = fechamentoDto.Justificativa;
+            CriadoRF = fechamentoDto.CriadoRF;
             ComponenteSemNota = componenteSemNota;
             RegistraFrequencia = registraFrequencia;
-            TurmaId = turmaId;
+            TurmaId = fechamentoDto.TurmaId;
         }
 
         public long ComponenteCurricularId { get; }

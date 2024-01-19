@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterMarcadorAlunoQueryHandler : IRequestHandler<ObterMarcadorAlunoQuery, MarcadorFrequenciaDto>
     {
-        public async Task<MarcadorFrequenciaDto> Handle(ObterMarcadorAlunoQuery request, CancellationToken cancellationToken)
+        public Task<MarcadorFrequenciaDto> Handle(ObterMarcadorAlunoQuery request, CancellationToken cancellationToken)
         {
             MarcadorFrequenciaDto marcador = null;
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
                     break;
             }
 
-            return marcador;
+            return Task.FromResult(marcador);
         }
     }
 }

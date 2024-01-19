@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra.Dtos.EscolaAqui.DashboardAdesao;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<IEnumerable<TotaisAdesaoAgrupadoProDreResultado>>(json);
             }
             
-            throw new Exception("Não foi possível obter dados de adesão do aplicativo.");
+            throw new NegocioException("Não foi possível obter dados de adesão do aplicativo.");
         }
     }
 }

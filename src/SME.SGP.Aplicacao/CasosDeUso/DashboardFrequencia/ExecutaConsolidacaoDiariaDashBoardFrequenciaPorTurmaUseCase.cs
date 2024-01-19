@@ -66,10 +66,10 @@ namespace SME.SGP.Aplicacao
                     frequencia.DataAula, turma.ModalidadeCodigo, anoLetivo, turma.Ue.DreId, turma.Ue.Id, TipoPeriodoDashboardFrequencia.Diario)) ?? new ConsolidacaoDashBoardFrequencia();
 
             await mediator.Send(new SalvarConsolidacaoDashBoardFrequenciaCommand(MapearParaEntidade(
-                consolidacaoDashBoardFrequencia, turma, frequencia, (int)TipoPeriodoDashboardFrequencia.Diario, mes: mes)));
+                consolidacaoDashBoardFrequencia, turma, frequencia, (int)TipoPeriodoDashboardFrequencia.Diario)));
         }
 
-        private ConsolidacaoDashBoardFrequencia MapearParaEntidade(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia, Turma turma, DadosParaConsolidacaoDashBoardFrequenciaDto dados, int tipoPeriodo, DateTime? dataInicio = null, DateTime? dataFim = null, int? mes = null)
+        private ConsolidacaoDashBoardFrequencia MapearParaEntidade(ConsolidacaoDashBoardFrequencia consolidacaoDashBoardFrequencia, Turma turma, DadosParaConsolidacaoDashBoardFrequenciaDto dados, int tipoPeriodo)
         {
             consolidacaoDashBoardFrequencia.AnoLetivo = turma.AnoLetivo;
             consolidacaoDashBoardFrequencia.TurmaId = turma.Id;

@@ -14,12 +14,10 @@ namespace SME.SGP.Aplicacao
     public class AlterarEmailUsuarioCommandHandler : AsyncRequestHandler<AlterarEmailUsuarioCommand>
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IMediator mediator;
 
-        public AlterarEmailUsuarioCommandHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
+        public AlterarEmailUsuarioCommandHandler(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         protected override async Task Handle(AlterarEmailUsuarioCommand request, CancellationToken cancellationToken)

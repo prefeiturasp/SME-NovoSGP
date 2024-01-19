@@ -8,27 +8,18 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
 {
     public class InserirAulaUnicaCommand : IRequest<RetornoBaseDto>
     {
-        public InserirAulaUnicaCommand(Usuario usuario,
-                                       DateTime dataAula,
-                                       int quantidade,
-                                       string codigoTurma,
-                                       long componenteCurricularId,
-                                       string nomeComponenteCurricular,
-                                       long tipoCalendarioId,
-                                       TipoAula tipoAula,
-                                       string codigoUe,
-                                       bool ehRegencia)
+        public InserirAulaUnicaCommand(Usuario usuario, PersistirAulaDto persistirAulaDto)
         {
             Usuario = usuario;
-            DataAula = dataAula;
-            Quantidade = quantidade;
-            CodigoComponenteCurricular = componenteCurricularId;
-            NomeComponenteCurricular = nomeComponenteCurricular;
-            TipoCalendarioId = tipoCalendarioId;
-            TipoAula = tipoAula;
-            CodigoUe = codigoUe;
-            EhRegencia = ehRegencia;
-            CodigoTurma = codigoTurma;
+            DataAula = persistirAulaDto.DataAula;
+            Quantidade = persistirAulaDto.Quantidade;
+            CodigoComponenteCurricular = persistirAulaDto.CodigoComponenteCurricular;
+            NomeComponenteCurricular = persistirAulaDto.NomeComponenteCurricular;
+            TipoCalendarioId = persistirAulaDto.TipoCalendarioId;
+            TipoAula = persistirAulaDto.TipoAula;
+            CodigoUe = persistirAulaDto.CodigoUe;
+            EhRegencia = persistirAulaDto.EhRegencia;
+            CodigoTurma = persistirAulaDto.CodigoTurma;
         }
 
         public DateTime DataAula { get; private set; }

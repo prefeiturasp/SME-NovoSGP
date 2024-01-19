@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao.Interfaces;
@@ -60,9 +59,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AlunoReduzidoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterAlunosPorCodigo(string codigoAluno, int anoLetivo, string codigoTurma, [FromServices] IObterAlunoPorCodigoEolEAnoLetivoUseCase useCase)
+        public async Task<IActionResult> ObterAlunosPorCodigo(string codigoAluno, int anoLetivo, string codigoTurma, [FromServices] IObterAlunoPorCodigoEolEAnoLetivoUseCase useCase, bool carregarDadosResponsaveis = false)
         {
-            return Ok(await useCase.Executar(codigoAluno, anoLetivo, codigoTurma));
+            return Ok(await useCase.Executar(codigoAluno, anoLetivo, codigoTurma, carregarDadosResponsaveis));
         }
 
         [HttpGet("{codigoAluno}/foto")]

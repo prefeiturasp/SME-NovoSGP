@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -19,7 +18,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno;
         private readonly IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
@@ -31,7 +29,6 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoNotificacaoFrequencia(IRepositorioNotificacaoFrequencia repositorioNotificacaoFrequencia,
                                             IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                             IRepositorioFrequenciaConsulta repositorioFrequencia,
-                                            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                             IRepositorioTurmaConsulta repositorioTurma,
                                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAluno,
@@ -51,7 +48,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.consultasFeriadoCalendario = consultasFeriadoCalendario ?? throw new System.ArgumentNullException(nameof(consultasFeriadoCalendario));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
@@ -61,35 +57,24 @@ namespace SME.SGP.Dominio.Servicos
         public async Task ExecutaNotificacaoRegistroFrequencia()
         {
             var cargosNotificados = new List<(string CodigoTurma, Cargo? Cargo)>();
-
-            Console.WriteLine($"Notificando usuários de aulas sem frequência.");
-
             cargosNotificados = await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.Professor, cargosNotificados);
             cargosNotificados = await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.SupervisorUe, cargosNotificados);
             await NotificarAusenciaFrequencia(TipoNotificacaoFrequencia.GestorUe, cargosNotificados);
-
-            Console.WriteLine($"Rotina finalizada.");
         }
 
         public async Task NotificarAlunosFaltosos(long ueId)
         {
             var dataReferencia = DateTime.Today.AddDays(-1);
-
             var quantidadeDiasCP = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoCPAlunosAusentes));
-            var quantidadeDiasDiretor = int.Parse(await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasNotificaoDiretorAlunosAusentes));
-            
 
-            //await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.Infantil, quantidadeDiasCP, quantidadeDiasDiretor);
-            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, quantidadeDiasDiretor, ueId);
-            //await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.EJA, quantidadeDiasCP, quantidadeDiasDiretor);
+            await NotificarAlunosFaltososModalidade(dataReferencia, ModalidadeTipoCalendario.FundamentalMedio, quantidadeDiasCP, ueId);
         }
 
-        private async Task NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, int quantidadeDiasDiretor, long ueId)
+        private async Task NotificarAlunosFaltososModalidade(DateTime dataReferencia, ModalidadeTipoCalendario modalidade, int quantidadeDiasCP, long ueId)
         {
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(dataReferencia.Year, modalidade, dataReferencia.Semestre());
 
             await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasCP - 1), quantidadeDiasCP, Cargo.CP, tipoCalendario?.Id ?? 0, ueId);
-            //await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
         public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm)
@@ -162,7 +147,6 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (var uesAgrupadas in alunosFaltososBimestre.GroupBy(a => new { a.DreCodigo, a.DreNome, a.DreAbreviacao, a.TipoEscola, a.UeCodigo, a.UeNome }))
                 {
                     await NotificarEscolaAlunosFaltososBimestre(uesAgrupadas.Key.DreCodigo,
-                                                                uesAgrupadas.Key.DreNome,
                                                                 uesAgrupadas.Key.DreAbreviacao,
                                                                 (TipoEscola)uesAgrupadas.Key.TipoEscola,
                                                                 uesAgrupadas.Key.UeCodigo,
@@ -176,7 +160,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreNome, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        private async Task NotificarEscolaAlunosFaltososBimestre(string dreCodigo, string dreAbreviacao, TipoEscola tipoEscola, string ueCodigo, string ueNome, double percentualCritico, int bimestre, int ano, IEnumerable<IGrouping<string, AlunoFaltosoBimestreDto>> turmasAgrupadas, ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
             var titulo = $"Alunos com baixa frequência da {tipoEscola.ObterNomeCurto()} {ueNome} - {modalidadeTipoCalendario.Name()}";
             StringBuilder mensagem = new StringBuilder();
@@ -463,48 +447,44 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<List<(string CodigoTurma, Cargo? Cargo)>> NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, List<(string CodigoTurma, Cargo? Cargo)> cargosNotificados)
         {
             // Busca registro de aula sem frequencia e sem notificação do tipo
-            IEnumerable<RegistroFrequenciaFaltanteDto> turmasSemRegistro = null;
-            turmasSemRegistro = await mediator.Send(new ObterNotificacaoFrequenciaTurmasSemRegistroDeFrequenciaQuery(tipo));
-
-            if (turmasSemRegistro.NaoEhNulo())
-            {
-                // Busca parametro do sistema de quantidade de aulas sem frequencia para notificação
-                var qtdAulasNotificacao = QuantidadeAulasParaNotificacao(tipo).Result;
-
-                if (qtdAulasNotificacao.HasValue)
+            var turmasSemRegistro = await mediator.Send(new ObterNotificacaoFrequenciaTurmasSemRegistroDeFrequenciaQuery(tipo));
+            var qtdAulasNotificacao = ObterParametroQuantidadeAulasParaNotificacao(tipo).Result;
+            if (qtdAulasNotificacao > 0)
+                foreach (var turma in turmasSemRegistro)
                 {
-                    foreach (var turma in turmasSemRegistro)
+                    // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
+                    turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId, tipo);
+                    if (turma.Aulas.PossuiRegistros() 
+                        && turma.Aulas.Count() >= qtdAulasNotificacao)
                     {
-                        // Carrega todas as aulas sem registro de frequencia da turma e disciplina para notificação
-                        turma.Aulas = repositorioFrequencia.ObterAulasSemRegistroFrequencia(turma.CodigoTurma, turma.DisciplinaId, tipo);
-                        if (turma.Aulas.NaoEhNulo() && turma.Aulas.Count() >= qtdAulasNotificacao)
+                        // Busca Professor/Gestor/Supervisor da Turma ou Ue
+                        var usuarios = await BuscaUsuarioNotificacao(turma, tipo);
+
+                        if (usuarios.NaoEhNulo())
                         {
-                            // Busca Professor/Gestor/Supervisor da Turma ou Ue
-                            var usuarios = await BuscaUsuarioNotificacao(turma, tipo);
-
-                            if (usuarios.NaoEhNulo())
-                            {
-                                var cargosLinq = cargosNotificados;
-                                var cargosNaoNotificados = usuarios.Select(u => u.Cargo)
-                                                            .GroupBy(u => u)
-                                                            .Where(w => !cargosLinq.Any(l => l.CodigoTurma == turma.CodigoTurma && l.Cargo == w.Key))
-                                                            .Select(s => new { turma.CodigoTurma, s.Key });
-
-                                foreach (var usuario in usuarios.Where(u => cargosNaoNotificados.Select(c => c.Key).Contains(u.Cargo)))
-                                {
-                                    NotificaRegistroFrequencia(usuario.Usuario, turma, tipo);
-                                }
-
-                                cargosNotificados.AddRange(cargosNaoNotificados.Select(n => (n.CodigoTurma, n.Key)));
-                            }
+                            var cargosNaoNotificados = FiltrarCargosNaoNotificados(usuarios, turma.CodigoTurma, cargosNotificados);
+                            await NotificaRegistroFrequencia(usuarios.Where(u => cargosNaoNotificados.Select(c => c.Cargo).Contains(u.Cargo)), turma, tipo);
+                            cargosNotificados.AddRange(cargosNaoNotificados.Select(n => (n.CodigoTurma, n.Cargo)));
                         }
-                        else
-                            Console.WriteLine($"Notificação não necessária pois quantidade de aulas sem frequência: {turma.Aulas?.Count() ?? 0 } está dentro do limite: {qtdAulasNotificacao}.");
                     }
                 }
-            }
-
             return cargosNotificados;
+        }
+
+        public record CargoNaoNotificadoTurma(string CodigoTurma, Cargo? Cargo);
+
+        private IEnumerable<CargoNaoNotificadoTurma> FiltrarCargosNaoNotificados(IEnumerable<(Cargo? Cargo, Usuario Usuario)> usuarios, 
+                                                                                 string codigoTurma,
+                                                                                 List<(string CodigoTurma, Cargo? Cargo)> cargosNotificados)
+        => usuarios.Select(u => u.Cargo)
+                   .GroupBy(u => u)
+                   .Where(w => !cargosNotificados.Any(l => l.CodigoTurma == codigoTurma && l.Cargo == w.Key))
+                   .Select(s => new CargoNaoNotificadoTurma(codigoTurma, s.Key));
+
+        private async Task NotificaRegistroFrequencia(IEnumerable<(Cargo? Cargo, Usuario Usuario)> usuarios, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
+        {
+            foreach (var usuario in usuarios)
+                await NotificaRegistroFrequencia(usuario.Usuario, turmaSemRegistro, tipo);
         }
 
         private async Task NotificaRegistroFrequencia(Usuario usuario, RegistroFrequenciaFaltanteDto turmaSemRegistro, TipoNotificacaoFrequencia tipo)
@@ -575,7 +555,7 @@ namespace SME.SGP.Dominio.Servicos
             return disciplina.Nome;
         }
 
-        private async Task<int?> QuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
+        private async Task<int> ObterParametroQuantidadeAulasParaNotificacao(TipoNotificacaoFrequencia tipo)
         {
             TipoParametroSistema tipoParametroSistema;
 
@@ -587,8 +567,8 @@ namespace SME.SGP.Dominio.Servicos
                 tipoParametroSistema = TipoParametroSistema.QuantidadeAulasNotificarSupervisorUE;
 
             var qtdDias = await repositorioParametrosSistema.ObterValorPorTipoEAno(tipoParametroSistema, DateTime.Now.Year);
-
-            return !string.IsNullOrEmpty(qtdDias) ? int.Parse(qtdDias) : (int?)null;
+            int.TryParse(qtdDias, out int qtdDiasParametro);
+            return qtdDiasParametro;
         }
 
         private DateTime DiaRetroativo(DateTime data, int nrDias)

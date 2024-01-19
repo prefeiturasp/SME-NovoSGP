@@ -30,8 +30,6 @@ namespace SME.SGP.Dados.Contexto
         {
             get
             {
-                //if (conexao.State != ConnectionState.Open)
-                //    Open();
                 return conexao;
             }
         }

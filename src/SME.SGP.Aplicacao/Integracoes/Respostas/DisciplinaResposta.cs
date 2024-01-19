@@ -64,9 +64,9 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
         {
             disciplinasReposta.ForEach(componenteCurricular =>
             {
-                var componenteCurricularSgp = componentesCurricularesSgp.Where(cc => cc.Codigo == componenteCurricular.CodigoComponenteCurricular
+                var componenteCurricularSgp = componentesCurricularesSgp.FirstOrDefault(cc => cc.Codigo == componenteCurricular.CodigoComponenteCurricular
                                                                                     || (componenteCurricular.CodigoComponenteTerritorioSaber != 0 &&
-                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber)).FirstOrDefault();
+                                                                                        cc.Codigo == componenteCurricular.CodigoComponenteTerritorioSaber));
 
                 if (componenteCurricularSgp.NaoEhNulo())
                 {

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -6,9 +7,7 @@ using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
@@ -201,39 +200,12 @@ namespace SME.SGP.Aplicacao
         
         private async Task<bool> VerificarUsuarioLogadoPertenceMesmaUEPlano(Usuario usuarioLogado, Turma turmaEncaminhamentoAee)
         {
-            return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(
-                usuarioLogado.Login, 
-                usuarioLogado.PerfilAtual,
-                turmaEncaminhamentoAee.Ue.CodigoUe,
-                turmaEncaminhamentoAee.ModalidadeCodigo,
-                turmaEncaminhamentoAee.Historica,
-                turmaEncaminhamentoAee.AnoLetivo));
+            return await mediator.Send(new VerificarUsuarioLogadoPertenceMesmaUEQuery(usuarioLogado, turmaEncaminhamentoAee));
         }
         
         private async Task<IEnumerable<AlunosTurmaProgramaPapDto>> BuscarAlunosTurmaPAP(string[] alunosCodigos, int anoLetivo)
         {
             return  await mediator.Send(new ObterAlunosAtivosTurmaProgramaPapEolQuery(anoLetivo, alunosCodigos));
-        }
-        private async Task<bool> EhGestorDaEscolaDaTurma(Usuario usuarioLogado, Turma turma)
-        {
-            if (!usuarioLogado.EhGestorEscolar())
-                return false;
-
-            var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turma.CodigoTurma));
-            if (ue.EhNulo())
-                throw new NegocioException($"Escola da turma [{turma.CodigoTurma}] não localizada.");
-
-            return await mediator.Send(new EhGestorDaEscolaQuery(usuarioLogado.CodigoRf, ue.CodigoUe, usuarioLogado.PerfilAtual));
-        }
-
-        private async Task<bool> EhProfessorDaTurma(Usuario usuarioLogado, Turma turma)
-        {
-            if (!usuarioLogado.EhProfessor())
-                return false;
-
-            var professores = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
-
-            return professores.Any(a => a.ProfessorRf.ToString() == usuarioLogado.CodigoRf);
         }
 
         private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
@@ -293,19 +265,18 @@ namespace SME.SGP.Aplicacao
         private async Task<AlunoPorTurmaResposta> ChecaSeOAlunoTeveMudancaDeTurmaAnual(string codigoAluno, int anoLetivo)
         {
             var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, true));
+            
             if (turmasAluno.Any())
             {
-                if (turmasAluno.Count() > 0)
-                {
-                    var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
+                var alunoComMatriculaAtiva = turmasAluno.FirstOrDefault(t => t.PossuiSituacaoAtiva());
 
-                    if (alunoComMatriculaAtiva.EhNulo())
-                        return null;
+                if (alunoComMatriculaAtiva.EhNulo())
+                    return null;
 
-                    return await mediator
-                        .Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, false, alunoComMatriculaAtiva.CodigoTurma.ToString()));
-                }
+                return await mediator
+                    .Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, false, alunoComMatriculaAtiva.CodigoTurma.ToString()));
             }
+
             return null;
         }
 

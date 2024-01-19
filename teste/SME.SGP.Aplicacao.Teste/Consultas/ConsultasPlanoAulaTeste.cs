@@ -38,15 +38,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolar>();
             mediator = new Mock<IMediator>();
 
-
             consultasPlanoAula = new ConsultasPlanoAula(repositorioPlanoAula.Object,
-                                                consultasPlanoAnual.Object,
-                                                consultasObjetivosAprendizagemAula.Object,
-                                                consultasAula.Object,
-                                                consultasPeriodoEscolar.Object,
-                                                repositorioAtividadeAvaliativa.Object,
                                                 servicoUsuario.Object,
-                                                repositorioPeriodoEscolar.Object,
                                                 mediator.Object);
             Setup();
         }

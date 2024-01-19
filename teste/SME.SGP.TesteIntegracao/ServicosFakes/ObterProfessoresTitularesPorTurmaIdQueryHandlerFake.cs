@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFake
                     ProfessorRf ="222222",
                     ProfessorNome ="PROFESSOR DE PORTUGUES",
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
-                    DisciplinasId = new long[] { 138 }
+                    CodigosDisciplinas = "138"
                 },
             });
         }

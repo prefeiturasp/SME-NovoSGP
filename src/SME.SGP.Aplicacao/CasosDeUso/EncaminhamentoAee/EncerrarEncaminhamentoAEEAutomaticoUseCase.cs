@@ -38,10 +38,10 @@ namespace SME.SGP.Aplicacao
 
                 _unitOfWork.PersistirTransacao();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _unitOfWork.Rollback();
-                throw ex;
+                throw;
             }
 
             return true;

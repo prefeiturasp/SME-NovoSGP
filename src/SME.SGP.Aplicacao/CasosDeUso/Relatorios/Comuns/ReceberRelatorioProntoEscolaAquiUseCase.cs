@@ -53,8 +53,8 @@ namespace SME.SGP.Aplicacao
         {
             var parametros = JsonConvert.DeserializeObject<MensagemRelatorioAutomaticoEscolaAquiDto>(relatorioPronto.MensagemDados);
 
-            await mediator.Send(new InserirComunicadoMensagemAutomaticaCommand(relatorioPronto.MensagemUsuario, relatorioPronto.MensagemTitulo, parametros.AnoLetivo, parametros.TurmaCodigo, parametros.Modalidade,
-                parametros.Semestre, parametros.AlunoCodigo, parametros.CodigoArquivo, urlRedirecionamentoBase, tipoRelatorio, nomeRelatorio));
+            await mediator.Send(new InserirComunicadoMensagemAutomaticaCommand(relatorioPronto.MensagemUsuario, relatorioPronto.MensagemTitulo, parametros,
+                                                                                urlRedirecionamentoBase, tipoRelatorio, nomeRelatorio));
         }
     }
 }

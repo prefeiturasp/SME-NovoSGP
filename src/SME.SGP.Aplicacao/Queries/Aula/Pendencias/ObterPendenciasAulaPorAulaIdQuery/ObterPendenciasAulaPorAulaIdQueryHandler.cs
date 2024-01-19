@@ -37,18 +37,16 @@ namespace SME.SGP.Aplicacao
                 componentesCurricularesDoProfessorCJ = await mediator
                      .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
 
+            ComponenteCurricularEol componenteCorrespondente = new ComponenteCurricularEol();
 
-            var componenteCorrespondente = componentesCurricularesEolProfessor.NaoEhNulo()
-                ? componentesCurricularesEolProfessor.FirstOrDefault(cc => cc.Codigo.ToString() == aula.DisciplinaId)
-                : usuarioLogado.EhSomenteProfessorCj() && componentesCurricularesDoProfessorCJ.Any() ?
-                                                        componentesCurricularesDoProfessorCJ.Select(c => new ComponenteCurricularEol()
-                                                        {
-                                                            Codigo = c.DisciplinaId,
-                                                            TurmaCodigo = c.TurmaId
-                                                        }).FirstOrDefault(c => c.TurmaCodigo == aula.TurmaId)
-                                                        : new ComponenteCurricularEol();
-
-
+            if (componentesCurricularesEolProfessor.NaoEhNulo())
+                componenteCorrespondente = componentesCurricularesEolProfessor.FirstOrDefault(cc => cc.Codigo.ToString() == aula.DisciplinaId);
+            else if (usuarioLogado.EhSomenteProfessorCj() && componentesCurricularesDoProfessorCJ.Any())
+                componenteCorrespondente = componentesCurricularesDoProfessorCJ.Select(c => new ComponenteCurricularEol()
+                {
+                    Codigo = c.DisciplinaId,
+                    TurmaCodigo = c.TurmaId
+                }).FirstOrDefault(c => c.TurmaCodigo == aula.TurmaId);
 
             var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil, request.UsuarioLogado, (componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0) > 0 ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : null);
 

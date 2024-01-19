@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
         public ObterPodeCadastrarAulaPorDataQueryHandlerFake()
         { }
 
-        public async Task<PodeCadastrarAulaPorDataRetornoDto> Handle(ObterPodeCadastrarAulaPorDataQuery request, CancellationToken cancellationToken)
+        public Task<PodeCadastrarAulaPorDataRetornoDto> Handle(ObterPodeCadastrarAulaPorDataQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new PodeCadastrarAulaPorDataRetornoDto(true));
+            return Task.FromResult(new PodeCadastrarAulaPorDataRetornoDto(true));
         }
     }
 }

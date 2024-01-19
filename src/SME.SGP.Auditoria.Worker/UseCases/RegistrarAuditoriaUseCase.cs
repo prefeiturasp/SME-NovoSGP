@@ -1,7 +1,6 @@
-﻿using System;
-using SME.SGP.Auditoria.Worker.Interfaces;
-using System.Threading.Tasks;
+﻿using SME.SGP.Auditoria.Worker.Interfaces;
 using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Auditoria.Worker
 {
@@ -14,10 +13,12 @@ namespace SME.SGP.Auditoria.Worker
             this.repositorioAuditoria = repositorioAuditoria ?? throw new System.ArgumentNullException(nameof(repositorioAuditoria));
         }
 
-        public Task Executar(MensagemRabbit mensagem)
+        public async Task<bool> Executar(Infra.MensagemRabbit mensagem)
         {
             var auditoria = mensagem.ObterObjetoMensagem<Entidade.Auditoria>();
-            return repositorioAuditoria.Salvar(auditoria);
+            await repositorioAuditoria.Salvar(auditoria);
+
+            return true;
         }
     }
 }

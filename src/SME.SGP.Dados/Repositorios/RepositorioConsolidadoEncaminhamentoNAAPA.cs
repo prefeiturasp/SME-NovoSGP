@@ -11,7 +11,6 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConsolidadoEncaminhamentoNAAPA: RepositorioBase<ConsolidadoEncaminhamentoNAAPA>, IRepositorioConsolidadoEncaminhamentoNAAPA
     {
-        private string TODOS = "-99";
         public RepositorioConsolidadoEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
@@ -33,16 +32,16 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = new StringBuilder(); 
             sql.AppendLine(@"select");
-            sql.AppendLine(@"	 cen.situacao,");
-            sql.AppendLine(@"	 sum(cen.quantidade)::int4 as quantidade,");
-            sql.AppendLine(@"	 COALESCE(max(cen.alterado_em), max(cen.criado_em))DataUltimaConsolidacao");
+            sql.AppendLine(@"     cen.situacao,");
+            sql.AppendLine(@"     sum(cen.quantidade)::int4 as quantidade,");
+            sql.AppendLine(@"     COALESCE(max(cen.alterado_em), max(cen.criado_em))DataUltimaConsolidacao");
             sql.AppendLine(@"from consolidado_encaminhamento_naapa cen");
             sql.AppendLine(@"inner join ue u on u.id = cen.ue_id");
             sql.AppendLine(@"where cen.ano_Letivo = @anoLetivo ");
             if(ueId.NaoEhNulo())
-               sql.AppendLine(@"	and cen.ue_id= @ueId ");
+               sql.AppendLine(@"    and cen.ue_id= @ueId ");
             if(dreId.NaoEhNulo())
-               sql.AppendLine(@"	and u.dre_id = @dreId ");
+               sql.AppendLine(@"    and u.dre_id = @dreId ");
             sql.AppendLine(@"group by cen.situacao;");
             return await database.Conexao.QueryAsync<DadosGraficoSitaucaoPorUeAnoLetivoDto>(sql.ToString(), new {  ueId,anoLetivo,dreId }, commandTimeout: 60);
         }

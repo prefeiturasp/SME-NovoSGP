@@ -1,16 +1,17 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Questionario;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery : IRequest<IEnumerable<QuestaoDto>>
+    public class ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery : IRequest<IEnumerable<SecaoQuestoesDTO>>
     {
-        public ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery(int? modalidadeId)
+        public ObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesQuery(int[] modalidadesId)
         {
-            ModalidadeId = modalidadeId;
+            ModalidadesId = modalidadesId;
         }
 
-        public int? ModalidadeId { get; }
+        public int[] ModalidadesId { get; }
     }
 }

@@ -32,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             var sql = @"select
                             id as Id,
                             planejamento_anual_componente_id as PlanejamentoAnualComponenteId,
-	                        objetivo_aprendizagem_id as ObjetivoAprendizagemId
+                            objetivo_aprendizagem_id as ObjetivoAprendizagemId
                         from
                             planejamento_anual_objetivos_aprendizagem paoa
                         where
