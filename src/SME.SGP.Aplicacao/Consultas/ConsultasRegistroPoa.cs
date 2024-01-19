@@ -49,9 +49,9 @@ namespace SME.SGP.Aplicacao.Consultas
                 !retornoquery.Items.Any() ||
                 retornoquery.Items.ElementAt(0).Id == 0;
 
-            var listaRf = retornoquery.Items.Select(x => x.CodigoRf);
+            var listaRf = retornoquery.Items?.Select(x => x.CodigoRf);
+            var nomes = listaRf.Any() ? await mediator.Send(new ObterFuncionariosPorRFsQuery(listaRf)) : Enumerable.Empty<ProfessorResumoDto>();
 
-            var nomes = await mediator.Send(new ObterFuncionariosPorRFsQuery(listaRf));
             return MapearListagem(retornoquery, retornoPaginado, nenhumItemEncontrado, nomes);
         }
 
