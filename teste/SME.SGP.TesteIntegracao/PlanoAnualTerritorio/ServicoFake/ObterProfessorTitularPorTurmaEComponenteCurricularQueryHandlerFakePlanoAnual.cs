@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAnualTerritorio.ServicoFake
         {
             return await Task.FromResult(new ProfessorTitularDisciplinaEol()
             {
-                DisciplinasId = new long[] { COMPONENTE_CURRICULAR_1111 },
+                CodigosDisciplinas = COMPONENTE_CURRICULAR_1111.ToString(),
                 ProfessorNome = "Não há professor titular",
                 ProfessorRf = "",
                 TurmaId = TURMA_ID_1
