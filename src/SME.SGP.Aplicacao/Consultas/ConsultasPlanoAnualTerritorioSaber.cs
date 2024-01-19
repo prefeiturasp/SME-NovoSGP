@@ -96,7 +96,11 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
                     };
 
-            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.Codigo ?? 0, usuarioLogado.EhProfessor() ? usuarioLogado.CodigoRf : null);
+            var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmaId, componenteCorrespondente?.Codigo.ToString() ?? "0"));
+
+            bool deveVerificarProfessor = usuarioLogado.EhProfessor() && professorTitular.NaoEhNulo() && (!string.IsNullOrEmpty(professorTitular.ProfessorRf) && professorTitular.ProfessorRf != usuarioLogado.CodigoRf);
+
+            var listaPlanoAnual = await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(anoLetivo, ueId, turmaId, componenteCorrespondente?.Codigo ?? 0, deveVerificarProfessor ? usuarioLogado.CodigoRf : null);
             if (listaPlanoAnual.NaoEhNulo() && listaPlanoAnual.Any())
             {
                 if (listaPlanoAnual.Count() != periodos.Count())
