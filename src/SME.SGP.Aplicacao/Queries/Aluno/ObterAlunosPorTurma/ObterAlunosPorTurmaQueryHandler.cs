@@ -35,10 +35,10 @@ namespace SME.SGP.Aplicacao
             else
             {
                 var httpClient = httpClientFactory.CreateClient(ServicosEolConstants.SERVICO);
-                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_CONSIDERA_INATIVOS, request.TurmaCodigo, request.ConsideraInativos));
+                var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_TURMAS_CONSIDERA_INATIVOS, request.TurmaCodigo, request.ConsideraInativos), cancellationToken);
                 if (resposta.IsSuccessStatusCode)
                 {
-                    var json = await resposta.Content.ReadAsStringAsync();
+                    var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
                     alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
 
                     // Salva em cache por 5 min
@@ -46,7 +46,9 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            return alunos.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
+            return alunos.Where(x => x.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido)
+                         .GroupBy(x => x.CodigoAluno)
+                         .SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
         }
     }
 }

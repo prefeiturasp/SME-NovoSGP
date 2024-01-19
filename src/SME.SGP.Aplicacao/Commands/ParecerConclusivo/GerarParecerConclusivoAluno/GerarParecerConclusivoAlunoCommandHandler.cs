@@ -1,11 +1,10 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,37 +14,26 @@ namespace SME.SGP.Aplicacao
     public class GerarParecerConclusivoAlunoCommandHandler : IRequestHandler<GerarParecerConclusivoAlunoCommand, ParecerConclusivoDto>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
 
-        public GerarParecerConclusivoAlunoCommandHandler(IMediator mediator, IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno)
+        public GerarParecerConclusivoAlunoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
 
-        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request,
-            CancellationToken cancellationToken)
+        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request, CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma));
-            var alunosEol =
-                await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
-            var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
-            bool historico = turma.Historica;
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
             var emAprovacao = await EnviarParaAprovacao(turma);
 
-            if (alunoNaTurma.NaoEhNulo())
-                historico = alunoNaTurma.Inativo;
-
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null,
-                    historico))
+            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma);
             var parecerConclusivo =
                 await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo,
-                    turma.CodigoTurma, pareceresDaTurma));
+                    turma.CodigoTurma, pareceresDaTurma), cancellationToken);
 
             if (parecerConclusivo.Id == conselhoClasseAluno.ConselhoClasseParecerId)
                 return new ParecerConclusivoDto()
@@ -71,7 +59,7 @@ namespace SME.SGP.Aplicacao
                     Bimestre = bimestre,
                     AnoLetivo = turma.AnoLetivo
                 };
-                await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto));
+                await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto), cancellationToken);
             }
 
             return new ParecerConclusivoDto()
@@ -129,7 +117,7 @@ namespace SME.SGP.Aplicacao
             return pareceresConclusivos;
         }
 
-        public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId, bool? historico = false)
+        public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId)
         {
             int bimestre;
             long[] conselhosClassesIds;
@@ -143,14 +131,23 @@ namespace SME.SGP.Aplicacao
                 tiposTurmasParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
                 tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
 
-                var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, 1));
+                var periodoEscolar = periodoEscolarId.HasValue ? 
+                    await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolarId.Value)) : 
+                    (await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre))).OrderBy(p => p.Bimestre).LastOrDefault();
 
-                if(periodoEscolar.NaoEhNulo() && periodoEscolar.Any())
+                if(periodoEscolar.NaoEhNulo())
                 {
                     var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.First(x => x.Bimestre == 1).PeriodoInicio,  ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
+                        .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.PeriodoFim, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
 
-                    var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+                    if (turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any())
+                    {
+                        var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigosEOL, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date));
+                        if (turmasComMatriculasValidas.Any())
+                            turmasCodigosEOL = turmasComMatriculasValidas.ToArray();
+                    }
+
+                    var turmasEOL = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL)) : null;
 
                     turmasCodigosEOL = turmasEOL.NaoEhNulo() && turmasEOL.Any() ? turmasEOL.Where(x => x.Ano == turma.Ano).Select(x => x.CodigoTurma).ToArray() : null;
 
@@ -162,12 +159,10 @@ namespace SME.SGP.Aplicacao
                         {
                             turmasCodigos = turmasCodigosEOL;
                             turmasCodigos = turmasCodigos
-                            .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                                .Concat(new string[] { turma.CodigoTurma }).ToArray();
                         }
                         else
-                        {
                             turmasCodigos = new string[] { turma.CodigoTurma };
-                        }
                     }
                     else
                         turmasCodigos = turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any() ? turmasCodigosEOL
@@ -195,7 +190,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 bimestre = 0;
-                conselhosClassesIds = new long[0];
+                conselhosClassesIds = Enumerable.Empty<long>().ToArray();
             }
 
             var notasParaVerificar = new List<NotaConceitoBimestreComponenteDto>();
@@ -204,7 +199,6 @@ namespace SME.SGP.Aplicacao
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
                     var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, alunoCodigo, bimestre));
-
                     notasParaVerificar.AddRange(notasParaAdicionar);
                 }
             }
