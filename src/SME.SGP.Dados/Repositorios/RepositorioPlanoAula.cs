@@ -147,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 retorno.Adicionar(objetivoComponente);
             }
 
-            if (objetivoComponente.NaoEhNulo() && objetivoAprendizagemDto.NaoEhNulo())
+            if (objetivoComponente.NaoEhNulo() && objetivoAprendizagemDto.NaoEhNulo() && !objetivoComponente.ObjetivosAprendizagem.Any(ob=> ob.Id == objetivoAprendizagemDto.Id))
             {
                 objetivoComponente.ObjetivosAprendizagem.Add(objetivoAprendizagemDto);
             }
