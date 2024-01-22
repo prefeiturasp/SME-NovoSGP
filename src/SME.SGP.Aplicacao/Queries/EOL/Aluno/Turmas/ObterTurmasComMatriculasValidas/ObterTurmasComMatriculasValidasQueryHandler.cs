@@ -30,9 +30,13 @@ namespace SME.SGP.Aplicacao
                 var matriculasAluno = (await mediator
                     .Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo), cancellationToken))
                     .Where(m => m.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido);
-                var matriculasFiltradas = matriculasAluno.Where(m => m.PossuiSituacaoAtiva() && m.DataMatricula <= request.FinalDoFechamento);
+
                 if (matriculasAluno.NaoEhNulo() || matriculasAluno.Any())
                 {
+                    var matriculasFiltradas = matriculasAluno.Where(m => (m.PossuiSituacaoAtiva() && m.DataMatricula <= request.FinalDoFechamento)
+                            || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.InicioDoFechamento && m.DataSituacao <= request.FinalDoFechamento)
+                            || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= request.FinalDoFechamento && m.DataSituacao > request.FinalDoFechamento));
+
                     if (matriculasFiltradas.Any(m => m.CodigoTurma.ToString() == codTurma &&
                        ((m.PossuiSituacaoAtiva() && m.DataMatricula <= request.PeriodoFim) 
                        || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio && m.DataSituacao <= request.PeriodoFim) 

@@ -142,7 +142,7 @@ namespace SME.SGP.Aplicacao
 
                     if (turmasCodigosEOL.NaoEhNulo() && turmasCodigosEOL.Any())
                     {
-                        var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigosEOL, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date));
+                        var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigosEOL, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().Date));
                         if (turmasComMatriculasValidas.Any())
                             turmasCodigosEOL = turmasComMatriculasValidas.ToArray();
                     }
