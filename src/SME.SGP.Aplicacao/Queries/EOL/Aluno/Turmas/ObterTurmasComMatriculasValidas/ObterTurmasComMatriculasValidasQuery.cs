@@ -12,13 +12,17 @@ namespace SME.SGP.Aplicacao
         public string AlunoCodigo { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
+        public DateTime InicioDoFechamento { get; set; }
+        public DateTime FinalDoFechamento { get; set; }
 
-        public ObterTurmasComMatriculasValidasQuery(string alunoCodigo, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim)
+        public ObterTurmasComMatriculasValidasQuery(string alunoCodigo, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim, DateTime inicioDoFechamento, DateTime finalDoFechamento)
         {
             TurmasCodigos = turmasCodigos;
             AlunoCodigo = alunoCodigo;
             PeriodoInicio = periodoInicio;
             PeriodoFim = periodoFim;
+            InicioDoFechamento = inicioDoFechamento;
+            FinalDoFechamento = finalDoFechamento;
         }
     }
     

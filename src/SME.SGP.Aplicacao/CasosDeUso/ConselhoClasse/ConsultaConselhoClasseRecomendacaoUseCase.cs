@@ -98,7 +98,11 @@ namespace SME.SGP.Aplicacao
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
-            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(recomendacaoDto.AlunoCodigo, turmasCodigos, periodoInicio, periodoFim));
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendario.Id, turma.EhTurmaInfantil, bimestre ?? (int)Bimestre.Final));
+            var periodoFechamentoInicio = periodoFechamento.InicioDoFechamento;
+            var periodoFechamentoFim = periodoFechamento.FinalDoFechamento;
+
+            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(recomendacaoDto.AlunoCodigo, turmasCodigos, periodoInicio, periodoFim, periodoFechamentoInicio, periodoFechamentoFim));
 
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
