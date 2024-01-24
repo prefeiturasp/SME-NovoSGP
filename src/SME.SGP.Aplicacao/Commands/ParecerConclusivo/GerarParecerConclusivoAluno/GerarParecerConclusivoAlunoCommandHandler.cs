@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolarId.Value)) : 
                     (await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre))).OrderBy(p => p.Bimestre).LastOrDefault();
 
-                if (periodoEscolar.NaoEhNulo())
+                if(periodoEscolar.NaoEhNulo())
                 {
                     var turmasCodigosEOL = await mediator
                         .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, dataReferencia: periodoEscolar.PeriodoFim, ueCodigo: turma.Ue.CodigoUe, semestre: turma.Semestre != 0 ? turma.Semestre : null));
