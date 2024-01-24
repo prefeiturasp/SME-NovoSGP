@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,52 +17,62 @@ namespace SME.SGP.TesteIntegracao.Informe.ServicosFake
                 new GruposDeUsuariosDto()
                 {
                     Id = 11,
-                    Nome = "AD"
+                    Nome = "AD",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 33,
-                    Nome = "ADM COTIC"
+                    Nome = "ADM COTIC",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 14,
-                    Nome = "ADM DRE"
+                    Nome = "ADM DRE",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 32,
-                    Nome = "ADM SME"
+                    Nome = "ADM SME",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 8,
-                    Nome = "ADM UE"
+                    Nome = "ADM UE",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 51,
-                    Nome = "Área Técnica"
+                    Nome = "Área Técnica",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 47,
-                    Nome = "Assistente Social"
+                    Nome = "Assistente Social",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 1,
-                    Nome = "ATE"
+                    Nome = "ATE",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 41,
-                    Nome = "ATE Secretaria"
+                    Nome = "ATE Secretaria",
+                    GuidPerfil = Guid.NewGuid()
                 },
                 new GruposDeUsuariosDto()
                 {
                     Id = 42,
-                    Nome = "Comunicados DRE"
+                    Nome = "Comunicados DRE",
+                    GuidPerfil = Guid.NewGuid()
                 },
             };
         }
