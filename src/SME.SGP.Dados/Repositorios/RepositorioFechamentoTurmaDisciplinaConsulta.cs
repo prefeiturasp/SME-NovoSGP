@@ -759,9 +759,9 @@ namespace SME.SGP.Dados.Repositorios
                           left join fechamento_turma ft on ft.id = f.fechamento_turma_id
                           left join periodo_escolar p on p.id = ft.periodo_escolar_id
                           left join turma t on t.id = ft.turma_id
-                          where 
-	                        t.turma_id = any(@turmasCodigos)
-                        and fa.aluno_codigo = @alunoCodigo";
+                          where not fn.excluido
+	                            and t.turma_id = any(@turmasCodigos)
+                                and fa.aluno_codigo = @alunoCodigo";
 
             if (bimestre > 0)
                 query += " and p.bimestre = @bimestre";
