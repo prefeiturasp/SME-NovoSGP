@@ -145,7 +145,7 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarPermissoesAbrangencia(Turma turma, Usuario usuario, string componenteCurricularId, DateTime dataAula)
         {
             if (usuario.EhGestorEscolar())
-                await ValidarAbrangenciaGestorEscolar(usuario, turma.CodigoTurma, turma.EhTurmaHistorica);
+                await ValidarAbrangenciaGestorEscolar(usuario, turma.CodigoTurma, turma.Historica);
             else
                 await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, turma.CodigoTurma, componenteCurricularId, dataAula, usuario.EhProfessorCj());
         }
