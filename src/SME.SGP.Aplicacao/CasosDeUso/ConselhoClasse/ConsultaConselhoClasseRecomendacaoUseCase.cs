@@ -100,6 +100,11 @@ namespace SME.SGP.Aplicacao
 
             var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(recomendacaoDto.AlunoCodigo, turmasCodigos, periodoInicio, periodoFim));
 
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendario.Id, turma.EhTurmaInfantil, periodoEscolar?.Bimestre ?? (int)Bimestre.Final));
+            if (periodoFechamento != null)
+            {
+                turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(recomendacaoDto.AlunoCodigo, turmasCodigos, periodoFechamento.InicioDoFechamento, periodoFechamento.FinalDoFechamento));
+            }
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
 
