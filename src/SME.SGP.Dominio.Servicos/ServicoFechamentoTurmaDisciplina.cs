@@ -313,7 +313,10 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         var semFechamentoNota = fechamentoNota.Id == 0;
                         var ehAprovacaoSemFechamentoNota = emAprovacao && semFechamentoNota;
-                        
+
+                        if(fechamentoNota.Nota.NaoEhNulo() && fechamentoNota.Nota > 10)
+                            throw new NegocioException(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10);
+
                         if (!emAprovacao || ehAprovacaoSemFechamentoNota)
                         {
                             FechamentoNota fechamentoNotaClone = null;

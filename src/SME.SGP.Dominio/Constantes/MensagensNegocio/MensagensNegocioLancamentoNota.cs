@@ -21,5 +21,7 @@
         public const string Nao_foi_encontrada_nenhuma_da_avaliacao_informada = "Não foi encontrada nenhuma da(s) avaliação(es) informada(s)";
 
         public const string REGISTRADO_COM_SUCESSO_EM_24_HORAS_SERA_ENVIADO_PARA_APROVACAO = "Registro alterado com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";
+
+        public const string NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10 = "A nota final deve ser menor ou igual a 10.";
     }
 }

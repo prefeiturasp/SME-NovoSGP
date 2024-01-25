@@ -148,7 +148,10 @@ namespace SME.SGP.Aplicacao
                                 .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo && x.DisciplinaId == fechamentoNota.DisciplinaId);                            
                             
                             var semFechamentoNota = (fechamentoNota.Id == 0);
-                            
+
+                            if (fechamentoNota.Nota.NaoEhNulo() && fechamentoNota.Nota > 10)
+                                throw new NegocioException(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10);
+
                             //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                             //   deve gerar o registro do fechamento da nota inicial.
                             if (!emAprovacao || (emAprovacao && semFechamentoNota))
@@ -199,6 +202,9 @@ namespace SME.SGP.Aplicacao
                         }
                         catch (NegocioException e)
                         {
+                            if (e.Message.Equals(MensagensNegocioLancamentoNota.NOTA_NUMERICA_DEVE_SER_MENOR_OU_IGUAL_A_10))
+                                throw e;
+
                             var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
                             await LogarErro(mensagem, e, LogNivel.Negocio);
                         }
