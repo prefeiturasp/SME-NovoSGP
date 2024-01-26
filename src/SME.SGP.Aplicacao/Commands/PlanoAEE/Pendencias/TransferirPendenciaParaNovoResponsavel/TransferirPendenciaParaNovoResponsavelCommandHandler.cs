@@ -7,16 +7,12 @@ namespace SME.SGP.Aplicacao
 {
     public class TransferirPendenciaParaNovoResponsavelCommandHandler : IRequestHandler<TransferirPendenciaParaNovoResponsavelCommand, bool>
     {
-        private readonly IMediator mediator;
         private readonly IRepositorioPendenciaPlanoAEE repositorioPendenciaPlano;
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
 
-        public TransferirPendenciaParaNovoResponsavelCommandHandler(
-                                                IMediator mediator, 
-                                                IRepositorioPendenciaPlanoAEE repositorioPendenciaPlano, 
+        public TransferirPendenciaParaNovoResponsavelCommandHandler(IRepositorioPendenciaPlanoAEE repositorioPendenciaPlano, 
                                                 IRepositorioPendenciaUsuario repositorioPendenciaUsuario)
         {
-            this.mediator = mediator;
             this.repositorioPendenciaPlano = repositorioPendenciaPlano;
             this.repositorioPendenciaUsuario = repositorioPendenciaUsuario;
         }

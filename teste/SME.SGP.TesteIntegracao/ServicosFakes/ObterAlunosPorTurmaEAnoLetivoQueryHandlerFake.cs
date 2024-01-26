@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao
         private readonly string TIPO_RESPONSAVEL_4 = "4";
         private readonly string CELULAR_RESPONSAVEL = "11111111111";
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
             var anoAtual = DateTimeExtension.HorarioBrasilia().Year;
             var dataSituacao = new DateTime(anoAtual, 2, 1);
@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao
                 }
             };
 
-            return await Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma));
+            return Task.FromResult(alunos.Where(x => x.CodigoTurma.ToString() == request.CodigoTurma));
         }
     }
 }

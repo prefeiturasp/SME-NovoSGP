@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             {
                 var erro = $"Erro ao validar a atribuição do professor no EOL - Turma:{request.TurmaCodigo}, Professor:{request.CriadoRF}, Disciplina:{request.ComponenteParaVerificarAtribuicao} - Erro:{e.Message}";
                 await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, e.Message));
-                throw e;
+                throw;
             }
         }
     }

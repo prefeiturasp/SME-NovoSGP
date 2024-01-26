@@ -31,15 +31,15 @@ namespace SME.SGP.Dados.Repositorios
                                 sen.nome as Secao, campos_inseridos as CamposInseridos, campos_alterados as CamposAlterados, 
                                 data_atendimento as DataAtendimento, data_historico as DataHistorico, ha.Id as IdHistorico
                         from encaminhamento_naapa_historico_alteracoes ha
-		                         inner join usuario u on u.id = ha.usuario_id
-		                         left join secao_encaminhamento_naapa sen on sen.id = ha.secao_encaminhamento_naapa_id
+                                 inner join usuario u on u.id = ha.usuario_id
+                                 left join secao_encaminhamento_naapa sen on sen.id = ha.secao_encaminhamento_naapa_id
                         where ha.encaminhamento_naapa_id = @encaminhamentoNAAPAId
                         order by data_historico desc
                         OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY;
                         select count(ha.Id)
                         from encaminhamento_naapa_historico_alteracoes ha
-		                         inner join usuario u on u.id = ha.usuario_id
-		                         left join secao_encaminhamento_naapa sen on sen.id = ha.secao_encaminhamento_naapa_id
+                                 inner join usuario u on u.id = ha.usuario_id
+                                 left join secao_encaminhamento_naapa sen on sen.id = ha.secao_encaminhamento_naapa_id
                         where ha.encaminhamento_naapa_id = @encaminhamentoNAAPAId;";
 
             using (var historicoAlteracoes = await database.Conexao.QueryMultipleAsync(sql, new { encaminhamentoNAAPAId }))

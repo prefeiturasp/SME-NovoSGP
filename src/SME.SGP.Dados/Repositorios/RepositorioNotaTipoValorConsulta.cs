@@ -32,25 +32,25 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = tipoTurma == TipoTurma.EdFisica ?
                     $@"select *
-	                      from notas_conceitos_ciclos_parametos
+                          from notas_conceitos_ciclos_parametos
                        where tipo_nota = {(int)TipoNota.Nota}
                        limit 1;" :
                     @"select
-	                    nccp.*
+                        nccp.*
                     from
-	                    turma t
+                        turma t
                     inner join tipo_ciclo_ano tca on
-	                    (
-		                    (t.ano = 'S' and tca.ano = '1') OR
-    	                    (tca.ano = t.ano)
+                        (
+                            (t.ano = 'S' and tca.ano = '1') OR
+                            (tca.ano = t.ano)
                         )
-	                    and tca.modalidade = t.modalidade_codigo
+                        and tca.modalidade = t.modalidade_codigo
                     inner join tipo_ciclo tc on
-	                    tca.tipo_ciclo_id = tc.id
+                        tca.tipo_ciclo_id = tc.id
                     inner join notas_conceitos_ciclos_parametos nccp on
-	                    nccp.ciclo = tc.id
+                        nccp.ciclo = tc.id
                     where
-	                    t.id = @turmaId";
+                        t.id = @turmaId";
 
             return database.QueryFirstOrDefault<NotaTipoValor>(sql, new { turmaId });
         }
@@ -59,25 +59,25 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = tipoTurma == TipoTurma.EdFisica ?
                     $@"select *
-	                      from notas_conceitos_ciclos_parametos
+                          from notas_conceitos_ciclos_parametos
                        where tipo_nota = {(int)TipoNota.Nota}
                        limit 1;" :
                     @"select
-	                    nccp.*
+                        nccp.*
                     from
-	                    turma t
+                        turma t
                     inner join tipo_ciclo_ano tca on
-	                    (
-		                    (t.ano = 'S' and tca.ano = '1') OR
-    	                    (tca.ano = t.ano)
+                        (
+                            (t.ano = 'S' and tca.ano = '1') OR
+                            (tca.ano = t.ano)
                         )
-	                    and tca.modalidade = t.modalidade_codigo
+                        and tca.modalidade = t.modalidade_codigo
                     inner join tipo_ciclo tc on
-	                    tca.tipo_ciclo_id = tc.id
+                        tca.tipo_ciclo_id = tc.id
                     inner join notas_conceitos_ciclos_parametos nccp on
-	                    nccp.ciclo = tc.id
+                        nccp.ciclo = tc.id
                     where
-	                    t.id = @turmaId";
+                        t.id = @turmaId";
 
             return await database.QueryFirstOrDefaultAsync<NotaTipoValor>(sql, new { turmaId });
         }

@@ -1,10 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +14,7 @@ namespace SME.SGP.Aplicacao.Queries.Bimestre.ObterPorModalidade
             {
 
             }
-            public async Task<List<FiltroBimestreDto>> Handle(ObterBimestrePorModalidadeQuery request, CancellationToken cancellationToken)
+            public Task<List<FiltroBimestreDto>> Handle(ObterBimestrePorModalidadeQuery request, CancellationToken cancellationToken)
             {
                 var listaBimestres = new List<FiltroBimestreDto>();
 
@@ -44,7 +41,7 @@ namespace SME.SGP.Aplicacao.Queries.Bimestre.ObterPorModalidade
                 listaBimestres.Add(primeiro);
                 listaBimestres.Add(segundoBimestre);
 
-                if (request.Modalidade != Modalidade.EJA)
+                if (request.Modalidade.NaoEhSemestral())
                 {
                     var terceiroBimestre = new FiltroBimestreDto()
                     {
@@ -73,7 +70,7 @@ namespace SME.SGP.Aplicacao.Queries.Bimestre.ObterPorModalidade
                     listaBimestres.Add(bimestreFinal);
                 }
 
-                return listaBimestres;
+                return Task.FromResult(listaBimestres);
 
             }
         }

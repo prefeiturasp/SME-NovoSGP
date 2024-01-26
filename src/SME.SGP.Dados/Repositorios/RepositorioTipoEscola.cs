@@ -54,8 +54,8 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<TipoEscolaDto>> ObterTipoEscolaPorDreEUe(string dreCodigo, string ueCodigo, int[] modalidades)
         {
             var query = new StringBuilder(@"select distinct te.id,
-						                           te.cod_tipo_escola_eol as CodTipoEscola,
-						                           te.descricao
+                                                   te.cod_tipo_escola_eol as CodTipoEscola,
+                                                   te.descricao
                                               from tipo_escola te
                                              inner join ue on ue.tipo_escola = te.cod_tipo_escola_eol
                                              inner join dre on dre.id = ue.dre_id ");

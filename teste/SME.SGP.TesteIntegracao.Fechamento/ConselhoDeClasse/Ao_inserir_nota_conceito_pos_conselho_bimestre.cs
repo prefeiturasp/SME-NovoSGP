@@ -96,6 +96,24 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito);
         }
 
+        [Fact(DisplayName = "Conselho de classe - Deve alterar nota conceito de turma celp")]
+        public async Task Deve_lancar_nota_conceito_turma_celp()
+        {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_INGLES_ID_9, TipoNota.Conceito, fechamentoTurma: FECHAMENTO_TURMA_ID_2, bimestre: BIMESTRE_2);
+
+            await CriarDados(ObterPerfilProfessor(),
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                TipoNota.Conceito,
+                ANO_1,
+                Modalidade.CELP,
+                ModalidadeTipoCalendario.CELP,
+                false,
+                SituacaoConselhoClasse.EmAndamento,
+                true);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Conceito);
+        }
+
 
         private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {

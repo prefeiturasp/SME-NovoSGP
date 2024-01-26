@@ -1,27 +1,25 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using System;
+using SME.SGP.Infra.Dtos;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterAtribuicoesPorTurmaEProfessorQuery : IRequest<IEnumerable<AtribuicaoCJ>>
     {
-        public ObterAtribuicoesPorTurmaEProfessorQuery(Modalidade? modalidade, string turmaId, string ueId, long componenteCurricularId, string usuarioRf, string usuarioNome, bool? substituir, string dreCodigo = "", string[] turmaIds = null, 
-            int? anoLetivo = null, bool? historico = null)
+        public ObterAtribuicoesPorTurmaEProfessorQuery(AtribuicoesPorTurmaEProfessorDto dto)
         {
-            Modalidade = modalidade;
-            TurmaId = turmaId;
-            UeId = ueId;
-            ComponenteCurricularId = componenteCurricularId;
-            UsuarioRf = usuarioRf;
-            UsuarioNome = usuarioNome;
-            Substituir = substituir;
-            DreCodigo = dreCodigo;
-            TurmaIds = turmaIds;
-            AnoLetivo = anoLetivo;
-            Historico = historico;
+            Modalidade = dto.Modalidade;
+            TurmaId = dto.TurmaId;
+            UeId = dto.UeId;
+            ComponenteCurricularId = dto.ComponenteCurricularId;
+            UsuarioRf = dto.UsuarioRf;
+            UsuarioNome = dto.UsuarioNome;
+            Substituir = dto.Substituir;
+            DreCodigo = dto.DreCodigo;
+            TurmaIds = dto.TurmaIds;
+            AnoLetivo = dto.AnoLetivo;
+            Historico = dto.Historico;
         }
 
         public Modalidade? Modalidade { get; set; }
@@ -33,7 +31,7 @@ namespace SME.SGP.Aplicacao
         public bool? Substituir { get; set; }
         public string DreCodigo { get; set; }
         public string[] TurmaIds { get; set; }
-        public int? AnoLetivo { get; set; }
+        public int AnoLetivo { get; set; }
         public bool? Historico { get; set; }
     }
 }

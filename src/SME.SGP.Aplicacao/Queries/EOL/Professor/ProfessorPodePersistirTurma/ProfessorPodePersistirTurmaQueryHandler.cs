@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Net.Http;
@@ -24,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var resposta = await httpClient.GetAsync(string.Format(ServicosEolConstants.URL_PROFESSORES_TURMAS_ATRIBUICAO_VERIFICAR_DATA, request.ProfessorRf, request.CodigoTurma) + $"?dataConsulta={dataString}", cancellationToken);
 
             if (!resposta.IsSuccessStatusCode)
-                throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
+                throw new NegocioException("Não foi possível validar a atribuição do professor no EOL.");
             
             var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
             return JsonConvert.DeserializeObject<bool>(json);

@@ -29,15 +29,15 @@ namespace SME.SGP.Dados.Repositorios
 
             var sql = $@"select t.modalidade_codigo as modalidade, 
                                 {campoNomeTurma}
-		                        t.ano,
-		                        sum(cft.quantidade_acima_minimo_frequencia)  AS QuantidadeAcimaMinimoFrequencia,
-		                        sum(cft.quantidade_abaixo_minimo_frequencia) AS QuantidadeAbaixoMinimoFrequencia
-	                      from consolidacao_frequencia_turma cft
-	                     inner join turma t on t.id = cft.turma_id
+                                t.ano,
+                                sum(cft.quantidade_acima_minimo_frequencia)  AS QuantidadeAcimaMinimoFrequencia,
+                                sum(cft.quantidade_abaixo_minimo_frequencia) AS QuantidadeAbaixoMinimoFrequencia
+                          from consolidacao_frequencia_turma cft
+                         inner join turma t on t.id = cft.turma_id
                          inner join ue on ue.id = t.ue_id 
                          inner join dre on dre.id = ue.dre_id 
-	                     where quantidade_abaixo_minimo_frequencia >= 0
-	                       and t.ano_letivo = @anoLetivo
+                         where quantidade_abaixo_minimo_frequencia >= 0
+                           and t.ano_letivo = @anoLetivo
                            and t.modalidade_codigo = @modalidade";
             if (semestre > 0) sql += @"  and t.semestre = @semestre";
             if (dreId > 0) sql += @" and dre.id = @dreId";

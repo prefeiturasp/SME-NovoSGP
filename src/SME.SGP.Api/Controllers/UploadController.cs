@@ -38,8 +38,6 @@ namespace SME.SGP.Api.Controllers
             var files = Request.Form.Files;
             if (files.NaoEhNulo())
             {
-                //Foi adicionado fixo o valor https pois será discutido com a infra o problema de SSL
-                //Depois que corrigir, colocar: {Request.Protocol.Split('/')[0].ToLower()}
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
@@ -114,9 +112,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria,[FromServices] IObterServicoArmazenamentoUseCase useCase)
+        public IActionResult ObterUrlServicoArmazenamento(string nomeArquivo, bool ehPastaTemporaria,[FromServices] IObterServicoArmazenamentoUseCase useCase)
         {
-            return Ok(await useCase.Executar(nomeArquivo,ehPastaTemporaria));
+            return Ok(useCase.Executar(nomeArquivo,ehPastaTemporaria));
         }
     }
 }

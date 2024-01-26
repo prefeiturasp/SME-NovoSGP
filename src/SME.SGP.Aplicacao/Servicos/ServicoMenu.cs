@@ -45,84 +45,89 @@ namespace SME.SGP.Aplicacao
                     EhMenu = atributoEnumerado.EhMenu
                 };
 
-                var permissoesMenu = agrupamento.GroupBy(item => new
-                {
-                    item.GetAttribute<PermissaoMenuAttribute>().Menu,
-                    Ordem = item.GetAttribute<PermissaoMenuAttribute>().OrdemMenu
-                }).OrderBy(a => a.Key.Ordem).ToList();
+                var permissoesMenu = agrupamento.GroupBy(item => new MenuOrdem(item.GetAttribute<PermissaoMenuAttribute>().Menu,
+                                                                               item.GetAttribute<PermissaoMenuAttribute>().OrdemMenu)).OrderBy(a => a.Key.Ordem).ToList();
 
-                foreach (var permissaoMenu in permissoesMenu)
-                {
-                    var menu = permissaoMenu.First();
-                    var menuEnumerado = menu.GetAttribute<PermissaoMenuAttribute>();
-
-                    if (menuEnumerado.EhSubMenu)
-                    {
-                        var menuPai = new MenuPermissaoDto
-                        {
-                            Codigo = (int)menu,
-                            Descricao = menuEnumerado.Menu,
-                        };
-
-                        foreach (var subMenu in permissaoMenu.OrderBy(o=> o.GetAttribute<PermissaoMenuAttribute>().OrdemSubMenu).GroupBy(a => a.GetAttribute<PermissaoMenuAttribute>().Url))
-                        {
-                            if (!menuEnumerado.EhSubMenu) 
-                                continue;
-                            
-                            var menuSubEnumerado = subMenu.FirstOrDefault();
-                            var menuSubEnumeradoComAtributo = menuSubEnumerado.GetAttribute<PermissaoMenuAttribute>();
-
-                            var url = ObterUrlComRedirect(menuSubEnumeradoComAtributo);
-
-                            var permissoesSubMenu = permissaoMenu.Where(c =>
-                                c.GetAttribute<PermissaoMenuAttribute>().Url == subMenu.Key).ToList();
-
-                            menuPai.SubMenus.Add(new MenuPermissaoDto()
-                            {
-                                Codigo = (int)menuSubEnumerado,
-                                Url = url,
-                                Descricao = menuSubEnumeradoComAtributo.SubMenu,
-                                Ordem = menuSubEnumeradoComAtributo.OrdemSubMenu,
-                                PodeConsultar = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
-                                PodeAlterar = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
-                                PodeIncluir = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
-                                PodeExcluir = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao),
-                                AjudaDoSistema = ajudas.FirstOrDefault(c => c.IdModulo == (int)menuSubEnumerado)?.AjudaDoSistema
-                            });
-                        }
-                        menuRetornoDto.Menus.Add(menuPai);
-                    }
-                    else
-                    {
-                        var url = ObterUrlComRedirect(menuEnumerado);
-                        menuRetornoDto.Menus.Add(new MenuPermissaoDto()
-                        {
-                            Codigo = (int)menu,
-                            Url = url,
-                            Descricao = menuEnumerado.Menu,
-                            PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
-                            PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
-                            PodeExcluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao),
-                            PodeConsultar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
-                            AjudaDoSistema = ajudas.FirstOrDefault(c => c.IdModulo == (int)menu)?.AjudaDoSistema
-                        });
-                    }
-                }
+                AdicionarPermissoesMenu(menuRetornoDto, permissoesMenu, ajudas);
                 
                 menuRetornoDto.Menus = menuRetornoDto.Menus.OrderBy(a => a.Ordem).ToList();
                 listaRetorno.Add(menuRetornoDto);
             }
-            
             return listaRetorno;
+        }
+
+        private record MenuOrdem(string Menu, int Ordem);
+
+        private void AdicionarPermissoesMenu(MenuRetornoDto menuRetornoDto, List<IGrouping<MenuOrdem, Permissao>> permissoesMenu, IEnumerable<AjudaDoSistemaDto> ajudas)
+        {
+            foreach (var permissaoMenu in permissoesMenu)
+            {
+                var menu = permissaoMenu.First();
+                var menuEnumerado = menu.GetAttribute<PermissaoMenuAttribute>();
+
+                if (menuEnumerado.EhSubMenu)
+                {
+                    var menuPai = new MenuPermissaoDto
+                    {
+                        Codigo = (int)menu,
+                        Descricao = menuEnumerado.Menu,
+                    };
+
+                    AdicionarPermissoesSubMenu(menuPai, permissaoMenu, ajudas, menuEnumerado.EhSubMenu);
+                    menuRetornoDto.Menus.Add(menuPai);
+                }
+                else
+                {
+                    var url = ObterUrlComRedirect(menuEnumerado);
+                    menuRetornoDto.Menus.Add(new MenuPermissaoDto()
+                    {
+                        Codigo = (int)menu,
+                        Url = url,
+                        Descricao = menuEnumerado.Menu,
+                        PodeAlterar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
+                        PodeIncluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
+                        PodeExcluir = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao),
+                        PodeConsultar = permissaoMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
+                        AjudaDoSistema = ajudas.FirstOrDefault(c => c.IdModulo == (int)menu)?.AjudaDoSistema
+                    });
+                }
+            }
+        }
+
+        private void AdicionarPermissoesSubMenu(MenuPermissaoDto menuPai, IGrouping<MenuOrdem, Permissao> permissaoMenu, IEnumerable<AjudaDoSistemaDto> ajudas, bool ehSubMenu)
+        {
+            foreach (var subMenu in permissaoMenu.OrderBy(o => o.GetAttribute<PermissaoMenuAttribute>().OrdemSubMenu).GroupBy(a => a.GetAttribute<PermissaoMenuAttribute>().Url))
+            {
+                if (!ehSubMenu)
+                    continue;
+
+                var menuSubEnumerado = subMenu.FirstOrDefault();
+                var menuSubEnumeradoComAtributo = menuSubEnumerado.GetAttribute<PermissaoMenuAttribute>();
+
+                var url = ObterUrlComRedirect(menuSubEnumeradoComAtributo);
+
+                var permissoesSubMenu = permissaoMenu.Where(c =>
+                    c.GetAttribute<PermissaoMenuAttribute>().Url == subMenu.Key).ToList();
+
+                menuPai.SubMenus.Add(new MenuPermissaoDto()
+                {
+                    Codigo = (int)menuSubEnumerado,
+                    Url = url,
+                    Descricao = menuSubEnumeradoComAtributo.SubMenu,
+                    Ordem = menuSubEnumeradoComAtributo.OrdemSubMenu,
+                    PodeConsultar = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhConsulta),
+                    PodeAlterar = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhAlteracao),
+                    PodeIncluir = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhInclusao),
+                    PodeExcluir = permissoesSubMenu.Any(a => a.GetAttribute<PermissaoMenuAttribute>().EhExclusao),
+                    AjudaDoSistema = ajudas.FirstOrDefault(c => c.IdModulo == (int)menuSubEnumerado)?.AjudaDoSistema
+                });
+            }
         }
 
         private string ObterUrlComRedirect(PermissaoMenuAttribute permissaoMenuAttribute)
         {
             var url = permissaoMenuAttribute.Url;
-            //if (!string.IsNullOrWhiteSpace(permissaoMenuAttribute.Redirect))
-            //{
-            //    url = $"{url}?redirect={permissaoMenuAttribute.Redirect}";
-            //}
+
             return url;
         }
     }

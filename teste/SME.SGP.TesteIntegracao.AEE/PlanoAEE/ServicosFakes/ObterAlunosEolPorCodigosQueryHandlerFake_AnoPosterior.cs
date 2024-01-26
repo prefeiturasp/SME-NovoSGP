@@ -1,15 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Shouldly;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFake
 {
@@ -17,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFake
     {
         private const int ALUNO_1 = 1;
         private const int ALUNO_2 = 2;
-        public async Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<TurmasDoAlunoDto>> Handle(ObterAlunosEolPorCodigosQuery request, CancellationToken cancellationToken)
         {
             var dataAnoPosterior = DateTimeExtension.HorarioBrasilia().AddYears(1);
             var dataAnoAnterior = DateTimeExtension.HorarioBrasilia().AddYears(-1);
@@ -74,7 +71,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFake
                 }
             };
 
-            return lista.FindAll(aluno => aluno.CodigoAluno == request.CodigosAluno.FirstOrDefault());
+            var resultado = lista.FindAll(aluno => aluno.CodigoAluno == request.CodigosAluno.FirstOrDefault());
+
+            return Task.FromResult<IEnumerable<TurmasDoAlunoDto>>(resultado);
         }
     }
 }

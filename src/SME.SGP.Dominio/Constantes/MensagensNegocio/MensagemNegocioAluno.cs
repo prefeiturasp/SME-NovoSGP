@@ -2,6 +2,8 @@
 {
     public class MensagemNegocioAluno
     {
+        protected MensagemNegocioAluno() { }
+
         public const string CRIANCA_INATIVA = "Criança Inativa";
         public const string CRIANCA_NOVA = "Criança Nova";
         public const string ESTUDANTE_NOVO = "Estudante Novo";

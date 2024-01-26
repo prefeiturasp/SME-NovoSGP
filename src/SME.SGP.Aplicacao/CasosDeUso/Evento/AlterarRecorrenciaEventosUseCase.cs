@@ -22,11 +22,12 @@ namespace SME.SGP.Aplicacao
             this.servicoEvento = servicoEvento;
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public Task<bool> Executar(MensagemRabbit param)
         {
             var dados = param.ObterObjetoMensagem<AlterarRecorrenciaEventosParametro>();
             servicoEvento.AlterarRecorrenciaEventos(dados.Evento, dados.AlterarRecorrenciaCompleta);
-            return true;
+            
+            return Task.FromResult(true);
         }
     }
 }

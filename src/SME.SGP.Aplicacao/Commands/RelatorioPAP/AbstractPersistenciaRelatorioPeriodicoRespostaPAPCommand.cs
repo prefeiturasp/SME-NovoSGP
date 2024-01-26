@@ -11,7 +11,7 @@ namespace SME.SGP.Aplicacao
         protected readonly IMediator mediator;
         protected readonly IRepositorioRelatorioPeriodicoPAPResposta repositorio;
 
-        public AbstractPersistenciaRelatorioPeriodicoRespostaPAPCommand(IMediator mediator, IRepositorioRelatorioPeriodicoPAPResposta repositorio)
+        protected AbstractPersistenciaRelatorioPeriodicoRespostaPAPCommand(IMediator mediator, IRepositorioRelatorioPeriodicoPAPResposta repositorio)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));

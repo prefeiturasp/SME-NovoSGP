@@ -10,11 +10,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
     public class ObterAlunoPorTurmaAlunoCodigoQueryHandlerParecerConclusivo : IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>
     {
-        public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorTurmaAlunoCodigoQuery request, CancellationToken cancellationToken)
+        public Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorTurmaAlunoCodigoQuery request, CancellationToken cancellationToken)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 
-            return await Task.FromResult(new AlunoPorTurmaResposta()
+            return Task.FromResult(new AlunoPorTurmaResposta()
             {
                 CodigoAluno = "1",
                 NomeAluno = "Nome aluno 1",

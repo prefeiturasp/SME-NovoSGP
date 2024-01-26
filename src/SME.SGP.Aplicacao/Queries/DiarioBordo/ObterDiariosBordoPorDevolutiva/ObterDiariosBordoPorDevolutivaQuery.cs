@@ -1,20 +1,19 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterDiariosBordoPorDevolutivaQuery : IRequest<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>>
     {
-        public ObterDiariosBordoPorDevolutivaQuery(long devolutivaId)
+        public ObterDiariosBordoPorDevolutivaQuery(long devolutivaId, int anoLetivo)
         {
             DevolutivaId = devolutivaId;
+            AnoLetivo = anoLetivo;
         }
 
         public long DevolutivaId { get; set; }
+        public int AnoLetivo { get; set; }
     }
 
     public class ObterDiariosBordoPorDevolutivaQueryValidator : AbstractValidator<ObterDiariosBordoPorDevolutivaQuery>

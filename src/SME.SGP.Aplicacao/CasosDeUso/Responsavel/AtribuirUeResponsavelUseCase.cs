@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                             .ObtemPorDreESupervisor(atribuicaoResponsavelUe.DreId, atribuicaoResponsavelUe.ResponsavelId, false);
 
                     await AjustarRegistrosExistentes(atribuicaoResponsavelUe, escolasAtribuidas);
-                    await AtribuirEscolas(atribuicaoResponsavelUe);
+                    AtribuirEscolas(atribuicaoResponsavelUe);
                 }
                 return new SalvarAtribuicaoResponsavelStatus { AtribuidoComSucesso = string.IsNullOrEmpty(validacao), Mensagem = validacao };
             }
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task AtribuirEscolas(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
+        private void AtribuirEscolas(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
         {
             if (atribuicaoSupervisorEscolaDto.UesIds.NaoEhNulo())
             {
@@ -102,12 +102,6 @@ namespace SME.SGP.Aplicacao
                     });
                 }
             }
-        }
-
-        private async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
-        {
-            return await repositorioSupervisorEscolaDre.VerificarSeJaExisteAtribuicaoExcluida(atribuicaoSupervisorEscolaDto.DreId,
-                                atribuicaoSupervisorEscolaDto.UesIds.ToArray(), (int)atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
         }
 
         private async Task AjustarRegistrosExistentes(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto, IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)

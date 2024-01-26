@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -231,7 +232,19 @@ namespace SME.SGP.Api.Controllers
 
             if (filtro.Length < 3)
                 filtro = "";
-            var ues = await useCase.Executar(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo, consideraNovasUEs, filtrarTipoEscolaPorAnoLetivo, filtro);
+
+            var dto = new UEsPorDreDto()
+            {
+                CodigoDre = codigoDre,
+                Modalidade = modalidade,
+                Periodo = periodo,
+                AnoLetivo = anoLetivo,
+                ConsideraNovasUEs = consideraNovasUEs,
+                FiltrarTipoEscolaPorAnoLetivo = filtrarTipoEscolaPorAnoLetivo,
+                Filtro = filtro
+            };
+
+            var ues = await useCase.Executar(dto);
 
             if (!ues.Any())
                 return NoContent();

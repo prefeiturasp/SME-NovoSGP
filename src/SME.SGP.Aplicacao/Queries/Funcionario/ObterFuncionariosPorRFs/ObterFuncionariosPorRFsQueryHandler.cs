@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao.Queries.Funcionario.ObterListaNomePorListaRF
                 return JsonConvert.DeserializeObject<IEnumerable<ProfessorResumoDto>>(json);
             }
 
-            throw new Exception($"Não foi possível localizar os rfs : {string.Join(",",request.CodigosRf)}.");
+            throw new NegocioException($"Não foi possível localizar os rfs : {string.Join(",",request.CodigosRf)}.");
         } 
     }
 }

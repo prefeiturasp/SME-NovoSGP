@@ -19,18 +19,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ArquivoArmazenadoItineranciaDto> Handle(UploadArquivoItineranciaCommand request, CancellationToken cancellationToken)
         {
-            if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
-            {
-                if (request.Arquivo.ContentType != request.TipoConteudo.Name())
-                    throw new NegocioException(MensagemNegocioComuns.FORMATO_ARQUIVO_NAO_ACEITO);
-            }
+            if (request.TipoConteudo != TipoConteudoArquivo.Indefinido &&
+                request.Arquivo.ContentType != request.TipoConteudo.Name())
+                throw new NegocioException(MensagemNegocioComuns.FORMATO_ARQUIVO_NAO_ACEITO);
+            
             var nomeArquivo = request.Arquivo.FileName;
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, TipoArquivo.Itinerancia, request.Arquivo.ContentType));
             arquivo.Path = await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), TipoArquivo.Itinerancia));
 
             return MapearDto(arquivo);
         }
-
 
         private ArquivoArmazenadoItineranciaDto MapearDto(ArquivoArmazenadoDto armazenadoDto)
         {

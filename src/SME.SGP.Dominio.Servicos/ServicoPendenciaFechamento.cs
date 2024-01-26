@@ -23,7 +23,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
 
         private int avaliacoesSemnota;
@@ -38,7 +37,6 @@ namespace SME.SGP.Dominio.Servicos
                                           IRepositorioPendencia repositorioPendencia,
                                           IRepositorioPendenciaFechamento repositorioPendenciaFechamento,
                                           IRepositorioAulaConsulta repositorioAula,
-                                          IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                           IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
                                           IServicoUsuario servicoUsuario,
                                           IServicoAbrangencia servicoAbrangencia,
@@ -52,7 +50,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -104,7 +101,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<ProfessorTitularDisciplinaEol> BuscaProfessorTitularPorTurmaEDisciplina(string turmaCodigo, long disciplinaId)
         {
             var professoresTitularesPorTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turmaCodigo));
-            var professorTitularPorTurmaEDisciplina = professoresTitularesPorTurma.FirstOrDefault(o => o.DisciplinasId.Contains(disciplinaId));
+            var professorTitularPorTurmaEDisciplina = professoresTitularesPorTurma.FirstOrDefault(o => o.DisciplinasId().Contains(disciplinaId));
 
             if (professorTitularPorTurmaEDisciplina.EhNulo())
                 throw new NegocioException($"Não existe professor titular para esta turma/disciplina {turmaCodigo}/{disciplinaId}");
@@ -152,7 +149,7 @@ namespace SME.SGP.Dominio.Servicos
                     var professor = usuariosPendencias
                         .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p => p.ProfessorRf == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
 
-                    var professorTitularAtualDaTurma = professoresTitularesDaTurma.FirstOrDefault(p => p.DisciplinasId.Any(d => d == long.Parse(aula.DisciplinaId)));
+                    var professorTitularAtualDaTurma = professoresTitularesDaTurma.FirstOrDefault(p => p.DisciplinasId().Any(d => d == long.Parse(aula.DisciplinaId)));
 
                     professor = professorTitularAtualDaTurma.NaoEhNulo() && professor.CodigoRf != professorTitularAtualDaTurma.ProfessorRf
                         ? new Usuario()
@@ -167,7 +164,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
 
-                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId.Contains(disciplinaId)).FirstOrDefault()?.ProfessorRf;
+                var professorRf = professoresTitularesDaTurma.FirstOrDefault(professor => professor.DisciplinasId().Contains(disciplinaId))?.ProfessorRf;
                 if (string.IsNullOrWhiteSpace(professorRf) || aulasCJ)
                     professorRf = aulas.FirstOrDefault()?.ProfessorRf;
 
@@ -217,7 +214,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
 
-                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId.Contains(disciplinaId)).FirstOrDefault()?.ProfessorRf;
+                var professorRf = professoresTitularesDaTurma.FirstOrDefault(professor => professor.DisciplinasId().Contains(disciplinaId))?.ProfessorRf;
                 if (string.IsNullOrWhiteSpace(professorRf) || aulasCJ)
                     professorRf = atividades.FirstOrDefault()?.ProfessorRf;
 
@@ -368,7 +365,7 @@ namespace SME.SGP.Dominio.Servicos
                 var rfProfTitularTurma = string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(professorRF.disciplnaId))
-                    rfProfTitularTurma = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId.Contains(long.Parse(professorRF.disciplnaId))).FirstOrDefault()?.ProfessorRf;
+                    rfProfTitularTurma = professoresTitularesDaTurma.FirstOrDefault(professor => professor.DisciplinasId().Contains(long.Parse(professorRF.disciplnaId)))?.ProfessorRf;
                 else
                     rfProfTitularTurma = professoresTitularesDaTurma.FirstOrDefault()?.ProfessorRf;
                 

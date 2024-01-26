@@ -12,12 +12,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAcompanhamentoAlunoUseCase : AbstractUseCase, IObterAcompanhamentoAlunoUseCase
     {
-        private readonly IConsultasPeriodoFechamento consultaPeriodoFechamento;
-
-        public ObterAcompanhamentoAlunoUseCase(IMediator mediator, IConsultasPeriodoFechamento consultaPeriodoFechamento) : base(mediator)
-        {
-            this.consultaPeriodoFechamento = consultaPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultaPeriodoFechamento));
-        }
+        public ObterAcompanhamentoAlunoUseCase(IMediator mediator) : base(mediator)
+        {}
 
         public async Task<AcompanhamentoAlunoTurmaSemestreDto> Executar(FiltroAcompanhamentoTurmaAlunoSemestreDto filtro)
         {
@@ -91,16 +87,22 @@ namespace SME.SGP.Aplicacao
 
         private void TratamentoSemestre(AcompanhamentoAlunoTurmaSemestreDto acompanhamentosAlunoTurmaSemestre, IEnumerable<PeriodoEscolar> periodosEscolares, int semestre, Modalidade modalidadeCodigo)
         {
-
-
-            var periodosSemestre = modalidadeCodigo == Modalidade.EJA ?
-                periodosEscolares :
-                    semestre == 1 ?
-                    periodosEscolares.Where(c => new int[] { 1, 2 }.Contains(c.Bimestre)) :
-                    periodosEscolares.Where(c => new int[] { 3, 4 }.Contains(c.Bimestre));
+            var periodosSemestre = ObterPeriodo(periodosEscolares, modalidadeCodigo, semestre);
 
             acompanhamentosAlunoTurmaSemestre.PeriodoInicio = periodosSemestre.Min(a => a.PeriodoInicio);
             acompanhamentosAlunoTurmaSemestre.PeriodoFim = periodosSemestre.Max(a => a.PeriodoFim);
+        }
+
+        private IEnumerable<PeriodoEscolar> ObterPeriodo(IEnumerable<PeriodoEscolar> periodosEscolares, Modalidade modalidadeCodigo, int semestre)
+        {
+            const int PRIMEIRO_SEMESTRE = 1;
+
+            if (modalidadeCodigo == Modalidade.EJA)
+                return periodosEscolares;
+
+            return semestre == PRIMEIRO_SEMESTRE ?
+                    periodosEscolares.Where(c => new int[] { 1, 2 }.Contains(c.Bimestre)) :
+                    periodosEscolares.Where(c => new int[] { 3, 4 }.Contains(c.Bimestre));
         }
 
         private async Task<Turma> ObterTurma(string turmaCodigo)

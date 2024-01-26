@@ -1,20 +1,21 @@
 ﻿using MediatR;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarAtividadeInfantilCommand : IRequest
     {
-        public SalvarAtividadeInfantilCommand(long aulaId, string usuarioRf, string titulo, string descricao, DateTime dataCriacao, DateTime? dataAlteracao, long atividadeClassroomId, string email)
+        public SalvarAtividadeInfantilCommand(long aulaId, AtividadeGsaDto atividade)
         {
             AulaId = aulaId; 
-            UsuarioRf = usuarioRf;
-            Titulo = titulo;
-            Mensagem = descricao;
-            DataCriacao = dataCriacao;
-            DataAlteracao = dataAlteracao;
-            AvisoClassroomId = atividadeClassroomId;
-            Email = email;
+            UsuarioRf = atividade.UsuarioRf;
+            Titulo = atividade.Titulo;
+            Mensagem = atividade.Descricao;
+            DataCriacao = atividade.DataCriacao;
+            DataAlteracao = atividade.DataAlteracao;
+            AvisoClassroomId = atividade.AtividadeClassroomId;
+            Email = atividade.Email;
         }
 
         public long AulaId { get; }

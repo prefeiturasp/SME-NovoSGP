@@ -1,21 +1,22 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class InserirWorkflowReposicaoAulaCommand : IRequest<long>
     {
-        public InserirWorkflowReposicaoAulaCommand(int ano, long aulaId, int quantidade, string dreCodigo, string dreNome, string ueCodigo, string ueNome, string turmaNome, string componenteCurricularNome, Guid? perfilAtual = null)
+        public InserirWorkflowReposicaoAulaCommand(int ano, Aula aula, Turma turma, string componenteCurricularNome, Guid? perfilAtual = null)
         {
             Ano = ano;
-            AulaId = aulaId;
-            Quantidade = quantidade;
-            DreCodigo = dreCodigo;
-            DreNome = dreNome;
-            UeCodigo = ueCodigo;
-            UeNome = ueNome;
-            TurmaNome = turmaNome;
+            AulaId = aula.Id;
+            Quantidade = aula.Quantidade;
+            DreCodigo = turma.Ue.Dre.CodigoDre;
+            DreNome = turma.Ue.Dre.Nome;
+            UeCodigo = turma.Ue.CodigoUe;
+            UeNome = turma.Ue.Nome;
+            TurmaNome = turma.Nome;
             ComponenteCurricularNome = componenteCurricularNome;
             PerfilAtual = perfilAtual;
         }

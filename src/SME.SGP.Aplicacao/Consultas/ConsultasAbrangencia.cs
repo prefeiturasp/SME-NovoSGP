@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -113,13 +112,8 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-            var filtroEhCodigo = false;
+            var filtroEhCodigo = !string.IsNullOrWhiteSpace(filtro) && filtro.All(char.IsDigit);
 
-            if (!string.IsNullOrWhiteSpace(filtro))
-            {
-                if (filtro.All(char.IsDigit))
-                    filtroEhCodigo = true;
-            }
             return await repositorioAbrangencia.ObterDres(login, perfil, modalidade, periodo, consideraHistorico, anoLetivo, filtro, filtroEhCodigo);
         }
 
@@ -144,9 +138,14 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
 
             var result = await repositorioAbrangencia.ObterTurmas(codigoUe, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo);
-            var turmasRegulares = await mediator.Send(new ObterTurmasRegularesQuery(result.Select(x => x.Codigo).ToArray()));
+            IEnumerable<string> turmasTipo = null;
 
-            return result.Where(r => turmasRegulares.Contains(r.Codigo));
+            if (modalidade.EhCELP())
+                turmasTipo = await mediator.Send(new ObterTurmasProgramaQuery(result.Select(x => x.Codigo).ToArray()));
+            else
+                turmasTipo = await mediator.Send(new ObterTurmasRegularesQuery(result.Select(x => x.Codigo).ToArray()));
+
+            return result.Where(r => turmasTipo.Contains(r.Codigo));
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPrograma(string codigoUe, Modalidade modalidade, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0)

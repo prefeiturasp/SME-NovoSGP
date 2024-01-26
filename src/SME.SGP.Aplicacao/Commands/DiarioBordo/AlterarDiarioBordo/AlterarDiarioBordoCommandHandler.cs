@@ -3,9 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -45,11 +43,10 @@ namespace SME.SGP.Aplicacao
 
                 var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
 
-                if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
-                {
-                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
-                        throw new NegocioException($"Você não possui permissão para alterar o registro de diário de bordo neste período");
-                }
+                if (possuiAtribuicaoCJ && 
+                    atribuicoesEsporadica.Any() &&
+                    !atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
+                    throw new NegocioException($"Você não possui permissão para alterar o registro de diário de bordo neste período");
             }
 
             var componenteCurricularPrincipalProfessor = await RetornaComponenteCurricularIdPrincipalDoProfessor(turma.CodigoTurma, request.ComponenteCurricularId);
@@ -73,7 +70,7 @@ namespace SME.SGP.Aplicacao
             var disciplinas = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(turmaCodigo, false, false, false);
             if (disciplinas != null && disciplinas.Any())
             {
-                if (disciplinas.Count() > 1)
+                if (disciplinas.Count > 1)
                 {
                     var disciplina = disciplinas.Where(b => b.CodigoComponenteCurricular == componenteCurricularId);
 

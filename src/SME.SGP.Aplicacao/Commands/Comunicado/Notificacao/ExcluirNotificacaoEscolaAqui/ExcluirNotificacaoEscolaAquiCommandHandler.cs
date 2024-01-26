@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 return true;
             else
-                throw new Exception($"Não foi possível excluir os dados no aplicativo do aluno");
+                throw new NegocioException($"Não foi possível excluir os dados no aplicativo do aluno");
         }
     }
 }

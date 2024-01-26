@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
             var login = await mediator.Send(ObterLoginAtualQuery.Instance);
             var perfil = await mediator.Send(ObterPerfilAtualQuery.Instance);
             var dre = await mediator.Send(new ObterDREPorIdQuery(request.Filtro.DreId));
-            var ues = await mediator.Send(new ObterUEsPorDREQuery(dre.CodigoDre, login, perfil, 0, 0, request.Filtro.ConsideraHistorico, request.Filtro.AnoLetivo));
+            var ues = await mediator.Send(new ObterUEsPorDREQuery(dre.CodigoDre, login, perfil, request.Filtro.ConsideraHistorico, request.Filtro.AnoLetivo));
 
             return ues.Select(x => x.Id).ToArray();
         }

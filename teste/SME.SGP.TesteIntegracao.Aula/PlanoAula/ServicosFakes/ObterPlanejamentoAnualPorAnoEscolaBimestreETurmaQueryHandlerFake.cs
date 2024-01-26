@@ -9,9 +9,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
 {
     public class ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandlerFake: IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery,PlanejamentoAnual>
     {
-        public async Task<PlanejamentoAnual> Handle(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery request, CancellationToken cancellationToken)
+        public Task<PlanejamentoAnual> Handle(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery request, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(new PlanejamentoAnual()
+            return Task.FromResult(new PlanejamentoAnual()
             {
                 Id = 1,
                 TurmaId = 1,

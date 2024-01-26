@@ -59,18 +59,21 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var servicoUsuario = ServiceProvider.GetService<IServicoUsuario>();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-
-            var comando = new InserirAulaRecorrenteCommand(usuario,
-                                                            new(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
-                                                            5,
-                                                            "1",
-                                                            1106,
-                                                            "Regência",
-                                                            1,
-                                                            TipoAula.Normal,
-                                                            "1",
-                                                            true,
-                                                            RecorrenciaAula.AulaUnica);
+            var aulaRecorrente = new IncluirFilaInserirAulaRecorrenteCommand(usuario,
+                new PersistirAulaDto()
+                {
+                    DataAula = new(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                    Quantidade = 5,
+                    CodigoTurma = "1",
+                    CodigoComponenteCurricular = 1106,
+                    NomeComponenteCurricular = "Regência",
+                    TipoCalendarioId = 1,
+                    TipoAula = TipoAula.Normal,
+                    CodigoUe = "1",
+                    EhRegencia = true,
+                    RecorrenciaAula = RecorrenciaAula.AulaUnica
+                });
+            var comando = new InserirAulaRecorrenteCommand(aulaRecorrente);
 
             var request = new MensagemRabbit(
                                  comando,
