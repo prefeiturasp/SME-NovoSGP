@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             // Listar componentes da turma
             try
             {
-                var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasQuery(new string[] { turmaCodigo }));
+                var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(new string[] { turmaCodigo }));
                 if (componentesCurriculares?.Any() != true)
                     throw new NegocioException("Não foi possível obter os componentes curriculares da turma para conciliação de frequência");
 
