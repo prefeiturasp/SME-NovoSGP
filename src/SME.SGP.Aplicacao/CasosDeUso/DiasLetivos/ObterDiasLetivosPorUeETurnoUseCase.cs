@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DiaLetivoSimplesDto>> Executar(FiltroDiasLetivosPorUeEDataDTO param)
         {
             if (param.DataInicio > param.DataFim)
-                throw new Exception("A data de início não pode ser maior que a data final.");
+                throw new NegocioException("A data de início não pode ser maior que a data final.");
 
             var modalidadeCalendario = param.TipoTurno == (int)TipoTurno.Manha || param.TipoTurno == (int)TipoTurno.Tarde
                 ?
@@ -37,11 +37,11 @@ namespace SME.SGP.Aplicacao
                 tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(modalidadeCalendario, anoLetivo, semestre));
             
             if (tipoCalendarioId == 0)
-                throw new Exception("Tipo calendário não encontrado");
+                throw new NegocioException("Tipo calendário não encontrado");
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendarioId));
             if (periodosEscolares.EhNulo() || !periodosEscolares.Any())
-                throw new Exception("Períodos escolares não encontrados");
+                throw new NegocioException("Períodos escolares não encontrados");
 
             var eventos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, param.UeCodigo, false));
 

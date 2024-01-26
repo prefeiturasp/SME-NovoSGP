@@ -84,13 +84,13 @@ namespace SME.SGP.Dados.Repositorios
 	                c.bimestre, 
                     c.professor_rf professor
                 from
-	                compensacao_ausencia_aluno caa
+                    compensacao_ausencia_aluno caa
                 inner join compensacao_ausencia c on
-	                c.id = caa.compensacao_ausencia_id
+                    c.id = caa.compensacao_ausencia_id
                 inner join turma t on
-	                t.id = c.turma_id
+                    t.id = c.turma_id
                 where
-	                not caa.excluido
+                    not caa.excluido
                     and not c.excluido 
 	                and c.bimestre = @bimestre
 	                {(alunoCodigos != null && alunoCodigos.Any() ? " and caa.codigo_aluno = any(@alunoCodigos) " : string.Empty)}
@@ -126,9 +126,9 @@ namespace SME.SGP.Dados.Repositorios
                                  caa.qtd_faltas_compensadas QuantidadeCompensacoes,
                                  caa.compensacao_ausencia_id CompensacaoAusenciaId,
                                  count(caaa.registro_frequencia_aluno_id) as QuantidadeRegistrosFrequenciaAluno
-	                        from compensacao_ausencia_aluno caa
-	                        join compensacao_ausencia_aluno_aula caaa on caa.id = caaa.compensacao_ausencia_aluno_id
-	                        where caaa.registro_frequencia_aluno_id = ANY(@registroFrequenciaAlunoIds)
+                            from compensacao_ausencia_aluno caa
+                            join compensacao_ausencia_aluno_aula caaa on caa.id = caaa.compensacao_ausencia_aluno_id
+                            where caaa.registro_frequencia_aluno_id = ANY(@registroFrequenciaAlunoIds)
                                 and not caa.excluido   
                                 and not caaa.excluido
                             group by caa.id,caa.qtd_faltas_compensadas, caa.compensacao_ausencia_id  ";

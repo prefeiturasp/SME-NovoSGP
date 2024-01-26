@@ -1,37 +1,26 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class IncluirFilaInserirAulaRecorrenteCommand: IRequest<bool>
     {
-        public IncluirFilaInserirAulaRecorrenteCommand(Usuario usuario,
-                                       DateTime dataAula,
-                                       int quantidade,
-                                       string codigoTurma,
-                                       long componenteCurricularId,
-                                       string nomeComponenteCurricular,
-                                       long tipoCalendarioId,
-                                       TipoAula tipoAula,
-                                       string codigoUe,
-                                       bool ehRegencia,
-                                       RecorrenciaAula recorrenciaAula)
+        public IncluirFilaInserirAulaRecorrenteCommand(Usuario usuario, PersistirAulaDto inserirAulaDto)
         {
             Usuario = usuario;
-            DataAula = dataAula;
-            Quantidade = quantidade;
-            CodigoTurma = codigoTurma;
-            ComponenteCurricularId = componenteCurricularId;
-            NomeComponenteCurricular = nomeComponenteCurricular;
-            TipoCalendarioId = tipoCalendarioId;
-            TipoAula = tipoAula;
-            CodigoUe = codigoUe;
-            EhRegencia = ehRegencia;
-            RecorrenciaAula = recorrenciaAula;
+            DataAula = inserirAulaDto.DataAula;
+            Quantidade = inserirAulaDto.Quantidade;
+            CodigoTurma = inserirAulaDto.CodigoTurma;
+            ComponenteCurricularId = inserirAulaDto.CodigoComponenteCurricular;
+            NomeComponenteCurricular = inserirAulaDto.NomeComponenteCurricular;
+            TipoCalendarioId = inserirAulaDto.TipoCalendarioId;
+            TipoAula = inserirAulaDto.TipoAula;
+            CodigoUe = inserirAulaDto.CodigoUe;
+            EhRegencia = inserirAulaDto.EhRegencia;
+            RecorrenciaAula = inserirAulaDto.RecorrenciaAula;
         }
 
         public Usuario Usuario { get; set; }

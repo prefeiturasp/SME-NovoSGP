@@ -28,9 +28,7 @@ namespace SME.SGP.Aplicacao
             var compensacoesAlunosExcluir = new List<CompensacaoAusenciaAluno>();
             var compensacoesDisciplinasExcluir = new List<CompensacaoAusenciaDisciplinaRegencia>();
             var compensacoesAlunoAulasExcluir = new List<CompensacaoAusenciaAlunoAula>();
-
             var listaCompensacaoDescricao = new List<string>();
-            var idsComErroAoExcluir = new List<long>();
 
             foreach (var compensacaoId in compensacoesIds)
             {
@@ -39,76 +37,24 @@ namespace SME.SGP.Aplicacao
                 compensacao.Excluir();
                 compensacoesExcluir.Add(compensacao);
 
-                var compensacoesAlunos = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
+                compensacoesAlunosExcluir.AddRange(
+                                            ObterCompensacoesAusenciaAlunoExclusao(
+                                                  await ObterCompensacoesAusenciaAluno(compensacaoId)));
 
-                foreach (var compensacaoAluno in compensacoesAlunos)
-                {
-                    compensacaoAluno.Excluir();
-                    compensacoesAlunosExcluir.Add(compensacaoAluno);
-                }
+                compensacoesDisciplinasExcluir.AddRange(
+                                                    ObterCompensacoesAusenciaDisciplinaRegenciaExclusao(
+                                                        await ObterCompensacoesAusenciaDisciplinaRegencia(compensacaoId)));
 
-                var compensacoesDisciplinas = await mediator.Send(new ObterCompensacaoAusenciaDisciplinaRegenciaPorIdQuery(compensacaoId));
-                foreach (var compensacaoDisciplina in compensacoesDisciplinas)
-                {
-                    compensacaoDisciplina.Excluir();
-                    compensacoesDisciplinasExcluir.Add(compensacaoDisciplina);
-                }
-
-                var compensacoesAlunoAulas = await mediator.Send(new ObterCompensacaoAusenciaAlunoAulasPorCompensacaoIdQuery(compensacaoId));
-                foreach (var compensacaoAusenciaAlunoAula in compensacoesAlunoAulas)
-                {
-                    compensacaoAusenciaAlunoAula.Excluir();
-                    compensacoesAlunoAulasExcluir.Add(compensacaoAusenciaAlunoAula);
-                }
+                compensacoesAlunoAulasExcluir.AddRange(
+                                                    ObterCompensacoesAusenciaAlunoAulaExclusao(
+                                                        await ObterCompensacoesAusenciaAlunoAula(compensacaoId)));
             }
 
-            foreach (var compensacaoExcluir in compensacoesExcluir)
-            {
-                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(compensacaoExcluir.TurmaId));
-                var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
-
-                unitOfWork.IniciarTransacao();
-                try
-                {
-                    var alunosDaCompensacao = compensacoesAlunosExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id);
-                    foreach (var compensacaoAusenciaAluno in alunosDaCompensacao)
-                    {
-                        foreach (var compensacaoAlunoAulaExcluir in compensacoesAlunoAulasExcluir.Where(c => c.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id))
-                        {
-                            await mediator.Send(new SalvarCompensacaoAusenciaAlunoAulaCommand(compensacaoAlunoAulaExcluir));
-                        }
-
-                        await mediator.Send(new SalvarCompensacaoAusenciaAlunoCommand(compensacaoAusenciaAluno));
-                    }
-
-                    foreach (var compensacaoDisciplinaRegenciaExcluir in compensacoesDisciplinasExcluir.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id))
-                    {
-                        await mediator.Send(new SalvarCompensacaoAusenciaDiciplinaRegenciaCommand(compensacaoDisciplinaRegenciaExcluir));
-                    }
-
-                    await mediator.Send(new SalvarCompensacaoAusenciaCommand(compensacaoExcluir));
-
-                    await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoExcluir.Id));
-
-                    unitOfWork.PersistirTransacao();
-
-                    if (alunosDaCompensacao.Any())
-                    {
-                        await AtualizarCacheCompensacaoAusenciaTurma(turma.CodigoTurma, periodo.Bimestre, compensacaoExcluir.DisciplinaId, compensacoesAlunosExcluir);
-
-                        var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno);
-
-                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos,
-                            periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
-                    }
-                }
-                catch (Exception)
-                {
-                    idsComErroAoExcluir.Add(compensacaoExcluir.Id);
-                    unitOfWork.Rollback();
-                }
-            }
-
+            var idsComErroAoExcluir = await ExcluirCompensacoes(compensacoesExcluir, 
+                                                                compensacoesAlunosExcluir, 
+                                                                compensacoesAlunoAulasExcluir, 
+                                                                compensacoesDisciplinasExcluir);
+            
             if (listaCompensacaoDescricao.NaoEhNulo() && listaCompensacaoDescricao.Any())
             {
                 foreach (var item in listaCompensacaoDescricao)
@@ -122,6 +68,103 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foi possível excluir as compensações de ids {string.Join(",", idsComErroAoExcluir)}");
 
             return true;
+        }
+
+        private Task<IEnumerable<CompensacaoAusenciaAlunoAula>> ObterCompensacoesAusenciaAlunoAula(long compensacaoId)
+        {
+            return mediator.Send(new ObterCompensacaoAusenciaAlunoAulasPorCompensacaoIdQuery(compensacaoId));
+        }
+
+        private Task<IEnumerable<CompensacaoAusenciaDisciplinaRegencia>> ObterCompensacoesAusenciaDisciplinaRegencia(long compensacaoId)
+        {
+            return mediator.Send(new ObterCompensacaoAusenciaDisciplinaRegenciaPorIdQuery(compensacaoId));
+        }
+
+        private Task<IEnumerable<CompensacaoAusenciaAluno>> ObterCompensacoesAusenciaAluno(long compensacaoId)
+        {
+            return mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoId));
+        }
+
+        private IEnumerable<CompensacaoAusenciaAlunoAula> ObterCompensacoesAusenciaAlunoAulaExclusao(IEnumerable<CompensacaoAusenciaAlunoAula> compensacoes)
+        {
+            foreach (var compensacao in compensacoes)
+            {
+                compensacao.Excluir();
+                yield return compensacao;
+            }
+        }
+
+        private IEnumerable<CompensacaoAusenciaDisciplinaRegencia> ObterCompensacoesAusenciaDisciplinaRegenciaExclusao(IEnumerable<CompensacaoAusenciaDisciplinaRegencia> compensacoes)
+        {
+            foreach (var compensacao in compensacoes)
+            {
+                compensacao.Excluir();
+                yield return compensacao;
+            }
+        }
+
+        private IEnumerable<CompensacaoAusenciaAluno> ObterCompensacoesAusenciaAlunoExclusao(IEnumerable<CompensacaoAusenciaAluno> compensacoes)
+        {
+            foreach (var compensacao in compensacoes)
+            {
+                compensacao.Excluir();
+                yield return compensacao;
+            }
+        }
+
+        private async Task<List<long>> ExcluirCompensacoes(List<CompensacaoAusencia> compensacoes, 
+                                               List<CompensacaoAusenciaAluno> compensacoesAlunos,
+                                               List<CompensacaoAusenciaAlunoAula> compensacoesAlunoAulas,
+                                                List<CompensacaoAusenciaDisciplinaRegencia> compensacoesDisciplinas)
+        {
+            var idsComErroAoExcluir = new List<long>();
+            foreach (var compensacaoExcluir in compensacoes)
+            {
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(compensacaoExcluir.TurmaId));
+                var periodo = await BuscaPeriodo(turma, compensacaoExcluir.Bimestre);
+
+                unitOfWork.IniciarTransacao();
+                try
+                {
+                    var alunosDaCompensacao = compensacoesAlunos.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id);
+                    foreach (var compensacaoAusenciaAluno in alunosDaCompensacao)
+                    {
+                        foreach (var compensacaoAlunoAulaExcluir in compensacoesAlunoAulas.Where(c => c.CompensacaoAusenciaAlunoId == compensacaoAusenciaAluno.Id))
+                        {
+                            await mediator.Send(new SalvarCompensacaoAusenciaAlunoAulaCommand(compensacaoAlunoAulaExcluir));
+                        }
+
+                        await mediator.Send(new SalvarCompensacaoAusenciaAlunoCommand(compensacaoAusenciaAluno));
+                    }
+
+                    foreach (var compensacaoDisciplinaRegenciaExcluir in compensacoesDisciplinas.Where(c => c.CompensacaoAusenciaId == compensacaoExcluir.Id))
+                    {
+                        await mediator.Send(new SalvarCompensacaoAusenciaDiciplinaRegenciaCommand(compensacaoDisciplinaRegenciaExcluir));
+                    }
+
+                    await mediator.Send(new SalvarCompensacaoAusenciaCommand(compensacaoExcluir));
+
+                    await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoExcluir.Id));
+
+                    unitOfWork.PersistirTransacao();
+
+                    if (alunosDaCompensacao.Any())
+                    {
+                        await AtualizarCacheCompensacaoAusenciaTurma(turma.CodigoTurma, periodo.Bimestre, compensacaoExcluir.DisciplinaId, compensacoesAlunos);
+
+                        var listaAlunos = alunosDaCompensacao.Select(a => a.CodigoAluno);
+
+                        await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos,
+                            periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId, periodo.MesesDoPeriodo().ToArray()));
+                    }
+                }
+                catch (Exception)
+                {
+                    idsComErroAoExcluir.Add(compensacaoExcluir.Id);
+                    unitOfWork.Rollback();
+                }
+            }
+            return idsComErroAoExcluir;
         }
         private async Task<PeriodoEscolarDto> BuscaPeriodo(Turma turma, int bimestre)
         {

@@ -1,18 +1,16 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Registry;
 using RabbitMQ.Client;
-using SME.SGP.Infra;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Utilitarios;
-using Microsoft.Extensions.Options;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {

@@ -87,14 +87,21 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor.NaoEhNulo() && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
-                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId || (componenteCurricular.NaoEhNulo() && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) || cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId)
-                    : new ComponenteCurricularEol
-                    {
-                        Codigo = territorioExperienciaId > 0 ? territorioExperienciaId : 0,
-                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
-                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
-                    };
+            ComponenteCurricularEol componenteCorrespondente = null;
+
+            if (!usuarioLogado.EhProfessorCj() &&
+                componentesCurricularesEolProfessor.NaoEhNulo() &&
+                (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor()))
+                componenteCorrespondente = componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai == territorioExperienciaId ||
+                                                                                                    (componenteCurricular.NaoEhNulo() && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) ||
+                                                                                                    cp.Codigo == territorioExperienciaId || cp.CodigoComponenteTerritorioSaber == territorioExperienciaId);
+            else
+                componenteCorrespondente = new ComponenteCurricularEol
+                {
+                    Codigo = territorioExperienciaId > 0 ? territorioExperienciaId : 0,
+                    CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
+                    CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
+                };
 
             var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmaId, componenteCorrespondente?.Codigo.ToString() ?? "0"));
 
@@ -106,13 +113,13 @@ namespace SME.SGP.Aplicacao
                 if (listaPlanoAnual.Count() != periodos.Count())
                 {
                     var periodosFaltantes = periodos.Where(c => !listaPlanoAnual.Any(p => p.Bimestre == c.Bimestre));
-                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodosFaltantes, dataAtual).ToList();
+                    var planosFaltantes = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodosFaltantes).ToList();
                     planosFaltantes.AddRange(listaPlanoAnual);
                     listaPlanoAnual = planosFaltantes;
                 }
             }
             else
-                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodos, dataAtual);
+                listaPlanoAnual = ObterNovoPlanoAnualTerritorioSaberCompleto(turma, anoLetivo, ueId, periodos);
 
             listaPlanoAnual.ToList().ForEach(planoAnual =>
             {
@@ -122,7 +129,7 @@ namespace SME.SGP.Aplicacao
             return listaPlanoAnual.OrderBy(c => c.Bimestre);
         }
 
-        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(Turma turma, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos, DateTime dataAtual)
+        private IEnumerable<PlanoAnualTerritorioSaberCompletoDto> ObterNovoPlanoAnualTerritorioSaberCompleto(Turma turma, int anoLetivo, string ueId, IEnumerable<PeriodoEscolar> periodos)
         {
             var listaPlanoAnual = new List<PlanoAnualTerritorioSaberCompletoDto>();
             foreach (var periodo in periodos)

@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public Task<IEnumerable<Ue>> Handle(ObterUEsComDREsPorModalidadeTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
-            return repositorioUe.ObterUEsComDREsPorModalidadeTipoCalendarioQuery(request.Modalidades, request.AnoLetivo);
+            return repositorioUe.ObterUesPorModalidade(request.Modalidades, request.AnoLetivo);
         }
     }
 }

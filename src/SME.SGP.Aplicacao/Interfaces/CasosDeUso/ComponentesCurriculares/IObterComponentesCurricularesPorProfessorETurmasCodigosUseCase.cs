@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterComponentesCurricularesPorProfessorETurmasCodigosUseCase
     {
-        Task<IEnumerable<DisciplinaNomeDto>> Executar(IEnumerable<string> codigoUe);
+        Task<IEnumerable<DisciplinaNomeDto>> Executar(IEnumerable<string> turmasCodigos);
     }
 }

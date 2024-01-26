@@ -1,24 +1,23 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using FluentValidation;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery : IRequest<IEnumerable<FrequenciaAlunoDashboardDto>>
     {
-        public ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(int anoLetivo, long dreId, long ueId, int modalidade, int semestre, string anoTurma, DateTime dataAula, bool visaoDre)
+        public ObterDadosDashboardFrequenciaDiariaPorAnoTurmaQuery(FrequenciasConsolidadacaoPorTurmaEAnoDto frequenciaDto)
         {
-            AnoLetivo = anoLetivo;
-            DreId = dreId;
-            UeId = ueId;
-            Modalidade = modalidade;
-            Semestre = semestre;
-            AnoTurma = anoTurma;
-            DataAula = dataAula;
-            VisaoDre = visaoDre;
+            AnoLetivo = frequenciaDto.AnoLetivo;
+            DreId = frequenciaDto.DreId;
+            UeId = frequenciaDto.UeId;
+            Modalidade = frequenciaDto.Modalidade;
+            Semestre = frequenciaDto.Semestre;
+            AnoTurma = frequenciaDto.AnoTurma;
+            DataAula = frequenciaDto.DataAula;
+            VisaoDre = frequenciaDto.VisaoDre;
         }
 
         public int AnoLetivo { get; set; }

@@ -173,40 +173,34 @@ namespace SME.SGP.Dominio
             return TipoCalendario.AnoLetivo == DateTime.Today.Year;
         }
 
+        private void ConsistirFechamentoNoMesmoPeriodo(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
+        {
+            foreach (var fechamento in fechamentosCadastrados.Where(fechamento => EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim)))
+                throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio:dd/MM/yyyy} e termina em {fechamento.Fim:dd/MM/yyyy}");
+        }
+
         private void VerificaFechamentosNoMesmoPeriodo(IEnumerable<FechamentoReabertura> fechamentosCadastrados)
         {
             if (EhParaSme())
             {
                 var fechamentosSME = fechamentosCadastrados.Where(a => a.EhParaSme());
-
-                if (fechamentosSME is null || !fechamentosSME.Any())
+                if (fechamentosSME.NaoPossuiRegistros())
                     return;
-
-                foreach (var fechamento in fechamentosSME)
-                {
-                    if (EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim))
-                        throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio.ToString("dd/MM/yyyy")} e termina em {fechamento.Fim.ToString("dd/MM/yyyy")}");
-                }
+                ConsistirFechamentoNoMesmoPeriodo(fechamentosSME);
             }
             else if (EhParaDre())
             {
                 var fechamentosDre = (fechamentosCadastrados.Where(a => a.EhParaDre() && a.DreId == DreId)).ToList();
-
                 if (!fechamentosDre.Any())
                     return;
-
-                foreach (var fechamento in fechamentosDre.Where(fechamento => EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim)))
-                    throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio:dd/MM/yyyy} e termina em {fechamento.Fim:dd/MM/yyyy}");
+                ConsistirFechamentoNoMesmoPeriodo(fechamentosDre);
             }
             else if (EhParaUe())
             {
                 var fechamentosUe = fechamentosCadastrados.Where(a => a.EhParaUe() && a.UeId == UeId).ToList();
-
                 if (!fechamentosUe.Any())
                     return;
-
-                foreach (var fechamento in fechamentosUe.Where(fechamento => EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim)))
-                    throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio:dd/MM/yyyy} e termina em {fechamento.Fim:dd/MM/yyyy}");
+                ConsistirFechamentoNoMesmoPeriodo(fechamentosUe);
             }
         }
     }

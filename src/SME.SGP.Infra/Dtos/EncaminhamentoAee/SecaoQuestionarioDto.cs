@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public string? NomeComponente { get; set; }
         public int Ordem { get; set; }
         public TipoQuestionario TipoQuestionario { get; set; }
+        public int[] ModalidadesCodigo { get; set; }
     }
 }

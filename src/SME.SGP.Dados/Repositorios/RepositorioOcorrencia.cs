@@ -19,9 +19,9 @@ namespace SME.SGP.Dados
         public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao, long[] idUes = null)
         {
             var tabelas = @" ocorrencia o
-						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+                        inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
                         left  join turma tu on tu.id  = o.turma_id
-						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id 
+                        left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id 
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id";
 
             var gerador = new GeradorDeCondicoes(" where not o.excluido and extract(year from o.data_ocorrencia) = @anoLetivo ");
@@ -53,31 +53,31 @@ namespace SME.SGP.Dados
                         {condicao} {orderBy};
 
                         select
-							o.id,
-							o.turma_id,
-							o.titulo,
-							o.data_ocorrencia,
-							o.hora_ocorrencia,
-							o.descricao,
-							o.ocorrencia_tipo_id,
-							o.excluido,
-							o.criado_rf,
-							o.criado_em,
-							o.alterado_em,
-							o.alterado_por,
-							o.alterado_rf,
-							o.ue_id ,
-							ot.id,
-							ot.descricao,
-							oa.id,
-							oa.codigo_aluno,
+                            o.id,
+                            o.turma_id,
+                            o.titulo,
+                            o.data_ocorrencia,
+                            o.hora_ocorrencia,
+                            o.descricao,
+                            o.ocorrencia_tipo_id,
+                            o.excluido,
+                            o.criado_rf,
+                            o.criado_em,
+                            o.alterado_em,
+                            o.alterado_por,
+                            o.alterado_rf,
+                            o.ue_id ,
+                            ot.id,
+                            ot.descricao,
+                            oa.id,
+                            oa.codigo_aluno,
                             os.*,
                             tu.*
                         from tempOcorrenciasSelecionadas tos
                         inner join ocorrencia o on tos.id = o.id
-						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+                        inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
                         left join turma tu on tu.id = tos.turmaId
-						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
+                        left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id;";
 
             var lstOcorrencias = new Dictionary<long, Ocorrencia>();
@@ -119,7 +119,7 @@ namespace SME.SGP.Dados
 
             return new PaginacaoResultadoDto<Ocorrencia>()
             {
-                Items = lstOcorrencias.Values.ToList().OrderByDescending(x=>x.DataOcorrencia),
+                Items = lstOcorrencias.Values.OrderByDescending(x=>x.DataOcorrencia),
                 TotalRegistros = lstOcorrencias.Values.Count,
                 TotalPaginas = (int)Math.Ceiling((double)lstOcorrencias.Values.Count / paginacao.QuantidadeRegistros)
             };
@@ -128,35 +128,35 @@ namespace SME.SGP.Dados
         public override async Task<Ocorrencia> ObterPorIdAsync(long id)
         {
             const string sql = @"select
-									o.id,
-									o.alterado_em as AlteradoEm,
-									o.alterado_por as AlteradoPor,
-									o.alterado_rf as AlteradoRf,
-									o.criado_em as CriadoEm,
-									o.criado_por as CriadoPor,
-									o.criado_rf as CriadoRf,
-									o.data_ocorrencia as DataOcorrencia,
-									o.hora_ocorrencia as HoraOcorrencia,
-									o.ocorrencia_tipo_id as OcorrenciaTipoId,
-									o.turma_id as TurmaId,
-									o.titulo as Titulo,
-									o.ue_id  as UeId,
-									o.descricao as Descricao,
-									o.excluido as Excluido,
-									oa.id,
-									oa.codigo_aluno as CodigoAluno,
-									oa.ocorrencia_id as OcorrenciaId,
-									os.id,
-									os.rf_codigo  as CodigoServidor,
-									os.ocorrencia_id  as OcorrenciaId,
-									u.*,t.*
-								FROM public.ocorrencia o
-								left JOIN public.ocorrencia_aluno oa ON o.id = oa.ocorrencia_id
-								left join public.ocorrencia_servidor os on o.id = os.ocorrencia_id
-								inner join public.ue u on o.ue_id = u.id
-								left join public.turma t on o.turma_id = t.id
-								WHERE o.id = @id
-									AND not o.excluido;";
+                                    o.id,
+                                    o.alterado_em as AlteradoEm,
+                                    o.alterado_por as AlteradoPor,
+                                    o.alterado_rf as AlteradoRf,
+                                    o.criado_em as CriadoEm,
+                                    o.criado_por as CriadoPor,
+                                    o.criado_rf as CriadoRf,
+                                    o.data_ocorrencia as DataOcorrencia,
+                                    o.hora_ocorrencia as HoraOcorrencia,
+                                    o.ocorrencia_tipo_id as OcorrenciaTipoId,
+                                    o.turma_id as TurmaId,
+                                    o.titulo as Titulo,
+                                    o.ue_id  as UeId,
+                                    o.descricao as Descricao,
+                                    o.excluido as Excluido,
+                                    oa.id,
+                                    oa.codigo_aluno as CodigoAluno,
+                                    oa.ocorrencia_id as OcorrenciaId,
+                                    os.id,
+                                    os.rf_codigo  as CodigoServidor,
+                                    os.ocorrencia_id  as OcorrenciaId,
+                                    u.*,t.*
+                                FROM public.ocorrencia o
+                                left JOIN public.ocorrencia_aluno oa ON o.id = oa.ocorrencia_id
+                                left join public.ocorrencia_servidor os on o.id = os.ocorrencia_id
+                                inner join public.ue u on o.ue_id = u.id
+                                left join public.turma t on o.turma_id = t.id
+                                WHERE o.id = @id
+                                    AND not o.excluido;";
 
             Ocorrencia resultado = null;
             await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno,OcorrenciaServidor,Ue,Turma,Ocorrencia>(sql,
@@ -189,7 +189,7 @@ namespace SME.SGP.Dados
 
         public async Task<PaginacaoResultadoDto<OcorrenciasPorAlunoDto>> ObterOcorrenciasPorTurmaAlunoEPeriodoPaginadas(long turmaId, long codigoAluno, DateTime periodoInicio, DateTime periodoFim, Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, turmaId, codigoAluno, periodoInicio, periodoFim);
+            var query = MontaQueryCompleta(paginacao);
             var parametros = new { turmaId, codigoAluno, periodoInicio, periodoFim };
             var retorno = new PaginacaoResultadoDto<OcorrenciasPorAlunoDto>();
 
@@ -202,24 +202,24 @@ namespace SME.SGP.Dados
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        private static string MontaQueryCompleta(Paginacao paginacao)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, turmaId, alunoCodigo, periodoIncio, periodoFim);
+            MontaQueryConsulta(paginacao, sql, contador: false);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, turmaId, alunoCodigo, periodoIncio, periodoFim);
+            MontaQueryConsulta(paginacao, sql, contador: true);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql, turmaId, alunoCodigo, periodoIncio, periodoFim);
+            ObtenhaFiltro(sql);
 
             if (!contador)
                 sql.AppendLine(" order by o.data_ocorrencia desc ");
@@ -245,7 +245,7 @@ namespace SME.SGP.Dados
             sql.AppendLine(" inner join turma t on t.id = o.turma_id");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long turmaId, long alunoCodigo, DateTime periodoIncio, DateTime periodoFim)
+        private static void ObtenhaFiltro(StringBuilder sql)
         {
             sql.AppendLine(" where ");
             sql.AppendLine(" o.turma_id = @turmaId and ");

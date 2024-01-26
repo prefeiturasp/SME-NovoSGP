@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
         {
             return !string.IsNullOrEmpty(tipoResponsavel) ?
                  ((TipoResponsavel)Enum.Parse(typeof(TipoResponsavel), tipoResponsavel)).Name() :
-                 TipoResponsavel.Filicacao1.Name();
+                 TipoResponsavel.Filiacao1.Name();
         }
     }
 }

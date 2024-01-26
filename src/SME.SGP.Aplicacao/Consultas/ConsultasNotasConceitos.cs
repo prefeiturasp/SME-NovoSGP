@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,25 +16,17 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa;
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasPeriodoFechamento consultasFechamento;
         private readonly IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodoConsulta;
         private readonly IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia;
-        private readonly IRepositorioConceitoConsulta repositorioConceito;
-        private readonly IRepositorioDre repositorioDre;
-        private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTipoAvaliacao repositorioTipoAvaliacao;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioTurma repositorioTurma;
-        private readonly IRepositorioUe repositorioUe;
         private readonly IServicoAluno servicoAluno;
         private readonly IServicoDeNotasConceitos servicoDeNotasConceitos;
         private readonly IServicoUsuario servicoUsuario;
@@ -43,23 +35,19 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasNotasConceitos(IConsultaAtividadeAvaliativa consultasAtividadeAvaliativa,
             IConsultasFechamentoTurmaDisciplina consultasFechamentoTurmaDisciplina, IConsultasDisciplina consultasDisciplina,
-            IConsultasPeriodoFechamento consultasFechamento,
             IServicoDeNotasConceitos servicoDeNotasConceitos, IRepositorioNotasConceitosConsulta repositorioNotasConceitos,
             IRepositorioFrequenciaConsulta repositorioFrequencia, IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodoConsulta,
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IRepositorioConceitoConsulta repositorioConceito,
-            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe,
-            IRepositorioDre repositorioDre, IRepositorioEvento repositorioEvento, IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
-            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, 
+            IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
+            IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IMediator mediator,
             IConsultasTurma consultasTurma)
         {
             this.consultasAtividadeAvaliativa = consultasAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(consultasAtividadeAvaliativa));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasFechamentoTurmaDisciplina = consultasFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(consultasFechamentoTurmaDisciplina));
-            this.consultasFechamento = consultasFechamento ?? throw new ArgumentNullException(nameof(consultasFechamento));
             this.servicoDeNotasConceitos = servicoDeNotasConceitos ?? throw new ArgumentNullException(nameof(servicoDeNotasConceitos));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
@@ -69,21 +57,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioFrequenciaAlunoDisciplinaPeriodoConsulta = this.repositorioFrequenciaAlunoDisciplinaPeriodoConsulta ?? throw new ArgumentNullException(nameof(ConsultasNotasConceitos.repositorioFrequenciaAlunoDisciplinaPeriodoConsulta));
-            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioTipoAvaliacao = repositorioTipoAvaliacao ?? throw new ArgumentNullException(nameof(repositorioTipoAvaliacao));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
-            this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaRegencia));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
-
         }
 
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(ListaNotasConceitosConsultaDto filtro)
@@ -194,7 +174,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             IEnumerable<ComponenteCurricularEol> disciplinasRegenciaEol = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(filtro.TurmaCodigo, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
-                            if (disciplinasRegenciaEol.EhNulo() || !disciplinasRegenciaEol.Where(x => x.Regencia).Any())
+                            if (disciplinasRegenciaEol.EhNulo() || !disciplinasRegenciaEol.Any(x => x.Regencia))
                                 throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
                             disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(x => x.Regencia));
                         }
@@ -330,21 +310,17 @@ namespace SME.SGP.Aplicacao
                                         EhConceito = notaConceitoBimestre.ConceitoId.HasValue
                                     });
                         }
-                        else
-                        if (disciplinaEOL.Regencia)
+                        else if (disciplinaEOL.Regencia && disciplinasRegencia.NaoEhNulo())
                         {
                             // Regencia carrega disciplinas mesmo sem nota de fechamento
-                            if (disciplinasRegencia.NaoEhNulo())
+                            foreach (var disciplinaRegencia in disciplinasRegencia)
                             {
-                                foreach (var disciplinaRegencia in disciplinasRegencia)
+                                notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
                                 {
-                                    notaConceitoAluno.NotasBimestre.Add(new FechamentoNotaRetornoDto()
-                                    {
-                                        DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
-                                        Disciplina = disciplinaRegencia.Nome,
-                                    });
-                                }
-                            }
+                                    DisciplinaId = disciplinaRegencia.CodigoComponenteCurricular,
+                                    Disciplina = disciplinaRegencia.Nome,
+                                });
+                            } 
                         }
 
                         // Carrega Frequencia Aluno
@@ -379,7 +355,7 @@ namespace SME.SGP.Aplicacao
                             atividadeAvaliativaParaObterTipoNota = avaliacao;
                     }
                     bimestreParaAdicionar.Alunos = listaAlunosDoBimestre;
-                    bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre.Where(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id).Count();
+                    bimestreParaAdicionar.QtdAvaliacoesBimestrais = atividadesAvaliativasdoBimestre.Count(x => x.TipoAvaliacaoId == tipoAvaliacaoBimestral.Id);
                     bimestreParaAdicionar.PodeLancarNotaFinal = await mediator.Send(new ObterTurmaEmPeriodoDeFechamentoQuery(turma, DateTimeExtension.HorarioBrasilia(), periodoAtual.Bimestre));
 
                     // Valida Avaliações Bimestrais
@@ -392,7 +368,8 @@ namespace SME.SGP.Aplicacao
                             throw new NegocioException("Não foi possível obter o tipo de nota desta avaliação.");
 
                         retorno.NotaTipo = notaTipo.TipoNota;
-                        ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
+                        CarregarValoresDeAuditoriaInserida(dataUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoInserida, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaInclusao);
+                        CarregarValoresAuditoriaAlterada(dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoAlterada, notaTipo.TipoNota, retorno, nomeAvaliacaoAuditoriaAlteracao);
                     }
                     else
                     {
@@ -417,6 +394,9 @@ namespace SME.SGP.Aplicacao
             // Para turma tipo 2 o padrão é nota.
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                 return TipoNota.Nota;
+
+            if (await ModalidadeTurmaEhCelp(turmaEOL)) 
+                return TipoNota.Conceito;
 
             var notaTipo = await servicoDeNotasConceitos.TipoNotaPorAvaliacao(new AtividadeAvaliativa()
             {
@@ -518,40 +498,21 @@ namespace SME.SGP.Aplicacao
             else return periodoEscolar.Bimestre;
         }
 
-        private NotasConceitosBimestreRetornoDto ObterBimestreGenerico(int bimestreAtual)
+        private void CarregarValoresAuditoriaAlterada(DateTime? dataUltimaNotaConceitoAlterada, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoAlteracao)
         {
-            return new NotasConceitosBimestreRetornoDto()
-            {
-                Descricao = $"{bimestreAtual}º Bimestre",
-                Numero = bimestreAtual
-            };
-        }
-
-        private IEnumerable<NotasConceitosBimestreRetornoDto> ObterListaBimestreGenerico(int quantidadeBimestres)
-        {
-            for (int i = 0; i < quantidadeBimestres; i++)
-            {
-                yield return ObterBimestreGenerico(i + 1);
-            }
-        }
-
-        private NotasConceitosRetornoDto ObterRetornoGenericoBimestreAtualVazio(IEnumerable<PeriodoEscolar> periodosEscolares, int bimestre)
-        {
-            return new NotasConceitosRetornoDto
-            {
-                BimestreAtual = bimestre,
-                Bimestres = ObterListaBimestreGenerico(periodosEscolares.Count()).ToList(),
-            };
-        }
-
-        private void ObterValoresDeAuditoria(DateTime? dataUltimaNotaConceitoInserida, DateTime? dataUltimaNotaConceitoAlterada, string usuarioInseriu, string usuarioAlterou, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao, string nomeAvaliacaoAlteracao)
-        {
-            var tituloNotasOuConceitos = tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
-
-            if (dataUltimaNotaConceitoInserida.HasValue)
-                notasConceitosRetornoDto.AuditoriaInserido = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
             if (dataUltimaNotaConceitoAlterada.HasValue)
-                notasConceitosRetornoDto.AuditoriaAlterado = $"{tituloNotasOuConceitos} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+                notasConceitosRetornoDto.AuditoriaAlterado = $"{ObterDescricaoNota(tipoNota)} da avaliação {nomeAvaliacaoAlteracao} alterados por {usuarioAlterou} em {dataUltimaNotaConceitoAlterada.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoAlterada.Value.ToString("HH:mm")}.";
+        }
+
+        private void CarregarValoresDeAuditoriaInserida(DateTime? dataUltimaNotaConceitoInserida, string usuarioInseriu, TipoNota tipoNota, NotasConceitosRetornoDto notasConceitosRetornoDto, string nomeAvaliacaoInclusao)
+        {
+            if (dataUltimaNotaConceitoInserida.HasValue)
+                notasConceitosRetornoDto.AuditoriaInserido = $"{ObterDescricaoNota(tipoNota)} da avaliação {nomeAvaliacaoInclusao} inseridos por {usuarioInseriu} em {dataUltimaNotaConceitoInserida.Value.ToString("dd/MM/yyyy")}, às {dataUltimaNotaConceitoInserida.Value.ToString("HH:mm")}.";
+        }
+
+        private string ObterDescricaoNota(TipoNota tipoNota)
+        {
+            return tipoNota == TipoNota.Conceito ? "Conceitos" : "Notas";
         }
 
         private async Task ValidaMinimoAvaliacoesBimestrais(DisciplinaDto disciplinaEOL, IEnumerable<DisciplinaResposta> disciplinasRegencia, long tipoCalendarioId, string turmaCodigo, int bimestre, TipoAvaliacao tipoAvaliacaoBimestral, NotasConceitosBimestreRetornoDto bimestreDto)
@@ -574,6 +535,18 @@ namespace SME.SGP.Aplicacao
                 if ((avaliacoes.EhNulo()) || (avaliacoes.Count() < tipoAvaliacaoBimestral.AvaliacoesNecessariasPorBimestre))
                     bimestreDto.Observacoes.Add($"O componente curricular [{disciplinaEOL.Nome}] não tem o número mínimo de avaliações bimestrais no bimestre {bimestre}");
             }
+        }
+
+        private async Task<bool> ModalidadeTurmaEhCelp(DadosTurmaEolDto turmaEOL)
+        {
+            if (turmaEOL.TipoTurma == TipoTurma.Programa)
+            {
+                var modalidade = await mediator.Send(new ObterModalidadeTurmaPorCodigoQuery(turmaEOL.Codigo.ToString()));
+
+                return modalidade == Modalidade.CELP;
+            }
+
+            return false;
         }
     }
 }

@@ -11,6 +11,9 @@ namespace SME.SGP.Dominio
         Workflow_Aprovacao = 2,
 
         [Display(Name = "Aviso")]
-        Aviso = 3
+        Aviso = 3,
+
+        [Display(Name = "Informe")]
+        Informe = 4
     }
 }

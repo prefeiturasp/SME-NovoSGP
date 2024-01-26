@@ -18,9 +18,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<WfAprovacaoItinerancia> ObterPorItineranciaId(long itineranciaId)
         {
             var query = @"select 
-	                        wf_aprovacao_id as WfAprovacaoId,
-	                        itinerancia_id as ItineranciaId,
-	                        status_aprovacao as StatusAprovacao
+                            wf_aprovacao_id as WfAprovacaoId,
+                            itinerancia_id as ItineranciaId,
+                            status_aprovacao as StatusAprovacao
                         from wf_aprovacao_itinerancia
                         where itinerancia_id = @itineranciaId order by id desc";
 
@@ -30,9 +30,9 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<WfAprovacaoItinerancia> ObterPorWorkflowId(long workflowId)
         {
             var query = @"select 
-	                        wf_aprovacao_id as WfAprovacaoId,
-	                        itinerancia_id as ItineranciaId,
-	                        status_aprovacao as StatusAprovacao
+                            wf_aprovacao_id as WfAprovacaoId,
+                            itinerancia_id as ItineranciaId,
+                            status_aprovacao as StatusAprovacao
                         from wf_aprovacao_itinerancia
                         where wf_aprovacao_id = @workflowId order by id desc";
 

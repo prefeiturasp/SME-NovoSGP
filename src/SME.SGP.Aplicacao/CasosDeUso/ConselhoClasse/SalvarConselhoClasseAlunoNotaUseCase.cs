@@ -25,9 +25,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(dto.CodigoTurma)) ?? throw new NegocioException("Turma não encontrada");
 
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Now.Year;
-
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(dto.FechamentoTurmaId,
-                dto.CodigoAluno, ehAnoAnterior));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(dto.FechamentoTurmaId, dto.CodigoAluno));
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina;
 
@@ -97,7 +95,10 @@ namespace SME.SGP.Aplicacao
         {
             if (periodo.PeriodoFim == DateTime.MinValue)
             {
-                return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
+                if (bimestre == 0)
+                    bimestre = turma.ModalidadeTipoCalendario.EhEjaOuCelp() ? BIMESTRE_2 : BIMESTRE_4;
+
+                return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             }
 
             return periodo;
@@ -125,25 +126,6 @@ namespace SME.SGP.Aplicacao
 
             if (!visualizaNotas || !await mediator.Send(new VerificaSePodeEditarNotaQuery(alunoConselho.CodigoAluno, turma, periodoEscolar)))
                 throw new NegocioException(MensagemNegocioFechamentoNota.NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO);
-        }
-
-        private async Task<FechamentoReabertura> ObtenhaPeriodoDeAbertura(PeriodoEscolar periodoEscolar, Turma turma, DateTime? periodoInicio)
-        {
-            if (periodoEscolar.NaoEhNulo())
-            {
-                if (periodoInicio.GetValueOrDefault().Year >= DateTime.Now.Year)
-                {
-                    return await mediator.Send(
-                        new ObterFechamentoReaberturaPorDataTurmaQuery()
-                        {
-                            DataParaVerificar = DateTime.Now,
-                            TipoCalendarioId = periodoEscolar.TipoCalendarioId,
-                            UeId = turma.Ue.Id
-                        });
-                }
-            }
-
-            return null;
         }
 
         private async Task<List<PeriodoEscolar>> ObtenhaListaDePeriodoLetivo(Turma turma)
@@ -176,9 +158,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma.Turma.EhNulo())
                 return;
 
-            var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId,
-                fechamentoTurma.Turma.TipoTurma));
-
+            var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(fechamentoTurma.Turma));
             if (notaTipoValor.EhNulo())
                 return;
 
@@ -187,13 +167,13 @@ namespace SME.SGP.Aplicacao
 
             var turmasCodigos = new[] { dto.CodigoTurma };
 
+            var dataSituacao = alunoConselho.PossuiSituacaoAtiva() ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao;
+
             var notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?
                 await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, dto.CodigoAluno,
-                    dto.Bimestre, alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva()
-                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
+                    dto.Bimestre, alunoConselho.DataMatricula, dataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
                 await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, dto.CodigoAluno,
-                    alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva()
-                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();
+                    alunoConselho.DataMatricula, dataSituacao, dto.Bimestre))).ToList();
 
             var notaFechamentoAluno = notasFechamentoAluno.FirstOrDefault(c =>
                 c.ComponenteCurricularCodigo == dto.ConselhoClasseNotaDto.CodigoComponenteCurricular &&

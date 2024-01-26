@@ -14,18 +14,12 @@ namespace SME.SGP.Aplicacao
     public class ObterOcorrenciaPorIdQueryHandler : IRequestHandler<ObterOcorrenciaPorIdQuery, OcorrenciaDto>
     {
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
-        private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
-        private readonly IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo;
         private readonly IMediator mediator;
 
-        public ObterOcorrenciaPorIdQueryHandler(IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator,
-                                                IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno,
-                                                IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo)
+        public ObterOcorrenciaPorIdQueryHandler(IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno));
-            this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo));
         }
 
         public async Task<OcorrenciaDto> Handle(ObterOcorrenciaPorIdQuery request, CancellationToken cancellationToken)

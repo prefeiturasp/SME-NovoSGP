@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -139,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join notas_conceito n on n.atividade_avaliativa = av.id
                        where not av.excluido
                          and av.turma_id = @turmaCodigo
-	                     and aad.disciplina_id = @disciplinaId
+                         and aad.disciplina_id = @disciplinaId
                          and av.data_avaliacao::date between @inicioPeriodo::date and @fimPeriodo::date
                          and n.id is null
                          and ta.codigo <> @tipoAtividadeAvaliativa";
@@ -429,6 +430,105 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("a.data_avaliacao");
         }
 
+        private static void AdicionarCondicionalDataAvaliacao(StringBuilder query, DateTime? dataAvaliacao)
+        {
+            if (dataAvaliacao.HasValue)
+                query.AppendLine("and date(a.data_avaliacao) = @dataAvaliacao");
+        }
+
+        private static void AdicionarCondicionalDre(StringBuilder query, string dreId)
+        {
+            if (!string.IsNullOrEmpty(dreId))
+                query.AppendLine("and a.dre_id = @dreId");
+        }
+
+        private static void AdicionarCondicionalUe(StringBuilder query, string ueId)
+        {
+            if (!string.IsNullOrEmpty(ueId))
+                query.AppendLine("and a.ue_id = @ueId");
+        }
+
+        private static void AdicionarCondicionalNomeAvaliacao(StringBuilder query, string nomeAvaliacao, bool nomeExato)
+        {
+            if (!string.IsNullOrEmpty(nomeAvaliacao))
+                if (nomeExato)
+                    query.AppendLine("and  lower(f_unaccent(a.nome_avaliacao)) = f_unaccent(@nomeAvaliacao)");
+                else
+                    query.AppendLine("and  lower(f_unaccent(a.nome_avaliacao)) LIKE f_unaccent(@nomeAvaliacao)");
+        }
+
+        private static void AdicionarCondicionalTurma(StringBuilder query, string turmaId)
+        {
+            if (!string.IsNullOrEmpty(turmaId))
+                query.AppendLine("and a.turma_id = @turmaId");
+        }
+
+        private static void AdicionarCondicionalTipoAvaliacao(StringBuilder query, long? tipoAvaliacaoId)
+        {
+            if (tipoAvaliacaoId.HasValue)
+                query.AppendLine("and ta.id = @tipoAvaliacaoId");
+        }
+
+        private static void AdicionarCondicionalProfessor(StringBuilder query, string professorRf)
+        {
+            if (!string.IsNullOrEmpty(professorRf))
+                query.AppendLine("and a.professor_rf = @professorRf");
+        }
+
+        private static void AdicionarCondicionalPeriodo(StringBuilder query, DateTime? perioInicio, DateTime? periodoFim)
+        {
+            if (perioInicio.HasValue)
+                query.AppendLine("and date(a.data_avaliacao) >= @periodoInicio");
+            if (periodoFim.HasValue)
+                query.AppendLine("and date(a.data_avaliacao) <= @periodoFim");
+        }
+
+        private static void AdicionarCondicionalDisciplinas(StringBuilder query, string[] disciplinasId)
+        {
+            if (disciplinasId.PossuiRegistros())
+            {
+                query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
+                query.AppendLine("and aad.excluido =  false");
+            }
+        }
+
+        private static void AdicionarCondicionalDisciplina(StringBuilder query, string disciplinaId)
+        {
+            if (!String.IsNullOrEmpty(disciplinaId))
+            {
+                query.AppendLine("and aad.disciplina_id::text =  @disciplinaId");
+                query.AppendLine("and aad.excluido =  false");
+            }
+        }
+
+        private static void AdicionarCondicionalRegencia(StringBuilder query, bool? ehRegencia)
+        {
+            if (ehRegencia.HasValue)
+            {
+                if (ehRegencia.Value)
+                    query.AppendLine("and a.eh_regencia = true");
+                else
+                    query.AppendLine("and a.eh_regencia = false");
+            }
+        }
+
+        private static void AdicionarCondicionalMesAno(StringBuilder query, int? mes, int? ano)
+        {
+            if (mes.HasValue)
+                query.AppendLine("AND extract(month from a.data_avaliacao) = @mes");
+            if (ano.HasValue)
+                query.AppendLine("AND extract(year from a.data_avaliacao) = @ano");
+        }
+
+        private static void AdicionarCondicionalId(StringBuilder query, long? id, bool ehAlteracao)
+        {
+            if (id.HasValue)
+                if (ehAlteracao)
+                    query.AppendLine("AND a.id <> @id");
+                else
+                    query.AppendLine("AND a.id = @id");
+        }
+
         private void MontaWhere(StringBuilder query,
             DateTime? dataAvaliacao = null,
             string dreId = null,
@@ -451,53 +551,19 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where");
             query.AppendLine("a.excluido = false");
             query.AppendLine("and ta.situacao = true");
-            if (dataAvaliacao.HasValue)
-                query.AppendLine("and date(a.data_avaliacao) = @dataAvaliacao");
-            if (!string.IsNullOrEmpty(dreId))
-                query.AppendLine("and a.dre_id = @dreId");
-            if (!string.IsNullOrEmpty(ueId))
-                query.AppendLine("and a.ue_id = @ueId");
-            if (!string.IsNullOrEmpty(nomeAvaliacao))
-                if (nomeExato)
-                    query.AppendLine("and  lower(f_unaccent(a.nome_avaliacao)) = f_unaccent(@nomeAvaliacao)");
-                else
-                    query.AppendLine("and  lower(f_unaccent(a.nome_avaliacao)) LIKE f_unaccent(@nomeAvaliacao)");
-            if (!string.IsNullOrEmpty(turmaId))
-                query.AppendLine("and a.turma_id = @turmaId");
-            if (tipoAvaliacaoId.HasValue)
-                query.AppendLine("and ta.id = @tipoAvaliacaoId");
-            if (!string.IsNullOrEmpty(professorRf))
-                query.AppendLine("and a.professor_rf = @professorRf");
-            if (perioInicio.HasValue)
-                query.AppendLine("and date(a.data_avaliacao) >= @periodoInicio");
-            if (periodoFim.HasValue)
-                query.AppendLine("and date(a.data_avaliacao) <= @periodoFim");
-            if (disciplinasId.NaoEhNulo() && disciplinasId.Length > 0)
-            {
-                query.AppendLine("and aad.disciplina_id =  ANY(@disciplinasId)");
-                query.AppendLine("and aad.excluido =  false");
-            }
-            if (!String.IsNullOrEmpty(disciplinaId))
-            {
-                query.AppendLine("and aad.disciplina_id::text =  @disciplinaId");
-                query.AppendLine("and aad.excluido =  false");
-            }
-            if (ehRegencia.HasValue)
-            {
-                if (ehRegencia.Value)
-                    query.AppendLine("and a.eh_regencia = true");
-                else
-                    query.AppendLine("and a.eh_regencia = false");
-            }
-            if (mes.HasValue)
-                query.AppendLine("AND extract(month from a.data_avaliacao) = @mes");
-            if (ano.HasValue)
-                query.AppendLine("AND extract(year from a.data_avaliacao) = @ano");
-            if (id.HasValue)
-                if (ehAlteracao)
-                    query.AppendLine("AND a.id <> @id");
-                else
-                    query.AppendLine("AND a.id = @id");
+            AdicionarCondicionalDataAvaliacao(query, dataAvaliacao);
+            AdicionarCondicionalDre(query, dreId);
+            AdicionarCondicionalUe(query, ueId);
+            AdicionarCondicionalNomeAvaliacao(query, nomeAvaliacao, nomeExato);
+            AdicionarCondicionalTurma(query, turmaId);
+            AdicionarCondicionalTipoAvaliacao(query, tipoAvaliacaoId);
+            AdicionarCondicionalProfessor(query, professorRf);
+            AdicionarCondicionalPeriodo(query, perioInicio, periodoFim);
+            AdicionarCondicionalDisciplinas(query, disciplinasId);
+            AdicionarCondicionalDisciplina(query, disciplinaId);
+            AdicionarCondicionalRegencia(query, ehRegencia);
+            AdicionarCondicionalMesAno(query, mes, ano);
+            AdicionarCondicionalId(query, id, ehAlteracao);
         }
 
         private void MontaWhereRegencia(StringBuilder query)
@@ -514,13 +580,13 @@ namespace SME.SGP.Dados.Repositorios
                            and a.tipo_calendario_id = @tipoCalendarioId
                            and a.data_aula between @dataInicio and @dataFim
                            and not exists (
-   		                        select 1 
-		                        from atividade_avaliativa aa
-	                           inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
-	                           where not aa.excluido
+                                   select 1 
+                                from atividade_avaliativa aa
+                               inner join atividade_avaliativa_disciplina ad on ad.atividade_avaliativa_id = aa.id
+                               where not aa.excluido
                                  and aa.turma_id = a.turma_id
-	                             and ad.disciplina_id = a.disciplina_id
-	                             and aa.data_avaliacao between @dataInicio and @dataFim)";
+                                 and ad.disciplina_id = a.disciplina_id
+                                 and aa.data_avaliacao between @dataInicio and @dataFim)";
 
             return await database.Conexao.QueryAsync<TurmaEComponenteDto>(query, new { tipoCalendarioId, dataInicio, dataFim });
         }
@@ -603,8 +669,8 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
         {
             var query = @"SELECT distinct aa.nome_avaliacao as Nome
-	                        , aa.data_avaliacao as data
-	                        , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
+                            , aa.data_avaliacao as data
+                            , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
                             , eh_regencia as Regencia
                             , aa.id as Id
                             , aa.categoria_id = 2 as EhInterdisciplinar

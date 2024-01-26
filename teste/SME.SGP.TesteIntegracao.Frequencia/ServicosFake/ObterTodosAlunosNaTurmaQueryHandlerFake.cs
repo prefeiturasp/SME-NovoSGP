@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal.ServicosFakes
         private readonly string NAO_COMPARECEU = "Não Compareceu";
         private readonly string DESISTENTE = "Desistente";
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTodosAlunosNaTurmaQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTodosAlunosNaTurmaQuery request, CancellationToken cancellationToken)
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia().AddMonths(-1);
 
@@ -150,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaMensal.ServicosFakes
                 DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
-            return await Task.FromResult(alunos.Where(x => x.CodigoTurma == request.CodigoTurma));
+            return Task.FromResult(alunos.Where(x => x.CodigoTurma == request.CodigoTurma));
         }
     }
 }

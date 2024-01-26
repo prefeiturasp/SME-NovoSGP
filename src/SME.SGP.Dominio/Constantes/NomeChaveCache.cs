@@ -47,5 +47,7 @@
         public const string DIAS_LETIVOS_E_NAO_LETIVOS_PERIODO_ESCOLAR_IDS_CONSIDERADOS_DESCONSIDERA_CRIACAO_DIA_LETIVO_PROXIMAS_UES = "eventos-letivos-nao-letivos-periodos-escolares:{0}-{1}";
         public const string DADOS_CRIACAO_AULAS_AUTOMATICAS_REGENCIA_UE_TIPO_CALENDARIO_MODALIDADE = "dados-criacao-aulas-automaticas-regencia:{0}-{1}-{2}";
         public const string DADOS_CRIACAO_AULA_AUTOMATICA_INFANTIL_REGENCIA_TURMA = "dados-criacao-aula-automatica-infantil-regencia-turma:{0}";
+        public const string ATRIBUICOES_RESPONSAVEIS_ATIVAS = "atribuicoes-responsaveis-tipo:{0}";
+        public const string ATRIBUICOES_ESPORADICAS_ATIVAS = "atribuicoes-esporadicas";
     }
 }

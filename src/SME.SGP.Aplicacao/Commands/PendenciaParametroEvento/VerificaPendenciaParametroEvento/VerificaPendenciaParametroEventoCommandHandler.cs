@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
         {
             var pendenciasCalendario = await mediator.Send(new ObterPendenciasCalendarioUeQuery(tipoCalendarioId, ueId, TipoPendencia.CadastroEventoPendente));
 
-            return pendenciasCalendario.NaoEhNulo() & pendenciasCalendario.Any() ?
+            return pendenciasCalendario.NaoEhNulo() && pendenciasCalendario.Any() ?
                     pendenciasCalendario.First() : null;
         }
 

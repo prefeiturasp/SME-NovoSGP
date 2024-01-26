@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos.Questionario;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterQuestoesRelatorioDinamicoEncaminhamentoNAAPAPorModalidadesUseCase
     {
-        Task<IEnumerable<QuestaoDto>> Executar(int? modalidadeId);
+        Task<IEnumerable<SecaoQuestoesDTO>> Executar(int[] modalidadesId);
     }
 }

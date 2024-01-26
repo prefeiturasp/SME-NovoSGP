@@ -79,7 +79,7 @@ pipeline {
           }
    
          stage('Sonar & Testes') {
-         when { anyOf { branch 'master_'; branch 'main_'; branch "story/*"; branch 'development'; branch 'develop'; branch 'release'; branch 'homolog'; branch 'homolog-r2'; branch 'release-r2';  } }
+         when { anyOf { branch 'master_'; branch 'main_'; branch "story/*"; branch 'development'; branch 'develop'; branch 'release_'; branch 'homolog'; branch 'homolog-r2'; branch 'release-r2';  } }
           parallel {
           stage('TesteIntegracao & build'){
             agent { kubernetes {
@@ -540,13 +540,28 @@ pipeline {
                   imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-naapa"
                   dockerImage14 = docker.build(imagename, "-f src/SME.SGP.NAAPA.Worker/Dockerfile .")
                   docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
-                  dockerImage14.push() } 
-                  }  
+                  dockerImage14.push() }  
                 }
               }
             }   
-          }    
-          
+            stage('sme-worker-metrica') {
+              agent { kubernetes { 
+                  label 'builder'
+                  defaultContainer 'builder'
+                }
+              }
+              steps{
+                checkout scm
+                script {
+                  imagename = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-metrica"
+                  dockerImage15 = docker.build(imagename, "-f src/SME.SGP.Metrica.Worker/Dockerfile .")
+                  docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                  dockerImage15.push() }  
+                }
+              }
+            }
+          }
+    }
         stage('Deploy'){
              agent { kubernetes { 
                   label 'builder'
@@ -581,6 +596,7 @@ pipeline {
                                 sh "kubectl rollout restart deployment/sme-worker-notificacoes-hub -n ${namespace}"
                                 sh "kubectl rollout restart deployment/sme-worker-compressao -n ${namespace}"
                                 sh "kubectl rollout restart deployment/sme-worker-naapa -n ${namespace}"
+                                sh "kubectl rollout restart deployment/sme-worker-metrica -n ${namespace}"
                                 sh('rm -f '+"$home"+'/.kube/config')
                         }
                     //}

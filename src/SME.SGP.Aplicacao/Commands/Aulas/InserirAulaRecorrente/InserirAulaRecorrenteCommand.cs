@@ -7,29 +7,23 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirAulaRecorrenteCommand : IRequest<bool>
     {
-        public InserirAulaRecorrenteCommand(Usuario usuario,
-                                       DateTime dataAula,
-                                       int quantidade,
-                                       string codigoTurma,
-                                       long componenteCurricularId,
-                                       string nomeComponenteCurricular,
-                                       long tipoCalendarioId,
-                                       TipoAula tipoAula,
-                                       string codigoUe,
-                                       bool ehRegencia,
-                                       RecorrenciaAula recorrenciaAula)
+        public InserirAulaRecorrenteCommand()
         {
-            Usuario = usuario;
-            DataAula = dataAula;
-            Quantidade = quantidade;
-            CodigoTurma = codigoTurma;
-            ComponenteCurricularId = componenteCurricularId;
-            NomeComponenteCurricular = nomeComponenteCurricular;
-            TipoCalendarioId = tipoCalendarioId;
-            TipoAula = tipoAula;
-            CodigoUe = codigoUe;
-            EhRegencia = ehRegencia;
-            RecorrenciaAula = recorrenciaAula;
+        }
+
+        public InserirAulaRecorrenteCommand(IncluirFilaInserirAulaRecorrenteCommand aulaRecorrente)
+        {
+            Usuario = aulaRecorrente.Usuario;
+            DataAula = aulaRecorrente.DataAula;
+            Quantidade = aulaRecorrente.Quantidade;
+            CodigoTurma = aulaRecorrente.CodigoTurma;
+            ComponenteCurricularId = aulaRecorrente.ComponenteCurricularId;
+            NomeComponenteCurricular = aulaRecorrente.NomeComponenteCurricular;
+            TipoCalendarioId = aulaRecorrente.TipoCalendarioId;
+            TipoAula = aulaRecorrente.TipoAula;
+            CodigoUe = aulaRecorrente.CodigoUe;
+            EhRegencia = aulaRecorrente.EhRegencia;
+            RecorrenciaAula = aulaRecorrente.RecorrenciaAula;
         }
 
         public Usuario Usuario { get; set; }

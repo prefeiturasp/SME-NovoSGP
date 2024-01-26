@@ -63,9 +63,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return new List<string>() {configuracaoArmazenamentoOptions.BucketArquivos, configuracaoArmazenamentoOptions.BucketTemp};
         }
 
-        public async Task<string> Obter(string nomeArquivo, bool ehPastaTemp)
+        public string Obter(string nomeArquivo, bool ehPastaTemp)
         {
-            await Task.FromResult("");
             return ObterUrl(string.Empty, string.Empty);
         }
 

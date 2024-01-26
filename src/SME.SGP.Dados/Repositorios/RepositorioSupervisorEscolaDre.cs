@@ -55,7 +55,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe(int tipo, string ueCodigo, string dreCodigo, string responsavelCodigo)
         {
             StringBuilder query = new(@"SELECT
-	                                        count(*)
+                                            count(*)
                                         FROM
                                          supervisor_escola_dre sed
                                         WHERE  NOT sed.excluido  
@@ -80,8 +80,8 @@ namespace SME.SGP.Dados.Repositorios
                                             ELSE false 
                                             END AS AtribuicaoExcluida
                                         FROM
-	                                        ue u
-	                                        INNER JOIN dre d ON u.dre_id = d.id
+                                            ue u
+                                            INNER JOIN dre d ON u.dre_id = d.id
                                             LEFT JOIN supervisor_escola_dre sed ON u.ue_id = sed.escola_id 
                                         WHERE d.dre_id = :dreCodigo
                                         GROUP BY u.ue_id,u.nome,u.tipo_escola,tipo,excluido  
@@ -255,12 +255,12 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                vact.dre_codigo CodigoDre,");
             sqlQuery.AppendLine("                vact.dre_nome DreNome,");
             sqlQuery.AppendLine("                vact.dre_id DreId,");
-            sqlQuery.AppendLine("				 vact.ue_codigo CodigoUe,");
-            sqlQuery.AppendLine("				 vact.ue_nome UeNome,");
-            sqlQuery.AppendLine("				 ue.tipo_escola TipoEscola,");
-            sqlQuery.AppendLine("				 vact.ue_id UeId,");
-            sqlQuery.AppendLine("				 vact.turma_semestre Semestre,");
-            sqlQuery.AppendLine("				 vact.turma_codigo CodigoTurma,");
+            sqlQuery.AppendLine("                 vact.ue_codigo CodigoUe,");
+            sqlQuery.AppendLine("                 vact.ue_nome UeNome,");
+            sqlQuery.AppendLine("                 ue.tipo_escola TipoEscola,");
+            sqlQuery.AppendLine("                 vact.ue_id UeId,");
+            sqlQuery.AppendLine("                 vact.turma_semestre Semestre,");
+            sqlQuery.AppendLine("                 vact.turma_codigo CodigoTurma,");
             sqlQuery.AppendLine("                vact.turma_ano TurmaAno,");
             sqlQuery.AppendLine("                vact.turma_ano_letivo TurmaAnoLetivo,");
             sqlQuery.AppendLine("                vact.turma_nome TurmaNome,");
@@ -270,13 +270,13 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                vact.turma_id TurmaId,");
             sqlQuery.AppendLine("                vact.tipo_turma TipoTurma,");
             sqlQuery.AppendLine("                vact.nome_filtro NomeFiltro");
-            sqlQuery.AppendLine("	from supervisor_escola_dre sed");
-            sqlQuery.AppendLine("		inner join ue");
-            sqlQuery.AppendLine("			on sed.escola_id = ue.ue_id");
-            sqlQuery.AppendLine("		inner join v_abrangencia_cadeia_turmas vact");
-            sqlQuery.AppendLine("			on ue.id = vact.ue_id");
+            sqlQuery.AppendLine("    from supervisor_escola_dre sed");
+            sqlQuery.AppendLine("        inner join ue");
+            sqlQuery.AppendLine("            on sed.escola_id = ue.ue_id");
+            sqlQuery.AppendLine("        inner join v_abrangencia_cadeia_turmas vact");
+            sqlQuery.AppendLine("            on ue.id = vact.ue_id");
             sqlQuery.AppendLine("where sed.supervisor_id = @rfSupervisor and");
-            sqlQuery.AppendLine("	 not sed.excluido and");
+            sqlQuery.AppendLine("     not sed.excluido and");
             sqlQuery.AppendLine("    vact.turma_historica = @consideraHistorico and");
             
             if(anoLetivo > 0)
@@ -306,8 +306,8 @@ namespace SME.SGP.Dados.Repositorios
             var sql = new StringBuilder(@"SELECT 
                                u.id ,
                                u.ue_id AS Codigo,
-	                           u.nome AS NomeSimples,
-	                           u.tipo_escola AS TipoEscola 
+                               u.nome AS NomeSimples,
+                               u.tipo_escola AS TipoEscola 
                            FROM ue u
                            INNER JOIN dre d ON u.dre_id =d.id
                            LEFT JOIN supervisor_escola_dre sed ON u.ue_id  = sed.escola_id 

@@ -10,13 +10,10 @@ namespace SME.SGP.Aplicacao
 {
     public class AulaPossuiAvaliacaoQueryHandler : IRequestHandler<AulaPossuiAvaliacaoQuery, bool>
     {
-        private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
 
-        public AulaPossuiAvaliacaoQueryHandler(IRepositorioAula repositorioAula,
-                                               IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
+        public AulaPossuiAvaliacaoQueryHandler(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
         {
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
         }
 

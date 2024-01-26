@@ -15,15 +15,10 @@ namespace SME.SGP.Aplicacao
     public class ExcluirNotificacaoCartaIntencoesObservacaoUseCase : IExcluirNotificacaoCartaIntencoesObservacaoUseCase
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioNotificacao repositorioNotificacao;
-        private readonly IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao;
-
-        public ExcluirNotificacaoCartaIntencoesObservacaoUseCase(IMediator mediator, IRepositorioNotificacao repositorioNotificacao,
-            IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao)
+        
+        public ExcluirNotificacaoCartaIntencoesObservacaoUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
-            this.repositorioNotificacaoCartaIntencoesObservacao = repositorioNotificacaoCartaIntencoesObservacao ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCartaIntencoesObservacao));
         }
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {

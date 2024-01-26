@@ -11,6 +11,6 @@ namespace SME.SGP.Dto
         public RecuperacaoParalelaOrdenacao? Ordenacao { get; set; }
         public RecuperacaoParalelaPeriodoListagemDto Periodo { get; set; }
         public IEnumerable<RespostaDto> Respostas { get; set; }
-        public bool SomenteLeitura { get; set; }
+        public bool SomenteLeitura { get; set; }       
     }
 }

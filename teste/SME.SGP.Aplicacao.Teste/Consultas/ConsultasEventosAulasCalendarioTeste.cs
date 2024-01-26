@@ -14,43 +14,30 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly IComandosDiasLetivos comandosDiasLetivos;
         private readonly Mock<IComandosDiasLetivos> comandosDiasLetivosMock;
 
-        private readonly Mock<IConsultasAbrangencia> consultasAbrangencia;
         private readonly Mock<IConsultasAula> consultasAula;
         private readonly Mock<IConsultasDisciplina> consultasDisciplina;
         private readonly ConsultasEventosAulasCalendario consultasEventosAulasCalendario;
-        private readonly Mock<IHttpContextAccessor> httpContext;
         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
         private readonly Mock<IRepositorioAtividadeAvaliativaDisciplina> repositorioAtividadeAvaliativaDisciplina;
         private readonly Mock<IRepositorioAtividadeAvaliativaRegencia> repositorioAtividadeAvaliativaRegencia;
-        private readonly Mock<IRepositorioAtribuicaoCJ> repositorioAtribuicaoCj;
         private readonly Mock<IRepositorioAulaConsulta> repositorioAula;
         private readonly Mock<IRepositorioEvento> repositorioEvento;
         private readonly Mock<IRepositorioEventoTipo> repositorioEventoTipo;
         private readonly Mock<IRepositorioFechamentoReabertura> repositorioFechamentoReabertura;
         private readonly Mock<IRepositorioPeriodoEscolarConsulta> repositorioPeriodoEscolar;
-        private readonly Mock<IRepositorioParametrosSistemaConsulta> repositorioParametrosSistema;
-        private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
         private readonly Mock<IServicoUsuario> servicoUsuario;
-        private readonly Mock<IMediator> mediator;
-        private readonly Mock<IRepositorioComponenteCurricularConsulta> repositorioComponenteCurricular;
-        
+        private readonly Mock<IMediator> mediator;      
 
         public ConsultasEventosAulasCalendarioTeste()
         {
             repositorioAula = new Mock<IRepositorioAulaConsulta>();
             repositorioEvento = new Mock<IRepositorioEvento>();
             servicoUsuario = new Mock<IServicoUsuario>();
-            httpContext = new Mock<IHttpContextAccessor>();
             comandosDiasLetivosMock = new Mock<IComandosDiasLetivos>();
-            repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricularConsulta>();
             repositorioPeriodoEscolar = new Mock<IRepositorioPeriodoEscolarConsulta>();
-            repositorioParametrosSistema = new Mock<IRepositorioParametrosSistemaConsulta>();
-            repositorioTipoCalendatio = new Mock<IRepositorioTipoCalendario>();
             repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
-            consultasAbrangencia = new Mock<IConsultasAbrangencia>();
             repositorioAtividadeAvaliativaRegencia = new Mock<IRepositorioAtividadeAvaliativaRegencia>();
             repositorioAtividadeAvaliativaDisciplina = new Mock<IRepositorioAtividadeAvaliativaDisciplina>();
-            repositorioAtribuicaoCj = new Mock<IRepositorioAtribuicaoCJ>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
             consultasAula = new Mock<IConsultasAula>();
             repositorioEventoTipo = new Mock<IRepositorioEventoTipo>();
@@ -60,8 +47,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                                   comandosDiasLetivosMock.Object,
                                                                                   repositorioAula.Object,
                                                                                   servicoUsuario.Object,
-                                                                                  repositorioComponenteCurricular.Object,
-                                                                                  consultasAbrangencia.Object,
                                                                                   repositorioAtividadeAvaliativa.Object,
                                                                                   repositorioPeriodoEscolar.Object,
                                                                                   repositorioAtividadeAvaliativaRegencia.Object,
@@ -72,10 +57,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                                   mediator.Object,
                                                                                   repositorioFechamentoReabertura.Object);
 
-            comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object,
-                                                          repositorioEvento.Object,
-                                                          repositorioTipoCalendatio.Object,
-                                                          repositorioParametrosSistema.Object);
+            comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object);
         }
 
         //[Fact(DisplayName = "Deve_Buscar_Evento_E_Aulas_Do_Ano_Todo_Por_Tipo_Calendario_Dre_Ue")]

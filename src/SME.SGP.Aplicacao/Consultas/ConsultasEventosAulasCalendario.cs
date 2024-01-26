@@ -18,7 +18,6 @@ namespace SME.SGP.Aplicacao
     public class ConsultasEventosAulasCalendario : IConsultasEventosAulasCalendario
     {
         private readonly IComandosDiasLetivos comandosDiasLetivos;
-        private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasAula consultasAula;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
@@ -29,7 +28,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
 
@@ -38,8 +36,6 @@ namespace SME.SGP.Aplicacao
             IComandosDiasLetivos comandosDiasLetivos,
             IRepositorioAulaConsulta repositorioAula,
             IServicoUsuario servicoUsuario,
-            IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-            IConsultasAbrangencia consultasAbrangencia,
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
@@ -54,7 +50,6 @@ namespace SME.SGP.Aplicacao
             this.comandosDiasLetivos = comandosDiasLetivos ?? throw new ArgumentNullException(nameof(comandosDiasLetivos));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentException(nameof(servicoUsuario));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativa));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentException(nameof(repositorioPeriodoEscolar));
             this.repositorioAtividadeAvaliativaRegencia = repositorioAtividadeAvaliativaRegencia ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaRegencia));
@@ -62,7 +57,6 @@ namespace SME.SGP.Aplicacao
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.consultasAula = consultasAula ?? throw new ArgumentNullException(nameof(consultasAula));
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
-            this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

@@ -7,13 +7,10 @@ namespace SME.SGP.Aplicacao
 {
     public class ComandosCompensacaoAusencia: IComandosCompensacaoAusencia
     {
-        private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IServicoCompensacaoAusencia servicoCompensacaoAusencia;
 
-        public ComandosCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
-                                           IServicoCompensacaoAusencia servicoCompensacaoAusencia)
+        public ComandosCompensacaoAusencia(IServicoCompensacaoAusencia servicoCompensacaoAusencia)
         {
-            this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.servicoCompensacaoAusencia = servicoCompensacaoAusencia ?? throw new ArgumentNullException(nameof(servicoCompensacaoAusencia));
         }
 

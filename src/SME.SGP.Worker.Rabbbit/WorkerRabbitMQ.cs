@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace SME.SGP.Worker.RabbitMQ
 {
-    public class WorkerRabbitMQ : WorkerRabbitMQBase
+    public class WorkerRabbitMQ : WorkerRabbitAplicacao
     {
         private const int TENTATIVA_REPROCESSAR_10 = 10;
 
@@ -43,10 +43,11 @@ namespace SME.SGP.Worker.RabbitMQ
             RegistrarUseCasesRelatorioComErro();
         }
 
-        protected override void RegistrarUseCasesDoWorker()
+        protected override void RegistrarUseCases()
         {
             RegistrarUseCasesRelatorios();
 
+            Comandos.Add(RotasRabbitSgp.RotaNotificacaoUsuario, new ComandoRabbit("Notificar usuário", typeof(INotificarUsuarioUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo, new ComandoRabbit("Notificar usuário sobre nova observação no diário de bordo", typeof(INotificarDiarioBordoObservacaoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoAlterarObservacaoDiarioBordo, new ComandoRabbit("Alterar as notificações dos usuários excluídos das observação no diário de bordo", typeof(IAlterarNotificacaoObservacaoDiarioBordoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNovaNotificacaoObservacaoCartaIntencoes, new ComandoRabbit("Notificar usuário sobre nova observação na carta de intenções", typeof(ISalvarNotificacaoCartaIntencoesObservacaoUseCase)));
@@ -110,6 +111,11 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ExecutarMigracaoRelatorioSemestralPAP, new ComandoRabbit("Executar migração do relatório semestral pap", typeof(IExecutarMigracaoRelatorioSemestralPAPUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarMigracaoRelatorioSemestralPAPPorAnoLetivo, new ComandoRabbit("Executar migração do relatório semestral pap por ano letivo", typeof(IExecutarMigracaoRelatorioPapPorAnoEletivoUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarMigracaoRelatorioSemestralPAPPorId, new ComandoRabbit("Executar migração do relatório semestral pap por id", typeof(IExecutarMigracaoRelatorioPAPPorIdUseCase), true));
+            Comandos.Add(RotasRabbitSgp.RotaNotificacaoInformativo, new ComandoRabbit("Executar notificação de informativo aos usuários", typeof(IExecutarNotificacaoInformativoUsuariosUseCase), true));
+            Comandos.Add(RotasRabbitSgp.RotaNotificacaoInformativoUsuario, new ComandoRabbit("Executar notificação de informativo ao usuário", typeof(IExecutarNotificacaoInformativoUsuarioUseCase), true));
+            Comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoInformativo, new ComandoRabbit("Executar exclusão notificações de informativo aos usuários", typeof(IExecutarExclusaoNotificacaoInformativoUsuariosUseCase), true));
+            Comandos.Add(RotasRabbitSgp.RotaExcluirNotificacaoInformativoUsuario, new ComandoRabbit("Executar exclusão notificação de informativo ao usuário", typeof(IExecutarExclusaoNotificacaoInformativoUsuarioUseCase), true));
+            Comandos.Add(RotasRabbitSgp.GerarCacheAtribuicaoResponsaveis, new ComandoRabbit("Gerar cache atribuições de responsáveis ativos", typeof(IGerarCacheAtribuicaoResponsaveisUseCase), true));
         }
     }
 }
