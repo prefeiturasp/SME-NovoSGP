@@ -241,7 +241,8 @@ namespace SME.SGP.Api.Controllers
                 AnoLetivo = anoLetivo,
                 ConsideraNovasUEs = consideraNovasUEs,
                 FiltrarTipoEscolaPorAnoLetivo = filtrarTipoEscolaPorAnoLetivo,
-                Filtro = filtro
+                Filtro = filtro,
+                ConsideraHistorico = ConsideraHistorico
             };
 
             var ues = await useCase.Executar(dto);
