@@ -98,13 +98,7 @@ namespace SME.SGP.Aplicacao
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
-            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(recomendacaoDto.AlunoCodigo, turmasCodigos, periodoInicio, periodoFim));
-
-            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendario.Id, turma.EhTurmaInfantil, periodoEscolar?.Bimestre ?? (int)Bimestre.Final));
-            if (periodoFechamento != null)
-            {
-                turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(recomendacaoDto.AlunoCodigo, turmasCodigos, periodoFechamento.InicioDoFechamento, periodoFechamento.FinalDoFechamento));
-            }
+            var turmasComMatriculasValidas = await ObterTurmasComMatriculasValidas(recomendacaoDto.AlunoCodigo, turma.EhTurmaInfantil, bimestre ?? (int)Bimestre.Final, tipoCalendario.Id, turmasCodigos, periodoInicio, periodoFim);
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
 
@@ -173,7 +167,18 @@ namespace SME.SGP.Aplicacao
 
             return consultasConselhoClasseRecomendacaoConsultaDto;
         }
+        private async Task<IEnumerable<string>> ObterTurmasComMatriculasValidas(string alunoCodigo, bool ehTurmaInfantil, int bimestre, long tipoCalendarioId, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim)
+        {
+            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigos, periodoInicio, periodoFim));
 
+            var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdEBimestreQuery(tipoCalendarioId, ehTurmaInfantil, bimestre));
+            if (periodoFechamento.NaoEhNulo())
+            {
+                turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigos, periodoFechamento.InicioDoFechamento, periodoFechamento.FinalDoFechamento));
+            }
+
+            return turmasComMatriculasValidas;
+        }
         private async Task<SituacaoConselhoClasse> BuscaSituacaoConselhoAluno(string alunoCodigo, Turma turma)
         {
             var statusAluno = SituacaoConselhoClasse.NaoIniciado;
